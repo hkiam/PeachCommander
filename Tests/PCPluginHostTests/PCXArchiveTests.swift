@@ -95,17 +95,29 @@ final class PCXArchiveTests: XCTestCase {
     private func buildFakeLibrary(source: String? = nil) throws -> PluginLibrary? {
         let clang = "/usr/bin/clang"
         guard FileManager.default.isExecutableFile(atPath: clang) else { return nil }
-        let src = dir.appendingPathComponent("fake.c")
-        let out = dir.appendingPathComponent("libfake.dylib")
-        try (source ?? Self.fakePlugin).write(to: src, atomically: true, encoding: .utf8)
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-I", sdkIncludeDir, "-o", out.path, src.path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        guard p.terminationStatus == 0 else {
-            let err = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            XCTFail("clang failed: \(err)"); return nil
+        let text = source ?? Self.fakePlugin
+        // One compile per distinct fake, not per test — see CachedPluginBuild. Three fakes and six
+        // tests used to mean six clang invocations; the key is the source itself, so a fourth fake
+        // gets its own compile without anyone remembering to name it.
+        let out: URL
+        do {
+            out = try CachedPluginBuild.freshBuild(key: "pcx-fake-\(text.hashValue)", into: dir) { cache in
+                let src = cache.appendingPathComponent("fake.c")
+                let out = cache.appendingPathComponent("libfake.dylib")
+                try text.write(to: src, atomically: true, encoding: .utf8)
+                let p = Process()
+                p.executableURL = URL(fileURLWithPath: clang)
+                p.arguments = ["-dynamiclib", "-I", sdkIncludeDir, "-o", out.path, src.path]
+                let pipe = Pipe(); p.standardError = pipe
+                try p.run(); p.waitUntilExit()
+                guard p.terminationStatus == 0 else {
+                    let err = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                    throw PluginBuildFailure(description: "clang failed: \(err)")
+                }
+                return out
+            }
+        } catch let failure as PluginBuildFailure {
+            XCTFail(failure.description); return nil
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PCXSymbols.required, optional: PCXSymbols.optional) else {

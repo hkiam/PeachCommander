@@ -22,14 +22,10 @@ final class AppleFoundationModelsProviderTests: XCTestCase {
     /// Opt-in (real on-device model): set `PC_AI_LIVE=1`, mirroring `PC_NET_LIVE`
     /// for the live server tests.
     ///
-    /// These call Apple's on-device model for real, so their outcome depends on what
-    /// the model generates. `test_live_agentLoop_readOnly_overFakeBridge` failed a
-    /// run with `"Exceeded model context window size"` — the loop had simply
-    /// accumulated more context that time. A default suite whose result depends on
-    /// token usage is not a usable signal, so these now skip unless asked for.
+    /// The gate that keeps the model out of a default run lives in LiveModel — the reasoning that
+    /// put it here first is written down there, and the other two live files now share it.
     private func liveProviderOrSkip() async throws -> AppleFoundationModelsProvider {
-        try XCTSkipUnless(ProcessInfo.processInfo.environment["PC_AI_LIVE"] == "1",
-                          "set PC_AI_LIVE=1 to run tests against the real on-device model")
+        try LiveModel.requireEnabled()
         let p = AppleFoundationModelsProvider()
         guard await p.isAvailable else { throw XCTSkip("Apple Intelligence not available") }
         return p

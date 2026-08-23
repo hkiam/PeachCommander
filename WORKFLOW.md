@@ -22,11 +22,12 @@ pick next unchecked task in current iteration
   -> read linked spec section
   -> implement (smallest change that satisfies acceptance criteria)
   -> build: xcodegen generate (if project.yml changed) && xcodebuild build
-  -> test:  xcodebuild test (targets listed in the task; at minimum the module touched)
+  -> test:  Tools/test.sh --changed (the bundles the edit can reach; add any the task names)
   -> manual check: run the app if the task has a "Demo" line
   -> update the iteration file: check the box, add one-line note if noteworthy
   -> update STATE.md (current task pointer, timestamp, any new blockers/decisions)
   -> update feature-inventory.md status column if a F-xxx feature became "done"
+  -> Tools/test.sh (the full suite — once, before the commit, not after every edit)
   -> git commit (format below)
 ```
 

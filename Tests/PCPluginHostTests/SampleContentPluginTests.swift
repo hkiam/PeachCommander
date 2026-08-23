@@ -23,17 +23,27 @@ final class SampleContentPluginTests: XCTestCase {
     private func buildSampleContentPlugin() throws -> PluginLibrary? {
         let clang = "/usr/bin/clang"
         guard FileManager.default.isExecutableFile(atPath: clang) else { return nil }
-        let src = repoRoot.appendingPathComponent("Plugins/SampleContentPlugin/sample_content.c")
-        let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
-        let out = dir.appendingPathComponent("libsamplecontent.dylib")
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        guard p.terminationStatus == 0 else {
-            let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            XCTFail("clang failed: \(e)"); return nil
+        // Compiled once per test run, copied per test — see CachedPluginBuild.
+        let out: URL
+        do {
+            out = try CachedPluginBuild.freshBuild(key: "samplecontent", into: dir) { cache in
+                let src = repoRoot.appendingPathComponent("Plugins/SampleContentPlugin/sample_content.c")
+                let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
+                let out = cache.appendingPathComponent("libsamplecontent.dylib")
+                let p = Process()
+                p.executableURL = URL(fileURLWithPath: clang)
+                p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
+                let pipe = Pipe(); p.standardError = pipe
+                try p.run(); p.waitUntilExit()
+                guard p.terminationStatus == 0 else {
+                    let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                    throw PluginBuildFailure(description: "clang failed: \(e)")
+                }
+                return out
+            }
+        } catch let failure as PluginBuildFailure {
+            // Recorded per test, as it was when every test compiled its own copy.
+            XCTFail(failure.description); return nil
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PDXSymbols.required, optional: PDXSymbols.optional) else {

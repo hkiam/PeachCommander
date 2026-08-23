@@ -6,11 +6,28 @@ on:
   pull_request:
     branches: [main]
 
-jobs:
-  build-and-test:
-    name: Build and Test
-    runs-on: macos-26
+# Four jobs rather than one long one. They used to run in sequence inside a single job — the static
+# gates, then a 12-minute build, then a 29-minute test run — and the wall clock was their sum even
+# though nothing after the gates depends on anything before it. The app, the plugins and the tests
+# each build what they need and nothing else, so the run now costs the longest of them.
+#
+# There is deliberately no DerivedData cache. Restoring one gives every cached object file a newer
+# mtime than the freshly checked-out sources, which is exactly the state Xcode reads as "up to date":
+# the failure mode is a green run on code that was never compiled. The parallelism above buys most of
+# what a cache would, without that.
 
+jobs:
+  # Everything that needs no *project* build. Fails in about a minute when it fails at all, which is
+  # the point of keeping it separate from the jobs that take ten.
+  #
+  # It still needs the toolchain. Four of these gates compile real sources with a bare `swiftc` —
+  # check-archive-listing.sh builds a probe out of Sources/PCArchive, check-checksums.sh and
+  # check-pack-formats.sh do the same, check-descript-format.sh out of Sources/PCFoundation — and
+  # those sources are Swift 6.3. "Needs no build" in the comments below means no xcodebuild, not no
+  # compiler; without the Xcode pin here they would compile against whatever the image defaults to.
+  checks:
+    name: Static checks
+    runs-on: macos-26
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -18,27 +35,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          # Must match the development toolchain: the sources use Swift 6.3
-          # syntax and macOS 26 SDK APIs (FoundationModels, behind
-          # @available(macOS 26) + #if canImport). Xcode 16 cannot compile them.
-          # Range, not a hard pin — runner images retire point releases.
           xcode-version: '^26.0'
-
-      - name: Install dependencies
-        # libssh2 is explicit on purpose: CSSH2 resolves <libssh2.h> from the
-        # Homebrew keg (nothing is vendored), and the runner image only happens to
-        # carry it today. Don't build on an incidental preinstall.
-        #
-        # squashfs and e2fsprogs *build the fixtures* for the FSImage plugin's tests —
-        # mksquashfs and mke2fs author real filesystem images, so the reader is checked
-        # against a third-party encoder rather than against itself. Those tests skip
-        # when the tool is missing, so without this two whole formats go untested while
-        # the run stays green: the failure mode a skip is supposed to prevent, not
-        # cause. (The tests turn that skip into a hard failure when CI is set, so a
-        # broken install here is loud rather than invisible.)
-        run: |
-          brew install xcodegen libssh2 squashfs e2fsprogs
-          ./Tools/bootstrap.sh
 
       # Static half of the release guard: catches a plugin that exists but would not be
       # shipped. Needs no build, so it runs before the expensive steps.
@@ -126,10 +123,78 @@ jobs:
       - name: Check every plugin source is compiled into its plugin
         run: python3 Tools/check-plugin-sources.py
 
-      - name: Build project
+  # The application. Plugins are skipped here because they are their own job below; nothing in the
+  # app build reads them.
+  app:
+    name: Build app
+    runs-on: macos-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          # Must match the development toolchain: the sources use Swift 6.3
+          # syntax and macOS 26 SDK APIs (FoundationModels, behind
+          # @available(macOS 26) + #if canImport). Xcode 16 cannot compile them.
+          # Range, not a hard pin — runner images retire point releases.
+          xcode-version: '^26.0'
+
+      - name: Install dependencies
+        # libssh2 is explicit on purpose: CSSH2 resolves <libssh2.h> from the
+        # Homebrew keg (nothing is vendored), and the runner image only happens to
+        # carry it today. Don't build on an incidental preinstall.
         run: |
-          ./Tools/build.sh
+          brew install xcodegen libssh2
+          ./Tools/bootstrap.sh
+
+      - name: Build the app
+        run: PC_SKIP_PLUGINS=1 ./Tools/build.sh
+
+  # Every shipping plugin, built the way a release builds them. This is the half of the old build
+  # step that had nothing to do with the app: plugins are swiftc invocations in shell scripts, not
+  # Xcode targets, so they share no work with the build above and can run beside it.
+  plugins:
+    name: Build plugins
+    runs-on: macos-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '^26.0'
+
+      - name: Build every shipping plugin
+        run: ./Tools/build-all-plugins.sh "$RUNNER_TEMP/plugins"
+
+  tests:
+    name: Test
+    runs-on: macos-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '^26.0'
+
+      - name: Install dependencies
+        # squashfs and e2fsprogs *build the fixtures* for the FSImage plugin's tests —
+        # mksquashfs and mke2fs author real filesystem images, so the reader is checked
+        # against a third-party encoder rather than against itself. Those tests skip
+        # when the tool is missing, so without this two whole formats go untested while
+        # the run stays green: the failure mode a skip is supposed to prevent, not
+        # cause. (The tests turn that skip into a hard failure when CI is set, so a
+        # broken install here is loud rather than invisible.)
+        run: |
+          brew install xcodegen libssh2 squashfs e2fsprogs
+          ./Tools/bootstrap.sh
 
       - name: Run tests
-        run: |
-          ./Tools/test.sh
+        # The AllTests scheme, which builds the test bundles and not the application: no unit-test
+        # target depends on PCApp, and building it here recompiled 84k lines before a test could run.
+        run: ./Tools/test.sh

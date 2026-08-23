@@ -28,52 +28,24 @@ final class S3AWSConfigTests: XCTestCase {
     }
 
     /// Compile the config reader (and what it needs) with a driver, and return its tab-separated output.
-    private func runDriver(_ body: String) throws -> [String: String] {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
-        let driverDir = dir.appendingPathComponent("driver", isDirectory: true)
-        try FileManager.default.createDirectory(at: driverDir, withIntermediateDirectories: true)
-        try Data(body.utf8).write(to: driverDir.appendingPathComponent("main.swift"))
-
-        let binary = dir.appendingPathComponent("awsconfig")
-        let build = Process()
-        build.executableURL = URL(fileURLWithPath: swiftc)
+    ///
+    /// The driver takes the fake home through argv rather than through interpolated source, so all
+    /// ten tests share one compiled binary instead of compiling eight files each. See SwiftDriver.
+    private func runDriver(_ body: String, home: URL) throws -> [String: String] {
         // S3Profiles and S3Client come along because S3AWSConfig builds an `S3Profile` and reads
         // `S3Environment.looksLikeALocalEndpoint`; a stub would be a second implementation to keep in
         // step with the first.
-        build.arguments = ["-O", "-o", binary.path]
-            + ["S3AWSConfig", "S3Profiles", "S3Client", "S3Signer", "S3XML", "S3Transfer", "S3Write"]
-                .map { repoRoot.appendingPathComponent("Plugins/S3/\($0).swift").path }
-            + [repoRoot.appendingPathComponent("Plugins/SDK/PluginLoc.swift").path,
-               driverDir.appendingPathComponent("main.swift").path,
-               "-import-objc-header",
-               repoRoot.appendingPathComponent("Plugins/S3/S3Bridging.h").path,
-               "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
-               "-framework", "AppKit"]
-        let buildErr = Pipe(); build.standardError = buildErr
-        try build.run(); build.waitUntilExit()
-        guard build.terminationStatus == 0 else {
-            let e = String(data: buildErr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            // A compiler that ran and refused this is a failure, not a skip.
-            XCTFail("the AWS config reader did not compile:\n\(e)")
-            throw NSError(domain: "S3AWSConfigTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
-        }
-
-        let run = Process()
-        run.executableURL = binary
-        let out = Pipe(); run.standardOutput = out
-        try run.run()
-        let data = out.fileHandleForReading.readDataToEndOfFile()
-        run.waitUntilExit()
-        XCTAssertEqual(run.terminationStatus, 0, "the driver did not run to completion")
-
-        var result: [String: String] = [:]
-        for line in (String(data: data, encoding: .utf8) ?? "").split(separator: "\n") {
-            let parts = line.split(separator: "\t", maxSplits: 1).map(String.init)
-            if parts.count == 2 { result[parts[0]] = parts[1] }
-        }
-        return result
+        try SwiftDriver.run(
+            label: "s3awsconfig",
+            sources: ["S3AWSConfig", "S3Profiles", "S3Client", "S3Signer", "S3XML", "S3Transfer", "S3Write"]
+                .map { "Plugins/S3/\($0).swift" } + ["Plugins/SDK/PluginLoc.swift"],
+            extraFlags: ["-import-objc-header",
+                         repoRoot.appendingPathComponent("Plugins/S3/S3Bridging.h").path,
+                         "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
+                         "-framework", "AppKit"],
+            body: body,
+            arguments: [home.path],
+            repoRoot: repoRoot)
     }
 
     /// Write a fake ~/.aws and report what the reader made of it.
@@ -86,7 +58,7 @@ final class S3AWSConfigTests: XCTestCase {
 
         return try runDriver("""
         import Foundation
-        S3AWSConfig.homeOverride = "\(home.path)"
+        S3AWSConfig.homeOverride = CommandLine.arguments[1]
         let profiles = S3AWSConfig.profiles()
         print("names\\t" + profiles.map(\\.name).joined(separator: ","))
         for p in profiles {
@@ -100,7 +72,7 @@ final class S3AWSConfigTests: XCTestCase {
             print("\\(p.name).pathStyle\\t\\(converted.pathStyle)")
             print("\\(p.name).anonymous\\t\\(converted.anonymous)")
         }
-        """)
+        """, home: home)
     }
 
     // MARK: - The format's quiet failures
@@ -263,9 +235,9 @@ final class S3AWSConfigTests: XCTestCase {
         try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
         let output = try runDriver("""
         import Foundation
-        S3AWSConfig.homeOverride = "\(home.path)"
+        S3AWSConfig.homeOverride = CommandLine.arguments[1]
         print("count\\t\\(S3AWSConfig.profiles().count)")
-        """)
+        """, home: home)
         XCTAssertEqual(output["count"], "0")
     }
 }

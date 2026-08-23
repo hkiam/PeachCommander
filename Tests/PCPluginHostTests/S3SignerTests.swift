@@ -32,48 +32,11 @@ final class S3SignerTests: XCTestCase {
     }
 
     /// Compile the signer with a driver and return its output, keyed by the driver's labels.
+    ///
+    /// The compile is memoized per driver source — see SwiftDriver.
     private func runDriver(_ body: String) throws -> [String: String] {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
-        // Top-level statements are only allowed in a file called main.swift, which is why the driver
-        // lives in a directory of its own rather than beside the binary.
-        let driverDir = dir.appendingPathComponent("driver", isDirectory: true)
-        try FileManager.default.createDirectory(at: driverDir, withIntermediateDirectories: true)
-        let main = driverDir.appendingPathComponent("main.swift")
-        try Data(body.utf8).write(to: main)
-
-        let binary = dir.appendingPathComponent("signer")
-        let build = Process()
-        build.executableURL = URL(fileURLWithPath: swiftc)
-        build.arguments = ["-O", "-o", binary.path,
-                           repoRoot.appendingPathComponent("Plugins/S3/S3Signer.swift").path,
-                           main.path]
-        let buildErr = Pipe(); build.standardError = buildErr
-        try build.run(); build.waitUntilExit()
-        guard build.terminationStatus == 0 else {
-            let e = String(data: buildErr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            // A compiler that RAN and refused this is a failure, not a skip. The skip belongs to a
-            // machine without swiftc; reusing it here means the day S3 signer stops compiling, this
-            // file reports success and says nothing.
-            XCTFail("S3 signer did not compile:\n\(e)")
-            throw NSError(domain: "S3SignerTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
-        }
-
-        let run = Process()
-        run.executableURL = binary
-        let out = Pipe(); run.standardOutput = out
-        try run.run()
-        let data = out.fileHandleForReading.readDataToEndOfFile()
-        run.waitUntilExit()
-        XCTAssertEqual(run.terminationStatus, 0, "the driver did not run to completion")
-
-        var result: [String: String] = [:]
-        for line in (String(data: data, encoding: .utf8) ?? "").split(separator: "\n") {
-            let parts = line.split(separator: "\t", maxSplits: 1).map(String.init)
-            if parts.count == 2 { result[parts[0]] = parts[1] }
-        }
-        return result
+        try SwiftDriver.run(label: "s3signer", sources: ["Plugins/S3/S3Signer.swift"],
+                            body: body, repoRoot: repoRoot)
     }
 
     // MARK: - The published vectors

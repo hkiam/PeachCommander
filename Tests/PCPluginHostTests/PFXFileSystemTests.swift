@@ -78,34 +78,35 @@ final class PFXFileSystemTests: XCTestCase {
     }
 
     override func setUpWithError() throws {
-        let clang = "/usr/bin/clang"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: clang), "clang unavailable")
         dir = FileManager.default.temporaryDirectory.appendingPathComponent("samplefs-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
-        let src = repoRoot.appendingPathComponent("Plugins/SampleFS/sample_fs.c")
-        let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
-        let out = dir.appendingPathComponent("libsamplefs.dylib")
-        let p = Process(); p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        guard p.terminationStatus == 0 else {
-            let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            // A compiler that RAN and refused this is a failure, not a skip. The skip belongs to a
-            // machine without clang; reusing it here means the day SampleFS stops compiling, this
-            // file reports success and says nothing.
-            XCTFail("SampleFS did not compile:\n\(e)")
-            throw NSError(domain: "PFXFileSystemTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
+        // Compiled once per test run, copied per test — see CachedPluginBuild. The copy is what
+        // keeps `SampleFsResetCounters` and friends counting for one test at a time.
+        let out = try CachedPluginBuild.freshBuild(key: "samplefs", into: dir) { cache in
+            let clang = "/usr/bin/clang"
+            try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: clang), "clang unavailable")
+            let src = repoRoot.appendingPathComponent("Plugins/SampleFS/sample_fs.c")
+            let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
+            let out = cache.appendingPathComponent("libsamplefs.dylib")
+            let p = Process(); p.executableURL = URL(fileURLWithPath: clang)
+            p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
+            let pipe = Pipe(); p.standardError = pipe
+            try p.run(); p.waitUntilExit()
+            guard p.terminationStatus == 0 else {
+                let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                // A compiler that RAN and refused this is a failure, not a skip. The skip belongs to a
+                // machine without clang; reusing it here means the day SampleFS stops compiling, this
+                // file reports success and says nothing. The failure is cached, so every test goes red.
+                throw PluginBuildFailure(description: "SampleFS did not compile:\n\(e)")
+            }
+            return out
         }
         let hooks = ["SampleFsOpenFinds", "SampleFsFindNextCalls", "SampleFsResetCounters",
                      "SampleFsDisconnects"]
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional + hooks) else {
-            XCTFail("SampleFS compiled but could not be loaded")
-            throw NSError(domain: "PFXFileSystemTests", code: 2,
-                          userInfo: [NSLocalizedDescriptionKey: "load failed"])
+            throw PluginBuildFailure(description: "SampleFS compiled but could not be loaded")
         }
         self.lib = lib
     }

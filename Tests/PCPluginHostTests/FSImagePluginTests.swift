@@ -117,56 +117,67 @@ final class FSImagePluginTests: XCTestCase {
     private static let vendoredCSources = ["Plugins/FSImage/Vendor/zstddeclib.c"]
 
     private func buildPlugin() throws {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
+        lib = try openPluginCopy()
+    }
 
-        var objects: [String] = []
-        for source in Self.vendoredCSources {
-            let object = dir.appendingPathComponent((source as NSString).lastPathComponent + ".o")
-            let clang = Process()
-            clang.executableURL = URL(fileURLWithPath: "/usr/bin/clang")
-            clang.arguments = ["-O2", "-c", "-o", object.path,
-                               repoRoot.appendingPathComponent(source).path]
-            let clangErrors = Pipe(); clang.standardError = clangErrors
-            try clang.run(); clang.waitUntilExit()
-            guard clang.terminationStatus == 0 else {
-                let message = String(data: clangErrors.fileHandleForReading.readDataToEndOfFile(),
-                                     encoding: .utf8) ?? ""
-                return XCTFail("clang failed on \(source): \(message)")
+    /// A plugin image of this test's own — a separate copy on disk, so a separate `dlopen`.
+    ///
+    /// Called once per test from `setUpWithError`, and once per worker by the fuzz test: the
+    /// plugin keeps state of its own (`ImageCache`), so driving one image from several threads
+    /// would be sharing exactly what these tests must not share. A copy costs a file copy.
+    private func openPluginCopy() throws -> PluginLibrary {
+        // Compiled once per test run and copied per caller — see CachedPluginBuild. Only the
+        // compiler stopped running 79 times for one dylib.
+        let plugin = try CachedPluginBuild.freshBuild(key: "fsimage", into: dir) { cache in
+            let swiftc = "/usr/bin/swiftc"
+            try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
+
+            var objects: [String] = []
+            for source in Self.vendoredCSources {
+                let object = cache.appendingPathComponent((source as NSString).lastPathComponent + ".o")
+                let clang = Process()
+                clang.executableURL = URL(fileURLWithPath: "/usr/bin/clang")
+                clang.arguments = ["-O2", "-c", "-o", object.path,
+                                   repoRoot.appendingPathComponent(source).path]
+                let clangErrors = Pipe(); clang.standardError = clangErrors
+                try clang.run(); clang.waitUntilExit()
+                guard clang.terminationStatus == 0 else {
+                    let message = String(data: clangErrors.fileHandleForReading.readDataToEndOfFile(),
+                                         encoding: .utf8) ?? ""
+                    // `throw`, not XCTFail: this runs inside setUpWithError, and a recorded-but-not-
+                    // thrown failure leaves `lib` nil for a test body that force-unwraps it — a
+                    // fatalError that takes the runner down along with every test after it.
+                    throw PluginBuildFailure(description: "clang failed on \(source): \(message)")
+                }
+                objects.append(object.path)
             }
-            objects.append(object.path)
-        }
 
-        let out = dir.appendingPathComponent("libfsimage.dylib")
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: swiftc)
-        process.arguments = [
-            "-emit-library", "-module-name", "FSImage",
-            "-import-objc-header", repoRoot.appendingPathComponent("Plugins/FSImage/FSImageBridging.h").path,
-            "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
-            "-o", out.path,
-        ] + Self.pluginSources.map { repoRoot.appendingPathComponent($0).path } + objects
-        let pipe = Pipe(); process.standardError = pipe
-        try process.run(); process.waitUntilExit()
-        // `throw` rather than XCTFail: XCTFail records the failure and lets setUp
-        // finish, leaving `lib` nil for a test body that then force-unwraps it — which
-        // is a fatalError, and a fatalError takes the whole runner down along with
-        // every test after it. One unbuildable plugin should cost one red test, not
-        // the rest of the suite's results.
-        struct BuildFailure: Error, CustomStringConvertible { let description: String }
-        guard process.terminationStatus == 0 else {
-            let message = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            throw BuildFailure(description: "swiftc failed: \(message)")
+            let out = cache.appendingPathComponent("libfsimage.dylib")
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: swiftc)
+            process.arguments = [
+                "-emit-library", "-module-name", "FSImage",
+                "-import-objc-header", repoRoot.appendingPathComponent("Plugins/FSImage/FSImageBridging.h").path,
+                "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
+                "-o", out.path,
+            ] + Self.pluginSources.map { repoRoot.appendingPathComponent($0).path } + objects
+            let pipe = Pipe(); process.standardError = pipe
+            try process.run(); process.waitUntilExit()
+            guard process.terminationStatus == 0 else {
+                let message = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                throw PluginBuildFailure(description: "swiftc failed: \(message)")
+            }
+            return out
         }
         // Both ABIs: the plugin is a packer that also contributes a Commands entry, and
         // the host resolves those through two separate opens. Combining them here is
         // what lets one dlopen'd copy be driven from both sides in one test file.
         guard case .success(let lib) = PluginLibrary.open(
-            path: out.path, required: PCXSymbols.required,
+            path: plugin.path, required: PCXSymbols.required,
             optional: PCXSymbols.optional + ContribSymbols.optional) else {
-            throw BuildFailure(description: "dlopen/symbol resolution failed for \(out.path)")
+            throw PluginBuildFailure(description: "dlopen/symbol resolution failed for \(plugin.path)")
         }
-        self.lib = lib
+        return lib
     }
 
     // MARK: - Fixtures
@@ -1392,7 +1403,6 @@ final class FSImagePluginTests: XCTestCase {
         // which input did it, so the index of the last case started is published as it
         // goes and reported if the deadline passes.
         let progress = NSLock()
-        var current = "(none)"
         var crashed: [String] = []
         var unsafePaths: [(String, String)] = []
         /// Cases that got past the magic check into real parsing. Counted because a
@@ -1404,15 +1414,28 @@ final class FSImagePluginTests: XCTestCase {
         /// corpus could not reach at all until now, and a combined number would let it
         /// stop reaching it again without anybody noticing.
         var reachedParserBuried = 0
-        let finished = DispatchSemaphore(value: 0)
 
-        DispatchQueue.global().async { [lib] in
-            for (label, path, buried) in cases {
-                progress.lock(); current = label; progress.unlock()
+        // Striped over a few workers, each holding a plugin image of its own. The cases were always
+        // independent — a fresh guard and a unique id per case — but they all drove one dlopen'd
+        // library, whose own ImageCache is shared mutable state, so the batch had to be serial and
+        // took 110 s of a 154 s class. A copy per worker removes the sharing rather than hoping the
+        // plugin is thread-safe. Round-robin, not contiguous chunks, so every worker gets a mix of
+        // fixture families and one slow format cannot land entirely on one of them.
+        let workerCount = min(max(2, ProcessInfo.processInfo.activeProcessorCount / 3), 6)
+        var libs: [PluginLibrary] = []
+        for _ in 0..<workerCount { libs.append(try openPluginCopy()) }
+        var currents = [String](repeating: "(none)", count: workerCount)
+        let group = DispatchGroup()
+
+        for worker in 0..<workerCount {
+            DispatchQueue.global().async(group: group) { [lib = libs[worker]] in
+            for (label, path, buried) in cases.enumerated()
+                .filter({ $0.offset % workerCount == worker }).map({ $0.element }) {
+                progress.lock(); currents[worker] = label; progress.unlock()
                 // A fresh guard and a unique id per case: shared state here would let
                 // the first crash quarantine the plugin and make every later case pass
                 // by never running.
-                let archive = PCXArchive(library: lib!, pluginID: "fuzz-\(label)", guard: PluginGuard())
+                let archive = PCXArchive(library: lib, pluginID: "fuzz-\(label)", guard: PluginGuard())
                 do {
                     let entries = try archive.list(archivePath: path)
                     progress.lock()
@@ -1440,16 +1463,18 @@ final class FSImagePluginTests: XCTestCase {
                     progress.unlock()
                 }
             }
-            finished.signal()
+            }
         }
 
         // Raised from 120s when the header sweep roughly quadrupled the case count. It
         // bounds the whole batch, not one case, so it is a hang detector with slack —
-        // not a performance budget.
+        // not a performance budget. Left where it was rather than lowered with the
+        // workers: a budget that tracks the machine turns a hang detector into a flake.
         let deadline = DispatchTime.now() + .seconds(300)
-        if finished.wait(timeout: deadline) == .timedOut {
-            progress.lock(); let stuck = current; progress.unlock()
-            return XCTFail("a mutated image did not finish parsing within 120s — stuck on \(stuck)")
+        if group.wait(timeout: deadline) == .timedOut {
+            progress.lock(); let stuck = currents; progress.unlock()
+            return XCTFail("a mutated image did not finish parsing in time — workers were on "
+                           + stuck.joined(separator: ", "))
         }
 
         XCTAssertEqual(crashed, [], "these mutated images crashed the plugin")

@@ -27,60 +27,30 @@ final class S3XMLTests: XCTestCase {
         if let dir { try? FileManager.default.removeItem(at: dir) }
     }
 
-    private func runDriver(_ body: String) throws -> [String: String] {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
-        let driverDir = dir.appendingPathComponent("driver", isDirectory: true)
-        try FileManager.default.createDirectory(at: driverDir, withIntermediateDirectories: true)
-        try Data(body.utf8).write(to: driverDir.appendingPathComponent("main.swift"))
-
-        let binary = dir.appendingPathComponent("xml")
-        let build = Process()
-        build.executableURL = URL(fileURLWithPath: swiftc)
-        build.arguments = ["-O", "-o", binary.path,
-                          repoRoot.appendingPathComponent("Plugins/S3/S3XML.swift").path,
-                          driverDir.appendingPathComponent("main.swift").path]
-        let buildErr = Pipe(); build.standardError = buildErr
-        try build.run(); build.waitUntilExit()
-        guard build.terminationStatus == 0 else {
-            let e = String(data: buildErr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            XCTFail("the S3 parsers did not compile:\n\(e)")
-            throw NSError(domain: "S3XMLTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
-        }
-
-        let run = Process()
-        run.executableURL = binary
-        let out = Pipe(); run.standardOutput = out
-        try run.run()
-        let data = out.fileHandleForReading.readDataToEndOfFile()
-        run.waitUntilExit()
-        XCTAssertEqual(run.terminationStatus, 0)
-
-        var result: [String: String] = [:]
-        for line in (String(data: data, encoding: .utf8) ?? "").split(separator: "\n") {
-            let parts = line.split(separator: "\t", maxSplits: 1).map(String.init)
-            if parts.count == 2 { result[parts[0]] = parts[1] }
-        }
-        return result
+    /// The compile is memoized per driver source — see SwiftDriver.
+    private func runDriver(_ body: String, arguments: [String] = [],
+                           stdin: String? = nil) throws -> [String: String] {
+        try SwiftDriver.run(label: "s3xml", sources: ["Plugins/S3/S3XML.swift"],
+                            body: body, arguments: arguments, stdin: stdin,
+                            repoRoot: repoRoot)
     }
 
     /// Parse a ListBucketResult and report the entries as `name|d|size` triples.
     private func list(_ xml: String, prefix: String, urlEncoded: Bool = true) throws -> [String: String] {
+        // XML on stdin, prefix and flag in argv: the driver *source* is then the same for every
+        // caller, so it is compiled once for the whole class instead of once per test.
         try runDriver("""
         import Foundation
-        let xml = \"\"\"
-        \(xml)
-        \"\"\"
-        let page = S3ListObjectsParser.parse(Data(xml.utf8), selfPrefix: "\(prefix)",
-                                             urlEncoded: \(urlEncoded))
+        let xml = String(data: FileHandle.standardInput.readDataToEndOfFile(), encoding: .utf8)!
+        let page = S3ListObjectsParser.parse(Data(xml.utf8), selfPrefix: CommandLine.arguments[1],
+                                             urlEncoded: CommandLine.arguments[2] == "true")
         print("entries\\t" + page.entries.map { "\\($0.name)|\\($0.isDir ? "d" : "f")|\\($0.size)" }
             .joined(separator: " "))
         print("count\\t\\(page.entries.count)")
         print("raw\\t\\(page.rawCount)")
         print("truncated\\t\\(page.isTruncated)")
         print("token\\t\\(page.nextToken ?? "-")")
-        """)
+        """, arguments: [prefix, urlEncoded ? "true" : "false"], stdin: xml)
     }
 
     // MARK: - Keys a filesystem cannot hold

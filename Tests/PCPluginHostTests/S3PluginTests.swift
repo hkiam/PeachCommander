@@ -72,45 +72,52 @@ final class S3PluginTests: XCTestCase {
 
     /// Compile the plugin exactly as `Tools/build-s3-plugin.sh` does, and open it.
     ///
-    /// Shared with `S3ConformanceTests`, which drives the same plugin against a real MinIO server —
-    /// two copies of this would be two source lists to forget a file from.
+    /// Shared with `S3ConformanceTests` and `S3LiveTests`, which drive the same plugin against a
+    /// real MinIO server — two copies of this would be two source lists to forget a file from.
+    ///
+    /// The compile itself happens once per test run (see `CachedPluginBuild`); each caller still
+    /// gets its own copy of the dylib in `dir`, so each `dlopen` is a separate image with its own
+    /// globals. That matters here more than elsewhere: connecting writes profiles, and two tests
+    /// sharing one image would share what the first one wrote.
     static func buildPlugin(repoRoot: URL, into dir: URL) throws -> PluginLibrary {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
-        let out = dir.appendingPathComponent("libs3.dylib")
-        // Must stay in step with Tools/build-s3-plugin.sh. Tools/check-plugin-sources.py is what
-        // keeps them in step, because forgetting one here builds a plugin the tests cannot see and
-        // forgetting it there ships a plugin that does not link.
-        let sources = ["s3", "S3Signer", "S3XML", "S3Client", "S3Transfer", "S3Write",
-                       "S3Profiles", "S3AWSConfig", "S3ConnectDialog"]
-            .map { repoRoot.appendingPathComponent("Plugins/S3/\($0).swift").path }
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: swiftc)
-        p.arguments = ["-emit-library", "-module-name", "S3", "-framework", "AppKit",
-                       "-import-objc-header",
-                       repoRoot.appendingPathComponent("Plugins/S3/S3Bridging.h").path,
-                       "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
-                       "-o", out.path]
-            + sources
-            + [repoRoot.appendingPathComponent("Plugins/SDK/PluginLoc.swift").path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        // A compiler that RAN and refused the plugin is a failure, not a skip. The skip above is for
-        // a machine without swiftc; using it here too meant that when the plugin genuinely stopped
-        // compiling — a source file missing from the list, say — every test in this file quietly
-        // skipped and the suite reported success. That happened, and the only trace was a compiler
-        // error buried in a log that ended with "** TEST SUCCEEDED **".
-        guard p.terminationStatus == 0 else {
-            let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            XCTFail("the S3 plugin did not compile:\n\(e)")
-            throw NSError(domain: "S3PluginTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "plugin build failed"])
+        let out = try CachedPluginBuild.freshBuild(key: "s3", into: dir) { cache in
+            let swiftc = "/usr/bin/swiftc"
+            try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
+            let out = cache.appendingPathComponent("libs3.dylib")
+            // Must stay in step with Tools/build-s3-plugin.sh. Tools/check-plugin-sources.py is what
+            // keeps them in step, because forgetting one here builds a plugin the tests cannot see and
+            // forgetting it there ships a plugin that does not link.
+            let sources = ["s3", "S3Signer", "S3XML", "S3Client", "S3Transfer", "S3Write",
+                           "S3Profiles", "S3AWSConfig", "S3ConnectDialog"]
+                .map { repoRoot.appendingPathComponent("Plugins/S3/\($0).swift").path }
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: swiftc)
+            p.arguments = ["-emit-library", "-module-name", "S3", "-framework", "AppKit",
+                           "-import-objc-header",
+                           repoRoot.appendingPathComponent("Plugins/S3/S3Bridging.h").path,
+                           "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
+                           "-o", out.path]
+                + sources
+                + [repoRoot.appendingPathComponent("Plugins/SDK/PluginLoc.swift").path]
+            let pipe = Pipe(); p.standardError = pipe
+            try p.run(); p.waitUntilExit()
+            // A compiler that RAN and refused the plugin is a failure, not a skip. The skip above is for
+            // a machine without swiftc; using it here too meant that when the plugin genuinely stopped
+            // compiling — a source file missing from the list, say — every test in this file quietly
+            // skipped and the suite reported success. That happened, and the only trace was a compiler
+            // error buried in a log that ended with "** TEST SUCCEEDED **".
+            //
+            // The failure is cached along with the artifact, so it is still every test in the class
+            // that goes red — the compiler just only runs once to establish it.
+            guard p.terminationStatus == 0 else {
+                let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                throw PluginBuildFailure(description: "the S3 plugin did not compile:\n\(e)")
+            }
+            return out
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional) else {
-            XCTFail("the S3 plugin compiled but could not be loaded")
-            throw NSError(domain: "S3PluginTests", code: 2,
-                          userInfo: [NSLocalizedDescriptionKey: "plugin load failed"])
+            throw PluginBuildFailure(description: "the S3 plugin compiled but could not be loaded")
         }
         return lib
     }

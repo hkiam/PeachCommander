@@ -102,6 +102,7 @@ final class LiveRealFolderTests: XCTestCase {
     // real user data is touched. Auto-skips without Apple Intelligence.
     func test_live_readsRealFile_andAnswers() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         let provider = AppleFoundationModelsProvider()
         guard await provider.isAvailable else { throw XCTSkip("Apple Intelligence not available") }
 

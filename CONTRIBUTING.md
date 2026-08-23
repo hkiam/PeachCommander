@@ -26,11 +26,35 @@ cd PeachCommander
 ./Tools/test.sh          # the full suite
 ```
 
+While you are working, run only what your change can reach:
+
+```bash
+./Tools/test.sh --changed        # bundles your uncommitted work can affect
+./Tools/test.sh --since main     # everything accumulated since the branch point
+./Tools/test.sh --list --changed # what it would run, without running it
+./Tools/test.sh --perf           # the benchmarks, which are not in the normal suite
+```
+
+Some suites are opt-in because they need something the machine may not have, and because
+their result depends on it rather than on your change:
+
+```bash
+PC_AI_LIVE=1  ./Tools/test.sh   # the real on-device model (Apple Intelligence)
+PC_NET_LIVE=1 ./Tools/test.sh   # a live FTP/SFTP server
+PC_S3_LIVE=1  ./Tools/test.sh   # a real S3 bucket you own — this one costs money
+```
+
+`--changed` works the affected bundles out of `project.yml`'s dependency graph
+(`Tools/affected-tests.py`); when it cannot narrow honestly — a change to `project.yml`,
+`Tools/` or anything outside `Sources/`, `Tests/` and `Plugins/` — it runs everything.
+The full run stays the default and stays the thing you do before committing.
+
 `bootstrap.sh` installs `libssh2` via Homebrew. That is not optional: `CSSH2`
 resolves `<libssh2.h>` from the keg and no header is vendored.
 
 **Never edit `PeachCommander.xcodeproj`.** It is generated from `project.yml` by
-XcodeGen, is not tracked in git, and `build.sh`/`test.sh` regenerate it on every run.
+XcodeGen, is not tracked in git, and `build.sh`/`test.sh` regenerate it whenever
+`project.yml` is newer than the generated file (`PC_FORCE_GEN=1` regenerates regardless).
 Build settings, targets and the app version all live in `project.yml`.
 
 ### Plugins

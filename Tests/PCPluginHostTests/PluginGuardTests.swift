@@ -42,17 +42,27 @@ final class PluginGuardTests: XCTestCase {
     private func buildLibrary() throws -> UnsafeMutableRawPointer? {
         let clang = "/usr/bin/clang"
         guard FileManager.default.isExecutableFile(atPath: clang) else { return nil }
-        let src = dir.appendingPathComponent("pg.c")
-        let out = dir.appendingPathComponent("libpg.dylib")
-        try Self.source.write(to: src, atomically: true, encoding: .utf8)
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-o", out.path, src.path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        guard p.terminationStatus == 0 else {
-            XCTFail("clang failed: \(String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "")")
-            return nil
+        // Compiled once per test run, copied per test — see CachedPluginBuild. The copy is what
+        // keeps the `dlclose` in each test closing an image of its own.
+        let out: URL
+        do {
+            out = try CachedPluginBuild.freshBuild(key: "pluginguard", into: dir) { cache in
+                let src = cache.appendingPathComponent("pg.c")
+                let out = cache.appendingPathComponent("libpg.dylib")
+                try Self.source.write(to: src, atomically: true, encoding: .utf8)
+                let p = Process()
+                p.executableURL = URL(fileURLWithPath: clang)
+                p.arguments = ["-dynamiclib", "-o", out.path, src.path]
+                let pipe = Pipe(); p.standardError = pipe
+                try p.run(); p.waitUntilExit()
+                guard p.terminationStatus == 0 else {
+                    let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                    throw PluginBuildFailure(description: "clang failed: \(e)")
+                }
+                return out
+            }
+        } catch let failure as PluginBuildFailure {
+            XCTFail(failure.description); return nil
         }
         return dlopen(out.path, RTLD_NOW)
     }

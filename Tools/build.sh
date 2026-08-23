@@ -8,12 +8,17 @@ echo "=== Peach Commander Build ==="
 
 cd "$(dirname "$0")/.."
 
-# Always regenerate: project.yml is the source of truth and the .pbxproj is not
-# tracked, so a stale one silently ignores build-setting changes. (This used to be
-# guarded by `[ ! -f PeachCommander.xcodeproj ]`, which is a directory — the test
-# was always true, so it regenerated anyway while claiming "Project not found".)
-echo "Generating Xcode project from project.yml..."
-xcodegen generate
+# project.yml is the source of truth and the .pbxproj is not tracked, so a stale one silently
+# ignores build-setting changes. (The original guard was `[ ! -f PeachCommander.xcodeproj ]`, which
+# is a directory — the test was always true, so it regenerated anyway while claiming "Project not
+# found". Regenerating unconditionally fixed that and cost a few seconds of every build; comparing
+# timestamps against the generated file guarantees the same freshness for nothing.)
+# PC_FORCE_GEN=1 regenerates regardless, for when the generated project itself is suspect.
+if [ "${PC_FORCE_GEN:-0}" = "1" ] || [ ! -f PeachCommander.xcodeproj/project.pbxproj ] \
+   || [ project.yml -nt PeachCommander.xcodeproj/project.pbxproj ]; then
+    echo "Generating Xcode project from project.yml..."
+    xcodegen generate
+fi
 
 # Build Debug configuration
 echo "Building Debug configuration..."

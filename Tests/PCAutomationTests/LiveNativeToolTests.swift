@@ -51,6 +51,7 @@ final class NativeToolContextTests: XCTestCase {
     // Live: guided generation produces a well-formed Markdown table (KI-09).
     func test_live_guidedTable_isWellFormed() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         let probe = AppleFoundationModelsProvider()
         guard await probe.isAvailable else { throw XCTSkip("Apple Intelligence not available") }
         // Read a REAL file (temp sandbox) then tabulate it via guided generation — the
@@ -95,6 +96,7 @@ final class NativeToolContextTests: XCTestCase {
     // with its actual content — the reliability win over the text convention.
     func test_live_native_readsRealFile_reliably() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         let probe = AppleFoundationModelsProvider()
         guard await probe.isAvailable else { throw XCTSkip("Apple Intelligence not available") }
 
@@ -128,6 +130,7 @@ final class NativeToolContextTests: XCTestCase {
     // identical text, so the turn could never recover. It must now answer, from the file.
     func test_live_guardrailRejectedHeader_recoversAndAnswers() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         guard await AppleFoundationModelsProvider().isAvailable else {
             throw XCTSkip("Apple Intelligence not available")
         }
@@ -177,6 +180,7 @@ final class NativeToolContextTests: XCTestCase {
     // file's length costs time instead of failing.
     func test_live_summarizesLongFile_beyondContextWindow() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         guard await AppleFoundationModelsProvider().isAvailable else {
             throw XCTSkip("Apple Intelligence not available")
         }
@@ -274,6 +278,7 @@ final class NativeToolContextTests: XCTestCase {
     // what fills a window that holds a few thousand tokens.
     func test_live_longConversation_isCompactedRatherThanEnded() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         guard await AppleFoundationModelsProvider().isAvailable else {
             throw XCTSkip("Apple Intelligence not available")
         }
@@ -316,6 +321,7 @@ final class NativeToolContextTests: XCTestCase {
     // and named in the prompts, which this pins.
     func test_live_foldedSummary_keepsTheFilesLanguage() async throws {
         guard #available(macOS 26, *) else { throw XCTSkip("macOS 26") }
+        try LiveModel.requireEnabled()
         guard await AppleFoundationModelsProvider().isAvailable else {
             throw XCTSkip("Apple Intelligence not available")
         }

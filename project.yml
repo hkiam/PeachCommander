@@ -752,54 +752,129 @@ targets:
       - XCTest
 
 schemes:
+  # Coverage is off in every scheme below. Nothing reads the data — there is no xccov or profdata
+  # step in Tools/ or in CI — and instrumenting every target for it cost a share of both the compile
+  # and the run on every single test run, plus a stray default.profraw in the repo root. The nightly
+  # coverage job passes `-enableCodeCoverage YES` on the command line when it actually wants numbers.
+  #
+  # `parallelizable: true` on each bundle lets Xcode spread its test *classes* over several runner
+  # processes. Classes inside one process still run in order, so a class that sets process-wide state
+  # (S3PluginTests and WebDAVPluginTests both setenv) is safe as long as it clears it in tearDown,
+  # which they do. Temp directories are UUID-isolated throughout and no test binds a fixed port.
+
+  # The default scheme: builds and runs the app, and tests it with ⌘U from Xcode.
   PeachCommander:
     build:
       targets:
         PCApp: all
     test:
-      gatherCoverageData: true
+      gatherCoverageData: false
       configuration: Debug
       targets:
-        - PCFoundationTests
-        - PCVFSTests
-        - PCCommandsTests
-        - PCOperationsTests
-        - PCArchiveTests
-        - PCAutomationTests
-        - PCPluginHostTests
-        - PCNetTests
-        - PCThemeTests
-        - PCAIChatTests
-        - PCAccessibilityTests
-        - PCTagTests
-        - PCShellQuoteTests
-        - PCEditorTests
-        - PCKeyboardTests
+        - name: PCFoundationTests
+          parallelizable: true
+        - name: PCVFSTests
+          parallelizable: true
+        - name: PCCommandsTests
+          parallelizable: true
+        - name: PCOperationsTests
+          parallelizable: true
+        - name: PCArchiveTests
+          parallelizable: true
+        - name: PCAutomationTests
+          parallelizable: true
+        - name: PCPluginHostTests
+          parallelizable: true
+        - name: PCNetTests
+          parallelizable: true
+        - name: PCThemeTests
+          parallelizable: true
+        - name: PCAIChatTests
+          parallelizable: true
+        - name: PCAccessibilityTests
+          parallelizable: true
+        - name: PCTagTests
+          parallelizable: true
+        - name: PCShellQuoteTests
+          parallelizable: true
+        - name: PCEditorTests
+          parallelizable: true
+        - name: PCKeyboardTests
+          parallelizable: true
 
+  # What Tools/test.sh runs, and the list Tools/check-tests-registered.py holds every unit-test
+  # bundle against.
+  #
+  # Its build action is the test bundles themselves, deliberately: no unit-test target depends on
+  # PCApp — the four that exercise app code (PCThemeTests, PCAccessibilityTests, PCTagTests,
+  # PCKeyboardTests) compile the one file they need straight into themselves. Building the
+  # application here meant that touching any framework recompiled and relinked 84k lines of AppKit
+  # code before a single test could run, for nothing.
   AllTests:
     build:
       targets:
-        PCApp: all
+        PCFoundationTests: [test]
+        PCVFSTests: [test]
+        PCCommandsTests: [test]
+        PCOperationsTests: [test]
+        PCArchiveTests: [test]
+        PCAutomationTests: [test]
+        PCPluginHostTests: [test]
+        PCNetTests: [test]
+        PCThemeTests: [test]
+        PCAIChatTests: [test]
+        PCAccessibilityTests: [test]
+        PCTagTests: [test]
+        PCShellQuoteTests: [test]
+        PCEditorTests: [test]
+        PCKeyboardTests: [test]
     test:
-      gatherCoverageData: true
+      gatherCoverageData: false
       configuration: Debug
       targets:
-        - PCFoundationTests
-        - PCVFSTests
-        - PCCommandsTests
-        - PCOperationsTests
-        - PCArchiveTests
-        - PCAutomationTests
-        - PCPluginHostTests
-        - PCNetTests
-        - PCPerfTests
-        - PCThemeTests
-        - PCAIChatTests
-        - PCAccessibilityTests
-        - PCTagTests
-        - PCShellQuoteTests
-        - PCEditorTests
-        - PCKeyboardTests
+        - name: PCFoundationTests
+          parallelizable: true
+        - name: PCVFSTests
+          parallelizable: true
+        - name: PCCommandsTests
+          parallelizable: true
+        - name: PCOperationsTests
+          parallelizable: true
+        - name: PCArchiveTests
+          parallelizable: true
+        - name: PCAutomationTests
+          parallelizable: true
+        - name: PCPluginHostTests
+          parallelizable: true
+        - name: PCNetTests
+          parallelizable: true
+        - name: PCThemeTests
+          parallelizable: true
+        - name: PCAIChatTests
+          parallelizable: true
+        - name: PCAccessibilityTests
+          parallelizable: true
+        - name: PCTagTests
+          parallelizable: true
+        - name: PCShellQuoteTests
+          parallelizable: true
+        - name: PCEditorTests
+          parallelizable: true
+        - name: PCKeyboardTests
+          parallelizable: true
+
+  # The benchmarks, kept out of AllTests because they are timing assertions: they belong to a
+  # deliberate run on a quiet machine, not to the edit-test loop. Tools/test.sh --perf runs them.
+  PerfTests:
+    build:
+      targets:
+        PCPerfTests: [test]
+    test:
+      gatherCoverageData: false
+      configuration: Debug
+      targets:
+        - name: PCPerfTests
+          parallelizable: false
 
   UITests:
     build:

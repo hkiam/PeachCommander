@@ -64,36 +64,36 @@ final class WebDAVPluginTests: XCTestCase {
     // MARK: - Fixture wiring
 
     private func buildPlugin() throws {
-        let swiftc = "/usr/bin/swiftc"
-        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
-        let out = dir.appendingPathComponent("libwebdav.dylib")
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: swiftc)
-        p.arguments = [
-            "-emit-library", "-module-name", "WebDAV",
-            "-framework", "AppKit",
-            "-import-objc-header", repoRoot.appendingPathComponent("Plugins/WebDAV/WebDAVBridging.h").path,
-            "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
-            "-o", out.path,
-            repoRoot.appendingPathComponent("Plugins/WebDAV/webdav.swift").path,
-            repoRoot.appendingPathComponent("Plugins/SDK/PluginLoc.swift").path,
-        ]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        // Skipped only when there is no compiler. A compiler that ran and refused the plugin is a
-        // failure: treating it as a skip means the day the plugin stops compiling, this file reports
-        // success and says nothing.
-        guard p.terminationStatus == 0 else {
-            let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            XCTFail("the WebDAV plugin did not compile:\n\(e)")
-            throw NSError(domain: "WebDAVPluginTests", code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "plugin build failed"])
+        // Compiled once per test run, copied per test — see CachedPluginBuild.
+        let out = try CachedPluginBuild.freshBuild(key: "webdav", into: dir) { cache in
+            let swiftc = "/usr/bin/swiftc"
+            try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
+            let out = cache.appendingPathComponent("libwebdav.dylib")
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: swiftc)
+            p.arguments = [
+                "-emit-library", "-module-name", "WebDAV",
+                "-framework", "AppKit",
+                "-import-objc-header", repoRoot.appendingPathComponent("Plugins/WebDAV/WebDAVBridging.h").path,
+                "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
+                "-o", out.path,
+                repoRoot.appendingPathComponent("Plugins/WebDAV/webdav.swift").path,
+                repoRoot.appendingPathComponent("Plugins/SDK/PluginLoc.swift").path,
+            ]
+            let pipe = Pipe(); p.standardError = pipe
+            try p.run(); p.waitUntilExit()
+            // Skipped only when there is no compiler. A compiler that ran and refused the plugin is a
+            // failure: treating it as a skip means the day the plugin stops compiling, this file reports
+            // success and says nothing. The failure is cached, so every test still goes red.
+            guard p.terminationStatus == 0 else {
+                let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                throw PluginBuildFailure(description: "the WebDAV plugin did not compile:\n\(e)")
+            }
+            return out
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional) else {
-            XCTFail("the WebDAV plugin compiled but could not be loaded")
-            throw NSError(domain: "WebDAVPluginTests", code: 2,
-                          userInfo: [NSLocalizedDescriptionKey: "plugin load failed"])
+            throw PluginBuildFailure(description: "the WebDAV plugin compiled but could not be loaded")
         }
         self.lib = lib
     }

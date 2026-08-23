@@ -22,16 +22,27 @@ final class PCXArchiveFSTests: XCTestCase {
     private func buildLib() throws -> PluginLibrary? {
         let clang = "/usr/bin/clang"
         guard FileManager.default.isExecutableFile(atPath: clang) else { return nil }
-        let out = dir.appendingPathComponent("libsample.dylib")
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-std=c11", "-I", repoRoot.appendingPathComponent("Plugins/SDK").path,
-                       "-o", out.path, repoRoot.appendingPathComponent("Plugins/SamplePacker/sample_packer.c").path]
-        let pipe = Pipe(); p.standardError = pipe
-        try p.run(); p.waitUntilExit()
-        guard p.terminationStatus == 0 else {
-            XCTFail("clang: \(String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "")")
-            return nil
+        // Compiled once per test run, copied per test — see CachedPluginBuild.
+        let out: URL
+        do {
+            out = try CachedPluginBuild.freshBuild(key: "samplepacker", into: dir) { cache in
+                let src = repoRoot.appendingPathComponent("Plugins/SamplePacker/sample_packer.c")
+                let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
+                let out = cache.appendingPathComponent("libsample.dylib")
+                let p = Process()
+                p.executableURL = URL(fileURLWithPath: clang)
+                p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
+                let pipe = Pipe(); p.standardError = pipe
+                try p.run(); p.waitUntilExit()
+                guard p.terminationStatus == 0 else {
+                    let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+                    throw PluginBuildFailure(description: "clang failed: \(e)")
+                }
+                return out
+            }
+        } catch let failure as PluginBuildFailure {
+            // Recorded per test, as it was when every test compiled its own copy.
+            XCTFail(failure.description); return nil
         }
         guard case .success(let lib) = PluginLibrary.open(path: out.path, required: PCXSymbols.required,
                                                           optional: PCXSymbols.optional) else {
