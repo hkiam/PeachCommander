@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>S3</string>
+	<key>CFBundleExecutable</key><string>S3</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>pfx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Amazon S3</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<!-- Under construction: read-only so far, no writing, no ~/.aws profiles, one language.
+	     Tools/verify-shipping.sh lets development proceed with this set and refuses to build a
+	     DMG, so it cannot reach a user by accident. Removed when the plugin is finished. -->
+	<key>PCPluginIncomplete</key><true/>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.s3.connect</string>
+				<key>title</key><string>Amazon S3 Connect…</string>
+				<key>category</key><string>Network</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.s3.connect</string>
+				<key>menu</key><string>Net</string>
+				<key>group</key><string>5_plugins</string>
+				<key>order</key><integer>110</integer>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

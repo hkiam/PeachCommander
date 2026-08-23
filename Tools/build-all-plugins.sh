@@ -33,6 +33,7 @@ SCRIPTS=(
   build-ai-plugin
   build-aicolumn-plugin
   build-pfx-plugins
+  build-s3-plugin
 )
 for script in "${SCRIPTS[@]}"; do
   echo "--> $script"

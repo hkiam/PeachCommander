@@ -862,6 +862,188 @@ Transfer Manager through `OperationKind.custom` is its own piece of work, and so
 upload path has no overwrite dialog and no directory recursion for *any* network backend. `openRead`
 still loads a whole object into memory, because the ABI has no range read.
 
+## 2026-08-23 (F-453) — Amazon S3 as a drive: the read half, and a signer held to AWS's own numbers
+
+The first wave of the S3 plugin. `S3.pfxplugin` connects to AWS or to anything that speaks S3 —
+MinIO, Ceph/RGW, R2, Wasabi, B2, Spaces — and the bucket list is the root of the mount. Read-only on
+purpose; `PfxGetCapabilities` returns `PC_PFX_CAP_READ` alone, because advertising write in front of
+a `PfxPutFile` that does not exist puts F5 on a key that answers `PC_E_NOT_SUPPORTED`, and to the
+user that reads as the *server* refusing.
+
+**No SDK, and the decision is in ADR-012 rather than in a comment.** A PFX plugin is a bare
+`swiftc -emit-library` dylib outside the Xcode target graph, so it cannot consume a SwiftPM package
+without new build machinery — `soto` and `aws-sdk-swift` are not available to it at any price short
+of that. SigV4 over CryptoKit is about 200 lines. Seven sources, one `Tools/build-s3-plugin.sh`
+(its own script, because the helper in `build-pfx-plugins.sh` takes exactly one source file), and the
+universal build links CryptoKit on both slices with no extra flag.
+
+**The signer is a pure function, which is the only reason it can be trusted.** No clock, no
+`URLSession`, no request building: inputs in, signature out. That is what makes AWS's published
+"Examples: Signature Calculations" usable — they are exact inputs with an exact expected signature
+string, and a signer that reads `Date()` cannot be held against them. All four match:
+`f0e8bdb8…` (GET with a Range header), `98ad7217…` (PUT with `$` in the key and a storage class in
+the signature), `fea454ca…` (a valueless `?lifecycle`, which signs as `lifecycle=`), `34b48302…`
+(two query parameters, sorted by name rather than by insertion). `S3SignerTests` compiles the signer
+on its own into a driver and compares the strings.
+
+**The bug the vectors did not catch, and the comment that found it.** `canonicalURI` filtered out
+empty path segments, so `/a//b` signed as `/a/b` — while the doc comment three lines above claimed
+that S3 is the service which does *not* normalise the path. `a//b` is a real, addressable key; the
+signature would have been for a different object, and it would have failed only for the keys a user
+is least able to rename. Written down wrongly and fixed because it was written down.
+
+**Two prefix bugs, one cause, found by the tests.** S3 has no directories: a folder is either a
+common prefix inferred from the keys under it, or a zero-byte object whose key ends in `/`. The
+parser drops the directory's own marker (otherwise the folder appears inside itself, which in a panel
+is an endless chain) and drops sub-prefix markers that `CommonPrefixes` already reported (otherwise
+each folder shows twice, once as a folder and once as an empty file). Both correct — and both leave
+the caller unable to tell "this directory is empty" from "there is no such directory", because after
+filtering each answers with zero entries. A prefix holding only its own marker was reported missing,
+and `PfxStat` called a real folder absent. `S3ListPage` now also carries `rawCount`, the number of
+elements the server actually sent before any filtering, and the two callers ask that instead.
+
+**The fixture verifies signatures rather than accepting them.** `Fixtures/s3server.py` recomputes the
+canonical request from the raw path and query — never decoded and re-encoded, because that would hide
+exactly the bug it exists to catch — and refuses a mismatch. So every assertion about a listing is
+also an assertion that the canonical request, the signed header list and the payload hash were all
+right: a signing bug does not produce a subtly wrong listing here, it produces 403 on everything.
+One test proves the fixture is really doing this by connecting with a wrong secret and requiring the
+failure; without it the whole file could be green against a server that ignores the header.
+
+**Details that are decisions, not defaults.** Pagination is lazy inside `PfxFindNext`, so a bucket
+with a hundred thousand keys appears progressively and stops early when the user navigates away —
+the host yields to the panel in batches of 128 and checks for cancellation between them, and
+fetching every page inside `PfxFindFirst` would throw that away. `encoding-type=url` is always
+requested, because a key may contain bytes that are not legal in XML and without it the whole
+directory comes back as a document the parser rejects, i.e. as empty. `PfxStat` on a 403 also asks
+whether the path is a prefix, since a bucket policy can allow `ListBucket` and deny `HeadObject` —
+and then the only question that would have identified a directory answers "denied". Profiles live
+under `getContext("configRoot")/s3/`, never a path built from Application Support, and the secret
+goes through the host's `crypt` callback; an environment connection is deliberately *not* saved,
+because exporting credentials in a shell is not asking for a drive chip.
+
+**A defect the lazy paging created, and the host change that answers it.** `PfxFindNext` returning 0
+means "no more entries" and nothing else — the ABI gives it no error channel. For a plugin that
+fetches a directory in pages, a connection lost *between* two pages therefore looks exactly like
+reaching the end: the panel shows part of the directory and calls it complete, which is worse than an
+error because nothing on screen suggests anything is missing. `PFXFileSystem.list` now asks
+`PfxLastError` once the enumeration ends and fails the listing when the answer is
+`PC_E_CONNECTION_LOST` — only that one, because a plugin reporting something else may be describing a
+single entry it skipped, and turning a complete listing into a failure over that would be its own
+defect. A plugin that does not track errors answers nil and nothing changes. The fixture grew a
+`PC_S3_FIXTURE_DIE_AFTER_LISTINGS` knob so the test arranges this rather than trying to time it.
+
+**Evidence.** `S3PluginTests` — 23 tests through `PFXFileSystem`, the same path the app uses: the
+bucket list as the root (and the account's `<DisplayName>` not listed as a bucket), prefixes as
+directories, an empty prefix still a directory, a prefix not inside itself, a key called
+`odd +name.txt` fetched byte-for-byte (a space must be `%20` and a `+` must be `%2B` in both the URL
+and the signature, and form-decoding the `+` would fetch a different key), 40 objects across
+fourteen pages with the fixture capped at three keys, a server that dies after the first page
+reported as a lost connection rather than as a 3-entry directory, a dead server reported as a lost
+connection rather than a missing directory, and the profile list not written anywhere else. Plus
+`S3SignerTests` — 2 tests, the four vectors and the encoding rules they do not reach.
+**25 tests, 0 failures.**
+`verify-shipping`, `check-plugin-translations`, `check-tests-registered`, `check-sdk-headers` and
+`check-strings-extracted` are green; the bundle is `x86_64 arm64`.
+
+**`PCPluginIncomplete` is set**, so `verify-shipping.sh` lets development proceed and refuses to
+build a DMG. What is missing behind it: all writing, `~/.aws` profiles, region redirects, retry,
+Glacier handling, content columns, eighteen translations and a help topic.
+
+**A trap worth recording.** The signer test file first ran as "Executed 0 tests — TEST SUCCEEDED":
+a new file under `Tests/` is not in the target until `xcodegen generate` has run, and an absent test
+passes silently. `check-tests-registered.py` guards bundles against the scheme, not files against a
+target, so the only signal is the count.
+
+## 2026-08-23 (F-454) — Writing to S3, and four tests that were green for the wrong reason
+
+The write half of the S3 plugin: upload (with multipart), new folder, new bucket, delete an object,
+delete a folder, delete a bucket, rename and move — including across buckets. `PfxGetCapabilities`
+now returns `READ | WRITE | RENAME`, which with F-452 in place means F5, F6, F7 and F8 all reach the
+server from the keyboard.
+
+**The three things S3 does not have, and what stands in for each.** No directories: a folder is a
+common prefix inferred from keys, or a zero-byte object whose key ends in `/`. So creating one writes
+that marker, and deleting one has to delete every key beneath it, because there is nothing else to
+delete. No rename: a move is a server-side copy followed by a delete, and a folder move is that for
+every key under the prefix — non-atomic by construction, which is why a failure part-way through is
+reported rather than retried into a half-moved state. No append, and a 5 GiB ceiling on one PUT:
+above that, multipart.
+
+**`PfxDelete` has to decide what something is before touching it.** A DELETE on a key that does not
+exist answers 204 — success. So a plugin that treats a folder as an object reports the folder deleted
+and removes nothing, and every object inside it is still there. The kind is settled first, with a
+`max-keys=1` listing, and only then does anything get deleted.
+
+**Two places where S3 answers 200 and means no.** `CompleteMultipartUpload` keeps the connection open
+while it assembles the object and writes an `<Error>` document into a *successful* response;
+`CopyObject` does the same. Reading only the status reports an object that does not exist as uploaded
+— and for a move, the delete that follows would then lose the original. Both check the body of a 200.
+
+**Orphaned multipart parts are the failure that costs money.** Parts of an upload that was neither
+completed nor aborted stay in the bucket, are billed, and appear in no listing. Every failure path
+aborts: a refused part, a read error on the source, a cancel, an empty part list, a late failure in
+Complete. The fixture grew `GET /<bucket>?uploads` — the real API — so a test can *prove* nothing was
+left rather than trust that it was not.
+
+**Batch delete needs Content-MD5, and its result is in the body.** It is the only request in the
+plugin that needs MD5 at all (S3 rejects the call outright without it), and it answers 200 even when
+it deleted nothing — the per-key outcomes are in `<DeleteResult>`. The fixture enforces both, because
+a client that omits the header works against a lenient fixture and fails against AWS.
+
+**CreateBucket's LocationConstraint is the most common way a first bucket fails.** `us-east-1` must
+NOT send one and every other region must. Both directions are wrong, and the fixture checks both.
+
+### Four tests that were green for the wrong reason
+
+The run that found these is the more useful half of the day.
+
+**"** TEST SUCCEEDED **" with compiler errors in the log.** `S3Write.swift` was missing from
+`Tools/build-s3-plugin.sh` and from the test's own source list. The build script failure was obvious.
+The test one was not: the plugin build in `S3PluginTests` turned a non-zero `swiftc` into
+`throw XCTSkip`, so every test in the file skipped and the suite reported success. The skip exists for
+a machine with no compiler — which `isExecutableFile` has already established by that point. A
+compiler that *ran and refused the plugin* is a failure. Fixed here and in the three other files with
+the same copied guard (`WebDAVPluginTests`, `PFXFileSystemTests`, `TaskManagerPluginTests`), so none
+of them can pass by not running again.
+
+**A new gate for the cause: `Tools/check-plugin-sources.py`.** Plugins are not built by Xcode; each
+is a `swiftc` invocation in a shell script with its sources listed by hand. A file in
+`Plugins/<Name>/` that no script compiles is simply not in the plugin — and if something needs it the
+build fails pointing at the *caller*, which reads as a typo there rather than as an absent file. In
+CI, before the build. Writing it found a bug in itself first: the pattern stopped at the first slash
+and reported all twenty-nine of FSImage's `Support/` and `Drivers/` sources as missing.
+
+**A multipart test that only ever sent one part.** `partSize` keeps S3's 5 MiB floor, so lowering
+`PC_S3_MULTIPART_THRESHOLD` to 1 KiB still put a 20 000-byte file in a single part: the multipart code
+ran, produced one part, and proved nothing about reassembly — and the abort test could not fail part
+two because there was no part two. `PC_S3_PART_SIZE` is now a separate seam, and the success test
+asserts it is really sending more than one part, so it cannot go back to measuring a plain PUT.
+
+**A folder that came back after being deleted.** The fixture stored a prefix marker as an empty
+directory, since a file whose name ends in `/` cannot exist. That reads correctly and writes wrongly:
+deleting the last object out of a folder left an empty directory, which the key walk then reported as
+a marker — so a just-deleted folder was still listed, and so was the source of a just-moved one. Real
+S3 has no marker unless one was created, so an emptied prefix stops existing; the fixture now prunes.
+
+**A conformance assertion the compiler answered.** `XCTAssertTrue(fs is ResumableFileUploading)` on a
+concrete `PFXFileSystem` is statically true — the compiler says so with a warning — so it would pass
+whatever the runtime did. Asked through a `VirtualFileSystem`-typed value now, which is also how
+`PanelController` actually holds it.
+
+**Evidence.** `S3PluginTests` is 39 tests and `S3SignerTests` 2 — **41 tests, 0 failures**. New in
+this wave: upload, upload-over-existing, upload of a key with a space and a `+`, a five-part multipart
+upload whose bytes come back byte-identical, a multipart whose second part is refused leaving no open
+upload and no assembled object, new folder, new bucket, delete an object, delete a folder *and* its
+contents, delete an empty bucket, a non-empty bucket refused, rename, rename-as-move, rename across
+buckets, rename a folder with every key under it, and a bucket rename refused rather than faked.
+`check-plugin-sources`, `verify-shipping`, `check-plugin-translations`, `check-tests-registered`,
+`check-strings-extracted`, `check-format-specifiers`, `check-inventory` and `check-sdk-headers` green.
+
+**Still behind `PCPluginIncomplete`**: `~/.aws` profiles, region redirects, retry/backoff, Glacier,
+content columns, presigned links, the Docker/MinIO conformance suite, eighteen translations and a
+help topic.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

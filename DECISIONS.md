@@ -79,3 +79,24 @@ it (never rewrite history). Keep each ADR short: Context / Decision / Consequenc
 - **Decision:** PCNet implements FTP (custom, on Network.framework) and SFTP
   (libssh2 via SPM) as bundled PFX plugins using the public plugin API.
 - **Consequences:** API gets a real consumer early; network code stays isolated.
+
+## ADR-012: S3 as an external PFX plugin, with SigV4 written here rather than an SDK
+- **Context:** S3 (and S3-compatible storage) should be mountable as a drive. Two
+  choices had to be made: where the code lives, and whether to take an AWS SDK.
+- **Decision:** An external `S3.pfxplugin` against the public PFX C ABI, and a
+  hand-written SigV4 signer over CryptoKit.
+- **Why not an SDK:** a PFX plugin is a bare `swiftc -emit-library` dylib built by
+  a shell script, outside the Xcode target graph — it cannot consume a SwiftPM
+  package (`soto`, `aws-sdk-swift`) without new build machinery, and neither is in
+  `docs/architecture/tech-stack.md`. SigV4 for S3 is a few hundred lines of string
+  handling over HMAC-SHA256, which CryptoKit already provides, and it is pinned
+  against AWS's own published example signatures (`S3SignerTests`).
+- **Why not in PCNet, beside FTP/SFTP:** those predate the removable-plugin model
+  and are in-process (ADR-011). A plugin is removable and can be switched off,
+  which is the standard the filesystem-image, decompiler and AI plugins already
+  ship under.
+- **Consequences:** no new dependency and no new ADR needed for one. The cost is
+  the PFX ABI's whole-file semantics: `PfxGetFile`/`PfxPutFile` take two paths and
+  no offset, so there is no range read and no resume. Large objects are therefore
+  expensive to view (the host materialises them), and a streaming entry point in
+  `pfx.h` is the way out if that becomes the binding limit.

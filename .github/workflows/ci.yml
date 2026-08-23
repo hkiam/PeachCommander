@@ -118,6 +118,14 @@ jobs:
       - name: Check plugin strings are translated, or honestly absent
         run: python3 Tools/check-plugin-translations.py
 
+      # Plugins are not built by Xcode: each one is a swiftc invocation in a shell script with its
+      # sources listed by hand, so a new file in Plugins/<Name>/ is not in the plugin until the script
+      # is edited too. Forgetting fails the build pointing at the *caller* of the missing type, which
+      # reads as a typo there rather than as an absent file — or, if nothing needs it yet, succeeds
+      # and ships the code absent.
+      - name: Check every plugin source is compiled into its plugin
+        run: python3 Tools/check-plugin-sources.py
+
       - name: Build project
         run: |
           ./Tools/build.sh
