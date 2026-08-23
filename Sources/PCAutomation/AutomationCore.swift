@@ -81,6 +81,19 @@ public protocol AutomationCore: Sendable {
     /// Confirm a previously returned plan (its `token`) and execute it.
     func confirm(token: String) async throws -> AutomationOutcome
 
+    /// The rows of a pending plan, or none when the action cannot sensibly be divided (F-450).
+    ///
+    /// `async`, because the Core is an actor and a *synchronous* requirement has nowhere to hop — the
+    /// same trap F-435 was: the witness would then run the actor's state access on whatever thread the
+    /// caller happened to be on.
+    func planItems(token: String) async -> [PlanItem]
+
+    /// Confirm a pending plan, leaving out the rows whose ids are in `rejected`.
+    ///
+    /// Rejecting every row is a cancellation, and is reported as one rather than as a successful action
+    /// that touched nothing.
+    func confirm(token: String, rejecting rejected: Set<String>) async throws -> AutomationOutcome
+
     /// The host event stream (panel/selection/operation/config/search).
     func events() -> AsyncStream<HostEvent>
     /// Take back the most recent recorded action that has an inverse (rename, move). Defaulted,
@@ -99,4 +112,10 @@ public extension AutomationCore {
         .failed(error: "No action log is being kept.")
     }
     func auditTrail(limit: Int) async -> [AuditEntry] { [] }
+    /// A core that does not divide its plans answers with none, and the caller shows the plan text it
+    /// always showed. Nothing has to be taught about rows to keep working.
+    func planItems(token: String) async -> [PlanItem] { [] }
+    func confirm(token: String, rejecting rejected: Set<String>) async throws -> AutomationOutcome {
+        try await confirm(token: token)
+    }
 }

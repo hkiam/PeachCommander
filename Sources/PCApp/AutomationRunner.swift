@@ -27,7 +27,7 @@
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
-//                               (append ":confirm" to the tool name to agree to a gated plan at once)
+//                               (":confirm" agrees to a gated plan; ":confirm:<id>,<id>" strikes rows out)
 //   pathbardump <side>|<out>   the path bar's state: editing, its text, the breadcrumb, where it ends
 //   pathbarclick <side>|<region>|<clicks>|<out>   click a path bar region (first/last/gap/trailing/pencil)
 //   theme <id>            select a colour palette ("system", "norton", …)
@@ -579,14 +579,30 @@ extension MainWindowController {
                     // A ":confirm" suffix on the tool name agrees to the plan straight away, which is
                     // the only way to exercise a gated action from a script — and the plan is written
                     // out either way, so the table a user would have read is still in the report.
-                    let wantsConfirm = at[0].hasSuffix(":confirm")
-                    let tool = wantsConfirm ? String(at[0].dropLast(":confirm".count)) : at[0]
+                    // "<tool>:confirm" agrees to the whole plan; "<tool>:confirm:<id>,<id>" agrees to
+                    // it with those rows struck out, which is the only way to exercise a partial
+                    // confirmation without a mouse (F-450).
+                    var tool = at[0]
+                    var wantsConfirm = false
+                    var rejected: Set<String> = []
+                    if let range = tool.range(of: ":confirm") {
+                        wantsConfirm = true
+                        let tail = String(tool[range.upperBound...])
+                        tool = String(tool[..<range.lowerBound])
+                        if tail.hasPrefix(":") {
+                            rejected = Set(tail.dropFirst().split(separator: ",").map(String.init))
+                        }
+                    }
                     var outcome = try? await automationCore.invoke(tool: tool, arguments: args,
                                                                    policy: .standard)
                     var plan: String?
                     if wantsConfirm, case .needsConfirmation(let p, let token) = outcome {
-                        plan = p
-                        outcome = try? await automationCore.confirm(token: token)
+                        // The rows are reported alongside the plan: a check that strikes one out has to
+                        // be able to see what the ids actually were.
+                        let rows = await automationCore.planItems(token: token)
+                        plan = p + (rows.isEmpty ? "" :
+                            "\nrows: " + rows.map { "\($0.id)=\($0.text)" }.joined(separator: " | "))
+                        outcome = try? await automationCore.confirm(token: token, rejecting: rejected)
                     }
                     let text: String
                     switch outcome {

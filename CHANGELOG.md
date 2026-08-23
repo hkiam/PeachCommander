@@ -40,6 +40,14 @@ does not have.
 
 ### Added
 
+- **You can agree to part of the assistant's plan.** When a plan covers several files — renaming a
+  folder full of them, clearing out your Downloads — each one is a ticked line above the buttons. Untick
+  what you want left alone and press **Confirm & run**: the rest goes ahead and the unticked files are
+  not touched. Until now the only answers were all and nothing, so wanting all-but-three meant rejecting
+  the plan and describing the exception in words for the assistant to get right on a second try.
+  Unticking everything is the same as cancelling, and it says so rather than reporting that it did
+  nothing.
+
 - **Ask the assistant to find a file and it looks through your whole disk.** *"Find the PDF invoice from
   last month"*, *"where are all my node_modules folders?"*, *"which file mentions the Aachen contract?"*
   — including words **inside** files, which the ordinary search can only do once you point it at a

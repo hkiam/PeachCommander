@@ -213,11 +213,25 @@ public actor AgentSession {
 
     /// Confirm previously surfaced plans (their tokens) and resume the loop.
     public func confirm(tokens: [String]) async throws -> Result {
+        try await confirm(tokens: tokens, rejecting: [:])
+    }
+
+    /// Confirm the pending plans, leaving out the rows the user struck out (F-450).
+    ///
+    /// Keyed by token, because two plans can be awaiting one press of Confirm and a row id is only
+    /// unique within its own plan — striking out "a.txt" in one must not strike out an "a.txt" in the
+    /// other.
+    public func confirm(tokens: [String], rejecting rejected: [String: Set<String>]) async throws -> Result {
         for token in tokens {
-            let outcome = try await core.confirm(token: token)
+            let outcome = try await core.confirm(token: token, rejecting: rejected[token] ?? [])
             history.append(toolMessage(name: "pc_confirm", id: token, outcome: outcome))
         }
         return try await runLoop()
+    }
+
+    /// The rows of a pending plan, for a caller that wants to offer them.
+    public func planItems(token: String) async -> [PlanItem] {
+        await core.planItems(token: token)
     }
 
     // MARK: - Loop

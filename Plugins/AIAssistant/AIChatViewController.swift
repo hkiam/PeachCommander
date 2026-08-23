@@ -44,6 +44,11 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     private var currentSessionId: String?
     private var sessions: [SessionInfo] = []
     private var pendingTokens: [String] = []
+    /// The tick list for a plan that has rows, above the Confirm bar (F-450). Empty for a plan that
+    /// cannot be divided, and then nothing is shown — the plan text alone is what it always was.
+    private let planRowsBox = NSStackView()
+    /// One checkbox per row, tagged with its token and id so Confirm can collect what was unticked.
+    private var planRowChecks: [(token: String, id: String, box: NSButton)] = []
     private var attachments: [String] = []
     /// A proposal on offer (rename). Accepting it is what carries it out.
     private var pendingSuggestion: AgentSession.Suggestion?
@@ -300,9 +305,14 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         suggestionBar.addArrangedSubview(discardButton)
         suggestionBar.addArrangedSubview(applyButton)
 
+        planRowsBox.orientation = .vertical
+        planRowsBox.alignment = .leading
+        planRowsBox.spacing = 2
+        planRowsBox.isHidden = true
+
         var rows: [NSView] = [topRow]
         if contextProvider != nil { rows.append(attachRow) }
-        rows += [statusRow, scroll, suggestionBar, confirmBar, inputRow]
+        rows += [statusRow, scroll, suggestionBar, planRowsBox, confirmBar, inputRow]
         let stack = NSStackView(views: rows)
         stack.orientation = .vertical
         stack.spacing = 8
@@ -548,6 +558,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         if nativeConfirm != nil { resolveNativeConfirm(false); return }
         pendingTokens = []
         confirmBar.isHidden = true
+        clearPlanRows()
         append(role: assistantLabel, text: String(localized: "Okay, I won’t make those changes.", comment: "AI: declined changes"))
     }
 
@@ -975,7 +986,59 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
             append(role: assistantLabel,
                    text: header + "\n" + plans.map { "• \($0.plan)" }.joined(separator: "\n") + "\n\n" + footer)
             confirmBar.isHidden = false
+            // A plan made of items gets a tick list, so the answer can be "yes, except those" instead of
+            // only all or nothing (F-450). Asked for after the plan is on screen: the rows come from the
+            // host over a blocking call, and the plan should not wait for them.
+            Task { @MainActor [weak self] in await self?.showPlanRows(for: plans.map(\.token)) }
         }
+    }
+
+    /// Build the tick list for the pending plans, all ticked. Nothing is shown when no plan has rows.
+    private func showPlanRows(for tokens: [String]) async {
+        guard let agent = currentSession else { return clearPlanRows() }
+        var rows: [(token: String, item: PlanItem)] = []
+        for token in tokens {
+            rows += await agent.planItems(token: token).map { (token, $0) }
+        }
+        renderPlanRows(rows)
+    }
+
+    /// Draw the tick list, separately from fetching it.
+    ///
+    /// Split for a reason that is still unfinished business: the rows and what striking one out skips are
+    /// proved through the host's ABI, but whether the checkboxes are on screen can only be shown by a
+    /// picture — and nothing in the automation harness types into this chat, so getting a plan on screen
+    /// needs a language model to choose to propose one, which is not something a check can depend on.
+    /// With the drawing separated, a harness that can reach this method can photograph it (F-450).
+    private func renderPlanRows(_ rows: [(token: String, item: PlanItem)]) {
+        clearPlanRows()
+        for row in rows {
+            let box = NSButton(checkboxWithTitle: row.item.text, target: nil, action: nil)
+            box.state = NSControl.StateValue.on
+            planRowChecks.append((row.token, row.item.id, box))
+            planRowsBox.addArrangedSubview(box)
+        }
+        // Only worth a list when there is a choice to make: one row is the whole plan, and Confirm and
+        // Cancel already say yes and no to that.
+        guard planRowChecks.count > 1 else { return clearPlanRows() }
+        planRowsBox.isHidden = false
+        confirmBar.isHidden = false
+    }
+
+    private func clearPlanRows() {
+        planRowChecks.forEach { $0.box.removeFromSuperview() }
+        planRowChecks = []
+        planRowsBox.isHidden = true
+    }
+
+    /// What the user unticked, keyed by the plan it belongs to. Per token, because a row id is only
+    /// unique inside its own plan.
+    private func rejectedRows() -> [String: Set<String>] {
+        var out: [String: Set<String>] = [:]
+        for row in planRowChecks where row.box.state != NSControl.StateValue.on {
+            out[row.token, default: []].insert(row.id)
+        }
+        return out
     }
 
     /// The messages last rendered, so a theme change can redraw them rather than recolour

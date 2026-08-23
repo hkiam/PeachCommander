@@ -58,6 +58,8 @@ Two limits worth knowing. macOS keeps some places out of its index — and out o
 
 For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a **plan and waits for your confirmation** before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything. A copy or a move is reported as done when it is done: the assistant waits for the transfer to finish, and you can follow it in the Transfer Manager as with any other operation.
 
+**You can agree to part of a plan.** When a plan covers several files — renaming a folder full of them, clearing out your Downloads — each one appears as a ticked line above the buttons. Untick the ones you want left alone and press **Confirm & run**: the rest goes ahead, and what you unticked is not touched. Unticking everything is the same as cancelling, and the assistant says so rather than reporting that it did nothing. A plan that is a single action has no list, because Confirm and Cancel already say yes and no to it.
+
 ## What the assistant did, and taking it back
 
 **Actions ▾** in the chat has two entries:

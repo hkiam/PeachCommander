@@ -77,6 +77,28 @@ final class RemoteAutomationCore: AutomationCore, @unchecked Sendable {
         return Self.decodeOutcome(json)
     }
 
+    /// The rows of a pending plan (F-450). An older host has no such entry point; nil there means
+    /// "cannot be divided", which is the behaviour the plugin had before rows existed.
+    func planItems(token: String) async -> [PlanItem] {
+        let json = await call { s in token.withCString { tp in s.automationPlanItems?(s.host, tp) } }
+        guard let json, let data = json.data(using: .utf8),
+              let rows = try? JSONDecoder().decode([PlanItem].self, from: data) else { return [] }
+        return rows
+    }
+
+    func confirm(token: String, rejecting rejected: Set<String>) async throws -> AutomationOutcome {
+        // Nothing struck out is the plain confirmation, so an older host still answers it.
+        guard !rejected.isEmpty else { return try await confirm(token: token) }
+        let list = (try? JSONSerialization.data(withJSONObject: rejected.sorted()))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+        let json = await call { s in
+            token.withCString { tp in list.withCString { rp in
+                s.automationConfirmRejecting?(s.host, tp, rp)
+            } }
+        }
+        return Self.decodeOutcome(json)
+    }
+
     func events() -> AsyncStream<HostEvent> { AsyncStream { $0.finish() } }
 
     // MARK: - Off-main C call + string ownership

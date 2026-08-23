@@ -124,10 +124,31 @@ public actor DefaultAutomationCore: AutomationCore {
     }
 
     public func confirm(token: String) async throws -> AutomationOutcome {
+        try await confirm(token: token, rejecting: [])
+    }
+
+    /// `async` to match the requirement exactly. Declared synchronously it still compiled — an async
+    /// requirement accepts a sync witness — but the call site then had two candidates, this one and the
+    /// protocol extension's `async` default, and `await` picked the async one. Which returns `[]`. So
+    /// every plan looked indivisible and nothing said why (F-450).
+    public func planItems(token: String) async -> [PlanItem] {
+        guard let p = pending[token] else { return [] }
+        return PlanRows.of(tool: p.tool, arguments: p.args)
+    }
+
+    public func confirm(token: String, rejecting rejected: Set<String>) async throws -> AutomationOutcome {
         guard let p = pending.removeValue(forKey: token) else {
             return .failed(error: "Unknown or already-used confirmation token.")
         }
-        return await execute(p.tool, p.args, isUndo: p.isUndo)
+        // The rows the user struck out are removed from the arguments, so what is skipped is skipped by
+        // the tool and not by a second opinion somewhere downstream (F-450).
+        guard let filtered = PlanRows.arguments(tool: p.tool, arguments: p.args, rejecting: rejected)
+        else {
+            // Every row struck out. That is a cancellation, and saying so beats reporting a successful
+            // action that touched nothing.
+            return .failed(error: "Nothing left to do — every item was left out.")
+        }
+        return await execute(p.tool, filtered, isUndo: p.isUndo)
     }
 
     /// Number of plans awaiting confirmation (tests/diagnostics).

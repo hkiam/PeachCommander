@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **105 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is green again** (117 scenarios, 2026-08-22). It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-22 |
+| Last updated | 2026-08-23 |
 | Released | **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1383 keys × 19) + all shipping plugins + the **full in-app Help Book (51 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=51 · ui_strings=1383 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -683,6 +683,52 @@ Now `permissionDenied(Refusal)` with `.modeBits` (EACCES) and `.notPermitted` (E
 `errno` said, which is all it ever recorded. Thirteen sites across six files. And the mapping is pinned
 now: `VFSErrorTests` had never existed, so `fromErrno` — five branches that every file operation in the
 app depends on — was covered by nothing.
+
+## 2026-08-23 (F-450) — All or nothing was the only answer a plan could take
+
+The third gap the Cmdr comparison found, and the one it advertises as "a list of move/delete suggestions
+you can approve/reject". `needsConfirmation` carried one string. For a single action that is the right
+shape — "Delete report.pdf" is agreed to or not. For "clean up my Downloads" it is the wrong one: the
+answer is usually "yes, except those three", and without rows a user who wants that has to reject the
+whole plan and describe the exception in prose for the model to get right on a second attempt.
+
+**The rows are derived from the arguments, not declared by the model.** What the user strikes out has to
+be what the tool skips, and that is a property of the arguments and nothing else. `PlanRows.of` produces
+them for the tools where a list is meaningful — a batch rename, a multi-file move/copy, a multi-file
+trash or delete — and nothing for the rest: striking out the only row of a `write_file` is cancelling,
+and offering that as a choice is noise.
+
+**The dangerous case is `rename_batch`, and it is why this is a tested pure function.** Its two lists are
+positional, so filtering them separately shifts every pair after the gap onto the wrong name — and the
+batch still applies cleanly, renaming the wrong files with no error anywhere. Filtering is pairwise, and
+a test pins it: strike `b` out of a→x, b→y, c→z and `c` must still become `z`, never `y`. Verified in the
+running app too: three files, one struck out, `renamed: 2`, and `1.txt 3.txt b.txt` on disk.
+
+**Rejecting every row is a cancellation**, reported as one. The alternative — running a `move` with no
+sources — reports success for having done nothing, which is worse than a refusal.
+
+**A trap that cost a wrong conclusion.** The concrete `planItems` was written synchronously while the
+protocol requirement is `async`. That compiles: an async requirement accepts a sync witness. But the
+call site then has two candidates — the actor's own method and the protocol extension's async default —
+and `await` picks the async one, which returns `[]`. So every plan looked indivisible, no error appeared
+anywhere, and the first end-to-end run "passed" while proving nothing about rows. The requirement is
+`async` for the F-435 reason (a synchronous requirement on an actor has nowhere to hop); the witness now
+matches it exactly.
+
+**The plugin ABI grew by two entries**, appended, as `contrib.h` documents for exactly this:
+`automationPlanItems` and `automationConfirmRejecting`. An older host has neither, and the plugin then
+behaves as it did before rows existed — nil rows means "cannot be divided". All three copies of the
+header stay in step (`Tools/sync-plugin-sdk.sh`; the gate found the third one).
+
+**What is not finished: there is no picture of the tick list.** The rows, and what striking one out
+actually skips, are proved through the host's ABI by `aitool` — for a batch rename and for a multi-file
+trash, in the running app. Whether the checkboxes are *on screen* only a picture can show, and nothing in
+the automation harness types into that chat, so getting a plan on screen needs a language model to choose
+to propose one — which is not something a check can depend on. Drawing is now split from fetching
+(`renderPlanRows`) so a harness that can reach it could photograph it. A DEBUG command to render
+fabricated rows was written and then removed: contribution commands have to be *declared* in the
+plugin's manifest to be dispatched, and a test entry point in a shipping plugin's manifest is a worse
+trade than the missing picture.
 
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 

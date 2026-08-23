@@ -58,6 +58,8 @@ Zwei Grenzen, die man kennen sollte. macOS hält manche Orte aus seinem Index he
 
 Bei allem, was Dateien verändert – Verschieben, Umbenennen, Schreiben, Löschen –, zeigt der Assistent einen **Plan und wartet auf Ihre Bestätigung**, bevor er handelt. Sie können dies in den Einstellungen ändern, indem Sie die Autonomie des Assistenten erhöhen, oder sie auf schreibgeschützt senken, sodass er niemals etwas ändert.
 
+**Sie können einem Plan auch nur teilweise zustimmen.** Betrifft ein Plan mehrere Dateien — einen ganzen Ordner umbenennen, die Downloads aufräumen —, erscheint jede davon als angehakte Zeile über den Schaltflächen. Haken Sie ab, was unangetastet bleiben soll, und drücken Sie **Bestätigen & ausführen**: der Rest läuft, das Abgehakte wird nicht berührt. Alles abzuhaken ist dasselbe wie Abbrechen, und der Assistent sagt das auch, statt zu melden, er habe nichts getan. Ein Plan mit nur einer Aktion hat keine Liste — dazu sagen Bestätigen und Abbrechen schon ja und nein.
+
 ## Was der Assistent getan hat, und wie Sie es zurücknehmen
 
 **Aktionen ▾** im Chat hat zwei Einträge:

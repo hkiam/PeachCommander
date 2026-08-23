@@ -321,6 +321,32 @@ final class ContribHostBridge {
                 ContribHostBridge.encodeOutcome(try? await core.confirm(token: token))
             }
         }
+        // The rows of a pending plan, and agreeing to it with some struck out (F-450). Same blocking
+        // shape as the calls above: a plugin asks off the main thread and the host answers with JSON.
+        s.automationPlanItems = { host, tokenC in
+            guard let host, let tokenC else { return nil }
+            let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+            let token = String(cString: tokenC)
+            return ContribHostBridge.blockingCoreString(b) { core, _ in
+                let rows = await core.planItems(token: token)
+                return (try? JSONEncoder().encode(rows)).flatMap { String(data: $0, encoding: .utf8) }
+            }
+        }
+        s.automationConfirmRejecting = { host, tokenC, rejectedC in
+            guard let host, let tokenC else { return nil }
+            let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+            let token = String(cString: tokenC)
+            // A malformed or absent list rejects nothing, which degrades to the whole-plan confirmation
+            // rather than to an error: the user pressed Confirm, and refusing that over a parse is the
+            // wrong answer.
+            let rejected: Set<String> = rejectedC
+                .flatMap { try? JSONSerialization.jsonObject(with: Data(String(cString: $0).utf8)) }
+                .flatMap { $0 as? [String] }
+                .map(Set.init) ?? []
+            return ContribHostBridge.blockingCoreString(b) { core, _ in
+                ContribHostBridge.encodeOutcome(try? await core.confirm(token: token, rejecting: rejected))
+            }
+        }
         s.automationFree = { _, ptr in if let ptr { free(ptr) } }
         // Per-file comments (F-372). Synchronous by design: a plugin view asks while drawing, and the
         // read is one small file in the directory the panel is already looking at.
