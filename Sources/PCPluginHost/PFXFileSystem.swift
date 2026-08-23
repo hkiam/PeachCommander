@@ -443,7 +443,7 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
         // connection can be used for anything further.
         case PC_E_CONNECTION_LOST: return .connectionLost(retryable: true)
         case PC_E_EOPEN, PC_E_BAD_ARCHIVE: return .notFound(path)
-        case PC_E_ECREATE, PC_E_EWRITE: return .permissionDenied(needsElevation: false)
+        case PC_E_ECREATE, PC_E_EWRITE: return .permissionDenied(.modeBits)
         case PC_E_NOT_SUPPORTED: return .unsupported
         case PC_E_EABORTED: return .cancelled
         default: return .underlying(code: code, message: "PFX error \(code)")

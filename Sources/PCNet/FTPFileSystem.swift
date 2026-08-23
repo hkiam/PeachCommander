@@ -275,7 +275,7 @@ public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
         case FTPError.notConnected: return VFSError.connectionLost(retryable: true)
         case let FTPError.unexpectedReply(_, code, _):
             if code == 550 { return VFSError.notFound("") }
-            if code == 530 { return VFSError.permissionDenied(needsElevation: false) }
+            if code == 530 { return VFSError.permissionDenied(.modeBits) }
             return VFSError.underlying(code: Int32(code), message: "FTP \(code)")
         default: return error
         }

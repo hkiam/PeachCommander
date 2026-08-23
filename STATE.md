@@ -666,6 +666,24 @@ dock's terminal), none of which is the assistant. `regress.py` never names the A
 **Not changed:** the on-device/cloud choice, the autonomy gating, or anything the assistant does once
 it is on. Only whether it is there to begin with.
 
+## 2026-08-22 (F-449) — A flag that named a remedy it knew nothing about
+
+`VFSError.permissionDenied(needsElevation: Bool)` was set from `code == EPERM` and read by exactly one
+caller, which wanted the errno. So the name promised something the value never carried — and on macOS
+the EPERM case is usually the privacy gate, where administrator rights are precisely what cannot help.
+A reader following that name would reach for the one remedy that is useless.
+
+Worse than misleading: **redundant**. The question it appeared to answer is answered properly elsewhere,
+by `FileWritability.administratorMayHelp`, which looks at the file instead of guessing from a refusal —
+and that is what the "retry as administrator" feature actually uses. Checked: nothing outside
+`PrivateLocation` ever destructured the flag, and no `switch` over `VFSError` is exhaustive, so the
+payload could be changed without a single call-site becoming wrong by silence.
+
+Now `permissionDenied(Refusal)` with `.modeBits` (EACCES) and `.notPermitted` (EPERM) — named for what
+`errno` said, which is all it ever recorded. Thirteen sites across six files. And the mapping is pinned
+now: `VFSErrorTests` had never existed, so `fromErrno` — five branches that every file operation in the
+app depends on — was covered by nothing.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

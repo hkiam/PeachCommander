@@ -176,7 +176,7 @@ public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, 
         // It cannot: libssh2 state after a transport failure is not something to keep browsing with.
         case SFTPError.transportLost: return VFSError.connectionLost(retryable: true)
         case SFTPError.hostKeyMismatch, SFTPError.authFailed:
-            return VFSError.permissionDenied(needsElevation: false)
+            return VFSError.permissionDenied(.modeBits)
         default: return error
         }
     }

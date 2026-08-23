@@ -56,11 +56,11 @@ final class PrivateLocationTests: XCTestCase {
     override func tearDownWithError() throws { try? FileManager.default.removeItem(at: dir) }
 
     func testTheErrorOverloadReadsTheDistinctionVFSErrorAlreadyCarries() {
-        // `fromErrno` sets needsElevation for EPERM and clears it for EACCES, which is the only place
-        // the two are still told apart by the time the panel sees the failure.
-        XCTAssertTrue(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(needsElevation: true),
+        // `fromErrno` records `.notPermitted` for EPERM and `.modeBits` for EACCES, which is the only
+        // place the two are still told apart by the time the panel sees the failure.
+        XCTAssertTrue(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(.notPermitted),
                                                        path: dir.path))
-        XCTAssertFalse(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(needsElevation: false),
+        XCTAssertFalse(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(.modeBits),
                                                         path: dir.path))
     }
 
@@ -74,7 +74,7 @@ final class PrivateLocationTests: XCTestCase {
     func testAPathThatIsNotThereIsNotAPrivacyRefusal() {
         // `stat` fails, and a guess in either direction would be worse than saying no: the ordinary
         // message still names the folder.
-        XCTAssertFalse(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(needsElevation: true),
+        XCTAssertFalse(PrivateLocation.isPrivacyRefusal(VFSError.permissionDenied(.notPermitted),
                                                         path: dir.appendingPathComponent("gone").path))
     }
 }

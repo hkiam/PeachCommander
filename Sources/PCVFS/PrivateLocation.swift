@@ -39,11 +39,11 @@ public enum PrivateLocation {
 
     /// Whether `error` from a listing is the privacy gate rather than the file system.
     ///
-    /// `VFSError.permissionDenied(needsElevation:)` carries the distinction already: `fromErrno` sets
-    /// `needsElevation` for EPERM and clears it for EACCES. The name is a poor fit here — elevation is
-    /// the one thing that does not help — so it is read for what it actually records.
+    /// `VFSError.permissionDenied` carries the distinction already: `fromErrno` records `.notPermitted`
+    /// for EPERM and `.modeBits` for EACCES. That payload used to be a `Bool` called `needsElevation`,
+    /// which named the wrong thing — this reader was its only one, and it wanted the errno (F-449).
     public static func isPrivacyRefusal(_ error: Error, path: String) -> Bool {
-        guard case VFSError.permissionDenied(let needsElevation) = error else { return false }
-        return isPrivacyRefusal(eperm: needsElevation, path: path)
+        guard case VFSError.permissionDenied(let refusal) = error else { return false }
+        return isPrivacyRefusal(eperm: refusal == .notPermitted, path: path)
     }
 }
