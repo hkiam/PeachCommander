@@ -5,8 +5,10 @@
 // file names. The chat used to put that on screen verbatim, so the "Make a table" action —
 // which uses guided generation precisely so the table is always well-formed — arrived as
 // rows of pipe characters. Everything here exists to close that gap: a table becomes a
-// table (NSTextTable), a fenced block becomes a code block, a list becomes a list, and a
-// path becomes something clickable.
+// table (NSTextTable), a fenced block becomes a code block, a list becomes a list, a
+// path becomes something clickable, and `![](/path/x.png)` becomes the picture.
+//
+// Images are read from disk and never from the network — see `imageAttachment`.
 //
 // Deliberately a small subset, hand-written rather than NSAttributedString(markdown:):
 // that initialiser does not produce tables or code blocks, and this way the paths keep
@@ -26,8 +28,12 @@ struct ChatMarkdownStyle {
     let border: NSColor
     let codeBackground: NSColor
     let bodySize: CGFloat
+    /// Widest an inline image may be drawn. A screenshot at its natural size would push the
+    /// transcript sideways, and the chat pane is narrow by nature; the controller passes the
+    /// transcript's own text width so the picture fits whatever the pane has been dragged to.
+    let maxImageWidth: CGFloat
 
-    init(theme: PluginTheme, bodySize: CGFloat = 13) {
+    init(theme: PluginTheme, bodySize: CGFloat = 13, maxImageWidth: CGFloat = 320) {
         text = theme.text
         secondary = theme.secondaryText
         accent = theme.accent
@@ -35,6 +41,7 @@ struct ChatMarkdownStyle {
         // A wash of the text colour rather than a fixed grey, so it sits on either ground.
         codeBackground = theme.text.withAlphaComponent(theme.isDark ? 0.10 : 0.06)
         self.bodySize = bodySize
+        self.maxImageWidth = maxImageWidth
     }
 
     var body: NSFont { .systemFont(ofSize: bodySize) }
@@ -287,6 +294,25 @@ enum ChatMarkdown {
 
         while index < text.endIndex {
             let rest = text[index...]
+            // `![alt](path)`. Every failure here — no closing bracket, a URL rather than a path,
+            // a file that will not open — falls through to the character-by-character path below,
+            // so the reader sees the literal Markdown instead of nothing at all.
+            if rest.hasPrefix("!["), let markup = imageMarkup(rest),
+               let attachment = imageAttachment(path: markup.path, style: style) {
+                flush()
+                let image = NSMutableAttributedString(attachment: attachment)
+                var attributes: [NSAttributedString.Key: Any] = [
+                    // The attachment carries the body font like every other run: the line it sits
+                    // on needs a height, and "every character is styled" is a checked invariant.
+                    .font: style.body, .foregroundColor: style.text, .paragraphStyle: paragraph]
+                // The alt text is the only description of the picture there is; a tooltip is
+                // where a reader can still get at it.
+                if !markup.alt.isEmpty { attributes[.toolTip] = markup.alt }
+                image.addAttributes(attributes, range: NSRange(location: 0, length: image.length))
+                out.append(image)
+                index = text.index(index, offsetBy: markup.length)
+                continue
+            }
             if rest.hasPrefix("**"), let end = closing(of: "**", in: rest.dropFirst(2)) {
                 flush()
                 out.append(NSAttributedString(string: String(rest.dropFirst(2).prefix(upTo: end)), attributes: [
@@ -319,6 +345,57 @@ enum ChatMarkdown {
 
     private static func closing(of marker: String, in text: Substring) -> String.Index? {
         text.range(of: marker)?.lowerBound
+    }
+
+    // MARK: - Images
+
+    /// An `![alt](path)` at the start of `rest`: how many characters it spans, its alt text and
+    /// its path. Nil if it is not one.
+    static func imageMarkup(_ rest: Substring) -> (length: Int, alt: String, path: String)? {
+        guard rest.hasPrefix("!["), let altEnd = rest.dropFirst(2).firstIndex(of: "]") else { return nil }
+        let open = rest.index(after: altEnd)
+        guard open < rest.endIndex, rest[open] == "(",
+              let close = rest[rest.index(after: open)...].firstIndex(of: ")") else { return nil }
+        let inside = rest[rest.index(after: open)..<close]
+        // `![a](x.png "a title")` — the title is not part of the path.
+        let path = inside.split(separator: " ", maxSplits: 1).first.map(String.init) ?? ""
+        return (rest.distance(from: rest.startIndex, to: close) + 1,
+                String(rest[rest.index(rest.startIndex, offsetBy: 2)..<altEnd]),
+                path)
+    }
+
+    /// A local image file as an attachment, scaled down to `style.maxImageWidth`; nil for
+    /// anything that is not a readable local file.
+    ///
+    /// Deliberately no network: an `![](http://…/x.png)` in an answer is a read receipt, telling
+    /// that server when the answer was displayed and from which address — the same thing the
+    /// viewer's `img-src file: data:` policy exists to stop, and the privacy help page promises
+    /// nothing leaves the machine unasked. Such an image stays visible as its own Markdown text,
+    /// which is more use to the reader than a silent blank.
+    static func imageAttachment(path: String, style: ChatMarkdownStyle) -> NSTextAttachment? {
+        guard let url = localImageURL(path),
+              let image = NSImage(contentsOf: url),
+              image.size.width > 0, image.size.height > 0 else { return nil }
+        let attachment = NSTextAttachment()
+        attachment.image = image
+        let scale = min(1, style.maxImageWidth / image.size.width)
+        attachment.bounds = CGRect(x: 0, y: 0,
+                                   width: (image.size.width * scale).rounded(),
+                                   height: (image.size.height * scale).rounded())
+        return attachment
+    }
+
+    /// A path (absolute, or `~`-relative) as a file URL. Nil for anything carrying a scheme —
+    /// `http:`, `https:`, `data:` — and for a relative path, which has nothing to be relative to:
+    /// the chat view knows no current directory, and the paths in an answer come from tool
+    /// results, which are absolute.
+    static func localImageURL(_ path: String) -> URL? {
+        guard !path.isEmpty,
+              path.range(of: "^[A-Za-z][A-Za-z0-9+.-]*:", options: .regularExpression) == nil
+        else { return nil }
+        if path.hasPrefix("~") { return URL(fileURLWithPath: (path as NSString).expandingTildeInPath) }
+        guard path.hasPrefix("/") else { return nil }
+        return URL(fileURLWithPath: path)
     }
 
     /// Turn detected file paths into `pcfile://` links, styled so they read as file chips.

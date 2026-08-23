@@ -55,6 +55,13 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?,
         if let r = pendingRenameRequest { pendingRenameRequest = nil; vc.sendRenameRequest(path: r.path, displayName: r.name) }
         if let b = pendingBatchRequest { pendingBatchRequest = nil; vc.sendBatchSkill(b) }
         if let n = pendingNotice { pendingNotice = nil; vc.showNotice(n) }
+        // DEBUG host-verification: render a given answer and photograph it. Separate from the
+        // probe below because this one must not involve a model — see `renderProbe`.
+        if let markdown = ProcessInfo.processInfo.environment["PC_AI_RENDER"],
+           let png = ProcessInfo.processInfo.environment["PC_AI_RENDER_PNG"] {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            vc.renderProbe(markdown.replacingOccurrences(of: "\\n", with: "\n"), pngPath: png)
+        }
         // DEBUG host-verification: auto-send a probe message and log the transcript.
         if let probe = ProcessInfo.processInfo.environment["PC_AI_PROBE"] {
             await vc.sendProgrammatically(probe)

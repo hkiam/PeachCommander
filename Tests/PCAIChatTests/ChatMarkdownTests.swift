@@ -162,6 +162,92 @@ final class ChatMarkdownTests: XCTestCase {
         XCTAssertEqual(ChatMarkdown.render("\n\n\n", style: style).string, "")
     }
 
+    // MARK: Images
+    //
+    // `![](…)` used to arrive as its own source text, bracket for bracket. It is now the picture —
+    // read from disk, never fetched, and scaled so a screenshot cannot push the chat sideways.
+
+    /// A real PNG on disk, `width` × `width/2`, so scaling is observable. Encoded straight from
+    /// a bitmap rep rather than drawn into an NSImage: a test needs no window server for this.
+    private func writePNG(width: Int, _ name: String) throws -> URL {
+        let rep = try XCTUnwrap(NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: width / 2,
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
+        let data = try XCTUnwrap(rep.representation(using: .png, properties: [:]))
+        let url = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("ChatMarkdownTests-\(name).png")
+        try data.write(to: url)
+        addTeardownBlock { try? FileManager.default.removeItem(at: url) }
+        return url
+    }
+
+    func test_localImage_becomesAnAttachment() throws {
+        let url = try writePNG(width: 40, "local")
+        let out = ChatMarkdown.render("Hier:\n\n![Ein Diagramm](\(url.path))", style: style)
+        let attachment = try XCTUnwrap((0..<out.length).compactMap {
+            out.attribute(.attachment, at: $0, effectiveRange: nil) as? NSTextAttachment
+        }.first, "no attachment in: \(out.string.debugDescription)")
+        XCTAssertNotNil(attachment.image)
+        XCTAssertFalse(out.string.contains("!["), "the source markup must not also be shown")
+        XCTAssertFalse(out.string.contains(url.path))
+    }
+
+    func test_theAltTextSurvivesAsATooltip() throws {
+        let url = try writePNG(width: 40, "alt")
+        let out = ChatMarkdown.render("![Ein Diagramm](\(url.path))", style: style)
+        let tips = (0..<out.length).compactMap { out.attribute(.toolTip, at: $0, effectiveRange: nil) as? String }
+        XCTAssertEqual(tips.first, "Ein Diagramm")
+    }
+
+    func test_aWideImageIsScaledToTheAvailableWidth() throws {
+        let url = try writePNG(width: 800, "wide")
+        let narrow = ChatMarkdownStyle(theme: .systemFallback, maxImageWidth: 200)
+        let attachment = try XCTUnwrap(ChatMarkdown.imageAttachment(path: url.path, style: narrow))
+        XCTAssertEqual(attachment.bounds.width, 200, accuracy: 1)
+        XCTAssertEqual(attachment.bounds.height, 100, accuracy: 1, "the aspect ratio must hold")
+    }
+
+    func test_aSmallImageIsNotBlownUp() throws {
+        let url = try writePNG(width: 40, "small")
+        let attachment = try XCTUnwrap(ChatMarkdown.imageAttachment(path: url.path, style: style))
+        XCTAssertEqual(attachment.bounds.width, 40, accuracy: 1)
+    }
+
+    func test_aRemoteImageIsNotFetchedAndStaysVisibleAsText() {
+        // The point of the whole exercise: an image URL in an answer is a read receipt, and this
+        // renderer never asks for one. The reader still sees what was meant.
+        for markup in ["![x](http://example.test/a.png)",
+                       "![x](https://example.test/a.png)",
+                       "![x](data:image/png;base64,AAAA)"] {
+            let out = ChatMarkdown.render(markup, style: style)
+            XCTAssertTrue(out.string.contains("!["), "\(markup) should have stayed text: \(out.string)")
+            XCTAssertNil(ChatMarkdown.localImageURL(String(markup.dropFirst(5).dropLast())))
+        }
+    }
+
+    func test_anUnreadableImageFallsBackToItsMarkdown() {
+        let out = ChatMarkdown.render("![weg](/tmp/does-not-exist-\(UUID().uuidString).png)", style: style)
+        XCTAssertTrue(out.string.contains("![weg]("), out.string)
+    }
+
+    func test_aRelativePathIsNotGuessedAt() {
+        // Nothing in the chat view knows a current directory, so there is nothing to resolve
+        // against — better literal text than an image loaded from the wrong place.
+        XCTAssertNil(ChatMarkdown.localImageURL("pictures/a.png"))
+        XCTAssertNil(ChatMarkdown.localImageURL(""))
+        XCTAssertEqual(ChatMarkdown.localImageURL("/tmp/a.png")?.path, "/tmp/a.png")
+    }
+
+    func test_imageMarkupIsReadWithItsTitleLeftOut() throws {
+        let m = try XCTUnwrap(ChatMarkdown.imageMarkup("![a](/tmp/x.png \"Titel\") danach"[...]))
+        XCTAssertEqual(m.alt, "a")
+        XCTAssertEqual(m.path, "/tmp/x.png")
+        XCTAssertEqual(m.length, "![a](/tmp/x.png \"Titel\")".count)
+        XCTAssertNil(ChatMarkdown.imageMarkup("![a] (/tmp/x.png)"[...]))
+        XCTAssertNil(ChatMarkdown.imageMarkup("![a"[...]))
+    }
+
     func test_everyCharacterIsStyled() {
         let out = ChatMarkdown.render("**A** und `b` und *c*", style: style)
         var unstyled = 0

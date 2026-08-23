@@ -158,6 +158,33 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         NSLog("[aidump] provider=%@ BEGIN\n%@\n[aidump] END", providerName, transcript.string)
     }
 
+    /// DEBUG: show `markdown` as an assistant answer, then write a PNG of the chat panel.
+    ///
+    /// `PC_AI_PROBE` sends a real question to a real model, which is the right check for the
+    /// conversation but the wrong one for the rendering: an image only appears in an answer that
+    /// contains one, and no model was ever going to write the path of a file on this machine. So
+    /// the text is *given* here, and what comes out is looked at — the transcript is drawn in this
+    /// process, so the view can hand over its own picture without asking the machine for screen
+    /// recording rights.
+    func renderProbe(_ markdown: String, pngPath: String) {
+        append(role: assistantLabel, text: markdown)
+        view.layoutSubtreeIfNeeded()
+        if let container = transcript.textContainer { transcript.layoutManager?.ensureLayout(for: container) }
+        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
+            NSLog("[airender] no bitmap rep"); return
+        }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        guard let png = rep.representation(using: .png, properties: [:]) else {
+            NSLog("[airender] no png"); return
+        }
+        do {
+            try png.write(to: URL(fileURLWithPath: pngPath))
+            NSLog("[airender] wrote %.0fx%.0f to %@", view.bounds.width, view.bounds.height, pngPath)
+        } catch {
+            NSLog("[airender] write failed: %@", error.localizedDescription)
+        }
+    }
+
     // DEBUG: drive the confirm bar from the automation hook (host verification of the
     // plan-then-confirm flow). Each logs whether a confirmation was actually pending.
     func debugConfirm() { NSLog("[aidebug] confirm (pending=%@)", nativeConfirm != nil ? "yes" : "no"); confirmTapped() }
@@ -1068,7 +1095,17 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     }
 
     /// The style the renderer draws with, following the host theme.
-    private var markdownStyle: ChatMarkdownStyle { ChatMarkdownStyle(theme: theme) }
+    private var markdownStyle: ChatMarkdownStyle {
+        ChatMarkdownStyle(theme: theme, maxImageWidth: transcriptTextWidth)
+    }
+
+    /// The transcript's usable text width, which is how wide an inline image may be drawn.
+    /// The container tracks the view, so this follows the pane as it is dragged; before the
+    /// first layout it is zero, and a fixed figure is better than an image of no width.
+    private var transcriptTextWidth: CGFloat {
+        let width = (transcript.textContainer?.size.width ?? 0) - transcript.textContainerInset.width * 2
+        return width > 80 ? width : 320
+    }
 
     /// Append one message. The body goes through the Markdown renderer, so a table is a
     /// table, a fenced block is a code block, and a path is clickable — the model writes
