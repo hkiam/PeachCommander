@@ -183,25 +183,86 @@ final class NativeToolContext: @unchecked Sendable {
             if !Self.readWasTruncated(payload) { break }
         }
         guard !partials.isEmpty else { return "The file is empty." }
-        let folded: String
-        if partials.count == 1 {
-            folded = partials[0]
-        } else {
-            // Fold: the section summaries are short, so they fit in one window together.
-            // "the same language as the summaries", not "the user's language": measured, a German
-            // file summarised through English fold prompts came back in English 4 times out of 4,
-            // because the model relays the language it was handed. The slices are in the file's
-            // language, so this carries it through.
-            folded = await Self.generate(
-                "These are summaries of consecutive sections of one file. Combine them into a "
-                + "single coherent summary of the whole file. Do not mention sections or "
-                + "summaries.\(Self.languageClause(language))\n\n"
-                + partials.enumerated().map { "Section \($0.offset + 1): \($0.element)" }
-                    .joined(separator: "\n\n"))
-        }
+        let folded = await fold(partials, language: language)
         summaries[stamp] = folded
         summaryStore?.save(folded, for: stamp, path: path)
         return folded
+    }
+
+    /// Fold section summaries into one, in as many rounds as it takes.
+    ///
+    /// This used to be a single generation over every partial, with a comment asserting that "the
+    /// section summaries are short, so they fit in one window together". That is an assumption, and
+    /// the model decides how long a "two or three sentence" summary is. A ten-slice file produced a
+    /// fold prompt the model reported as 4100 tokens against a limit of 4096 — so the feature whose
+    /// whole point is that length costs time rather than failing, failed on length after all, at the
+    /// last step. Measured, and nondeterministically: the same file and the same code passed three
+    /// runs and failed the fourth.
+    ///
+    /// Folding in rounds bounds every prompt. The result of a round is itself foldable, so the tree
+    /// closes however many sections there were.
+    private func fold(_ partials: [String], language: String?) async -> String {
+        var level = partials
+        while level.count > 1 {
+            let groups = Self.foldGroups(level, budget: Self.foldBudget)
+            // Nothing left to combine — every partial is over budget on its own. Fold them together
+            // anyway rather than looping: an over-long prompt may still be answered, and dropping a
+            // section to stay under a budget would silently summarise the wrong file.
+            if groups.count >= level.count { break }
+            var next: [String] = []
+            for group in groups {
+                next.append(group.count == 1 ? group[0]
+                            : await Self.generate(Self.foldPrompt(group, language: language)))
+            }
+            level = next
+        }
+        guard level.count > 1 else { return level.first ?? "The file is empty." }
+        return await Self.generate(Self.foldPrompt(level, language: language))
+    }
+
+    /// How much folded text one generation may see, in bytes.
+    ///
+    /// Smaller than `readBudget` on purpose: the fold prompt carries its instructions *and* every
+    /// partial it is given, and the window counts tokens while this counts bytes — so the headroom
+    /// has to cover both the overhead and the conversion.
+    static let foldBudget = 2048
+
+    /// Group `partials` in order so each group stays under `budget`, keeping neighbours together.
+    ///
+    /// In order and adjacent, because the sections are consecutive parts of one file: folding
+    /// section 1 with section 9 would produce a summary that reads as though the middle were missing.
+    /// A partial longer than the budget on its own becomes its own group — refusing it would mean
+    /// dropping a section, which is worse than one long prompt.
+    static func foldGroups(_ partials: [String], budget: Int) -> [[String]] {
+        var groups: [[String]] = []
+        var current: [String] = []
+        var size = 0
+        for partial in partials {
+            let cost = partial.utf8.count
+            if !current.isEmpty, size + cost > budget {
+                groups.append(current)
+                current = []
+                size = 0
+            }
+            current.append(partial)
+            size += cost
+        }
+        if !current.isEmpty { groups.append(current) }
+        return groups
+    }
+
+    /// The fold instruction.
+    ///
+    /// "the same language as the summaries", not "the user's language": measured, a German file
+    /// summarised through English fold prompts came back in English 4 times out of 4, because the
+    /// model relays the language it was handed. The slices are in the file's language, so this
+    /// carries it through.
+    static func foldPrompt(_ partials: [String], language: String?) -> String {
+        "These are summaries of consecutive sections of one file. Combine them into a "
+        + "single coherent summary of the whole file. Do not mention sections or "
+        + "summaries.\(languageClause(language))\n\n"
+        + partials.enumerated().map { "Section \($0.offset + 1): \($0.element)" }
+            .joined(separator: "\n\n")
     }
 
     /// The English name of the dominant language of `text`, or nil when it cannot be told.

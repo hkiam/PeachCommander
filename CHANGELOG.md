@@ -26,6 +26,12 @@ does not have.
 
 ### Fixed
 
+- **Summarising a very long file no longer fails at the last step.** The assistant reads a long file in
+  slices and combines the results; combining them was itself one request, and for a long enough file —
+  or a talkative enough model — that request was too big for the on-device window. It failed only
+  sometimes, and when it did the assistant reported it as though the *file* were the problem. The
+  combining now happens in rounds, so it stays within the window however long the file is.
+
 - **A folder that cannot be opened no longer moves the panel there.** Opening one that macOS keeps
   private, or that permissions refuse, used to leave the panel claiming to be in it: the tab and the
   path said the new folder, the path bar said the old one, and the file list belonged to neither. The

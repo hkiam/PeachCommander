@@ -730,6 +730,45 @@ fabricated rows was written and then removed: contribution commands have to be *
 plugin's manifest to be dispatched, and a test entry point in a shipping plugin's manifest is a worse
 trade than the missing picture.
 
+## 2026-08-23 (F-451) — The fold assumed the summaries would fit
+
+A live test failed, and the first job was to find out whose fault it was. It passed three times today and
+failed the fourth, on trees where the only difference was code that does not touch summarising — so the
+easy conclusion was "flaky model, retry more". The failure message said otherwise.
+
+**What the model actually answered:** "Die Datei bericht.txt enthält zu viele Token (4091) zum
+Zusammenfassen. Die maximale zulässige Größe beträgt 4096." That reads as a wrong summary of the file,
+and it sent me looking at the file. It is the model *narrating a window failure back to the reader* —
+the log line above it is a real `exceededContextWindowSize` at 4100 tokens — and the number is the tell.
+4096 is our own budget.
+
+**The assumption was written down, which is what made it findable.** `summarizeWholeFile` folded every
+section summary in one generation, under the comment "the section summaries are short, so they fit in one
+window together". The model decides how long a "two or three sentence" summary is. A 38 KB file is ten
+sections here, and ten verbose partials plus the fold instructions exceed the window — so the feature
+whose whole point is that *length costs time rather than failing* failed on length after all, at the very
+last step, and only sometimes.
+
+**Folding now happens in rounds.** `foldGroups` batches consecutive partials up to `foldBudget`, each
+batch is folded, and the results are folded again until one remains. Every prompt is bounded however many
+sections there were. The grouping keeps neighbours together and in order, because the sections are
+consecutive parts of one file and folding section 1 with section 9 would read as though the middle were
+missing. A partial over budget on its own becomes its own group: refusing it would drop a section, and a
+summary of the wrong file is worse than one long prompt. `foldBudget` is deliberately under `readBudget` —
+the fold prompt carries its instructions as well as the partials, and the window counts tokens while the
+budget counts bytes.
+
+**The live test keeps the same assertion and gained a sharper one.** It now also fails when the answer
+*is* a relayed context-window excuse, in either language, so the next occurrence says which half broke
+instead of pointing at the file. Three attempts rather than two, with the reason written down: it drives
+a live model whose wording varies, and one word from the file is what counts as an answer — but the thing
+that was actually broken is fixed in the fold, not in the retry count.
+
+**Verified**: the test now passes on the first attempt in 17 seconds at `summarize_file:10/10` — the same
+ten sections that overflowed — and the summary includes the file's *last* line, which is the part a fold
+that dropped sections would lose. Nine unit tests pin the grouping, including the property that matters
+most: whatever the budget, no section is ever dropped or reordered.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

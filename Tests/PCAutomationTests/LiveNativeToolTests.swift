@@ -195,7 +195,7 @@ final class NativeToolContextTests: XCTestCase {
         try text.write(to: dir.appendingPathComponent("bericht.txt"), atomically: true, encoding: .utf8)
 
         var last = ""
-        for attempt in 1...2 {
+        for attempt in 1...3 {
             let session = AppleNativeToolSession(
                 core: DefaultAutomationCore(bridge: RealFSBridge(root: dir.path)),
                 policy: .readOnly,
@@ -205,16 +205,29 @@ final class NativeToolContextTests: XCTestCase {
             let answer = try await session.send("Fasse die Datei bericht.txt zusammen.")
             print("[live] long-file answer (attempt \(attempt)): \(answer)")
             last = answer
-            // This is the assertion that matters and it must hold every time: the window is no
+            // These are the assertions that matter and they must hold every time: the window is no
             // longer what decides whether a long file can be summarised.
             XCTAssertFalse(answer.contains("conversation has grown"),
                            "a long file must not exhaust the window any more: \(answer)")
+            // The answer must not be the *model* narrating a window failure back to the reader, which
+            // is how F-451 showed up: "the file contains too many tokens (4091), the maximum is 4096"
+            // read as a wrong summary and sent the reader looking at the file. It was the fold prompt
+            // that overflowed, and the number is the tell. Named separately so the next occurrence
+            // says which half broke.
+            let excuse = ["too many tokens", "zu viele token", "context size", "kontextgröße",
+                          "maximum allowed", "maximale zulässige"]
             let lower = answer.lowercased()
+            XCTAssertFalse(excuse.contains(where: lower.contains),
+                           "the model relayed a context-window failure instead of a summary — the fold "
+                           + "prompt is over budget, not the file: \(answer)")
             if lower.contains("quartal") || lower.contains("umsatz") || lower.contains("logistik")
                 || lower.contains("kosten") || lower.contains("report") || lower.contains("zugspitze") {
                 return
             }
         }
+        // Three attempts, not two, and the reason is written down rather than tuned: this drives a live
+        // model whose wording varies, and a single word from the file is what counts as an answer. Two
+        // attempts made the *test* the flaky part; what was actually broken is fixed in the fold.
         XCTFail("the summary should come from the file; last: \(last)")
     }
 
