@@ -1638,6 +1638,44 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Diagnostic: the current "View" popup item titles (built-in modes + the
     /// current file's claiming plugins), for F-119 automation checks.
     func automationReprItems() -> [String] { reprPopup.itemArray.map(\.title) }
+
+    /// Diagnostic: a PNG of whatever the viewer is currently showing.
+    ///
+    /// Everything else about this window can be dumped as text. A rendered page cannot: "are the
+    /// code blocks coloured, and in dark mode too" is a question only a picture answers. Taken from
+    /// inside the app on purpose — `screencapture` needs Screen Recording permission, which a
+    /// verification run has no business asking a machine for, and without it every shot comes back
+    /// black.
+    ///
+    /// The web view needs its own route: WebKit renders in another process, so `cacheDisplay` on it
+    /// returns an empty bitmap — `takeSnapshot` is the only way to see the page. Hence the callback:
+    /// that call is asynchronous and a script has to be able to wait for the file.
+    func automationContentSnapshot(to path: String, then done: @escaping (String) -> Void) {
+        func write(_ image: NSImage?) -> String {
+            guard let image, let tiff = image.tiffRepresentation,
+                  let rep = NSBitmapImageRep(data: tiff),
+                  let png = rep.representation(using: .png, properties: [:]) else { return "no image" }
+            do {
+                try png.write(to: URL(fileURLWithPath: path))
+                return "\(Int(image.size.width))x\(Int(image.size.height))"
+            } catch { return "write failed: \(error.localizedDescription)" }
+        }
+        if mode == .web, let web = webView, !web.isHidden {
+            web.takeSnapshot(with: nil) { image, error in
+                done(image == nil ? "snapshot failed: \(error?.localizedDescription ?? "nil")"
+                                  : write(image))
+            }
+            return
+        }
+        guard let view = contentView ?? window?.contentView,
+              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
+            done("no content view"); return
+        }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        guard let png = rep.representation(using: .png, properties: [:]) else { done("no png"); return }
+        done((try? png.write(to: URL(fileURLWithPath: path))) != nil
+             ? "\(Int(view.bounds.width))x\(Int(view.bounds.height))" : "write failed")
+    }
     #endif
 
     /// Apply an initial search term and jump to the first match (F-113) — used

@@ -2,11 +2,13 @@
 // MarkdownRenderer.swift - Minimal CommonMark-ish Markdown -> HTML converter.
 //
 // Used by the F3 lister to render .md files. Covers the common constructs found
-// in real-world Markdown: ATX headings, fenced/indented code, blockquotes,
-// ordered/unordered lists, thematic breaks, GFM pipe tables, paragraphs, and the
-// usual inline spans (code, images, links, bold, italic, strikethrough, hard
-// line breaks). It is intentionally small and dependency-free; it is not a full
-// CommonMark implementation but handles the vast majority of documents well.
+// in real-world Markdown: ATX headings, fenced code (coloured when the fence
+// names a language), blockquotes, ordered/unordered lists, thematic breaks, GFM
+// pipe tables, paragraphs, and the usual inline spans (code, images, links, bold,
+// italic, strikethrough, hard line breaks). It is intentionally small and
+// dependency-free; it is not a full CommonMark implementation but handles the vast
+// majority of documents well. Indented code blocks are NOT among them — the header
+// used to claim they were.
 //
 // Output is a self-contained HTML document with embedded, theme-aware CSS so it
 // renders cleanly in a WKWebView without any network access.
@@ -103,6 +105,7 @@ public enum MarkdownRenderer {
             // Fenced code block ``` or ~~~.
             if let fence = fenceMarker(trimmed) {
                 flushParagraph(&para)
+                let info = fenceInfo(trimmed, marker: fence)
                 var code: [String] = []
                 i += 1
                 while i < lines.count {
@@ -111,7 +114,7 @@ public enum MarkdownRenderer {
                     code.append(lines[i])
                     i += 1
                 }
-                out.append("<pre><code>\(escape(code.joined(separator: "\n")))</code></pre>")
+                out.append(codeBlock(code.joined(separator: "\n"), info: info))
                 continue
             }
 
@@ -236,6 +239,87 @@ public enum MarkdownRenderer {
         if trimmed.hasPrefix("```") { return "```" }
         if trimmed.hasPrefix("~~~") { return "~~~" }
         return nil
+    }
+
+    /// The language word of a fence's info string, lowercased — `swift` from ```` ```swift ````,
+    /// and from ```` ```swift title="A.swift" ```` too. Empty when the fence names nothing.
+    ///
+    /// The whole opening line used to be skipped, so every code block in every rendered `.md`
+    /// arrived as an unmarked `<pre><code>`: no `class="language-…"` for anything reading the
+    /// page, and nothing for the stylesheet to colour.
+    static func fenceInfo(_ trimmed: String, marker: String) -> String {
+        guard let fenceChar = marker.first else { return "" }
+        let rest = trimmed.drop(while: { $0 == fenceChar })   // ```` and longer are fences too
+        // `{.python}` (Pandoc) and `swift,linenos` name a language as much as a bare word does.
+        return rest.trimmingCharacters(in: .whitespaces)
+                   .drop(while: { $0 == "{" || $0 == "." })
+                   .prefix(while: { !$0.isWhitespace && $0 != "," && $0 != "}" && $0 != "=" })
+                   .lowercased()
+    }
+
+    /// Names Markdown authors write on a fence that are not the file extension the lexer is
+    /// keyed by. The ones that already *are* an extension — `swift`, `json`, `go`, `rs`, `java`,
+    /// `bash`, `yaml`, `css`, `sql`, `lua` — need no entry and deliberately have none.
+    static let fenceLanguageAliases: [String: String] = [
+        "python": "py", "python3": "py",
+        "javascript": "js", "node": "js", "typescript": "ts",
+        "shell": "sh", "console": "sh", "terminal": "sh", "shell-session": "sh",
+        "c++": "cpp", "objective-c": "m", "objectivec": "m", "objc": "m",
+        "c#": "cs", "csharp": "cs",
+        "rust": "rs", "golang": "go", "ruby": "rb", "kotlin": "kt",
+        "perl": "pl", "haskell": "hs", "elixir": "ex", "powershell": "ps1",
+    ]
+
+    /// The lexer for a fence's language word, or nil — which is the answer for `mermaid`, `text`
+    /// and everything else this app has no lexer for, and means an uncoloured block rather than
+    /// a failure.
+    static func fenceLanguage(_ info: String) -> SyntaxLanguage? {
+        guard !info.isEmpty else { return nil }
+        if let language = SyntaxHighlighter.language(forExtension: info) { return language }
+        guard let ext = fenceLanguageAliases[info] else { return nil }
+        return SyntaxHighlighter.language(forExtension: ext)
+    }
+
+    /// A fence rendered as `<pre><code>`, carrying the GFM `language-…` class and, where there is
+    /// a lexer for it, `<span class="tok-…">` around comments, strings, numbers and keywords.
+    ///
+    /// Classes and an embedded stylesheet, never a `style=` attribute and never a script: the
+    /// document's `default-src 'none'` policy is the point and is not relaxed for colour.
+    private static func codeBlock(_ code: String, info: String) -> String {
+        let attr = isLanguageToken(info) ? " class=\"language-\(info)\"" : ""
+        guard let language = fenceLanguage(info) else {
+            return "<pre><code\(attr)>\(escape(code))</code></pre>"
+        }
+        return "<pre><code\(attr)>\(highlighted(code, language: language))</code></pre>"
+    }
+
+    /// Whether an info string is plausibly a language name, and so safe to put in a class
+    /// attribute. `escape` would make anything else harmless, but `class="language-&quot;&gt;"`
+    /// is noise in the page rather than information in it.
+    static func isLanguageToken(_ info: String) -> Bool {
+        !info.isEmpty && info.allSatisfy {
+            $0.isLetter || $0.isNumber || "+#-_.".contains($0)
+        }
+    }
+
+    /// `code`, HTML-escaped, with the lexer's spans wrapped in `<span class="tok-…">`.
+    private static func highlighted(_ code: String, language: SyntaxLanguage) -> String {
+        let chars = Array(code)
+        var out = ""
+        var cursor = 0
+        for token in SyntaxHighlighter.tokens(code, language: language) {
+            // The lexer is single-pass, so its ranges arrive in order and cannot overlap. Clamped
+            // anyway: this is the one place that turns those offsets into string indices, and a
+            // wrong range should cost colour, not a crash in a file viewer.
+            let lower = min(max(token.range.lowerBound, cursor), chars.count)
+            let upper = min(max(token.range.upperBound, lower), chars.count)
+            if lower > cursor { out += escape(String(chars[cursor..<lower])) }
+            out += "<span class=\"tok-\(token.kind.rawValue)\">"
+                 + escape(String(chars[lower..<upper])) + "</span>"
+            cursor = upper
+        }
+        if cursor < chars.count { out += escape(String(chars[cursor...])) }
+        return out
     }
 
     private static func atxHeading(_ trimmed: String) -> (Int, String)? {
@@ -462,6 +546,13 @@ public enum MarkdownRenderer {
       background: #f6f8fa; padding: 14px 16px; border-radius: 8px; overflow: auto; line-height: 1.45;
     }
     .markdown-body pre code { background: none; padding: 0; font-size: .875em; }
+    /* The four kinds SyntaxHighlighter emits, in GitHub's own palette to match the rest of this
+       stylesheet. Not the app's theme colours: those live in PCApp as NSColor, and PCFoundation
+       does not import AppKit — so a rendered page follows light/dark, like the page it is. */
+    .markdown-body .tok-comment { color: #6e7781; font-style: italic; }
+    .markdown-body .tok-string  { color: #0a3069; }
+    .markdown-body .tok-number  { color: #0550ae; }
+    .markdown-body .tok-keyword { color: #cf222e; }
     .markdown-body blockquote {
       margin: 0 0 1em; padding: 0 1em; color: #656d76; border-left: .25em solid #d0d7de;
     }
@@ -479,6 +570,10 @@ public enum MarkdownRenderer {
       .markdown-body h1, .markdown-body h2 { border-bottom-color: #30363d; }
       .markdown-body a { color: #4493f8; }
       .markdown-body pre { background: #161b22; }
+      .markdown-body .tok-comment { color: #8b949e; }
+      .markdown-body .tok-string  { color: #a5d6ff; }
+      .markdown-body .tok-number  { color: #79c0ff; }
+      .markdown-body .tok-keyword { color: #ff7b72; }
       .markdown-body blockquote { color: #9198a1; border-left-color: #30363d; }
       .markdown-body th, .markdown-body td { border-color: #30363d; }
       .markdown-body hr { background: #30363d; }

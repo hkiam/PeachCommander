@@ -24,6 +24,7 @@
 //   rowdump <file>        every visible column of the cursor row, as id + rendered text
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
+//   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
@@ -382,6 +383,17 @@ extension MainWindowController {
                                                               caseInsensitive: false)
                         ?? "ERROR: no lister window\n"
                     try? out.write(toFile: f[2], atomically: true, encoding: .utf8)
+                }
+            case "listershot":                          // listershot <out.png>: a picture of the viewer's content
+                // The one thing about the viewer that cannot be dumped as text. Awaited, because the
+                // web view's snapshot is asynchronous and the harness reads the file straight after.
+                if let lister = currentLister() {
+                    let result = await withCheckedContinuation { (c: CheckedContinuation<String, Never>) in
+                        lister.automationContentSnapshot(to: arg) { c.resume(returning: $0) }
+                    }
+                    NSLog("[automation] listershot: %@", result)
+                } else {
+                    NSLog("[automation] listershot: no lister window")
                 }
             case "listerzoom":                          // listerzoom <in|out|actual|fit|state>|<out> (F-389)
                 let z = arg.split(separator: "|", maxSplits: 1).map(String.init)

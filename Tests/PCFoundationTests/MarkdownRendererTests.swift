@@ -141,6 +141,69 @@ final class MarkdownRendererTests: XCTestCase {
         XCTAssertEqual(html, "<pre><code>let x = a &lt; b</code></pre>")
     }
 
+    // MARK: - A fence names its language, and the language is coloured
+    //
+    // The opening line used to be skipped whole, so every code block in every rendered .md came out
+    // as a bare <pre><code>: nothing said what the language was, and nothing could colour it.
+
+    func testTheFenceLanguageBecomesTheGFMClass() {
+        let html = body("```python\nx = 1\n```")
+        XCTAssertTrue(html.hasPrefix("<pre><code class=\"language-python\">"), html)
+    }
+
+    func testFenceInfoIsTheFirstWordOnly() {
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("```swift", marker: "```"), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("``` Swift", marker: "```"), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("````py", marker: "```"), "py")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("~~~sh", marker: "~~~"), "sh")
+        // The forms other tools attach to a fence, none of which is part of the language name.
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("```swift title=\"A.swift\"", marker: "```"), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("```py,linenos", marker: "```"), "py")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("```{.python}", marker: "```"), "python")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("```", marker: "```"), "")
+    }
+
+    func testTheNamesAuthorsWriteResolveToALexer() {
+        // The lexer is keyed by file extension, and most fence words already are one.
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("swift")?.name, "Swift")
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("yaml")?.name, "YAML")
+        // These are not, and are what the alias table is for.
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("python")?.name, "Python")
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("shell")?.name, "Shell")
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("csharp")?.name, "C#")
+        XCTAssertEqual(MarkdownRenderer.fenceLanguage("objective-c")?.name, "C")
+        // No lexer is a normal answer, not a failure.
+        XCTAssertNil(MarkdownRenderer.fenceLanguage("mermaid"))
+        XCTAssertNil(MarkdownRenderer.fenceLanguage(""))
+    }
+
+    func testAKnownLanguageIsColoured() {
+        let html = body("```swift\n// note\nlet n = 42\n```")
+        XCTAssertTrue(html.contains("<span class=\"tok-comment\">// note</span>"), html)
+        XCTAssertTrue(html.contains("<span class=\"tok-keyword\">let</span>"), html)
+        XCTAssertTrue(html.contains("<span class=\"tok-number\">42</span>"), html)
+    }
+
+    func testAnUnknownLanguageIsAPlainBlockThatStillSaysWhatItIs() {
+        // A mermaid diagram has no lexer here and must not lose a character over it.
+        let html = body("```mermaid\ngraph TD\n  A --> B\n```")
+        XCTAssertEqual(html, "<pre><code class=\"language-mermaid\">graph TD\n  A --&gt; B</code></pre>")
+    }
+
+    func testColouredCodeIsStillEscaped() {
+        // The tokens are wrapped in spans; everything inside them is still escaped, or a code block
+        // would be a way to put markup into the page.
+        let html = body("```swift\nlet s = \"<script>\"\n```")
+        XCTAssertTrue(html.contains("&lt;script&gt;"), html)
+        XCTAssertFalse(html.contains("<script>"), html)
+    }
+
+    func testAnInfoStringThatIsNotALanguageNameStaysOutOfTheClassAttribute() {
+        let html = body("```\"><b>\nx\n```")
+        XCTAssertEqual(html, "<pre><code>x</code></pre>")
+        XCTAssertFalse(html.contains("class="), html)
+    }
+
     func testBlockquote() {
         XCTAssertEqual(body("> quoted"), "<blockquote><p>quoted</p></blockquote>")
     }
