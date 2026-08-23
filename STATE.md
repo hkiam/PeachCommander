@@ -1108,6 +1108,103 @@ cases. Bundle `x86_64 arm64`; `check-plugin-sources`, `verify-shipping`, `check-
 conformance suite, AWS live tests, the VM scenario, transfer progress in the Transfer Manager, content
 columns, presigned links, eighteen translations and a help topic.
 
+## 2026-08-23 (F-456) — S3 against a server that is not ours, and the drive chip that only looks like a shortcut
+
+Fourth wave: bounded retries, keys a filesystem cannot hold, a listing longer than three pages, a
+conformance suite against real MinIO in Docker, and a live suite against real AWS. The MinIO suite
+earned its keep on the first run by finding a bug the local fixture structurally could not.
+
+**The retry policy is a correctness question, not a tuning one.** GET and HEAD change nothing; PUT of
+an object and DELETE of a key are idempotent. POST is decided by what it asks for rather than by the
+verb, because two of S3's POSTs are opposites: `POST ?delete` is idempotent (deleting an absent key
+succeeds) and a recursive delete is a run of them, so refusing to retry left a folder half deleted
+with no record of which half — the first version excluded POST wholesale and did exactly that.
+`POST ?uploads` is never retried: a second attempt starts a *second* multipart upload and orphans the
+first, which the user pays for and cannot see. `POST ?uploadId` is never retried either, because a
+retry can answer `NoSuchUpload` when the first attempt actually succeeded, which reads as a failed
+upload of an object that is sitting right there.
+
+Three attempts, ~1 s total, and the bound is the point: a retry sleeps on the connection's serial
+queue and nothing can cancel a sleep — the ABI's only cancellation channel is the progress callback,
+which a listing does not have. A `SlowDown` that never clears has to stop, not spin. After the
+attempts are used up the message carries `x-amz-request-id`, which is the one handle AWS support asks
+for and exists nowhere else once the response is gone.
+
+**The fixture's readiness probe was eating the failures the test was handing the plugin.** A retry test
+measured 101 requests and a successful listing: `waitForServer` polls until it gets a 200, and against
+a server told to answer 503 a few times the probe spent the whole budget. The probe now carries a
+header the fixture answers without counting. Worth writing down because it is a shape rather than a
+one-off — a harness that talks to the fixture is traffic too.
+
+**Keys a filesystem cannot hold are tested against the parser, not the fixture.** An S3 key is an
+arbitrary byte string: it may not be valid UTF-8, it may contain a tab, and a bucket may hold both an
+object `docs` and a prefix `docs/`. None of those can exist on APFS, so a fixture backed by real files
+can never present them — `S3XMLTests` feeds the parser the XML directly. An undecodable key keeps its
+encoded form rather than being dropped, which is ugly and honest: losing the object is the one outcome
+a file manager must not produce.
+
+### The bug only Docker could find
+
+`encoding-type=url` is **form**-encoded, not percent-encoded. MinIO returns the key
+`odd +name=v~1.txt` as `odd+%2Bname%3Dv%7E1.txt` — space as `+`, literal plus as `%2B`. The plugin
+decoded percent-escapes only, so the object appeared in the panel as `odd++name=v~1.txt`, a name that
+could not be opened. The code comment asserted the opposite in as many words ("S3 does not encode it
+as a space here, so only percent-decoding is right").
+
+The local fixture could not have caught it: it encoded the same way the plugin decoded. Two halves
+agreeing on one mistake see nothing, which is the whole argument for an independent implementation in
+the loop. The fixture now form-encodes like a real server, and `S3XMLTests` pins both directions —
+including why form-decoding is *safe* for a server that percent-encodes instead: a literal `+` is
+`%2B` under either scheme, so a bare `+` can only ever have meant a space.
+
+**The conformance suite also fails when it runs nothing.** `Tools/s3-conformance.sh` reported success
+with MinIO running and not a single request made to it, twice: a plain `export` does not reach a
+host-less unit-test bundle, and neither does xcodebuild's `TEST_RUNNER_` prefix. The settings now
+arrive in `build/s3-conformance.env`, which has no plumbing to get wrong, and the script fails if no
+test actually ran. A conformance script that is green while measuring nothing is worse than no script.
+MinIO also enforces S3's 5 MiB minimum part size, which the Python fixture does not — so that suite is
+the only place the production multipart defaults are exercised at all.
+
+**The live AWS suite is written and NOT verified.** No account here, so all four tests skip. It is
+deliberately narrow: MinIO covers the ordinary lifecycle, and repeating that against a real account
+spends money to learn nothing. What is there is only what no emulator has — AWS's own region redirect,
+its own storage classes, its own opinion of a wrong clock. The clock case is an explicit `XCTSkip`
+with the manual procedure written into it, rather than a test that pretends.
+
+### The VM scenario, and why there is none
+
+Written, run, and taken back out — but it did its job before it went.
+
+The scenario connects the drive from the running app, which is the user's route rather than the tests'.
+The control run proves the groundwork is right: the saved profile really does produce a chip, and the
+drive bar reads
+`chips=Macintosh HD:startupDisk:system|TaskManager:pluginDrive:plugin|S3Fixture:pluginDrive:plugin`.
+
+Clicking it does not connect. `mountPluginVolume` knows exactly which volume the user clicked, but the
+sentinel it routes through carries only the *plugin* id, and **`PfxConnect` takes no argument at all**
+— so a plugin with more than one static volume cannot be told which chip was clicked. The S3 plugin
+therefore falls back to its connect dialog, and the scenario hung on a modal window nothing in the
+harness can answer. That is why the report was empty three runs in a row.
+
+TaskManager never met this: it has one volume. iCloud never met it either: its volumes are local paths
+that are browsed directly and never connected. S3 is the first plugin with several connectable
+volumes, and it found the gap.
+
+The fix is an optional per-volume connect in `pfx.h` — the header says new entry points may be added,
+so a `PfxConnectVolume(volumeId, services)` with a fallback to `PfxConnect` is within the ABI's own
+rules. That touches the shared header in four copies plus the host, and doing it at the end of a long
+session is how an ABI mistake ships. So: **the defect is recorded and the scenario is not in the
+tree.** Leaving broken harness machinery behind would be worse than having none, and a scenario that
+cannot pass is not evidence of anything. It goes in with the fix.
+
+**Evidence.** `S3PluginTests` 48, `S3XMLTests` 16, `S3AWSConfigTests` 10, `S3SignerTests` 2 — and
+`S3ConformanceTests` 8, **all eight green against a real MinIO container**, which is the number that
+matters most in this wave. `S3LiveTests` 4, skipped for want of an account. New gates and scripts:
+`Tools/s3-conformance.sh`. All static gates green.
+
+**Still behind `PCPluginIncomplete`**: the per-volume connect above, transfer progress in the Transfer
+Manager, content columns, presigned links, eighteen translations and a help topic.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

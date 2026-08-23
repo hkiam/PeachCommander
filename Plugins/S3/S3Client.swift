@@ -232,6 +232,49 @@ final class S3Connection {
 
     // MARK: Sending
 
+    /// Whether a request can be sent again without changing what the server ends up holding.
+    ///
+    /// This is the whole retry policy, and it is a correctness question rather than a tuning one.
+    /// GET and HEAD change nothing. PUT of an object and DELETE of a key are idempotent: the same
+    /// call twice leaves the same state.
+    ///
+    /// POST is decided by what it is asking for, not by the verb — because two of S3's POSTs are
+    /// opposites:
+    ///   * `POST ?delete` (batch delete) is idempotent. Deleting a key that is already gone succeeds,
+    ///     so retrying is safe — and NOT retrying it was worse than it looked: a recursive delete is
+    ///     a run of these, and one throttled batch left the folder half deleted with no record of
+    ///     which half.
+    ///   * `POST ?uploads` starts a multipart upload, and a retry starts a *second* one and orphans
+    ///     the first — which the user pays for and cannot see. `POST ?uploadId` (Complete) can answer
+    ///     `NoSuchUpload` on a retry because the first attempt actually succeeded, which reads as a
+    ///     failed upload of an object that is sitting right there. Neither is ever retried.
+    static func isRetryable(method: String, query: [(String, String)]) -> Bool {
+        switch method {
+        case "GET", "HEAD", "PUT", "DELETE": return true
+        case "POST": return query.contains { $0.0 == "delete" }
+        default: return false
+        }
+    }
+
+    /// Transient server conditions: throttling, and a server that is briefly not there.
+    static func isTransient(_ status: Int) -> Bool {
+        status == 429 || status == 500 || status == 503
+    }
+
+    /// How long to wait before attempt `attempt` (1-based), in seconds.
+    ///
+    /// Bounded on purpose. A retry sleeps on the connection's serial queue, and nothing can cancel a
+    /// sleep — the ABI's only cancellation channel is the progress callback, which a listing does not
+    /// have. So the total is kept near a second: long enough to ride out a `SlowDown`, short enough
+    /// that a panel never looks frozen.
+    static func backoff(attempt: Int) -> TimeInterval {
+        let base = 0.2 * pow(2.0, Double(attempt - 1))
+        // Jitter, because several panels retrying in lockstep is what produced the throttling.
+        return base + Double.random(in: 0...0.1)
+    }
+
+    static let maxAttempts = 3
+
     /// Send a metadata request and read the whole (bounded) body.
     ///
     /// `redirectsLeft` is how a bucket in another region is followed. Not a general redirect follower:
@@ -241,6 +284,21 @@ final class S3Connection {
     func send(_ method: String, bucket: String? = nil, key: String = "",
               query: [(String, String)] = [], headers: [String: String] = [:],
               body: Data? = nil, redirectsLeft: Int = 1) -> S3Response {
+        var attempt = 1
+        while true {
+            let response = sendOnce(method, bucket: bucket, key: key, query: query,
+                                    headers: headers, body: body, redirectsLeft: redirectsLeft)
+            guard attempt < Self.maxAttempts,
+                  Self.isTransient(response.status),
+                  Self.isRetryable(method: method, query: query) else { return response }
+            Thread.sleep(forTimeInterval: Self.backoff(attempt: attempt))
+            attempt += 1
+        }
+    }
+
+    private func sendOnce(_ method: String, bucket: String?, key: String,
+                          query: [(String, String)], headers: [String: String],
+                          body: Data?, redirectsLeft: Int) -> S3Response {
         let payload = body.map { S3Signer.sha256Hex($0) } ?? S3Signer.emptyPayload
         var extra = headers
         if let body { extra["content-length"] = String(body.count) }
@@ -280,6 +338,8 @@ final class S3Connection {
             let region = response.error?.region ?? response.header("x-amz-bucket-region")
             if let region, !region.isEmpty, region != resolvedEndpoint(for: bucket).region {
                 learn(bucket: bucket, region: region, host: response.error?.endpoint)
+                // Back through `send`, not `sendOnce`: the retry budget applies to the request after
+                // the redirect too, and a throttled answer there is as transient as anywhere else.
                 return send(method, bucket: bucket, key: key, query: query, headers: headers,
                             body: body, redirectsLeft: redirectsLeft - 1)
             }
@@ -438,7 +498,14 @@ final class S3Connection {
                 ? L("The bucket still contains objects.") : L("The server reported a conflict.")
             return Int32(PC_E_EWRITE)
         case 429, 500, 503:
-            message = L("The server is busy or unavailable.")
+            // Reached here only after the retries were used up, so this is not a blip. The request id
+            // is the one thing AWS support asks for, and it exists nowhere else once the response is
+            // gone.
+            if let id = response.error?.requestID ?? response.header("x-amz-request-id"), !id.isEmpty {
+                message = String(format: L("The server is busy or unavailable (request %@)."), id)
+            } else {
+                message = L("The server is busy or unavailable.")
+            }
             return Int32(PC_E_CONNECTION_LOST)
         case 502, 504:
             message = L("The server did not answer.")

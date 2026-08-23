@@ -45,6 +45,15 @@ DIE_AFTER_LISTINGS = int(os.environ.get("PC_S3_FIXTURE_DIE_AFTER_LISTINGS", "0")
 # Refuse this part number of every multipart upload, so that "the upload failed halfway" is a thing a
 # test can arrange. An orphaned multipart is billed and invisible, so the cleanup needs proving.
 FAIL_PART = int(os.environ.get("PC_S3_FIXTURE_FAIL_PART", "0"))
+# Answer the first N requests of the named methods with 503, so a retry policy can be tested rather
+# than assumed. The counters are written to PC_S3_FIXTURE_STATS_FILE after every request, because a
+# test needs to see how many attempts actually arrived — proving that POST is NOT retried is only
+# possible by counting.
+FLAKY = int(os.environ.get("PC_S3_FIXTURE_FLAKY", "0"))
+FLAKY_METHODS = {m.strip().upper() for m in
+                 os.environ.get("PC_S3_FIXTURE_FLAKY_METHODS", "GET").split(",") if m.strip()}
+STATS_FILE = os.environ.get("PC_S3_FIXTURE_STATS_FILE", "")
+_counts = {}
 _listings = [0]
 
 # In-flight multipart uploads: id -> {"bucket":…, "key":…, "parts": {number: bytes}}.
@@ -57,8 +66,22 @@ UNRESERVED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~
 
 
 def uri_encode(value):
-    """AWS UriEncode: percent-encode everything outside RFC 3986 unreserved."""
+    """AWS UriEncode: percent-encode everything outside RFC 3986 unreserved.
+
+    Used for SIGNING, where the rule is strict RFC 3986 and a space is %20.
+    """
     return urllib.parse.quote(value, safe=UNRESERVED)
+
+
+def response_encode(value):
+    """Encode a key for an `encoding-type=url` response, the way a real server does.
+
+    Form-encoding: a space becomes "+", a literal "+" becomes "%2B". This used to be `uri_encode`,
+    which meant the fixture encoded exactly the way the plugin decoded — so both were wrong together
+    and no test could see it. A real MinIO server returns `odd +name=v~1.txt` as
+    `odd+%2Bname%3Dv%7E1.txt`, and that difference is what the Docker conformance suite found.
+    """
+    return urllib.parse.quote_plus(value, safe="")
 
 
 def esc(s):
@@ -89,6 +112,36 @@ class Handler(BaseHTTPRequestHandler):
         pass   # the test reads results, not a request log
 
     # ---- plumbing -----------------------------------------------------------------------------
+
+    def _is_ping(self):
+        """A readiness probe from the test harness, not traffic.
+
+        It has to be distinguishable, because the harness polls until it gets a 200 — and against a
+        server configured to answer 503 a few times, the probe would eat exactly the transient
+        failures the plugin was supposed to see. That happened: a retry test measured 101 requests and
+        a successful listing, because the probe had used the whole budget up.
+        """
+        return (self.headers.get("x-fixture-ping") or "") != ""
+
+    def _count(self):
+        """Record this request, and say whether it should be failed as transient."""
+        _counts[self.command] = _counts.get(self.command, 0) + 1
+        _counts["ALL"] = _counts.get("ALL", 0) + 1
+        if STATS_FILE:
+            try:
+                with open(STATS_FILE, "w") as handle:
+                    for key in sorted(_counts):
+                        handle.write("%s=%d\n" % (key, _counts[key]))
+            except OSError:
+                pass
+        if not FLAKY or self.command not in FLAKY_METHODS:
+            return False
+        return _counts.get("flaky:" + self.command, 0) < FLAKY
+
+    def _flake(self):
+        """Answer 503 and record that we did."""
+        _counts["flaky:" + self.command] = _counts.get("flaky:" + self.command, 0) + 1
+        self._error(503, "SlowDown", "please reduce your request rate")
 
     def _body(self):
         """Always read the body. An unread one desynchronises the keep-alive connection."""
@@ -280,12 +333,17 @@ class Handler(BaseHTTPRequestHandler):
 
     def _handle(self, head_only):
         body = self._body()
+        if self._is_ping():
+            return self._send(200, b"", head_only=head_only)
         problem = self._verify_signature(body)
         if problem:
             extra = ""
             if problem[1] == "AuthorizationHeaderMalformed":
                 extra = "<Region>%s</Region>" % esc(REGION)
             return self._error(problem[0], problem[1], problem[2], extra)
+
+        if self._count():
+            return self._flake()
 
         bucket, key = self._target()
         if bucket is None:
@@ -352,7 +410,7 @@ class Handler(BaseHTTPRequestHandler):
         max_keys = max(1, max_keys)
 
         def out(value):
-            return uri_encode(value) if encoding == "url" else esc(value)
+            return response_encode(value) if encoding == "url" else esc(value)
 
         contents, prefixes = [], []
         for key, local in self._walk_keys(bucket):
@@ -453,6 +511,9 @@ class Handler(BaseHTTPRequestHandler):
         if problem:
             return self._error(problem[0], problem[1], problem[2])
 
+        if self._count():
+            return self._flake()
+
         bucket, key = self._target()
         if bucket is None:
             return self._error(400, "InvalidRequest", "cannot PUT the service root")
@@ -533,6 +594,9 @@ class Handler(BaseHTTPRequestHandler):
         if problem:
             return self._error(problem[0], problem[1], problem[2])
 
+        if self._count():
+            return self._flake()
+
         bucket, key = self._target()
         if bucket is None:
             return self._error(400, "InvalidRequest", "cannot DELETE the service root")
@@ -574,6 +638,9 @@ class Handler(BaseHTTPRequestHandler):
         problem = self._verify_signature(body)
         if problem:
             return self._error(problem[0], problem[1], problem[2])
+
+        if self._count():
+            return self._flake()
 
         bucket, key = self._target()
         if bucket is None:

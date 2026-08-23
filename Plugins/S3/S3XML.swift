@@ -165,9 +165,27 @@ final class S3ListObjectsParser: S3ParserBase {
 
     private func decode(_ s: String) -> String {
         guard urlEncoded else { return s }
-        // A key can contain a literal "+" and S3 does not encode it as a space here, so only
-        // percent-decoding is right — form-decoding would rename the file.
-        return s.removingPercentEncoding ?? s
+        return Self.formDecode(s)
+    }
+
+    /// Decode a value from an `encoding-type=url` response: "+" is a space, then percent-decode.
+    ///
+    /// This is form-decoding, and the first version of this deliberately did NOT do it — the comment
+    /// claimed a literal "+" would be renamed. Testing against a real MinIO server showed the
+    /// opposite: it returns the key `odd +name=v~1.txt` as `odd+%2Bname%3Dv%7E1.txt`, so a
+    /// percent-only decode produced `odd++name` and the object appeared in the panel under a name
+    /// that could not be opened. The Docker suite is the only place that surfaced it, because the
+    /// Python fixture encodes the same way this used to decode — two halves agreeing on one mistake.
+    ///
+    /// Safe for a server that percent-encodes instead: a literal "+" is `%2B` under either scheme
+    /// (it is not RFC 3986 unreserved), so a bare "+" in the response can only ever have meant a
+    /// space. `test_aPlusInAKeyStaysAPlus` is that case.
+    static func formDecode(_ s: String) -> String {
+        let spaced = s.replacingOccurrences(of: "+", with: " ")
+        // A key is an arbitrary byte string and need not be valid UTF-8. When it is not, decoding
+        // answers nil — and dropping the entry would lose the object entirely, which is the one
+        // outcome a file manager must not produce. The encoded form is ugly and honest.
+        return spaced.removingPercentEncoding ?? s
     }
 
     func parser(_ parser: XMLParser, didStartElement e: String, namespaceURI: String?,
@@ -384,7 +402,9 @@ final class S3RawKeyParser: S3ParserBase {
         case "IsTruncated" where !inContents: truncated = (v == "true")
         case "NextContinuationToken": token = v.isEmpty ? nil : v
         case "Key" where inContents:
-            let decoded = urlEncoded ? (v.removingPercentEncoding ?? v) : v
+            // The same decoding as a listing, through the same function: a recursive delete that
+            // decoded keys differently from the listing would delete the wrong ones.
+            let decoded = urlEncoded ? S3ListObjectsParser.formDecode(v) : v
             if !decoded.isEmpty { keys.append(decoded) }
         case "Contents": inContents = false
         default: break

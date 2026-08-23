@@ -71,6 +71,9 @@ final class S3PluginTests: XCTestCase {
     }
 
     /// Compile the plugin exactly as `Tools/build-s3-plugin.sh` does, and open it.
+    ///
+    /// Shared with `S3ConformanceTests`, which drives the same plugin against a real MinIO server —
+    /// two copies of this would be two source lists to forget a file from.
     static func buildPlugin(repoRoot: URL, into dir: URL) throws -> PluginLibrary {
         let swiftc = "/usr/bin/swiftc"
         try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
@@ -131,7 +134,10 @@ final class S3PluginTests: XCTestCase {
     private func startServer(root: URL, maxKeys: Int?,
                             dieAfterListings: Int? = nil,
                             failPart: Int? = nil,
-                            region: String = "us-east-1") throws -> (Process, Int) {
+                            region: String = "us-east-1",
+                            flaky: Int? = nil,
+                            flakyMethods: String? = nil,
+                            statsFile: URL? = nil) throws -> (Process, Int) {
         let python = "/usr/bin/python3"
         try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: python), "python3 unavailable")
         let chosen = try Self.freePort()
@@ -146,6 +152,9 @@ final class S3PluginTests: XCTestCase {
         if let maxKeys { env["PC_S3_FIXTURE_MAX_KEYS"] = String(maxKeys) }
         if let dieAfterListings { env["PC_S3_FIXTURE_DIE_AFTER_LISTINGS"] = String(dieAfterListings) }
         if let failPart { env["PC_S3_FIXTURE_FAIL_PART"] = String(failPart) }
+        if let flaky { env["PC_S3_FIXTURE_FLAKY"] = String(flaky) }
+        if let flakyMethods { env["PC_S3_FIXTURE_FLAKY_METHODS"] = flakyMethods }
+        if let statsFile { env["PC_S3_FIXTURE_STATS_FILE"] = statsFile.path }
         p.environment = env
         p.standardOutput = Pipe(); p.standardError = Pipe()
         try p.run()
@@ -183,6 +192,10 @@ final class S3PluginTests: XCTestCase {
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.timeoutInterval = 1
+            // Marked as a probe so the fixture does not count it and does not spend a configured
+            // transient failure on it — polling until a 200 arrives would otherwise consume exactly
+            // the 503s a retry test is trying to hand the plugin.
+            request.setValue("1", forHTTPHeaderField: "x-fixture-ping")
             let done = DispatchSemaphore(value: 0)
             var ok = false
             URLSession.shared.dataTask(with: request) { _, response, _ in
@@ -641,6 +654,28 @@ final class S3PluginTests: XCTestCase {
         XCTAssertEqual(buckets, ["backups", "photos"])
     }
 
+    func test_aDirectoryLargerThanThreePagesArrivesWhole() async throws {
+        // At the protocol's real page size, not a lowered one. 2 500 objects is three pages, and the
+        // failure this catches is an off-by-one at a page boundary or a dropped last page — both of
+        // which look like a complete directory that is quietly missing files, which is the worst
+        // shape a file manager can fail in.
+        let root = dir.appendingPathComponent("big")
+        let bucket = root.appendingPathComponent("many")
+        try FileManager.default.createDirectory(at: bucket, withIntermediateDirectories: true)
+        let expected = (0..<2_500).map { String(format: "object-%04d.txt", $0) }
+        for name in expected {
+            try Data("x".utf8).write(to: bucket.appendingPathComponent(name))
+        }
+        let (big, bigPort) = try startServer(root: root, maxKeys: nil)
+        defer { big.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(bigPort)", 1)
+
+        let fs = try makeFS()
+        let names = try await collect(fs, "/many").map(\.name).sorted()
+        XCTAssertEqual(names.count, expected.count, "the listing lost objects across page boundaries")
+        XCTAssertEqual(names, expected)
+    }
+
     // MARK: - A server that goes away
 
     func test_aDeadServerIsReportedAsALostConnection_notAsAMissingDirectory() async throws {
@@ -662,6 +697,116 @@ final class S3PluginTests: XCTestCase {
                 return XCTFail("a dead server was reported as \(error)")
             }
         }
+    }
+
+    // MARK: - Retrying, and what must not be retried
+
+    /// The fixture's request counters, keyed by method (plus "ALL").
+    private func requestCounts(_ statsFile: URL) -> [String: Int] {
+        guard let text = try? String(contentsOf: statsFile, encoding: .utf8) else { return [:] }
+        var out: [String: Int] = [:]
+        for line in text.split(separator: "\n") {
+            let parts = line.split(separator: "=", maxSplits: 1).map(String.init)
+            if parts.count == 2, let value = Int(parts[1]) { out[parts[0]] = value }
+        }
+        return out
+    }
+
+    func test_aThrottledListingIsRetried() async throws {
+        // `SlowDown` is what S3 says when it wants fewer requests, and giving up on the first one
+        // turns a busy moment into "this folder does not exist".
+        let root = dir.appendingPathComponent("flaky")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("bucket"),
+                                                withIntermediateDirectories: true)
+        try Data("survived".utf8).write(to: root.appendingPathComponent("bucket/there.txt"))
+        let stats = dir.appendingPathComponent("stats-get.txt")
+        // Two 503s, then the truth. The plugin allows three attempts.
+        let (flaky, flakyPort) = try startServer(root: root, maxKeys: nil, flaky: 2,
+                                                flakyMethods: "GET", statsFile: stats)
+        defer { flaky.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(flakyPort)", 1)
+
+        let fs = try makeFS()
+        let names = try await collect(fs, "/bucket").map(\.name)
+        XCTAssertEqual(names, ["there.txt"], "the listing gave up on a transient failure")
+        XCTAssertGreaterThanOrEqual(requestCounts(stats)["GET"] ?? 0, 3,
+                                    "the listing succeeded without ever retrying")
+    }
+
+    func test_aThrottledListingThatNeverRecoversStopsRatherThanSpinning() async throws {
+        // The other half: the retries are bounded. A sleep on the connection queue cannot be
+        // cancelled — the ABI's only cancellation channel is the progress callback, which a listing
+        // does not have — so an unbounded retry would be a frozen panel.
+        let root = dir.appendingPathComponent("hopeless")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("bucket"),
+                                                withIntermediateDirectories: true)
+        let stats = dir.appendingPathComponent("stats-hopeless.txt")
+        let (flaky, flakyPort) = try startServer(root: root, maxKeys: nil, flaky: 99,
+                                                flakyMethods: "GET", statsFile: stats)
+        defer { flaky.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(flakyPort)", 1)
+
+        let fs = try makeFS()
+        do {
+            _ = try await collect(fs, "/bucket")
+            XCTFail("a server that answered 503 to everything produced a listing")
+        } catch is VFSError {}
+        // Three attempts, not thirty.
+        XCTAssertLessThanOrEqual(requestCounts(stats)["GET"] ?? 0, 4,
+                                 "the retry loop is not bounded")
+    }
+
+    func test_startingAMultipartUploadIsNotRetried() async throws {
+        // The one place a retry is a correctness bug rather than a delay. A retried
+        // `POST ?uploads` starts a SECOND multipart upload and orphans the first — which the user
+        // pays for and cannot see. So POST is never retried, and this counts to prove it.
+        let root = dir.appendingPathComponent("nopost")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("bucket"),
+                                                withIntermediateDirectories: true)
+        let stats = dir.appendingPathComponent("stats-post.txt")
+        let (flaky, flakyPort) = try startServer(root: root, maxKeys: nil, flaky: 99,
+                                                flakyMethods: "POST", statsFile: stats)
+        defer { flaky.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(flakyPort)", 1)
+        setenv("PC_S3_MULTIPART_THRESHOLD", "1024", 1)
+        setenv("PC_S3_PART_SIZE", "4096", 1)
+        defer { unsetenv("PC_S3_MULTIPART_THRESHOLD"); unsetenv("PC_S3_PART_SIZE") }
+
+        let fs = try makeFS()
+        let local = dir.appendingPathComponent("multi.bin")
+        try Data(repeating: 0x42, count: 20_000).write(to: local)
+        do {
+            _ = try await fs.uploadFile(local, to: vpath("/bucket/multi.bin"), resume: false)
+            XCTFail("an upload whose CreateMultipartUpload was refused reported success")
+        } catch is VFSError {}
+
+        XCTAssertEqual(requestCounts(stats)["POST"], 1,
+                       "CreateMultipartUpload was retried, which orphans the first upload")
+    }
+
+    func test_aThrottledBatchDeleteIsRetried() async throws {
+        // The other side of the POST rule. `POST ?delete` is idempotent — deleting a key that is
+        // already gone succeeds — and a recursive delete is a run of these, so refusing to retry left
+        // a folder half deleted with no record of which half. Excluding POST by verb alone did
+        // exactly that.
+        let root = dir.appendingPathComponent("delflaky")
+        let bucket = root.appendingPathComponent("bucket/folder")
+        try FileManager.default.createDirectory(at: bucket, withIntermediateDirectories: true)
+        for index in 0..<3 {
+            try Data("x".utf8).write(to: bucket.appendingPathComponent("f\(index).txt"))
+        }
+        let stats = dir.appendingPathComponent("stats-del.txt")
+        let (flaky, flakyPort) = try startServer(root: root, maxKeys: nil, flaky: 1,
+                                                flakyMethods: "POST", statsFile: stats)
+        defer { flaky.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(flakyPort)", 1)
+
+        let fs = try makeFS()
+        try await fs.delete(vpath("/bucket/folder"))
+        let names = try await collect(fs, "/bucket").map(\.name)
+        XCTAssertFalse(names.contains("folder"), "the folder survived a throttled batch delete")
+        XCTAssertGreaterThanOrEqual(requestCounts(stats)["POST"] ?? 0, 2,
+                                    "the batch delete was not retried")
     }
 
     // MARK: - Regions and anonymous access
