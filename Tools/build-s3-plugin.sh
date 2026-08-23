@@ -30,6 +30,7 @@ pc_swiftc -emit-library -O -module-name S3 -target "$TARGET" -framework AppKit \
   "$ROOT/Plugins/S3/S3Transfer.swift" \
   "$ROOT/Plugins/S3/S3Write.swift" \
   "$ROOT/Plugins/S3/S3Profiles.swift" \
+  "$ROOT/Plugins/S3/S3AWSConfig.swift" \
   "$ROOT/Plugins/S3/S3ConnectDialog.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift"
 

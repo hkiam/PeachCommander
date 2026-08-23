@@ -1044,6 +1044,70 @@ buckets, rename a folder with every key under it, and a bucket rename refused ra
 content columns, presigned links, the Docker/MinIO conformance suite, eighteen translations and a
 help topic.
 
+## 2026-08-23 (F-455) — The credentials the AWS CLI already has, and buckets that are somewhere else
+
+Third wave of the S3 plugin: `~/.aws` profiles, endpoint presets, anonymous access, and following a
+region redirect instead of failing at it.
+
+**Reading ~/.aws rather than asking for a second copy of a secret.** Anyone who uses `aws s3` already
+has profiles; retyping an access key into a dialog means keeping the same secret in two places. The
+reader has no writer, and an AWS CLI profile is deliberately *not* saved into the plugin's own list —
+copying someone's credentials out of `~/.aws` into the plugin store and the Keychain is a thing to do
+when asked, not by picking a name from a menu. So "Remember this connection" defaults to off for one.
+
+**The format's failures are all quiet, which is why the tests are exact strings.** In `~/.aws/config`
+every section except `default` is written `[profile name]` while `credentials` uses `[name]` — treat
+them alike and you get a profile called "profile work" that never matches its own credentials. `#` is
+legal inside a secret access key, so a comment is only a comment after a space; stripping it
+unconditionally yields a secret that is almost right, and the failure reads as a wrong password.
+Nested settings are where `s3.addressing_style = path` lives, which is the one setting that decides
+whether a MinIO or Ceph endpoint works at all — a parser that ignores indentation never sees it. Ten
+tests, each on one of those.
+
+**A bucket does not have to be in the connection's region.** AWS answers a request signed for the
+wrong one with a 301, or a 400 whose code says the signature was built elsewhere, and names the right
+region in the body or in `x-amz-bucket-region` — the latter being the only one a HEAD can carry, since
+a HEAD has no body. The plugin learns it, re-signs and retries exactly once. Not a general redirect
+follower: retrying without learning sends the same wrong request again. Cached per bucket, because the
+answer does not change and paying a redirect on every listing doubles the request count on a service
+that charges per request.
+
+**Both halves of "somewhere else" have to be learned together.** The region goes in the signature and,
+for virtual-hosted addressing, the host goes in the URL. Fixing only the region produces a signature
+the right region rejects because the host is still wrong. The `<Endpoint>` a redirect names is the
+*bucket's* address, so the leading `<bucket>.` comes off before it can be used as an endpoint host —
+otherwise the retry asks for `bucket.bucket.s3…`.
+
+**The transfer paths carry their own retry.** They build their own requests and cannot use `send`'s.
+Without that, an object in an out-of-region bucket could be *listed* — the listing goes through
+`send` — and then not downloaded, which is a confusing place to fail. Tested by reaching a transfer
+without a listing first, because in normal use a listing comes first and would hide the gap.
+
+**A 403 with no credentials is not a signature problem.** Anonymous means no signature at all, not one
+made with an empty key, so "the secret key was not accepted" would send the user hunting for a key
+they deliberately did not give. It says the bucket is not publicly readable.
+
+**Presets are about addressing, not hosts.** TLS and path-style are the two settings a user cannot
+guess and both fail as something else: virtual-hosted against an IP is a DNS error, path-style against
+AWS is a 404 that reads as a missing bucket. The host is often account-specific and stays editable.
+The AWS preset derives its host from whatever is in the region field when it is chosen — applied from
+visible state, so it is predictable rather than magic.
+
+**The skip-to-fail change from F-454 proved itself on the next file.** `S3AWSConfig.swift` was missing
+from the plugin's source lists, and instead of 43 tests quietly skipping under a green suite, all 43
+failed with the compiler error in the message. `check-plugin-sources.py` named the build-script half
+before the test run started.
+
+**Evidence.** `S3PluginTests` 43 tests, `S3AWSConfigTests` 10, `S3SignerTests` 2 — **55 tests, 0
+failures.** New here: a bucket in another region followed on a listing and on a transfer that had not
+listed first, an anonymous connection reading a public bucket and refused a write, and the ten INI
+cases. Bundle `x86_64 arm64`; `check-plugin-sources`, `verify-shipping`, `check-plugin-translations`,
+`check-tests-registered`, `check-strings-extracted` and `check-format-specifiers` green.
+
+**Still behind `PCPluginIncomplete`**: retry/backoff, Glacier, non-UTF-8 keys, the Docker/MinIO
+conformance suite, AWS live tests, the VM scenario, transfer progress in the Transfer Manager, content
+columns, presigned links, eighteen translations and a help topic.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

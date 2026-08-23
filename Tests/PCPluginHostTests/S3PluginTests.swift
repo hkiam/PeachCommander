@@ -79,7 +79,7 @@ final class S3PluginTests: XCTestCase {
         // keeps them in step, because forgetting one here builds a plugin the tests cannot see and
         // forgetting it there ships a plugin that does not link.
         let sources = ["s3", "S3Signer", "S3XML", "S3Client", "S3Transfer", "S3Write",
-                       "S3Profiles", "S3ConnectDialog"]
+                       "S3Profiles", "S3AWSConfig", "S3ConnectDialog"]
             .map { repoRoot.appendingPathComponent("Plugins/S3/\($0).swift").path }
         let p = Process()
         p.executableURL = URL(fileURLWithPath: swiftc)
@@ -130,7 +130,8 @@ final class S3PluginTests: XCTestCase {
 
     private func startServer(root: URL, maxKeys: Int?,
                             dieAfterListings: Int? = nil,
-                            failPart: Int? = nil) throws -> (Process, Int) {
+                            failPart: Int? = nil,
+                            region: String = "us-east-1") throws -> (Process, Int) {
         let python = "/usr/bin/python3"
         try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: python), "python3 unavailable")
         let chosen = try Self.freePort()
@@ -141,7 +142,7 @@ final class S3PluginTests: XCTestCase {
         var env = ProcessInfo.processInfo.environment
         env["PC_S3_FIXTURE_KEY"] = Self.accessKey
         env["PC_S3_FIXTURE_SECRET"] = Self.secretKey
-        env["PC_S3_FIXTURE_REGION"] = "us-east-1"
+        env["PC_S3_FIXTURE_REGION"] = region
         if let maxKeys { env["PC_S3_FIXTURE_MAX_KEYS"] = String(maxKeys) }
         if let dieAfterListings { env["PC_S3_FIXTURE_DIE_AFTER_LISTINGS"] = String(dieAfterListings) }
         if let failPart { env["PC_S3_FIXTURE_FAIL_PART"] = String(failPart) }
@@ -661,6 +662,80 @@ final class S3PluginTests: XCTestCase {
                 return XCTFail("a dead server was reported as \(error)")
             }
         }
+    }
+
+    // MARK: - Regions and anonymous access
+
+    func test_aBucketInAnotherRegionIsFollowedRatherThanFailing() async throws {
+        // Buckets do not have to be in the connection's region, and AWS answers a request signed for
+        // the wrong one with a 400 whose code says so and whose body names the right region. Without
+        // following that, every access to such a bucket fails with a message that explains nothing —
+        // and the user has no way to discover which region to enter.
+        let root = dir.appendingPathComponent("elsewhere")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("frankfurt"),
+                                                withIntermediateDirectories: true)
+        try Data("guten tag".utf8).write(to: root.appendingPathComponent("frankfurt/hallo.txt"))
+        // The server only accepts signatures for eu-central-1 …
+        let (remote, remotePort) = try startServer(root: root, maxKeys: nil, region: "eu-central-1")
+        defer { remote.terminate() }
+        // … and the plugin is configured for us-east-1, which is the situation being tested.
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(remotePort)", 1)
+        setenv("PC_S3_REGION", "us-east-1", 1)
+
+        let fs = try makeFS()
+        let names = try await collect(fs, "/frankfurt").map(\.name)
+        XCTAssertEqual(names, ["hallo.txt"], "the region redirect was not followed")
+
+        // And the answer is remembered: reading the object afterwards goes through a different code
+        // path (the transfer session, which builds its own requests), so this also checks that the
+        // learned region reaches it.
+        let downloaded = try await fs.localFileIfAvailable(vpath("/frankfurt/hallo.txt"))
+        XCTAssertEqual(try Data(contentsOf: try XCTUnwrap(downloaded)), Data("guten tag".utf8))
+    }
+
+    func test_aRegionRedirectIsFollowedForATransferThatHasNotListedFirst() async throws {
+        // The transfer paths sign their own requests and cannot use `send`'s retry, so they carry
+        // their own. Reached directly here — without a listing to warm the cache — because in normal
+        // use a listing comes first and would hide a missing retry on this path.
+        let root = dir.appendingPathComponent("cold")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("bucket"),
+                                                withIntermediateDirectories: true)
+        try Data("cold start".utf8).write(to: root.appendingPathComponent("bucket/only.txt"))
+        let (remote, remotePort) = try startServer(root: root, maxKeys: nil, region: "ap-south-1")
+        defer { remote.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(remotePort)", 1)
+        setenv("PC_S3_REGION", "us-east-1", 1)
+
+        let fs = try makeFS()
+        let downloaded = try await fs.localFileIfAvailable(vpath("/bucket/only.txt"))
+        XCTAssertEqual(try Data(contentsOf: try XCTUnwrap(downloaded)), Data("cold start".utf8))
+    }
+
+    func test_connectingAnonymouslyReadsAPublicBucket() async throws {
+        // No credentials means no signature at all, not a signature made with an empty key. The
+        // fixture allows unsigned reads, which is what a public bucket is.
+        setenv("PC_S3_ACCESS_KEY", "", 1)
+        setenv("PC_S3_SECRET_KEY", "", 1)
+        let fs = try makeFS()
+        let names = try await collect(fs, "/photos").map(\.name).sorted()
+        XCTAssertEqual(names, ["2006", "2007", "odd +name.txt", "readme.txt"])
+    }
+
+    func test_anAnonymousConnectionCannotWrite() async throws {
+        // The fixture refuses unsigned writes, as the real service does for a bucket that is readable
+        // but not writable — the common shape of a public bucket. It must be an error rather than a
+        // silent no-op.
+        setenv("PC_S3_ACCESS_KEY", "", 1)
+        setenv("PC_S3_SECRET_KEY", "", 1)
+        let fs = try makeFS()
+        let local = dir.appendingPathComponent("nope.txt")
+        try Data("nope".utf8).write(to: local)
+        do {
+            _ = try await fs.uploadFile(local, to: vpath("/photos/nope.txt"), resume: false)
+            XCTFail("an anonymous connection uploaded an object")
+        } catch is VFSError {}
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: serving.appendingPathComponent("photos/nope.txt").path))
     }
 
     // MARK: - Credentials and the config root

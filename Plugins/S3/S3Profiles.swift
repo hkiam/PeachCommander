@@ -139,3 +139,75 @@ enum S3Environment {
         return parts.count == 4 && parts.allSatisfy { UInt8($0) != nil }
     }
 }
+
+/// One entry offered in the connect dialog, and where it came from.
+///
+/// Not `Codable` and not persisted: the point of it is to keep a profile the plugin saved apart from
+/// one that belongs to the AWS CLI. They look the same on screen and must not be treated the same —
+/// copying someone's credentials out of ~/.aws into the plugin's own store and the Keychain is a
+/// thing to do when asked, not by default.
+struct S3ProfileChoice {
+    enum Source { case saved, awsCLI }
+
+    let profile: S3Profile
+    /// A secret the choice already knows (an AWS CLI profile carries one). Nil means ask the
+    /// Keychain, or the user.
+    let knownSecret: String?
+    let source: Source
+
+    var displayName: String {
+        source == .awsCLI ? profile.name + " (AWS CLI)" : profile.name
+    }
+
+    /// Everything the dialog should offer: the plugin's own profiles first, then the AWS CLI's.
+    ///
+    /// Saved first because they were made here on purpose. Names are not de-duplicated across the two
+    /// sources — a saved "default" and an AWS "default" are genuinely different connections, and
+    /// hiding one of them would hide the one the user is looking for.
+    static func all() -> [S3ProfileChoice] {
+        var out = S3Profiles.load().map {
+            S3ProfileChoice(profile: $0, knownSecret: nil, source: .saved)
+        }
+        for aws in S3AWSConfig.profiles() {
+            let (profile, secret) = S3AWSConfig.connection(for: aws)
+            out.append(S3ProfileChoice(profile: profile,
+                                       knownSecret: secret.isEmpty ? nil : secret,
+                                       source: .awsCLI))
+        }
+        return out
+    }
+}
+
+/// A ready-made endpoint for a service, offered in the connect dialog.
+///
+/// What a preset is actually for is the *addressing* decisions — TLS and path-style — because those
+/// are the two a user cannot guess and both fail in ways that look like something else: virtual-hosted
+/// against an IP is a DNS error, path-style against AWS is a 404 that reads as a missing bucket. The
+/// host itself is often account-specific and stays editable.
+struct S3Preset {
+    let name: String
+    /// nil = keep whatever is in the field, because only the account holder knows it.
+    let host: String?
+    let useTLS: Bool
+    let pathStyle: Bool
+    let region: String?
+    /// For AWS, the host follows the region, so it is built when the preset is applied.
+    let derivesHostFromRegion: Bool
+
+    static let all: [S3Preset] = [
+        S3Preset(name: "Amazon S3", host: "s3.amazonaws.com", useTLS: true, pathStyle: false,
+                 region: nil, derivesHostFromRegion: true),
+        S3Preset(name: "MinIO (local)", host: "127.0.0.1:9000", useTLS: false, pathStyle: true,
+                 region: "us-east-1", derivesHostFromRegion: false),
+        S3Preset(name: "Ceph / RGW", host: nil, useTLS: true, pathStyle: true,
+                 region: nil, derivesHostFromRegion: false),
+        S3Preset(name: "Cloudflare R2", host: nil, useTLS: true, pathStyle: false,
+                 region: "auto", derivesHostFromRegion: false),
+        S3Preset(name: "Wasabi", host: "s3.wasabisys.com", useTLS: true, pathStyle: false,
+                 region: "us-east-1", derivesHostFromRegion: false),
+        S3Preset(name: "Backblaze B2", host: nil, useTLS: true, pathStyle: false,
+                 region: nil, derivesHostFromRegion: false),
+        S3Preset(name: "DigitalOcean Spaces", host: nil, useTLS: true, pathStyle: false,
+                 region: nil, derivesHostFromRegion: false),
+    ]
+}

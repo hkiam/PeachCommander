@@ -18,9 +18,14 @@ struct S3ConnectResult {
 
 final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
     private let window: NSWindow
-    private let profiles: [S3Profile]
+    private let choices: [S3ProfileChoice]
+    /// The secret the selected choice already knew (an AWS CLI profile carries one). Used only when
+    /// the secret field is left blank — never shown, because putting a secret on screen to save one
+    /// keystroke is not a trade worth making.
+    private var knownSecret: String?
 
     private let profileCombo = NSComboBox()
+    private let presetPopUp = NSPopUpButton()
     private let hostField = NSTextField(string: "")
     private let regionField = NSTextField(string: "")
     private let keyField = NSTextField(string: "")
@@ -31,8 +36,8 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
     private let rememberCheck = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private var confirmed = false
 
-    init(profiles: [S3Profile]) {
-        self.profiles = profiles
+    init(choices: [S3ProfileChoice]) {
+        self.choices = choices
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 320),
                           styleMask: [.titled], backing: .buffered, defer: false)
         super.init()
@@ -40,7 +45,7 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
         window.center()
         window.isReleasedWhenClosed = false
         build()
-        apply(profiles.first ?? S3Profile.makeDefault())
+        if let first = choices.first { apply(first) } else { apply(S3Profile.makeDefault()) }
     }
 
     func run() -> S3ConnectResult? {
@@ -49,7 +54,10 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
         guard confirmed else { return nil }
         let anonymous = anonymousCheck.state == .on
         let key = anonymous ? "" : keyField.stringValue.trimmingCharacters(in: .whitespaces)
-        let secret = anonymous ? "" : secretField.stringValue
+        // A blank field means "use what you already have": the AWS CLI's secret for that profile, or
+        // failing that the Keychain, which the connect path looks up.
+        let typed = secretField.stringValue
+        let secret = anonymous ? "" : (typed.isEmpty ? (knownSecret ?? "") : typed)
         let host = normalisedHost()
         let profile = S3Profile(
             name: profileCombo.stringValue.trimmingCharacters(in: .whitespaces),
@@ -76,9 +84,14 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
 
     private func build() {
         guard let content = window.contentView else { return }
-        profileCombo.addItems(withObjectValues: profiles.map(\.name))
+        profileCombo.addItems(withObjectValues: choices.map(\.displayName))
         profileCombo.completes = true
         profileCombo.delegate = self
+
+        presetPopUp.addItem(withTitle: L("Choose a service…"))
+        presetPopUp.addItems(withTitles: S3Preset.all.map(\.name))
+        presetPopUp.target = self
+        presetPopUp.action = #selector(presetChosen)
 
         tlsCheck.title = L("Use HTTPS")
         pathStyleCheck.title = L("Path-style addressing (MinIO, Ceph, an IP address)")
@@ -90,6 +103,7 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
 
         let rows = NSStackView(views: [
             row(L("Name:"), profileCombo),
+            row(L("Service:"), presetPopUp),
             row(L("Endpoint:"), hostField),
             row(L("Region:"), regionField),
             row(L("Access key ID:"), keyField),
@@ -137,6 +151,15 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
 
     // MARK: - Behaviour
 
+    private func apply(_ choice: S3ProfileChoice) {
+        knownSecret = choice.knownSecret
+        apply(choice.profile)
+        // An AWS CLI profile is not offered for remembering by default. Saving it would copy a secret
+        // out of ~/.aws into the plugin's own store and the Keychain — a second place to keep it, and
+        // a second place to forget it — and the user did not ask for that by picking the profile.
+        rememberCheck.state = choice.source == .awsCLI ? .off : .on
+    }
+
     private func apply(_ profile: S3Profile) {
         hostField.stringValue = profile.host
         regionField.stringValue = profile.region
@@ -164,9 +187,29 @@ final class S3ConnectDialog: NSObject, NSComboBoxDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             let index = self.profileCombo.indexOfSelectedItem
-            guard index >= 0, index < self.profiles.count else { return }
-            self.apply(self.profiles[index])
+            guard index >= 0, index < self.choices.count else { return }
+            self.apply(self.choices[index])
         }
+    }
+
+    @objc private func presetChosen() {
+        // Index 0 is the "choose a service" placeholder, so it does nothing.
+        let index = presetPopUp.indexOfSelectedItem - 1
+        guard index >= 0, index < S3Preset.all.count else { return }
+        let preset = S3Preset.all[index]
+        tlsCheck.state = preset.useTLS ? .on : .off
+        pathStyleCheck.state = preset.pathStyle ? .on : .off
+        if let region = preset.region { regionField.stringValue = region }
+        if preset.derivesHostFromRegion {
+            // Applied from what is on screen right now, so it is predictable rather than magic: a
+            // region typed before choosing the service is used, and one typed after is not.
+            let region = regionField.stringValue.trimmingCharacters(in: .whitespaces)
+            hostField.stringValue = region.isEmpty || region == "us-east-1"
+                ? "s3.amazonaws.com" : "s3.\(region).amazonaws.com"
+        } else if let host = preset.host {
+            hostField.stringValue = host
+        }
+        anonymousChanged()
     }
 
     @objc private func ok() { confirmed = true; NSApp.stopModal() }

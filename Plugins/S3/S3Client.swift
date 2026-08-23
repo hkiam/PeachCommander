@@ -92,6 +92,20 @@ final class S3Connection {
     /// host serialises calls on a connection — the same reason `PFXProgressSink` has one.
     var progress: ((String, Int) -> Bool)?
 
+    /// Where each bucket actually lives, learned from a redirect or a HEAD.
+    ///
+    /// A connection has one configured region, and buckets do not have to be in it. AWS answers a
+    /// request signed for the wrong region with a 301, or with a 400 whose code says the signature
+    /// was built for the wrong one — and it names the right region in the body or in
+    /// `x-amz-bucket-region`. Learned once per bucket rather than per request, because the answer
+    /// does not change and paying a redirect on every listing is a doubled request count on a
+    /// service that charges per request.
+    ///
+    /// Not locked: `pfx.h` guarantees the host calls one connection from one thread at a time, and
+    /// nothing on a URLSession callback thread touches this.
+    private var bucketRegions: [String: String] = [:]
+    private var bucketHosts: [String: String] = [:]
+
     init(endpoint: S3Endpoint, credentials: S3Credentials, displayHost: String) {
         self.endpoint = endpoint
         self.credentials = credentials
@@ -115,7 +129,62 @@ final class S3Connection {
 
     // MARK: Request building
 
+    /// The endpoint to use for `bucket`, with whatever has been learned about where it lives.
+    ///
+    /// Both halves matter and they are learned together: a bucket in another region needs the other
+    /// region in the signature *and*, for virtual-hosted addressing, the other host in the URL.
+    /// Fixing only the region produces a signature the right region rejects because the host is
+    /// still wrong.
+    func resolvedEndpoint(for bucket: String?) -> S3Endpoint {
+        guard let bucket, !bucket.isEmpty else { return endpoint }
+        var resolved = endpoint
+        if let region = bucketRegions[bucket] { resolved.region = region }
+        if let host = bucketHosts[bucket] { resolved.host = host }
+        return resolved
+    }
+
+    /// Remember where `bucket` lives. `host` may be nil when only the region was reported.
+    private func learn(bucket: String, region: String?, host: String?) {
+        if let region, !region.isEmpty { bucketRegions[bucket] = region }
+        if let host, !host.isEmpty {
+            // The <Endpoint> a redirect names is the *bucket's* virtual-hosted address, so the
+            // leading "<bucket>." has to come off before it can be used as an endpoint host —
+            // otherwise the next request asks for "bucket.bucket.s3...".
+            var trimmed = host
+            let prefix = bucket + "."
+            if trimmed.hasPrefix(prefix) { trimmed = String(trimmed.dropFirst(prefix.count)) }
+            bucketHosts[bucket] = trimmed
+        } else if let region, !region.isEmpty, endpoint.host.hasSuffix(".amazonaws.com") {
+            // AWS without an explicit endpoint: the regional host is derivable, and deriving it is
+            // what makes a redirect on a HEAD (which has no body to carry <Endpoint>) usable.
+            bucketHosts[bucket] = "s3.\(region).amazonaws.com"
+        }
+    }
+
+    /// Learn from a region redirect and say whether retrying is worth it.
+    ///
+    /// Used by the transfer paths, which build their own requests and so cannot go through `send`'s
+    /// retry. Without this, an object in a bucket outside the connection's region could be listed —
+    /// the listing goes through `send` — and then not downloaded, which is a confusing place to fail.
+    func followRegionRedirect(bucket: String, response: S3Response) -> Bool {
+        guard Self.isRegionRedirect(response) else { return false }
+        let region = response.error?.region ?? response.header("x-amz-bucket-region")
+        guard let region, !region.isEmpty, region != resolvedEndpoint(for: bucket).region else {
+            return false
+        }
+        learn(bucket: bucket, region: region, host: response.error?.endpoint)
+        return true
+    }
+
+    /// True when this response is AWS saying "that bucket is somewhere else".
+    static func isRegionRedirect(_ response: S3Response) -> Bool {
+        let code = response.error?.code ?? ""
+        return response.status == 301 || response.status == 307
+            || (response.status == 400 && code == "AuthorizationHeaderMalformed")
+    }
+
     private func url(bucket: String?, key: String, query: [(String, String)]) -> URL? {
+        let endpoint = resolvedEndpoint(for: bucket)
         let path = endpoint.path(bucket: bucket, key: key)
         // Built from the *canonical* forms so that what is signed is byte-for-byte what is sent.
         // Handing the raw path to URLComponents and the encoded one to the signer is how a key with
@@ -135,6 +204,7 @@ final class S3Connection {
                          query: [(String, String)], extraHeaders: [String: String],
                          payloadHash: String) -> URLRequest? {
         guard let url = url(bucket: bucket, key: key, query: query) else { return nil }
+        let endpoint = resolvedEndpoint(for: bucket)
         let now = Date()
         var headers = extraHeaders
         headers["host"] = endpoint.authority(bucket: bucket)
@@ -163,9 +233,14 @@ final class S3Connection {
     // MARK: Sending
 
     /// Send a metadata request and read the whole (bounded) body.
+    ///
+    /// `redirectsLeft` is how a bucket in another region is followed. Not a general redirect follower:
+    /// exactly one retry, and only after learning the region from the answer, because the *only*
+    /// thing that changes is the signature and the host. Retrying without learning would send the
+    /// same wrong request again.
     func send(_ method: String, bucket: String? = nil, key: String = "",
               query: [(String, String)] = [], headers: [String: String] = [:],
-              body: Data? = nil) -> S3Response {
+              body: Data? = nil, redirectsLeft: Int = 1) -> S3Response {
         let payload = body.map { S3Signer.sha256Hex($0) } ?? S3Signer.emptyPayload
         var extra = headers
         if let body { extra["content-length"] = String(body.count) }
@@ -197,12 +272,26 @@ final class S3Connection {
         // contains a key called "Code" is not an error.
         let parsed = (200...299).contains(status) ? nil : S3ErrorParser.parse(data)
         let response = S3Response(status: status, data: data, headers: responseHeaders, error: parsed)
+
+        if let bucket, redirectsLeft > 0, Self.isRegionRedirect(response) {
+            // The region arrives two ways and both have to be read: in the <Error> body, and in
+            // `x-amz-bucket-region` — which is the only one a HEAD can carry, since a HEAD has no
+            // body at all.
+            let region = response.error?.region ?? response.header("x-amz-bucket-region")
+            if let region, !region.isEmpty, region != resolvedEndpoint(for: bucket).region {
+                learn(bucket: bucket, region: region, host: response.error?.endpoint)
+                return send(method, bucket: bucket, key: key, query: query, headers: headers,
+                            body: body, redirectsLeft: redirectsLeft - 1)
+            }
+        }
+
         record(response)
         return response
     }
 
     /// Download an object straight to `destination`, reporting progress and honouring an abort.
-    func download(bucket: String, key: String, to destination: URL, name: String) -> S3Response {
+    func download(bucket: String, key: String, to destination: URL, name: String,
+                  redirectsLeft: Int = 1) -> S3Response {
         guard let r = request("GET", bucket: bucket, key: key, query: [],
                               extraHeaders: [:], payloadHash: S3Signer.emptyPayload) else {
             lastError = Int32(PC_E_BAD_DATA)
@@ -223,13 +312,18 @@ final class S3Connection {
                                   headers: outcome.headers,
                                   error: (200...299).contains(outcome.status)
                                       ? nil : S3ErrorParser.parse(outcome.errorBody))
+        if redirectsLeft > 0, !outcome.aborted,
+           followRegionRedirect(bucket: bucket, response: response) {
+            return download(bucket: bucket, key: key, to: destination, name: name,
+                            redirectsLeft: redirectsLeft - 1)
+        }
         record(response, aborted: outcome.aborted)
         return response
     }
 
     /// Upload a local file to `key` in one PUT, reporting progress and honouring an abort.
     func putFile(bucket: String, key: String, from source: URL, name: String,
-                 extraHeaders: [String: String]) -> S3Response {
+                 extraHeaders: [String: String], redirectsLeft: Int = 1) -> S3Response {
         let hash: String
         do { hash = try Self.sha256HexOfFile(source) }
         catch {
@@ -252,6 +346,11 @@ final class S3Connection {
                                   headers: outcome.headers,
                                   error: (200...299).contains(outcome.status)
                                       ? nil : S3ErrorParser.parse(outcome.errorBody))
+        if redirectsLeft > 0, !outcome.aborted,
+           followRegionRedirect(bucket: bucket, response: response) {
+            return putFile(bucket: bucket, key: key, from: source, name: name,
+                           extraHeaders: extraHeaders, redirectsLeft: redirectsLeft - 1)
+        }
         record(response, aborted: outcome.aborted)
         return response
     }
@@ -277,14 +376,16 @@ final class S3Connection {
     private func record(_ response: S3Response, aborted: Bool = false) {
         lastMessage = ""
         if aborted { lastError = Int32(PC_E_EABORTED); return }
-        lastError = Self.pcError(response, message: &lastMessage)
+        lastError = Self.pcError(response, message: &lastMessage,
+                                 anonymous: credentials.isAnonymous)
         if lastError == Int32(PC_OK), !response.ok {
             lastError = Int32(PC_E_BAD_DATA)
         }
     }
 
     /// Map a response onto a PC_E_* code, and say something true about it when the code cannot.
-    static func pcError(_ response: S3Response, message: inout String) -> Int32 {
+    static func pcError(_ response: S3Response, message: inout String,
+                        anonymous: Bool = false) -> Int32 {
         if response.ok { return Int32(PC_OK) }
         let code = response.error?.code ?? ""
 
@@ -309,6 +410,13 @@ final class S3Connection {
             message = L("The server did not answer.")
             return Int32(PC_E_CONNECTION_LOST)
         case 403:
+            // Without credentials there is no signature to be wrong about, and "the secret key was
+            // not accepted" would send the user looking for a key they deliberately did not give.
+            // What a 403 means here is that the bucket is not public.
+            if anonymous {
+                message = L("This bucket is not publicly readable. Connect with an access key.")
+                return Int32(PC_E_ECREATE)
+            }
             switch code {
             case "SignatureDoesNotMatch":
                 // A configuration mistake, not a permission. Reported as "access denied" it sends

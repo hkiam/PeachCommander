@@ -249,7 +249,7 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     if let (profile, secret) = S3Environment.connection() {
         chosen = S3ConnectResult(profile: profile, secret: secret, remember: false)
     } else {
-        chosen = S3ConnectDialog(profiles: S3Profiles.load()).run()
+        chosen = S3ConnectDialog(choices: S3ProfileChoice.all()).run()
     }
     guard let result = chosen, !result.profile.host.isEmpty else { return nil }
 
