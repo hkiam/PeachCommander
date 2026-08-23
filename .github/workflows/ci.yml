@@ -6,10 +6,15 @@ on:
   pull_request:
     branches: [main]
 
-# Four jobs rather than one long one. They used to run in sequence inside a single job — the static
+# Three jobs rather than one long one. They used to run in sequence inside a single job — the static
 # gates, then a 12-minute build, then a 29-minute test run — and the wall clock was their sum even
-# though nothing after the gates depends on anything before it. The app, the plugins and the tests
-# each build what they need and nothing else, so the run now costs the longest of them.
+# though nothing after the gates depends on anything before it. The run now costs the longest of them.
+#
+# The build job does the app *and* the plugins, in that order, because they are not independent:
+# build-ai-plugin.sh links PCAutomation.framework out of the app's build products. Splitting them
+# looked free and was not — the plugins job got as far as the AI plugin and died with "PCAutomation
+# .framework not found — build the app first". Keeping them together also builds the app once
+# instead of twice, which a `needs:` edge between two jobs would not have.
 #
 # There is deliberately no DerivedData cache. Restoring one gives every cached object file a newer
 # mtime than the freshly checked-out sources, which is exactly the state Xcode reads as "up to date":
@@ -123,10 +128,10 @@ jobs:
       - name: Check every plugin source is compiled into its plugin
         run: python3 Tools/check-plugin-sources.py
 
-  # The application. Plugins are skipped here because they are their own job below; nothing in the
-  # app build reads them.
-  app:
-    name: Build app
+  # The application and every shipping plugin, in that order — see the note above on why they are
+  # one job.
+  build:
+    name: Build app and plugins
     runs-on: macos-26
     steps:
       - name: Checkout repository
@@ -149,32 +154,8 @@ jobs:
           brew install xcodegen libssh2
           ./Tools/bootstrap.sh
 
-      - name: Build the app
-        run: PC_SKIP_PLUGINS=1 ./Tools/build.sh
-
-  # Every shipping plugin, built the way a release builds them. This is the half of the old build
-  # step that had nothing to do with the app: plugins are swiftc invocations in shell scripts, not
-  # Xcode targets, so they share no work with the build above and can run beside it.
-  plugins:
-    name: Build plugins
-    runs-on: macos-26
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '^26.0'
-
-      - name: Install xcodegen
-        # Only the terminal plugin needs it, and only to read the SwiftTerm pin out of project.yml —
-        # but it needs it, and this job is the first place build-all-plugins.sh runs without build.sh
-        # having generated the project first.
-        run: brew install xcodegen
-
-      - name: Build every shipping plugin
-        run: ./Tools/build-all-plugins.sh "$RUNNER_TEMP/plugins"
+      - name: Build the app and every shipping plugin
+        run: ./Tools/build.sh
 
   tests:
     name: Test
