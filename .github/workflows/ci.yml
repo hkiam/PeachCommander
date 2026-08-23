@@ -167,6 +167,12 @@ jobs:
         with:
           xcode-version: '^26.0'
 
+      - name: Install xcodegen
+        # Only the terminal plugin needs it, and only to read the SwiftTerm pin out of project.yml —
+        # but it needs it, and this job is the first place build-all-plugins.sh runs without build.sh
+        # having generated the project first.
+        run: brew install xcodegen
+
       - name: Build every shipping plugin
         run: ./Tools/build-all-plugins.sh "$RUNNER_TEMP/plugins"
 

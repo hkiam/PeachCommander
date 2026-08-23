@@ -33,6 +33,15 @@ SWIFTTERM="$SPM_DIR/checkouts/SwiftTerm/Sources/SwiftTerm"
 # changed pin) needs the network — the same bargain the app already makes for Sparkle.
 if [ ! -d "$SWIFTTERM" ]; then
   echo "==> Resolving SwiftTerm (pinned in project.yml) into build/spm…"
+  # The pin lives in project.yml and is only readable through the generated project, which is not
+  # tracked. Generating it here rather than assuming it: build-all-plugins.sh is called on its own
+  # (by CI's plugins job, and by anyone following CONTRIBUTING), not only from build.sh, which used
+  # to be the thing that happened to have run xcodegen first. That assumption failed silently in the
+  # sense that mattered — every other plugin built, and this one died on a missing .xcodeproj.
+  if [ ! -f "$ROOT/PeachCommander.xcodeproj/project.pbxproj" ]; then
+    echo "==> No generated project yet; running xcodegen for the SwiftTerm pin"
+    (cd "$ROOT" && xcodegen generate >/dev/null)
+  fi
   xcodebuild -project "$ROOT/PeachCommander.xcodeproj" -resolvePackageDependencies \
     -clonedSourcePackagesDirPath "$SPM_DIR" >/dev/null
 fi
