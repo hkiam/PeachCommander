@@ -329,12 +329,25 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
         contentFields.map { ("\(contentQualifier).\($0.name)", $0) }
     }
 
+    /// Which of this mount's fields `fieldID` names, or nil if it names none of them.
+    ///
+    /// Matched as a prefix rather than split on ".", and that is a fix rather than a preference. The
+    /// qualifier is the connection id, and a connection id is full of dots: `s3:127.0.0.1:9000`, or
+    /// `s3:s3.eu-central-1.amazonaws.com` for any AWS endpoint at all. Splitting on the first dot made
+    /// the qualifier "s3:127" and the field "0.0.1:9000.storageclass", so no field ever resolved and
+    /// every plugin column was blank. It went unseen because the only plugin with columns until now —
+    /// TaskManager — has a qualifier with no dot in it.
+    private func fieldIndex(for fieldID: String) -> Int? {
+        let prefix = contentQualifier + "."
+        guard fieldID.hasPrefix(prefix) else { return nil }
+        let leaf = String(fieldID.dropFirst(prefix.count))
+        return contentFields.firstIndex { $0.name == leaf }
+    }
+
     /// Resolve a qualified content field for the entry at `path` (cached per
     /// listing). Returns nil for a field this mount doesn't own.
     public func contentDisplay(fieldID: String, path: String) -> String? {
-        let parts = fieldID.split(separator: ".", maxSplits: 1).map(String.init)
-        guard parts.count == 2, parts[0] == contentQualifier,
-              let index = contentFields.firstIndex(where: { $0.name == parts[1] }) else { return nil }
+        guard let index = fieldIndex(for: fieldID) else { return nil }
         cacheLock.lock()
         var row = rowCache[path]
         cacheLock.unlock()
@@ -371,9 +384,7 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
     /// Separate from `contentDisplay` because formatting destroys order: "9.9 MB" and "1.2 GB"
     /// compare as 9.9 and 1.2, so a size column that reads correctly would sort backwards.
     public func contentSortValue(fieldID: String, path: String) -> String? {
-        let parts = fieldID.split(separator: ".", maxSplits: 1).map(String.init)
-        guard parts.count == 2, parts[0] == contentQualifier,
-              let index = contentFields.firstIndex(where: { $0.name == parts[1] }) else { return nil }
+        guard let index = fieldIndex(for: fieldID) else { return nil }
         cacheLock.lock()
         var row = rowCache[path]
         cacheLock.unlock()

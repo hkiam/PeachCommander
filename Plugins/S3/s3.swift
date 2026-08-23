@@ -66,6 +66,11 @@ final class S3Find {
     private var index = 0
     private var token: String?
     private var exhausted: Bool
+    /// Where to leave the column values, and under which directory. Nil for the bucket list, which
+    /// has no per-object columns to show.
+    private let mount: S3Mount?
+    private let directory: String
+    private var seen: [String: S3Entry] = [:]
 
     /// Buckets: one request, no paging — the list is small and S3 does not page it.
     init(buckets: [S3Entry], connection: S3Connection) {
@@ -75,6 +80,8 @@ final class S3Find {
         self.buffer = buckets
         self.token = nil
         self.exhausted = true
+        self.mount = nil
+        self.directory = "/"
     }
 
     /// Objects: the first page now, the rest fetched lazily as the host asks for entries.
@@ -84,18 +91,29 @@ final class S3Find {
     /// yields entries to the panel in batches of 128 and checks for cancellation between them, so
     /// paging here is what makes a large bucket appear progressively and stop early when the user
     /// navigates away.
-    init(connection: S3Connection, bucket: String, prefix: String, page: S3ListPage) {
+    init(connection: S3Connection, bucket: String, prefix: String, page: S3ListPage,
+         mount: S3Mount?, directory: String) {
         self.connection = connection
         self.bucket = bucket
         self.prefix = prefix
         self.buffer = page.entries
         self.token = page.nextToken
         self.exhausted = !page.isTruncated
+        self.mount = mount
+        self.directory = directory
+    }
+
+    /// Hand the column values over. Called when the enumeration ends, because that is the only moment
+    /// the set is complete — a page at a time would leave the panel drawing rows the mount has not
+    /// been told about yet.
+    private func publishColumns() {
+        guard let mount, !seen.isEmpty else { return }
+        mount.rememberColumns(directory: directory, entries: seen)
     }
 
     func next() -> S3Entry? {
         while index >= buffer.count {
-            guard !exhausted, let bucket else { return nil }
+            guard !exhausted, let bucket else { publishColumns(); return nil }
             guard let page = S3Operations.listPage(connection, bucket: bucket,
                                                    prefix: prefix, token: token) else {
                 // The connection recorded why in `lastError`, and the host asks for it once the
@@ -103,6 +121,7 @@ final class S3Find {
                 // apart from reaching the last one. Without that, a server dying halfway through a
                 // large bucket shows a short directory and calls it complete.
                 exhausted = true
+                publishColumns()
                 return nil
             }
             buffer = page.entries
@@ -111,10 +130,12 @@ final class S3Find {
             exhausted = !page.isTruncated
             // A page can legitimately contain nothing the panel wants — every key in it was the
             // directory's own marker, say — so this loops rather than returning nil on an empty page.
-            if buffer.isEmpty, exhausted { return nil }
+            if buffer.isEmpty, exhausted { publishColumns(); return nil }
         }
         defer { index += 1 }
-        return buffer[index]
+        let entry = buffer[index]
+        if !entry.isDir { seen[entry.name] = entry }
+        return entry
     }
 }
 
@@ -173,9 +194,37 @@ enum S3Operations {
 final class S3Mount {
     let connection: S3Connection
     let label: String
+
+    /// Content-column values, by directory and then by entry name.
+    ///
+    /// Kept from the listing rather than fetched: the storage class and the ETag arrive in every
+    /// `ListObjectsV2` answer, so a column that asked the server per row would turn one request into
+    /// one per file — on a service that charges per request.
+    ///
+    /// Two directories, not one and not all. One is wrong because both panels can be on the same
+    /// mount, and the second listing would empty the first panel's columns while it is still drawing.
+    /// All of them is an unbounded dictionary that grows for as long as the mount is open.
+    private var columnRows: [(directory: String, rows: [String: S3Entry])] = []
+
     init(connection: S3Connection, label: String) {
         self.connection = connection
         self.label = label
+    }
+
+    func rememberColumns(directory: String, entries: [String: S3Entry]) {
+        columnRows.removeAll { $0.directory == directory }
+        columnRows.append((directory, entries))
+        if columnRows.count > 2 { columnRows.removeFirst(columnRows.count - 2) }
+    }
+
+    /// The entry behind a full mount path, if a recent listing saw it.
+    func columnEntry(forPath path: String) -> S3Entry? {
+        let leaf = (path as NSString).lastPathComponent
+        let directory = (path as NSString).deletingLastPathComponent
+        for remembered in columnRows.reversed() where remembered.directory == directory {
+            if let entry = remembered.rows[leaf] { return entry }
+        }
+        return nil
     }
 }
 
@@ -404,7 +453,9 @@ public func PfxFindFirst(_ conn: UnsafeMutableRawPointer?,
         return nil
     }
     return Unmanaged.passRetained(S3Find(connection: mount.connection, bucket: bucket,
-                                         prefix: path.listPrefix, page: page)).toOpaque()
+                                         prefix: path.listPrefix, page: page,
+                                         mount: mount,
+                                         directory: String(cString: dir))).toOpaque()
 }
 
 @_cdecl("PfxFindNext")
@@ -617,4 +668,47 @@ public func PfxRenMov(_ conn: UnsafeMutableRawPointer?, _ from: UnsafePointer<CC
     }
     return mount.connection.moveObject(bucket: targetBucket, to: target.key,
                                        sourceBucket: sourceBucket, from: source.key)
+}
+
+// MARK: - Content columns
+
+/// The columns this plugin publishes, in the order `PfxContentGetRow` writes them.
+///
+/// Both come out of the listing that has already happened, which is the reason there are only two.
+/// Everything else worth showing — server-side encryption, the restore state of an archived object —
+/// needs a HEAD per object, and a column that costs one request per visible row is a column that
+/// costs money to scroll.
+private let s3ContentFields: [(name: String, title: String, width: Int32)] = [
+    ("storageclass", "Storage Class", 110),
+    ("etag", "ETag", 220),
+]
+
+@_cdecl("PfxContentFieldCount")
+public func PfxContentFieldCount() -> Int32 { Int32(s3ContentFields.count) }
+
+@_cdecl("PfxContentField")
+public func PfxContentField(_ index: Int32, _ out: UnsafeMutablePointer<PfxFieldInfo>?) {
+    guard let out, index >= 0, Int(index) < s3ContentFields.count else { return }
+    let field = s3ContentFields[Int(index)]
+    setCString(field.name, &out.pointee.name.0, 128)
+    setCString(L(field.title), &out.pointee.title.0, 128)
+    // Both are strings. The storage class is a word, and an ETag is a hash that only ever wants to be
+    // compared — sorting either numerically would order them by nothing.
+    out.pointee.type = Int32(PFX_FT_STRING)
+    out.pointee.defaultWidth = field.width
+}
+
+@_cdecl("PfxContentGetRow")
+public func PfxContentGetRow(_ conn: UnsafeMutableRawPointer?, _ path: UnsafePointer<CChar>?,
+                             _ out: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
+    guard let conn, let path, let out, maxlen > 0 else { return 0 }
+    let mount = Unmanaged<S3Mount>.fromOpaque(conn).takeUnretainedValue()
+    // Answered only from what a listing already said. A path the plugin has not seen — a bucket, a
+    // prefix, or a row from a directory two navigations ago — gets 0, and the host draws an empty
+    // cell. Fetching it here instead would be one request per row on a paid service, from the main
+    // thread, while the panel is drawing.
+    guard let entry = mount.columnEntry(forPath: String(cString: path)) else { return 0 }
+    let row = [entry.storageClass, entry.etag].joined(separator: "\t")
+    setCString(row, out, Int(maxlen))
+    return 1
 }

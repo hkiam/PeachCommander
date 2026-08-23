@@ -1275,6 +1275,55 @@ running app and by then the plugin has been asked for its volumes and found none
 written from a full run and holds 105 other rows. Restored; the s3-mount artefacts go in with the next
 full run rather than as a partial set that disagrees with its own report.
 
+## 2026-08-23 (F-457b) — Two S3 columns, and every plugin column that was blank because of a dot
+
+Storage class and ETag as sortable, persisted panel columns — and a host defect the first of those
+tests walked straight into.
+
+**Both values come out of a listing that has already happened.** `ListObjectsV2` returns the storage
+class and the ETag for every object, so the columns cost nothing. That is also why there are only two:
+server-side encryption and the restore state of an archived object each need a HEAD *per object*, and
+a column that costs one request per visible row is a column that costs money to scroll — from the
+drawing path, on a paid service. `PfxContentGetRow` answers only from what a listing said, and a path
+no listing has seen gets 0 and an empty cell.
+
+**The mount keeps the last two directories, not one and not all.** One is wrong because both panels
+can be on the same mount and share one `PFXFileSystem`: the second panel's listing would empty the
+first panel's columns while it was still drawing them. All of them is a dictionary that grows for as
+long as the mount is open. Two is the number of panels.
+
+### The host bug the test found
+
+`contentDisplay(fieldID:path:)` resolved a field id by splitting on the FIRST ".". The qualifier is
+the connection id, and connection ids are full of dots — `s3:127.0.0.1:9000`, or
+`s3:s3.eu-central-1.amazonaws.com` for any AWS endpoint at all. So the qualifier came out as `s3:127`,
+the field as `0.0.1:9000.storageclass`, nothing ever matched, and **every** plugin column resolved to
+nil. The host published one id and resolved a different one.
+
+It had gone unseen because the only plugin with content columns until now is TaskManager, whose
+qualifier is `TaskManager` — no dot. Matched as a prefix now (`qualifier + "."`), which is exact
+whether the qualifier has dots or the field leaf does, and pinned in `PFXFileSystemTests` against
+SampleFS with a deliberately dotted qualifier — so it is held by a plugin that has nothing to do with
+S3.
+
+**Evidence.** Four new tests in `S3PluginTests`: the published fields and their types, a column value
+that costs no request (asserted by counting the fixture's requests before and after), an empty cell
+for a bucket and for a directory navigated away from, and two panels on one mount keeping both sets.
+One in `PFXFileSystemTests` for the qualifier. **66 tests, 0 failures** over the two suites; 22 PFX
+entry points exported; bundle `x86_64 arm64`.
+
+**The tests for this are not in this commit.** They were written and green, but the files they live in
+— `S3PluginTests` and `PFXFileSystemTests` — were being changed at the same time by the build-time
+work that introduced `Tests/PCPluginHostTests/Support/CachedPluginBuild.swift`, and a `git add -A`
+swept that in under this entry before it was noticed. The plugin and host changes are here; the four
+column tests and the qualifier test go in with that work, since the same files carry both. Recorded
+because the commit otherwise claims evidence that is not next to it.
+
+**Still open in this wave**: transfer progress in the Transfer Manager, and presigned links. Both are
+separate pieces rather than leftovers — the progress one is a host feature that no network backend has
+today (the upload path has no progress, no cancel and no overwrite dialog for FTP and SFTP either),
+and a presigned-link command needs the contrib ABI to carry a panel selection.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

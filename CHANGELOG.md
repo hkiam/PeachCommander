@@ -26,6 +26,10 @@ does not have.
 
 ### Fixed
 
+- **Columns a plugin adds are no longer blank.** A plugin can contribute extra columns for its own
+  entries — the Task Manager's CPU and PID, an S3 drive's storage class. For a drive whose name
+  contains a dot, which is every server address, the column stayed empty however it was configured.
+
 - **A plugin drive in the drive bar now connects when you click it.** A plugin that offers several
   saved connections showed one chip each, and clicking one opened the connection dialog instead of
   connecting — the chip looked like a shortcut and was not. It connects that saved connection
