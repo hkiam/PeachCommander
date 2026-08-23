@@ -2,7 +2,7 @@
 
 Peach Commander gratefully builds on the work of the open-source community. Thank you to all the authors and contributors of the projects listed here.
 
-This product includes the following open-source software. The full license text of each is in `Resources/Licenses/`.
+This product includes the following open-source software — plus, where a row says so, software that is described here without shipping in the app. The full license text of each is in `Resources/Licenses/`.
 
 ## Sparkle 2.6.3
 
@@ -131,6 +131,15 @@ This product includes the following open-source software. The full license text 
 - TypeScript grammar for tree-sitter (vendored).
 - Repository: https://github.com/tree-sitter/tree-sitter-typescript
 - License text: `Resources/Licenses/tree-sitter-typescript.txt`
+
+## Mermaid 11.15.0
+
+- **License:** MIT
+- **Copyright (c) 2014 - 2022 Knut Sveidqvist**
+- _Documentation website only — not part of any build of the app._
+- Renders the architecture diagrams on the documentation website. Vendored at docs/assets/vendor/mermaid/ and served from that site so it needs no CDN; not linked into, bundled with, or invoked by the application.
+- Repository: https://github.com/mermaid-js/mermaid
+- License text: `Resources/Licenses/mermaid.txt`
 
 ## libssh2 1.11.1
 

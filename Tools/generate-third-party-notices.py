@@ -272,6 +272,23 @@ COMPONENTS = [
          vendor_dir="CTreeSitterTypeScript",
          text=lambda vd="CTreeSitterTypeScript": repo_license(vd)),
 
+    # -- Documentation-website assets (not part of the app) --
+    # Vendored because MkDocs Material renders the ```mermaid fences but, absent a `mermaid`
+    # global, fetches the engine from unpkg.com — so the 34 diagrams rendered only for an online
+    # reader, and only by telling a CDN which page they were on. Attributed here even though it
+    # ships with no build of the app: leaving a vendored 3.2 MB MIT file unnamed would be the
+    # omission, and the note says where it does and does not go.
+    dict(key="mermaid", name="Mermaid", spdx="MIT", version="11.15.0",
+         website="https://mermaid.js.org",
+         repository="https://github.com/mermaid-js/mermaid",
+         copyright="Copyright (c) 2014 - 2022 Knut Sveidqvist",
+         description="Renders the architecture diagrams on the documentation website. Vendored at "
+                     "docs/assets/vendor/mermaid/ and served from that site so it needs no CDN; "
+                     "not linked into, bundled with, or invoked by the application.",
+         note="Documentation website only — not part of any build of the app.",
+         vendor_dir="docs/assets/vendor/mermaid",
+         text=lambda: path_license("docs/assets/vendor/mermaid/LICENSE")),
+
     # -- Native libraries bundled into the installer (.app) builds --
     dict(key="libssh2", name="libssh2", spdx="BSD-3-Clause",
          version=homebrew_version("libssh2") or "bundled",
@@ -364,8 +381,9 @@ def main():
     # Markdown notices for the repository.
     md = ["# Third-Party Notices", "",
           ACKNOWLEDGEMENT, "",
-          "This product includes the following open-source software. The full "
-          "license text of each is in `Resources/Licenses/`.", ""]
+          "This product includes the following open-source software — plus, where a "
+          "row says so, software that is described here without shipping in the app. "
+          "The full license text of each is in `Resources/Licenses/`.", ""]
     for c in components_json:
         md.append("## %s %s" % (c["name"], c["version"]))
         md.append("")

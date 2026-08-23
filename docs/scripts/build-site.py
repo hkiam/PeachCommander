@@ -129,7 +129,7 @@ use_directory_urls: false
 extra_css:
   - assets/website/peach.css
 extra_javascript:
-  - assets/website/download.js
+{extra_js}
 extra:
   social:
     - icon: fontawesome/brands/github
@@ -170,6 +170,7 @@ def parse(md: str):
 def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
               recursive: bool, home_from_website: bool,
               alternate: list[tuple[str, str, str]], mkdocs: str, strict: bool,
+              mermaid: bool = False,
               lang: str = "en", group_by_slug: dict[str, str] | None = None,
               synth_title: str | None = None, synth_lead: str = ""):
     """Stage one language's pages into build/<workspace> and render to out_dir."""
@@ -187,6 +188,17 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         shutil.copytree(ASSETS / "website", docs / "assets/website")
     if (ASSETS / "peachcommander-icon.png").exists():
         shutil.copy2(ASSETS / "peachcommander-icon.png", docs / "assets")
+    # The Mermaid engine, and only for the site that draws diagrams. Material renders the
+    # ```mermaid fences itself but fetches the engine from unpkg.com unless a `mermaid` global
+    # is already there — so the diagrams used to need a network, on a site whose whole point is
+    # to work without one. Vendored (MIT), listed in extra_javascript below, and copied here
+    # rather than into docs/assets/website/ because that directory goes to all 19 languages
+    # while every one of the 34 fences is English: 3.2 MB of engine, eighteen times, for pages
+    # that have no diagram in them.
+    if mermaid and (ASSETS / "vendor/mermaid/mermaid.min.js").exists():
+        (docs / "assets/vendor").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ASSETS / "vendor/mermaid/mermaid.min.js", docs / "assets/vendor")
+        shutil.copy2(ASSETS / "vendor/mermaid/LICENSE", docs / "assets/vendor/mermaid-LICENSE.txt")
 
     md_files = sorted(sources.rglob("*.md")) if recursive else sorted(sources.glob("*.md"))
     pages = []  # (group, section, order, title, out_name)
@@ -294,9 +306,16 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
 
     alt_lines = "\n".join(
         f"    - name: {n}\n      link: {link}\n      lang: {lang}" for n, link, lang in alternate)
+    # Order matters and is the reason this is not `defer`: extra_javascript emits classic
+    # scripts, which run before DOMContentLoaded, and DOMContentLoaded is when Material mounts
+    # the diagram components that look for the global.
+    extra_js = ["  - assets/website/download.js"]
+    if mermaid and (docs / "assets/vendor/mermaid.min.js").exists():
+        extra_js.insert(0, "  - assets/vendor/mermaid.min.js")
+
     (work / "mkdocs.yml").write_text(
         MKDOCS_YML.format(site_name=site_name, nav="\n".join(nav_lines), alternate=alt_lines,
-                          features=", ".join(features),
+                          features=", ".join(features), extra_js="\n".join(extra_js),
                           repo_url=REPO_URL, repo_slug=REPO_SLUG),
         encoding="utf-8")
 
@@ -382,7 +401,7 @@ def main():
     rc_en, out_en, n_en = build_one(
         workspace="site-en", out_dir=SITE, site_name="Peach Commander",
         sources=CONTENT, recursive=True, home_from_website=True,
-        alternate=alt("en", langs), mkdocs=mkdocs, strict=not args.serve)
+        alternate=alt("en", langs), mkdocs=mkdocs, strict=not args.serve, mermaid=True)
     if args.serve:
         subprocess.run([mkdocs, "serve", "-f", str(BUILD / "site-en" / "mkdocs.yml")])
         return
