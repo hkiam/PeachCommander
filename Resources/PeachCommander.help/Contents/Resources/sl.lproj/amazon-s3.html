@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 in shrambe, združljive s S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 in shrambe, združljive s S3</h1>
+<p>Vedro S3 lahko v podoknu brskate kot vsako mapo. Izberite <strong>Poveži z Amazon S3…</strong> v meniju Omrežje, vnesite končno točko in ključe, in shramba se pojavi v aktivnem podoknu — s <strong>seznamom veder kot najvišjo ravnjo</strong> in vsakim vedrom kot običajnim imenikom pod njo.</p>
+<p>Deluje z Amazon S3 in z vsem, kar govori isti protokol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 in DigitalOcean Spaces so dosegljivi.</p>
+<p>Je vtičnik, zato ga lahko izklopite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="povezovanje">Povezovanje</h2>
+<p>Meni <strong>Storitev</strong> izpolni dve nastavitvi, ki jih ni mogoče uganiti — ali uporabiti HTTPS in ali končna točka potrebuje naslavljanje po poti — končno točko samo pa pusti vam, saj je običajno odvisna od vašega računa. Obe nastavitvi odpovesta tako, da je videti kot nekaj drugega: naslavljanje po imenu gostitelja proti golemu naslovu IP je napaka razreševanja imen, naslavljanje po poti proti Amazonu pa je »ni takega vedra«, kar se bere kot manjkajoče vedro.</p>
+<p><strong>Skrivni ključ za dostop</strong> gre prek gostiteljskega programa v <strong>Zbirko ključev</strong>, nikoli v nastavitveno datoteko. Pustite polje pri naslednji povezavi prazno in uporabljen bo shranjeni.</p>
+<p><strong>Zapomni si to povezavo</strong> ohrani končno točko, regijo, ID ključa in način naslavljanja — nikoli skrivnosti — v <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Zapomnjena povezava postane tudi gumb v vrstici pogonov, klik nanj pa jo poveže neposredno, namesto da bi znova odprl to pogovorno okno.</p>
+<h3 id="profili-ki-jih-ze-imate">Profili, ki jih že imate</h3>
+<p>Če uporabljate ukazno vrstico AWS, so njeni profili ponujeni v meniju <strong>Ime</strong> z oznako <em>(AWS CLI)</em> in prebrani iz <code>~/.aws/credentials</code> in <code>~/.aws/config</code> — skupaj z regijo, žetonom seje in <code>s3.addressing_style</code>. Tja se nič ne zapisuje nazaj, in tak profil se <strong>ne</strong> zapomni samodejno: hraniti drugo kopijo skrivnosti je nekaj, kar se zahteva, ne nekaj, kar se zgodi, ker ste izbrali ime iz menija.</p>
+<h3 id="javna-vedra">Javna vedra</h3>
+<p><strong>Poveži anonimno</strong> ne pošlje nobenega podpisa, kar javno berljivo vedro tudi želi. Če vedro ni javno, vam bo povedano prav to — in ne, da je bil vaš ključ zavrnjen. Ključa ni bilo.</p>
+<h2 id="kaj-je-mogoce">Kaj je mogoče</h2>
+<p>Izpis, branje, pisanje, ustvarjanje map in veder, brisanje, preimenovanje in premikanje delujejo. Kopiranje in premikanje se zgodita <strong>na strežniku</strong>: bajti ne gredo prek vašega Maca.</p>
+<p>Mapa v S3 ni nič resničnega — je bodisi skupna predpona ključev pod njo bodisi predmet nič bajtov, čigar ime se konča z <code>/</code>. Oboje je prikazano kot mapa. Ustvarjanje zapiše to oznako; brisanje izbriše vsak predmet pod njo, ker drugega za brisanje ni.</p>
+<p>Na najvišji ravni <strong>Nova mapa ustvari vedro</strong> — ta raven <em>je</em> seznam veder, drugega tam ne bi moglo pomeniti.</p>
+<p><strong>Razred shrambe</strong> in <strong>ETag</strong> sta na voljo kot stolpca podokna (desni klik na glavo stolpca). Oba prihajata iz izpisa, ki se je že zgodil, zato nič ne stanejo.</p>
+<h2 id="kaj-pricakovati">Kaj pričakovati</h2>
+<p><strong>Vedra ni mogoče preimenovati.</strong> S3 te operacije nima, alternativa — kopirati vsak predmet v novo vedro in staro izbrisati — pa ni to, kar je zahtevalo pogovorno okno za preimenovanje. To je zavrnjeno, ne pa hlinjeno.</p>
+<p><strong>Prenosi zajemajo cele datoteke.</strong> Datoteka se pridobi ali pošlje v enem kosu; prekinjen prenos se začne znova, namesto da bi se nadaljeval. Veliki prenosi navzgor se samodejno razdelijo na dele; če del odpove, se deli počistijo in ne ostanejo, da bi bili zaračunani.</p>
+<p><strong>Preimenovanje mape ni atomarno.</strong> Kopira in briše predmet za predmetom in se ustavi pri prvi napaki, namesto da bi nadaljevalo v napol premaknjeno stanje.</p>
+<p><strong>Arhiviranih predmetov ni mogoče brati neposredno.</strong> Predmet v Glacier ali Deep Archive je treba najprej obnoviti, v konzoli AWS ali z CLI. Podokno to pove, namesto da bi odpovedalo, kot bi bil predmet poškodovan.</p>
+<p><strong>Izpis zelo velike mape traja toliko, kolikor traja strežniku.</strong> Predmeti prihajajo po tisoč, podokno pa se napolni, ko prispe zadnja stran.</p>
+<p><strong>Vsaka zahteva pri plačljivi storitvi stane denar.</strong> Vtičnik je napisan tako, da vpraša čim manj — stolpci prihajajo iz izpisa, ki se je že zgodil, regija vedra se izve enkrat in se zapomni — a brskanje po vedru ni brezplačno tako kot brskanje po disku.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="webdav.html">Strežniki WebDAV</a></li><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li><li><a href="copying-files.html">Kopiranje datotek</a></li></ul></section>
+</main>
+</body>
+</html>

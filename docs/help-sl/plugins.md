@@ -24,6 +24,7 @@ Več vtičnikov ima svojo podrobno temo pomoči — sledite povezavi za celotno 
 
 Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:
 
+- **Amazon S3** — povežite se z Amazon S3 ali shrambo, združljivo s S3 (**Omrežje ▸ Poveži z Amazon S3…**), in brskajte po vedrih kot po mapah, z branjem, pisanjem, preimenovanjem in brisanjem. Skrivni ključi so shranjeni v Zbirki ključev macOS.
 - **WebDAV** — povežite se s strežnikom WebDAV (**Omrežje ▸ Poveži WebDAV…**) in po njem brskajte, nalagajte, prenašajte, preimenujte in brišite, kot da bi bila mapa. Gesla se hranijo v ključavnici macOS.
 - **iCloud Drive** — doda vnos *iCloud Drive* v vrstico diskov, ki skoči naravnost v vašo lokalno mapo iCloud Drive. Pojavi se le, kadar je iCloud Drive nastavljen na vašem Macu.
 - **Notes** — hranite zapisek poleg katere koli datoteke ali mape. Majhna značka **●** označuje elemente, ki ga imajo; zapiske urejajte v zasidrani stranski vrstici **Notes** ali v celotnem urejevalniku obogatenega besedila (**Ukazi ▸ Uredi zapisek…**) in po vseh brskajte s **Pregled zapiskov…**.

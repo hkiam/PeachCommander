@@ -24,6 +24,7 @@ Kilka wtyczek ma własny szczegółowy temat pomocy — kliknij łącze, aby poz
 
 Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:
 
+- **Amazon S3** — połącz się z Amazon S3 lub magazynem zgodnym z S3 (**Sieć ▸ Połącz z Amazon S3…**) i przeglądaj buckety jak foldery, z czytaniem, zapisem, zmianą nazwy i usuwaniem. Tajne klucze są przechowywane w Pęku kluczy macOS.
 - **WebDAV** — połącz się z serwerem WebDAV (**Sieć ▸ Połącz z WebDAV…**) i przeglądaj, wysyłaj, pobieraj, zmieniaj nazwy oraz usuwaj na nim tak, jakby był folderem. Hasła są przechowywane w pęku kluczy macOS.
 - **iCloud Drive** — dodaje pozycję *iCloud Drive* do paska dysków, która przechodzi prosto do Twojego lokalnego folderu iCloud Drive. Pojawia się tylko wtedy, gdy iCloud Drive jest skonfigurowany na Twoim Macu.
 - **Notes** — trzymaj notatkę obok dowolnego pliku lub folderu. Mały znacznik **●** oznacza pozycje, które ją mają; edytuj notatki w zadokowanym pasku bocznym **Notes** lub w pełnym edytorze tekstu sformatowanego (**Polecenia ▸ Edytuj notatkę…**) i przeglądaj je wszystkie za pomocą **Przegląd notatek…**.

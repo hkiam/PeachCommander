@@ -24,6 +24,7 @@ Několik zásuvných modulů má vlastní podrobné téma nápovědy — pro úp
 
 Zbývající vestavěné zásuvné moduly jsou menší a nepotřebují vlastní stránku:
 
+- **Amazon S3** — připojte se k Amazon S3 nebo úložišti kompatibilnímu s S3 (**Síť ▸ Připojit k Amazon S3…**) a prohlížejte buckety jako složky, se čtením, zápisem, přejmenováním a mazáním. Tajné klíče jsou uchovány v Klíčence macOS.
 - **WebDAV** — připojte se k serveru WebDAV (**Síť ▸ WebDAV Connect…**) a procházejte, nahrávejte, stahujte, přejmenovávejte a mažte na něm, jako by to byla složka. Hesla se uchovávají v klíčence macOS.
 - **iCloud Drive** — přidá do lišty disků položku *iCloud Drive*, která skočí přímo do vaší místní složky iCloud Drive. Objeví se jen tehdy, když je iCloud Drive nastaven ve vašem Macu.
 - **Notes** — uchovávejte poznámku vedle libovolného souboru nebo složky. Malý odznak **●** označuje položky, které ji mají; poznámky upravujte v ukotveném postranním panelu **Notes** nebo v úplném editoru formátovaného textu (**Příkazy ▸ Upravit poznámku…**) a procházejte je všechny pomocí **Přehled poznámek…**.

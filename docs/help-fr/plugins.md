@@ -24,6 +24,7 @@ Plusieurs extensions ont leur propre rubrique d'aide détaillée — suivez le l
 
 Les autres extensions intégrées sont plus petites et n'ont pas besoin de leur propre page :
 
+- **Amazon S3** — connectez-vous à Amazon S3 ou à un stockage compatible S3 (**Réseau ▸ Se connecter à Amazon S3…**) et parcourez les buckets comme des dossiers, avec lecture, écriture, renommage et suppression. Les clés secrètes sont conservées dans le trousseau de macOS.
 - **WebDAV** — connectez-vous à un serveur WebDAV (**Réseau ▸ Connexion WebDAV…**) et parcourez-le, téléversez, téléchargez, renommez et supprimez dessus comme s'il s'agissait d'un dossier. Les mots de passe sont conservés dans le trousseau macOS.
 - **iCloud Drive** — ajoute une entrée *iCloud Drive* à la barre de lecteurs qui saute directement à votre dossier iCloud Drive local. Elle n'apparaît que lorsqu'iCloud Drive est configuré sur votre Mac.
 - **Notes** — gardez une note à côté de n'importe quel fichier ou dossier. Une petite pastille **●** marque les éléments qui en ont une ; modifiez les notes dans une barre latérale **Notes** ancrée ou un éditeur de texte enrichi complet (**Commandes ▸ Modifier la note…**), et parcourez-les toutes avec **Vue d'ensemble des notes…**.

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 og S3-kompatibel lagring</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 og S3-kompatibel lagring</h1>
+<p>En S3-bucket kan gennemses i et panel som enhver anden mappe. Vælg <strong>Forbind til Amazon S3…</strong> i menuen Netværk, udfyld endepunkt og dine nøgler, og lagringen dukker op i det aktive panel — med <strong>bucketlisten som øverste niveau</strong> og hver bucket som en almindelig mappe nedenunder.</p>
+<p>Det virker med Amazon S3 og med alt, der taler samme protokol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 og DigitalOcean Spaces kan alle nås.</p>
+<p>Det er et plugin, så du kan slå det fra eller fjerne det under <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="forbindelse">Forbindelse</h2>
+<p>Menuen <strong>Tjeneste</strong> udfylder de to indstillinger, man ikke kan gætte — om der bruges HTTPS, og om endepunktet kræver sti-baseret adressering — og lader endepunktet selv være op til dig, da det typisk afhænger af din konto. Begge indstillinger fejler på en måde, der ligner noget andet: virtuel værtsadressering mod en nøgen IP-adresse er en navneopslagsfejl, og sti-baseret adressering mod Amazon er et »ingen sådan bucket«, der læses som en manglende bucket.</p>
+<p>Den <strong>hemmelige adgangsnøgle</strong> havner via værtsprogrammet i <strong>Nøglering</strong>, aldrig i en konfigurationsfil. Lad feltet stå tomt ved en senere forbindelse, og den gemte bruges.</p>
+<p><strong>Husk denne forbindelse</strong> bevarer endepunkt, region, nøgle-ID og adresseringsform — aldrig hemmeligheden — i <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. En husket forbindelse bliver desuden en knap i drevlinjen, og et klik på den forbinder direkte i stedet for at åbne denne dialog igen.</p>
+<h3 id="profiler-du-allerede-har">Profiler du allerede har</h3>
+<p>Bruger du AWS' kommandolinje, tilbydes dens profiler i menuen <strong>Navn</strong> markeret <em>(AWS CLI)</em>, læst fra <code>~/.aws/credentials</code> og <code>~/.aws/config</code> — inklusive region, et sessionstoken og <code>s3.addressing_style</code>. Der skrives intet tilbage dertil, og en sådan profil huskes <strong>ikke</strong> som standard: at have en anden kopi af en hemmelighed er noget man beder om, ikke noget der sker, fordi man valgte et navn i en menu.</p>
+<h3 id="offentlige-buckets">Offentlige buckets</h3>
+<p><strong>Forbind anonymt</strong> sender slet ingen signatur, hvilket er hvad en offentligt læsbar bucket vil. Er bucketen ikke offentlig, får du netop det at vide — ikke at din nøgle blev afvist. Der var ingen nøgle.</p>
+<h2 id="hvad-du-kan-gre">Hvad du kan gøre</h2>
+<p>Visning, læsning, skrivning, oprettelse af mapper og buckets, sletning, omdøbning og flytning virker alle. Kopiering og flytning sker <strong>på serveren</strong>: bytes går ikke gennem din Mac.</p>
+<p>En mappe er ikke noget virkeligt i S3 — det er enten et fælles præfiks for nøglerne under den, eller et objekt på nul bytes, hvis navn ender på <code>/</code>. Begge vises som mapper. At oprette en skriver den markør; at slette en sletter hvert objekt nedenunder, for der er intet andet at slette.</p>
+<p>På øverste niveau opretter <strong>Ny mappe en bucket</strong> — det niveau <em>er</em> bucketlisten, andet kunne det ikke betyde.</p>
+<p><strong>Lagerklasse</strong> og <strong>ETag</strong> er tilgængelige som panelkolonner (højreklik på kolonneoverskriften). Begge kommer fra den visning, der allerede er sket, så de koster ingenting.</p>
+<h2 id="hvad-du-kan-forvente">Hvad du kan forvente</h2>
+<p><strong>En bucket kan ikke omdøbes.</strong> S3 har ikke den handling, og alternativet — at kopiere hvert objekt til en ny bucket og slette den gamle — er ikke det, en omdøbningsdialog bad om. Det afvises frem for at foregives.</p>
+<p><strong>Overførsler omfatter hele filer.</strong> En fil hentes eller sendes i ét stykke; en afbrudt overførsel begynder forfra i stedet for at fortsætte. Store uploads deles automatisk i dele; fejler en del, ryddes delene op i stedet for at blive efterladt til fakturering.</p>
+<p><strong>At omdøbe en mappe er ikke atomart.</strong> Den kopierer og sletter objekt for objekt og stopper ved den første fejl frem for at fortsætte ind i en halvt flyttet tilstand.</p>
+<p><strong>Arkiverede objekter kan ikke læses direkte.</strong> Et objekt i Glacier eller Deep Archive skal først gendannes, i AWS-konsollen eller med CLI'en. Panelet siger det frem for at fejle, som var objektet beskadiget.</p>
+<p><strong>At vise en meget stor mappe tager den tid, serveren tager.</strong> Objekter kommer tusind ad gangen, og panelet fyldes, når den sidste side er kommet ind.</p>
+<p><strong>Hver forespørgsel koster penge på en betalt tjeneste.</strong> Pluginet er skrevet til at spørge så lidt som muligt — kolonner kommer fra den visning, der allerede er sket, en buckets region læres én gang og huskes — men at gennemse en bucket er ikke gratis, som det er at gennemse en disk.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="webdav.html">WebDAV-servere</a></li><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li><li><a href="copying-files.html">Kopiering af filer</a></li></ul></section>
+</main>
+</body>
+</html>

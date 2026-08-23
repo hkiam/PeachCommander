@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 en S3-compatibele opslag</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 en S3-compatibele opslag</h1>
+<p>Een S3-bucket is in een paneel te doorzoeken als elke andere map. Kies <strong>Verbinden met Amazon S3…</strong> in het menu Netwerk, vul het endpoint en je sleutels in, en de opslag verschijnt in het actieve paneel — met de <strong>bucketlijst als bovenste niveau</strong> en elke bucket als een gewone map daaronder.</p>
+<p>Het werkt met Amazon S3 en met alles wat hetzelfde protocol spreekt: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 en DigitalOcean Spaces zijn allemaal bereikbaar.</p>
+<p>Het is een plug-in, dus je kunt hem uitschakelen of verwijderen in <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="verbinden">Verbinden</h2>
+<p>Het menu <strong>Dienst</strong> vult de twee instellingen in die je niet kunt raden — of HTTPS wordt gebruikt en of het endpoint padgebaseerde adressering nodig heeft — en laat het endpoint zelf aan jou, omdat dat meestal van je account afhangt. Beide instellingen mislukken op een manier die naar iets anders lijkt: virtual-hosted adressering tegen een kaal IP-adres is een naamsopzoekfout, en padgebaseerde adressering tegen Amazon is een «bucket bestaat niet» die als een ontbrekende bucket leest.</p>
+<p>De <strong>secret access key</strong> gaat via het hostprogramma naar de <strong>Sleutelhanger</strong>, nooit naar een configuratiebestand. Laat het veld bij een volgende verbinding leeg en de opgeslagen sleutel wordt gebruikt.</p>
+<p><strong>Deze verbinding onthouden</strong> bewaart endpoint, regio, key-ID en adresseringswijze — nooit het geheim — in <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Een onthouden verbinding wordt ook een knop in de volumebalk, en daarop klikken verbindt hem direct in plaats van dit venster opnieuw te openen.</p>
+<h3 id="profielen-die-je-al-hebt">Profielen die je al hebt</h3>
+<p>Als je de AWS-opdrachtregel gebruikt, worden die profielen in het menu <strong>Naam</strong> aangeboden met <em>(AWS CLI)</em>, gelezen uit <code>~/.aws/credentials</code> en <code>~/.aws/config</code> — inclusief de regio, een sessietoken en <code>s3.addressing_style</code>. Daar wordt niets naar teruggeschreven, en zo'n profiel wordt <strong>niet</strong> standaard onthouden: een tweede kopie van een geheim bewaren is iets wat je vraagt, niet iets wat gebeurt omdat je een naam uit een menu koos.</p>
+<h3 id="openbare-buckets">Openbare buckets</h3>
+<p><strong>Anoniem verbinden</strong> stuurt helemaal geen ondertekening, wat een openbaar leesbare bucket wil. Is de bucket niet openbaar, dan wordt je dat gezegd — en niet dat je sleutel is geweigerd. Er was geen sleutel.</p>
+<h2 id="wat-je-kunt-doen">Wat je kunt doen</h2>
+<p>Lijsten, lezen, schrijven, mappen en buckets maken, verwijderen, hernoemen en verplaatsen werken allemaal. Kopiëren en verplaatsen gebeurt <strong>op de server</strong>: de bytes gaan niet via je Mac.</p>
+<p>Een map is in S3 niets echts — het is een gedeeld voorvoegsel van de sleutels eronder, of een object van nul bytes waarvan de naam op <code>/</code> eindigt. Beide worden als map getoond. Er een maken schrijft die markering; er een verwijderen verwijdert elk object eronder, want er is niets anders te verwijderen.</p>
+<p>Op het bovenste niveau maakt <strong>Nieuwe map een bucket</strong> — dat niveau <em>is</em> de bucketlijst, iets anders kan het daar niet betekenen.</p>
+<p><strong>Opslagklasse</strong> en <strong>ETag</strong> zijn beschikbaar als paneelkolommen (rechtsklik op de kolomkop). Beide komen uit de lijst die al is opgehaald en kosten dus niets.</p>
+<h2 id="wat-je-ervan-mag-verwachten">Wat je ervan mag verwachten</h2>
+<p><strong>Een bucket kan niet worden hernoemd.</strong> S3 heeft die bewerking niet, en het alternatief — elk object naar een nieuwe bucket kopiëren en de oude verwijderen — is niet wat een hernoemvenster vroeg. Het wordt geweigerd in plaats van nagebootst.</p>
+<p><strong>Overdrachten gaan per heel bestand.</strong> Een bestand wordt in één stuk opgehaald of verstuurd; een afgebroken overdracht begint opnieuw in plaats van door te gaan. Grote uploads worden automatisch in delen gesplitst; mislukt een deel, dan worden de delen opgeruimd in plaats van achtergelaten om te worden gefactureerd.</p>
+<p><strong>Een map hernoemen is niet atomair.</strong> Het kopieert en verwijdert object voor object, en stopt bij de eerste fout in plaats van door te gaan naar een halfverplaatste toestand.</p>
+<p><strong>Gearchiveerde objecten zijn niet direct te lezen.</strong> Een object in Glacier of Deep Archive moet eerst worden teruggezet, in de AWS-console of met de CLI. Het paneel zegt dat, in plaats van te falen alsof het object beschadigd is.</p>
+<p><strong>Een zeer grote map lijsten duurt zolang de server erover doet.</strong> Objecten komen per duizend binnen en het paneel vult zich als de laatste pagina er is.</p>
+<p><strong>Elke aanvraag kost geld bij een betaalde dienst.</strong> De plug-in is geschreven om zo weinig mogelijk te vragen — kolommen komen uit de lijst die al is opgehaald, de regio van een bucket wordt eenmaal geleerd en onthouden — maar een bucket doorzoeken is niet gratis zoals een schijf doorzoeken.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="webdav.html">WebDAV-servers</a></li><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li><li><a href="copying-files.html">Bestanden kopiëren</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -24,6 +24,7 @@ Flere plugins har deres eget detaljerede hjælpeemne — følg linket for hele h
 
 De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv:
 
+- **Amazon S3** — forbind til Amazon S3 eller S3-kompatibel lagring (**Netværk ▸ Forbind til Amazon S3…**) og gennemse buckets som mapper, med læsning, skrivning, omdøbning og sletning. Hemmelige nøgler opbevares i macOS-nøgleringen.
 - **WebDAV** — opret forbindelse til en WebDAV-server (**Net ▸ WebDAV Connect…**) og gennemse, upload, download, omdøb og slet på den, som var den en mappe. Adgangskoder opbevares i macOS-nøgleringen.
 - **iCloud Drive** — tilføjer et *iCloud Drive*-emne til drevlinjen, der springer direkte til din lokale iCloud Drive-mappe. Det vises kun, når iCloud Drive er sat op på din Mac.
 - **Notes** — behold en note ved siden af enhver fil eller mappe. Et lille **●**-mærke markerer emner, der har en; redigér noter i en forankret **Notes**-sidebjælke eller en fuld rich text-editor (**Kommandoer ▸ Edit Note…**), og gennemse dem alle med **Notes Overview…**.

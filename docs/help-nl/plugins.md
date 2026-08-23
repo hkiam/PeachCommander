@@ -24,6 +24,7 @@ Verschillende plug-ins hebben hun eigen uitgebreide helponderwerp — volg de ko
 
 De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:
 
+- **Amazon S3** — verbind met Amazon S3 of S3-compatibele opslag (**Netwerk ▸ Verbinden met Amazon S3…**) en doorzoek buckets als mappen, met lezen, schrijven, hernoemen en verwijderen. Secret keys worden in de macOS-sleutelhanger bewaard.
 - **WebDAV** — verbind met een WebDAV-server (**Net ▸ WebDAV Verbinden…**) en blader, upload, download, hernoem en verwijder erop alsof het een map was. Wachtwoorden worden bewaard in de macOS-sleutelhanger.
 - **iCloud Drive** — voegt een *iCloud Drive*-vermelding toe aan de schijvenbalk die direct naar je lokale iCloud Drive-map springt. Deze verschijnt alleen wanneer iCloud Drive op je Mac is ingesteld.
 - **Notes** — bewaar een notitie naast elk bestand of elke map. Een klein **●**-badge markeert items die er een hebben; bewerk notities in een vastgezette **Notes**-zijbalk of een volledige rich-text-editor (**Opdrachten ▸ Notitie bewerken…**), en blader ze allemaal door met **Notities-overzicht…**.

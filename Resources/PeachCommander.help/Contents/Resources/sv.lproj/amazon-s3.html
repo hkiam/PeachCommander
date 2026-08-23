@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 och S3-kompatibel lagring</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 och S3-kompatibel lagring</h1>
+<p>En S3-bucket kan bläddras i en panel som vilken mapp som helst. Välj <strong>Anslut till Amazon S3…</strong> i Nät-menyn, fyll i slutpunkten och dina nycklar, och lagringen visas i den aktiva panelen — med <strong>bucketlistan som översta nivå</strong> och varje bucket som en vanlig katalog under.</p>
+<p>Det fungerar med Amazon S3 och med allt som talar samma protokoll: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 och DigitalOcean Spaces går alla att nå.</p>
+<p>Det är ett insticksprogram, så du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="ansluta">Ansluta</h2>
+<p>Menyn <strong>Tjänst</strong> fyller i de två inställningar man inte kan gissa — om HTTPS ska användas och om slutpunkten kräver sökvägsbaserad adressering — och lämnar slutpunkten själv till dig, eftersom den oftast beror på ditt konto. Båda inställningarna misslyckas på ett sätt som ser ut som något annat: virtuell värdadressering mot en naken IP-adress är ett namnuppslagsfel, och sökvägsbaserad adressering mot Amazon är ett ”ingen sådan bucket” som läses som en saknad bucket.</p>
+<p>Den <strong>hemliga åtkomstnyckeln</strong> hamnar via värdprogrammet i <strong>Nyckelhanteraren</strong>, aldrig i en konfigurationsfil. Lämna fältet tomt vid en senare anslutning och den sparade används.</p>
+<p><strong>Kom ihåg den här anslutningen</strong> behåller slutpunkt, region, nyckel-ID och adresseringssätt — aldrig hemligheten — i <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. En sparad anslutning blir dessutom en knapp i enhetsraden, och ett klick på den ansluter direkt i stället för att öppna den här dialogen igen.</p>
+<h3 id="profiler-du-redan-har">Profiler du redan har</h3>
+<p>Använder du AWS:s kommandorad erbjuds dess profiler i <strong>Namn</strong>-menyn märkta <em>(AWS CLI)</em>, lästa från <code>~/.aws/credentials</code> och <code>~/.aws/config</code> — inklusive region, en sessionstoken och <code>s3.addressing_style</code>. Inget skrivs tillbaka dit, och en sådan profil sparas <strong>inte</strong> som standard: att ha en andra kopia av en hemlighet är något man ber om, inte något som händer för att man valde ett namn i en meny.</p>
+<h3 id="oppna-buckets">Öppna buckets</h3>
+<p><strong>Anslut anonymt</strong> skickar ingen signatur alls, vilket är vad en offentligt läsbar bucket vill. Är bucketen inte offentlig får du veta just det — inte att din nyckel avvisades. Det fanns ingen nyckel.</p>
+<h2 id="vad-du-kan-gora">Vad du kan göra</h2>
+<p>Listning, läsning, skrivning, skapa mappar och buckets, ta bort, byta namn och flytta fungerar alla. Kopiering och flytt sker <strong>på servern</strong>: byten går inte genom din Mac.</p>
+<p>En mapp är inget verkligt i S3 — det är antingen ett gemensamt prefix för nycklarna under den, eller ett objekt på noll byte vars namn slutar med <code>/</code>. Båda visas som mappar. Att skapa en skriver den markören; att ta bort en tar bort varje objekt under, för det finns inget annat att ta bort.</p>
+<p>På översta nivån skapar <strong>Ny mapp en bucket</strong> — den nivån <em>är</em> bucketlistan, något annat kunde det inte betyda.</p>
+<p><strong>Lagringsklass</strong> och <strong>ETag</strong> finns som panelkolumner (högerklick på kolumnrubriken). Båda kommer från listningen som redan skett och kostar därför ingenting.</p>
+<h2 id="vad-du-kan-vanta-dig">Vad du kan vänta dig</h2>
+<p><strong>En bucket kan inte byta namn.</strong> S3 har inte den operationen, och alternativet — att kopiera varje objekt till en ny bucket och ta bort den gamla — är inte vad en namnbytesdialog bad om. Det avvisas i stället för att låtsas.</p>
+<p><strong>Överföringar gäller hela filer.</strong> En fil hämtas eller skickas i ett stycke; en avbruten överföring börjar om i stället för att fortsätta. Stora uppladdningar delas automatiskt i delar; misslyckas en del städas delarna bort i stället för att lämnas kvar och faktureras.</p>
+<p><strong>Att byta namn på en mapp är inte atomärt.</strong> Den kopierar och tar bort objekt för objekt och stannar vid första felet i stället för att fortsätta in i ett halvflyttat tillstånd.</p>
+<p><strong>Arkiverade objekt kan inte läsas direkt.</strong> Ett objekt i Glacier eller Deep Archive måste först återställas, i AWS-konsolen eller med CLI:t. Panelen säger det, i stället för att misslyckas som om objektet vore skadat.</p>
+<p><strong>Att lista en mycket stor mapp tar den tid servern tar.</strong> Objekt kommer tusen i taget och panelen fylls när sista sidan kommit in.</p>
+<p><strong>Varje förfrågan kostar pengar hos en betaltjänst.</strong> Insticksprogrammet är skrivet för att fråga så lite som möjligt — kolumner kommer från listningen som redan skett, en buckets region lärs en gång och kommas ihåg — men att bläddra i en bucket är inte gratis så som att bläddra på en disk.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="webdav.html">WebDAV-servrar</a></li><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li><li><a href="copying-files.html">Kopiera filer</a></li></ul></section>
+</main>
+</body>
+</html>

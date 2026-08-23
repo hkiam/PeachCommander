@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 és S3-kompatibilis tárolók</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 és S3-kompatibilis tárolók</h1>
+<p>Egy S3-bucket a panelen ugyanúgy böngészhető, mint bármelyik mappa. Válassza a <strong>Kapcsolódás az Amazon S3-hoz…</strong> parancsot a Hálózat menüből, adja meg a végpontot és a kulcsokat, és a tároló megjelenik az aktív panelen — a <strong>bucketek listájával a legfelső szinten</strong>, alatta pedig minden bucket egy közönséges könyvtárként.</p>
+<p>Működik az Amazon S3-mal és mindennel, ami ugyanezt a protokollt beszéli: a MinIO, a Ceph/RADOS Gateway, a Cloudflare R2, a Wasabi, a Backblaze B2 és a DigitalOcean Spaces mind elérhető.</p>
+<p>Bővítmény, tehát a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt kikapcsolható vagy eltávolítható.</p>
+<h2 id="kapcsolodas">Kapcsolódás</h2>
+<p>A <strong>Szolgáltatás</strong> menü kitölti azt a két beállítást, amit nem lehet kitalálni — hogy HTTPS-t kell-e használni, és hogy a végpont igényel-e útvonal alapú címzést —, a végpontot magát viszont önre hagyja, mert az általában a fiókjától függ. Mindkét beállítás úgy hibázik, hogy másnak látszik: a virtuális gazdanév alapú címzés egy puszta IP-cím ellen névfeloldási hiba, az útvonal alapú címzés az Amazon ellen pedig „nincs ilyen bucket”, ami hiányzó bucketnek olvasható.</p>
+<p>A <strong>titkos hozzáférési kulcs</strong> a gazdaalkalmazáson keresztül a <strong>Kulcskarikára</strong> kerül, soha nem konfigurációs fájlba. Hagyja a mezőt egy későbbi kapcsolódásnál üresen, és a mentett kulcsot használja.</p>
+<p>A <strong>Kapcsolat megjegyzése</strong> megőrzi a végpontot, a régiót, a kulcsazonosítót és a címzés módját — a titkot soha — a <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code> fájlban. A megjegyzett kapcsolat ezenkívül gomb lesz a meghajtósávon, és arra kattintva közvetlenül kapcsolódik, nem nyílik meg újra ez a párbeszédpanel.</p>
+<h3 id="profilok-amelyek-mar-megvannak">Profilok, amelyek már megvannak</h3>
+<p>Ha használja az AWS parancssorát, annak profiljai a <strong>Név</strong> menüben <em>(AWS CLI)</em> jelöléssel jelennek meg, a <code>~/.aws/credentials</code> és a <code>~/.aws/config</code> fájlból olvasva — a régióval, a munkamenet-tokennel és az <code>s3.addressing_style</code> beállítással együtt. Oda semmi nem íródik vissza, és az ilyen profilt <strong>nem</strong> jegyzi meg magától: egy titok második példányát tartani olyan dolog, amit kérni kell, nem olyan, ami azért történik, mert egy menüből nevet választott.</p>
+<h3 id="nyilvanos-bucketek">Nyilvános bucketek</h3>
+<p>A <strong>Kapcsolódás anonim módon</strong> egyáltalán nem küld aláírást, és ezt akarja egy nyilvánosan olvasható bucket. Ha a bucket nem nyilvános, pontosan ezt közli — nem azt, hogy a kulcsát elutasították. Nem volt kulcs.</p>
+<h2 id="mit-lehet-vele-tenni">Mit lehet vele tenni</h2>
+<p>A listázás, olvasás, írás, mappa- és bucketlétrehozás, törlés, átnevezés és mozgatás mind működik. A másolás és a mozgatás <strong>a kiszolgálón</strong> történik: a bájtok nem mennek át a Macjén.</p>
+<p>Egy mappa az S3-ban nem valódi dolog — vagy az alatta lévő kulcsok közös előtagja, vagy egy nulla bájtos objektum, amelynek a neve <code>/</code> jelre végződik. Mindkettő mappaként látszik. Létrehozni azt jelenti, hogy ezt a jelölőt írjuk; törölni azt, hogy minden alatta lévő objektumot törlünk, mert más nincs, amit törölni lehetne.</p>
+<p>A legfelső szinten az <strong>Új mappa bucketet hoz létre</strong> — az a szint <em>maga</em> a bucketlista, ott semmi mást nem jelenthetne.</p>
+<p>A <strong>Tárolási osztály</strong> és az <strong>ETag</strong> panel-oszlopként elérhető (jobb kattintás az oszlopfejlécen). Mindkettő a már megtörtént listázásból származik, tehát semmibe nem kerül.</p>
+<h2 id="mire-szamithat">Mire számíthat</h2>
+<p><strong>Egy bucketet nem lehet átnevezni.</strong> Az S3-ban nincs ilyen művelet, és az alternatíva — minden objektum átmásolása egy új bucketbe, majd a régi törlése — nem az, amit egy átnevezési párbeszédpanel kért. Ezt elutasítja, nem pedig megjátssza.</p>
+<p><strong>Az átvitel teljes fájlokra vonatkozik.</strong> Egy fájl egy darabban jön vagy megy; a megszakadt átvitel újrakezdődik, nem folytatódik. A nagy feltöltések automatikusan részekre bomlanak; ha egy rész elbukik, a részeket eltakarítja, nem hagyja ott, hogy kiszámlázzák.</p>
+<p><strong>Egy mappa átnevezése nem atomi.</strong> Objektumonként másol és töröl, és az első hibánál megáll, nem megy tovább egy félig áthelyezett állapotba.</p>
+<p><strong>Az archivált objektumok közvetlenül nem olvashatók.</strong> A Glacierben vagy Deep Archive-ban lévő objektumot először vissza kell állítani, az AWS konzolján vagy a CLI-vel. A panel ezt mondja, nem pedig úgy hibázik, mintha az objektum sérült volna.</p>
+<p><strong>Egy nagyon nagy mappa listázása annyi ideig tart, amennyi a kiszolgálónak kell.</strong> Az objektumok ezres tételekben érkeznek, és a panel akkor telik meg, amikor az utolsó oldal beérkezett.</p>
+<p><strong>Fizetős szolgáltatásnál minden kérés pénzbe kerül.</strong> A bővítmény úgy készült, hogy a lehető legkevesebbet kérdezze — az oszlopok a már megtörtént listázásból jönnek, egy bucket régióját egyszer megtudja és megjegyzi —, de egy bucket böngészése nem olyan ingyenes, mint egy lemez böngészése.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="webdav.html">WebDAV-kiszolgálók</a></li><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li><li><a href="copying-files.html">Fájlok másolása</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 i magazyny zgodne z S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 i magazyny zgodne z S3</h1>
+<p>Bucket S3 można przeglądać w panelu jak każdy folder. Wybierz <strong>Połącz z Amazon S3…</strong> z menu Sieć, podaj punkt końcowy i klucze, a magazyn pojawi się w aktywnym panelu — z <strong>listą bucketów jako najwyższym poziomem</strong>, a każdy bucket będzie zwykłym katalogiem poniżej.</p>
+<p>Działa z Amazon S3 i ze wszystkim, co mówi tym samym protokołem: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 i DigitalOcean Spaces są dostępne.</p>
+<p>To wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="aczenie">Łączenie</h2>
+<p>Menu <strong>Usługa</strong> wypełnia dwa ustawienia, których nie da się odgadnąć — czy używać HTTPS i czy punkt końcowy wymaga adresowania w stylu ścieżki — a sam punkt końcowy pozostawia tobie, bo zwykle zależy od konta. Oba te ustawienia zawodzą w sposób wyglądający na coś innego: adresowanie przez nazwę hosta wobec zwykłego adresu IP to błąd rozwiązywania nazw, a adresowanie w stylu ścieżki wobec Amazona to „nie ma takiego bucketa”, co czyta się jak brakujący bucket.</p>
+<p><strong>Tajny klucz dostępu</strong> trafia przez program nadrzędny do <strong>Pęku kluczy</strong>, nigdy do pliku konfiguracyjnego. Zostaw pole puste przy następnym połączeniu i zostanie użyty zapisany.</p>
+<p><strong>Zapamiętaj to połączenie</strong> zachowuje punkt końcowy, region, identyfikator klucza i sposób adresowania — nigdy tajny klucz — w <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Zapamiętane połączenie staje się też przyciskiem na pasku napędów, a klik na nim łączy bezpośrednio, bez ponownego otwierania tego okna.</p>
+<h3 id="profile-ktore-juz-masz">Profile, które już masz</h3>
+<p>Jeśli używasz wiersza poleceń AWS, jego profile są proponowane w menu <strong>Nazwa</strong> z oznaczeniem <em>(AWS CLI)</em>, czytane z <code>~/.aws/credentials</code> i <code>~/.aws/config</code> — wraz z regionem, tokenem sesji i <code>s3.addressing_style</code>. Nic nie jest tam zapisywane, a taki profil <strong>nie</strong> jest zapamiętywany domyślnie: trzymanie drugiej kopii tajnego klucza to coś, o co się prosi, a nie coś, co dzieje się dlatego, że wybrano nazwę z menu.</p>
+<h3 id="publiczne-buckety">Publiczne buckety</h3>
+<p><strong>Połącz anonimowo</strong> nie wysyła żadnego podpisu, czego oczekuje bucket czytelny publicznie. Jeśli bucket nie jest publiczny, dowiesz się właśnie tego — a nie że klucz został odrzucony. Klucza nie było.</p>
+<h2 id="co-mozna-zrobic">Co można zrobić</h2>
+<p>Listowanie, czytanie, zapis, tworzenie folderów i bucketów, usuwanie, zmiana nazwy i przenoszenie działają. Kopiowanie i przenoszenie odbywa się <strong>na serwerze</strong>: bajty nie przechodzą przez twojego Maca.</p>
+<p>Folder w S3 nie jest niczym rzeczywistym — to albo wspólny przedrostek kluczy pod nim, albo obiekt o zerowej długości, którego nazwa kończy się na <code>/</code>. Oba są pokazywane jako foldery. Utworzenie takiego zapisuje ten znacznik; usunięcie usuwa każdy obiekt poniżej, bo nie ma nic innego do usunięcia.</p>
+<p>Na najwyższym poziomie <strong>Nowy folder tworzy bucket</strong> — ten poziom <em>jest</em> listą bucketów, nic innego nie mogłoby tam znaczyć.</p>
+<p><strong>Klasa magazynu</strong> i <strong>ETag</strong> są dostępne jako kolumny panelu (prawy klik na nagłówku). Oba pochodzą z listy, która już się odbyła, więc nic nie kosztują.</p>
+<h2 id="czego-mozna-sie-spodziewac">Czego można się spodziewać</h2>
+<p><strong>Bucketa nie da się przemianować.</strong> S3 nie ma takiej operacji, a alternatywa — skopiowanie każdego obiektu do nowego bucketa i usunięcie starego — nie jest tym, o co prosiło okno zmiany nazwy. Jest to odmawiane, nie udawane.</p>
+<p><strong>Transfery obejmują całe pliki.</strong> Plik jest pobierany lub wysyłany w jednym kawałku; przerwany transfer zaczyna się od nowa, a nie wznawia. Duże wysyłki są automatycznie dzielone na części; jeśli część zawiedzie, części są sprzątane, a nie zostawiane do zapłaty.</p>
+<p><strong>Zmiana nazwy folderu nie jest atomowa.</strong> Kopiuje i usuwa obiekt po obiekcie i zatrzymuje się na pierwszym błędzie, zamiast przechodzić w stan przeniesiony do połowy.</p>
+<p><strong>Zarchiwizowanych obiektów nie da się czytać wprost.</strong> Obiekt w Glacier lub Deep Archive trzeba najpierw przywrócić, w konsoli AWS albo przez CLI. Panel to mówi, zamiast zawodzić tak, jakby obiekt był uszkodzony.</p>
+<p><strong>Listowanie bardzo dużego folderu trwa tyle, ile trwa u serwera.</strong> Obiekty przychodzą po tysiąc, a panel zapełnia się, gdy dotrze ostatnia strona.</p>
+<p><strong>Każde żądanie kosztuje w usłudze płatnej.</strong> Wtyczka jest napisana tak, by pytać jak najmniej — kolumny pochodzą z listy, która już się odbyła, region bucketa jest poznawany raz i pamiętany — ale przeglądanie bucketa nie jest darmowe tak jak przeglądanie dysku.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="webdav.html">Serwery WebDAV</a></li><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li><li><a href="copying-files.html">Kopiowanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

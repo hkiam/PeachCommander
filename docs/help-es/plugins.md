@@ -24,6 +24,7 @@ Varios complementos tienen su propio tema de ayuda detallado; sigue el enlace pa
 
 Los demás complementos integrados son más pequeños y no necesitan una página propia:
 
+- **Amazon S3** — conéctese a Amazon S3 o a almacenamiento compatible con S3 (**Red ▸ Conectar con Amazon S3…**) y explore los buckets como carpetas, con lectura, escritura, renombrado y borrado. Las claves secretas se guardan en el Llavero de macOS.
 - **WebDAV** — conéctate a un servidor WebDAV (**Net ▸ Conectar a WebDAV…**) y explora, sube, descarga, renombra y elimina en él como si fuera una carpeta. Las contraseñas se guardan en el Llavero de macOS.
 - **iCloud Drive** — añade una entrada *iCloud Drive* a la barra de unidades que salta directamente a tu carpeta local de iCloud Drive. Aparece solo cuando iCloud Drive está configurado en tu Mac.
 - **Notes** — guarda una nota junto a cualquier archivo o carpeta. Una pequeña insignia **●** marca los elementos que tienen una; edita las notas en una barra lateral **Notes** acoplada o en un editor de texto enriquecido completo (**Comandos ▸ Editar nota…**), y explóralas todas con **Resumen de notas…**.

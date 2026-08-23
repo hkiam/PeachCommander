@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 et stockages compatibles S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 et stockages compatibles S3</h1>
+<p>Un bucket S3 peut être parcouru dans un panneau comme n’importe quel dossier. Choisissez <strong>Se connecter à Amazon S3…</strong> dans le menu Réseau, renseignez le point d’accès et vos clés, et le stockage apparaît dans le panneau actif — avec la <strong>liste des buckets comme niveau supérieur</strong>, chaque bucket étant un répertoire ordinaire en dessous.</p>
+<p>Cela fonctionne avec Amazon S3 et avec tout ce qui parle le même protocole : MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 et DigitalOcean Spaces sont tous accessibles.</p>
+<p>C’est une extension : vous pouvez la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<h2 id="se-connecter">Se connecter</h2>
+<p>Le menu <strong>Service</strong> renseigne les deux réglages qui ne se devinent pas — utiliser HTTPS et savoir si le point d’accès exige l’adressage par chemin — et laisse le point d’accès lui-même, car il dépend généralement de votre compte. Ces deux réglages échouent d’une manière qui ressemble à autre chose : l’adressage par nom d’hôte virtuel contre une adresse IP nue est une erreur de résolution de nom, et l’adressage par chemin contre Amazon est un « bucket inexistant » qui se lit comme un bucket manquant.</p>
+<p>La <strong>clé d’accès secrète</strong> est confiée au <strong>trousseau</strong> par l’application hôte, jamais à un fichier de configuration. Laissez le champ vide lors d’une connexion ultérieure et la clé enregistrée est utilisée.</p>
+<p><strong>Mémoriser cette connexion</strong> conserve le point d’accès, la région, l’ID de clé et le mode d’adressage — jamais le secret — dans <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Une connexion mémorisée devient aussi une vignette dans la barre des volumes, et un clic dessus s’y connecte directement au lieu de rouvrir cette fenêtre.</p>
+<h3 id="les-profils-que-vous-avez-deja">Les profils que vous avez déjà</h3>
+<p>Si vous utilisez la ligne de commande AWS, ses profils sont proposés dans le menu <strong>Nom</strong> avec la mention <em>(AWS CLI)</em>, lus depuis <code>~/.aws/credentials</code> et <code>~/.aws/config</code> — y compris la région, un jeton de session et <code>s3.addressing_style</code>. Rien n’y est réécrit, et un tel profil n’est <strong>pas</strong> mémorisé par défaut : garder une deuxième copie d’un secret est une chose que l’on demande, pas une chose qui arrive parce qu’on a choisi un nom dans un menu.</p>
+<h3 id="buckets-publics">Buckets publics</h3>
+<p><strong>Se connecter anonymement</strong> n’envoie aucune signature, ce qu’attend un bucket lisible publiquement. Si le bucket n’est pas public, on vous le dit — et non que votre clé a été refusée. Il n’y avait pas de clé.</p>
+<h2 id="ce-que-vous-pouvez-faire">Ce que vous pouvez faire</h2>
+<p>Lister, lire, écrire, créer des dossiers et des buckets, supprimer, renommer et déplacer fonctionnent tous. Les copies et les déplacements ont lieu <strong>sur le serveur</strong> : les octets ne passent pas par votre Mac.</p>
+<p>Un dossier n’existe pas vraiment dans S3 — c’est soit un préfixe commun aux clés qu’il contient, soit un objet de zéro octet dont le nom se termine par <code>/</code>. Les deux sont présentés comme des dossiers. En créer un écrit ce marqueur ; en supprimer un supprime tous les objets en dessous, car il n’y a rien d’autre à supprimer.</p>
+<p>Au niveau supérieur, <strong>Nouveau dossier crée un bucket</strong> — ce niveau <em>est</em> la liste des buckets, cela ne pourrait rien signifier d’autre.</p>
+<p><strong>Classe de stockage</strong> et <strong>ETag</strong> sont disponibles comme colonnes du panneau (clic droit sur l’en-tête). Toutes deux proviennent de la liste déjà obtenue et ne coûtent donc rien.</p>
+<h2 id="a-quoi-vous-attendre">À quoi vous attendre</h2>
+<p><strong>Un bucket ne peut pas être renommé.</strong> S3 n’a pas cette opération, et l’alternative — copier chaque objet dans un nouveau bucket puis supprimer l’ancien — n’est pas ce qu’une fenêtre de renommage a demandé. C’est refusé plutôt que simulé.</p>
+<p><strong>Les transferts portent sur des fichiers entiers.</strong> Un fichier est récupéré ou envoyé d’un seul tenant ; un transfert interrompu recommence au lieu de reprendre. Les envois volumineux sont découpés automatiquement ; si une partie échoue, les parties sont nettoyées plutôt que laissées à facturer.</p>
+<p><strong>Renommer un dossier n’est pas atomique.</strong> Cela copie et supprime objet par objet, et s’arrête à la première erreur au lieu de continuer vers un état à moitié déplacé.</p>
+<p><strong>Les objets archivés ne se lisent pas directement.</strong> Un objet dans Glacier ou Deep Archive doit d’abord être restauré, dans la console AWS ou avec la CLI. Le panneau le dit, au lieu d’échouer comme si l’objet était endommagé.</p>
+<p><strong>Lister un très grand dossier prend le temps que met le serveur.</strong> Les objets arrivent par milliers et le panneau se remplit quand la dernière page est arrivée.</p>
+<p><strong>Chaque requête coûte de l’argent sur un service payant.</strong> L’extension est écrite pour demander le moins possible — les colonnes viennent de la liste déjà obtenue, la région d’un bucket est apprise une fois et retenue — mais parcourir un bucket n’est pas gratuit comme parcourir un disque.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="webdav.html">Serveurs WebDAV</a></li><li><a href="ftp-and-sftp.html">Se connecter en FTP et SFTP</a></li><li><a href="copying-files.html">Copier des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

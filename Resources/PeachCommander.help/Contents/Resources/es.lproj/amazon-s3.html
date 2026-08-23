@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 y almacenamiento compatible con S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 y almacenamiento compatible con S3</h1>
+<p>Un bucket de S3 se puede explorar en un panel como cualquier carpeta. Elija <strong>Conectar con Amazon S3…</strong> en el menú Red, indique el punto de acceso y sus claves, y el almacenamiento aparecerá en el panel activo — con la <strong>lista de buckets como nivel superior</strong> y cada bucket como un directorio normal por debajo.</p>
+<p>Funciona con Amazon S3 y con todo lo que hable el mismo protocolo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 y DigitalOcean Spaces son accesibles.</p>
+<p>Es un complemento, así que puede desactivarlo o quitarlo en <strong>Configuración ▸ Complementos…</strong>.</p>
+<h2 id="conectar">Conectar</h2>
+<p>El menú <strong>Servicio</strong> rellena los dos ajustes que no se pueden adivinar — si se usa HTTPS y si el punto de acceso necesita direccionamiento por ruta — y deja el punto de acceso a su criterio, porque suele depender de su cuenta. Ambos ajustes fallan de un modo que parece otra cosa: el direccionamiento por nombre de host contra una dirección IP desnuda es un error de resolución de nombres, y el direccionamiento por ruta contra Amazon es un «no existe el bucket» que se lee como un bucket que falta.</p>
+<p>La <strong>clave de acceso secreta</strong> va al <strong>Llavero</strong> a través de la aplicación anfitriona, nunca a un archivo de configuración. Deje el campo vacío en una conexión posterior y se usará la guardada.</p>
+<p><strong>Recordar esta conexión</strong> conserva el punto de acceso, la región, el ID de clave y el modo de direccionamiento — nunca el secreto — en <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Una conexión recordada se convierte además en una ficha en la barra de volúmenes, y pulsarla conecta directamente en lugar de volver a abrir este diálogo.</p>
+<h3 id="perfiles-que-ya-tiene">Perfiles que ya tiene</h3>
+<p>Si usa la línea de comandos de AWS, sus perfiles se ofrecen en el menú <strong>Nombre</strong> marcados con <em>(AWS CLI)</em>, leídos de <code>~/.aws/credentials</code> y <code>~/.aws/config</code> — incluida la región, un token de sesión y <code>s3.addressing_style</code>. Allí no se escribe nada, y un perfil así <strong>no</strong> se recuerda por omisión: guardar una segunda copia de un secreto es algo que se pide, no algo que ocurre por elegir un nombre en un menú.</p>
+<h3 id="buckets-publicos">Buckets públicos</h3>
+<p><strong>Conectar de forma anónima</strong> no envía ninguna firma, que es lo que quiere un bucket de lectura pública. Si el bucket no es público, se le dice eso — y no que su clave fue rechazada. No había clave.</p>
+<h2 id="que-puede-hacer">Qué puede hacer</h2>
+<p>Listar, leer, escribir, crear carpetas y buckets, eliminar, renombrar y mover funcionan todos. Las copias y los movimientos ocurren <strong>en el servidor</strong>: los bytes no pasan por su Mac.</p>
+<p>Una carpeta en S3 no es algo real — es o un prefijo compartido de las claves que contiene, o un objeto de cero bytes cuyo nombre termina en <code>/</code>. Ambos se muestran como carpetas. Crear una escribe ese marcador; eliminar una elimina todos los objetos que hay debajo, porque no hay nada más que eliminar.</p>
+<p>En el nivel superior, <strong>Nueva carpeta crea un bucket</strong> — ese nivel <em>es</em> la lista de buckets, no podría significar otra cosa.</p>
+<p><strong>Clase de almacenamiento</strong> y <strong>ETag</strong> están disponibles como columnas del panel (clic derecho en el encabezado). Ambas salen del listado, así que mostrarlas no cuesta nada.</p>
+<h2 id="que-esperar">Qué esperar</h2>
+<p><strong>Un bucket no se puede renombrar.</strong> S3 no tiene esa operación, y la alternativa — copiar cada objeto a un bucket nuevo y borrar el antiguo — no es lo que pidió un diálogo de renombrar. Se rechaza en lugar de simularse.</p>
+<p><strong>Las transferencias son de archivo completo.</strong> Un archivo se obtiene o se envía de una pieza; una transferencia interrumpida empieza de nuevo en vez de continuar. Las subidas grandes se dividen en partes automáticamente; si una parte falla, las partes se limpian en lugar de quedar y facturarse.</p>
+<p><strong>Renombrar una carpeta no es atómico.</strong> Copia y elimina objeto a objeto, y se detiene en el primer fallo en lugar de seguir hacia un estado a medio mover.</p>
+<p><strong>Los objetos archivados no se leen directamente.</strong> Un objeto en Glacier o Deep Archive debe restaurarse primero, en la consola de AWS o con la CLI. El panel lo dice, en lugar de fallar como si el objeto estuviera dañado.</p>
+<p><strong>Listar una carpeta muy grande tarda lo que tarde el servidor.</strong> Los objetos llegan de mil en mil y el panel se llena cuando ha entrado la última página.</p>
+<p><strong>Cada petición cuesta dinero en un servicio de pago.</strong> El complemento está escrito para preguntar lo menos posible — las columnas vienen del listado que ya ocurrió, la región de un bucket se aprende una vez y se recuerda — pero explorar un bucket no es gratis como explorar un disco.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="webdav.html">Servidores WebDAV</a></li><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li><li><a href="copying-files.html">Copiar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

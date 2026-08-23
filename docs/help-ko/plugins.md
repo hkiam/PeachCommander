@@ -24,6 +24,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 
 나머지 기본 제공 플러그인은 더 작아서 별도의 페이지가 필요하지 않습니다:
 
+- **Amazon S3** — Amazon S3 또는 S3 호환 스토리지에 연결하고(**네트워크 ▸ Amazon S3에 연결…**) 버킷을 폴더처럼 탐색하며 읽기, 쓰기, 이름 바꾸기, 삭제를 할 수 있습니다. 비밀 키는 macOS 키체인에 보관됩니다.
 - **WebDAV** — WebDAV 서버에 연결하고(**네트워크 ▸ WebDAV Connect…**) 마치 폴더인 것처럼 그 위에서 탐색, 업로드, 다운로드, 이름 바꾸기, 삭제를 합니다. 암호는 macOS 키체인에 보관됩니다.
 - **iCloud Drive** — 로컬 iCloud Drive 폴더로 곧장 이동하는 *iCloud Drive* 항목을 드라이브 막대에 더합니다. Mac에 iCloud Drive가 설정되어 있을 때만 나타납니다.
 - **Notes** — 아무 파일이나 폴더 옆에 메모를 보관합니다. 작은 **●** 배지가 메모가 있는 항목을 표시합니다. 도킹된 **Notes** 사이드바나 전체 서식 있는 텍스트 편집기(**명령 ▸ Edit Note…**)에서 메모를 편집하고, **Notes Overview…**로 모두 둘러봅니다.

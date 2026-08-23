@@ -24,6 +24,7 @@ Flera insticksprogram har sitt eget detaljerade hjälpavsnitt — följ länken 
 
 De återstående inbyggda insticksprogrammen är mindre och behöver ingen egen sida:
 
+- **Amazon S3** — anslut till Amazon S3 eller S3-kompatibel lagring (**Nät ▸ Anslut till Amazon S3…**) och bläddra i buckets som mappar, med läsning, skrivning, namnbyte och borttagning. Hemliga nycklar förvaras i macOS-nyckelhanteraren.
 - **WebDAV** — anslut till en WebDAV-server (**Nätverk ▸ Anslut till WebDAV…**) och bläddra, ladda upp, ladda ner, byt namn på och ta bort på den som om den vore en mapp. Lösenord förvaras i macOS nyckelring.
 - **iCloud Drive** — lägger till en post *iCloud Drive* i enhetsraden som hoppar direkt till din lokala iCloud Drive-mapp. Den visas bara när iCloud Drive är konfigurerat på din Mac.
 - **Notes** — behåll en anteckning bredvid vilken fil eller mapp som helst. En liten **●**-bricka markerar objekt som har en; redigera anteckningar i en dockad **Notes**-sidopanel eller en fullständig redigerare för rik text (**Kommandon ▸ Redigera anteckning…**), och bläddra bland dem alla med **Anteckningsöversikt…**.

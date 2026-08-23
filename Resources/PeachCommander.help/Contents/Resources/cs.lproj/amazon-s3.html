@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 a úložiště kompatibilní s S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 a úložiště kompatibilní s S3</h1>
+<p>Bucket S3 lze v panelu prohlížet jako každou složku. Zvolte <strong>Připojit k Amazon S3…</strong> v nabídce Síť, zadejte endpoint a klíče, a úložiště se objeví v aktivním panelu — se <strong>seznamem bucketů jako nejvyšší úrovní</strong> a každým bucketem jako běžným adresářem pod ní.</p>
+<p>Funguje s Amazon S3 a se vším, co mluví stejným protokolem: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 a DigitalOcean Spaces jsou dostupné.</p>
+<p>Je to zásuvný modul, takže jej lze vypnout nebo odebrat v <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="pripojeni">Připojení</h2>
+<p>Nabídka <strong>Služba</strong> vyplní dvě nastavení, která nelze uhádnout — zda použít HTTPS a zda endpoint potřebuje adresování cestou — a samotný endpoint nechá na vás, protože obvykle závisí na vašem účtu. Obě nastavení selhávají způsobem, který vypadá jako něco jiného: adresování přes jméno hostitele proti holé IP adrese je chyba překladu jmen, a adresování cestou proti Amazonu je „takový bucket neexistuje“, což se čte jako chybějící bucket.</p>
+<p><strong>Tajný přístupový klíč</strong> míří přes hostitelskou aplikaci do <strong>Klíčenky</strong>, nikdy do konfiguračního souboru. Nechte pole při dalším připojení prázdné a použije se uložený.</p>
+<p><strong>Zapamatovat toto připojení</strong> uchová endpoint, region, ID klíče a způsob adresování — nikdy tajný klíč — v <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Zapamatované připojení se navíc stane tlačítkem v liště disků a kliknutí na něj jej připojí přímo, místo aby znovu otevřelo tento dialog.</p>
+<h3 id="profily-ktere-uz-mate">Profily, které už máte</h3>
+<p>Pokud používáte příkazovou řádku AWS, její profily se nabízejí v nabídce <strong>Název</strong> s označením <em>(AWS CLI)</em> a čtou se z <code>~/.aws/credentials</code> a <code>~/.aws/config</code> — včetně regionu, tokenu sezení a <code>s3.addressing_style</code>. Nic se tam nezapisuje zpět a takový profil se <strong>nezapamatuje</strong> automaticky: držet druhou kopii tajného klíče je něco, o co se žádá, ne něco, co se stane proto, že jste vybrali jméno z nabídky.</p>
+<h3 id="verejne-buckety">Veřejné buckety</h3>
+<p><strong>Připojit anonymně</strong> neposílá žádný podpis, což je to, co veřejně čitelný bucket chce. Není-li bucket veřejný, řekne se vám právě to — a ne že byl váš klíč odmítnut. Žádný klíč nebyl.</p>
+<h2 id="co-lze-delat">Co lze dělat</h2>
+<p>Výpis, čtení, zápis, vytváření složek a bucketů, mazání, přejmenování a přesun fungují. Kopírování a přesun se dějí <strong>na serveru</strong>: bajty neputují přes váš Mac.</p>
+<p>Složka v S3 není nic skutečného — je to buď společný prefix klíčů pod ní, nebo objekt nulové délky, jehož jméno končí na <code>/</code>. Obojí se zobrazuje jako složka. Vytvoření zapíše tento marker; smazání smaže každý objekt pod ní, protože nic jiného ke smazání není.</p>
+<p>Na nejvyšší úrovni <strong>Nová složka vytvoří bucket</strong> — tato úroveň <em>je</em> seznam bucketů, nic jiného by tam nemohlo znamenat.</p>
+<p><strong>Třída úložiště</strong> a <strong>ETag</strong> jsou dostupné jako sloupce panelu (pravý klik na záhlaví). Oba pocházejí z výpisu, který už proběhl, takže nic nestojí.</p>
+<h2 id="co-od-nej-ocekavat">Co od něj očekávat</h2>
+<p><strong>Bucket nelze přejmenovat.</strong> S3 tuto operaci nemá a alternativa — zkopírovat každý objekt do nového bucketu a starý smazat — není to, o co dialog přejmenování žádal. Je to odmítnuto, ne předstíráno.</p>
+<p><strong>Přenosy se týkají celých souborů.</strong> Soubor se získá nebo pošle v jednom kusu; přerušený přenos začne znovu, místo aby pokračoval. Velké uploady se automaticky dělí na části; selže-li část, části se uklidí a nezůstanou k fakturaci.</p>
+<p><strong>Přejmenování složky není atomické.</strong> Kopíruje a maže objekt po objektu a zastaví se na první chybě, místo aby pokračovalo do napůl přesunutého stavu.</p>
+<p><strong>Archivované objekty nelze číst přímo.</strong> Objekt v Glacier nebo Deep Archive je nutné nejprve obnovit, v konzoli AWS nebo pomocí CLI. Panel to řekne, místo aby selhal, jako by byl objekt poškozený.</p>
+<p><strong>Výpis velmi velké složky trvá tak dlouho, jak trvá serveru.</strong> Objekty přicházejí po tisících a panel se naplní, až dorazí poslední stránka.</p>
+<p><strong>Každý požadavek u placené služby stojí peníze.</strong> Zásuvný modul je napsán tak, aby se ptal co nejméně — sloupce pocházejí z výpisu, který už proběhl, region bucketu se zjistí jednou a pamatuje se — ale prohlížet bucket není zdarma jako prohlížet disk.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="webdav.html">Servery WebDAV</a></li><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li><li><a href="copying-files.html">Kopírování souborů</a></li></ul></section>
+</main>
+</body>
+</html>

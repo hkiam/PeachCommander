@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 e storage compatibili con S3</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 e storage compatibili con S3</h1>
+<p>Un bucket S3 si può esplorare in un pannello come qualsiasi cartella. Scegli <strong>Connetti ad Amazon S3…</strong> dal menu Rete, inserisci l’endpoint e le tue chiavi, e lo storage appare nel pannello attivo — con l’<strong>elenco dei bucket come livello superiore</strong> e ogni bucket come una normale directory sottostante.</p>
+<p>Funziona con Amazon S3 e con tutto ciò che parla lo stesso protocollo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 e DigitalOcean Spaces sono tutti raggiungibili.</p>
+<p>È un plugin, quindi puoi disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="connessione">Connessione</h2>
+<p>Il menu <strong>Servizio</strong> compila le due impostazioni che non si possono indovinare — se usare HTTPS e se l’endpoint richiede l’indirizzamento per percorso — e lascia a te l’endpoint, perché di solito dipende dal tuo account. Entrambe fallirebbero in un modo che sembra qualcos’altro: l’indirizzamento virtual-hosted verso un semplice indirizzo IP è un errore di risoluzione dei nomi, e l’indirizzamento per percorso verso Amazon è un «bucket inesistente» che si legge come un bucket mancante.</p>
+<p>La <strong>chiave di accesso segreta</strong> finisce nel <strong>Portachiavi</strong> tramite l’applicazione host, mai in un file di configurazione. Lascia il campo vuoto a una connessione successiva e verrà usata quella salvata.</p>
+<p><strong>Ricorda questa connessione</strong> conserva endpoint, regione, ID chiave e modalità di indirizzamento — mai il segreto — in <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. Una connessione ricordata diventa anche un pulsante nella barra dei volumi, e farci clic la collega direttamente invece di riaprire questa finestra.</p>
+<h3 id="profili-che-hai-gia">Profili che hai già</h3>
+<p>Se usi la riga di comando AWS, i suoi profili vengono offerti nel menu <strong>Nome</strong> con la dicitura <em>(AWS CLI)</em>, letti da <code>~/.aws/credentials</code> e <code>~/.aws/config</code> — compresi regione, token di sessione e <code>s3.addressing_style</code>. Lì non viene riscritto nulla, e un profilo così <strong>non</strong> viene ricordato per impostazione predefinita: tenere una seconda copia di un segreto è qualcosa che si chiede, non qualcosa che succede perché hai scelto un nome da un menu.</p>
+<h3 id="bucket-pubblici">Bucket pubblici</h3>
+<p><strong>Connetti in modo anonimo</strong> non invia alcuna firma, che è ciò che vuole un bucket leggibile pubblicamente. Se il bucket non è pubblico te lo dice, invece di dirti che la chiave è stata rifiutata: non c’era nessuna chiave.</p>
+<h2 id="cosa-puoi-fare">Cosa puoi fare</h2>
+<p>Elencare, leggere, scrivere, creare cartelle e bucket, eliminare, rinominare e spostare funzionano tutti. Copie e spostamenti avvengono <strong>sul server</strong>: i byte non passano dal tuo Mac.</p>
+<p>Una cartella in S3 non è una cosa reale — è un prefisso condiviso dalle chiavi che contiene, oppure un oggetto di zero byte il cui nome termina con <code>/</code>. Entrambi vengono mostrati come cartelle. Crearne una scrive quel marcatore; eliminarne una elimina ogni oggetto sottostante, perché non c’è altro da eliminare.</p>
+<p>Al livello superiore, <strong>Nuova cartella crea un bucket</strong> — quel livello <em>è</em> l’elenco dei bucket, non potrebbe significare altro.</p>
+<p><strong>Classe di storage</strong> ed <strong>ETag</strong> sono disponibili come colonne del pannello (clic destro sull’intestazione). Entrambe provengono dall’elenco già ottenuto, quindi non costano nulla.</p>
+<h2 id="cosa-aspettarsi">Cosa aspettarsi</h2>
+<p><strong>Un bucket non si può rinominare.</strong> S3 non ha questa operazione, e l’alternativa — copiare ogni oggetto in un nuovo bucket ed eliminare il vecchio — non è ciò che una finestra di rinomina ha chiesto. Viene rifiutato anziché simulato.</p>
+<p><strong>I trasferimenti riguardano l’intero file.</strong> Un file viene preso o inviato in un pezzo unico; un trasferimento interrotto ricomincia invece di riprendere. I caricamenti grandi vengono divisi in parti automaticamente; se una parte fallisce, le parti vengono ripulite anziché lasciate lì a essere fatturate.</p>
+<p><strong>Rinominare una cartella non è atomico.</strong> Copia ed elimina un oggetto per volta, e si ferma al primo errore invece di proseguire verso uno stato spostato a metà.</p>
+<p><strong>Gli oggetti archiviati non si leggono direttamente.</strong> Un oggetto in Glacier o Deep Archive va prima ripristinato, nella console AWS o con la CLI. Il pannello lo dice, invece di fallire come se l’oggetto fosse danneggiato.</p>
+<p><strong>Elencare una cartella molto grande richiede il tempo del server.</strong> Gli oggetti arrivano mille alla volta e il pannello si riempie quando è arrivata l’ultima pagina.</p>
+<p><strong>Ogni richiesta costa denaro su un servizio a pagamento.</strong> Il plugin è scritto per chiedere il meno possibile — le colonne vengono dall’elenco già ottenuto, la regione di un bucket viene appresa una volta e ricordata — ma esplorare un bucket non è gratis come esplorare un disco.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="webdav.html">Server WebDAV</a></li><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li><li><a href="copying-files.html">Copiare i file</a></li></ul></section>
+</main>
+</body>
+</html>

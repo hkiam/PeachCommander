@@ -439,6 +439,24 @@ features:
     screenshots: [ftp-connection-manager]
     notes: "Plain FTP, FTPS explicit (AUTH TLS) + implicit (990), active/passive, resume (REST), MLSD/UNIX/DOS listings, keep-alive, self-signed opt-in, SOCKS5 proxy, wincmd import."
 
+  - id: amazon-s3
+    name: Amazon S3 (Plugin)
+    name_en: Amazon S3 (plugin)
+    category: network
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Net], shortcuts: [], commands: [plugin.s3.connect] }
+    source: { modules: [Plugins/S3], types: [S3Connection, S3Signer, S3Profiles] }
+    documentation: { integrated_help: true, website: true, developer_docs: false }
+    notes: >-
+      Removable PFX plugin. AWS and S3-compatible (MinIO, Ceph/RGW, R2, Wasabi, B2, Spaces).
+      Bucket list as the mount root; SigV4 written in-plugin over CryptoKit and pinned against
+      AWS's published example signatures; virtual-hosted and path-style addressing; per-bucket
+      region learned from a redirect; ~/.aws profiles, environment and anonymous access;
+      read, write, multipart upload with abort cleanup, recursive prefix delete, server-side
+      copy/move across buckets; Storage Class and ETag as content columns. No range read —
+      the PFX ABI is whole-file.
+
   - id: sftp
     name: SFTP / SCP (SSH)
     name_en: SFTP / SCP

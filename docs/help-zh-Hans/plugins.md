@@ -24,6 +24,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 
 其余的内置插件较小，不需要各自单独的页面：
 
+- **Amazon S3** — 连接到 Amazon S3 或 S3 兼容存储（**网络 ▸ 连接到 Amazon S3…**），像浏览文件夹一样浏览存储桶，可读取、写入、重命名和删除。私有密钥保存在 macOS 钥匙串中。
 - **WebDAV** —— 连接到 WebDAV 服务器（**网络 ▸ WebDAV Connect…**），并像浏览文件夹一样在其上浏览、上传、下载、重命名和删除。密码保存在 macOS 钥匙串中。
 - **iCloud Drive** —— 在驱动器栏中添加一个 *iCloud Drive* 条目，直接跳转到你本地的 iCloud 云盘文件夹。它仅在你的 Mac 上设置了 iCloud 云盘时才出现。
 - **Notes** —— 在任意文件或文件夹旁保留一条备注。一个小小的 **●** 标记会标示带有备注的项目；在停靠的 **Notes** 侧边栏或完整的富文本编辑器中编辑备注（**命令 ▸ Edit Note…**），并用 **Notes Overview…** 浏览所有备注。

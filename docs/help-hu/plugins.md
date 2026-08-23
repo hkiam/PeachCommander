@@ -24,6 +24,7 @@ Több bővítménynek saját, részletes súgótémája van — kövesse a hivat
 
 A többi beépített bővítmény kisebb, és nincs szüksége saját oldalra:
 
+- **Amazon S3** — kapcsolódjon az Amazon S3-hoz vagy S3-kompatibilis tárolóhoz (**Hálózat ▸ Kapcsolódás az Amazon S3-hoz…**), és böngésszen a bucketek között mappákként, olvasással, írással, átnevezéssel és törléssel. A titkos kulcsok a macOS Kulcskarikán maradnak.
 - **WebDAV** — csatlakozzon egy WebDAV-kiszolgálóhoz (**Hálózat ▸ WebDAV-kapcsolat…**), és böngésszen, töltsön fel, töltsön le, nevezzen át és töröljön rajta, mintha egy mappa lenne. A jelszavak a macOS Kulcskarikán maradnak.
 - **iCloud Drive** — hozzáad egy *iCloud Drive* bejegyzést a meghajtósávhoz, amely közvetlenül a helyi iCloud Drive mappájához ugrik. Csak akkor jelenik meg, ha az iCloud Drive be van állítva a Macen.
 - **Notes** — tartson egy jegyzetet bármely fájl vagy mappa mellett. Egy kis **●** jelvény jelöli az olyan elemeket, amelyekhez tartozik; szerkessze a jegyzeteket egy dokkolt **Notes** oldalsávban vagy egy teljes rich-text szerkesztőben (**Parancsok ▸ Jegyzet szerkesztése…**), és böngéssze mindet a **Jegyzetek áttekintése…** paranccsal.

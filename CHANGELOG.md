@@ -14,6 +14,21 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Amazon S3 and S3-compatible storage as a drive.** **Net ▸ Amazon S3 Connect…** connects to Amazon
+  S3, MinIO, Ceph, Cloudflare R2, Wasabi, Backblaze B2 or DigitalOcean Spaces, and the bucket list
+  becomes the top level of a panel with each bucket a folder below it. Reading, writing, new folders
+  and buckets, deleting, renaming and moving all work, and copies happen on the server rather than
+  through your Mac. Profiles from the AWS command line are offered if you have them; secret keys go
+  into the Keychain. A remembered connection becomes a chip in the drive bar that connects when you
+  click it. **Storage Class** and **ETag** are available as panel columns.
+
+  It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**. The help topic
+  **Amazon S3 and S3-compatible storage** describes what to expect of it — including that a bucket
+  cannot be renamed, that an archived object must be restored before it can be read, and that unlike a
+  disk, every request to a paid service costs money.
+
 ### Changed
 
 - **The AI assistant now arrives switched off.** Turn it on in **Configuration ▸ Plugins…**; leave it

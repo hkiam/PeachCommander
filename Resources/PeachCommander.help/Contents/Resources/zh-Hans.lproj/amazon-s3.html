@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 与 S3 兼容存储</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 与 S3 兼容存储</h1>
+<p>S3 存储桶可以像任何文件夹一样在面板中浏览。在“网络”菜单中选择 <strong>连接到 Amazon S3…</strong>，填入终端节点和你的密钥，存储就会出现在活动面板中——<strong>顶层是存储桶列表</strong>，其下每个存储桶都是一个普通目录。</p>
+<p>它适用于 Amazon S3，也适用于所有讲同一协议的服务：MinIO、Ceph/RADOS Gateway、Cloudflare R2、Wasabi、Backblaze B2 和 DigitalOcean Spaces 都可以访问。</p>
+<p>它是一个插件，因此可以在 <strong>配置 ▸ 插件…</strong> 中关闭或移除。</p>
+<h2 id="_1">连接</h2>
+<p><strong>服务</strong> 菜单会填好两项无法猜测的设置——是否使用 HTTPS，以及终端节点是否需要路径式寻址——而终端节点本身留给你，因为它通常与你的账户有关。这两项设置出错时都像是别的问题：对裸 IP 地址使用虚拟主机式寻址会得到名称解析错误，对 Amazon 使用路径式寻址会得到“没有这个存储桶”，读起来像是存储桶不存在。</p>
+<p><strong>私有访问密钥</strong> 通过宿主程序进入 <strong>钥匙串</strong>，绝不写入配置文件。下次连接时把该栏留空，就会使用已保存的密钥。</p>
+<p><strong>记住此连接</strong> 会把终端节点、区域、密钥 ID 和寻址方式保存在 <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code> 中——绝不保存私有密钥。记住的连接还会成为驱动器栏中的一个按钮，点击它即直接连接，而不会再次打开此对话框。</p>
+<h3 id="_2">你已经有的配置档</h3>
+<p>如果你使用 AWS 命令行，它的配置档会在 <strong>名称</strong> 菜单中以 <em>(AWS CLI)</em> 标注提供，从 <code>~/.aws/credentials</code> 和 <code>~/.aws/config</code> 读取——包括区域、会话令牌和 <code>s3.addressing_style</code>。不会向那里回写任何内容，而且这样的配置档默认 <strong>不会</strong> 被记住：多留一份密钥副本是应当明确要求的事，而不是因为你从菜单里选了一个名字就发生的事。</p>
+<h3 id="_3">公开存储桶</h3>
+<p><strong>匿名连接</strong> 完全不发送签名，这正是可公开读取的存储桶所需要的。如果存储桶不是公开的，会明确告诉你这一点——而不是说你的密钥被拒绝了。当时并没有密钥。</p>
+<h2 id="_4">可以做什么</h2>
+<p>列出、读取、写入、创建文件夹和存储桶、删除、重命名和移动都可用。复制和移动发生在 <strong>服务器上</strong>：字节不会经过你的 Mac。</p>
+<p>S3 中的文件夹并非真实存在——它要么是其下各个键的公共前缀，要么是一个名称以 <code>/</code> 结尾的零字节对象。两者都显示为文件夹。创建一个会写下该标记；删除一个会删除其下的每个对象，因为没有别的可删。</p>
+<p>在顶层，<strong>新建文件夹会创建一个存储桶</strong>——那一层 <em>就是</em> 存储桶列表，不可能有别的含义。</p>
+<p><strong>存储类别</strong> 和 <strong>ETag</strong> 可作为面板列使用（右键点击列标题）。两者都来自已经完成的列表请求，因此不产生额外开销。</p>
+<h2 id="_5">应有的预期</h2>
+<p><strong>存储桶无法重命名。</strong> S3 没有这个操作，而替代做法——把每个对象复制到新存储桶再删除旧的——并不是重命名对话框所要求的。因此予以拒绝，而不是假装完成。</p>
+<p><strong>传输以整个文件为单位。</strong> 文件一次性取回或发送；中断的传输会重新开始，而不是续传。大文件上传会自动分成多个部分；若某部分失败，这些部分会被清理，而不会留下来产生费用。</p>
+<p><strong>重命名文件夹不是原子操作。</strong> 它逐个对象复制并删除，遇到第一个错误就停下，而不会继续进入移动了一半的状态。</p>
+<p><strong>归档对象无法直接读取。</strong> 位于 Glacier 或 Deep Archive 的对象必须先在 AWS 控制台或用 CLI 还原。面板会如实说明，而不是像对象已损坏那样失败。</p>
+<p><strong>列出非常大的文件夹需要服务器所需的时间。</strong> 对象每千个一批到达，面板在最后一页到达时填满。</p>
+<p><strong>在付费服务上每个请求都要花钱。</strong> 这个插件的写法力求少问——列值来自已经完成的列表请求，存储桶的区域只查一次并记住——但浏览存储桶不像浏览磁盘那样免费。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="webdav.html">WebDAV 服务器</a></li><li><a href="ftp-and-sftp.html">连接到 FTP 与 SFTP</a></li><li><a href="copying-files.html">复制文件</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 og S3-kompatibel lagring</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 og S3-kompatibel lagring</h1>
+<p>En S3-bucket kan utforskes i et panel som enhver annen mappe. Velg <strong>Koble til Amazon S3…</strong> i Nett-menyen, fyll inn endepunkt og nøklene dine, og lagringen dukker opp i det aktive panelet — med <strong>bucketlisten som øverste nivå</strong> og hver bucket som en vanlig mappe under.</p>
+<p>Det virker med Amazon S3 og med alt som snakker samme protokoll: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 og DigitalOcean Spaces er alle tilgjengelige.</p>
+<p>Det er et programtillegg, så du kan slå det av eller fjerne det under <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="tilkobling">Tilkobling</h2>
+<p>Menyen <strong>Tjeneste</strong> fyller ut de to innstillingene man ikke kan gjette — om HTTPS skal brukes, og om endepunktet trenger sti-basert adressering — og lar endepunktet selv være opp til deg, siden det oftest avhenger av kontoen din. Begge innstillingene feiler på en måte som ser ut som noe annet: virtuell vertsadressering mot en naken IP-adresse er en navneoppslagsfeil, og sti-basert adressering mot Amazon er et «ingen slik bucket» som leses som en manglende bucket.</p>
+<p>Den <strong>hemmelige tilgangsnøkkelen</strong> går via vertsprogrammet til <strong>Nøkkelring</strong>, aldri til en oppsettsfil. La feltet stå tomt ved en senere tilkobling, og den lagrede brukes.</p>
+<p><strong>Husk denne tilkoblingen</strong> beholder endepunkt, region, nøkkel-ID og adresseringsmåte — aldri hemmeligheten — i <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. En husket tilkobling blir dessuten en knapp i disklinjen, og et klikk på den kobler til direkte i stedet for å åpne dette vinduet på nytt.</p>
+<h3 id="profiler-du-allerede-har">Profiler du allerede har</h3>
+<p>Bruker du AWS' kommandolinje, tilbys profilene dens i <strong>Navn</strong>-menyen merket <em>(AWS CLI)</em>, lest fra <code>~/.aws/credentials</code> og <code>~/.aws/config</code> — inkludert region, et sesjonstoken og <code>s3.addressing_style</code>. Ingenting skrives tilbake dit, og en slik profil huskes <strong>ikke</strong> som standard: å ha en andre kopi av en hemmelighet er noe man ber om, ikke noe som skjer fordi man valgte et navn i en meny.</p>
+<h3 id="offentlige-buckets">Offentlige buckets</h3>
+<p><strong>Koble til anonymt</strong> sender ingen signatur i det hele tatt, som er hva en offentlig lesbar bucket vil. Er bucketen ikke offentlig, blir du fortalt nettopp det — ikke at nøkkelen din ble avvist. Det var ingen nøkkel.</p>
+<h2 id="hva-du-kan-gjre">Hva du kan gjøre</h2>
+<p>Listing, lesing, skriving, oppretting av mapper og buckets, sletting, endring av navn og flytting virker alle. Kopiering og flytting skjer <strong>på tjeneren</strong>: bytene går ikke gjennom Macen din.</p>
+<p>En mappe er ikke noe virkelig i S3 — det er enten et felles prefiks for nøklene under den, eller et objekt på null byte hvis navn ender på <code>/</code>. Begge vises som mapper. Å opprette en skriver den markøren; å slette en sletter hvert objekt under, for det finnes ikke noe annet å slette.</p>
+<p>På øverste nivå oppretter <strong>Ny mappe en bucket</strong> — det nivået <em>er</em> bucketlisten, noe annet kunne det ikke bety.</p>
+<p><strong>Lagringsklasse</strong> og <strong>ETag</strong> er tilgjengelige som panelkolonner (høyreklikk på kolonneoverskriften). Begge kommer fra listingen som alt har skjedd, så de koster ingenting.</p>
+<h2 id="hva-du-kan-forvente">Hva du kan forvente</h2>
+<p><strong>En bucket kan ikke få nytt navn.</strong> S3 har ikke den operasjonen, og alternativet — å kopiere hvert objekt til en ny bucket og slette den gamle — er ikke det et navneendringsvindu ba om. Det avvises framfor å bli etterlignet.</p>
+<p><strong>Overføringer gjelder hele filer.</strong> En fil hentes eller sendes i ett stykke; en avbrutt overføring begynner på nytt i stedet for å fortsette. Store opplastinger deles automatisk i deler; feiler en del, ryddes delene bort i stedet for å bli liggende og fakturert.</p>
+<p><strong>Å endre navn på en mappe er ikke atomisk.</strong> Den kopierer og sletter objekt for objekt, og stopper ved første feil framfor å fortsette inn i en halvt flyttet tilstand.</p>
+<p><strong>Arkiverte objekter kan ikke leses direkte.</strong> Et objekt i Glacier eller Deep Archive må gjenopprettes først, i AWS-konsollen eller med CLI-en. Panelet sier det, framfor å feile som om objektet var skadet.</p>
+<p><strong>Å liste en svært stor mappe tar så lang tid som tjeneren bruker.</strong> Objekter kommer tusen om gangen, og panelet fylles når siste side er kommet inn.</p>
+<p><strong>Hver forespørsel koster penger på en betalt tjeneste.</strong> Programtillegget er skrevet for å spørre så lite som mulig — kolonner kommer fra listingen som alt har skjedd, en buckets region læres én gang og huskes — men å utforske en bucket er ikke gratis slik det er å utforske en disk.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="webdav.html">WebDAV-tjenere</a></li><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li><li><a href="copying-files.html">Kopiere filer</a></li></ul></section>
+</main>
+</body>
+</html>

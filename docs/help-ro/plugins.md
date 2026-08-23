@@ -24,6 +24,7 @@ Mai multe pluginuri au propriul lor subiect detaliat de ajutor — urmați linku
 
 Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină proprie:
 
+- **Amazon S3** — conectați-vă la Amazon S3 sau la o stocare compatibilă S3 (**Rețea ▸ Conectare la Amazon S3…**) și parcurgeți bucketurile ca dosare, cu citire, scriere, redenumire și ștergere. Cheile secrete sunt păstrate în Brelocul de chei macOS.
 - **WebDAV** — conectați-vă la un server WebDAV (**Rețea ▸ Conectare WebDAV…**) și parcurgeți, încărcați, descărcați, redenumiți și ștergeți pe el ca și cum ar fi un folder. Parolele sunt păstrate în inelul de chei macOS.
 - **iCloud Drive** — adaugă un element *iCloud Drive* în bara de unități care sare direct la folderul dvs. local iCloud Drive. Apare doar când iCloud Drive este configurat pe Mac-ul dvs.
 - **Notes** — păstrați o notă lângă orice fișier sau folder. Un mic ecuson **●** marchează elementele care au una; editați notele într-o bară laterală **Notes** ancorată sau într-un editor de text îmbogățit complet (**Comenzi ▸ Editează nota…**) și parcurgeți-le pe toate cu **Prezentare generală a notelor…**.

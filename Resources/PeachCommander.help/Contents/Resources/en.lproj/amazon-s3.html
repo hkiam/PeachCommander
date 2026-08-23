@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 and S3-compatible storage</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 and S3-compatible storage</h1>
+<p>An S3 bucket can be browsed in a panel like any folder. Choose <strong>Amazon S3 Connect…</strong> from the Network menu, fill in the endpoint and your keys, and the storage appears in the active panel — with the <strong>bucket list as its top level</strong>, and each bucket an ordinary directory below it.</p>
+<p>It works with Amazon S3 and with anything that speaks the same protocol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 and DigitalOcean Spaces are all reachable.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="connecting">Connecting</h2>
+<p>The <strong>Service</strong> menu fills in the two settings you cannot guess — whether to use HTTPS and whether the endpoint needs path-style addressing — and leaves the endpoint itself for you, since it is usually specific to your account. Both settings fail in ways that look like something else: virtual-hosted addressing against a bare IP address is a name-lookup error, and path-style addressing against Amazon is a "no such bucket" that reads as a missing bucket.</p>
+<p>The <strong>secret access key</strong> goes into the <strong>Keychain</strong> through the host, never into a configuration file. Leave the field empty on a later connection and the saved one is used.</p>
+<p><strong>Remember this connection</strong> keeps the endpoint, region, key ID and addressing style — never the secret — in <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code>. A remembered connection also becomes a chip in the drive bar, and clicking that connects it directly rather than reopening this dialog.</p>
+<h3 id="profiles-you-already-have">Profiles you already have</h3>
+<p>If you use the AWS command line, its profiles are offered in the <strong>Name</strong> menu marked <em>(AWS CLI)</em>, read from <code>~/.aws/credentials</code> and <code>~/.aws/config</code> — including the region, a session token and <code>s3.addressing_style</code>. Nothing is written back there, and such a profile is <strong>not</strong> remembered by default: keeping a second copy of a secret is something to ask for, not something to happen because you picked a name from a menu.</p>
+<h3 id="public-buckets">Public buckets</h3>
+<p><strong>Connect anonymously</strong> sends no signature at all, which is what a publicly readable bucket wants. If the bucket is not public you are told that, rather than being told your key was rejected — there was no key.</p>
+<h2 id="what-you-can-do">What you can do</h2>
+<p>Listing, reading, writing, creating folders and buckets, deleting, renaming and moving all work. Copies and moves happen <strong>on the server</strong>: the bytes do not travel through your Mac.</p>
+<p>A folder in S3 is not a real thing — it is either a shared prefix of the keys under it, or a zero-byte object whose name ends in <code>/</code>. Both are shown as folders. Creating one writes that marker; deleting one deletes every object beneath it, because there is nothing else to delete.</p>
+<p>At the top level, <strong>New Folder creates a bucket</strong> — the top level <em>is</em> the bucket list, so there is nothing else it could mean.</p>
+<p><strong>Storage Class</strong> and <strong>ETag</strong> are available as panel columns (right-click the column header). Both come out of the listing, so they cost nothing to show.</p>
+<h2 id="what-to-expect-of-it">What to expect of it</h2>
+<p><strong>A bucket cannot be renamed.</strong> S3 has no such operation, and the alternative — copying every object into a new bucket and deleting the old one — is not what a rename dialog asked for. It is refused rather than faked.</p>
+<p><strong>Transfers are whole-file.</strong> A file is fetched or sent in one piece, so an interrupted transfer starts again rather than resuming. Large uploads are split into parts automatically; if one fails, the parts are cleaned up rather than left behind to be charged for.</p>
+<p><strong>Renaming a folder is not atomic.</strong> It copies and deletes one object at a time, and stops at the first failure rather than continuing into a half-moved state.</p>
+<p><strong>Archived objects cannot be read directly.</strong> An object in Glacier or Deep Archive has to be restored first, in the AWS console or with the CLI. The panel says so instead of failing as though the object were damaged.</p>
+<p><strong>Listing a very large folder takes as long as the server takes.</strong> Objects arrive a thousand at a time and the panel fills when the last page has come in.</p>
+<p><strong>Every request costs money on a paid service.</strong> The plugin is written to ask as little as possible — columns come from the listing that already happened, a bucket's region is learned once and remembered — but browsing a bucket is not free the way browsing a disk is.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="webdav.html">WebDAV servers</a></li><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li><li><a href="copying-files.html">Copying files</a></li></ul></section>
+</main>
+</body>
+</html>

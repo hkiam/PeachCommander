@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon S3 및 S3 호환 스토리지</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Amazon S3 및 S3 호환 스토리지</h1>
+<p>S3 버킷은 여느 폴더와 마찬가지로 패널에서 탐색할 수 있습니다. 네트워크 메뉴에서 <strong>Amazon S3에 연결…</strong> 을 고르고 엔드포인트와 키를 입력하면, 활성 패널에 스토리지가 나타납니다 — <strong>최상위는 버킷 목록</strong>이고, 그 아래의 각 버킷은 평범한 디렉터리입니다.</p>
+<p>Amazon S3는 물론 같은 프로토콜을 쓰는 모든 것과 동작합니다. MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2, DigitalOcean Spaces에 모두 접근할 수 있습니다.</p>
+<p>플러그인이므로 <strong>환경설정 ▸ 플러그인…</strong> 에서 끄거나 제거할 수 있습니다.</p>
+<h2 id="_1">연결하기</h2>
+<p><strong>서비스</strong> 메뉴는 짐작할 수 없는 두 가지 설정 — HTTPS를 쓸지, 엔드포인트가 경로 스타일 주소 지정을 필요로 하는지 — 를 채워 주고, 엔드포인트 자체는 보통 계정에 따라 다르므로 사용자에게 맡깁니다. 두 설정은 모두 다른 문제처럼 보이는 방식으로 실패합니다. 순수한 IP 주소에 가상 호스트 방식 주소 지정을 쓰면 이름 조회 오류가 되고, Amazon에 경로 스타일을 쓰면 “그런 버킷이 없습니다”가 되어 버킷이 없는 것처럼 읽힙니다.</p>
+<p><strong>비밀 액세스 키</strong> 는 호스트 응용 프로그램을 통해 <strong>키체인</strong> 으로 들어가며, 설정 파일에는 결코 들어가지 않습니다. 다음 연결 때 필드를 비워 두면 저장된 키가 사용됩니다.</p>
+<p><strong>이 연결 기억하기</strong> 는 엔드포인트, 리전, 키 ID, 주소 지정 방식을 <code>~/Library/Application Support/PeachCommander/s3/profiles.json</code> 에 보관합니다 — 비밀 키는 결코 보관하지 않습니다. 기억된 연결은 드라이브 바의 칩이 되며, 그것을 클릭하면 이 대화상자를 다시 열지 않고 바로 연결됩니다.</p>
+<h3 id="_2">이미 가지고 있는 프로필</h3>
+<p>AWS 명령줄을 쓴다면 그 프로필들이 <strong>이름</strong> 메뉴에 <em>(AWS CLI)</em> 로 표시되어 제공됩니다. <code>~/.aws/credentials</code> 와 <code>~/.aws/config</code> 에서 리전, 세션 토큰, <code>s3.addressing_style</code> 까지 읽습니다. 그곳으로 되쓰는 것은 없으며, 그런 프로필은 기본적으로 <strong>기억되지 않습니다</strong>. 비밀의 두 번째 사본을 두는 것은 요청해야 하는 일이지, 메뉴에서 이름을 골랐다는 이유로 일어나야 하는 일이 아닙니다.</p>
+<h3 id="_3">공개 버킷</h3>
+<p><strong>익명으로 연결</strong> 은 서명을 전혀 보내지 않으며, 공개 읽기 버킷이 원하는 것이 바로 그것입니다. 버킷이 공개가 아니라면 바로 그 점을 알려 줍니다 — 키가 거부되었다고 말하지 않습니다. 키가 없었으니까요.</p>
+<h2 id="_4">할 수 있는 일</h2>
+<p>목록 보기, 읽기, 쓰기, 폴더와 버킷 만들기, 삭제, 이름 바꾸기, 이동이 모두 동작합니다. 복사와 이동은 <strong>서버에서</strong> 일어납니다. 바이트가 Mac을 거치지 않습니다.</p>
+<p>S3에서 폴더는 실재하지 않습니다 — 아래에 있는 키들의 공통 접두사이거나, 이름이 <code>/</code> 로 끝나는 0바이트 객체입니다. 둘 다 폴더로 표시됩니다. 만들면 그 표식을 쓰고, 삭제하면 아래의 모든 객체를 삭제합니다. 삭제할 다른 것이 없기 때문입니다.</p>
+<p>최상위에서는 <strong>새 폴더가 버킷을 만듭니다</strong> — 그 층위가 <em>바로</em> 버킷 목록이므로, 다른 뜻일 수가 없습니다.</p>
+<p><strong>스토리지 클래스</strong> 와 <strong>ETag</strong> 는 패널 열로 쓸 수 있습니다(열 머리글 오른쪽 클릭). 둘 다 이미 이루어진 목록 조회에서 나오므로 비용이 들지 않습니다.</p>
+<h2 id="_5">기대할 수 있는 것</h2>
+<p><strong>버킷은 이름을 바꿀 수 없습니다.</strong> S3에 그런 작업이 없고, 대안 — 모든 객체를 새 버킷으로 복사하고 옛 버킷을 삭제하는 것 — 은 이름 바꾸기 대화상자가 요청한 일이 아닙니다. 흉내내지 않고 거부합니다.</p>
+<p><strong>전송은 파일 전체 단위입니다.</strong> 파일은 한 덩어리로 가져오거나 보냅니다. 중단된 전송은 이어지지 않고 다시 시작합니다. 큰 업로드는 자동으로 여러 부분으로 나뉩니다. 한 부분이 실패하면 부분들은 정리되며, 요금이 청구될 채로 남지 않습니다.</p>
+<p><strong>폴더 이름 바꾸기는 원자적이지 않습니다.</strong> 객체를 하나씩 복사하고 삭제하며, 첫 오류에서 멈춥니다. 절반만 옮겨진 상태로 계속 나아가지 않습니다.</p>
+<p><strong>아카이브된 객체는 직접 읽을 수 없습니다.</strong> Glacier나 Deep Archive의 객체는 AWS 콘솔이나 CLI로 먼저 복원해야 합니다. 패널은 객체가 손상된 것처럼 실패하지 않고 그 사실을 알려 줍니다.</p>
+<p><strong>아주 큰 폴더의 목록은 서버가 걸리는 만큼 걸립니다.</strong> 객체는 천 개씩 도착하며, 마지막 페이지가 들어오면 패널이 채워집니다.</p>
+<p><strong>유료 서비스에서는 모든 요청에 비용이 듭니다.</strong> 이 플러그인은 되도록 적게 묻도록 작성되었습니다 — 열 값은 이미 이루어진 목록 조회에서 나오고, 버킷의 리전은 한 번 알아내어 기억합니다 — 그러나 버킷을 탐색하는 일은 디스크를 탐색하는 것처럼 공짜가 아닙니다.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="webdav.html">WebDAV 서버</a></li><li><a href="ftp-and-sftp.html">FTP 및 SFTP 연결</a></li><li><a href="copying-files.html">파일 복사</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -24,6 +24,7 @@ Diversi plugin hanno un proprio argomento della guida dettagliato — segui il l
 
 I restanti plugin integrati sono più piccoli e non necessitano di una pagina propria:
 
+- **Amazon S3** — connettiti ad Amazon S3 o a storage compatibili con S3 (**Rete ▸ Connetti ad Amazon S3…**) ed esplora i bucket come cartelle, con lettura, scrittura, rinomina ed eliminazione. Le chiavi segrete sono conservate nel Portachiavi di macOS.
 - **WebDAV** — connettiti a un server WebDAV (**Rete ▸ Connetti a WebDAV…**) e sfoglia, carica, scarica, rinomina ed elimina su di esso come se fosse una cartella. Le password sono conservate nel Portachiavi di macOS.
 - **iCloud Drive** — aggiunge una voce *iCloud Drive* alla barra dei dischi che salta direttamente alla tua cartella locale iCloud Drive. Compare solo quando iCloud Drive è configurato sul tuo Mac.
 - **Notes** — tieni una nota accanto a qualsiasi file o cartella. Un piccolo badge **●** contrassegna gli elementi che ne hanno una; modifica le note in una barra laterale **Notes** agganciata o in un editor di testo formattato completo (**Comandi ▸ Modifica nota…**), e sfogliale tutte con **Panoramica note…**.

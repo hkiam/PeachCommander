@@ -25,6 +25,7 @@ Several plugins have their own detailed help topic — follow the link for the f
 
 The remaining built-in plugins are smaller and don't need a page of their own:
 
+- **Amazon S3** — connect to Amazon S3 or S3-compatible storage (**Net ▸ Amazon S3 Connect…**) and browse buckets as folders, with reading, writing, renaming and deleting. Secret keys are kept in the macOS Keychain.
 - **WebDAV** — connect to a WebDAV server (**Net ▸ WebDAV Connect…**) and browse, upload, download, rename, and delete on it as if it were a folder. Passwords are kept in the macOS Keychain.
 - **iCloud Drive** — adds an *iCloud Drive* entry to the drive bar that jumps straight to your local iCloud Drive folder. It appears only when iCloud Drive is set up on your Mac.
 - **Notes** — keep a note beside any file or folder. A small **●** badge marks items that have one; edit notes in a docked **Notes** sidebar or a full rich-text editor (**Commands ▸ Edit Note…**), and browse them all with **Notes Overview…**.

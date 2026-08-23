@@ -24,6 +24,7 @@ Flere programtillegg har sitt eget detaljerte hjelpeemne – følg lenken for he
 
 De resterende innebygde programtilleggene er mindre og trenger ikke en egen side:
 
+- **Amazon S3** — koble til Amazon S3 eller S3-kompatibel lagring (**Nett ▸ Koble til Amazon S3…**) og utforsk buckets som mapper, med lesing, skriving, navneendring og sletting. Hemmelige nøkler oppbevares i macOS-nøkkelringen.
 - **WebDAV** – koble til en WebDAV-server (**Nettverk ▸ WebDAV-tilkobling…**) og bla, last opp, last ned, gi nytt navn og slett på den som om den var en mappe. Passord holdes i macOS-nøkkelringen.
 - **iCloud** – legger til en *iCloud Drive*-oppføring i stasjonslinjen som hopper rett til din lokale iCloud Drive-mappe. Den vises bare når iCloud Drive er satt opp på Mac-en din.
 - **Notes** – behold et notat ved siden av en hvilken som helst fil eller mappe. Et lite **●**-merke markerer elementer som har ett; rediger notater i et forankret **Notes**-sidefelt eller en fullstendig rik-tekst-redigerer (**Kommandoer ▸ Rediger notat…**), og bla gjennom dem alle med **Notatoversikt…**.

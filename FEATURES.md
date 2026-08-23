@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**88 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**89 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -70,6 +70,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| Amazon S3 (plugin) | user, expert | — | ✅ |
 | Attributes on remote servers | expert | — | ✅ |
 | Download from URL | user | Cmd+Shift+D | ✅ |
 | FTP / FTPS | user, expert | Ctrl+F, Ctrl+N | ✅ |

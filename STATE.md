@@ -1397,6 +1397,63 @@ per object on S3 — and silently overwriting is what every backend does today; 
 product decision rather than a defect. Recursive folder upload still refuses, and now says so in one
 place. Presigned links need the contrib ABI to carry a panel selection.
 
+## 2026-08-23 (F-459) — The S3 plugin ships
+
+`PCPluginIncomplete` is out of `Plugins/S3/Info.plist`, so the plugin can now reach a DMG — and with
+it the things that were only ever missing because it could not: nineteen languages, a help topic in
+all of them, and the entries in the two registries.
+
+**Nineteen languages, 36 strings each.** Dictionaries in `Tools/plugin-translations/S3/`, applied by
+`Tools/apply-plugin-translations.py`, which is the machinery every other plugin already uses.
+`check-plugin-translations` went from `untranslated_strings=450` to `0`. Product names and one
+protocol field stay untranslated on purpose — `Amazon S3` and `ETag` are not words to invent
+vocabulary for, and no S3 documentation in any language does.
+
+**A help topic, `amazon-s3`, in all nineteen.** It says what the plugin does and then says what to
+expect of it, which is the half that matters: a bucket cannot be renamed and the refusal is
+deliberate; transfers are whole-file because the PFX ABI is; renaming a folder is not atomic and stops
+at the first failure; an archived object has to be restored first; **and every request costs money on
+a paid service**, which is the one thing that makes browsing a bucket unlike browsing a disk and is
+not obvious from the panel. Also a line in `plugins.md` in all nineteen, next to WebDAV, since the two
+network plugins belong together.
+
+**The registries.** `features.yml` gains `amazon-s3` under Network, so `FEATURES.md` regenerates to 89
+features. The parity inventory gains F-459 with pointers that resolve — and one that did not: I wrote
+`ev: symbol:S3Connection`, and `check-inventory` refused it because `symbol:` means "a symbol in
+`Sources/`" while a plugin's code lives under `Plugins/`, which is what `plugin:S3` is for. The gate
+documented its own rule and was right; the row was wrong.
+
+**Shipping enabled rather than switched off.** The filesystem-image, decompiler and AI plugins ship
+off because they are large, or because they can act on your files on their own. This one does nothing
+at all until somebody connects to a server, which is the same standing WebDAV has, so it ships the way
+WebDAV does.
+
+**No screenshot.** `check-docs` does not require one for this feature and a capture would need the VM
+harness pointed at a live fixture with a real connection on screen. The help topic stands without it;
+adding one later costs a `screenshot-specs.yml` entry and a capture run.
+
+**Evidence.** The full suite: **3,038 tests, 0 failures, 36 skipped** — the skips being the opt-in
+Docker, AWS and live-server suites, by design. All fourteen static gates green, including the four docs
+gates that byte-compare generated output. The bundle carries 19 `.lproj` directories and is
+`x86_64 arm64`. The Help Book's `.helpindex` files are committed this time, unlike the last two
+regenerations: `hiutil` output is not reproducible so CI excludes it from the staleness comparison,
+but a new topic the in-app search cannot find is a topic that only half shipped.
+
+### Where the S3 work stands
+
+Seven pieces over F-452…F-459. What is *not* there, stated so nobody has to rediscover it: no range
+read, so a multi-gigabyte object is expensive to view (the ABI is whole-file, and a streaming entry
+point in `pfx.h` is the way out if that becomes the binding limit); no presigned links, which need the
+contrib ABI to carry a panel selection; no overwrite prompt on upload, which needs a remote stat per
+file and is a product decision rather than a defect; no recursive folder upload; and the AWS live
+suite is written but has never run, for want of an account.
+
+The host is in better shape than the plugin, which was not the plan: F-452 gave every plugin mount a
+route from F5, F6 and F7; F-457 gave the ABI a per-volume connect and fixed a field-id parse that had
+blanked *every* plugin column for any connection id containing a dot; F-458 gave every network backend
+a progress bar and a Cancel that works. None of those are S3 features. They were all found by trying
+to make one plugin work properly.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

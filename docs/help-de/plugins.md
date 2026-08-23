@@ -24,6 +24,7 @@ Mehrere Plugins haben ihr eigenes ausführliches Hilfethema — folgen Sie dem L
 
 Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:
 
+- **Amazon S3** — verbinden Sie sich mit Amazon S3 oder S3-kompatiblem Speicher (**Netz ▸ Mit Amazon S3 verbinden…**) und durchsuchen Sie Buckets wie Ordner, mit Lesen, Schreiben, Umbenennen und Löschen. Secret Keys werden im macOS-Schlüsselbund aufbewahrt.
 - **WebDAV** — verbinden Sie sich mit einem WebDAV-Server (**Netz ▸ WebDAV verbinden…**) und durchsuchen, laden Sie hoch und herunter, benennen Sie um und löschen Sie darauf, als wäre er ein Ordner. Passwörter werden im macOS-Schlüsselbund aufbewahrt.
 - **iCloud Drive** — fügt der Laufwerksleiste einen Eintrag *iCloud Drive* hinzu, der direkt zu Ihrem lokalen iCloud-Drive-Ordner springt. Er erscheint nur, wenn iCloud Drive auf Ihrem Mac eingerichtet ist.
 - **Notes** — bewahren Sie eine Notiz neben jeder Datei oder jedem Ordner auf. Ein kleines **●**-Abzeichen markiert Elemente, die eine haben; bearbeiten Sie Notizen in einer angedockten **Notes**-Seitenleiste oder einem vollständigen Rich-Text-Editor (**Befehle ▸ Notiz bearbeiten…**) und durchsuchen Sie sie alle mit **Notizübersicht…**.
