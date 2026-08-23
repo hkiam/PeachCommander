@@ -30,16 +30,22 @@ public protocol FileSystemPlugin: AnyObject {
     /// Title for an interactive connect command, or nil if the plugin only
     /// contributes static drives.
     var connectTitle: String? { get }
-    /// Perform the interactive connect (show a dialog, build a VFS, host.fsMount).
-    func connect(host: FileSystemHost)
+    /// Connect (show a dialog, build a VFS, host.fsMount).
+    ///
+    /// `volumeID` names the drive chip the user clicked, when there was one — a plugin whose static
+    /// volumes are themselves saved connections uses it to connect *that* one instead of asking
+    /// again. Nil for the menu command, which is a deliberate "ask me".
+    func connect(host: FileSystemHost, volumeID: String?)
     /// Always-available drives this plugin contributes to the drive bar.
     func driveVolumes() -> [Volume]
 }
 
 public extension FileSystemPlugin {
     var connectTitle: String? { nil }
-    func connect(host: FileSystemHost) {}
+    func connect(host: FileSystemHost, volumeID: String?) {}
     func driveVolumes() -> [Volume] { [] }
+    /// The interactive connect: no chip was clicked, so there is no volume.
+    func connect(host: FileSystemHost) { connect(host: host, volumeID: nil) }
 }
 
 @MainActor

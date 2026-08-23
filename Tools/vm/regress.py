@@ -887,6 +887,28 @@ SCENARIOS = [
                       "drivebardump /Users/admin/drive-second.txt", "wait 400",
                       "cmd cm_NextTab", "wait 2500",
                       "drivebardump /Users/admin/drive-back.txt", "wait 400"], 16),
+    # S3 as a drive, in the running app (F-457). The plugin's own tests drive it through
+    # `PFXFileSystem`; this is the only place the *user's* route runs — a saved profile becomes a chip
+    # in the drive bar, clicking it connects that profile, and the bucket list is the root of the mount.
+    #
+    # This scenario was written for F-456, failed three runs, and is what found the defect F-457 fixed:
+    # `PfxConnect` takes no argument, so the plugin could not tell which chip was clicked and fell back
+    # to its dialog — and the run hung on a modal window nothing here can answer. It only passes now
+    # because the host hands the volume id over.
+    #
+    # Anonymous on purpose: a signed connection would need the secret in the guest's Keychain, and
+    # nothing here can type into a Keychain prompt. The fixture serves unsigned reads, which is what a
+    # public bucket is.
+    #
+    # The profile and the server are set up BEFORE the app launches, in the guest-preparation block
+    # below — NOT with a `probe`. That was the first attempt and it cannot work: a probe runs inside
+    # the already-running app, and by then the plugin has been loaded and asked for its volumes, so
+    # there is no chip to mount.
+    ("s3-mount", ["probe /Users/admin/s3-probe.txt|"
+                  "if curl -fsS -o /dev/null http://127.0.0.1:9200/ 2>/dev/null; then echo fixture-up; "
+                  "elif test -f ~/s3server.py; then echo fixture-dead; else echo fixture-missing; fi",
+                  "active left", "pfxmount S3Fixture", "wait 3000",
+                  "dump /Users/admin/s3-panel.txt"], 18),
     # The Task Manager as a *file* manager (F-390, F-391, F-392, F-393, F-394). One scenario, because
     # each step needs the one before it: a process must be holding a file open before "which processes
     # have this open" can answer, and the answer is what puts the cursor on that process so entering it
@@ -1816,6 +1838,9 @@ REPORTS = {
     # with ":" for "/" (the host's own convention for a name containing a slash), and the panel path
     # names the process we entered — which is the process the file search found, not a row picked by
     # position.
+    # The bucket is a directory at the root of the mount, which is the whole path model. `path=/` says
+    # the panel really is inside the plugin's filesystem rather than somewhere on the guest's disk.
+    "s3-mount": ("/Users/admin/s3-panel.txt", ["path=/", "demo-bucket"]),
     "process-files": ("/Users/admin/tm-openfiles.txt",
                       ["path=/tail (", ":Users:admin:tm-target.txt"]),
     # Asked first, because everything below it is about a process holding a file: if the holder never
@@ -2388,6 +2413,26 @@ def boot(app: str, run: str):
     ssh_guest(ip, "mkdir -p pc-tc-ro && printf x > pc-tc-ro/tc-utf16.txt && printf x > pc-tc-ro/tc-multi.txt")
     sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
         f"{GUEST}@{ip}:pc-tc-ro/descript.ion"])
+    # The S3 fixture server, taken from Tests/ rather than copied into Tools/vm/fixtures: a second copy
+    # is a second thing to keep in step, and this one already has a suite holding it honest.
+    sh(["scp", *SSH,
+        str(Path(__file__).resolve().parents[2] / "Tests/PCPluginHostTests/Fixtures/s3server.py"),
+        f"{GUEST}@{ip}:s3server.py"])
+    # …with its bucket tree, its saved profile and the server itself, all before the app launches. The
+    # profile has to exist first: the plugin is asked for its drive volumes while it loads, so one
+    # written later produces no chip and `pfxmount` has nothing to find.
+    ssh_guest(ip, "rm -rf ~/s3-root && mkdir -p ~/s3-root/demo-bucket/docs && "
+                  "printf 'hello from s3' > ~/s3-root/demo-bucket/hello.txt && "
+                  "printf 'nested' > ~/s3-root/demo-bucket/docs/note.txt && "
+                  "mkdir -p ~/pc-cfg/s3 && "
+                  "printf '%s' "
+                  "'[{\"accessKeyID\":\"\",\"anonymous\":true,\"host\":\"127.0.0.1:9200\",'"
+                  "'\"name\":\"S3Fixture\",\"pathStyle\":true,\"region\":\"us-east-1\",'"
+                  "'\"useTLS\":false}]' > ~/pc-cfg/s3/profiles.json && "
+                  "pkill -f s3server.py; "
+                  "(nohup /usr/bin/python3 ~/s3server.py ~/s3-root 9200 >/dev/null 2>&1 &) ; "
+                  "sleep 2; curl -fsS -o /dev/null http://127.0.0.1:9200/ && echo s3-fixture-up || "
+                  "echo s3-fixture-DOWN")
     # A listening witness for the viewer's network block (F-116), plus a document that tries to reach it.
     # The self-test request is what makes a later "no hit" mean anything: without it, a dead server and a
     # working block produce the same empty log, and the scenario passes hardest when it proves least.

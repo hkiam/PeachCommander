@@ -39,7 +39,7 @@ public enum VolumeKind: String, Sendable, Equatable, CaseIterable {
     /// "ejectable", and nothing in `Volume` separates them. Rather than guess, the bar draws the
     /// system's own icon, which knows the difference; this enum only claims what it can defend.
     public static func of(_ volume: Volume) -> VolumeKind {
-        if volume.path.hasPrefix("pfxmount:") { return .pluginDrive }
+        if volume.path.hasPrefix(PFXMountSentinel.prefix) { return .pluginDrive }
         // Same reason as the plugin drive above, and asked before `isLocal`: a connection is not
         // local either, and calling it a network *share* would promise a mount the system knows
         // about — one Finder can see and the user can unmount from anywhere but here.

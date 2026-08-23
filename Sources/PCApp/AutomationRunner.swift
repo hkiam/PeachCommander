@@ -115,8 +115,13 @@ extension MainWindowController {
                 try? "\(InputDialog.hasScriptedAnswers)\n".write(toFile: arg, atomically: true, encoding: .utf8)
             case "cmd":        runCommandNamed(arg)
             case "pfxmount":                                              // pfxmount <volume-name> (e.g. TaskManager): mount a pfx drive volume by name into the active panel
-                if let vol = FileSystemPluginRegistry.shared.driveVolumes().first(where: { $0.name == arg && $0.path.hasPrefix("pfxmount:") }) {
-                    mountPluginVolume(pluginId: String(vol.path.dropFirst("pfxmount:".count)), into: activePanel)
+                if let vol = FileSystemPluginRegistry.shared.driveVolumes()
+                    .first(where: { $0.name == arg && PFXMountSentinel.parse($0.path) != nil }),
+                   let parsed = PFXMountSentinel.parse(vol.path) {
+                    // The volume, not just the plugin: a plugin with a chip per saved connection
+                    // would otherwise mount whichever of them came first.
+                    mountPluginVolume(pluginId: parsed.pluginId, volumeID: parsed.volumeId,
+                                      into: activePanel)
                 } else { NSLog("[automation] pfxmount: no pfx volume named \(arg)") }
             case "fsconnect":                                             // fsconnect <plugin-id fragment>: run a file-system plugin's interactive connect
                 // `pfxmount` only reaches plugins that contribute a *static* drive. A plugin whose

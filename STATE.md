@@ -1205,6 +1205,76 @@ matters most in this wave. `S3LiveTests` 4, skipped for want of an account. New 
 **Still behind `PCPluginIncomplete`**: the per-volume connect above, transfer progress in the Transfer
 Manager, content columns, presigned links, eighteen translations and a help topic.
 
+## 2026-08-23 (F-457) — A drive chip that connects, and the ABI addition that let it
+
+The defect F-456 found on its way out, fixed: clicking a plugin's drive chip now connects *that*
+volume instead of asking again.
+
+**What was wrong.** `PfxConnect` takes no argument. A plugin publishing several static volumes
+therefore cannot be told which chip the user clicked, and can only fall back to its own connect UI —
+so for a plugin whose volumes *are* saved connections, the chip promised a shortcut and delivered a
+form. Worse, the host had already lost the identity before anything could act on it:
+`driveBar.onSelect` passes the volume's path and nothing else, and that path was `pfxmount:<pluginId>`
+for every chip a plugin published. `mountPluginVolume` then took `first` of the matching volumes, so
+even the panel's own idea of which drive it was on came out wrong. TaskManager never met any of this
+(one volume); iCloud Drive never met it either (its volumes are local paths, browsed and never
+connected). S3 is the first plugin with a chip per saved connection.
+
+**Three pieces, in the order they have to be right.**
+
+`pfx.h` gains an optional `PfxConnectVolume(volumeId, services)`. Optional is what keeps it an
+addition rather than a break: a plugin that does not export it gets `PfxConnect` exactly as before,
+which is every existing plugin. `volumeId` is the id the plugin itself published in
+`PfxGetVolumeInfo`, so the plugin recognises its own token and the host invents nothing. Synced into
+all four copies of the header — `Sources/CPFX`, `Plugins/SDK`, the distributable `PluginSDK` — because
+`check-sdk-headers.sh` compares them byte for byte, and an out-of-date SDK package means third-party
+authors compiling against an ABI the host no longer has.
+
+The sentinel carries the volume: `pfxmount:<pluginId>#<percent-encoded volumeId>`. The encoding is
+what makes the split exact — both halves may contain almost anything, the plugin id being a bundle
+path and the volume id a plugin-chosen token, but an encoded volume id contains no `#`, so splitting
+on the *last* one cannot be fooled. A sentinel with no `#` still parses, with no volume: `session.ini`
+holds these, so a session written by an earlier build restores rather than being discarded.
+`PFXMountSentinel` lives in PCVFS rather than PCApp, beside `Volume` and `VolumeKind` — the latter
+already classified on this prefix, and two places reading one format is how they drift. It is also
+the only way it could have a unit test at all, since no test bundle links the application target.
+
+`mountPluginVolume` matches on the volume as well as the plugin, and hands the id to
+`FileSystemPlugin.connect(host:volumeID:)`. All three routes in — the drive bar, a tab restoring at
+startup, and the `pfxmount` automation verb — go through the one parser.
+
+**The plugin side has one rule worth stating.** A profile that needs a key and whose Keychain entry is
+gone does **not** quietly become an anonymous connection. That would list whatever is public and look
+like success while the private bucket the user asked for was never reached. It says so and refuses.
+An unknown volume id — a chip left from a profile since renamed — answers NULL rather than mounting
+whichever profile happens to be first under a name the user no longer has.
+
+**Evidence, and the scenario that came back.** `PFXMountSentinelTests` — 6 tests, including a volume
+id full of `#`, `:` and `/`, a sentinel with no volume id, and that `VolumeKind` still calls a widened
+sentinel a plugin drive. `S3PluginTests` — 51 tests, three of them new: the chip connects and the
+bucket list really is the root of the mount; a stale volume id fails instead of connecting something
+else; a profile whose secret is gone fails instead of connecting anonymously.
+
+And the VM scenario, which was written for F-456, failed three runs, was taken back out, and is now in
+the tree because it passes:
+
+```
+path=/
+count=1
+demo-bucket
+```
+
+`path=/` is the assertion that matters — the panel is inside the plugin's filesystem rather than
+somewhere on the guest's disk. That is the user's route, in the running app, and nothing before this
+exercised it. Anonymous, because nothing in the harness can type into a Keychain prompt; the profile
+and the fixture server are set up *before* the app launches, since a `probe` runs inside the already
+running app and by then the plugin has been asked for its volumes and found none.
+
+**Recorded artefacts left alone.** A single-scenario run overwrites
+`docs/generated/layout-regression/report.md`, which STATE.md warns about for good reason — it is
+written from a full run and holds 105 other rows. Restored; the s3-mount artefacts go in with the next
+full run rather than as a partial set that disagrees with its own report.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

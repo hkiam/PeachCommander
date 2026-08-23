@@ -7456,12 +7456,12 @@ final class PanelController: NSObject, PanelControllerProtocol {
             }
             return
         }
-        guard sentinel.hasPrefix("pfxmount:"),
+        guard let parsed = PFXMountSentinel.parse(sentinel),
               let wc = view.window?.windowController as? MainWindowController else { return }
-        let pluginId = String(sentinel.dropFirst("pfxmount:".count))
         // Not activating: restoring a tab must not decide which panel has the focus, and both
         // panels restore their tabs at startup — the second would silently win.
-        if !wc.mountPluginVolume(pluginId: pluginId, into: self, activating: false) {
+        if !wc.mountPluginVolume(pluginId: parsed.pluginId, volumeID: parsed.volumeId,
+                                 into: self, activating: false) {
             tabs.updateActive { $0.driveVolume = nil }
         }
     }
@@ -8245,10 +8245,10 @@ final class PanelView: NSView {
         driveBar.onSelect = { [weak controller, weak self] volumePath in
             // A non-local plugin volume (e.g. "TaskManager") carries a "pfxmount:"
             // sentinel path: connect + mount the plugin here rather than navigate.
-            if volumePath.hasPrefix("pfxmount:") {
-                let pluginId = String(volumePath.dropFirst("pfxmount:".count))
+            if let parsed = PFXMountSentinel.parse(volumePath) {
                 (self?.window?.windowController as? MainWindowController)?
-                    .mountPluginVolume(pluginId: pluginId, into: controller)
+                    .mountPluginVolume(pluginId: parsed.pluginId, volumeID: parsed.volumeId,
+                                       into: controller)
                 return
             }
             // An open FTP/SFTP session carries a "netmount:" sentinel: show that connection in
@@ -8727,7 +8727,8 @@ extension MainWindowController: ContributionHost {
     /// restore must not decide which panel has the focus. Returns whether a plugin was there to
     /// mount, so a tab restoring a drive whose plugin is gone can stop calling itself that drive.
     @discardableResult
-    func mountPluginVolume(pluginId: String, into panel: PanelController?, activating: Bool = true) -> Bool {
+    func mountPluginVolume(pluginId: String, volumeID: String? = nil,
+                           into panel: PanelController?, activating: Bool = true) -> Bool {
         if activating, let panel { activePanel = panel }
         guard let plugin = FileSystemPluginRegistry.shared.plugin(id: pluginId) else { return false }
         // The volume the user clicked, handed to the panel through `fsMount` so the bar can keep the
@@ -8735,11 +8736,18 @@ extension MainWindowController: ContributionHost {
         // its own "/", which tells all three nothing. Looked up in the same list the bar drew its
         // chips from, so what the panel calls the drive is what the user clicked, letter for letter.
         // `connect` calls `fsMount` synchronously, so both are read before they clear.
-        let sentinel = "pfxmount:\(pluginId)"
-        pendingDriveVolume = FileSystemPluginRegistry.shared.driveVolumes().first { $0.path == sentinel }
+        // Matched on the volume too, when there is one: every chip from one plugin shares its plugin
+        // id, so `first` alone picked whichever came first and the panel then named the wrong drive.
+        let volumes = FileSystemPluginRegistry.shared.driveVolumes()
+        pendingDriveVolume = volumes.first {
+            guard let parsed = PFXMountSentinel.parse($0.path), parsed.pluginId == pluginId else {
+                return false
+            }
+            return volumeID == nil || parsed.volumeId == volumeID
+        }
         pendingMountPanel = panel
         defer { pendingDriveVolume = nil; pendingMountPanel = nil }
-        plugin.connect(host: self)
+        plugin.connect(host: self, volumeID: volumeID)
         return true
     }
 

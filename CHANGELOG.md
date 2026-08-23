@@ -26,6 +26,12 @@ does not have.
 
 ### Fixed
 
+- **A plugin drive in the drive bar now connects when you click it.** A plugin that offers several
+  saved connections showed one chip each, and clicking one opened the connection dialog instead of
+  connecting — the chip looked like a shortcut and was not. It connects that saved connection
+  directly now. If its password is no longer in the Keychain it says so, rather than quietly
+  connecting without one.
+
 - **Copying, creating a folder and renaming now work inside a mounted plugin drive.** On a WebDAV
   server — or any drive a plugin provides — three keys did the wrong thing quietly. F5 into the drive
   handed the remote path to the local copy engine, so the file was written to a same-named folder on

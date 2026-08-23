@@ -281,7 +281,15 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     }
 
     if result.remember { S3Profiles.save(profile) }
+    return makeMount(profile: profile, secret: secret)
+}
 
+/// Build the connection handle for a profile that has already been settled.
+///
+/// Shared by the dialog path and by `PfxConnectVolume`, which is the point: a chip that connected by a
+/// second, similar-looking route would drift from the dialog's — a different session configuration, a
+/// different session token, a different idea of what "anonymous" means.
+private func makeMount(profile: S3Profile, secret: String) -> UnsafeMutableRawPointer? {
     let credentials = profile.anonymous
         ? S3Credentials.anonymous
         : S3Credentials(accessKeyID: profile.accessKeyID, secretAccessKey: secret,
@@ -291,6 +299,59 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     let mount = S3Mount(connection: connection,
                         label: profile.name.isEmpty ? profile.host : profile.name)
     return Unmanaged.passRetained(mount).toOpaque()
+}
+
+/// Load a saved profile's secret from the Keychain, through the host.
+///
+/// Returns an empty string for an anonymous profile and for one the Keychain has nothing for — the
+/// caller decides what that means. It is not an error here: a profile whose secret has been removed
+/// from the Keychain is a real state, and the honest answer to it is a failed connection rather than a
+/// crash or a silent anonymous one.
+private func savedSecret(for profile: S3Profile, services: PfxHostServices?) -> String {
+    guard !profile.anonymous, !profile.accessKeyID.isEmpty,
+          let svc = services, let crypt = svc.crypt else { return "" }
+    var buf = [CChar](repeating: 0, count: 1024)
+    let rc = profile.secretStore.withCString {
+        crypt(svc.host, Int32(PC_CRYPT_COPY_PASSWORD), $0, &buf, 1024)
+    }
+    return rc == PC_OK ? String(cString: buf) : ""
+}
+
+/// Connect the drive chip the user clicked, without asking again.
+///
+/// The whole reason this entry point was added to `pfx.h`: `PfxConnect` takes no argument, so a plugin
+/// publishing a chip per saved connection could only fall back to its dialog — the chip promised a
+/// shortcut and delivered a form. `volumeId` is the id this plugin published in `PfxGetVolumeInfo`,
+/// so nothing has to be guessed.
+@_cdecl("PfxConnectVolume")
+public func PfxConnectVolume(_ volumeId: UnsafePointer<CChar>?,
+                             _ services: UnsafePointer<PfxHostServices>?) -> UnsafeMutableRawPointer? {
+    guard let volumeId else { return nil }
+    let wanted = String(cString: volumeId)
+    let svc = services?.pointee ?? hostServices
+
+    // The id is "s3:<profile name>" — the same string `PfxGetVolumeInfo` writes. An id this plugin
+    // does not recognise means a chip from a configuration that has since changed; answering NULL is
+    // what tells the host the mount did not happen, and it drops the chip rather than leaving a drive
+    // that goes nowhere.
+    guard let profile = S3Profiles.load().first(where: { "s3:\($0.name)" == wanted }) else {
+        return nil
+    }
+    let secret = savedSecret(for: profile, services: svc)
+    // A profile that needs a secret and has none cannot connect, and must not quietly become an
+    // anonymous connection: that would list a public bucket and look like success while the private
+    // one the user asked for was never reached.
+    if !profile.anonymous, secret.isEmpty {
+        if let svc, let present = svc.presentInfo {
+            let title = L("Amazon S3")
+            let message = String(format:
+                L("No saved password was found for “%@”. Connect through the Net menu to enter it again."),
+                profile.name)
+            title.withCString { t in message.withCString { m in present(svc.host, t, m) } }
+        }
+        return nil
+    }
+    return makeMount(profile: profile, secret: secret)
 }
 
 @_cdecl("PfxLastError")

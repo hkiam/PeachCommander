@@ -158,10 +158,19 @@ final class LoadedPFXPlugin: FileSystemPlugin {
 
     var connectTitle: String? { plugin.connectTitle() }
 
-    func connect(host: FileSystemHost) {
+    func connect(host: FileSystemHost, volumeID: String?) {
         let bridge = PFXHostBridge(host)
         var services = bridge.makeServices()
-        guard let conn = withUnsafePointer(to: &services, { plugin.connect(services: $0) }) else { return }
+        // A clicked chip connects THAT volume, when the plugin can. Falling straight through to
+        // `PfxConnect` is what made a saved-connection chip open a dialog instead of connecting:
+        // `PfxConnect` takes no argument, so the plugin could not tell which chip it was.
+        let conn = withUnsafePointer(to: &services) { pointer -> UnsafeMutableRawPointer? in
+            if let volumeID, plugin.connectsVolumesDirectly {
+                return plugin.connectVolume(volumeID, services: pointer)
+            }
+            return plugin.connect(services: pointer)
+        }
+        guard let conn else { return }
         let fsID = plugin.connectionId(conn)
         // The connection id qualifies this mount's content columns (fieldID =
         // "<fsID>.<leaf>") so a saved column set keeps matching across sessions.
@@ -178,8 +187,12 @@ final class LoadedPFXPlugin: FileSystemPlugin {
                 // connects + mounts this plugin. The "pfxmount:" sentinel path
                 // carries the plugin id; the host routes it to connect(host:)
                 // instead of a filesystem navigation. Icon + order are plugin-owned.
+                // The sentinel carries the VOLUME as well as the plugin. With only the plugin in it,
+                // a plugin publishing several chips lost which one was clicked before anything could
+                // act on it — `driveBar.onSelect` passes this string and nothing else.
                 return Volume(id: "pfxvol:\(id):\(v.id)", name: v.name,
-                              path: "pfxmount:\(id)", isRemovable: false, isEjectable: false,
+                              path: PFXMountSentinel.make(pluginId: id, volumeId: v.id),
+                              isRemovable: false, isEjectable: false,
                               isHidden: false, capacity: 0, freeSpace: 0, fsType: "Plugin",
                               icon: v.icon, sortOrder: v.order)
             }

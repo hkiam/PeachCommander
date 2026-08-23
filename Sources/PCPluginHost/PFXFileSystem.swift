@@ -18,7 +18,7 @@ public enum PFXSymbols {
     public static let optional = [
         "PfxInit", "PfxGetCapabilities",
         "PfxGetVolumeCount", "PfxGetVolumeInfo",
-        "PfxGetConnectTitle", "PfxConnect", "PfxConnectionId", "PfxDisconnect",
+        "PfxGetConnectTitle", "PfxConnect", "PfxConnectVolume", "PfxConnectionId", "PfxDisconnect",
         "PfxFindFirst", "PfxFindNext", "PfxFindClose", "PfxStat",
         "PfxGetFile", "PfxPutFile", "PfxMkDir", "PfxDelete", "PfxRenMov",
         "PfxContentFieldCount", "PfxContentField", "PfxContentGetRow", "PfxLookup",
@@ -66,6 +66,7 @@ public final class PFXPlugin: @unchecked Sendable {
     typealias VolInfoFn = @convention(c) (Int32, UnsafeMutablePointer<PfxVolumeInfo>?) -> Void
     typealias ConnTitleFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32) -> Int32
     typealias ConnectFn = @convention(c) (UnsafePointer<PfxHostServices>?) -> UnsafeMutableRawPointer?
+    typealias ConnectVolumeFn = @convention(c) (UnsafePointer<CChar>?, UnsafePointer<PfxHostServices>?) -> UnsafeMutableRawPointer?
     typealias ConnIdFn = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<CChar>?, Int32) -> Int32
     typealias DisconnectFn = @convention(c) (UnsafeMutableRawPointer?) -> Void
     typealias FieldCountFn = @convention(c) () -> Int32
@@ -212,6 +213,19 @@ public final class PFXPlugin: @unchecked Sendable {
     /// Run the plugin's connect UI; returns an opaque connection handle or nil.
     public func connect(services: UnsafePointer<PfxHostServices>) -> UnsafeMutableRawPointer? {
         fn("PfxConnect", as: ConnectFn.self)?(services) ?? nil
+    }
+
+    /// True when this plugin can connect a named volume without asking.
+    public var connectsVolumesDirectly: Bool {
+        fn("PfxConnectVolume", as: ConnectVolumeFn.self) != nil
+    }
+
+    /// Connect the volume the user clicked. Nil when the plugin has no such entry point — the caller
+    /// then falls back to `connect(services:)`, which is what every plugin did before this existed.
+    public func connectVolume(_ volumeID: String,
+                              services: UnsafePointer<PfxHostServices>) -> UnsafeMutableRawPointer? {
+        guard let f = fn("PfxConnectVolume", as: ConnectVolumeFn.self) else { return nil }
+        return volumeID.withCString { f($0, services) }
     }
 
     /// A short stable id for a connection (mount scheme/title).

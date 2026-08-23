@@ -938,16 +938,78 @@ final class S3PluginTests: XCTestCase {
         XCTAssertEqual(fs.scheme, "s3:127.0.0.1:\(port)")
     }
 
+    // MARK: - Connecting the chip the user clicked
+
+    /// Write a profile into the config root the plugin was told about, as the connect dialog would.
+    private func saveProfile(name: String, anonymous: Bool, accessKeyID: String = "") throws {
+        let dir = self.dir.appendingPathComponent("config/s3", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let json = """
+        [{"accessKeyID":"\(accessKeyID)","anonymous":\(anonymous),        "host":"127.0.0.1:\(port)","name":"\(name)","pathStyle":true,        "region":"us-east-1","useTLS":false}]
+        """
+        try Data(json.utf8).write(to: dir.appendingPathComponent("profiles.json"))
+    }
+
+    private typealias ConnectVolumeFn =
+        @convention(c) (UnsafePointer<CChar>?, UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
+
+    /// Call `PfxConnectVolume` the way the host does when a drive chip is clicked.
+    private func connectVolume(_ volumeID: String) throws -> UnsafeMutableRawPointer? {
+        let symbol = try XCTUnwrap(lib.symbol("PfxConnectVolume"),
+                                   "the plugin does not export PfxConnectVolume")
+        let f = unsafeBitCast(symbol, to: ConnectVolumeFn.self)
+        return volumeID.withCString { f($0, nil) }
+    }
+
+    func test_aSavedProfileBecomesAChipThatConnectsWithoutAsking() async throws {
+        // The defect this entry point exists for. `PfxConnect` takes no argument, so a plugin
+        // publishing a chip per saved connection could only fall back to its dialog — the chip
+        // promised a shortcut and delivered a form, and in the VM harness it hung on a modal nothing
+        // could answer.
+        try saveProfile(name: "Fixture", anonymous: true)
+
+        let plugin = PFXPlugin(library: lib)
+        let volumes = plugin.volumes()
+        XCTAssertEqual(volumes.map(\.name), ["Fixture"], "the saved profile produced no drive chip")
+        XCTAssertFalse(volumes[0].isLocal, "a saved connection is not a local path")
+        XCTAssertTrue(plugin.connectsVolumesDirectly,
+                      "the host would fall back to the dialog for this plugin")
+
+        let conn = try XCTUnwrap(try connectVolume(volumes[0].id),
+                                 "clicking the chip did not connect")
+        let fs = PFXFileSystem(plugin: plugin, conn: conn, fsID: plugin.connectionId(conn),
+                               capabilities: plugin.capabilities, retaining: nil)
+        // And it really is connected: the bucket list is the root of the mount.
+        let names = try await collect(fs, "/").map(\.name).sorted()
+        XCTAssertEqual(names, ["backups", "photos"])
+        await fs.disconnect()
+    }
+
+    func test_aChipFromAConfigurationThatHasChangedFailsRatherThanConnectingSomethingElse() throws {
+        // A volume id left over from a profile that has since been renamed or removed. Answering with
+        // *a* connection would mount whatever happened to be first, under the name of a drive the user
+        // no longer has; NULL is what tells the host the mount did not happen so it drops the chip.
+        try saveProfile(name: "Fixture", anonymous: true)
+        XCTAssertNil(try connectVolume("s3:Gone"))
+        XCTAssertNil(try connectVolume(""))
+    }
+
+    func test_aProfileWhoseSecretIsGoneDoesNotSilentlyConnectAnonymously() throws {
+        // The dangerous shape. A profile that needs a key, whose Keychain entry has been removed,
+        // must not quietly become an anonymous connection — that would list whatever is public and
+        // look like success, while the private bucket the user asked for was never reached. No `crypt`
+        // callback is provided here, which is exactly the "the Keychain has nothing" case.
+        try saveProfile(name: "Private", anonymous: false, accessKeyID: Self.accessKey)
+        XCTAssertNil(try connectVolume("s3:Private"))
+    }
+
     // MARK: - Volumes
 
-    func test_savedProfilesBecomeDriveChips() throws {
-        // A saved profile is a chip whose click connects without the dialog (the pattern
-        // Plugins/TaskManager established). With no profiles saved there are no chips, which is the
-        // state these tests run in — asserting the empty case is what catches a plugin that
-        // advertises a volume with no path and no name.
+    func test_withNothingSavedThereAreNoChipsButStillAWayIn() throws {
+        // The empty case, which is what catches a plugin that advertises a volume with no name. The
+        // connect facet must still be offered, or there is no way to make a first profile at all.
         let plugin = PFXPlugin(library: lib)
         XCTAssertEqual(plugin.volumes().count, 0)
-        // The connect facet must still be offered, or there is no way to make a first profile.
         XCTAssertEqual(plugin.connectTitle(), "Amazon S3 Connect…")
     }
 
