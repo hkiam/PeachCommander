@@ -115,12 +115,12 @@ final class PFXFileSystemTests: XCTestCase {
 
     // MARK: - Fixture wiring
 
-    private func makeFS() -> PFXFileSystem {
+    private func makeFS(contentQualifier: String = "sfs") -> PFXFileSystem {
         typealias ConnectFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
         let conn = unsafeBitCast(lib.symbol("PfxConnect")!, to: ConnectFn.self)(nil)!
         return PFXFileSystem(plugin: PFXPlugin(library: lib), conn: conn,
                              fsID: "samplefs", capabilities: [.read], retaining: nil,
-                             contentQualifier: "sfs")
+                             contentQualifier: contentQualifier)
     }
 
     func test_contentFacet_fieldsAndValues() async throws {
@@ -166,6 +166,30 @@ final class PFXFileSystemTests: XCTestCase {
     }
 
     // MARK: - Tests
+
+    func test_aQualifierWithDotsInItStillResolvesItsFields() async throws {
+        // The qualifier is the connection id, and connection ids are full of dots — "s3:127.0.0.1:9000",
+        // or "s3:s3.eu-central-1.amazonaws.com" for any AWS endpoint. Resolving the field id by
+        // splitting on the first dot made the qualifier "s3:127" and matched nothing, so every plugin
+        // column was blank. Unseen until now because TaskManager's qualifier has no dot in it.
+        let fs = try makeFS(contentQualifier: "s3:s3.eu-central-1.amazonaws.com")
+        let fields = fs.contentFields
+        try XCTSkipIf(fields.isEmpty, "SampleFS publishes no content fields")
+        let leaf = fields[0].name
+        let entries = try await collect(fs, "/")
+        XCTAssertFalse(entries.isEmpty, "SampleFS listed nothing, so this proves nothing")
+
+        let qualified = "s3:s3.eu-central-1.amazonaws.com." + leaf
+        XCTAssertEqual(fs.qualifiedContentFields.first?.qualifiedID, qualified,
+                       "the id the host publishes is not the id it resolves")
+        // Asked of an entry the listing really produced, so a nil here means the *resolution* failed
+        // rather than the row being absent.
+        let name = try XCTUnwrap(entries.first?.name)
+        XCTAssertNotNil(fs.contentDisplay(fieldID: qualified, path: "/" + name),
+                        "a qualifier containing dots resolved to no field")
+        // And a field that genuinely is not ours still answers nil.
+        XCTAssertNil(fs.contentDisplay(fieldID: "someone.else", path: "/" + name))
+    }
 
     func test_list_root_returnsEntries_filteringDotDirs() async throws {
         let fs = makeFS()

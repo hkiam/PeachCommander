@@ -235,8 +235,13 @@ final class S3PluginTests: XCTestCase {
         let conn = try XCTUnwrap(unsafeBitCast(connect, to: ConnectFn.self)(nil),
                                  "PfxConnect returned nil — the plugin did not accept the endpoint")
         let plugin = PFXPlugin(library: lib)
-        return PFXFileSystem(plugin: plugin, conn: conn, fsID: plugin.connectionId(conn),
-                             capabilities: plugin.capabilities, retaining: nil)
+        let fsID = plugin.connectionId(conn)
+        // The qualifier the app uses is the connection id, and content field ids are
+        // "<qualifier>.<leaf>" — without it `contentDisplay` resolves nothing and a column test would
+        // pass by asking about a field that does not exist.
+        return PFXFileSystem(plugin: plugin, conn: conn, fsID: fsID,
+                             capabilities: plugin.capabilities, retaining: nil,
+                             contentQualifier: fsID)
     }
 
     private func vpath(_ path: String) -> VFSPath { VFSPath(filesystemId: "s3", path: path) }
@@ -943,6 +948,68 @@ final class S3PluginTests: XCTestCase {
         PFXPlugin(library: lib).initialize(services: bare)
         let fs = try makeFS()
         XCTAssertEqual(fs.scheme, "s3:127.0.0.1:\(port)")
+    }
+
+    // MARK: - Content columns
+
+    func test_thePluginPublishesTheColumnsItsListingsAlreadyKnow() throws {
+        let plugin = PFXPlugin(library: lib)
+        let fields = plugin.contentFields()
+        XCTAssertEqual(fields.map(\.name), ["storageclass", "etag"])
+        XCTAssertEqual(fields.map(\.title), ["Storage Class", "ETag"])
+        // Both are strings: an ETag is a hash that only wants comparing, and sorting either
+        // numerically would order them by nothing.
+        XCTAssertTrue(fields.allSatisfy { !$0.isNumericSort })
+        XCTAssertTrue(fields.allSatisfy { !$0.isRightAligned })
+    }
+
+    func test_aColumnValueComesFromTheListingRatherThanAnExtraRequest() async throws {
+        // The whole design decision. Storage class and ETag arrive in every ListObjectsV2 answer, so
+        // asking the server per row would turn one request into one per visible file — on a service
+        // that charges per request, from the main thread, while the panel draws.
+        let stats = dir.appendingPathComponent("stats-columns.txt")
+        let (counted, countedPort) = try startServer(root: serving, maxKeys: nil, statsFile: stats)
+        defer { counted.terminate() }
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(countedPort)", 1)
+
+        let fs = try makeFS()
+        _ = try await collect(fs, "/photos")
+        let afterListing = requestCounts(stats)["GET"] ?? 0
+
+        let storage = fs.contentDisplay(fieldID: "\(fs.scheme).storageclass",
+                                        path: "/photos/readme.txt")
+        XCTAssertEqual(storage, "STANDARD")
+        let etag = fs.contentDisplay(fieldID: "\(fs.scheme).etag", path: "/photos/readme.txt")
+        XCTAssertEqual(etag, "fixture-8", "the ETag did not survive the listing")
+
+        XCTAssertEqual(requestCounts(stats)["GET"] ?? 0, afterListing,
+                       "reading two columns cost a request")
+    }
+
+    func test_aColumnForSomethingNoListingSawIsEmptyRatherThanFetched() async throws {
+        // A bucket, a prefix, or a row from a directory navigated away from two moves ago. An empty
+        // cell is the honest answer; going to the server for it is the cost this design exists to
+        // avoid, and doing it from the drawing path is worse than the cost.
+        let fs = try makeFS()
+        _ = try await collect(fs, "/photos")
+        XCTAssertNil(fs.contentDisplay(fieldID: "\(fs.scheme).storageclass", path: "/photos"))
+        XCTAssertNil(fs.contentDisplay(fieldID: "\(fs.scheme).etag", path: "/photos/2006"))
+        XCTAssertNil(fs.contentDisplay(fieldID: "\(fs.scheme).etag", path: "/backups/top.bin"))
+    }
+
+    func test_columnsSurviveTwoPanelsOnOneMount() async throws {
+        // Both panels share one `PFXFileSystem`, and the plugin keeps the values from the LAST TWO
+        // directories for exactly this reason: with one, the second panel's listing would empty the
+        // first panel's columns while it was still drawing them.
+        let fs = try makeFS()
+        _ = try await collect(fs, "/photos")
+        _ = try await collect(fs, "/backups")
+        fs.invalidateContentCache()   // the host clears its own cache per listing; the plugin's stands
+        XCTAssertEqual(fs.contentDisplay(fieldID: "\(fs.scheme).storageclass",
+                                         path: "/backups/top.bin"), "STANDARD")
+        XCTAssertEqual(fs.contentDisplay(fieldID: "\(fs.scheme).storageclass",
+                                         path: "/photos/readme.txt"), "STANDARD",
+                       "the second listing threw away the first one's columns")
     }
 
     // MARK: - Connecting the chip the user clicked

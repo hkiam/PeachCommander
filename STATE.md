@@ -1312,12 +1312,17 @@ for a bucket and for a directory navigated away from, and two panels on one moun
 One in `PFXFileSystemTests` for the qualifier. **66 tests, 0 failures** over the two suites; 22 PFX
 entry points exported; bundle `x86_64 arm64`.
 
-**The tests for this are not in this commit.** They were written and green, but the files they live in
-— `S3PluginTests` and `PFXFileSystemTests` — were being changed at the same time by the build-time
-work that introduced `Tests/PCPluginHostTests/Support/CachedPluginBuild.swift`, and a `git add -A`
-swept that in under this entry before it was noticed. The plugin and host changes are here; the four
-column tests and the qualifier test go in with that work, since the same files carry both. Recorded
-because the commit otherwise claims evidence that is not next to it.
+**The tests landed one commit later than the code, on purpose.** They live in `S3PluginTests` and
+`PFXFileSystemTests`, which were being rewritten at the same time by the build-time work that
+introduced `Tests/PCPluginHostTests/Support/CachedPluginBuild.swift` — and a `git add -A` had swept
+that work in under this entry before it was noticed. Undone with `reset --soft` and explicit staging,
+so the code went in alone and the tests followed once the other work was committed. Worth recording
+twice over: `git add -A` is unsafe in a tree another process is writing to, and a commit that claims
+evidence sitting somewhere else should say so.
+
+**Evidence, after both landed.** Four column tests and the qualifier test, green on the combined tree:
+**795 tests, 0 failures, 12 skipped** across `PCPluginHostTests` and `PCVFSTests` — and in 65 seconds
+rather than the 1,150 it used to take, which is the other work's doing.
 
 **Still open in this wave**: transfer progress in the Transfer Manager, and presigned links. Both are
 separate pieces rather than leftovers — the progress one is a host feature that no network backend has
