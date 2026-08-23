@@ -39,11 +39,18 @@ final class TaskManagerPluginTests: XCTestCase {
         try p.run(); p.waitUntilExit()
         guard p.terminationStatus == 0 else {
             let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            throw XCTSkip("clang failed: \(e)")
+            // A compiler that RAN and refused this is a failure, not a skip. The skip belongs to a
+            // machine without clang; reusing it here means the day TaskManager stops compiling, this
+            // file reports success and says nothing.
+            XCTFail("TaskManager did not compile:\n\(e)")
+            throw NSError(domain: "TaskManagerPluginTests", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional) else {
-            throw XCTSkip("open failed")
+            XCTFail("TaskManager compiled but could not be loaded")
+            throw NSError(domain: "TaskManagerPluginTests", code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "load failed"])
         }
         self.lib = lib
     }

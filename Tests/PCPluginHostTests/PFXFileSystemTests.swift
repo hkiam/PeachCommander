@@ -2,10 +2,71 @@
 // PFXFileSystemTests.swift - Host PFX file-system adapter driven through the real
 // SampleFS C plugin (Plugins/SampleFS/sample_fs.c): directory enumeration,
 // empty/absent dirs, buffer-safe names, and mid-stream cancellation (F-232).
+//
+// Plus `PFXProgressSink`, the channel a plugin reports transfer progress on. It is tested here
+// rather than through a plugin on purpose: what needs proving is the concurrency contract — the
+// plugin calls it from its connection queue, never the main thread — and no plugin is needed to
+// show that.
 
 import XCTest
 import PCVFS
 @testable import PCPluginHost
+
+/// The transfer progress channel, on its own.
+final class PFXProgressSinkTests: XCTestCase {
+    func test_withNoHandler_theAnswerIsCarryOn() {
+        // The default matters more than it looks. `report` is called by every plugin that bothers to
+        // report progress, including when nothing is listening — and answering "abort" to an absent
+        // listener would cancel every transfer in the app.
+        let sink = PFXProgressSink()
+        XCTAssertTrue(sink.report("file.txt", 0))
+        XCTAssertTrue(sink.report("file.txt", 99))
+    }
+
+    func test_theHandlerSeesTheNameAndPercentAndCanStopTheTransfer() {
+        let sink = PFXProgressSink()
+        var seen: [(String, Int)] = []
+        sink.begin { name, pct in
+            seen.append((name, pct))
+            return pct < 50
+        }
+        XCTAssertTrue(sink.report("big.bin", 10))
+        XCTAssertTrue(sink.report("big.bin", 49))
+        XCTAssertFalse(sink.report("big.bin", 50), "the handler asked to stop and was not believed")
+        XCTAssertEqual(seen.map(\.1), [10, 49, 50])
+    }
+
+    func test_endRemovesTheHandler_soTheNextTransferIsNotCancelledByTheLastOne() {
+        // One slot, reused for every transfer on the connection. A handler left behind after its
+        // transfer finished would answer for the next one — and a handler that had said "abort"
+        // would abort a transfer nobody cancelled.
+        let sink = PFXProgressSink()
+        sink.begin { _, _ in false }
+        XCTAssertFalse(sink.report("first", 1))
+        sink.end()
+        XCTAssertTrue(sink.report("second", 1))
+    }
+
+    func test_reportingFromAnotherThreadDoesNotTrap() {
+        // The whole reason this type is not main-actor isolated: the plugin reports from the queue
+        // its transfer is running on. Its sibling callbacks in PFXHostBridge go through
+        // `MainActor.assumeIsolated`, which does not hop off the main thread — it traps.
+        let sink = PFXProgressSink()
+        let counter = NSLock()
+        var count = 0
+        sink.begin { _, _ in counter.lock(); count += 1; counter.unlock(); return true }
+        let queue = DispatchQueue(label: "test.pfx.progress")
+        let done = expectation(description: "reported off the main thread")
+        queue.async {
+            XCTAssertFalse(Thread.isMainThread)
+            for pct in 0...20 { _ = sink.report("f", pct) }
+            done.fulfill()
+        }
+        wait(for: [done], timeout: 5)
+        counter.lock(); let final = count; counter.unlock()
+        XCTAssertEqual(final, 21)
+    }
+}
 
 final class PFXFileSystemTests: XCTestCase {
     private var dir: URL!
@@ -31,13 +92,20 @@ final class PFXFileSystemTests: XCTestCase {
         try p.run(); p.waitUntilExit()
         guard p.terminationStatus == 0 else {
             let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            throw XCTSkip("clang failed: \(e)")
+            // A compiler that RAN and refused this is a failure, not a skip. The skip belongs to a
+            // machine without clang; reusing it here means the day SampleFS stops compiling, this
+            // file reports success and says nothing.
+            XCTFail("SampleFS did not compile:\n\(e)")
+            throw NSError(domain: "PFXFileSystemTests", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "build failed"])
         }
         let hooks = ["SampleFsOpenFinds", "SampleFsFindNextCalls", "SampleFsResetCounters",
                      "SampleFsDisconnects"]
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional + hooks) else {
-            throw XCTSkip("open failed")
+            XCTFail("SampleFS compiled but could not be loaded")
+            throw NSError(domain: "PFXFileSystemTests", code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "load failed"])
         }
         self.lib = lib
     }

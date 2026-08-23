@@ -565,6 +565,16 @@ extension PanelController {
     /// is new: names the batch could not deliver used to be dropped without a word (F-175).
     @discardableResult
     func performRenames(dir: String, pairs: [(old: String, new: String)]) -> [(from: String, to: String)] {
+        // A mount renames through its own file system. `RenameBatchEngine` is `FileManager`, so on a
+        // server or plugin panel every rename failed against a path that exists nowhere on this Mac —
+        // and the failures were then reported as if the files had refused. `PfxRenMov` is a
+        // documented, tested plugin operation that had no route from the keyboard at all.
+        if !(currentFileSystem is LocalFS) {
+            Task { await renameThroughFileSystem(dir: dir, pairs: pairs) }
+            // Nothing to log: the work has not happened yet, and an undo entry for a rename that may
+            // still fail is worse than none. The caller reloads; `renameThroughFileSystem` reports.
+            return []
+        }
         let outcome = RenameBatchEngine.apply(dir: dir, pairs: pairs)
         for step in outcome.log {
             // This path does not go through the move engine, so the comment carry is its own (F-372).
@@ -587,6 +597,38 @@ extension PanelController {
         return log
     }
 
+    /// Rename `pairs` through the panel's own filesystem (server, plugin mount).
+    ///
+    /// Deliberately not `RenameBatchEngine`: its two-phase staging exists to survive a cycle
+    /// (`a → b` while `b → a`) on a filesystem where a name can be held by a temporary, and it
+    /// reaches that temporary through `FileManager`. Out here the mount owns the namespace, so each
+    /// rename is asked for plainly and a cycle is the mount's business to refuse. No undo and no
+    /// comment carry for the same reason as creating: the inverse of a remote rename is another
+    /// remote rename that can fail on its own, and comments are a local-disk feature.
+    private func renameThroughFileSystem(dir: String, pairs: [(old: String, new: String)]) async {
+        let fs = currentFileSystem
+        var failed: [String] = []
+        var renamed = 0
+        for pair in pairs {
+            guard RenameValidator.isValid(pair.new) else { failed.append(pair.old); continue }
+            let from = VFSPath(filesystemId: fs.scheme, path: (dir as NSString).appendingPathComponent(pair.old))
+            let to = VFSPath(filesystemId: fs.scheme, path: (dir as NSString).appendingPathComponent(pair.new))
+            do { try await fs.rename(from, to: to); renamed += 1 }
+            catch { failed.append(pair.old) }
+        }
+        if !failed.isEmpty {
+            let list = failed.prefix(10).joined(separator: "\n")
+            let more = failed.count > 10
+                ? String(localized: "\n… and \(failed.count - 10) more.") : ""
+            presentError(String(localized: "Rename"),
+                         detail: String(localized: "\(failed.count) file(s) were not renamed:\n\(list)\(more)"))
+        }
+        if renamed > 0 {
+            recordInHistory(label: String(localized: "Rename \(renamed) item(s)"), directory: dir)
+        }
+        await reload()
+    }
+
     /// Reverse a rename log. Staged in two phases for the same reason the forward direction is: undoing
     /// a swap means putting `b` back while `a` still holds its place.
     func performUndo(_ log: [(from: String, to: String)]) {
@@ -606,6 +648,14 @@ extension PanelController {
         dialog.onConfirm = { name = $0 }
         dialog.runModalDialog()
         guard let spec = name, !spec.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        // A mount creates through its own file system. `MkDirEngine` is `FileManager`, so for a
+        // server or plugin panel it used to create a *local* directory named after the remote path —
+        // "/my-bucket/photos" appeared on this Mac, the panel did not change, and nothing said why.
+        // The same shape as the delete defect below, and as F-367 for copying.
+        if !(currentFileSystem is LocalFS) {
+            await makeDirectoryThroughFileSystem(spec, in: parent)
+            return
+        }
         do {
             let created = try MkDirEngine.create(spec: spec, in: parent)
             if !created.isEmpty {
@@ -622,6 +672,39 @@ extension PanelController {
             }
         } catch {
             presentError(String(localized: "Could not create directory."), detail: "\(error)")
+        }
+        await reload()
+    }
+
+    /// Create `spec`'s directories through the panel's own filesystem (server, plugin mount).
+    ///
+    /// No undo: undoing a creation means deleting it, and out there that is a real, unrecoverable
+    /// delete rather than a trip to the Trash — so the folder stays and the user removes it if they
+    /// meant to. Nesting and `|` are still honoured, because the names are parsed by the same
+    /// `MkDirEngine.parse` the local path uses; what differs is who creates them. A mount is free to
+    /// refuse a nested name, and says so per name rather than in one lump.
+    private func makeDirectoryThroughFileSystem(_ spec: String, in parent: String) async {
+        let fs = currentFileSystem
+        let names: [String]
+        do { names = try MkDirEngine.parse(spec: spec) }
+        catch {
+            presentError(String(localized: "Could not create directory."), detail: "\(error)")
+            return
+        }
+        var failed: [String] = []
+        for name in names {
+            let path = (parent as NSString).appendingPathComponent(name)
+            do { try await fs.mkdir(VFSPath(filesystemId: fs.scheme, path: path)) }
+            catch { failed.append(name) }
+        }
+        if !failed.isEmpty {
+            presentError(String(localized: "Could not create directory."),
+                         detail: String(format: String(localized: "%@ could not be created."),
+                                        failed.joined(separator: ", ")))
+        }
+        if failed.count < names.count {
+            // The operation, not the folders — same reason as the local path.
+            recordInHistory(label: String(localized: "New Folder"), directory: parent)
         }
         await reload()
     }

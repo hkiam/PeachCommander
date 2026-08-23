@@ -21,6 +21,14 @@ import Security
 final class PFXHostBridge {
     private weak var host: FileSystemHost?
     private let keychainService = "com.peachcommander.pfx"
+
+    /// Where a plugin's transfer progress goes, and where its abort answer comes from.
+    ///
+    /// `nonisolated let` on purpose: the plugin reports progress from the connection's serial queue,
+    /// so the C trampoline below must be able to reach this without hopping to the main actor. The
+    /// sink does its own locking; see `PFXProgressSink`.
+    nonisolated let progressSink = PFXProgressSink()
+
     init(_ host: FileSystemHost) { self.host = host }
 
     func makeServices() -> PfxHostServices {
@@ -28,8 +36,16 @@ final class PFXHostBridge {
         s.host = Unmanaged.passUnretained(self).toOpaque()
         s.parentWindow = host?.fsParentWindow.map { Unmanaged.passUnretained($0).toOpaque() }
 
-        // Progress: no host sink yet — never abort.
-        s.progress = { _, _, _ in Int32(PC_CONTINUE) }
+        // Progress. Unlike every other callback here this one does NOT hop to the main actor: the
+        // plugin reports from the queue its transfer is running on, and `MainActor.assumeIsolated`
+        // off the main thread traps rather than hops (F-422 bought that lesson once already).
+        // `PFXProgressSink` is built for exactly this — its own lock, no isolation.
+        s.progress = { host, name, pct in
+            guard let host else { return Int32(PC_CONTINUE) }
+            let bridge = Unmanaged<PFXHostBridge>.fromOpaque(host).takeUnretainedValue()
+            let carryOn = bridge.progressSink.report(name.map { String(cString: $0) } ?? "", Int(pct))
+            return carryOn ? Int32(PC_CONTINUE) : Int32(PC_ABORT)
+        }
 
         s.presentInfo = { host, title, message in
             guard let host else { return }
@@ -151,7 +167,7 @@ final class LoadedPFXPlugin: FileSystemPlugin {
         // "<fsID>.<leaf>") so a saved column set keeps matching across sessions.
         let fs = PFXFileSystem(plugin: plugin, conn: conn, fsID: fsID,
                                capabilities: plugin.capabilities, retaining: bridge,
-                               contentQualifier: fsID)
+                               contentQualifier: fsID, progressSink: bridge.progressSink)
         host.fsMount(fs, startPath: "/")
     }
 

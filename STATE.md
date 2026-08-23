@@ -790,6 +790,78 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-23 (F-452) — Three keys that did the wrong thing quietly on a plugin drive
+
+Groundwork for an S3 plugin, and it turned into a defect round before a line of S3 was written. The
+question was only "what does a PFX mount not do yet". The answer was that three of the four write
+operations the ABI defines have no route from the keyboard at all, and that all three fail *silently*
+on the local disk instead of failing on the server.
+
+**F5 into a mount copied to this Mac and said it had succeeded.** `cm_Copy` chooses between an upload
+and a local copy on `inactive.isOnNetworkFilesystem`, which is `fs is ResumableFileUploading`.
+`PFXFileSystem` did not conform, so every plugin mount took the local branch — `CopyEngine` against a
+path like `/my-bucket/photos/a.jpg`, on this disk. This is F-367 exactly, the defect that was found and
+fixed for FTP, still standing for every plugin because the fix was a conformance on one class and PFX
+was not that class.
+
+**F7 created a local folder named after the remote path.** `makeDirectory` calls `MkDirEngine.create`,
+which is `FileManager`. **F6 and Shift+F6 renamed nothing and blamed the files**: `RenameBatchEngine`
+is `FileManager` too, so every rename failed against a path that exists nowhere here, and the failures
+were then reported in the "N file(s) were not renamed" dialog as though the files had refused. `PfxMkDir`
+and `PfxRenMov` are documented in `pfx.h`, implemented in the shipped WebDAV plugin, translated into
+nineteen languages — and unreachable. The same shape as F-445, one level over.
+
+**Why nothing caught it.** The WebDAV plugin had no test for its write half either, and could not have
+had one: `Tests/PCPluginHostTests/Fixtures/davserver.py` was read-only, so `PUT`, `MKCOL`, `DELETE` and
+`MOVE` had never once been executed against anything. Two gaps that hid each other — the operations were
+untested, and the route to them was missing, so neither absence produced a failure anywhere.
+
+**Fix.** `PFXFileSystem` now conforms to `ResumableFileDownloading` and `ResumableFileUploading`. Neither
+can actually resume — `PfxGetFile`/`PfxPutFile` take two paths and no offset — so both report
+`resumedAt: 0`, which is the protocol's own way of saying the restart was not allowed. Adopting them
+anyway is the point: the conformance is what the panel reads to decide whether a keystroke is an upload.
+The download side also removes work rather than only routing, because the generic fallback in
+`extractNode` goes through `localFileIfAvailable`: materialise in temp, copy to the destination, delete
+the temp — three passes over every byte. `PfxGetFile` can write to the destination, so it does.
+`makeDirectory` and `performRenames` route a non-`LocalFS` panel to `fs.mkdir`/`fs.rename`, in the shape
+`deleteThroughFileSystem` already established: no undo, no comment carry, and a failure that names the
+items it happened to. No undo is deliberate — undoing a creation out there is a real unrecoverable
+delete, not a trip to the Trash.
+
+**The spec parsing moved rather than being copied.** `MkDirEngine.parse` is now separate from `create`,
+because `a/b|c` and the refusal of `..` are not formatting: the `..` rule is the reason a new folder
+cannot be talked into appearing outside the directory the panel is showing. Two callers duplicating that
+by hand is one of them eventually not having it.
+
+**The progress callback was a stub, and hooking it up has a trap in it.** `PFXHostBridge` answered
+`s.progress` with a constant `PC_CONTINUE` ("no host sink yet"), so cancelling a transfer did nothing:
+`run` hands the blocking C call to the connection queue and waits, and there is no suspension point
+left to cancel at — a 4 GB download finished and only then noticed nobody wanted it. `PFXProgressSink`
+is now the channel, and `withTransferCancellation` installs a handler for the duration of one transfer
+so a cancelled task makes the next progress report answer `PC_ABORT`. The trap: every sibling callback
+in that bridge goes through `MainActor.assumeIsolated`, and the plugin reports progress from its
+connection queue — off the main thread `assumeIsolated` traps rather than hops. That is the F-422 lesson
+a second time, so `PFXProgressSink` is deliberately not actor-isolated and does its own locking, with
+the reason written above it. A plugin that never reports progress still cannot be interrupted; that is a
+property of the plugin and is stated rather than papered over.
+
+**Evidence, before and after.** `davserver.py` gained the four write verbs (with containment on `MOVE`'s
+`Destination`, and a body that is always read — an unread `PUT` body desynchronises the keep-alive
+connection and surfaces as a random protocol failure several operations later). `WebDAVPluginTests` went
+from 10 tests to 23: upload, upload-over-existing, upload into a missing collection, download straight
+to the destination, download over a stale partial, download of a missing file leaving no file behind,
+mkdir, mkdir over something that exists, rename, rename-as-move, delete of a file and a directory, the
+two conformances themselves, and a transfer with the sink attached. Four more pin `PFXProgressSink`,
+including that reporting from another thread does not trap. **37 tests, 0 failures.** The new string is
+in the catalogue in all 18 translations; `check-strings-extracted`, `check-format-specifiers`,
+`check-translations`, `check-plugin-translations`, `check-inventory`, `check-tests-registered`,
+`check-sdk-headers`, `verify-shipping` and `check-docs` are green.
+
+**Not done here, on purpose.** The channel exists but nothing shows a percentage yet — wiring it to the
+Transfer Manager through `OperationKind.custom` is its own piece of work, and so is the fact that the
+upload path has no overwrite dialog and no directory recursion for *any* network backend. `openRead`
+still loads a whole object into memory, because the ABI has no range read.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

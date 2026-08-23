@@ -26,6 +26,14 @@ does not have.
 
 ### Fixed
 
+- **Copying, creating a folder and renaming now work inside a mounted plugin drive.** On a WebDAV
+  server — or any drive a plugin provides — three keys did the wrong thing quietly. F5 into the drive
+  handed the remote path to the local copy engine, so the file was written to a same-named folder on
+  this Mac and reported as copied. F7 created a local folder named after the remote path. F6 renamed
+  nothing and blamed the files. All three now go to the server, and a failure says which item it
+  happened to. Cancelling a transfer also reaches the plugin now, instead of being noticed after the
+  last byte had already arrived.
+
 - **Summarising a very long file no longer fails at the last step.** The assistant reads a long file in
   slices and combines the results; combining them was itself one request, and for a long enough file —
   or a talkative enough model — that request was too big for the on-device window. It failed only

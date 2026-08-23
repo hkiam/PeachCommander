@@ -10,6 +10,12 @@
 // origin (Fixtures/davserver.py), and drives it through `PFXFileSystem` — the same path the app
 // uses. Skips rather than fails when swiftc or python3 is unavailable, as the other
 // plugin-building tests here do.
+//
+// The write half of the plugin — `PfxPutFile`, `PfxMkDir`, `PfxRenMov` — was in the same position
+// the whole plugin used to be in: written, shipped, and never executed by a test. It also had no
+// route from the panel, so nothing exercised it by accident either. The tests at the bottom of this
+// file cover both halves of that: the operations themselves, and the host conformances that decide
+// whether a keystroke can reach them.
 
 import XCTest
 import PCVFS
@@ -74,13 +80,20 @@ final class WebDAVPluginTests: XCTestCase {
         ]
         let pipe = Pipe(); p.standardError = pipe
         try p.run(); p.waitUntilExit()
+        // Skipped only when there is no compiler. A compiler that ran and refused the plugin is a
+        // failure: treating it as a skip means the day the plugin stops compiling, this file reports
+        // success and says nothing.
         guard p.terminationStatus == 0 else {
             let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-            throw XCTSkip("swiftc failed: \(e)")
+            XCTFail("the WebDAV plugin did not compile:\n\(e)")
+            throw NSError(domain: "WebDAVPluginTests", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "plugin build failed"])
         }
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional) else {
-            throw XCTSkip("open failed")
+            XCTFail("the WebDAV plugin compiled but could not be loaded")
+            throw NSError(domain: "WebDAVPluginTests", code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "plugin load failed"])
         }
         self.lib = lib
     }
@@ -170,14 +183,15 @@ final class WebDAVPluginTests: XCTestCase {
         dir.appendingPathComponent("config/webdav/sites.json")
     }
 
-    private func makeFS() throws -> PFXFileSystem {
+    private func makeFS(progressSink: PFXProgressSink? = nil) throws -> PFXFileSystem {
         typealias ConnectFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
         let connect = try XCTUnwrap(lib.symbol("PfxConnect"))
         let conn = try XCTUnwrap(unsafeBitCast(connect, to: ConnectFn.self)(nil),
                                  "PfxConnect returned nil — the plugin did not accept the URL")
         let plugin = PFXPlugin(library: lib)
         return PFXFileSystem(plugin: plugin, conn: conn, fsID: plugin.connectionId(conn),
-                             capabilities: plugin.capabilities, retaining: nil)
+                             capabilities: plugin.capabilities, retaining: nil,
+                             progressSink: progressSink)
     }
 
     private func vpath(_ path: String) -> VFSPath { VFSPath(filesystemId: "webdav", path: path) }
@@ -245,6 +259,156 @@ final class WebDAVPluginTests: XCTestCase {
             XCTAssertEqual(e, .connectionLost(retryable: false))
         }
         await fs.disconnect()   // must not free the connection a second time
+    }
+
+    // MARK: - Whole-file transfers, and the conformance that routes a keystroke to them
+
+    func test_theMountIsSomethingThePanelWillUploadInto() throws {
+        // Not a tautology test. `PanelController.isOnNetworkFilesystem` is `fs is
+        // ResumableFileUploading`, and `cm_Copy` uses it to decide between an upload and a *local*
+        // copy against the remote path string. For every plugin mount the answer used to be no, so
+        // F5 into a mounted WebDAV wrote to a same-named local path and said it had succeeded —
+        // the defect F-367 fixed for FTP, left standing for plugins.
+        // Asked through a `VirtualFileSystem`-typed value, which is how `PanelController` holds it.
+        // Asking the concrete type is a question the compiler answers at compile time, so it would
+        // pass whatever the runtime did — and the compiler says so with a warning.
+        let fs: VirtualFileSystem = try makeFS()
+        XCTAssertTrue(fs is ResumableFileUploading, "the panel would copy locally instead of uploading")
+        XCTAssertTrue(fs is ResumableFileDownloading, "downloads would take the temp-and-copy path")
+    }
+
+    func test_upload_putsTheFileOnTheServer() async throws {
+        let fs = try makeFS()
+        let local = dir.appendingPathComponent("outgoing.txt")
+        try Data("sent from the panel".utf8).write(to: local)
+
+        let result = try await fs.uploadFile(local, to: vpath("/outgoing.txt"), resume: true)
+
+        XCTAssertEqual(result.written, Int64("sent from the panel".utf8.count))
+        // Whole-file ABI: there is no offset to resume from, and saying so is the point of the
+        // number rather than a placeholder in it.
+        XCTAssertEqual(result.resumedAt, 0)
+        XCTAssertEqual(try Data(contentsOf: serving.appendingPathComponent("outgoing.txt")),
+                       Data("sent from the panel".utf8))
+    }
+
+    func test_upload_overAnExistingFileReplacesIt() async throws {
+        let fs = try makeFS()
+        let local = dir.appendingPathComponent("replacement.txt")
+        try Data("second".utf8).write(to: local)
+        _ = try await fs.uploadFile(local, to: vpath("/readme.txt"), resume: false)
+        XCTAssertEqual(try Data(contentsOf: serving.appendingPathComponent("readme.txt")),
+                       Data("second".utf8))
+    }
+
+    func test_upload_intoADirectoryTheServerDoesNotHaveFails() async throws {
+        let fs = try makeFS()
+        let local = dir.appendingPathComponent("lost.txt")
+        try Data("nowhere".utf8).write(to: local)
+        do {
+            _ = try await fs.uploadFile(local, to: vpath("/nope/lost.txt"), resume: false)
+            XCTFail("uploaded into a collection that does not exist")
+        } catch is VFSError {
+            // The shape the panel needs: an error, not a silent success. Which error it is depends
+            // on how the server names the conflict, so this does not pin the case.
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: serving.appendingPathComponent("nope").path))
+    }
+
+    func test_download_writesStraightToTheDestination() async throws {
+        // The generic path in `extractNode` materialises the file in a temp directory, copies it to
+        // the destination and deletes the temp — three passes over every byte, and no way to resume.
+        // This one hands the plugin the destination.
+        let fs = try makeFS()
+        let dest = dir.appendingPathComponent("landing/readme.txt")
+        let result = try await fs.downloadFile(vpath("/readme.txt"), to: dest, resume: true)
+        XCTAssertEqual(try Data(contentsOf: dest), Data("hello webdav".utf8))
+        XCTAssertEqual(result.written, Int64("hello webdav".utf8.count))
+        XCTAssertEqual(result.resumedAt, 0)
+    }
+
+    func test_download_doesNotAppendToAPartialFile() async throws {
+        // `resume` is accepted and ignored, which is only safe if the stale bytes go. A plugin that
+        // wrote after them would produce a file that is longer than the original and passes every
+        // "did it arrive" check.
+        let fs = try makeFS()
+        let dest = dir.appendingPathComponent("partial.txt")
+        try Data("STALE".utf8).write(to: dest)
+        _ = try await fs.downloadFile(vpath("/readme.txt"), to: dest, resume: true)
+        XCTAssertEqual(try Data(contentsOf: dest), Data("hello webdav".utf8))
+    }
+
+    func test_download_ofAMissingFileReportsRatherThanLeavingAnEmptyFile() async throws {
+        let fs = try makeFS()
+        let dest = dir.appendingPathComponent("ghost.txt")
+        do {
+            _ = try await fs.downloadFile(vpath("/ghost.txt"), to: dest, resume: false)
+            XCTFail("downloaded a file the server does not have")
+        } catch is VFSError {}
+        XCTAssertFalse(FileManager.default.fileExists(atPath: dest.path),
+                       "a failed download left a file behind for the panel to list")
+    }
+
+    func test_mkdir_createsACollection() async throws {
+        let fs = try makeFS()
+        try await fs.mkdir(vpath("/reports"))
+        var isDir: ObjCBool = false
+        XCTAssertTrue(FileManager.default.fileExists(
+            atPath: serving.appendingPathComponent("reports").path, isDirectory: &isDir))
+        XCTAssertTrue(isDir.boolValue)
+        let listed = try await collect(fs, "/")
+        XCTAssertTrue(listed.contains { $0.name == "reports" && $0.kind == .directory })
+    }
+
+    func test_mkdir_overSomethingThatExistsFails() async throws {
+        let fs = try makeFS()
+        do {
+            try await fs.mkdir(vpath("/docs"))
+            XCTFail("created a collection over one that is already there")
+        } catch is VFSError {}
+    }
+
+    func test_rename_movesTheResource() async throws {
+        let fs = try makeFS()
+        try await fs.rename(vpath("/readme.txt"), to: vpath("/readme-renamed.txt"))
+        let names = try await collect(fs, "/").map(\.name).sorted()
+        XCTAssertEqual(names, ["docs", "readme-renamed.txt"])
+        XCTAssertEqual(try Data(contentsOf: serving.appendingPathComponent("readme-renamed.txt")),
+                       Data("hello webdav".utf8))
+    }
+
+    func test_rename_intoASubdirectoryIsAMove() async throws {
+        let fs = try makeFS()
+        try await fs.rename(vpath("/readme.txt"), to: vpath("/docs/readme.txt"))
+        let moved = try await collect(fs, "/docs").map(\.name).sorted()
+        XCTAssertEqual(moved, ["note.txt", "readme.txt"])
+    }
+
+    func test_delete_removesAFileAndADirectory() async throws {
+        let fs = try makeFS()
+        try await fs.delete(vpath("/readme.txt"))
+        try await fs.delete(vpath("/docs"))
+        let remaining = try await collect(fs, "/").map(\.name)
+        XCTAssertEqual(remaining, [])
+    }
+
+    // MARK: - The progress channel
+
+    func test_aTransferRunsWithAProgressSinkAttached() async throws {
+        // The WebDAV plugin never calls `progress`, so this cannot prove an abort gets through — a
+        // plugin that stays silent cannot be interrupted, and that is a property of the plugin. What
+        // it does prove is that attaching the channel does not change the outcome, which is the part
+        // that would otherwise only be discovered by a user whose transfers had all started failing.
+        let sink = PFXProgressSink()
+        var reports = 0
+        sink.begin { _, _ in reports += 1; return true }
+        let fs = try makeFS(progressSink: sink)
+        let dest = dir.appendingPathComponent("with-sink.txt")
+        _ = try await fs.downloadFile(vpath("/readme.txt"), to: dest, resume: false)
+        XCTAssertEqual(try Data(contentsOf: dest), Data("hello webdav".utf8))
+        // `withTransferCancellation` installs its own handler for the duration, so ours is out of
+        // the way while the transfer runs — the count says nothing either way and is not asserted.
+        _ = reports
     }
 
     // MARK: - A server that goes away

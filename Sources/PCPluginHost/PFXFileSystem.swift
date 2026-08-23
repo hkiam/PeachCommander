@@ -253,7 +253,9 @@ public final class PFXPlugin: @unchecked Sendable {
 /// handle is gone and holds it for the duration — which is also the "never two calls on one
 /// connection at once" that `pfx.h` has always promised plugins and that content-column reads,
 /// coming straight off the main thread, did not honour.
-public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable {
+public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
+                                 ResumableFileDownloading, ResumableFileUploading,
+                                 @unchecked Sendable {
     public let scheme: String
     public let capabilities: VFSCapabilities
 
@@ -269,6 +271,10 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
     private let fsID: String
     private let retaining: AnyObject?   // keeps the host-services table/bridge alive
     private let queue: DispatchQueue
+    /// Where `PfxGetFile`/`PfxPutFile` progress goes, and where an abort comes back from. Nil when
+    /// the caller wired no channel — every test that mounts a plugin directly, and any host older
+    /// than this parameter.
+    private let progressSink: PFXProgressSink?
 
     /// Content columns this mount publishes, and the qualifier under which the
     /// host exposes them (fieldID = "<qualifier>.<leaf>"). Empty if none.
@@ -290,7 +296,8 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
 
     public init(plugin: PFXPlugin, conn: UnsafeMutableRawPointer, fsID: String,
                 capabilities: VFSCapabilities, retaining: AnyObject?,
-                contentQualifier: String = "") {
+                contentQualifier: String = "", progressSink: PFXProgressSink? = nil) {
+        self.progressSink = progressSink
         self.plugin = plugin
         self.conn = conn
         self.fsID = fsID
@@ -526,6 +533,21 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
                             }
                             d = PfxFindData()
                         }
+                        // `PfxFindNext` returning 0 means "no more entries", and it is the only
+                        // thing it can mean — there is no error channel on it. For a plugin that
+                        // fetches a directory in pages (S3 lists a thousand keys at a time), a
+                        // connection dying between two pages therefore looks exactly like reaching
+                        // the end: the panel shows a short directory and calls it complete, which is
+                        // worse than an error because nothing suggests anything is missing.
+                        //
+                        // So the plugin is asked afterwards. Only a lost connection is acted on: a
+                        // plugin that reports something else may be describing an entry it skipped,
+                        // and turning a complete listing into a failure over that would be its own
+                        // defect. A plugin that does not track errors answers nil and nothing
+                        // changes.
+                        if let code = plugin.lastError(conn), code == PC_E_CONNECTION_LOST {
+                            throw Self.vfsError(code, dir.path)
+                        }
                         // Final batch (empty for an empty directory) closes the listing.
                         continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: true))
                         continuation.finish()
@@ -606,6 +628,91 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
         try await downloadToTemp(path)
     }
 
+    // MARK: - Whole-file transfers (ResumableFileDownloading / ResumableFileUploading)
+    //
+    // The PFX ABI moves whole files — `PfxGetFile` and `PfxPutFile` take two paths and no offset —
+    // so neither of these can resume, and both say so by reporting `resumedAt: 0`. That is the
+    // protocol's own way of saying "the server did not allow the restart", not a shortcut: a plugin
+    // mount really does start from the beginning every time.
+    //
+    // They are adopted anyway because the *absence* of the conformance was the defect. The panel
+    // asks `fs is ResumableFileUploading` to decide whether F5 into this panel is an upload or a
+    // local copy (`isOnNetworkFilesystem`), and for a plugin mount the answer used to be no — so
+    // copying into a mounted WebDAV or plugin filesystem handed the *remote* path to the local copy
+    // engine, which wrote to a same-named local path and reported success. Exactly the defect F-367
+    // fixed for FTP, still open for every plugin, and invisible because it reported success.
+    //
+    // The download side also removes real work rather than only routing: `extractNode`'s generic
+    // fallback goes through `localFileIfAvailable`, which materialises the file in a temp directory,
+    // copies it to the destination and deletes the temp — three passes over every byte. `PfxGetFile`
+    // can write to the destination directly, so it does.
+
+    public func downloadFile(_ path: VFSPath, to destination: URL, resume: Bool)
+        async throws -> (written: Int64, resumedAt: Int64) {
+        try await withTransferCancellation(path.lastComponent()) { [self] in
+            guard let get = plugin.fn("PfxGetFile", as: XferFn.self) else { throw VFSError.unsupported }
+            // The plugin writes the file itself, so the directory has to exist first — and any
+            // partial file from an earlier attempt has to go: `resume` is not honoured here, and a
+            // plugin that appends to what it finds would silently produce a corrupt file.
+            let dir = destination.deletingLastPathComponent()
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try? FileManager.default.removeItem(at: destination)
+            return try withConnection { conn in
+                let rc = path.path.withCString { r in destination.path.withCString { l in get(conn, r, l) } }
+                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+                let size = (try? FileManager.default.attributesOfItem(atPath: destination.path)[.size])
+                    .flatMap { $0 as? NSNumber }?.int64Value ?? 0
+                return (written: size, resumedAt: 0)
+            }
+        }
+    }
+
+    public func uploadFile(_ source: URL, to path: VFSPath, resume: Bool)
+        async throws -> (written: Int64, resumedAt: Int64) {
+        guard capabilities.contains(.write) else { throw VFSError.unsupported }
+        return try await withTransferCancellation(path.lastComponent()) { [self] in
+            guard let put = plugin.fn("PfxPutFile", as: XferFn.self) else { throw VFSError.unsupported }
+            // Asked before the call rather than reported after it: once `PfxPutFile` has returned
+            // there is nothing local left to measure, and a plugin is not obliged to say how much it
+            // sent.
+            let size = (try? FileManager.default.attributesOfItem(atPath: source.path)[.size])
+                .flatMap { $0 as? NSNumber }?.int64Value ?? 0
+            return try withConnection { conn in
+                let rc = source.path.withCString { l in path.path.withCString { r in put(conn, l, r) } }
+                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+                return (written: size, resumedAt: 0)
+            }
+        }
+    }
+
+    /// Run a blocking whole-file transfer, and let cancelling the surrounding task stop it.
+    ///
+    /// `run` hands the work to the connection's serial queue and waits, so by the time a
+    /// `PfxGetFile` is under way there is no Swift suspension point left to cancel at — the C call
+    /// owns the thread until the file has arrived. Cancelling a 4 GB download therefore did nothing
+    /// at all; it finished, and only then noticed nobody wanted it.
+    ///
+    /// The ABI's answer is the progress callback: a plugin that reports progress is asking, each
+    /// time, whether to carry on. So the task's cancellation flips a flag that the next report reads,
+    /// the plugin returns early with `PC_E_EABORTED`, and `vfsError` turns that into
+    /// `VFSError.cancelled`. A plugin that never reports progress cannot be interrupted — that is a
+    /// property of the plugin, not something the host can paper over, and it is why this is a flag
+    /// rather than a promise.
+    private func withTransferCancellation<T>(_ name: String,
+                                             _ body: @escaping () throws -> T) async throws -> T {
+        guard let sink = progressSink else { return try await run(body) }
+        let aborted = CancelFlag()
+        return try await withTaskCancellationHandler {
+            try await run {
+                sink.begin { _, _ in !aborted.isSet }
+                defer { sink.end() }
+                return try body()
+            }
+        } onCancel: {
+            aborted.set()
+        }
+    }
+
     // MARK: - Internals
 
     private func downloadToTemp(_ path: VFSPath) async throws -> URL {
@@ -625,6 +732,46 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
                 return out
             }
         }
+    }
+}
+
+/// The progress channel for a whole-file transfer on one PFX connection.
+///
+/// `PfxHostServices.progress` is the only thing the ABI gives a plugin to say "I am 40% through this
+/// file", and the only thing the host has to answer "stop". It lives here rather than in the app's
+/// bridge because both ends need it: the bridge owns the C trampoline, and `PFXFileSystem` is what
+/// knows a transfer is running.
+///
+/// One slot, no queue of handlers, and that is not a simplification: `pfx.h` serialises every call on
+/// a connection, so at most one `PfxGetFile`/`PfxPutFile` can be in flight per sink.
+///
+/// **Not main-actor isolated, deliberately.** The plugin calls `progress` from whichever thread it is
+/// running the transfer on — which is the host's own per-connection queue, never the main thread. The
+/// sibling callbacks in the bridge (`presentInfo`, `crypt`, `getContext`) all hop through
+/// `MainActor.assumeIsolated` because they end in AppKit; doing that here would trap on the first
+/// progress report, which is the trap F-422 already paid for once.
+public final class PFXProgressSink: @unchecked Sendable {
+    private let lock = NSLock()
+    private var handler: ((String, Int) -> Bool)?
+
+    public init() {}
+
+    /// Install `handler` for the duration of one transfer. It returns false to ask the plugin to stop.
+    public func begin(_ handler: @escaping (String, Int) -> Bool) {
+        lock.lock(); self.handler = handler; lock.unlock()
+    }
+
+    public func end() {
+        lock.lock(); handler = nil; lock.unlock()
+    }
+
+    /// Report progress. Returns false when the plugin should abort.
+    ///
+    /// No handler means carry on: a transfer nobody is watching is not a transfer anybody has
+    /// cancelled, and answering "abort" to an absent listener would kill every transfer.
+    public func report(_ name: String, _ pct: Int) -> Bool {
+        lock.lock(); let h = handler; lock.unlock()
+        return h?(name, pct) ?? true
     }
 }
 
