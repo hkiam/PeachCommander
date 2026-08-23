@@ -39,7 +39,23 @@ does not have.
   about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a
   panel column from the same model, arrives switched off with it.
 
+- **Code blocks in a rendered Markdown file are now coloured.** Press F3 on a `.md` file and the
+  Rendered view keeps the language written on each fence — ```` ```swift ````, ```` ```python ```` —
+  and colours comments, strings, numbers and keywords the way the editor does. A fence naming
+  something the app has no lexer for, such as `mermaid`, stays a plain block rather than failing. The
+  rendered page still loads nothing from the network.
+
 ### Fixed
+
+- **Images in an assistant answer are shown as images.** An answer pointing at a picture on your Mac
+  used to print the Markdown for it, brackets and all. It now appears, scaled to the width of the chat.
+  Only files on this Mac are shown: an image address on the internet is left as visible text and is
+  never fetched, because loading one would tell that server when you read the answer.
+
+- **Diagrams on the documentation website now render without an internet connection.** The
+  architecture pages draw 34 diagrams, and the engine that draws them was fetched from a third-party
+  CDN the moment a page was opened — so the diagrams were missing offline, and reading one told that
+  CDN which page you were on. The engine now ships with the site.
 
 - **Uploading to a server now shows progress and can be cancelled.** Copying files into an FTP,
   SFTP, WebDAV or plugin panel used to run with no progress window and nothing to press — for one

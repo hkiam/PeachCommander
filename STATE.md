@@ -1454,6 +1454,151 @@ blanked *every* plugin column for any connection id containing a dot; F-458 gave
 a progress bar and a Cancel that works. None of those are S3 features. They were all found by trying
 to make one plugin work properly.
 
+## 2026-08-23 (F-460) — The documentation site drew its diagrams from a CDN, or not at all
+
+Asked to check that graphics and diagrams render everywhere Markdown is shown, and to keep the whole
+thing working offline. Seven surfaces show Markdown here and **five of the renderers are
+hand-written** — no `Down`, no `swift-markdown`, no `cmark`; only the two Python generators use a real
+library. Images work where it matters. Diagrams worked nowhere, and the worst case was not a missing
+feature.
+
+**What was actually wrong.** 34 ` ```mermaid ` fences live in 15 English pages, one of them named
+`arch-diagrams.md` with seven. MkDocs Material renders those fences itself — and read out of its own
+bundle:
+
+    function as(){ return typeof mermaid=="undefined" || mermaid instanceof Element
+      ? _t("https://unpkg.com/mermaid@11/dist/mermaid.min.js") : $(void 0) }
+
+So the diagrams rendered **only for a reader who was online**, and only by telling unpkg.com which
+page that reader was on. `DOCUMENTATION.md:100` gives "fully offline output" as the reason MkDocs
+Material was chosen in the first place. My first reading of this was wrong in the other direction — I
+had concluded from the built HTML that *nothing* rendered them, because the engine appears in no
+`<script src>`; it is injected at runtime, which a grep of the page cannot see.
+
+**The fix is the same condition.** Define `mermaid` first and Material uses it and never asks the
+network. `mermaid.min.js` 11.15.0 (MIT) is vendored at `docs/assets/vendor/mermaid/` and listed in
+`extra_javascript`, which emits a classic script — those run before `DOMContentLoaded`, which is when
+Material mounts the diagram components, so "first" needs no `defer` and no ordering trick. Material
+also calls `initialize` itself with its own `--md-mermaid-*` themed CSS, so light and dark both work
+with no init file of ours.
+
+Two things were checked rather than assumed. The bundle is **self-contained**: it ends in
+`globalThis["mermaid"] = …` and contains no `import()` at all, unlike the ESM build with its 81 lazy
+chunks — one file is the whole engine. And the copy is **corroborated**: two independent installs on
+this machine (a bun cache and Homebrew's mermaid-cli) hold byte-identical 11.15.0,
+sha256 `70137e77…`.
+
+**Only the English site gets it.** Every fence is English and no translated Help topic has one, so
+copying it with `docs/assets/website/` — which goes to all nineteen — would have put 3.2 MB of engine
+into eighteen sites that draw nothing. Hence its own directory and a `mermaid=` flag on `build_one`.
+
+**Licence, and the ADR question.** MIT, compatible with Apache-2.0, attributed in
+`THIRD_PARTY_NOTICES.md` with a note saying it is a documentation-website asset and is *not* linked
+into, bundled with, or invoked by the app — the same honesty the `swift-argument-parser` row already
+carries. That row also made the notices file's opening sentence ("This product includes the following
+open-source software") not quite true, so it now says that some rows are described without shipping.
+**No ADR:** `CONVENTIONS.md:14` and `tech-stack.md` govern dependencies *of the application*, and a
+JavaScript file served by the website is not one. That judgement is written here so it can be
+disagreed with rather than only inferred from a commit.
+
+**Evidence.** Rebuilt, then served over HTTP and looked at: seven diagrams on `arch-diagrams.html`,
+in light **and** dark, and `performance.getEntriesByType('resource')` names three hosts —
+`127.0.0.1`, `fonts.googleapis.com` and `api.github.com` — with **no unpkg.com**. All seven
+`div.mermaid` elements carry a closed shadow root and no `pre` survives. The `de` site's script list
+is unchanged.
+
+**A finding beside the point, recorded and not fixed:** the site already loads
+`fonts.googleapis.com`, so "fully offline" was not true before this either. That is its own piece of
+work, not this one.
+
+## 2026-08-23 (F-461) — The viewer threw away the language of every code block
+
+`MarkdownRenderer.swift` skipped the whole fence opening line (`i += 1` after `fenceMarker`), so every
+code block in every rendered `.md` came out as a bare `<pre><code>`: no `class="language-…"` for
+anything reading the page, and nothing for the stylesheet to colour. The file header had claimed
+"fenced/indented code" as well, and indented code blocks are not implemented — the claim is corrected
+rather than the feature invented.
+
+The fence's first word is now read (through `{.python}`, `swift title="A.swift"` and `py,linenos`),
+emitted as the GFM `language-…` class, and coloured through the API that already existed:
+`SyntaxHighlighter.tokens(_:language:)` returns four token kinds over a pure `Character` array, so
+each becomes a `<span class="tok-…">` and the rest stays escaped. Fence names that are already file
+extensions (`swift`, `json`, `go`, `rs`, `yaml`, `bash`) need no table and deliberately have none;
+`python`, `shell`, `csharp`, `objective-c` and eleven others go through a small alias map. `mermaid`
+resolves to no lexer, which is a normal answer: an uncoloured block that loses not one character.
+
+**The CSP is untouched**, and that is the point of doing it this way: classes plus the embedded
+stylesheet, no `style=` attribute and no script. The three tests that pin
+`default-src 'none'; img-src file: data:` are unchanged and green. Colours are GitHub's own palette
+with a `prefers-color-scheme` block, not the app's theme — `SyntaxTheme` lives in PCApp and uses
+`NSColor`, and PCFoundation may not import AppKit (`CONVENTIONS.md:20`).
+
+**A picture, and a new way to take one.** `screencapture` returns a black frame without Screen
+Recording permission, which a verification run has no business asking a machine for — so the app hands
+over its own picture: `listershot <out.png>` (DEBUG). The web view needs its own route inside that
+verb, because WebKit renders in another process and `cacheDisplay` on a `WKWebView` comes back empty;
+`takeSnapshot` is the only way in, and it is asynchronous, so the verb awaits it. Two 1072×538 PNGs of
+the real viewer show a Swift block coloured, a `python` block coloured through the alias, and a
+`mermaid` block plain — in light and in dark, where the token colours switch with the page.
+
+Eight new tests, including that an info string which is not a language name (`"><b>`) stays out of the
+class attribute and that a coloured block is still escaped — a code block must not be a way to put
+markup into the page.
+
+## 2026-08-23 (F-462) — An image in an assistant answer arrived as its own source text
+
+`ChatMarkdown.inline` had no image branch at all, so `![Diagramm](/pfad/x.png)` was shown bracket for
+bracket. It is now an `NSTextAttachment`, reusing the pattern the Notes plugin already had, scaled to
+the transcript's own text width — the container tracks the view, so the picture follows the pane
+instead of pushing the conversation sideways. The alt text survives as a tooltip, which is the only
+description of the picture there is.
+
+**Local files only, and no fetch of any kind.** A scheme — `http:`, `https:`, `data:` — is refused by
+a rule, not by omission: an image URL in an answer is a read receipt, telling that server when the
+answer was displayed and from which address, which is the same thing the viewer's
+`img-src file: data:` policy exists to stop (F-116) and what the privacy help page promises against.
+Such an image stays visible as its Markdown text, which is more use to a reader than a silent blank,
+and an unreadable local file falls back the same way.
+
+**No `baseDir`, deliberately, against the plan.** The plan had the controller fill one from the panel
+context. Nothing in the chat view knows a directory — there is no host path on it — so the parameter
+would have been permanently `nil`, and the paths in an answer come from tool results and are absolute.
+Absolute and `~` resolve; a relative path is refused rather than guessed at.
+
+**The picture needed a hook.** `PC_AI_PROBE` sends a real question to a real model, which is right for
+the conversation and wrong for the rendering: no model was going to write the path of a file on this
+machine. `PC_AI_RENDER` + `PC_AI_RENDER_PNG` (DEBUG) put a *given* answer in the transcript and
+photograph the panel, drawn in-process. The shot shows the local PNG as a bar chart at pane width and
+`![Zählpixel](http://example.test/pixel.png)` still standing as text beside it.
+
+Ten new tests in `PCAIChatTests`, one of them the whole point: all three remote forms stay text.
+
+### What this task deliberately did not do
+
+Named here because each was considered and is a piece of work, not an oversight.
+
+- **Diagrams in the F3 viewer.** Mermaid is JavaScript needing a DOM; the viewer has JavaScript off,
+  `default-src 'none'` and a content-rule list blocking every network scheme, all measured and pinned
+  by the `viewer-beacon` scenario. The clean route is a **switchable PLX lister plugin** with its own
+  web view — the ABI says "the plugin returns its own content view" (`plx.h:14-16`) and the CSV lister
+  already does exactly that. Not a change to make to the viewer everyone gets.
+- **Maths** (KaTeX, MIT; fonts SIL OFL 1.1) — the same script conflict, with no place to put it.
+- **Replacing the five hand-written renderers with a real parser** (`swift-markdown`, Apache-2.0).
+  Factually the right cut against gaps that differ per surface — nested lists, footnotes, task lists
+  and reference links are missing in different places — but it rebuilds every surface at once, with
+  three test suites and a VM scenario behind it.
+- **`dot`/Graphviz** through viz-js: Graphviz is **EPL-1.0**, weak copyleft with a source obligation.
+  Not something to take on as a side effect.
+- **Build-time SVG rendering** of the site's diagrams (mermaid-cli is installed here) would drop the
+  886 KB gzipped engine entirely, but dark mode would need two SVGs or variable-driven fills.
+- **Housekeeping seen in passing:** three different `.md` extension sets
+  (`ListerWindow.swift:25`, `DeclarationOutline.swift:48`, `ExternalToolFormatter.swift:121`);
+  `NotesStore.render`, the repo's only user of `NSAttributedString(markdown:)`, has **no callers**;
+  `tech-stack.md:24` still says the Help Book is a WKWebView, which it is not.
+- **The Help Book's own generator** has no Mermaid support either — and needs none: not one fence is
+  under `docs/content/help/`. The viewer help page's existing sentence about Rendered mode stays true,
+  so no help text changed and nothing needed translating into nineteen languages.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model
