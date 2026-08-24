@@ -1909,7 +1909,17 @@ REPORTS = {
     # assertion: a double-appended batch or a dropped last one is invisible in a screenshot.
     "big-listing": ("/Users/admin/big-listing.txt",
                     ["path=/Users/admin/pc-big", "count=5000", "f00000.txt", "f04999.txt"]),
-    "s3-mount": ("/Users/admin/s3-panel.txt", ["path=/", "demo-bucket"]),
+    # The probe's own count. The comment on the scenario claimed this told a fixture that failed to
+    # build apart from a panel that listed wrongly — but nothing read it, so it told nobody anything.
+    "big-listing-seed": ("/Users/admin/big-seed.txt", ["5000"]),
+    # `path=/\n` and not `path=/`: the panel that never mounted reports `path=/Users/admin`, which
+    # *contains* `path=/`, so the unanchored form passed whether the mount happened or not. It is the
+    # only line here that says the panel is inside the plugin's filesystem at all, and for two runs it
+    # said it about a panel still sitting in the home directory.
+    "s3-mount": ("/Users/admin/s3-panel.txt", ["path=/\n", "demo-bucket"]),
+    # Whether the fixture server was even up when the app tried. Asked separately, because "no buckets"
+    # is the correct answer to a dead server and the wrong answer to the question this scenario asks.
+    "s3-mount-fixture": ("/Users/admin/s3-probe.txt", ["fixture-up"]),
     "process-files": ("/Users/admin/tm-openfiles.txt",
                       ["path=/tail (", ":Users:admin:tm-target.txt"]),
     # Asked first, because everything below it is about a process holding a file: if the holder never

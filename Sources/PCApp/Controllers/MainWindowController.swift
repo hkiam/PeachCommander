@@ -6988,9 +6988,20 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// (matched by name) — used by volatile auto-refresh so the selection doesn't
     /// jump as the process list churns.
     func reloadPreservingCursor() async {
+        // Not while a navigation is in flight. A refresh is a *newer request* than the navigation it
+        // would overtake — the watcher and the volatile timer both fire on their own schedule — and
+        // the model now lets the newest request win, so a refresh of the folder being left would
+        // cancel the move to the folder being entered. It would also be pointless: the navigation is
+        // about to produce a fresh listing of somewhere else.
+        guard loadingPath == nil else { return }
         let name = tableView.cursorEntryName()
-        await loadPath(await model.getPath(), recordHistory: false, focusName: name,
-                       preserveViewport: true)
+        let path = await model.getPath()
+        // Asked again after the await. `getPath()` is a suspension point, so a navigation can start
+        // during it — and this refresh is now holding the path of the folder being *left*. Reloading
+        // it would drag the panel back out of the folder the user just entered, which is precisely
+        // what `big-listing` caught.
+        guard loadingPath == nil else { return }
+        await loadPath(path, recordHistory: false, focusName: name, preserveViewport: true)
     }
 
     /// Start a ~2s repeating reload for a volatile mount, cursor-stable. No-op if
@@ -7345,27 +7356,54 @@ final class PanelController: NSObject, PanelControllerProtocol {
     @discardableResult
     private func loadPath(_ path: String, recordHistory: Bool, focusName: String?,
                           preserveViewport: Bool = false) async -> Bool {
+        // Claimed BEFORE the first `await`, and that ordering is the whole point. Everything here runs
+        // on the main actor, so the statements between two suspension points are atomic — but the
+        // moment this method awaits anything before staking its claim, a refresh looking at
+        // `loadingPath` sees nil and starts. That window was real: `big-listing` navigated into a
+        // 5,000-file directory, the watcher fired on the same directory's mtime, and the refresh —
+        // holding the *old* path it had read before the navigation committed — pulled the panel back
+        // out again. The tab said `pc-big` and the panel showed the home directory.
         loadingPath = path
         lastPartialPaint = .distantPast
         defer { if loadingPath == path { loadingPath = nil } }
+
+        // A refresh of the directory already on screen gets no partials, and that is the whole rule.
+        // The user is looking at the correct list; repainting it in pieces can only flicker and shove
+        // the scroll position about. It showed up as exactly that: `panel-place` mounts a volatile
+        // drive that reloads every two seconds, and the extra `reloadData` calls caught the table
+        // between a reload and its layout — the dump saw all 544 rows as "visible" and the user's
+        // place at row 98 gone. Partials are for *entering* a folder, where the alternative is an
+        // empty panel.
+        let entering = path != (await model.getPath())
         // Painted partial rows have to be taken back if the load then fails: `reportLoadFailure` leaves
         // the panel where it was, and rows from a directory we did not enter would be showing under the
         // old path. A flag object rather than a captured `var`, because the callback below is
         // `@Sendable` and cannot capture mutable local state.
         let painted = OneShotFlag()
         do {
-            let snapshot = try await model.load(path, fs: fs) { [weak self] partial in
-                // Handed over off the model's actor; the view is main-actor. Throttled in
-                // `showPartial`, because a fifty-thousand-object listing arrives in hundreds of
-                // batches and one table reload each would cost more than the wait it removes.
-                Task { @MainActor in
-                    guard let self, self.loadingPath == path else { return }
-                    if self.showPartial(partial, isFirst: !painted.isSet,
-                                        preserveViewport: preserveViewport) {
-                        painted.set()
+            // Assigned in an `if` rather than chosen by a ternary. As a ternary operand the closure
+            // has no contextual type, and the compiler went from naming the wrong error to failing to
+            // produce a diagnostic at all. Declaring the variable gives it the type up front.
+            //
+            // The decision stays here, at the model boundary, rather than inside the closure: on a
+            // refresh of a large directory the model would otherwise sort a growing array once per
+            // batch and hand over snapshots nobody looks at.
+            var onPartial: (@Sendable (DirectorySnapshot) -> Void)?
+            if entering {
+                onPartial = { [weak self] partial in
+                    // Handed over off the model's actor; the view is main-actor. Throttled in
+                    // `showPartial`, because a fifty-thousand-object listing arrives in hundreds of
+                    // batches and one table reload each would cost more than the wait it removes.
+                    Task { @MainActor in
+                        guard let self, self.loadingPath == path else { return }
+                        if self.showPartial(partial, isFirst: !painted.isSet,
+                                            preserveViewport: preserveViewport) {
+                            painted.set()
+                        }
                     }
                 }
             }
+            let snapshot = try await model.load(path, fs: fs, onPartial: onPartial)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
             view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name,
                         preserveViewport: preserveViewport)

@@ -25,6 +25,17 @@ sleep 1
 # Per-scenario reset: persisted view mode or directory from the previous scenario would make this one
 # show something else entirely.
 rm -f "$HOME/pc-cfg/session.ini" "$HOME/pc-cfg/workspaces.ini" "$HOME/pc-cfg/terminal/session.json"
+# The panel view mode lives in peachcmd.ini, not session.ini, so deleting the line above never reset it
+# — the comment claimed a guarantee the code did not give. `brief-view` is the third scenario in the
+# suite and Brief is drawn by IconGridView, so from that point on every scenario asserting
+# `responder=PanelListView` was asking about a panel that had been a grid since scenario three. Six of
+# them failed for months, passed when run with --only, and were written off as flaky. Stripped rather
+# than the whole file removed: peachcmd.ini also carries settings the golden image was prepared with.
+if [ -f "$HOME/pc-cfg/peachcmd.ini" ]; then
+  sed -i '' -e '/^LeftViewMode=/d' -e '/^RightViewMode=/d' \
+            -e '/^LeftTree=/d' -e '/^RightTree=/d' -e '/^SharedTree=/d' \
+            "$HOME/pc-cfg/peachcmd.ini"
+fi
 
 START=$(date "+%Y-%m-%d %H:%M:%S")
 # open, not the binary: LaunchServices puts the app in the auto-logged-in Aqua session. The log comes

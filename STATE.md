@@ -2116,6 +2116,90 @@ application target — so it is checked in the running app instead. The `big-lis
 panel ends up with `count=5000`. That is the assertion a screenshot cannot make: a batch appended twice
 or a last one dropped is invisible to the eye and exact in the count.
 
+## 2026-08-24 (F-475) — A refresh that pulled the panel back out of the folder you had just entered
+
+F-474 shipped with a regression it also gave me the means to find, and the finding is worth more than
+the fix: **the newest request winning is not the same as the user's request winning.**
+
+The generation counter F-474 added makes the newest `DirectoryModel.load` win and the overtaken one
+throw. That is right when the two requests are two navigations. It is wrong when the newer one is a
+*refresh*, because a refresh is not a request for anywhere — it is a request for wherever the panel
+already was, read from `model.getPath()` before it ran. So a watcher firing on the folder being left
+would start a reload of *that* folder, win on recency, and pull the panel back out of the folder the
+user had just entered. Before F-474 this was invisible: whichever load committed last won, and a
+33-entry home directory commits long before a 5,000-entry one, so the navigation happened to win the
+race it was losing on merit.
+
+**What it looked like.** The `big-listing` scenario, three runs red. The tab said `pc-big`; the panel
+showed `/Users/admin`. Those two disagreeing is the tell — `loadDirectory` only moves the tab when
+`loadPath` returned true, so the navigation had genuinely succeeded, and something afterwards had
+undone it. `reloadPreservingCursor` calls `loadPath` directly and never touches the tab, which is why
+only half the window went back. The screenshot said it in one look; the report alone would have had me
+looking at the listing code for another hour.
+
+**Three scenarios I had already blamed on other things.** `s3-mount`, `process-files` and
+`panel-place` were all failing with the same cause and I had written off the first as a fixture
+problem. They are all mounts that refresh on a timer or a watcher, which is exactly the shape that
+loses this race. One fix turned all four green.
+
+**The fix is about ordering, not about logic.** Everything here runs on the main actor, so statements
+between two suspension points are atomic — and both halves of the guard were on the wrong side of an
+`await`:
+
+  * `loadPath` set `loadingPath` *after* `await model.getPath()`. A refresh checking `loadingPath`
+    during that suspension sees nil and starts. The claim is now staked before the first `await`.
+  * `reloadPreservingCursor` checked `loadingPath` and then awaited `model.getPath()`. A navigation
+    starting during *that* suspension left the refresh holding the old path. It now asks again after
+    the await, immediately before the call, with nothing suspending in between.
+
+Neither is a lock. There is nothing to lock: main-actor code between suspension points cannot be
+interleaved, so a check placed adjacent to the thing it guards is sufficient — and a check placed
+across an `await` is worth nothing at all. That distinction is the entire defect.
+
+**A correction to F-474's own commit message.** It says the work was verified by the new `big-listing`
+scenario. It was not: that scenario had never passed when the commit was written. The 3,137 unit tests
+and fourteen gates were green and are the reason it looked finished — the model is unit-tested, the
+model-to-panel wiring is not, and the one check that covered the wiring was the one being ignored. A
+scenario written for a feature and then not read is worse than no scenario, because it is counted.
+
+**Two checks that could not fail.** Fixing this meant trusting the harness, and two of its claims did
+not deserve it. `s3-mount` asserted `path=/` — which is a substring of `path=/Users/admin`, so a panel
+that never mounted passed it; it now asserts `path=/\n`. And `big-listing`'s probe reported the number
+of files it had built, with a comment explaining that this told a broken fixture apart from a broken
+panel — but nothing read the probe, so it told nobody anything. Both are now real assertions, and the
+first thing the fixed scenario proved is that the fixture had been right all along.
+
+**Six scenarios that had been failing for months, and were not flaky.** `menu-key-guard-panel-del`,
+`raw-keyboard-panel`, `terminal-integration-panel`, `terminal-find`, `terminal-fkeys` and
+`terminal-fkeys-panel` all assert `responder=PanelListView`, all failed in a full run, and all passed
+when run with `--only`. That pattern reads as flakiness and had been treated as such. It is order
+dependence: the panel's view mode is persisted under `Layout/LeftViewMode` in `peachcmd.ini`, which the
+per-scenario reset does not touch — it deletes `session.ini`, under a comment claiming it resets "the
+persisted view mode". `brief-view` is the *third* scenario in the suite, Brief is drawn by
+`IconGridView` and not by the table, so from scenario three onwards every one of those six was asking
+about a panel that had not been a `PanelListView` for a long time. The reset now strips the view-mode
+and tree keys, so a scenario starts in Details unless it says otherwise. The comment on `IconGridView`
+naming only "Icons and Thumbnails" — which is what sent me looking for a thumbnail scenario that runs
+two-thirds of the way down the file — is corrected too.
+
+That is three separate things in one day that were green, red or silent for reasons unrelated to what
+they claimed to measure: a check that could not fail (`path=/`), a probe nobody read, and six checks
+asking about the wrong view. A suite is only worth the weakest claim in it, and F-474's false
+"verified" line is what that costs.
+
+**What F-474 actually reaches, stated plainly.** `LocalFS` yields 4,096 entries at a time, so a local
+directory smaller than that gets no partial paint at all and a 5,000-entry one gets its first at 82%.
+The feature earns its keep where the batches are small — 128 from a plugin mount, a page at a time from
+S3 — which is also where the waiting was. Left as it is rather than tuned: local directories of that
+size list quickly, and every extra partial is an extra `reloadData`, which is what caused the
+regression above.
+
+Verified: 3,137 tests, 0 failures; fifteen static gates green; and a full VM run of **123 scenarios
+with nothing red** — not one wrong report, empty report or crash. That is the first completely green
+full run in months, and the ten that had been failing were four defects and six lies, not eleven
+separate mysteries.
+
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

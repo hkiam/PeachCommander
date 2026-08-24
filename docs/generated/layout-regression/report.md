@@ -72,6 +72,7 @@ only go down.
 | keys-probe | 0 | — | — | `keys-probe.png` |
 | eject-menu | 0 | — | — | `eject-menu.png` |
 | drive-plugin | 0 | — | — | `drive-plugin.png` |
+| big-listing | 0 | — | — | `big-listing.png` |
 | s3-mount | 0 | — | — | `s3-mount.png` |
 | process-files | 0 | — | — | `process-files.png` |
 | panel-place | 0 | — | — | `panel-place.png` |

@@ -1,14 +1,9 @@
-window: Peach Commander
+window: ~/pc-demo
 AXUnknown
+  AXScrollArea
+    AXOutline | Folder tree
+    AXScrollBar = 0
   AXSplitGroup
-    AXScrollArea
-      AXOutline | Folder tree
-      AXScrollBar = 0
-        AXValueIndicator = 0
-        AXButton
-        AXButton
-        AXButton
-        AXButton
     AXScrollArea
       AXTable | File list, left panel
         AXGroup
@@ -19,15 +14,21 @@ AXUnknown
         AXButton
         AXButton
       AXScrollBar = 0
+        AXValueIndicator = 0
+        AXButton
+        AXButton
+        AXButton
+        AXButton
     AXTabGroup | Panel tabs
       AXRadioButton | pc-demo = 0
       AXRadioButton | pc-demo = 1
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, 17.89 GB free
-      AXButton | TaskManager, Zero KB free
-    AXSplitter = 351
+      AXButton | Macintosh HD, Startup disk, 17.51 GB free
+      AXButton | TaskManager, Plugin drive
+      AXButton | S3Fixture, Plugin drive
+    AXSplitter = 350.5
     AXScrollArea
       AXTable | File list, right panel
         AXGroup
@@ -48,8 +49,12 @@ AXUnknown
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, 17.89 GB free
-      AXButton | TaskManager, Zero KB free
+      AXButton | Macintosh HD, Startup disk, 17.51 GB free
+      AXButton | TaskManager, Plugin drive
+      AXButton | S3Fixture, Plugin drive
   AXScrollArea
-    AXScrollBar = 0
+    AXScrollBar = 1
   AXSplitter | Preview panel width = 300
+  AXSplitter | Dock height = 220
+  AXSplitGroup
+    AXScrollBar = 0
