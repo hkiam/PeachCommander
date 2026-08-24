@@ -6770,6 +6770,15 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// drive like TaskManager lists at its own "/", which no real volume owns and which names no
     /// disk the user could point at — so the bar, the tab and the path bar all take the drive from
     /// the mount rather than from the path. Restored to the enclosing mount's value on the way out.
+    /// The path `loadPath` is currently fetching, so a partial snapshot from a listing that has since
+    /// been overtaken does not paint over the one that replaced it.
+    private var loadingPath: String?
+    /// When a partial listing was last painted, for the throttle.
+    private var lastPartialPaint = Date.distantPast
+    /// How often partial rows may be painted. Ten times a second is faster than anyone reads and slow
+    /// enough that the reloads cost nothing next to the listing itself.
+    private static let partialInterval: TimeInterval = 0.1
+
     private var mountedDriveVolume: Volume?
 
     /// Record the drive this panel is now on, in the panel and in the tab showing it.
@@ -7336,8 +7345,27 @@ final class PanelController: NSObject, PanelControllerProtocol {
     @discardableResult
     private func loadPath(_ path: String, recordHistory: Bool, focusName: String?,
                           preserveViewport: Bool = false) async -> Bool {
+        loadingPath = path
+        lastPartialPaint = .distantPast
+        defer { if loadingPath == path { loadingPath = nil } }
+        // Painted partial rows have to be taken back if the load then fails: `reportLoadFailure` leaves
+        // the panel where it was, and rows from a directory we did not enter would be showing under the
+        // old path. A flag object rather than a captured `var`, because the callback below is
+        // `@Sendable` and cannot capture mutable local state.
+        let painted = OneShotFlag()
         do {
-            let snapshot = try await model.load(path, fs: fs)
+            let snapshot = try await model.load(path, fs: fs) { [weak self] partial in
+                // Handed over off the model's actor; the view is main-actor. Throttled in
+                // `showPartial`, because a fifty-thousand-object listing arrives in hundreds of
+                // batches and one table reload each would cost more than the wait it removes.
+                Task { @MainActor in
+                    guard let self, self.loadingPath == path else { return }
+                    if self.showPartial(partial, isFirst: !painted.isSet,
+                                        preserveViewport: preserveViewport) {
+                        painted.set()
+                    }
+                }
+            }
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
             view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name,
                         preserveViewport: preserveViewport)
@@ -7365,11 +7393,42 @@ final class PanelController: NSObject, PanelControllerProtocol {
             onStateChanged?()
             startWatching(path)
             return true
+        } catch is DirectoryLoadSuperseded {
+            // The user navigated again while this listing was arriving. Not a failure of anything, and
+            // reporting it would put a message on screen about a folder nobody is waiting for. The
+            // newer load owns the panel now, including any rows this one painted.
+            return false
         } catch {
             logger.error("Failed to load directory \(path): \(error)")
+            if painted.isSet {
+                // Put the previous listing back — rows AND path, which is why the snapshot carries
+                // both. The model never committed, so its own snapshot is still the directory the
+                // panel is nominally in, and that is the one the failure path is about to leave it
+                // claiming to show.
+                let previous = await model.snapshot()
+                view.updateRows(with: previous, rootLabel: mountedDriveVolume?.name)
+            }
             await reportLoadFailure(path, error)
             return false
         }
+    }
+
+    /// Show a partial listing, at most every `partialInterval`. Returns whether it painted.
+    ///
+    /// The last partial before the final snapshot may well be dropped by the throttle, which is fine:
+    /// the final one lands immediately afterwards and is never throttled.
+    private func showPartial(_ snapshot: DirectorySnapshot, isFirst: Bool,
+                             preserveViewport: Bool) -> Bool {
+        let now = Date()
+        guard now.timeIntervalSince(lastPartialPaint) >= Self.partialInterval else { return false }
+        lastPartialPaint = now
+        // The FIRST partial of a fresh navigation must not preserve the viewport: what it would be
+        // preserving is the previous directory's scroll position, so a big folder would open showing
+        // its five-hundredth row and then jump to the top when the listing finished. Later partials do
+        // preserve it, because by then the user may have scrolled the new directory themselves.
+        view.updateRows(with: snapshot, preserveViewport: preserveViewport || !isFirst,
+                        rootLabel: mountedDriveVolume?.name)
+        return true
     }
 
     /// Say what went wrong, and for a connection that has died, hand the mount back.
@@ -8723,6 +8782,32 @@ final class PanelView: NSView {
         if usesGrid { refreshGrid() }
         if isTreeVisible { treeView.reveal(path: snapshot.path) }
         controller?.refreshComments()   // fills the opt-in descript.ion Comment column
+    }
+
+    /// Show a partial listing: the rows, and the path they belong to.
+    ///
+    /// Lighter than `update(with:…)`, which also reveals the tree and re-reads the comment column —
+    /// once per batch would be absurd, and both are settled by the final update.
+    ///
+    /// The path moves with the rows, and that is a correctness requirement rather than tidiness.
+    /// `currentPath` is what a row's full path is built from (opening an entry, dragging one, the
+    /// context menu), so rows from one directory shown under another's path make Enter open
+    /// `oldDirectory/newEntry` — a path that does not exist. Leaving the breadcrumb behind while the
+    /// rows moved would have been the same defect this whole month has been made of: two parts of the
+    /// screen describing different places.
+    ///
+    /// What does NOT move is the status bar. It derives its counts from `model.getPath()`, which
+    /// deliberately still answers the committed directory, so it shows the previous folder's totals
+    /// until the listing finishes. Informational rather than functional — nothing is built from it —
+    /// and tracking partials there would mean threading them through `refreshStatusBar`.
+    func updateRows(with snapshot: DirectorySnapshot, preserveViewport: Bool = true,
+                    rootLabel: String? = nil) {
+        tableView.update(with: snapshot, preserveViewport: preserveViewport)
+        if currentPath != snapshot.path {
+            pathBar.update(with: snapshot.path, volume: nil, rootLabel: rootLabel)
+            currentPath = snapshot.path
+        }
+        if usesGrid { refreshGrid() }
     }
 
     /// Show `text` over the path bar for a few seconds (F-214).

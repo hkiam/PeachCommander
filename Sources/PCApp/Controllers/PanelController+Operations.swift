@@ -128,7 +128,7 @@ extension PanelController {
             // cannot learn about a Cancel press through task cancellation, and for one large object
             // that would mean a Cancel button that does nothing until the object has finished
             // arriving. Polled into a synchronous flag the plugin's progress callback can read.
-            let stop = TransferStopFlag()
+            let stop = OneShotFlag()
             let watcher = Task {
                 while !Task.isCancelled {
                     if await control.isCancelled { stop.set(); return }
@@ -1146,18 +1146,6 @@ extension PanelController {
         alert.addButton(withTitle: String(localized: "OK"))
         alert.runModal()
     }
-}
-
-/// A one-shot flag readable without `await`.
-///
-/// Needed because `OperationControl.cancel()` sets a flag on an actor, and a plugin's progress
-/// callback — the only place a transfer can be stopped mid-file — is synchronous and runs on the
-/// connection's queue. Something has to carry "cancelled" across that boundary without suspending.
-final class TransferStopFlag: @unchecked Sendable {
-    private var flag = false
-    private let lock = NSLock()
-    var isSet: Bool { lock.lock(); defer { lock.unlock() }; return flag }
-    func set() { lock.lock(); flag = true; lock.unlock() }
 }
 
 /// Upload tallies, counted from inside a `@Sendable` transfer closure.

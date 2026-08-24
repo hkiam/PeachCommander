@@ -19,6 +19,12 @@ public struct DirectorySnapshot: Sendable {
 }
 
 /// Directory model actor - holds full entry array + derived visible snapshot
+/// Thrown by `DirectoryModel.load` when a newer load for the same model has started.
+///
+/// Not a failure of the directory, and callers must not report it as one: it means the user navigated
+/// again while this listing was still arriving, and the answer they are waiting for is the other one.
+public struct DirectoryLoadSuperseded: Error {}
+
 public actor DirectoryModel {
     private let logger = PCFoundationLogger.logger
 
@@ -114,13 +120,50 @@ public actor DirectoryModel {
         return createSnapshot()
     }
 
+    /// Which load is the current one. See `load(_:fs:onPartial:)`.
+    private var generation = 0
+
+    /// Below this many entries a listing is over before anybody could look at it, so partial
+    /// snapshots are not offered: two table reloads instead of one, for no gain. `LocalFS` batches at
+    /// 4096 and the plugin adapter at 128, so this is about the *accumulated* count rather than a
+    /// batch size.
+    private static let partialThreshold = 200
+
     /// Load entries from a filesystem through the VFS streaming protocol (I08).
-    public func load(_ path: String, fs: VirtualFileSystem) async throws -> DirectorySnapshot {
+    ///
+    /// `onPartial` is called, on the caller's behalf and off the main actor, each time enough more
+    /// entries have arrived to be worth showing. It exists because the streaming was being thrown
+    /// away: `VirtualFileSystem.list` has yielded batches since I08 — 4096 at a time from `LocalFS`,
+    /// 128 from a plugin mount — and this method collected every one of them before answering. A
+    /// bucket with fifty thousand objects showed an empty panel until the last page arrived.
+    ///
+    /// The returned snapshot is still the whole listing, and it is the only one that is *committed*.
+    /// A partial is a value handed out for display; the model's own state does not move until the
+    /// enumeration finishes. That is deliberate and it is F-445's invariant: `getPath()` has twenty-odd
+    /// callers, and a path that changed before its entries did is how a panel came to name one folder
+    /// and list another.
+    public func load(_ path: String, fs: VirtualFileSystem,
+                     onPartial: (@Sendable (DirectorySnapshot) -> Void)? = nil) async throws
+        -> DirectorySnapshot {
+        generation += 1
+        let mine = generation
         var collected: [VFSEntry] = []
+        var offered = 0
         let dir = VFSPath(filesystemId: fs.scheme, path: path)
         for try await batch in fs.list(dir) {
+            // Actors are re-entrant at every `await`, so a second `load` can start while this one is
+            // waiting for its next batch. Before, the one that finished last won whatever the user
+            // asked for last; now the newest request wins and an overtaken one stops. Without this,
+            // partial snapshots from two directories would be appended into one list.
+            guard mine == generation else { throw DirectoryLoadSuperseded() }
             collected.append(contentsOf: batch.entries)
+            if let onPartial, !batch.isLastBatch,
+               collected.count >= Self.partialThreshold, collected.count > offered {
+                offered = collected.count
+                onPartial(snapshot(path: path, of: collected))
+            }
         }
+        guard mine == generation else { throw DirectoryLoadSuperseded() }
         commit(path: path, entries: collected)
         return createSnapshot()
     }
@@ -141,7 +184,16 @@ public actor DirectoryModel {
 
     /// Create an immutable snapshot with sorting and filtering applied
     private func createSnapshot() -> DirectorySnapshot {
-        var result = entries
+        snapshot(path: path, of: entries)
+    }
+
+    /// The same sorting and filtering, over entries that are not (yet) the model's own.
+    ///
+    /// Used for partial snapshots during a load. Each one is sorted in full rather than appended to
+    /// the last, so a row can move as more arrive — which is what an incrementally sorted listing
+    /// does, and is why the panel keeps the cursor on its *item* rather than on its row index.
+    private func snapshot(path: String, of source: [VFSEntry]) -> DirectorySnapshot {
+        var result = source
 
         // Sort: dirs first, then by current sort descriptor
         result.sort { a, b -> Bool in

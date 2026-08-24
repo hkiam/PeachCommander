@@ -2023,6 +2023,99 @@ Named here because each was considered and is a piece of work, not an oversight.
   under `docs/content/help/`. The viewer help page's existing sentence about Rendered mode stays true,
   so no help text changed and nothing needed translating into nineteen languages.
 
+## 2026-08-24 (F-474) — The streaming was there; the middle threw it away
+
+A panel on a large directory showed nothing until the whole listing had arrived. `VirtualFileSystem.list`
+has yielded batches since I08 — 4096 at a time from `LocalFS`, 128 from a plugin mount, a page at a
+time from S3 — and `DirectoryModel.load` collected every one of them before answering. Both ends were
+already incremental. Only the middle was not.
+
+`load` now takes an optional `onPartial`, and the panel paints from it. That is all it took, which is
+the annoying part: the batching, the `isLastBatch` flag and the cancellation between batches were all
+built years apart for this and never joined up.
+
+**A partial is a value, not a state change.** The model does not commit until the enumeration
+finishes, so `getPath()` keeps answering the directory the panel is actually in. That is F-445's
+invariant and partials must not break it: a path that moves before its entries do is how a panel came
+to name one folder and list another. A test asks `getPath()` from *inside* a partial callback, because
+actors are re-entrant and that is a state the app can really observe.
+
+**Two things had to be handled that did not exist before.**
+
+*An overtaken load.* Actors are re-entrant at every `await`, so a second `load` genuinely starts while
+the first is waiting for a batch. Before, whichever committed last won — sloppy but harmless, since
+each committed a whole listing. With partials it is not harmless: two enumerations appending into one
+array would show one directory's files under another's name. A generation counter now stops the
+overtaken one with `DirectoryLoadSuperseded`, which the panel deliberately does *not* report — the
+user navigated again, and a message about a folder nobody is waiting for is noise. It also fixes the
+old race in passing: the newest request wins now, rather than the slowest.
+
+*A listing that fails halfway.* This is the one that would have been a defect of exactly the kind this
+month has been full of. `reportLoadFailure` leaves the panel where it was — so after painting three
+pages of a new directory and then losing the connection, the panel would have been showing the new
+directory's rows under the old directory's path, with nothing to say so. The panel now repaints from
+`model.snapshot()`, which is still the committed (old) listing, but only when it actually painted
+something. Found by writing the failure test before the feature felt finished, not by hitting it.
+
+**Two cheap limits, both to avoid making things worse.** Below 200 accumulated entries no partial is
+offered at all — a short listing is over before anyone could look at it, and two table reloads instead
+of one is cost without benefit. And painting is throttled to ten a second: fifty thousand objects
+arrive in hundreds of batches, and a reload each would cost more than the wait it removes. A partial
+uses a rows-only update rather than `view.update`, which would also move the path bar (the path has not
+changed), reveal the tree and re-read the comment column once per batch.
+
+**A note against my own earlier claim.** The plan for the S3 work (F-452…F-459) recorded that `DirectoryModel.load`
+holds its actor for the whole listing, so `getPath()` and friends queue behind it. That is wrong:
+actors release at every suspension point, and `load` awaits per batch. The stall it described does not
+exist. Corrected here because it was written down as a known limitation and would have sent somebody
+looking for it.
+
+**The path had to move with the rows, and that is correctness rather than tidiness.** The first version
+painted rows only and left the breadcrumb alone, reasoning that the model had not committed the path
+yet. On screen that is one part of the window describing a different place from another — the same
+defect this whole month has been made of — but it is worse than cosmetic: `view.currentPath` is what a
+row's full path is *built from*, for opening an entry, dragging one, and the context menu. Rows from
+directory B under directory A's path make Enter open `A/entryFromB`, a path that does not exist. The
+partial update now moves the breadcrumb with the rows, and the failure repaint puts both back, which is
+why the snapshot carries its path.
+
+**What deliberately does not move is the status bar.** Its counts come from `model.getPath()`, which
+still answers the committed directory, so it shows the previous folder's totals until the listing
+finishes. Informational rather than functional — nothing is built from it — and tracking partials there
+would mean threading them through `refreshStatusBar`. Stated rather than left to be discovered.
+
+**Two details found by thinking rather than by testing, which is worth saying because neither would
+have failed a test.** A partial preserves the viewport, so the *first* one of a fresh navigation would
+have inherited the previous directory's scroll position — a big folder opening at its five-hundredth
+row and jumping to the top when the listing finished. The first partial of a navigation therefore does
+not preserve it, later ones do (the user may have scrolled the new directory by then). And the throttle
+clock is reset per load, or the first partial of a quick second navigation is dropped and the old rows
+stay up longer than they need to.
+
+**One duplication cleaned up rather than shipped.** Making this work needed a boolean readable without
+`await`, which is the third time that has come up — `CancelFlag` in PCPluginHost, and the one F-458 added
+for a transfer's Cancel. The two in PCApp are now one `OneShotFlag` in PCFoundation, with both reasons
+written on it. `CancelFlag` stays where it is: PCPluginHost does not import PCFoundation, and adding an
+import to consolidate six lines buys nothing.
+
+**A harness mistake of my own, for the record.** I started a full VM run and then rebuilt the app while
+it was in its copy phase — the exact trap already written into this file, where the guest ran a
+half-written bundle and every scenario failed for a reason that was not the application. Noticed
+immediately, the run killed and the VM deleted rather than interpreted. The lesson that was already
+here is apparently worth having twice: while the harness is running, nothing else may touch `build/`.
+
+**Evidence.** `DirectoryModelIncrementalTests` — 7 tests: a long listing offered before it finishes and
+never offered *as* finished, a short one not offered at all, a partial sorted and filtered like the real
+thing (fed in reverse so arrival order would show), the model not committing early, the previous listing
+still committed after a mid-listing failure, and an overtaken load stopping instead of mixing two
+directories. Full suite: **3,137 tests, 0 failures**, and all fourteen static gates green.
+
+The wiring between the model and the panel is not unit-testable — there is no test bundle that links the
+application target — so it is checked in the running app instead. The `big-listing` scenario builds a
+5,000-entry directory, which is two `LocalFS` batches and therefore one painted partial, and asserts the
+panel ends up with `count=5000`. That is the assertion a screenshot cannot make: a batch appended twice
+or a last one dropped is invisible to the eye and exact in the count.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

@@ -88,6 +88,12 @@ does not have.
 
 ### Fixed
 
+- **A large folder now fills in as it loads.** A directory with thousands of entries — a big folder on
+  disk, an FTP or SFTP listing, an S3 bucket — showed an empty panel until the very last entry had
+  arrived. The rows now appear as they come in. Navigating away while a folder is still loading no
+  longer lets the slower listing win, and if a listing fails partway through, the panel goes back to
+  showing the folder it was actually in rather than half of the one it could not open.
+
 - **The same bytes now give the same answer inside an archive as on disk.** Content search stopped
   after 16 MB of an archive member while a loose file had no such limit, so a match further into an
   archived log was reported as no match at all. Members past that point are extracted and searched

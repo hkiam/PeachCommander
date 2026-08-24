@@ -887,6 +887,20 @@ SCENARIOS = [
                       "drivebardump /Users/admin/drive-second.txt", "wait 400",
                       "cmd cm_NextTab", "wait 2500",
                       "drivebardump /Users/admin/drive-back.txt", "wait 400"], 16),
+    # A directory big enough to arrive in more than one batch (F-474). `LocalFS` yields 4096 entries at
+    # a time, so 5,000 files is two batches — which means one partial listing is painted before the
+    # final one. What this asserts is the part that a unit test cannot: that going through the partial
+    # path leaves the panel with exactly the right listing at the end. A batch appended twice, or the
+    # last one dropped, shows up here as a wrong count and nowhere else.
+    #
+    # The probe reports the count it built, so a fixture that failed to build cannot be mistaken for a
+    # panel that listed wrongly.
+    ("big-listing", ["probe /Users/admin/big-seed.txt|"
+                     "/usr/bin/python3 -c \"import os; d=os.path.expanduser('~/pc-big'); "
+                     "os.makedirs(d, exist_ok=True); [open(os.path.join(d,'f%05d.txt'%i),'w').close() "
+                     "for i in range(5000)]\" && ls ~/pc-big | wc -l | tr -d ' '",
+                     "active left", "left /Users/admin/pc-big", "wait 4000",
+                     "dump /Users/admin/big-listing.txt"], 20),
     # S3 as a drive, in the running app (F-457). The plugin's own tests drive it through
     # `PFXFileSystem`; this is the only place the *user's* route runs — a saved profile becomes a chip
     # in the drive bar, clicking it connects that profile, and the bucket list is the root of the mount.
@@ -1891,6 +1905,10 @@ REPORTS = {
     # position.
     # The bucket is a directory at the root of the mount, which is the whole path model. `path=/` says
     # the panel really is inside the plugin's filesystem rather than somewhere on the guest's disk.
+    # Exactly five thousand, after a listing that went through a partial paint. The count is the whole
+    # assertion: a double-appended batch or a dropped last one is invisible in a screenshot.
+    "big-listing": ("/Users/admin/big-listing.txt",
+                    ["path=/Users/admin/pc-big", "count=5000", "f00000.txt", "f04999.txt"]),
     "s3-mount": ("/Users/admin/s3-panel.txt", ["path=/", "demo-bucket"]),
     "process-files": ("/Users/admin/tm-openfiles.txt",
                       ["path=/tail (", ":Users:admin:tm-target.txt"]),
