@@ -11,7 +11,7 @@
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **0.7.2 — released 2026-08-19** — the Git plugin, assessed and then built out in six stages (F-415…F-423): the four defects the assessment found first (a subdirectory's file reported the parent repository's status, a rename shifted every status after it, a non-ASCII path came back blank, `push` could wait forever on a terminal this process does not have), then the panel with the host's compare window as its diff, the history with a lane graph and blame, branches/stashes/sync with a way out, `.gitignore` management, revert and cherry-pick, a column that follows a linked worktree and a submodule, a conflict resolver on the file's own markers, credential *diagnosis* that stores nothing, "open on the web" without an API, and a rebase bounded to the commits ahead of the upstream. Four things were argued down rather than built: a merge editor with base and result panes, credential storage of any kind, the GitHub/GitLab API, and status *icons* (a glyph instead, since the content ABI returns strings). The host gained asynchronous plugin commands with progress and cancel (F-422), where two traps sat one level apart: every host service asserted it was on the main actor — off-main `assumeIsolated` traps — and awaiting the command merely moved the block from the main thread to its caller. Previously **0.7.1 — released 2026-08-18** — a round of reported defects, four of them losing something rather than looking wrong: a Total Commander `.mnu` that could not be read at all (encoding + CRLF, the same fix for `.bar`/`usercmd.ini`/`wincmd.ini`), a CSV whose first record vanished into the column headers, every valid JSON Lines file reported as broken, and hardlinked files in a cpio/initramfs image listed as 0 bytes while opening with their full contents. Plus the freeze a reader hit while the work was in progress: formatting a 2 MB log with very long lines took 193,934 ms to draw thirty lines, now 126 ms. Previously **0.7.0 — released 2026-08-16** — a read-only plugin that opens filesystem images the way archives open (F-403): SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32, exFAT, NTFS, plus MBR and GPT partition tables. Router firmware with no partition table is carved — the filesystems are found by searching for them and confirmed by opening each one — and the bootloader, kernel and vendor header around them are listed and extractable. Every reader is written here from its published layout rather than vendored, for licence reasons; only zstd's own single-file decoder (BSD-3) is taken in. Reviewing it turned up three integer-overflow crashes reachable from a crafted image, one of them older than the plugin, and a mutation corpus that structurally could not reach the code it was meant to guard. That in turn exposed F-230: the crash guard caught the four faults C code raises and none of the ways Swift fails, so a trapping plugin took the whole app down. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
-| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **105 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is green again** (117 scenarios, 2026-08-22). It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
+| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **105 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 121 of 122 green (2026-08-24)**, and the one red scenario is diagnosed in the F-464…F-470 entry: `plugin-context-menu` asserts the AI plugin's context items, and that plugin has shipped switched off since F-448 while the harness never enables it in the guest — measured twice on the host, with and without. Before that: green at 117 scenarios, 2026-08-22. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
 | Last updated | 2026-08-23 |
 | Released | **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
@@ -1595,6 +1595,188 @@ route from F5, F6 and F7; F-457 gave the ABI a per-volume connect and fixed a fi
 blanked *every* plugin column for any connection id containing a dot; F-458 gave every network backend
 a progress bar and a Cancel that works. None of those are S3 features. They were all found by trying
 to make one plugin work properly.
+
+## 2026-08-24 (F-464…F-470) — Formats leave the core, and the lister ABI grows up
+
+F-460…F-462 closed three gaps and left three open — diagrams, mathematics, and a real parser. All
+three failed at the same place: the application's one web view, with JavaScript off,
+`default-src 'none'` and a rule list blocking every network scheme. The brief this time was not
+"make Markdown richer" but **take the subject out of the core, and build the interface so any format
+can go through a plugin** — on every surface, not only the F3 window.
+
+Seven pieces. Each is a commit with its own reasoning; what follows is what holds them together and
+what had to be measured rather than argued.
+
+### The interface (F-464)
+
+PLX was a WLX port: `ListLoad(parent, path, showFlags)` says everything a plugin can be told, which
+is enough for a window and nothing else. Four optional exports, each because a surface that exists
+today would otherwise lose something:
+
+| Export | Who needs it |
+|---|---|
+| `ListLoadEx` | the preview panel — a renderer in a 200-point column is not the same as in a window |
+| `ListGetOutline` | the viewer's symbol sidebar, which had nothing to read once the host stopped parsing |
+| `ListGotoAnchor` | clicking a row in it |
+| `ListGetText` | the find bar, Copy All, Mark All, Print |
+
+**The design decision worth arguing with** is `ListLoadEx`'s parameter: it takes the
+`PcHostServices` table the contribution host already builds, not a new struct of lister fields. So a
+lister reads the same context every other plugin does, and `lister.surface`, `lister.width` and
+`lister.height` are *keys*. The next thing a surface needs costs a string, not a header change.
+`plx.h` forward-declares `struct PcHostServices` rather than including contrib.h, so it still
+compiles standalone as C11 — and both include orders were checked by hand.
+
+Proved on the C sample **before** any shipping plugin depended on it, because an ABI designed
+against one caller tends to fit only that caller. `sync-plugin-sdk.sh` refreshed one of the seven
+copies of these headers; it does all six destinations now, from the sets the gate compares.
+
+### The core hands over (F-465, F-466)
+
+23 `.web` sites, `Mode.web`, `ensureWebView`, `showWeb`, `declaresCharset`, the content rule list and
+`ListerWebView` left `ListerWindow`, which no longer has a web view at all. `MarkdownRenderer.swift`
+moved rather than being rewritten, and its 28 tests moved with it.
+
+One renderer now serves four surfaces: the F3 window, the preview panel, the embedded Quick View,
+and the gallery — where `ListGetPreviewBitmap` had sat in the header since the beginning **with no
+caller in the application**. `PreviewRoute` gained a `plugin` case and a `hasPlugin` argument passed
+in rather than computed, for the reason the file already gave about `isImage`.
+
+`Viewer.RenderDocumentsInApp` deliberately does not govern it: that switch is about who renders PDFs
+and word-processor documents, and somebody who prefers the system's PDF reader has not asked to lose
+Markdown as well.
+
+**Apple's Quick Look (Cmd+Y) cannot be served and is not pretended to be.** It is
+`QLPreviewPanel.shared()` in another process; the only route is an app extension, and an extension
+must be signed to be registered, which is I20. Written in the help page so the difference from
+Ctrl+Q is not a mystery.
+
+Two defects found on the way, both older than this work: `contentView` was never set in plugin mode,
+so after a text file and then a CSV, Copy and Mark All worked on the *previous* file — exactly the
+defect that had been fixed for the rendered page, still standing one branch over. And an `NSView`
+subclass must not return nil before `super.init`: it leaves an allocated Objective-C object that was
+never initialised, and AppKit messages it later (`-[NSView _setIgnoreFocusEngine:]: unrecognized
+selector`, from a stack naming none of this code).
+
+### Engines, and the rule they are bound by (F-467)
+
+Mermaid 11.15.0 and KaTeX 0.16.47, both MIT, inside the bundle. **A document that needs no engine
+gets no JavaScript**, the scripts are replaced rather than added to when the view shows the next
+file, and dollars inside a fenced block ask for nothing. Generous about maths in the *loader* and
+strict in the *page*: two dollars on a prose line load KaTeX, and KaTeX's own auto-render then
+decides in the DOM, where it can see that a `$` sits inside `<code>`. A scanner deciding that would
+mangle a sentence; a generous loader only wastes an injection.
+
+Injected as `WKUserScript`, so the document's policy needs no `script-src`. KaTeX's fonts arrive as
+`data:` URIs, because the page is loaded with `loadHTMLString` and has no read access to the bundle
+— `font-src file: data:` admits that and nothing more. A reader's own build in
+`<configRoot>/markdown-assets/` wins, the decompiler plugin's rule for engines.
+
+Mermaid draws its own "Syntax error in text" figure *as well as* rejecting the promise, so a broken
+diagram was reported twice. Only a picture showed it.
+
+### The parser (F-468)
+
+swift-markdown over cmark-gfm. **The 28 moved tests carried the swap unchanged** — one changed,
+because `fenceInfo` now gets cmark's info string instead of the whole opening line, and the change
+is written into the test. That is what pinning the output rather than the parse was for.
+
+Three things had to be measured:
+
+* **No CMake.** swift-cmark ships a prebuilt `cmark-gfm_config.h` for exactly the case where CMake
+  did not run, so the C sources compile with include paths alone. This was the assumption the whole
+  step hung on and it was checked first.
+* **swift-markdown's directories contain spaces** ("Block Nodes"). Word splitting *and* swiftc
+  response files break on them, and the failure reads `error opening input file
+  'Blocks/BlockQuote.swift'` — a path that does not exist, naming no file that does.
+* **List tightness is not on the tree.** CommonMark makes it a property of the list, cmark knows it,
+  swift-markdown does not expose it. The reconstruction was wrong twice, and both times a *picture*
+  found it and no unit test could: deciding per item made `- one\n  - nested` loose, and then the
+  gap test made every list with anything after it loose, because cmark counts the blank line
+  separating a list from the next paragraph inside the final item's range. Every fixture ended with
+  its list, which is why they all passed.
+
+### Settings and shipping (F-469, F-470)
+
+Own page in Settings, settings in `<configRoot>/markdown.ini` and not the host's file. The row that
+earns its place is the engine status — each engine, its size, and *where it came from*, because "it
+is not working" and "it is working from a copy you forgot you put there" look identical otherwise.
+
+Ships **enabled**: it is the only renderer for `.md` and `.html` there is, and shipping it off would
+take a feature from every new installation. Switched off, both formats show as text with the outline
+intact, because `DeclarationOutline` parses them independently of any renderer.
+
+19 languages (14 strings; German hand-written, 17 dictionaries applied), a help topic in 19, a line
+in `plugins.md` in 19, `features.yml` → 90 features, the parity row, and licences for KaTeX,
+swift-markdown and swift-cmark. Mermaid's notices row said "not part of any build of the app" and had
+to stop saying it.
+
+**The translations are machine-produced from the reviewed English and have not been read by a native
+speaker.** That is the same standing as the other 52 topics and is said here rather than implied.
+
+### Evidence
+
+Pictures, because three of these features are invisible to a dump: the rendered page in light and
+dark, a diagram and a formula side by side with `$HOME kostet $5 und $6` untouched in a code block, a
+three-level nested list with task boxes, an alignment table, the preview panel reporting
+`route=plugin · Markdown and HTML`, the gallery tile, the settings pane — and the `.html` file whose
+own script tried to rewrite its text and title and did not.
+
+`listershot` came from F-461; `mainshot` is new and photographs the *key* window, which is what made
+the settings pane and the gallery checkable at all. `screencapture` returns a black frame without
+Screen Recording permission, which a verification run has no business asking a machine for.
+
+Three new VM scenarios — `markdown-diagram`, `markdown-html-escape`, `html-no-javascript` — and
+`markdown-html-escape` gets the beacon server as its witness, like `viewer-beacon`: the page runs
+JavaScript now, and an engine in it must not make a remote image reachable that was not reachable
+before.
+
+### The VM full run, and the one red scenario that is not this work's
+
+122 scenarios, **121 green, one red**, and the red one had to be diagnosed rather than assumed:
+
+    FAIL plugin-context-menu: report wrong about ['Suggest a comment', 'Suggest a name', 'Summarize']
+
+Those three strings come from exactly one place — `Plugins/AIAssistant/Info.plist` — and the AI plugin
+has shipped **switched off** since `ccecc6f0` (F-448, 2026-08-22). The harness writes no `plugins.ini`
+into the guest, so the plugin is not enabled there, so its context contributions are not in the menu,
+so a scenario that asserts them cannot pass. Measured rather than argued: the same `ctxdump` run twice
+on this machine, once with `Enabled=AI Assistant` in the config root and once without, and the eight
+AI items appear in exactly one of the two.
+
+It is not this work: `git diff 193e19f6..HEAD` touches no file under `Plugins/AIAssistant/`, nothing
+about `plugins.ini`, and nothing about plugin enablement. The last full run recorded as green
+(117 scenarios, 2026-08-22) either predates F-448 or was not repeated after it — the two runs since
+have been single-scenario.
+
+**Not fixed here, and the first version of this note was wrong about why.** It said there is no way
+to switch that plugin on per scenario. There is: `run_scenario` already writes `~/auto.txt` over ssh
+*before* `regress-guest.sh` launches the app with `-ConfigRoot ~/pc-cfg`, so a per-scenario
+`~/pc-cfg/plugins.ini` — written there and removed after — is about ten lines and touches no other
+scenario. What is true is only the narrower claim: it cannot be done from inside the script, because
+plugins load before the script runs and there is no `reloadplugins` verb.
+
+So the fix is cheap and known; it is simply not this work's. The scenario asserts an AI-plugin feature
+and broke when that plugin's default changed, which makes it F-448's consequence and belongs in a
+commit that says so, not in one about Markdown.
+
+**One screenshot is degraded, and not by this work either.** `markdown-diagram.png` has the
+"Allow PeachCommander to find devices on local networks?" dialog over part of the page — the
+golden-image issue already recorded in the harness entry of 2026-08-22. The formula and part of the
+diagram are visible past it and the *report* is green; the clean pictures of the same document were
+taken on the host with `listershot`.
+
+### What is deliberately not done
+
+* **Apple's Quick Look**, above — gated on signing.
+* **More formats into plugins** (images, media, hex, the XML tree). The interface can do it now; each
+  is its own decision. This round proved the way at two formats instead of claiming it at six.
+* **A separate `Markdown` module** in the plugin build. `pc_swiftc` compiles one slice per
+  architecture and a per-slice module path cannot be threaded through it, so swift-markdown is
+  compiled into the plugin's own module. No collision exists today; the fix if one appears is a
+  per-architecture loop in the build script.
+* **The chat and Notes** keep their own light renderers.
+* **`fonts.googleapis.com`** on the documentation site — still open, still its own piece of work.
 
 ## 2026-08-23 (F-460) — The documentation site drew its diagrams from a CDN, or not at all
 

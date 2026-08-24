@@ -56,6 +56,30 @@ does not have.
   about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a
   panel column from the same model, arrives switched off with it.
 
+- **Markdown and HTML are now drawn by a plugin, and can do much more.** Press F3 on a `.md` or
+  `.html` file and you get nested lists, task lists with their boxes, tables with alignment,
+  reference links and strikethrough — a real Markdown parser rather than an approximation. Diagrams
+  written as ` ```mermaid ` blocks are drawn, and mathematics written between dollar signs is
+  typeset. Both happen **on your Mac**: the engines ship inside the plugin, nothing is downloaded,
+  and no part of your document is sent anywhere. A document with neither loads neither.
+
+  The same rendering now appears in the **preview panel and Quick View**, so a preview and a full
+  view of one file no longer disagree, and the **gallery** shows a small picture of a Markdown
+  file's beginning instead of a generic icon. Apple's own Quick Look (Cmd+Y) is unchanged — that
+  panel belongs to macOS.
+
+  It is a plugin called **Markdown and HTML**, so you can switch it off in
+  **Configuration ▸ Plugins…**; both formats then open as text, with the outline and syntax colouring
+  intact. Its own settings page turns diagrams and mathematics on or off separately, sets the size
+  above which a file opens as text, and says which engine version is in use and where it came from.
+  If you need a different build of Mermaid or KaTeX, you can drop it in a folder and it is used
+  instead.
+
+  Two things it will not do, on purpose. A rendered page loads nothing over the network: an image
+  whose address begins with `http` stays blank, because fetching it would tell that server when you
+  opened the file. And a document's own scripts never run — HTML inside a Markdown file is shown as
+  text, and an `.html` file is displayed with scripting switched off.
+
 - **Code blocks in a rendered Markdown file are now coloured.** Press F3 on a `.md` file and the
   Rendered view keeps the language written on each fence — ```` ```swift ````, ```` ```python ```` —
   and colours comments, strings, numbers and keywords the way the editor does. A fence naming
