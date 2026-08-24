@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>Markdown</string>
+	<key>CFBundleExecutable</key><string>Markdown</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>plx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Markdown and HTML</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<key>PCPluginExtensions</key>
+	<array>
+		<string>md</string><string>markdown</string><string>mdown</string>
+		<string>mkd</string><string>mkdn</string><string>mdwn</string>
+		<string>html</string><string>htm</string><string>xhtml</string>
+	</array>
+	<key>PCPluginDetectString</key>
+	<string>EXT="MD" | EXT="MARKDOWN" | EXT="MDOWN" | EXT="MKD" | EXT="MKDN" | EXT="MDWN" | EXT="HTM" | EXT="HTML" | EXT="XHTML"</string>
+	<!-- No PCPluginEnabledByDefault: this plugin is the ONLY renderer for Markdown and HTML —
+	     the application gave the formats up entirely — so shipping it switched off would take a
+	     feature away from every new installation. Turning it off is a choice a reader can make,
+	     and then .md and .html are shown as text, with the outline still working. -->
+</dict>
+</plist>

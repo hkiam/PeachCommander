@@ -229,6 +229,17 @@ final class ContributionRegistry {
         return true
     }
 
+    /// Run `body` with a services table for a lister, whose context also answers `extras`.
+    ///
+    /// Goes through the same bridge every contributed command uses, so a lister reads the same
+    /// context — including the theme colours and the config root — as any other plugin, and gains
+    /// whatever is added there later without another ABI change. The `extras` are the `lister.*`
+    /// keys, which are true for one call only.
+    func withListerServices(host: ContributionHost, extras: [String: String],
+                            _ body: (UnsafeRawPointer?) -> Void) {
+        hostBridge(for: host).withServices(extras: extras, body)
+    }
+
     private func hostBridge(for host: ContributionHost) -> ContribHostBridge {
         if let bridge { return bridge }
         let b = ContribHostBridge(host); bridge = b; return b

@@ -16,14 +16,15 @@ import UniformTypeIdentifiers
 @MainActor
 final class ListerWindowController: NSWindowController, NSWindowDelegate, NSTextViewDelegate,
                                     NSUserInterfaceValidations {
-    enum Mode { case text, hex, image, media, web, plugin, directory, code, xmlTree, binary }
+    /// No `web` case: Markdown and HTML left the application. Both are rendered by the Markdown
+    /// lister plugin now, which reaches this window as `.plugin` like any other format plugin — see
+    /// the file header.
+    enum Mode { case text, hex, image, media, plugin, directory, code, xmlTree, binary }
 
     /// Audio/video player for `.media` mode (paused/cleared when the view changes).
     private var avPlayer: AVPlayer?
 
     /// File extensions the rendered (web) mode understands.
-    private static let markdownExts: Set<String> = ["md", "markdown", "mdown", "mkd", "mkdn", "mdwn"]
-    private static let htmlExts: Set<String> = ["html", "htm", "xhtml"]
     private static let rtfExts: Set<String> = ["rtf", "rtfd"]
 
     private var files: [String]
@@ -155,15 +156,13 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Parsed XML tree + its outline data source, for the collapsible tree mode.
     private var xmlRoot: XMLTreeNode?
     private var xmlOutline: XMLOutlineController?
-    /// The Markdown *source* behind the rendered page, and the anchors its headings were given.
+    /// 1-based source line → the anchor the *plugin* gave that heading, from `ListGetOutline`.
     ///
-    /// Kept because the rendered representation is a web view: the outline is built from the source
-    /// (headings and their nesting), while navigating goes to an element in the page. Without these two
-    /// the symbol sidebar had nothing to show for a Markdown file in its normal, rendered mode — the
-    /// toggle was simply dead, and the reader had to switch to the text representation to get an outline
-    /// of the document they were already reading.
-    private var webMarkdownSource: String?
-    private var webMarkdownAnchors: [Int: String] = [:]
+    /// The sidebar knows a heading by its line and the page can only be scrolled to an element, so
+    /// something has to hold the mapping between them. It used to be built here, from this window's
+    /// own Markdown renderer; now the plugin that rendered the page is the one that knows, and this
+    /// is where its answer is kept for the next click.
+    private var pluginOutlineAnchors: [Int: String] = [:]
 
     private let statusLabel = NSTextField(labelWithString: "")
     #if DEBUG
@@ -252,8 +251,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             return "symbol=\(name)\nfound=0\n"
         }
         var out = "symbol=\(name)\nfound=1\nline=\(sym.line)\n"
-        if mode == .web, let web = webView {
-            let anchor = webMarkdownAnchors[sym.line] ?? ""
+        if mode == .plugin, let web = contentWebView() {
+            let anchor = pluginOutlineAnchors[sym.line] ?? ""
             out += "anchor=\(anchor.isEmpty ? "-" : anchor)\n"
             let before = await webScrollY(web)
             out += "scrollYBefore=\(before)\n"
@@ -528,7 +527,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Toolbar action buttons paired with their selector, for per-representation
     /// enablement (see refreshActionEnablement).
     private var actionButtons: [(Selector, NSButton)] = []
-    private var webView: ListerWebView?
     private weak var container: NSView?
 
     /// Available PLX lister plugins, consulted before the built-in modes.
@@ -667,8 +665,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         bar.edgeInsets = NSEdgeInsets(top: 6, left: 10, bottom: 6, right: 10)
         bar.translatesAutoresizingMaskIntoConstraints = false
 
+        // No "Rendered" item: what renders a document is a plugin, and refreshPluginReprItems adds
+        // each claiming plugin *by name* — which says more than "Rendered" and is the only form that
+        // works when two plugins want the same file (F-119). The Document menu still offers
+        // "Rendered", because a menu has no room for a per-file list.
         for (title, tag) in [(String(localized: "Auto"), 0), ("Text", 1), ("Code", 2),
-                             ("Hex", 3), ("Image", 4), (String(localized: "Rendered"), 5)] {
+                             ("Hex", 3), ("Image", 4)] {
             reprPopup.addItem(withTitle: title); reprPopup.lastItem?.tag = tag
         }
         reprPopup.target = self
@@ -763,11 +765,22 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let ext = files.indices.contains(index) ? (files[index] as NSString).pathExtension.lowercased() : ""
         if mode == .code || mode == .text, let tv = textContentView {
             symbolSidebar.load(text: tv.string, ext: ext)
-        } else if mode == .web, let markdown = webMarkdownSource {
-            // The rendered page has no text view, but the *source* is right here and already bounded by
-            // the render cap — so the reader of a rendered document gets the same outline of it as the
-            // reader of its source, instead of a dead toggle (F-410).
-            symbolSidebar.load(text: markdown, ext: ext)
+        } else if mode == .plugin, let pv = pluginView {
+            // A plugin-rendered page has no text view, and two ways to have an outline anyway. Its own
+            // is preferred: a plugin knows the structure of the format it renders, and that is what
+            // lets a format the host has never heard of have a sidebar at all. Failing that, the text
+            // it hands over is outlined here — which keeps the promise F-410 made for a rendered
+            // Markdown document, now that the rendering happens somewhere else.
+            let rows = pv.lister.outline(of: pv.handle)
+            pluginOutlineAnchors = Dictionary(rows.map { ($0.line, $0.anchor) },
+                                              uniquingKeysWith: { first, _ in first })
+            if !rows.isEmpty {
+                symbolSidebar.load(rows: rows)
+            } else if let text = pv.lister.text(of: pv.handle), !text.isEmpty {
+                symbolSidebar.load(text: text, ext: ext)
+            } else {
+                symbolSidebar.clear()
+            }
         } else {
             symbolSidebar.clear()
         }
@@ -833,8 +846,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Jump the content view to a symbol's definition.
     private func navigate(to sym: SymbolNode) {
-        if mode == .web, let web = webView, let anchor = webMarkdownAnchors[sym.line] {
-            scrollWeb(to: anchor, web: web)
+        // A plugin-rendered page: the plugin knows where its own anchors are, and the host asks it to
+        // scroll rather than reaching into a view it did not build. `ListGotoAnchor` is optional, so a
+        // plugin without it simply keeps the outline and loses the jump.
+        if mode == .plugin, let pv = pluginView, let anchor = pluginOutlineAnchors[sym.line],
+           pv.lister.gotoAnchor(anchor, in: pv.handle) {
             return
         }
         if let tv = textContentView {
@@ -875,6 +891,22 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
     }
 
+    /// The `WKWebView` inside the current content view, if there is one.
+    ///
+    /// A plugin returns a plain `NSView` and puts whatever it likes inside it, so "is this a rendered
+    /// page" cannot be asked by casting. Walking the subtree is what lets the two automation verbs
+    /// that need pixels or a scroll position — `listershot`, `listersymbol` — keep working for a
+    /// format the application no longer renders itself, without this window knowing anything about a
+    /// particular plugin.
+    private func contentWebView() -> WKWebView? {
+        func find(_ view: NSView) -> WKWebView? {
+            if let web = view as? WKWebView { return web }
+            for sub in view.subviews { if let web = find(sub) { return web } }
+            return nil
+        }
+        return contentView.flatMap(find)
+    }
+
     /// A Swift string as a JavaScript string literal.
     private static func jsString(_ s: String) -> String {
         let escaped = s.replacingOccurrences(of: "\\", with: "\\\\")
@@ -892,7 +924,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         switch tag {
         case 1: vmText(); case 2: vmCode(); case 3: vmHex()
-        case 4: vmImage(); case 5: vmWeb(); default: vmAuto()
+        case 4: vmImage(); default: vmAuto()
         }
     }
 
@@ -962,9 +994,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     private static func autoMode(for path: String, slice: FileSlice?) -> Mode {
         let ext = (path as NSString).pathExtension.lowercased()
-        if markdownExts.contains(ext) || htmlExts.contains(ext) {
-            return .web
-        }
+        // Markdown and HTML used to be named here and sent to a web view this window owned. They are
+        // a plugin's business now, and a plugin that claims a file wins over this function anyway
+        // (see loadCurrent) — so with the plugin installed they never reach it, and without it they
+        // fall through to the sniff below and come up as text, which is a readable answer and not a
+        // blank one.
         if !ext.isEmpty, let type = UTType(filenameExtension: ext), type.conforms(to: .image) {
             return .image
         }
@@ -1001,23 +1035,15 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
         if mode == .plugin {
             if embedPlugin(for: path, slice: slice) {
-                webView?.isHidden = true
                 scrollView.isHidden = true
                 updateStatus()
+                refreshSymbols()
                 return
             }
             // No plugin claimed it (or it declined) → fall back to a built-in mode.
             mode = Self.autoMode(for: path, slice: slice)
         }
 
-        if mode == .web {
-            showWeb(for: path, slice: slice)
-            updateStatus()
-            return
-        }
-
-        // Non-web modes use the scroll view; hide any web view.
-        webView?.isHidden = true
         scrollView.isHidden = false
         scrollView.allowsMagnification = false   // enabled only for image mode (F-115)
         // Leaving the image behind: let go of the bitmap and stop centring the document, or a text file
@@ -1025,7 +1051,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if mode != .image, zoomImageView.image != nil {
             imageZoom.clear()
         }
-        if let container, window?.firstResponder === webView { window?.makeFirstResponder(container) }
         let view: NSView
         textMarks = nil   // reset; set below only for the NSTextView text/code path
         switch mode {
@@ -1116,7 +1141,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             outline.expandItem(root)
             view = outline
             scrollView.documentView = outline
-        case .web, .plugin, .directory:
+        case .plugin, .directory:
             return   // handled above / elsewhere
         }
         contentView = view
@@ -1130,7 +1155,22 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         var flags: PLXShowFlags = []
         if isDarkAppearance { flags.insert(.darkMode) }
         let parentPtr = Unmanaged.passUnretained(container).toOpaque()
-        guard let handle = lister.load(parent: parentPtr, file: path, showFlags: flags) else { return false }
+        // What the plugin is being asked to fit into. A renderer that puts a toolbar above its
+        // content is right in a window and wrong in a 200-point column, and this window is the
+        // "viewer" surface — the preview panel passes its own.
+        let area = marks.splitView
+        let extras = ["lister.surface": "viewer",
+                      "lister.width": String(Int(area.bounds.width)),
+                      "lister.height": String(Int(area.bounds.height))]
+        var loaded: PLXHandle?
+        if let context = ListerPluginContext.shared {
+            context.withServices(extras) { services in
+                loaded = lister.loadEx(parent: parentPtr, file: path, showFlags: flags, services: services)
+            }
+        } else {
+            loaded = lister.load(parent: parentPtr, file: path, showFlags: flags)
+        }
+        guard let handle = loaded else { return false }
         // The PLX contract: the handle is an NSView* the host embeds and later closes.
         let view = Unmanaged<NSView>.fromOpaque(handle).takeUnretainedValue()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -1142,7 +1182,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // an embedded representation should occupy, and it is the same anchor the web view
         // uses. (Anchoring to scrollView instead would freeze the height: rebuildContent
         // hides it first, and a hidden NSSplitView arranged subview keeps its last frame.)
-        let area = marks.splitView
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: area.topAnchor),
             view.leadingAnchor.constraint(equalTo: area.leadingAnchor),
@@ -1150,6 +1189,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             view.bottomAnchor.constraint(equalTo: area.bottomAnchor)
         ])
         pluginView = (lister, handle, view)
+        // The plugin's view *is* the content view now. Without this, `contentView` kept pointing at
+        // whatever the previous representation built, so `markable`, `ViewerTextProviding` and the
+        // snapshot verb all resolved against an invisible view belonging to the file before this one —
+        // the same defect the rendered page had until it was fixed there, and it was still here.
+        contentView = view
+        textMarks = nil
         return true
     }
 
@@ -1181,7 +1226,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     // MARK: - Directory summary (F3 on a folder)
 
     private func loadDirectoryStats(_ dir: String) {
-        webView?.isHidden = true
         scrollView.isHidden = false
         let label = NSTextField(wrappingLabelWithString: String(localized: "Calculating…"))
         label.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
@@ -1232,159 +1276,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         """
     }
 
-    /// Render Markdown or HTML into a (lazily created) WKWebView layered over the
-    /// scroll-view area. JavaScript is disabled, and network loads are blocked, so a
-    /// previewed page cannot run active content or phone home; local sibling
-    /// resources still load.
-    ///
-    /// The second half used to be a claim rather than a fact. Disabling JavaScript stops scripts, not
-    /// `<img src="http://…">` — measured with a local server as the witness, and the request went out.
-    /// So a page previewed here reports back that it was opened, and from where. The generated Markdown
-    /// document carries a Content-Security-Policy for this, but an HTML file the user opens is not ours
-    /// to add a header to, and that path loads the file directly; the content rule list below covers
-    /// both, since it is applied to the web view rather than to the document.
-    private func showWeb(for path: String, slice: FileSlice) {
-        let web = ensureWebView()
-        scrollView.isHidden = true
-        web.isHidden = false
-        // The rendered page *is* the content view now. Without this, contentView kept
-        // pointing at whatever the previous representation built: `markable` and
-        // `ViewerTextProviding` still resolved against that invisible view, so Mark
-        // All and Copy silently operated on the previously viewed file, and Print
-        // printed it. A WKWebView conforms to none of those protocols, so assigning it
-        // makes every capability below answer truthfully.
-        contentView = web
-        textMarks = nil
-        // A previous file's Markdown state must not survive into this one: an HTML file rendered after a
-        // Markdown one would otherwise keep the outline of the document before it.
-        webMarkdownSource = nil
-        webMarkdownAnchors = [:]
-        // Focus the web view so arrows / space / PageUp-Down scroll the page natively.
-        DispatchQueue.main.async { [weak self] in self?.window?.makeFirstResponder(web) }
-
-        let url = URL(fileURLWithPath: path)
-        let dir = url.deletingLastPathComponent()
-        let ext = (path as NSString).pathExtension.lowercased()
-
-        loadWithoutNetwork(web) { [weak self] in
-            if Self.htmlExts.contains(ext) {
-                let cap = 16 * 1024 * 1024
-                let raw = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
-                if Self.declaresCharset(raw) {
-                    // Charset is known to WebKit — load the file directly so relative
-                    // CSS/images/links resolve and the declared encoding is honored.
-                    web.loadFileURL(url, allowingReadAccessTo: dir)
-                } else {
-                    // No charset declared: decode with the detected encoding and hand
-                    // WebKit UTF-8 data so non-ASCII text is not garbled. (Such files
-                    // are typically self-contained, so losing sibling-file access is OK.)
-                    let enc = EncodingDetector.detect(Array(raw.prefix(64 * 1024)))
-                    let text = String(bytes: raw, encoding: enc) ?? String(decoding: raw, as: UTF8.self)
-                    if let data = text.data(using: .utf8) {
-                        web.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: dir)
-                    } else {
-                        web.loadFileURL(url, allowingReadAccessTo: dir)
-                    }
-                }
-            } else {
-                // Treat as Markdown: decode a bounded prefix and render to HTML.
-                let cap = 8 * 1024 * 1024
-                let data = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
-                let enc = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
-                let text = String(bytes: data, encoding: enc) ?? String(decoding: data, as: UTF8.self)
-                let rendered = MarkdownRenderer.document(from: text, title: url.lastPathComponent)
-                // Keep source and anchors so the symbol outline works on the rendered page.
-                self?.webMarkdownSource = text
-                self?.webMarkdownAnchors = rendered.anchors
-                web.loadHTMLString(rendered.html, baseURL: dir)
-                self?.refreshSymbols()
-            }
-        }
-    }
-
-    /// Whether an HTML document declares its encoding via a BOM or a `charset`
-    /// in the first few KB (so WebKit will decode it correctly on its own).
-    private static func declaresCharset(_ bytes: [UInt8]) -> Bool {
-        // UTF-8 / UTF-16 byte-order marks.
-        if bytes.starts(with: [0xEF, 0xBB, 0xBF]) { return true }
-        if bytes.starts(with: [0xFF, 0xFE]) || bytes.starts(with: [0xFE, 0xFF]) { return true }
-        let head = bytes.prefix(4096)
-        let ascii = String(decoding: head, as: UTF8.self).lowercased()
-        return ascii.contains("charset")
-    }
-
-    /// Every network scheme, blocked, whatever document the preview is showing.
-    ///
-    /// One rule per scheme on purpose: WebKit's filter engine rejects `^(https?|wss?)://` with
-    /// "Disjunctions are not supported yet", and a rule list that does not compile fails *open* — the
-    /// page would load and the block would exist only in the source. That was measured, not guessed,
-    /// which is why it is written the long way.
-    private static let noNetworkRules = """
-    [{"trigger":{"url-filter":"^http://"},"action":{"type":"block"}},
-     {"trigger":{"url-filter":"^https://"},"action":{"type":"block"}},
-     {"trigger":{"url-filter":"^ws://"},"action":{"type":"block"}},
-     {"trigger":{"url-filter":"^wss://"},"action":{"type":"block"}},
-     {"trigger":{"url-filter":"^ftp://"},"action":{"type":"block"}},
-     {"trigger":{"url-filter":"^ftps://"},"action":{"type":"block"}}]
-    """
-    private static var noNetworkList: WKContentRuleList?
-
-    /// Install the block on `web`, then load. `file:` and `data:` are untouched, so a document's
-    /// sibling image still appears — checked both ways.
-    ///
-    /// The load runs *in* the completion rather than beside it. Compiling is asynchronous, so loading
-    /// alongside it would leave the very first preview after launch unprotected — once, quietly, and
-    /// never in a way a later test would notice.
-    private func loadWithoutNetwork(_ web: WKWebView, _ load: @escaping () -> Void) {
-        func install(_ list: WKContentRuleList?) {
-            web.configuration.userContentController.removeAllContentRuleLists()
-            if let list { web.configuration.userContentController.add(list) }
-            load()
-        }
-        if let list = Self.noNetworkList { install(list); return }
-        guard let store = WKContentRuleListStore.default() else {
-            NSLog("[lister] no content rule list store — the preview is not blocked from the network")
-            load(); return
-        }
-        store.compileContentRuleList(forIdentifier: "pc-viewer-no-network",
-                                     encodedContentRuleList: Self.noNetworkRules) { list, error in
-            if let error {
-                NSLog("[lister] preview network block failed to compile: \(error.localizedDescription)")
-            }
-            Self.noNetworkList = list
-            install(list)
-        }
-    }
-
-    private func ensureWebView() -> ListerWebView {
-        if let web = webView { return web }
-        let config = WKWebViewConfiguration()
-        config.defaultWebpagePreferences.allowsContentJavaScript = false
-        let web = ListerWebView(frame: .zero, configuration: config)
-        // Route the viewer's command keys (mode switch, Esc, n/p, find) to the
-        // controller; other keys (arrows/space/page) fall through to WebKit's
-        // native scrolling.
-        web.onKey = { [weak self] event in self?.handleKey(event) ?? false }
-        web.translatesAutoresizingMaskIntoConstraints = false
-        if let container {
-            container.addSubview(web)
-            // Pin to the split view, NOT to scrollView: showWeb() hides the scroll
-            // view, and a hidden arranged subview of an NSSplitView stops being laid
-            // out — its frame froze at whatever it was when last visible, so a web
-            // view anchored to it kept the old size when the window grew and left
-            // blank areas to the right and below.
-            let area = marks.splitView
-            NSLayoutConstraint.activate([
-                web.topAnchor.constraint(equalTo: area.topAnchor),
-                web.leadingAnchor.constraint(equalTo: area.leadingAnchor),
-                web.trailingAnchor.constraint(equalTo: area.trailingAnchor),
-                web.bottomAnchor.constraint(equalTo: area.bottomAnchor)
-            ])
-        }
-        webView = web
-        return web
-    }
-
     private func updateStatus() {
         let size = slice?.count ?? 0
         let modeName: String
@@ -1406,9 +1297,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             // 100% look like two different files, and nothing else on screen says which one you have.
             modeName = "\(String(localized: "Image")) · \(imageZoom.levelText)"
         case .media: modeName = String(localized: "Media")
-        case .web:
-            let ext = (files[index] as NSString).pathExtension.lowercased()
-            modeName = Self.htmlExts.contains(ext) ? String(localized: "HTML") : String(localized: "Markdown")
         case .plugin:
             let name = pluginView?.lister.name ?? ""
             modeName = name.isEmpty ? String(localized: "Plugin") : "\(String(localized: "Plugin")) · \(name)"
@@ -1438,7 +1326,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     @objc func vmText() { setModeManually(.text) }
-    @objc func vmWeb() { setModeManually(.web) }
+    /// Show the file through a plugin — "Rendered", as the popup and the menu call it.
+    ///
+    /// It is the same representation as before by the reader's reckoning; what changed is who draws
+    /// it. Nothing happens when no plugin claims the file, which is also when the item is disabled.
+    @objc func vmPlugin() { guard pluginClaiming(path: files[index], slice: slice) != nil else { return }
+                            setModeManually(.plugin) }
     @objc func vmHex() { setModeManually(.hex) }
     @objc func vmImage() { setModeManually(.image) }
     @objc func vmCode() {
@@ -1539,55 +1432,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         marks.toggle()
     }
 
-    /// Copy the full text of the current text/code view to the clipboard.
-    /// Copy from the rendered page, matching what the other representations do: the
-    /// selection if there is one, otherwise everything.
-    ///
-    /// The queries run in an **isolated** content world, so the page's own JavaScript
-    /// stays disabled (`allowsContentJavaScript = false` — a previewed page must not run
-    /// active content) while the host can still read what is rendered.
-    private func copyFromWeb(_ web: ListerWebView) {
-        web.evaluateJavaScript("window.getSelection().toString()", in: nil, in: .defaultClient) { result in
-            let selection = ((try? result.get()) as? String) ?? ""
-            if !selection.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                // Hand it to WebKit rather than setting the string ourselves, so the
-                // clipboard keeps the rich flavours its own context menu provides.
-                NSApp.sendAction(Selector(("copy:")), to: web, from: nil)
-                return
-            }
-            // Nothing selected → the whole rendered text, as plain text (which is all the
-            // other representations offer anyway).
-            web.evaluateJavaScript("document.body.innerText", in: nil, in: .defaultClient) { textResult in
-                guard let text = (try? textResult.get()) as? String,
-                      !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    NSSound.beep(); return
-                }
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(text, forType: .string)
-            }
-        }
-    }
-
     private func copyAll() {
         // A text field being edited comes first: the viewer's ⌘C is also the ⌘C of every dialog it
         // opens (Find, Go To), and a menu key equivalent beats the responder chain — so without this,
         // ⌘C in the Go To field copied the *file* instead of the field's selection. Only an *editable*
         // text object wins, so the read-only content view below keeps its own meaning of "copy".
         if AppMenu.forwardToEditedText(#selector(NSText.copy(_:))) { return }
-        // Rendered pages: hand the standard editing action to WebKit, which copies the
-        // selection exactly as its own context menu does.
+        // An embedded plugin view — a rendered Markdown page among them: guarded on responds(to:),
+        // so a plugin that implements the standard action gets it and one that doesn't still falls
+        // through to the beep below rather than silently doing nothing.
         //
         // The viewer's Edit menu owns the ⌘C key equivalent (makeEditMenu binds it to
-        // DocumentAction.copy), and a menu key equivalent is matched before the
-        // responder chain — so the key never reached the web view. That is why copying
-        // worked from WebKit's own context menu but not from the keyboard.
-        if mode == .web, let web = webView, !web.isHidden {
-            copyFromWeb(web)
-            return
-        }
-        // Same situation for an embedded plugin view: guarded on responds(to:), so a
-        // plugin that implements the standard action gets it and one that doesn't still
-        // falls through to the beep below rather than silently doing nothing.
+        // DocumentAction.copy), and a menu key equivalent is matched before the responder chain — so
+        // the key never reaches the plugin's view on its own. That is why copying worked from
+        // WebKit's own context menu but not from the keyboard.
         if mode == .plugin, let pv = pluginView?.view, pv.responds(to: Selector(("copy:"))) {
             NSApp.sendAction(Selector(("copy:")), to: pv, from: nil)
             return
@@ -1660,7 +1518,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 return "\(Int(image.size.width))x\(Int(image.size.height))"
             } catch { return "write failed: \(error.localizedDescription)" }
         }
-        if mode == .web, let web = webView, !web.isHidden {
+        // A page rendered by a plugin. WebKit draws in another process, so `cacheDisplay` on the
+        // view below returns an empty bitmap and only `takeSnapshot` sees the page — and the plugin
+        // hands over a plain NSView, so the web view has to be found rather than cast to.
+        if let web = contentWebView() {
             web.takeSnapshot(with: nil) { image, error in
                 done(image == nil ? "snapshot failed: \(error?.localizedDescription ?? "nil")"
                                   : write(image))
@@ -1767,7 +1628,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let shift = event.modifierFlags.contains(.shift)
         switch event.keyCode {
         case 18: mode = .text; rebuildContent(); return true       // 1
-        case 19: mode = .web; rebuildContent(); return true        // 2 (rendered: Markdown/HTML)
+        // No digit for "rendered" any more: Markdown and HTML are a plugin, and 5 is the plugin key
+        // (which cycles the claimants when several plugins want the file).
         case 20: mode = .hex; rebuildContent(); return true        // 3
         case 21: mode = .image; rebuildContent(); return true      // 4
         case 26: mode = .binary; rebuildContent(); return true     // 7 (binary / fixed-width)
@@ -1792,12 +1654,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case 5 where ctrl: promptGoto(); return true               // Ctrl+G (goto line/offset)
         case 99 where shift: vmFindPrevious(); return true         // Shift+F3 = previous match
         case 99: vmFindNext(); return true                         // F3 = next match
-        case 126 where mode != .web: scrollContent(by: -lineStep); return true       // ↑
-        case 125 where mode != .web: scrollContent(by: lineStep); return true        // ↓
-        case 116 where mode != .web: scrollContent(by: -pageStep); return true       // PageUp
-        case 121 where mode != .web: scrollContent(by: pageStep); return true        // PageDown
-        case 115 where mode != .web: scrollToEdge(top: true); return true            // Home
-        case 119 where mode != .web: scrollToEdge(top: false); return true           // End
+        case 126 where mode != .plugin: scrollContent(by: -lineStep); return true       // ↑
+        case 125 where mode != .plugin: scrollContent(by: lineStep); return true        // ↓
+        case 116 where mode != .plugin: scrollContent(by: -pageStep); return true       // PageUp
+        case 121 where mode != .plugin: scrollContent(by: pageStep); return true        // PageDown
+        case 115 where mode != .plugin: scrollToEdge(top: true); return true            // Home
+        case 119 where mode != .plugin: scrollToEdge(top: false); return true           // End
         case 24 where mode == .image: docZoomIn(); return true            // + / =
         case 27 where mode == .image: docZoomOut(); return true           // -
         case 29 where mode == .image: docZoomActual(); return true        // 0 (actual size, 100%)
@@ -2201,23 +2063,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         tv.scrollRangeToVisible(sel)
     }
 
-    /// Search the rendered page through WebKit's own find, which highlights the match
-    /// and scrolls to it. Byte-offset search is useless here: the rendered DOM has no
-    /// relationship to the file's byte positions, and a WKWebView is not
-    /// ListerScrollable — so the generic path below found offsets it could never show.
-    private func findInWeb(backwards: Bool) {
-        guard let web = webView, !web.isHidden else { return }
-        let needle = String(bytes: lastNeedle, encoding: .utf8) ?? ""
-        guard !needle.isEmpty else { return }
-        let config = WKFindConfiguration()
-        config.backwards = backwards
-        config.caseSensitive = !searchCaseInsensitive
-        config.wraps = true
-        web.find(needle, configuration: config) { result in
-            if !result.matchFound { NSSound.beep() }
-        }
-    }
-
     private func findNext() {
         guard !lastNeedle.isEmpty else { return }
         // In plugin mode, delegate search to the plugin's own view.
@@ -2226,7 +2071,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
             return
         }
-        if mode == .web { findInWeb(backwards: false); return }
         guard let slice else { return }
         let match = lastRegex.map {
             ChunkRegexSearcher.search($0, in: slice, from: searchOffset, encoding: searchEncoding)
@@ -2263,7 +2107,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
             return
         }
-        if mode == .web { findInWeb(backwards: true); return }
         guard let slice else { return }
         let backMatch = lastRegex.map {
             ChunkRegexSearcher.searchBackwards($0, in: slice, before: lastMatchOffset,
@@ -2308,14 +2151,6 @@ private final class ListerContainerView: NSView {
 
 /// WKWebView that offers the viewer's command keys to the controller first, then
 /// lets WebKit handle the rest (native arrow / space / PageUp-Down scrolling).
-final class ListerWebView: WKWebView {
-    var onKey: ((NSEvent) -> Bool)?
-    override func keyDown(with event: NSEvent) {
-        if onKey?(event) == true { return }
-        super.keyDown(with: event)
-    }
-}
-
 /// A lister content view that can scroll a byte offset into view (for search).
 protocol ListerScrollable: AnyObject {
     func scroll(toByteOffset offset: Int64)
@@ -2334,6 +2169,23 @@ struct ListerNoteBridge {
     let editNote: (String) -> Void
 
     static var shared: ListerNoteBridge?
+}
+
+/// How a lister reaches the host's services table.
+///
+/// A plugin lister is handed `PcHostServices` at load time so it can read which surface it is being
+/// embedded in, the host's theme and the config root. Building that table needs the contribution
+/// host, and neither the viewer nor the preview panel has one — both are opened from places that
+/// hold no reference to the main window. So the host installs this once, exactly as
+/// `ListerNoteBridge` does, and a host that installs nothing loads plugins the old way: through
+/// `ListLoad`, with no context, which is what every plugin written before this expects anyway.
+@MainActor
+struct ListerPluginContext {
+    /// Run `body` with a table whose context also answers `extras` (the `lister.*` keys). The
+    /// pointer is valid for the duration of `body` and not after it.
+    let withServices: (_ extras: [String: String], _ body: (UnsafeRawPointer?) -> Void) -> Void
+
+    static var shared: ListerPluginContext?
 }
 
 /// A content view addressable by line number — what a note bound to a line needs (F-379).
@@ -2971,7 +2823,11 @@ extension ListerWindowController: WindowContextMenuProviding {
     fileprivate var documentCaps: DocumentMenuCaps {
         var c = DocumentMenuCaps()
         c.reprText = true; c.reprCode = true; c.reprHex = true
-        c.reprImage = true; c.reprRendered = true; c.reprAuto = true
+        c.reprImage = true; c.reprAuto = true
+        // Offered only when a plugin actually claims this file: the representation exists because a
+        // plugin provides it, and a menu item that can do nothing is worse than no menu item.
+        c.reprRendered = files.indices.contains(index)
+            && pluginClaiming(path: files[index], slice: slice) != nil
         c.encoding = true; c.format = true; c.xmlTree = true; c.xpath = true
         c.goto = true
         c.marks = true
@@ -3010,7 +2866,7 @@ extension ListerWindowController: WindowContextMenuProviding {
     /// `copy:` action to a view that implements it (WebKit's rendered page, a plugin
     /// view that supports copying).
     private var canCopyText: Bool {
-        if contentView is ViewerTextProviding || mode == .web { return true }
+        if contentView is ViewerTextProviding { return true }
         if mode == .plugin, let pv = pluginView?.view { return pv.responds(to: Selector(("copy:"))) }
         return false
     }
@@ -3018,7 +2874,7 @@ extension ListerWindowController: WindowContextMenuProviding {
     /// on a rendered page, the plugin's search, or a byte-offset scan — the last one
     /// needs a view that can be scrolled to an offset.
     private var canSearch: Bool {
-        textContentView != nil || mode == .web || mode == .plugin || contentView is ListerScrollable
+        textContentView != nil || mode == .plugin || contentView is ListerScrollable
     }
     /// Go To addresses a line or a byte offset. The rendered page has neither, so it
     /// stays unavailable there even though searching works.
@@ -3106,7 +2962,7 @@ extension ListerWindowController {
     @objc func docReprCode() { vmCode() }
     @objc func docReprHex() { vmHex() }
     @objc func docReprImage() { vmImage() }
-    @objc func docReprRendered() { vmWeb() }
+    @objc func docReprRendered() { vmPlugin() }
     @objc func docReprAuto() { vmAuto() }
     @objc func docCycleEncoding() { vmEncoding() }
     @objc func docFormat() { vmFormat() }

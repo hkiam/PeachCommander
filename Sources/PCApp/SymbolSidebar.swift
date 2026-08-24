@@ -6,6 +6,8 @@
 
 import AppKit
 import PCFoundation
+// PLXOutlineEntry: an outline a plugin produced rather than one parsed here.
+import PCPluginHost
 
 @MainActor
 final class SymbolSidebar: NSView {
@@ -120,6 +122,34 @@ final class SymbolSidebar: NSView {
     }
 
     /// Outline a structured-data file off the main thread, like the tree-sitter path.
+    /// Show an outline a *plugin* produced, rather than one parsed from text here.
+    ///
+    /// The rows arrive as (depth, line, anchor, title) from `ListGetOutline`; the anchor stays with
+    /// the caller, which is the only thing that can use it. Synchronous, unlike the three parsing
+    /// paths above: the parsing already happened inside the plugin, so there is nothing to move off
+    /// the main thread and nothing that could arrive late and replace a newer outline.
+    ///
+    /// This is what lets a format the application cannot parse have a sidebar at all — the plugin
+    /// that renders it is the one that knows its structure.
+    func load(rows: [PLXOutlineEntry]) {
+        generation += 1
+        lastSignature = nil
+        guard !rows.isEmpty else { setRoots([]); return }
+        var roots: [SymbolNode] = []
+        // One open node per depth, so a row attaches to the nearest shallower row above it. A depth
+        // that jumps by more than one (a document going straight from `#` to `###`) attaches to
+        // whatever is open, which is what a reader means by nesting even when the markup is uneven.
+        var stack: [SymbolNode] = []
+        for row in rows {
+            let node = SymbolNode(name: row.title, kind: "heading", line: row.line,
+                                  utf16Location: 0, start: 0, end: 0)
+            while stack.count > row.depth { stack.removeLast() }
+            if let parent = stack.last { parent.children.append(node) } else { roots.append(node) }
+            stack.append(node)
+        }
+        setRoots(roots)
+    }
+
     private func loadStructure(text: String, ext: String) {
         parseOffMainThread(text: text, ext: ext) { StructureOutline.parse($0, ext: $1) }
     }

@@ -1,8 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
-import XCTest
-@testable import PCFoundation
+// MarkdownDocumentTests.swift — the Markdown plugin's renderer.
+//
+// These tests moved here with Plugins/Markdown/MarkdownDocument.swift when Markdown and HTML left
+// the application. They assert the *output HTML*, not the renderer's internals, which is what makes
+// them a safety net rather than a description: the parser behind them is due to be replaced by
+// swift-markdown, and a test that pins the output survives that while a test that pins the parse does
+// not.
+//
+// The three Content-Security-Policy tests at the bottom are the assurance the move must not weaken.
+// They are unchanged from when this file lived in PCFoundationTests.
 
-final class MarkdownRendererTests: XCTestCase {
+import PCFoundation
+import XCTest
+
+// No import of the plugin: this bundle compiles the plugin's own sources (project.yml), the way
+// PCAIChatTests compiles ChatMarkdown.swift — a plugin is a dlopen'd bundle and there is no module
+// to import.
+
+final class MarkdownDocumentTests: XCTestCase {
     private func body(_ md: String) -> String { MarkdownRenderer.bodyHTML(from: md) }
 
     func testHeadings() {

@@ -656,6 +656,33 @@ targets:
     frameworks:
       - XCTest
 
+  # The Markdown plugin's own sources, compiled in here: a plugin is a dlopen'd bundle with no test
+  # target of its own, and this is the same arrangement PCAIChatTests uses for ChatMarkdown. It
+  # matters more here than there, because the application no longer has a Markdown or HTML renderer
+  # at all — if this bundle does not run, nothing checks the only one there is.
+  #
+  # markdown_lister.swift is deliberately absent: its C entry points need the plugin's bridging
+  # header, and they hold no logic the view behind them does not.
+  PCMarkdownTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCMarkdownTests
+      - path: Plugins/Markdown/MarkdownDocument.swift
+      - path: Plugins/Markdown/MarkdownWebView.swift
+      - path: Plugins/Markdown/MarkdownListerView.swift
+      - path: Plugins/Markdown/MarkdownThumbnail.swift
+    settings:
+      PRODUCT_NAME: PCMarkdownTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+    frameworks:
+      - XCTest
+      - WebKit
+
   PCNet:
     type: framework
     platform: macOS
@@ -793,6 +820,8 @@ schemes:
           parallelizable: true
         - name: PCAIChatTests
           parallelizable: true
+        - name: PCMarkdownTests
+          parallelizable: true
         - name: PCAccessibilityTests
           parallelizable: true
         - name: PCTagTests
@@ -825,6 +854,7 @@ schemes:
         PCNetTests: [test]
         PCThemeTests: [test]
         PCAIChatTests: [test]
+        PCMarkdownTests: [test]
         PCAccessibilityTests: [test]
         PCTagTests: [test]
         PCShellQuoteTests: [test]
@@ -853,6 +883,8 @@ schemes:
         - name: PCThemeTests
           parallelizable: true
         - name: PCAIChatTests
+          parallelizable: true
+        - name: PCMarkdownTests
           parallelizable: true
         - name: PCAccessibilityTests
           parallelizable: true

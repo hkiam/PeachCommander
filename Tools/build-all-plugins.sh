@@ -20,6 +20,10 @@ SCRIPTS=(
   build-archive-plugin
   build-fsimage-plugin
   build-csvlister-plugin
+  # Not optional in the way the others are: the application has no Markdown or HTML renderer of
+  # its own any more, so a run that skips this one produces a build where F3 on a README shows
+  # source. The script fails loudly rather than warning, for the same reason.
+  build-markdown-plugin
   build-javadecompiler-plugin
   build-netdecompiler-plugin
   build-git-plugin

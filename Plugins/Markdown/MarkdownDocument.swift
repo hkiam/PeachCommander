@@ -1,19 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
-// MarkdownRenderer.swift - Minimal CommonMark-ish Markdown -> HTML converter.
+// MarkdownDocument.swift - Markdown -> HTML for the Markdown lister plugin.
 //
-// Used by the F3 lister to render .md files. Covers the common constructs found
-// in real-world Markdown: ATX headings, fenced code (coloured when the fence
-// names a language), blockquotes, ordered/unordered lists, thematic breaks, GFM
-// pipe tables, paragraphs, and the usual inline spans (code, images, links, bold,
-// italic, strikethrough, hard line breaks). It is intentionally small and
-// dependency-free; it is not a full CommonMark implementation but handles the vast
-// majority of documents well. Indented code blocks are NOT among them — the header
-// used to claim they were.
+// Was Sources/PCFoundation/MarkdownRenderer.swift until the whole subject left the
+// core: rendering a document format is not something the application has to know
+// how to do, and inside a plugin this can use JavaScript, link a parser the app
+// does not have, and ship engines with it. The file moved rather than being
+// rewritten, and its tests moved with it — they assert the *output* HTML, which is
+// what makes them a safety net for the parser swap that follows.
+//
+// It covers the common constructs found in real-world Markdown: ATX headings,
+// fenced code (coloured when the fence names a language), blockquotes,
+// ordered/unordered lists, thematic breaks, GFM pipe tables, paragraphs, and the
+// usual inline spans (code, images, links, bold, italic, strikethrough, hard line
+// breaks). Indented code blocks are NOT among them — the header used to claim they
+// were.
 //
 // Output is a self-contained HTML document with embedded, theme-aware CSS so it
 // renders cleanly in a WKWebView without any network access.
 
 import Foundation
+// SyntaxHighlighter and its token kinds: the plugin links the host's framework rather than
+// carrying a second lexer, which is also what keeps a fence coloured the same way the editor
+// colours the same language.
+import PCFoundation
 
 public enum MarkdownRenderer {
     /// What the rendered document is allowed to load.

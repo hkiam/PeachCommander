@@ -119,6 +119,14 @@ final class ContribHostBridge {
     // services (cursorPath, presentInfo, openPath, …), not the snapshot.
     private var localPath: String?
     private var selection: [String] = []
+    /// Context that is true only for the duration of one call — today the `lister.*` keys, which say
+    /// which surface a lister view is being embedded in.
+    ///
+    /// Per-call rather than part of the host's context because the answer differs per call site: the
+    /// same plugin is loaded into a window, a preview column and a Quick View, and a key set once
+    /// globally would tell the second caller what the first one wanted. Set and cleared around a
+    /// synchronous call, so there is no window in which it could be read by anyone else.
+    private var callContext: [String: String] = [:]
     private let keychainService = "com.peachcommander.contrib"
 
     init(_ host: ContributionHost) { self.host = host }
@@ -126,6 +134,18 @@ final class ContribHostBridge {
     func update(localPath: String?, selection: [String]) {
         self.localPath = localPath
         self.selection = selection
+    }
+
+    /// Run `body` with a services table whose context also answers `extras`.
+    ///
+    /// The table is a local, so the pointer is only valid for the duration of `body` — which is why
+    /// this is a scoped call and not a getter. Every entry point that takes it (`ListLoadEx`) is
+    /// synchronous for the same reason.
+    func withServices(extras: [String: String], _ body: (UnsafeRawPointer?) -> Void) {
+        callContext = extras
+        defer { callContext = [:] }
+        var services = makeServices()
+        withUnsafePointer(to: &services) { body(UnsafeRawPointer($0)) }
     }
 
     /// Run a service's body on the main actor, from whichever thread the plugin called on (F-422).
@@ -222,7 +242,8 @@ final class ContribHostBridge {
             guard let host, let key, let out else { return 0 }
             return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
-                guard let v = b.host?.contribContextValue(String(cString: key)) else { return Int32(0) }
+                let k = String(cString: key)
+                guard let v = b.callContext[k] ?? b.host?.contribContextValue(k) else { return Int32(0) }
                 _ = strlcpy(out, v, Int(maxlen)); return Int32(1)
             }
         }

@@ -1442,6 +1442,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         contentFieldRegistry = registry
         availablePluginFields = pluginFields
         installNoteBridge(registry: registry)
+        // Here rather than at launch: a lister plugin's table must point at a live controller, and
+        // this runs whenever the enabled plugins change — the same moment the note bridge is renewed.
+        installListerPluginContext()
         let resolve: (String, String) async -> String? = { fieldID, path in
             await registry.value(qualifiedID: fieldID, forFileAt: URL(fileURLWithPath: path)).display
         }
@@ -9125,6 +9128,19 @@ extension MainWindowController: ContributionHost {
     func contribDismissSidebarView(viewId: String) {
         diskMapRoot = nil
         ViewContainerRegistry.shared.refresh(host: self)
+    }
+
+    /// Let a lister plugin reach the host's services table.
+    ///
+    /// Installed once, from here, because the viewer and the preview panel are both opened from
+    /// places that hold no reference to this controller — the same reason `installNoteBridge` exists.
+    /// The bridge is a closure over this controller, so a plugin loaded through it reads the *live*
+    /// theme, config root and cursor, not a snapshot taken when the viewer opened.
+    private func installListerPluginContext() {
+        ListerPluginContext.shared = ListerPluginContext(withServices: { [weak self] extras, body in
+            guard let self else { body(nil); return }
+            ContributionRegistry.shared.withListerServices(host: self, extras: extras, body)
+        })
     }
 
     /// Let the viewer reach the Notes plugin, if it is installed (F-379).
