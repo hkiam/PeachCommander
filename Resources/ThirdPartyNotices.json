@@ -182,11 +182,22 @@
       "version": "11.15.0",
       "license": "MIT",
       "copyright": "Copyright (c) 2014 - 2022 Knut Sveidqvist",
-      "description": "Renders the architecture diagrams on the documentation website. Vendored at docs/assets/vendor/mermaid/ and served from that site so it needs no CDN; not linked into, bundled with, or invoked by the application.",
+      "description": "Renders the architecture diagrams on the documentation website, and the ```mermaid blocks in a Markdown file opened with F3. Vendored at Vendor/mermaid/ — served from that site so it needs no CDN, and shipped inside the Markdown lister plugin, which draws the same diagrams in the file viewer; not linked into, bundled with, or invoked by the application.",
       "website": "https://mermaid.js.org",
       "repository": "https://github.com/mermaid-js/mermaid",
       "licenseFile": "mermaid.txt",
-      "note": "Documentation website only — not part of any build of the app."
+      "note": "Documentation website, and bundled inside the removable Markdown lister plugin."
+    },
+    {
+      "name": "KaTeX",
+      "version": "0.16.47",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2020 Khan Academy and other contributors",
+      "description": "Typesets $…$ and $$…$$ in a Markdown file opened with F3, inside the removable Markdown lister plugin. Vendored at Vendor/katex/ with its script, its stylesheet, its own auto-render extension and the woff2 faces; nothing is fetched at runtime.",
+      "website": "https://katex.org",
+      "repository": "https://github.com/KaTeX/KaTeX",
+      "licenseFile": "katex.txt",
+      "note": "Bundled inside the removable Markdown lister plugin."
     },
     {
       "name": "libssh2",

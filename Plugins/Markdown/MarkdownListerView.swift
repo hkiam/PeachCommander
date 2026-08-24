@@ -61,6 +61,12 @@ final class MarkdownListerView: NSView {
     private(set) var source = ""
     /// 1-based source line of a heading → the `id` its element carries.
     private var anchors: [Int: String] = [:]
+    /// The host's config root, so a reader's own engine files in `<configRoot>/markdown-assets/`
+    /// are found. Empty when the host published none, and then only the bundled copies exist.
+    private let configRoot: String
+    /// Which engines the document on screen needed, for the status the settings page shows and for
+    /// the tests — "no diagram, therefore no JavaScript" is otherwise invisible.
+    private(set) var loadedEngines: [String] = []
 
     /// A view for `path`, or nil when this plugin does not handle the file — which is how `ListLoad`
     /// says "not mine" and sends the host back to its own viewer.
@@ -70,15 +76,16 @@ final class MarkdownListerView: NSView {
     /// never initialised, and AppKit messages it later — the failure reads
     /// `-[NSView _setIgnoreFocusEngine:]: unrecognized selector`, from a stack that names none of this
     /// code. Deciding first and constructing second means there is never a half-built view at all.
-    static func make(path: String, surface: String) -> MarkdownListerView? {
+    static func make(path: String, surface: String, configRoot: String = "") -> MarkdownListerView? {
         guard let kind = Kind.forExtension((path as NSString).pathExtension),
               FileManager.default.isReadableFile(atPath: path) else { return nil }
-        return MarkdownListerView(kind: kind, path: path, surface: surface)
+        return MarkdownListerView(kind: kind, path: path, surface: surface, configRoot: configRoot)
     }
 
-    private init(kind: Kind, path: String, surface: String) {
+    private init(kind: Kind, path: String, surface: String, configRoot: String) {
         self.kind = kind
         self.path = path
+        self.configRoot = configRoot
         self.web = makeMarkdownWebView(policy: kind == .markdown ? .ownDocument : .foreignDocument)
         super.init(frame: NSRect(x: 0, y: 0, width: 700, height: 500))
         // The surface is read but not yet acted on: a narrower chrome for the preview column is the
@@ -124,12 +131,20 @@ final class MarkdownListerView: NSView {
             let rendered = MarkdownRenderer.document(from: text, title: url.lastPathComponent)
             source = text
             anchors = rendered.anchors
+            // Before the load, because a user script is installed for the *next* navigation — and
+            // replacing the previous document's scripts here is what keeps a plain README free of
+            // JavaScript after a diagram was shown in the same view.
+            loadedEngines = MarkdownEngines.install(MarkdownEngines.needs(of: text),
+                                                    into: web, configRoot: configRoot)
             loadWithoutNetwork(web) { [weak self] in
                 self?.web.loadHTMLString(rendered.html, baseURL: base)
             }
         case .html:
             source = ""
             anchors = [:]
+            // A foreign document gets no engines of ours on top of it: its scripts are off, and
+            // injecting ours would be the one script running in a page whose author's are not.
+            loadedEngines = MarkdownEngines.install(.init(), into: web, configRoot: configRoot)
             let bytes = [UInt8](raw)
             loadWithoutNetwork(web) { [weak self] in
                 guard let self else { return }

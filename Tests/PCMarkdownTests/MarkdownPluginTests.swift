@@ -111,6 +111,103 @@ final class MarkdownPluginTests: XCTestCase {
         XCTAssertEqual(view.embeddedSurface, "preview")
     }
 
+    // MARK: - Which engines a document needs
+    //
+    // The rule under test: a Markdown file with no diagram and no formula gets no JavaScript at all.
+    // Everything else here is in service of not breaking that one.
+
+    func testAPlainDocumentNeedsNothing() {
+        XCTAssertEqual(MarkdownEngines.needs(of: "# Title\n\nJust prose.\n"), .init())
+    }
+
+    func testAMermaidFenceAsksForDiagrams() {
+        let needs = MarkdownEngines.needs(of: "# T\n\n```mermaid\ngraph TD\n A --> B\n```\n")
+        XCTAssertTrue(needs.diagrams)
+        XCTAssertFalse(needs.maths, "a diagram is not a formula")
+    }
+
+    func testDollarsInsideCodeAskForNothing() {
+        // The case that would otherwise load 300 KB of KaTeX to render nothing: a shell snippet.
+        // Fenced *and* indented under a fence — the scan has to know it is inside one.
+        let needs = MarkdownEngines.needs(of: """
+        # Shell
+
+        ```sh
+        echo "$HOME kostet $5 und $6"
+        ```
+        """)
+        XCTAssertEqual(needs, .init())
+    }
+
+    func testMathsIsDetectedGenerously() {
+        XCTAssertTrue(MarkdownEngines.needs(of: "$$\na^2\n$$").maths)
+        XCTAssertTrue(MarkdownEngines.needs(of: "inline $a^2$ here").maths)
+        // Deliberately a false positive: two dollars on a prose line load KaTeX, and KaTeX's own
+        // auto-render then decides — in the page, where it can see the tags — that this is not maths.
+        // The cost is an injection; the alternative is a scanner that mangles a sentence.
+        XCTAssertTrue(MarkdownEngines.needs(of: "kostet $5 und $6").maths)
+        XCTAssertFalse(MarkdownEngines.needs(of: "kostet $5").maths)
+    }
+
+    @MainActor
+    func testNoEngineIsInstalledForADocumentThatNeedsNone() {
+        let web = makeMarkdownWebView(policy: .ownDocument)
+        XCTAssertEqual(MarkdownEngines.install(.init(), into: web, configRoot: dir.path), [])
+        XCTAssertEqual(web.configuration.userContentController.userScripts.count, 0)
+    }
+
+    @MainActor
+    func testAPlainDocumentLoadsNoScriptsThroughTheView() throws {
+        // The same rule one level up, where it actually matters.
+        let view = try XCTUnwrap(MarkdownListerView.make(
+            path: try write("plain.md", "# Title\n\nProse only.\n"), surface: "viewer",
+            configRoot: dir.path))
+        XCTAssertEqual(view.loadedEngines, [])
+        XCTAssertEqual(view.contentWebView.configuration.userContentController.userScripts.count, 0)
+    }
+
+    // MARK: - Where the engines come from
+
+    @MainActor
+    func testAReadersOwnCopyBeatsTheBundledOne() throws {
+        // The decompiler plugin's rule for engines, and for the same reason: a file somebody went to
+        // the trouble of placing there is an explicit instruction. Also the only path this test bundle
+        // can exercise — it has no engines of its own in its resources, which is itself the assertion
+        // that `locate` does not invent one.
+        XCTAssertNil(MarkdownAssets.locate("mermaid.min.js", configRoot: dir.path))
+
+        let assets = URL(fileURLWithPath: MarkdownAssets.overrideDirectory(configRoot: dir.path))
+        try FileManager.default.createDirectory(at: assets, withIntermediateDirectories: true)
+        try "window.mermaid = {};".write(to: assets.appendingPathComponent("mermaid.min.js"),
+                                        atomically: true, encoding: .utf8)
+
+        let found = try XCTUnwrap(MarkdownAssets.locate("mermaid.min.js", configRoot: dir.path))
+        XCTAssertEqual(found.source, .folder(assets.path))
+        let script = try XCTUnwrap(MarkdownAssets.mermaidScript(configRoot: dir.path))
+        XCTAssertEqual(script.js, "window.mermaid = {};")
+
+        // And it reaches the page: two scripts, the engine and the bootstrap that drives it.
+        let web = makeMarkdownWebView(policy: .ownDocument)
+        let loaded = MarkdownEngines.install(.init(diagrams: true, maths: false),
+                                            into: web, configRoot: dir.path)
+        XCTAssertEqual(loaded, ["mermaid (\(assets.path))"])
+        XCTAssertEqual(web.configuration.userContentController.userScripts.count, 2)
+    }
+
+    @MainActor
+    func testAMissingEngineCostsTheFeatureAndNotTheDocument() throws {
+        // No engine anywhere → nothing installed, and the document still renders. A plugin that
+        // refused to show a file because a diagram could not be drawn would be the worse failure.
+        let web = makeMarkdownWebView(policy: .ownDocument)
+        XCTAssertEqual(MarkdownEngines.install(.init(diagrams: true, maths: true),
+                                               into: web, configRoot: dir.path), [])
+        let view = try XCTUnwrap(MarkdownListerView.make(
+            path: try write("d.md", "# T\n\n```mermaid\ngraph TD\n```\n"), surface: "viewer",
+            configRoot: dir.path))
+        XCTAssertEqual(view.loadedEngines, [])
+        XCTAssertTrue(view.documentText.contains("mermaid"))
+    }
+
     // MARK: - Thumbnails
 
     @MainActor

@@ -41,6 +41,9 @@ REPO = Path(__file__).resolve().parents[2]
 CONTENT = REPO / "docs/content"
 HELP_DE = REPO / "docs/help-de"
 ASSETS = REPO / "docs/assets"
+# Third-party engines the repository vendors once and two things consume: this site, and the
+# Markdown lister plugin, which ships the same Mermaid build. One copy, because it is 3.2 MB.
+VENDOR = REPO / "Vendor"
 BUILD = REPO / "build/site"
 SITE = BUILD / "site"
 REPO_SLUG = "hkiam/PeachCommander"
@@ -195,10 +198,10 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
     # rather than into docs/assets/website/ because that directory goes to all 19 languages
     # while every one of the 34 fences is English: 3.2 MB of engine, eighteen times, for pages
     # that have no diagram in them.
-    if mermaid and (ASSETS / "vendor/mermaid/mermaid.min.js").exists():
+    if mermaid and (VENDOR / "mermaid/mermaid.min.js").exists():
         (docs / "assets/vendor").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(ASSETS / "vendor/mermaid/mermaid.min.js", docs / "assets/vendor")
-        shutil.copy2(ASSETS / "vendor/mermaid/LICENSE", docs / "assets/vendor/mermaid-LICENSE.txt")
+        shutil.copy2(VENDOR / "mermaid/mermaid.min.js", docs / "assets/vendor")
+        shutil.copy2(VENDOR / "mermaid/LICENSE", docs / "assets/vendor/mermaid-LICENSE.txt")
 
     md_files = sorted(sources.rglob("*.md")) if recursive else sorted(sources.glob("*.md"))
     pages = []  # (group, section, order, title, out_name)

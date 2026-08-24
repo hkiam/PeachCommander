@@ -77,12 +77,33 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/Markdown/MarkdownListerView.swift" \
   "$ROOT/Plugins/Markdown/MarkdownWebView.swift" \
   "$ROOT/Plugins/Markdown/MarkdownThumbnail.swift" \
+  "$ROOT/Plugins/Markdown/MarkdownAssets.swift" \
+  "$ROOT/Plugins/Markdown/MarkdownEngines.swift" \
   "$ROOT/Plugins/Markdown/MarkdownDocument.swift"
 
 if [ -d "$ROOT/Plugins/Markdown/Resources" ]; then
   mkdir -p "$BUNDLE/Contents/Resources"
   cp -R "$ROOT/Plugins/Markdown/Resources/." "$BUNDLE/Contents/Resources/"
 fi
+
+# The rendering engines, from the repository's single vendored copy. Copied rather than duplicated
+# into Plugins/Markdown/Resources: Vendor/mermaid is 3.2 MB and the documentation website ships the
+# same file (docs/scripts/build-site.py), so a second copy in git would be the wrong kind of
+# convenience. A missing engine is a hard failure — the plugin would otherwise load, claim every .md
+# and draw no diagram, which is worse than not building.
+ENGINES="$BUNDLE/Contents/Resources/engines"
+mkdir -p "$ENGINES/fonts"
+for f in "$ROOT/Vendor/mermaid/mermaid.min.js" \
+         "$ROOT/Vendor/katex/katex.min.js" \
+         "$ROOT/Vendor/katex/katex.min.css" \
+         "$ROOT/Vendor/katex/auto-render.min.js"; do
+  [ -f "$f" ] || { echo "error: vendored engine missing: ${f#"$ROOT"/}" >&2; exit 1; }
+  cp "$f" "$ENGINES/"
+done
+cp "$ROOT/Vendor/katex/"fonts/*.woff2 "$ENGINES/fonts/"
+# The licences travel with the files they cover, as they do beside the FSImage plugin's zstd.
+cp "$ROOT/Vendor/mermaid/LICENSE" "$ENGINES/mermaid-LICENSE.txt"
+cp "$ROOT/Vendor/katex/LICENSE" "$ENGINES/katex-LICENSE.txt"
 
 echo "Built $BUNDLE"
 echo "  linked PCFoundation + PCVFS from: $FWDIR"

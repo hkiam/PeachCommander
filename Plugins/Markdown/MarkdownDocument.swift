@@ -573,6 +573,15 @@ public enum MarkdownRenderer {
     .markdown-body tr:nth-child(2n) td { background: rgba(129,139,152,.06); }
     .markdown-body hr { height: 1px; background: #d0d7de; border: 0; margin: 1.6em 0; }
     .markdown-body img { max-width: 100%; }
+    /* Where a ```mermaid block was. The SVG is scaled down to fit and never up: a two-box diagram
+       stretched across 900 points looks like a mistake. */
+    .markdown-body .pc-diagram { margin: 0 0 1em; text-align: center; }
+    .markdown-body .pc-diagram svg { max-width: 100%; height: auto; }
+    /* A diagram that will not parse says so where it was, with its source below the message — a
+       silently missing figure is what gets reported as "the viewer lost my text". */
+    .markdown-body .pc-diagram-error {
+      background: rgba(207,34,46,.08); border-left: .25em solid #cf222e; color: #82071e;
+    }
     @media (prefers-color-scheme: dark) {
       body { background: #0d1117; }
       .markdown-body { color: #e6edf3; }
@@ -586,6 +595,9 @@ public enum MarkdownRenderer {
       .markdown-body blockquote { color: #9198a1; border-left-color: #30363d; }
       .markdown-body th, .markdown-body td { border-color: #30363d; }
       .markdown-body hr { background: #30363d; }
+      .markdown-body .pc-diagram-error {
+        background: rgba(248,81,73,.12); border-left-color: #f85149; color: #ffa198;
+      }
     }
     """
 }

@@ -43,17 +43,21 @@ public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: I
 @_cdecl("ListLoad")
 public func ListLoad(_ parent: UnsafeMutableRawPointer?, _ file: UnsafeMutablePointer<CChar>?,
                      _ showFlags: Int32) -> UnsafeMutableRawPointer? {
-    load(file, surface: "")
+    // No services table, so no config root: the bundled engines are all there are, which is the
+    // right answer for a host that offers no context at all.
+    load(file, surface: "", configRoot: "")
 }
 
 @_cdecl("ListLoadEx")
 public func ListLoadEx(_ parent: UnsafeMutableRawPointer?, _ file: UnsafePointer<CChar>?,
                        _ showFlags: Int32,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
-    load(UnsafeMutablePointer(mutating: file), surface: contextValue(services, "lister.surface"))
+    load(UnsafeMutablePointer(mutating: file), surface: contextValue(services, "lister.surface"),
+         configRoot: contextValue(services, "configRoot"))
 }
 
-private func load(_ file: UnsafeMutablePointer<CChar>?, surface: String) -> UnsafeMutableRawPointer? {
+private func load(_ file: UnsafeMutablePointer<CChar>?, surface: String,
+                  configRoot: String) -> UnsafeMutableRawPointer? {
     guard let file, let path = String(validatingUTF8: file) else { return nil }
     // The handle is carried out through a local rather than returned from `assumeIsolated`: a raw
     // pointer is not Sendable, so returning one across the isolation boundary is an error under the
@@ -61,7 +65,7 @@ private func load(_ file: UnsafeMutablePointer<CChar>?, surface: String) -> Unsa
     // a local is exactly as safe and says so.
     var handle: UnsafeMutableRawPointer?
     MainActor.assumeIsolated {
-        if let view = MarkdownListerView.make(path: path, surface: surface) {
+        if let view = MarkdownListerView.make(path: path, surface: surface, configRoot: configRoot) {
             handle = Unmanaged.passRetained(view).toOpaque()
         }
     }

@@ -272,22 +272,39 @@ COMPONENTS = [
          vendor_dir="CTreeSitterTypeScript",
          text=lambda vd="CTreeSitterTypeScript": repo_license(vd)),
 
-    # -- Documentation-website assets (not part of the app) --
+    # -- Vendored web assets: the documentation site, and the Markdown lister plugin --
     # Vendored because MkDocs Material renders the ```mermaid fences but, absent a `mermaid`
     # global, fetches the engine from unpkg.com — so the 34 diagrams rendered only for an online
     # reader, and only by telling a CDN which page they were on. Attributed here even though it
-    # ships with no build of the app: leaving a vendored 3.2 MB MIT file unnamed would be the
-    # omission, and the note says where it does and does not go.
+    # ships inside a plugin the user can remove: the note says where it goes, and leaving a
+    # vendored 3.2 MB MIT file unnamed would be the omission.
     dict(key="mermaid", name="Mermaid", spdx="MIT", version="11.15.0",
          website="https://mermaid.js.org",
          repository="https://github.com/mermaid-js/mermaid",
          copyright="Copyright (c) 2014 - 2022 Knut Sveidqvist",
-         description="Renders the architecture diagrams on the documentation website. Vendored at "
-                     "docs/assets/vendor/mermaid/ and served from that site so it needs no CDN; "
+         description="Renders the architecture diagrams on the documentation website, and the ```mermaid "
+                     "blocks in a Markdown file opened with F3. Vendored at "
+                     "Vendor/mermaid/ — served from that site so it needs no CDN, and shipped inside "
+                     "the Markdown lister plugin, which draws the same diagrams in the file viewer; "
                      "not linked into, bundled with, or invoked by the application.",
-         note="Documentation website only — not part of any build of the app.",
-         vendor_dir="docs/assets/vendor/mermaid",
-         text=lambda: path_license("docs/assets/vendor/mermaid/LICENSE")),
+         note="Documentation website, and bundled inside the removable Markdown lister plugin.",
+         vendor_dir="Vendor/mermaid",
+         text=lambda: path_license("Vendor/mermaid/LICENSE")),
+    # The plan for this work said "MIT, fonts SIL OFL 1.1 — to be checked at the package". Checked:
+    # the package declares "license": "MIT" and ships ONE licence file, covering everything in it,
+    # dist/fonts/ included. There is no separate font licence in the artefact, so MIT is what is
+    # attributed — see Vendor/katex/README.md, which is also where to start if upstream splits them.
+    dict(key="katex", name="KaTeX", spdx="MIT", version="0.16.47",
+         website="https://katex.org",
+         repository="https://github.com/KaTeX/KaTeX",
+         copyright="Copyright (c) 2013-2020 Khan Academy and other contributors",
+         description="Typesets $…$ and $$…$$ in a Markdown file opened with F3, inside the removable "
+                     "Markdown lister plugin. Vendored at Vendor/katex/ with its script, its "
+                     "stylesheet, its own auto-render extension and the woff2 faces; nothing is "
+                     "fetched at runtime.",
+         note="Bundled inside the removable Markdown lister plugin.",
+         vendor_dir="Vendor/katex",
+         text=lambda: path_license("Vendor/katex/LICENSE")),
 
     # -- Native libraries bundled into the installer (.app) builds --
     dict(key="libssh2", name="libssh2", spdx="BSD-3-Clause",

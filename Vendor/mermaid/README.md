@@ -37,8 +37,8 @@ already ships — which is why light and dark both work here without an init fil
 ## Updating it
 
     npm pack mermaid@<version>          # or take dist/mermaid.min.js from any install
-    cp …/mermaid/dist/mermaid.min.js docs/assets/vendor/mermaid/mermaid.min.js
-    cp …/mermaid/LICENSE              docs/assets/vendor/mermaid/LICENSE
+    cp …/mermaid/dist/mermaid.min.js Vendor/mermaid/mermaid.min.js
+    cp …/mermaid/LICENSE              Vendor/mermaid/LICENSE
 
 Then check the tail still assigns `globalThis["mermaid"]` (an ESM-only release would break the
 whole arrangement), refresh the digest above, run `Tools/generate-third-party-notices.py`, and

@@ -136,10 +136,19 @@ This product includes the following open-source software — plus, where a row s
 
 - **License:** MIT
 - **Copyright (c) 2014 - 2022 Knut Sveidqvist**
-- _Documentation website only — not part of any build of the app._
-- Renders the architecture diagrams on the documentation website. Vendored at docs/assets/vendor/mermaid/ and served from that site so it needs no CDN; not linked into, bundled with, or invoked by the application.
+- _Documentation website, and bundled inside the removable Markdown lister plugin._
+- Renders the architecture diagrams on the documentation website, and the ```mermaid blocks in a Markdown file opened with F3. Vendored at Vendor/mermaid/ — served from that site so it needs no CDN, and shipped inside the Markdown lister plugin, which draws the same diagrams in the file viewer; not linked into, bundled with, or invoked by the application.
 - Repository: https://github.com/mermaid-js/mermaid
 - License text: `Resources/Licenses/mermaid.txt`
+
+## KaTeX 0.16.47
+
+- **License:** MIT
+- **Copyright (c) 2013-2020 Khan Academy and other contributors**
+- _Bundled inside the removable Markdown lister plugin._
+- Typesets $…$ and $$…$$ in a Markdown file opened with F3, inside the removable Markdown lister plugin. Vendored at Vendor/katex/ with its script, its stylesheet, its own auto-render extension and the woff2 faces; nothing is fetched at runtime.
+- Repository: https://github.com/KaTeX/KaTeX
+- License text: `Resources/Licenses/katex.txt`
 
 ## libssh2 1.11.1
 
