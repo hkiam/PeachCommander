@@ -2728,9 +2728,28 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 // network filesystems (SFTP/FTP/WebDAV) upload the edited copy back
                 // to the origin on each save (F-214); archives are read-only here.
                 let local = await panel.localPathForCursor()
-                path = local
+                let remotePath = panel.tableView.cursorItemFullPath()
                 let fs = panel.currentFileSystem
-                if let local, let remote = panel.tableView.cursorItemFullPath(),
+                // Is this a copy, and can anything put it back?
+                //
+                // Three cases hide behind "the panel is not local". On SFTP/FTP/WebDAV the
+                // copy is written back on save (F-214). In a branch view the "copy" is the
+                // real file — `ResultsFS` hands back the path it was given — so editing it
+                // is editing the original. Inside an archive it is neither: Save would write
+                // into a temp file, leave the archive untouched and say nothing, which is the
+                // worst of the three outcomes. Refusing there names the route that works.
+                //
+                // Keyed on "the file I would edit is not the file the panel names", not on
+                // the filesystem being read-only: that first version would have taken F4
+                // away from the branch view, where it had always worked correctly.
+                if let local, let remotePath, local != remotePath,
+                   !fs.capabilities.contains(.write) {
+                    self.presentInfo(String(localized: "Edit"),
+                                     String(localized: "This file is inside an archive and cannot be edited in place. Copy it out with F5 and edit the copy."))
+                    return
+                }
+                path = local
+                if let local, let remote = remotePath,
                    fs.capabilities.contains(.write) {
                     onSaved = { [weak self, weak panel] in
                         self?.writeBackEditedFile(localPath: local, to: remote, on: fs, panel: panel)
@@ -3574,12 +3593,31 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                                          textProvider: textProvider,
                                                          textSearcher: textSearcher,
                                                          commentProvider: commentProvider) {
-                        // Content-field predicate (F-157): resolve the field on the
-                        // (local) hit and skip files that don't satisfy the condition.
-                        if let pred = contentPredicate, fs is LocalFS {
-                            let v = await registry.value(qualifiedID: pred.qualifiedID,
-                                                         forFileAt: URL(fileURLWithPath: hit.path))
-                            if !pred.evaluate(v) { continue }
+                        // Content-field predicate (F-157): resolve the field on the hit and
+                        // skip files that don't satisfy the condition.
+                        //
+                        // A hit inside an archive has to be extracted first. Its display path
+                        // — "/dir/a.tar.gz/etc/app.conf" — is not a file, so the provider
+                        // answered `.none` for it and `evaluate` reads `.none` as "does not
+                        // satisfy": every archive hit was dropped, in silence, the moment a
+                        // condition was set. Extracting is what the plugin-text path in the
+                        // engine already does for the same reason, and it is paid only when a
+                        // condition is actually set, which is rare and expensive anyway.
+                        if let pred = contentPredicate {
+                            var fileURL: URL?
+                            var temporary: URL?
+                            if let origin = hit.origin {
+                                temporary = await self.localFile(for: origin)
+                                fileURL = temporary
+                            } else if fs is LocalFS {
+                                fileURL = URL(fileURLWithPath: hit.path)
+                            }
+                            if let fileURL {
+                                let v = await registry.value(qualifiedID: pred.qualifiedID,
+                                                             forFileAt: fileURL)
+                                if let temporary { try? FileManager.default.removeItem(at: temporary) }
+                                if !pred.evaluate(v) { continue }
+                            }
                         }
                         if let origin = hit.origin, let entry = hit.entry {
                             self.lastSearchOrigins[hit.path] = (origin, entry)

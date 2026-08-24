@@ -72,6 +72,13 @@ does not have.
   temp directory that nothing ever removed; the extraction now belongs to the descent that made it,
   and an archive mount — built-in or plugin-backed — cleans up everything it extracted when it goes
   away. Anything earlier builds already left behind is cleared out at the next launch.
+- **A condition on the Plugins tab no longer discards every result found inside an archive.** The
+  condition was checked against the result's displayed path, which for an archive hit is not a file,
+  so those rows were dropped without a word as soon as any condition was set.
+- **Editing a file inside an archive says so instead of losing the change.** F4 opened a copy that
+  Save wrote into while the archive stayed as it was, and nothing said so. Copy the file out with F5
+  and edit the copy. Editing over SFTP, FTP and WebDAV still writes back as before, and a branch view
+  still edits the real file.
 - **A long search can be stopped while it is opening an archive.** Cancelling checked only between
   archives, so a search that had just started on a large one had to see it through first.
 - **Entering an archive twice no longer reads it twice.** An open archive is remembered — up to 32 of

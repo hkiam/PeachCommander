@@ -1206,6 +1206,22 @@ the app loses on a slow launch — the panel dump is the primary now. The skip i
 `skipped=1` rather than by its sentence, which is translated into nineteen languages and would have
 made the check depend on the guest's locale.
 
+**Two things the plan named and the first pass did not do**, found by reading it back against
+the code rather than against the notes. The Plugins-tab condition (F-157) was evaluated against
+`URL(fileURLWithPath: hit.path)`, and a hit's display path inside an archive is not a file — the
+provider answered `.none`, `evaluate` reads `.none` as "does not satisfy", and every archive hit
+was dropped in silence the moment a condition was set. It resolves the member now, which is
+possible because `localFile(for:)` exists; the plan had settled for skipping the condition and
+saying so, and this is better. And F4: a results panel is not `LocalFS`, so once a hit could
+resolve to a file, the editor opened a temp copy that Save wrote into and nothing carried back —
+a trap this work created, exactly as the plan predicted it would.
+
+The first F4 guard was wrong in the other direction and keyed on the filesystem being read-only,
+which would have taken F4 away from the branch view, where `ResultsFS` hands back the real path
+and editing has always worked. The condition is "the file I would edit is not the file the panel
+names", so SFTP keeps its write-back (F-214), the branch view keeps editing originals, and only
+the archive case is refused.
+
 **Verified in the running app**, not only in tests: `status=Fertig: 2 gefunden — ein Archiv wurde
 nicht durchsucht`, with `backup.tar.gz/etc/app.conf|line=2` among the hits and both rows surviving
 Feed to Listbox. **3080 tests, 0 failures.**
