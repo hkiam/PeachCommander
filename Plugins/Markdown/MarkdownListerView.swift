@@ -44,6 +44,16 @@ final class MarkdownListerView: NSView {
         }
     }
 
+    /// A file's size in bytes, or 0 when it cannot be asked.
+    ///
+    /// One helper because `try? attributesOfItem(...)[.size] as? Int64` is a double optional, and
+    /// unwrapping it twice at three call sites is three chances to get it wrong.
+    static func fileSize(of path: String) -> Int64 {
+        guard let size = try? FileManager.default.attributesOfItem(atPath: path)[.size] as? Int64
+        else { return 0 }
+        return size ?? 0
+    }
+
     /// How much of a file is read. The core rendered at most 8 MiB of Markdown and 16 MiB of HTML;
     /// carried over rather than re-chosen, because those numbers were picked against real files and
     /// the viewer exists for documents that need not fit in memory.
@@ -79,6 +89,11 @@ final class MarkdownListerView: NSView {
     static func make(path: String, surface: String, configRoot: String = "") -> MarkdownListerView? {
         guard let kind = Kind.forExtension((path as NSString).pathExtension),
               FileManager.default.isReadableFile(atPath: path) else { return nil }
+        // Declining an oversized file rather than rendering it: the host still has a text viewer that
+        // streams, and turning a 40 MB generated report into a DOM is not something to make somebody
+        // wait for. A decline is the ABI's own way of saying "use yours instead".
+        let options = MarkdownOptions.read(configRoot: configRoot)
+        if fileSize(of: path) > Int64(options.maxSizeMB) * 1024 * 1024 { return nil }
         return MarkdownListerView(kind: kind, path: path, surface: surface, configRoot: configRoot)
     }
 
@@ -134,8 +149,12 @@ final class MarkdownListerView: NSView {
             // Before the load, because a user script is installed for the *next* navigation — and
             // replacing the previous document's scripts here is what keeps a plain README free of
             // JavaScript after a diagram was shown in the same view.
-            loadedEngines = MarkdownEngines.install(MarkdownEngines.needs(of: text),
-                                                    into: web, configRoot: configRoot)
+            // What the document asks for, minus what the reader switched off.
+            let options = MarkdownOptions.read(configRoot: configRoot)
+            var needs = MarkdownEngines.needs(of: text)
+            if !options.diagrams { needs.diagrams = false }
+            if !options.maths { needs.maths = false }
+            loadedEngines = MarkdownEngines.install(needs, into: web, configRoot: configRoot)
             loadWithoutNetwork(web) { [weak self] in
                 self?.web.loadHTMLString(rendered.html, baseURL: base)
             }

@@ -19,6 +19,21 @@
 	</array>
 	<key>PCPluginDetectString</key>
 	<string>EXT="MD" | EXT="MARKDOWN" | EXT="MDOWN" | EXT="MKD" | EXT="MKDN" | EXT="MDWN" | EXT="HTM" | EXT="HTML" | EXT="XHTML"</string>
+	<!-- Contribution facet: this plugin's own page in Settings. Not a page built into the host —
+	     the plugin is removable, and a host page for something that may not be installed is dead
+	     UI, while settings in the host's own file would outlive the plugin that meant something
+	     by them. They live in <configRoot>/markdown.ini instead. -->
+	<key>PCContributions</key>
+	<dict>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.markdown.settings</string>
+				<key>container</key><string>settings</string>
+				<key>title</key><string>Markdown</string>
+			</dict>
+		</array>
+	</dict>
 	<!-- No PCPluginEnabledByDefault: this plugin is the ONLY renderer for Markdown and HTML —
 	     the application gave the formats up entirely — so shipping it switched off would take a
 	     feature away from every new installation. Turning it off is a choice a reader can make,

@@ -25,7 +25,7 @@
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
-//   mainshot <out.png>    a PNG of the main window (the gallery's thumbnails, the panels, the bars)
+//   mainshot <out.png>    a PNG of the key window (the main one, a dialog, or Settings)
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
@@ -390,7 +390,9 @@ extension MainWindowController {
                 // gallery's thumbnails need and no text dump can show. `screencapture` is the obvious
                 // alternative and returns a black frame without Screen Recording permission, which a
                 // verification run has no business asking a machine for.
-                if let view = window?.contentView,
+                // The key window rather than the main one, so a dialog or the Settings window can be
+                // photographed too — which is the only way to see a plugin's own settings pane.
+                if let view = (NSApp.keyWindow ?? window)?.contentView,
                    let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
                     view.cacheDisplay(in: view.bounds, to: rep)
                     if let png = rep.representation(using: .png, properties: [:]) {

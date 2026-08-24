@@ -28,6 +28,13 @@ public func PcGetApiVersion() -> Int32 { 1 }
 @_cdecl("ListGetDetectString")
 public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) {
     guard let buf, maxlen > 0 else { return }
+    // Read at call time rather than baked into the manifest, so the setting takes effect without a
+    // rebuild — the same reason the decompiler plugin reads its own claim switch here. Empty means
+    // "not mine", and the host then shows the file with its own text viewer.
+    guard MarkdownOptions.read(configRoot: pluginConfigRoot).claimFiles else {
+        buf[0] = 0
+        return
+    }
     // Built from the same sets the load path uses, so "claimed" and "can be shown" cannot drift
     // apart. A file this plugin claims and then declines would send the reader to a viewer that
     // has already been ruled out.
@@ -38,22 +45,53 @@ public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: I
     _ = exts.withCString { strlcpy(buf, $0, Int(maxlen)) }
 }
 
+// MARK: - Contributions (the settings pane)
+
+@_cdecl("PcMakeView")
+public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,
+                       _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
+    var view: UnsafeMutableRawPointer?
+    MainActor.assumeIsolated { view = makeMarkdownSettingsView(viewId, services) }
+    return view
+}
+
+@_cdecl("PcCloseView")
+public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
+    MainActor.assumeIsolated { releaseMarkdownSettingsView(view) }
+}
+
+/// Where this plugin's own settings live, learnt from the host and remembered.
+///
+/// `ListGetDetectString` takes no services table — it is asked before any view exists — so the config
+/// root has to come from somewhere. `ListSetDefaultParams` is the ABI's answer and the host calls it
+/// with exactly that; until it does, an empty root means "bundled engines, default settings", which is
+/// the right behaviour for a host that publishes no context at all.
+nonisolated(unsafe) private var pluginConfigRoot = ""
+
+@_cdecl("ListSetDefaultParams")
+public func ListSetDefaultParams(_ configDir: UnsafeMutablePointer<CChar>?) {
+    guard let configDir, let path = String(validatingUTF8: configDir) else { return }
+    pluginConfigRoot = path
+}
+
 // MARK: - Loading
 
 @_cdecl("ListLoad")
 public func ListLoad(_ parent: UnsafeMutableRawPointer?, _ file: UnsafeMutablePointer<CChar>?,
                      _ showFlags: Int32) -> UnsafeMutableRawPointer? {
-    // No services table, so no config root: the bundled engines are all there are, which is the
-    // right answer for a host that offers no context at all.
-    load(file, surface: "", configRoot: "")
+    // No services table, so whatever ListSetDefaultParams was told — and nothing if it was never
+    // called, which means bundled engines and default settings.
+    load(file, surface: "", configRoot: pluginConfigRoot)
 }
 
 @_cdecl("ListLoadEx")
 public func ListLoadEx(_ parent: UnsafeMutableRawPointer?, _ file: UnsafePointer<CChar>?,
                        _ showFlags: Int32,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
-    load(UnsafeMutablePointer(mutating: file), surface: contextValue(services, "lister.surface"),
-         configRoot: contextValue(services, "configRoot"))
+    let root = contextValue(services, "configRoot")
+    if !root.isEmpty { pluginConfigRoot = root }
+    return load(UnsafeMutablePointer(mutating: file), surface: contextValue(services, "lister.surface"),
+                configRoot: root)
 }
 
 private func load(_ file: UnsafeMutablePointer<CChar>?, surface: String,
@@ -175,7 +213,7 @@ private func view(_ handle: UnsafeMutableRawPointer?) -> MarkdownListerView? {
 }
 
 /// One context value from the host's table, or "" when there is no table or no such key.
-private func contextValue(_ services: UnsafePointer<PcHostServices>?, _ key: String) -> String {
+func contextValue(_ services: UnsafePointer<PcHostServices>?, _ key: String) -> String {
     guard let services, let getContext = services.pointee.getContext else { return "" }
     var buf = [CChar](repeating: 0, count: 256)
     let ok = key.withCString { k in
