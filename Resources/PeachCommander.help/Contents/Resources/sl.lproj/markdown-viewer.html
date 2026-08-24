@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown in HTML v pregledovalniku</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown in HTML v pregledovalniku</h1>
+<p>Pritisnite F3 na datoteki <code>.md</code> ali <code>.html</code> in prikazala se bo oblikovana, ne kot izvorno besedilo: naslovi, seznami, tabele, povezave, seznami opravil in bloki kode, obarvani po jeziku. Diagrami, zapisani kot bloki <code>```mermaid</code>, se narišejo, matematika med znaki za dolar pa se stavi.</p>
+<p>To je vstavek. Vse na tej strani prihaja iz <strong>Markdown and HTML</strong>, ki ga lahko izklopite v <strong>Nastavitve ▸ Vstavki…</strong> — spodaj je opisano, kaj se takrat spremeni.</p>
+<h2 id="kje-se-oblikovani-prikaz-pojavi">Kje se oblikovani prikaz pojavi</h2>
+<ul>
+<li><strong>Pregledovalnik (F3).</strong> Oblikovana stran. Meni <strong>Pogled</strong> še vedno ponuja Besedilo, Kodo in Hex, izvorno besedilo je torej en klik stran, ime vstavka pa je prav tako na tem seznamu.</li>
+<li><strong>Quick View (Ctrl+Q) in stran z informacijami</strong> v stranskem podoknu prikazujeta isto, tako da predogled in polni prikaz iste datoteke nikoli nista v nasprotju.</li>
+<li><strong>Galerija</strong> prikaže majhno sliko začetka datoteke Markdown namesto splošne ikone dokumenta.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> je lasten predogled sistema macOS in <em>ni</em> prizadet — to okno pripada sistemu in noben vstavek v njem ne more risati.</li>
+</ul>
+<h2 id="pregled-simbolov">Pregled simbolov</h2>
+<p>Pritisnite <strong>Simboli</strong> v pregledovalniku, da dobite naslove dokumenta, gnezdene tako, kot so zapisani, in kliknite enega, da nanj skočite na strani. Deluje v oblikovanem prikazu in v izvornem besedilu, oba pa se strinjata, kje naslov je.</p>
+<h2 id="diagrami-in-matematika">Diagrami in matematika</h2>
+<p>Blok kode z jezikom <code>mermaid</code> postane diagram; <code>$…$</code> in <code>$$…$$</code> postaneta stavljena matematika. Oboje se nariše <strong>na vašem Macu</strong>, s pripomočki, ki so priloženi v vstavku — nič se ne prenaša in noben del vašega dokumenta se nikamor ne pošilja. Znak za dolar v bloku kode ali v kodi v vrstici ostane znak za dolar.</p>
+<p>Dokument brez diagrama in brez formule ne naloži nobenega pripomočka, zato navaden README ne stane nič dodatnega. Diagram, ki ga ni mogoče prebrati, pokaže napako tam, kjer je bil blok, z besedilom bloka pod njo, namesto da bi izginil.</p>
+<p>Oboje je mogoče izklopiti ločeno v <strong>Nastavitve ▸ Možnosti ▸ Markdown</strong>, kjer je tudi vidno, katera različica je v uporabi in od kod prihaja.</p>
+<h2 id="vasa-lastna-razlicica">Vaša lastna različica</h2>
+<p>Če potrebujete novejšo ali drugačno različico Mermaid ali KaTeX, jo dajte v mapo, ki jo odpre gumb <strong>Engine Folder…</strong>, in uporabljena bo namesto priložene. Imena datotek so <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> in <code>auto-render.min.js</code>. Z interneta se za vas nikoli nič ne prenese.</p>
+<h2 id="cesa-oblikovana-stran-ne-bo-storila">Česa oblikovana stran ne bo storila</h2>
+<p>Oblikovana stran je namenoma odrezana, ker je datoteka Markdown vsebina, ki prihaja od drugod:</p>
+<ul>
+<li><strong>Ne nalaga ničesar prek omrežja.</strong> Slika, katere naslov se začne z <code>http</code>, namenoma ostane prazna: njen prenos bi tistemu strežniku povedal, kdaj ste datoteko odprli in z katerega naslova. Slika, ki leži poleg dokumenta na disku, se naloži normalno.</li>
+<li><strong>Lastni skripti in HTML dokumenta se nikoli ne izvedejo.</strong> HTML, zapisan v datoteki Markdown, je prikazan kot besedilo, datoteka <code>.html</code> pa je prikazana z izklopljenimi skripti.</li>
+</ul>
+<h2 id="izklop">Izklop</h2>
+<p>Izklopite vstavek v <strong>Nastavitve ▸ Vstavki…</strong> in datoteke <code>.md</code> ter <code>.html</code> se bodo odprle kot besedilo. Pregled še naprej deluje, barvanje skladnje še naprej deluje in nič drugega se ne spremeni — oblikovani prikaz preprosto ni več na voljo. Isto velja, če na strani z možnostmi vstavka izklopite samo oblikovani prikaz.</p>
+<h2 id="omejitve">Omejitve</h2>
+<ul>
+<li>Datoteke nad omejitvijo velikosti (privzeto 8 MB, na strani z možnostmi) se odprejo kot besedilo. Zelo velik ustvarjen dokument spremeniti v oblikovano stran je počasno, pregledovalnik besedila pa ga odpre takoj.</li>
+<li>Oblikovane strani ni mogoče urejati. Za to uporabite F4 ali pogled Besedilo za <strong>Oblikuj</strong>, <strong>Kodiranje</strong> in <strong>Pojdi na</strong>, ki veljajo za izvorno besedilo in ne za izrisano stran.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="viewing-files.html">Ogled datotek</a></li><li><a href="privacy-and-security.html">Zasebnost in varnost</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -24,7 +24,7 @@
 <ol>
 <li>For å søke inne i filer skriver du teksten i <strong>Finn tekst</strong> på Generelt-fanen — det som står i feltet, blir søkt etter, og et tomt felt søker bare på navn. Alternativer lar deg gjøre den <strong>Skiller mellom store og små bokstaver</strong>, samsvare bare med et <strong>Helt ord</strong>, behandle teksten som et <strong>Regulært uttrykk</strong>, gjøre et <strong>Heksadesimalt innholdssøk</strong>, eller finne filer som <strong>Ikke inneholder</strong> teksten.</li>
 <li>Bytt til <strong>Avansert</strong>-fanen for å snevre inn resultatene etter <strong>Størrelse</strong> (for eksempel <code>10K</code> til <code>5M</code>), etter <strong>endret dato</strong>-område, eller til filer som er endret de siste N dagene.</li>
-<li>Slå på <strong>Søk inni arkiver</strong> for å se i zip-familiens arkiver (zip, jar, war og lignende).</li>
+<li>Slå på <strong>Søk inne i arkiver</strong> for å se inn i arkivene som blir funnet — de samme formatene du kan åpne med Enter, inkludert dem en pakke-utvidelse legger til. Arkiver som ikke kunne åpnes, rapporteres når søket er ferdig.</li>
 <li>For å begrense søket til det du allerede har valgt, slå på <strong>Søk bare i merkede elementer</strong> før du starter.</li>
 <li>Slå på <strong>Søk også i filkommentarer</strong>, og teksten søkes i hver fils kommentar i tillegg til innholdet. Slik finner du en fil igjen ut fra det du skrev <em>om</em> den — «kundens original», «erstattet av 2026-eksporten» — når ingenting av det står i selve filen. Et treff funnet slik viser kommentaren i stedet for en linje fra filen, og ingen linjenummer, for treffet ligger ikke i filens tekst. Store/små bokstaver, helt ord og regulære uttrykk gjelder for en kommentar akkurat som for innhold; et heksadesimalt søk gjør det ikke, siden en kommentar er tekst noen har skrevet. <strong>Inneholder ikke</strong> forblir konsistent: en fil listes når teksten verken er i innholdet eller i kommentaren. Er Notater-tillegget slått på, finnes notatet som et innholdsfelt du kan filtrere på under <strong>Plugins</strong> — se <a href="plugins.html">Arbeid med tillegg</a>.</li>
 <li>Noen programtillegg kan gjøre en fil til tekst som filen selv ikke inneholder — dekompilator-tillegget gjør en <code>.class</code> til Java-kildekode. Slå på <strong>Søk i tekst fra programtillegg</strong>, og slike filer søkes som den teksten i stedet for som sine egne byte, slik at en formulering fra kildekoden finnes i en kompilert klasse. Valget vises bare når et slikt tillegg er installert, og det er tregere: å lage teksten kan bety én dekompilator per fil.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="merknader">Merknader</h2>
 <ul>
-<li>Innholdssøk leser hele filer for lokale mapper; på andre plasseringer hoppes svært store filer over (omtrent 16 MB, eller 64 MB når du bruker et regulært uttrykk).</li>
+<li>Innholdssøk leser hele filer for lokale mapper og for arkiver; på nettverksplasseringer leses svært store filer bare delvis (omtrent 16 MB, eller 64 MB ved bruk av et regulært uttrykk).</li>
 <li>Søk inni arkiver stiger ned opptil fire nivåer av nestede arkiver.</li>
 <li><strong>Inkluder mapper i resultatene</strong> lister også opp mapper hvis navn samsvarer, ikke bare filer.</li>
 <li>Spotlight dekker bare indekserte lokale mapper; for nettverksplasseringer eller mønsterbasert samsvar, la det være av og la Finn filer skanne.</li>

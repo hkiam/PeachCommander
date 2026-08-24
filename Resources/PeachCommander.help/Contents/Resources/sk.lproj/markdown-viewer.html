@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown a HTML v prehliadači</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown a HTML v prehliadači</h1>
+<p>Stlačte F3 na súbore <code>.md</code> alebo <code>.html</code> a zobrazí sa formátovaný, nie ako zdrojový text: nadpisy, zoznamy, tabuľky, odkazy, zoznamy úloh a bloky kódu zafarbené podľa jazyka. Diagramy zapísané ako bloky <code>```mermaid</code> sa nakreslia a matematika medzi znakmi dolára sa vysadí.</p>
+<p>Toto je zásuvný modul. Všetko na tejto stránke pochádza z <strong>Markdown and HTML</strong>, ktorý môžete vypnúť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong> — nižšie je opísané, čo sa potom zmení.</p>
+<h2 id="kde-sa-formatovany-pohlad-objavi">Kde sa formátovaný pohľad objaví</h2>
+<ul>
+<li><strong>Prehliadač (F3).</strong> Formátovaná stránka. Ponuka <strong>Zobrazenie</strong> stále nabízí Text, Kód a Hex, zdrojový text je teda jedno kliknutie ďaleko, a názov modulu je v tom zozname tiež.</li>
+<li><strong>Quick View (Ctrl+Q) a informačná stránka</strong> v bočnom paneli zobrazujú to isté, takže náhľad a plné zobrazenie toho istého súboru si nikdy neodporujú.</li>
+<li><strong>Galéria</strong> zobrazí malý obrázok začiatku súboru Markdown namiesto všeobecnej ikony dokumentu.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> je vlastný náhľad systému macOS a <em>nie je</em> ovplyvnený — ten panel patrí systému a žiadny modul doňho nemôže kresliť.</li>
+</ul>
+<h2 id="prehlad-symbolov">Prehľad symbolov</h2>
+<p>Stlačte <strong>Symboly</strong> v prehliadači a získate nadpisy dokumentu, vnorené tak, ako sú zapísané; kliknutím na jeden naň na stránke preskočíte. Funguje vo formátovanom pohľade aj v zdrojovom texte a oba sa zhodujú na tom, kde nadpis je.</p>
+<h2 id="diagramy-a-matematika">Diagramy a matematika</h2>
+<p>Blok kódu s jazykom <code>mermaid</code> sa stane diagramom; <code>$…$</code> a <code>$$…$$</code> sa stanú vysadenou matematikou. Oboje sa kreslí <strong>na vašom Macu</strong>, nástrojmi dodanými vnútri modulu — nič sa nestahuje a žiadna časť dokumentu sa nikam neposiela. Znak dolára v bloku kódu alebo v kóde v riadku zostáva znakom dolára.</p>
+<p>Dokument bez diagramu a bez formuly nenačíta ani jeden nástroj, obyčajný README teda nestojí nič navyše. Diagram, ktorý nemožno prečítať, zobrazí chybu tam, kde blok bol, s jeho vlastným textom pod ňou, namiesto toho, aby zmizol.</p>
+<p>Oboje sa dá vypnúť zvlášť v <strong>Konfigurácia ▸ Nastavenia ▸ Markdown</strong>, kde je tiež vidieť, ktorá verzia sa používa a odkiaľ pochádza.</p>
+<h2 id="vasa-vlastna-verzia">Vaša vlastná verzia</h2>
+<p>Ak potrebujete novšiu alebo inú verziu Mermaid či KaTeX, vložte ju do priečinka, ktorý otvorí tlačidlo <strong>Engine Folder…</strong>, a použije sa namiesto dodanej. Názvy súborov sú <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> a <code>auto-render.min.js</code>. Z internetu sa pre vás nikdy nič nestahuje.</p>
+<h2 id="co-formatovana-stranka-neurobi">Čo formátovaná stránka neurobí</h2>
+<p>Formátovaná stránka je zámerne odrezaná, pretože súbor Markdown je obsah, ktorý prišel odinakiaľ:</p>
+<ul>
+<li><strong>Nenačítava nič po sieti.</strong> Obrázok, ktorého adresa začína <code>http</code>, zostane zámerne prázdny: jeho stiahnutie by onomu serveru povedalo, kedy ste súbor otvorili a z akej adresy. Obrázok ležiaci vedľa dokumentu na disku sa načíta normálne.</li>
+<li><strong>Vlastné skripty a HTML dokumentu sa nikdy nespustia.</strong> HTML zapísané v súbore Markdown sa zobrazí ako text a súbor <code>.html</code> sa zobrazí s vypnutými skriptami.</li>
+</ul>
+<h2 id="vypnutie">Vypnutie</h2>
+<p>Vypnite modul v <strong>Konfigurácia ▸ Zásuvné moduly…</strong> a súbory <code>.md</code> a <code>.html</code> sa otvoria ako text. Prehľad ďalej funguje, farbenie syntaxe ďalej funguje a nič iné sa nemení — formátovaný pohľad sa jednoducho už nenabízí. To isté platí, ak na stránke nastavení modulu vypnete len formátovaný pohľad.</p>
+<h2 id="obmedzenia">Obmedzenia</h2>
+<ul>
+<li>Súbory nad limitom veľkosti (predvolene 8 MB, na stránke nastavení) sa otvoria ako text. Premeniť veľmi veľký generovaný dokument na formátovanú stránku je pomalé a textový prehliadač ho otvorí hneď.</li>
+<li>Formátovanú stránku nemožno editovať. Použite na to F4 alebo pohľad Text pre <strong>Formátovať</strong>, <strong>Kódovanie</strong> a <strong>Prejsť na</strong>, ktoré platia pre zdrojový text, nie pre vykreslenú stránku.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="privacy-and-security.html">Súkromie a bezpečnosť</a></li></ul></section>
+</main>
+</body>
+</html>

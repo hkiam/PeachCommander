@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown e HTML nel visualizzatore</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown e HTML nel visualizzatore</h1>
+<p>Premi F3 su un file <code>.md</code> o <code>.html</code> e apparirà formattato invece che come sorgente: titoli, elenchi, tabelle, collegamenti, elenchi di attività e blocchi di codice colorati per linguaggio. I diagrammi scritti come blocchi <code>```mermaid</code> vengono disegnati, e la matematica scritta tra segni di dollaro viene composta.</p>
+<p>Questo è un plugin. Tutto ciò che è descritto qui viene da <strong>Markdown and HTML</strong>, che puoi disattivare in <strong>Configurazione ▸ Plugin…</strong> — più sotto è spiegato cosa cambia.</p>
+<h2 id="dove-appare-la-vista-formattata">Dove appare la vista formattata</h2>
+<ul>
+<li><strong>Il visualizzatore (F3).</strong> La pagina formattata. Il menu <strong>Vista</strong> offre ancora Testo, Codice ed Hex, quindi il sorgente è a un clic di distanza, e in quell'elenco compare anche il nome del plugin.</li>
+<li><strong>Quick View (Ctrl+Q) e la pagina informazioni</strong> del pannello laterale mostrano la stessa resa, così un'anteprima e una vista completa dello stesso file non si contraddicono mai.</li>
+<li><strong>La galleria</strong> mostra una piccola immagine dell'inizio di un file Markdown invece di un'icona di documento generica.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> è l'anteprima di macOS stesso e <em>non</em> è interessata — quel pannello appartiene al sistema, e nessun plugin può disegnarvi.</li>
+</ul>
+<h2 id="la-struttura-dei-simboli">La struttura dei simboli</h2>
+<p>Premi <strong>Simboli</strong> nel visualizzatore per ottenere i titoli del documento, annidati come sono scritti, e fai clic su uno per saltarvi nella pagina. Funziona sulla vista formattata e sul sorgente, e le due concordano su dove si trovi un titolo.</p>
+<h2 id="diagrammi-e-matematica">Diagrammi e matematica</h2>
+<p>Un blocco di codice il cui linguaggio è <code>mermaid</code> diventa un diagramma; <code>$…$</code> e <code>$$…$$</code> diventano matematica composta. Entrambi vengono disegnati <strong>sul tuo Mac</strong>, da motori che vengono forniti dentro il plugin — non viene scaricato nulla, e nessuna parte del tuo documento viene inviata da nessuna parte. Un segno di dollaro dentro un blocco di codice o del codice in linea resta un segno di dollaro.</p>
+<p>Un documento senza diagrammi né formule non carica nessuno dei due motori, quindi un normale README non costa nulla in più. Un diagramma che non può essere letto mostra l'errore dove si trovava il blocco, con il testo del blocco sotto, invece di scomparire.</p>
+<p>Entrambi possono essere disattivati separatamente in <strong>Configurazione ▸ Impostazioni ▸ Markdown</strong>, dove si vede anche quale versione è in uso e da dove proviene.</p>
+<h2 id="la-tua-versione">La tua versione</h2>
+<p>Se ti serve una versione più recente o diversa di Mermaid o KaTeX, mettila nella cartella che apre il pulsante <strong>Engine Folder…</strong> e verrà usata al posto di quella fornita. I nomi dei file sono <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> e <code>auto-render.min.js</code>. Non viene mai scaricato nulla da internet per te.</p>
+<h2 id="cosa-la-pagina-formattata-non-fara">Cosa la pagina formattata non farà</h2>
+<p>La pagina formattata è deliberatamente isolata, perché un file Markdown è contenuto che viene da altrove:</p>
+<ul>
+<li><strong>Non carica nulla dalla rete.</strong> Un'immagine il cui indirizzo inizia con <code>http</code> resta vuota di proposito: recuperarla direbbe a quel server quando hai aperto il file, e da quale indirizzo. Un'immagine che sta accanto al documento sul disco viene caricata normalmente.</li>
+<li><strong>Gli script e l'HTML del documento non vengono mai eseguiti.</strong> L'HTML scritto dentro un file Markdown è mostrato come testo, e un file <code>.html</code> è visualizzato con gli script disattivati.</li>
+</ul>
+<h2 id="disattivarlo">Disattivarlo</h2>
+<p>Disattiva il plugin in <strong>Configurazione ▸ Plugin…</strong> e i file <code>.md</code> e <code>.html</code> si apriranno come testo. La struttura continua a funzionare, la colorazione della sintassi continua a funzionare, e nulla altro cambia — la vista formattata semplicemente non viene più offerta. Lo stesso vale se nella pagina delle impostazioni del plugin disattivi solo la vista formattata.</p>
+<h2 id="limiti">Limiti</h2>
+<ul>
+<li>I file oltre un limite di dimensione (8 MB per impostazione predefinita, nella pagina delle impostazioni) si aprono come testo. Trasformare un documento generato molto grande in una pagina formattata è lento, e il visualizzatore di testo lo apre subito.</li>
+<li>La pagina formattata non può essere modificata. Usa F4 per questo, o la vista Testo per <strong>Formatta</strong>, <strong>Codifica</strong> e <strong>Vai a</strong>, che si applicano al sorgente e non a una pagina resa.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="privacy-and-security.html">Privacy e sicurezza</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -24,7 +24,7 @@
 <ol>
 <li>För att söka inuti filer skriver du texten i <strong>Sök text</strong> på fliken Allmänt — det som står i fältet söks efter, och ett tomt fält söker bara på namn. Alternativ låter dig göra den <strong>Skiftlägeskänslig</strong>, matcha endast ett <strong>Helt ord</strong>, behandla texten som ett <strong>Reguljärt uttryck</strong>, göra en <strong>Hexadecimal innehållssökning</strong>, eller hitta filer som <strong>Inte innehåller</strong> texten.</li>
 <li>Växla till fliken <strong>Avancerat</strong> för att smalna av resultaten efter <strong>Storlek</strong> (till exempel <code>10K</code> till <code>5M</code>), efter <strong>ändringsdatum</strong>-intervall, eller till filer ändrade de senaste N dagarna.</li>
-<li>Slå på <strong>Sök inuti arkiv</strong> för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).</li>
+<li>Slå på <strong>Sök inuti arkiv</strong> för att titta in i arkiven som hittas — samma format som du kan öppna med Retur, inklusive de som ett packar-tillägg lägger till. Arkiv som inte kunde öppnas rapporteras när sökningen är klar.</li>
 <li>För att begränsa sökningen till det du redan valt, slå på <strong>Sök endast i markerade objekt</strong> innan du startar.</li>
 <li>Slå på <strong>Sök även i filkommentarer</strong> och texten söks i varje fils kommentar utöver dess innehåll. Så hittar du en fil igen via det du skrev <em>om</em> den — ”kundens original”, ”ersatt av 2026-exporten” — när inget sådant står i själva filen. Ett träff som hittas så visar kommentaren i stället för en rad ur filen, och inget radnummer, eftersom träffen inte finns i filens text. Skiftläge, helt ord och reguljära uttryck gäller för en kommentar precis som för innehåll; en hex-sökning gör det inte, eftersom en kommentar är text någon skrivit. <strong>Innehåller inte</strong> förblir konsekvent: en fil listas när texten varken finns i innehållet eller i kommentaren. Är insticksmodulen Anteckningar påslagen finns dess anteckning som ett innehållsfält, som du kan filtrera på under <strong>Plugins</strong> — se <a href="plugins.html">Arbeta med insticksmoduler</a>.</li>
 <li>Vissa insticksmoduler kan göra en fil till text som filen själv inte innehåller — dekompilator-modulen gör en <code>.class</code> till Java-källkod. Slå på <strong>Sök i text som insticksmoduler tillhandahåller</strong> och sådana filer söks som den texten i stället för som sina egna byte, så att en formulering ur källkoden hittas i en kompilerad klass. Alternativet visas bara när en sådan modul är installerad, och det är långsammare: att skapa texten kan innebära en dekompilator per fil.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Innehållssökning läser hela filer för lokala mappar; på andra platser hoppas mycket stora filer över (ungefär 16 MB, eller 64 MB när ett reguljärt uttryck används).</li>
+<li>Innehållssökning läser hela filer för lokala mappar och för arkiv; på nätverksplatser läses mycket stora filer bara delvis (ungefär 16 MB, eller 64 MB med ett reguljärt uttryck).</li>
 <li>Sökning inuti arkiv går ner upp till fyra nivåer av nästlade arkiv.</li>
 <li><strong>Inkludera mappar i resultaten</strong> listar även mappar vars namn matchar, inte bara filer.</li>
 <li>Spotlight täcker endast indexerade lokala mappar; för nätverksplatser eller mönsterbaserad matchning, lämna det av och låt Hitta filer söka igenom.</li>

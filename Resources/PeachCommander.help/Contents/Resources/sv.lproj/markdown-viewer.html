@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown och HTML i visaren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown och HTML i visaren</h1>
+<p>Tryck F3 på en <code>.md</code>- eller <code>.html</code>-fil och den visas formaterad i stället för som källtext: rubriker, listor, tabeller, länkar, uppgiftslistor och kodblock färgade efter språk. Diagram skrivna som <code>```mermaid</code>-block ritas, och matematik skriven mellan dollartecken sätts.</p>
+<p>Det här är ett plugin. Allt på den här sidan kommer från <strong>Markdown and HTML</strong>, som du kan stänga av i <strong>Konfiguration ▸ Plugins…</strong> — längre ned står vad som då ändras.</p>
+<h2 id="var-den-formaterade-vyn-visas">Var den formaterade vyn visas</h2>
+<ul>
+<li><strong>Visaren (F3).</strong> Den formaterade sidan. Menyn <strong>Vy</strong> erbjuder fortfarande Text, Kod och Hex, så källtexten är ett klick bort, och pluginets namn står också i listan.</li>
+<li><strong>Quick View (Ctrl+Q) och infosidan</strong> i sidopanelen visar samma återgivning, så en förhandsvisning och en full vy av samma fil är aldrig oense.</li>
+<li><strong>Galleriet</strong> visar en liten bild av början på en Markdown-fil i stället för en allmän dokumentikon.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> är macOS egen förhandsvisning och påverkas <em>inte</em> — den panelen tillhör systemet, och inget plugin kan rita i den.</li>
+</ul>
+<h2 id="symboloversikten">Symbolöversikten</h2>
+<p>Tryck <strong>Symboler</strong> i visaren för att få dokumentets rubriker, nästlade som de är skrivna, och klicka på en för att hoppa dit på sidan. Det fungerar i den formaterade vyn och i källtexten, och de två är eniga om var en rubrik står.</p>
+<h2 id="diagram-och-matematik">Diagram och matematik</h2>
+<p>Ett kodblock med språket <code>mermaid</code> blir ett diagram; <code>$…$</code> och <code>$$…$$</code> blir satt matematik. Båda ritas <strong>på din Mac</strong>, av motorer som följer med i pluginet — inget laddas ned, och ingen del av ditt dokument skickas någonstans. Ett dollartecken inuti ett kodblock eller inline-kod förblir ett dollartecken.</p>
+<p>Ett dokument utan diagram och utan formel laddar ingen av motorerna, så en vanlig README kostar inget extra. Ett diagram som inte kan läsas visar felet där blocket stod, med blockets egen text under, i stället för att försvinna.</p>
+<p>Båda kan stängas av separat i <strong>Konfiguration ▸ Inställningar ▸ Markdown</strong>, där man också ser vilken version som används och varifrån den kommer.</p>
+<h2 id="din-egen-version">Din egen version</h2>
+<p>Behöver du en nyare eller annan version av Mermaid eller KaTeX, lägg den i mappen som knappen <strong>Engine Folder…</strong> öppnar, och den används i stället för den medföljande. Filnamnen är <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> och <code>auto-render.min.js</code>. Inget hämtas någonsin från internet för din räkning.</p>
+<h2 id="vad-den-formaterade-sidan-inte-gor">Vad den formaterade sidan inte gör</h2>
+<p>Den formaterade sidan är avsiktligt avskild, för en Markdown-fil är innehåll som kommer någon annanstans ifrån:</p>
+<ul>
+<li><strong>Den laddar inget över nätet.</strong> En bild vars adress börjar med <code>http</code> förblir tom med flit: att hämta den skulle berätta för den servern när du öppnade filen, och från vilken adress. En bild som ligger intill dokumentet på disken laddas som vanligt.</li>
+<li><strong>Dokumentets egna skript och HTML körs aldrig.</strong> HTML som står i en Markdown-fil visas som text, och en <code>.html</code>-fil visas med skript avstängda.</li>
+</ul>
+<h2 id="stanga-av-det">Stänga av det</h2>
+<p>Stäng av pluginet i <strong>Konfiguration ▸ Plugins…</strong>, och <code>.md</code>- och <code>.html</code>-filer öppnas som text. Översikten fungerar fortfarande, syntaxfärgningen fungerar fortfarande, och inget annat ändras — den formaterade vyn erbjuds bara inte. Detsamma gäller om du bara stänger av den formaterade vyn på pluginets inställningssida.</p>
+<h2 id="granser">Gränser</h2>
+<ul>
+<li>Filer över en storleksgräns (8 MB som standard, på inställningssidan) öppnas som text i stället. Att göra ett mycket stort genererat dokument till en formaterad sida är långsamt, och textvisaren öppnar det direkt.</li>
+<li>Den formaterade sidan kan inte redigeras. Använd F4 för det, eller vyn Text för <strong>Formatera</strong>, <strong>Kodning</strong> och <strong>Gå till</strong>, som gäller källtext och inte en återgiven sida.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

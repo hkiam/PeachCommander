@@ -3,13 +3,14 @@ fullKeyboardAccess: true
 focused: NSTabView | Search options
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 6
+focusRefused: 7
   REFUSES: NSButton | Whole word / Whole word accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Hex content search / Hex content search accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Encoding-aware / Encoding-aware accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Not containing / Not containing accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Search text provided by plugins (e.g. decompiled source) / Search text provided by plugins (e.g. decompiled source) accepts=false hidden=true enabled=false refuses=false
   REFUSES: NSButton | Also search file comments / Also search file comments accepts=false hidden=false enabled=false refuses=false
+  REFUSES: NSButton | Details… / Details… accepts=true hidden=true enabled=true refuses=false
   tab[1]: NSView
   tab[2]: NSTabView | Search options
   tab[3]: NSComboBox | Search for: / *.*
@@ -20,7 +21,7 @@ focusRefused: 6
   tab[8]: NSButton | Search in selected items only / Search in selected items only
   tab[9]: NSButton | Use Spotlight (fast, indexed local folders) / Use Spotlight (fast, indexed local folders)
   tab[10]: NSButton | Include folders in results / Include folders in results
-  tab[11]: NSButton | Search inside archives (zip, jar, war, …) / Search inside archives (zip, jar, war, …)
+  tab[11]: NSButton | Search inside archives / Search inside archives
   tab[12]: NSButton | Empty folders only / Empty folders only
   tab[13]: NSScrollView
   tab[14]: NSClipView

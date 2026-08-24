@@ -72,6 +72,7 @@ only go down.
 | keys-probe | 0 | — | — | `keys-probe.png` |
 | eject-menu | 0 | — | — | `eject-menu.png` |
 | drive-plugin | 0 | — | — | `drive-plugin.png` |
+| s3-mount | 0 | — | — | `s3-mount.png` |
 | process-files | 0 | — | — | `process-files.png` |
 | panel-place | 0 | — | — | `panel-place.png` |
 | window-title | 0 | — | — | `window-title.png` |
@@ -84,6 +85,9 @@ only go down.
 | compare-dirs | 0 | — | — | `compare-dirs.png` |
 | shared-tree | 0 | — | — | `shared-tree.png` |
 | viewer-beacon | 0 | — | — | `viewer-beacon.png` |
+| markdown-diagram | 0 | — | — | `markdown-diagram.png` |
+| markdown-html-escape | 0 | — | — | `markdown-html-escape.png` |
+| html-no-javascript | 0 | — | — | `html-no-javascript.png` |
 | zip-slip | 0 | — | — | `zip-slip.png` |
 | sync-sftp | 0 | — | — | `sync-sftp.png` |
 | sftp-attributes | 0 | 0 | — | `sftp-attributes.png` |
@@ -92,6 +96,7 @@ only go down.
 | comment-carry | 0 | 0 | — | `comment-carry.png` |
 | tc-descript | 0 | 0 | — | `tc-descript.png` |
 | find-comments | 0 | 0 | — | `find-comments.png` |
+| find-archives | 0 | — | — | `find-archives.png` |
 | find-history | 0 | 0 | — | `find-history.png` |
 | find-seeded-viewer | 0 | 0 | — | `find-seeded-viewer.png` |
 | find-seed-off | 0 | 0 | — | `find-seed-off.png` |

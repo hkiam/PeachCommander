@@ -1,0 +1,30 @@
+/* Markdown-Plugin — Deutsch (de).
+ *
+ * Von Hand gepflegt und nicht aus einem Wörterbuch erzeugt, wie bei jedem anderen Plugin hier:
+ * Tools/apply-plugin-translations.py lässt eine Sprache ohne Wörterbuch bewusst in Ruhe, damit
+ * Kommentare wie dieser nicht bei der nächsten Regenerierung verschwinden.
+ *
+ * Zwei Festlegungen: die Produktnamen Mermaid, KaTeX und Markdown werden nicht übersetzt, und
+ * angesprochen wird mit „Sie", wie auf den Hilfeseiten. */
+
+/* Abschnittsüberschriften der Einstellungsseite. */
+"Rendering" = "Darstellung";
+"Engines" = "Motoren";
+"Limits" = "Grenzen";
+
+/* Die drei Schalter, und was das Abschalten des ersten bedeutet. */
+"Show .md and .html rendered when opened with F3" = ".md und .html formatiert zeigen, wenn sie mit F3 geöffnet werden";
+"Off: F3 leaves both formats to the built-in text viewer. The outline still works, because it is read from the source." = "Aus: F3 überlässt beide Formate dem eingebauten Textbetrachter. Die Gliederung funktioniert weiter, weil sie aus dem Quelltext gelesen wird.";
+"Draw ```mermaid blocks as diagrams" = "```mermaid-Blöcke als Diagramme zeichnen";
+"A document with no diagram loads no engine either way; this refuses it for documents that do have one." = "Ein Dokument ohne Diagramm lädt so oder so keinen Motor; dies verweigert ihn für Dokumente, die eines haben.";
+"Typeset $…$ and $$…$$ as mathematics" = "$…$ und $$…$$ als Mathematik setzen";
+
+/* Woher jeder Motor kommt — „bundled", oder der Ordner, in den der Leser seine eigene Fassung gelegt hat. */
+"%@: %@ — %@ KB" = "%@: %@ — %@ KB";
+"%@: not found" = "%@: nicht gefunden";
+"Engine Folder…" = "Motoren-Ordner…";
+"A copy of mermaid.min.js or katex.min.js placed here is used instead of the one inside the plugin. Nothing is ever downloaded." = "Eine hier abgelegte Kopie von mermaid.min.js oder katex.min.js wird anstelle der im Plugin benutzt. Es wird nie etwas heruntergeladen.";
+"Check Engines" = "Motoren prüfen";
+
+/* Oberhalb dieser Größe bleibt eine Datei dem Textbetrachter. */
+"Render files up to (MB):" = "Dateien formatieren bis (MB):";

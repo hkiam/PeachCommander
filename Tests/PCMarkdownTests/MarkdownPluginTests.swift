@@ -208,6 +208,67 @@ final class MarkdownPluginTests: XCTestCase {
         XCTAssertTrue(view.documentText.contains("mermaid"))
     }
 
+    // MARK: - What the reader chose
+
+    func testOptionsRoundTripThroughTheirOwnFile() {
+        // In markdown.ini rather than the host's peachcmd.ini: the plugin is removable, and a setting
+        // in the host's file would outlive the plugin that meant something by it.
+        var options = MarkdownOptions()
+        options.claimFiles = false
+        options.maths = false
+        options.maxSizeMB = 3
+        options.write(configRoot: dir.path)
+        let read = MarkdownOptions.read(configRoot: dir.path)
+        XCTAssertFalse(read.claimFiles)
+        XCTAssertTrue(read.diagrams)
+        XCTAssertFalse(read.maths)
+        XCTAssertEqual(read.maxSizeMB, 3)
+    }
+
+    func testDefaultsApplyWhenThereIsNoFileAndNoConfigRoot() {
+        // A host that publishes no context at all still gets working defaults, which is what the
+        // no-services `ListLoad` path relies on.
+        for root in [dir.path, ""] {
+            let options = MarkdownOptions.read(configRoot: root)
+            XCTAssertTrue(options.claimFiles)
+            XCTAssertTrue(options.diagrams)
+            XCTAssertTrue(options.maths)
+            XCTAssertEqual(options.maxSizeMB, 8)
+        }
+    }
+
+    @MainActor
+    func testAFileOverTheSizeLimitIsDeclined() throws {
+        // Declining is the ABI's way of saying "use your own viewer" — better than making somebody
+        // wait while a 40 MB generated report becomes a DOM.
+        var options = MarkdownOptions()
+        options.maxSizeMB = 1
+        options.write(configRoot: dir.path)
+        let big = try write("big.md", String(repeating: "# Kopf\n\nText.\n", count: 90_000))
+        XCTAssertGreaterThan(MarkdownListerView.fileSize(of: big), 1024 * 1024)
+        XCTAssertNil(MarkdownListerView.make(path: big, surface: "viewer", configRoot: dir.path))
+        // …and the same file is fine with the default limit.
+        XCTAssertNotNil(MarkdownListerView.make(path: big, surface: "viewer", configRoot: ""))
+    }
+
+    @MainActor
+    func testTurningTheEnginesOffKeepsThemOut() throws {
+        // The switches have to reach the load path, not only the settings file.
+        var options = MarkdownOptions()
+        options.diagrams = false
+        options.maths = false
+        options.write(configRoot: dir.path)
+        // An override engine exists, so "nothing loaded" cannot be mistaken for "nothing to load".
+        let assets = URL(fileURLWithPath: MarkdownAssets.overrideDirectory(configRoot: dir.path))
+        try FileManager.default.createDirectory(at: assets, withIntermediateDirectories: true)
+        try "window.mermaid = {};".write(to: assets.appendingPathComponent("mermaid.min.js"),
+                                        atomically: true, encoding: .utf8)
+        let view = try XCTUnwrap(MarkdownListerView.make(
+            path: try write("off.md", "# T\n\n```mermaid\ngraph TD\n```\n\n$$a$$\n"),
+            surface: "viewer", configRoot: dir.path))
+        XCTAssertEqual(view.loadedEngines, [])
+    }
+
     // MARK: - Thumbnails
 
     @MainActor

@@ -67,10 +67,8 @@ final class MarkdownSettingsView: NSView {
             box.action = #selector(optionsChanged)
             rows.append(box)
         }
-        claim.toolTip = L("Off: F3 leaves both formats to the built-in text viewer, and this plugin "
-                          + "draws nothing. The outline still works, because it is read from the source.")
-        diagrams.toolTip = L("A document with no diagram loads no diagram engine either way — this "
-                             + "refuses it for documents that do have one.")
+        claim.toolTip = L("Off: F3 leaves both formats to the built-in text viewer. The outline still works, because it is read from the source.")
+        diagrams.toolTip = L("A document with no diagram loads no engine either way; this refuses it for documents that do have one.")
 
         rows.append(heading(L("Engines")))
         engineStatus.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
@@ -80,8 +78,7 @@ final class MarkdownSettingsView: NSView {
         rows.append(engineStatus)
         let folder = NSButton(title: L("Engine Folder…"), target: self, action: #selector(openEngineFolder))
         folder.bezelStyle = .rounded
-        folder.toolTip = L("A copy of mermaid.min.js or katex.min.js placed here is used instead of "
-                           + "the one inside the plugin. Nothing is ever downloaded.")
+        folder.toolTip = L("A copy of mermaid.min.js or katex.min.js placed here is used instead of the one inside the plugin. Nothing is ever downloaded.")
         let check = NSButton(title: L("Check Engines"), target: self, action: #selector(checkEngines))
         check.bezelStyle = .rounded
         let buttons = NSStackView(views: [folder, check])

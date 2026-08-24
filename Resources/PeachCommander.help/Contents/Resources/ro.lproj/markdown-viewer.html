@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown și HTML în vizualizator</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown și HTML în vizualizator</h1>
+<p>Apăsați F3 pe un fișier <code>.md</code> sau <code>.html</code> și el apare formatat, nu ca sursă: titluri, liste, tabele, legături, liste de sarcini și blocuri de cod colorate după limbaj. Diagramele scrise ca blocuri <code>```mermaid</code> sunt desenate, iar matematica scrisă între semne de dolar este culeasă.</p>
+<p>Acesta este un plugin. Tot ce se află pe această pagină vine de la <strong>Markdown and HTML</strong>, pe care îl puteți dezactiva în <strong>Configurare ▸ Plugin-uri…</strong> — mai jos se explică ce se schimbă atunci.</p>
+<h2 id="unde-apare-vizualizarea-formatata">Unde apare vizualizarea formatată</h2>
+<ul>
+<li><strong>Vizualizatorul (F3).</strong> Pagina formatată. Meniul <strong>Vizualizare</strong> oferă în continuare Text, Cod și Hex, deci sursa este la un clic, iar numele plugin-ului se află și el în acea listă.</li>
+<li><strong>Quick View (Ctrl+Q) și pagina de informații</strong> din panoul lateral arată aceeași redare, astfel încât o previzualizare și o vizualizare completă a aceluiași fișier nu se contrazic niciodată.</li>
+<li><strong>Galeria</strong> arată o imagine mică a începutului unui fișier Markdown în loc de o pictogramă generică de document.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> este previzualizarea proprie a macOS și <em>nu</em> este afectată — acel panou aparține sistemului și niciun plugin nu poate desena în el.</li>
+</ul>
+<h2 id="schema-simbolurilor">Schema simbolurilor</h2>
+<p>Apăsați <strong>Simboluri</strong> în vizualizator pentru a obține titlurile documentului, imbricate așa cum sunt scrise, și faceți clic pe unul pentru a sări la el în pagină. Funcționează în vizualizarea formatată și în sursă, iar cele două sunt de acord unde se află un titlu.</p>
+<h2 id="diagrame-si-matematica">Diagrame și matematică</h2>
+<p>Un bloc de cod cu limbajul <code>mermaid</code> devine o diagramă; <code>$…$</code> și <code>$$…$$</code> devin matematică culeasă. Ambele sunt desenate <strong>pe Mac-ul dumneavoastră</strong>, de motoare livrate în plugin — nimic nu se descarcă și nicio parte a documentului nu este trimisă nicăieri. Un semn de dolar într-un bloc de cod sau în cod inline rămâne un semn de dolar.</p>
+<p>Un document fără diagramă și fără formulă nu încarcă niciunul dintre motoare, deci un README obișnuit nu costă nimic în plus. O diagramă care nu poate fi citită arată eroarea acolo unde era blocul, cu textul blocului dedesubt, în loc să dispară.</p>
+<p>Ambele pot fi dezactivate separat în <strong>Configurare ▸ Setări ▸ Markdown</strong>, unde se vede și ce versiune este în uz și de unde provine.</p>
+<h2 id="versiunea-dumneavoastra">Versiunea dumneavoastră</h2>
+<p>Dacă aveți nevoie de o versiune mai nouă sau diferită de Mermaid ori KaTeX, puneți-o în folderul deschis de butonul <strong>Engine Folder…</strong> și va fi folosită în locul celei livrate. Numele fișierelor sunt <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> și <code>auto-render.min.js</code>. Nimic nu este niciodată adus din internet pentru dumneavoastră.</p>
+<h2 id="ce-nu-va-face-pagina-formatata">Ce nu va face pagina formatată</h2>
+<p>Pagina formatată este izolată în mod deliberat, pentru că un fișier Markdown este conținut venit din altă parte:</p>
+<ul>
+<li><strong>Nu încarcă nimic prin rețea.</strong> O imagine a cărei adresă începe cu <code>http</code> rămâne goală intenționat: aducerea ei ar spune acelui server când ați deschis fișierul și de la ce adresă. O imagine aflată lângă document pe disc se încarcă normal.</li>
+<li><strong>Scripturile și HTML-ul documentului nu rulează niciodată.</strong> HTML-ul scris într-un fișier Markdown este arătat ca text, iar un fișier <code>.html</code> este afișat cu scripturile dezactivate.</li>
+</ul>
+<h2 id="dezactivarea">Dezactivarea</h2>
+<p>Dezactivați plugin-ul în <strong>Configurare ▸ Plugin-uri…</strong> și fișierele <code>.md</code> și <code>.html</code> se vor deschide ca text. Schema funcționează în continuare, colorarea sintaxei funcționează în continuare și nimic altceva nu se schimbă — vizualizarea formatată pur și simplu nu mai este oferită. Același lucru este valabil dacă dezactivați doar vizualizarea formatată în pagina de setări a plugin-ului.</p>
+<h2 id="limite">Limite</h2>
+<ul>
+<li>Fișierele peste o limită de dimensiune (8 MB implicit, în pagina de setări) se deschid ca text. Transformarea unui document generat foarte mare într-o pagină formatată este lentă, iar vizualizatorul de text îl deschide imediat.</li>
+<li>Pagina formatată nu poate fi editată. Folosiți F4 pentru asta, sau vizualizarea Text pentru <strong>Formatare</strong>, <strong>Codificare</strong> și <strong>Salt la</strong>, care se aplică sursei și nu unei pagini redate.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li><li><a href="privacy-and-security.html">Confidențialitate și securitate</a></li></ul></section>
+</main>
+</body>
+</html>

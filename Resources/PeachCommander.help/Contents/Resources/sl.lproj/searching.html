@@ -24,7 +24,7 @@
 <ol>
 <li>Za iskanje znotraj datotek vnesite besedilo v polje <strong>Najdi besedilo</strong> na zavihku Splošno — išče se to, kar je v polju, prazno polje išče samo po imenih. Možnosti vam omogočajo, da ga naredite <strong>razlikuje velikost</strong>, ujema le <strong>celo besedo</strong>, obravnava besedilo kot <strong>regularni izraz</strong>, izvede <strong>šestnajstiško iskanje vsebine</strong> ali najde datoteke, ki besedila <strong>ne vsebujejo</strong>.</li>
 <li>Preklopite na zavihek <strong>Napredno</strong>, da zožite rezultate po <strong>velikosti</strong> (na primer od <code>10K</code> do <code>5M</code>), po obsegu <strong>datuma spremembe</strong>, ali na datoteke, spremenjene v zadnjih N dneh.</li>
-<li>Vklopite <strong>Išči znotraj arhivov</strong>, da pogledate v arhive družine zip (zip, jar, war in podobne).</li>
+<li>Vklopite <strong>Išči v arhivih</strong>, da pogledate v najdene arhive — iste zapise, ki jih lahko odprete z Enter, vključno s tistimi, ki jih doda vtičnik za pakiranje. Arhivi, ki jih ni bilo mogoče odpreti, so sporočeni ob koncu iskanja.</li>
 <li>Za omejitev iskanja na to, kar ste že izbrali, pred začetkom vklopite <strong>Išči le v izbranih elementih</strong>.</li>
 <li>Vklopite <strong>Iskati tudi v komentarjih datotek</strong> in besedilo se bo poleg vsebine iskalo tudi v komentarju vsake datoteke. Tako datoteko spet najdete po tem, kar ste o njej zapisali — »izvirnik stranke«, »nadomeščeno z izvozom 2026« —, kadar v datoteki sami ni ničesar takega. Tako najden zadetek prikaže komentar namesto vrstice datoteke in nobene številke vrstice, saj zadetek ni v besedilu datoteke. Velikost črk, cela beseda in regularni izrazi za komentar veljajo enako kot za vsebino; šestnajstiško iskanje ne, saj je komentar natipkano besedilo. <strong>Ne vsebuje</strong> ostane skladno: datoteka je navedena, kadar besedila ni niti v vsebini niti v komentarju. Če je vstavek Zapiski vklopljen, je njegov zapisek na voljo kot vsebinsko polje, na katero lahko v razdelku <strong>Plugins</strong> postavite pogoj — glejte <a href="plugins.html">Delo z vstavki</a>.</li>
 <li>Nekateri vstavki znajo datoteko pretvoriti v besedilo, ki ga datoteka sama ne vsebuje — vstavek dekompilatorja iz <code>.class</code> naredi izvorno kodo Jave. Vklopite <strong>Iskanje po besedilu, ki ga dajo vstavki</strong>, in takšne datoteke se preiščejo kot to besedilo namesto kot lastni bajti, tako da se besedna zveza iz izvorne kode najde v prevedenem razredu. Možnost se pokaže le, kadar je tak vstavek namenščen, in je počasnejša: izdelava besedila lahko pomeni en dekompilator na datoteko.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="opombe">Opombe</h2>
 <ul>
-<li>Iskanje po vsebini bere celotne datoteke za lokalne mape; na drugih lokacijah so zelo velike datoteke preskočene (približno 16 MB, ali 64 MB pri uporabi regularnega izraza).</li>
+<li>Iskanje po vsebini prebere cele datoteke v krajevnih mapah in v arhivih; na omrežnih mestih se zelo velike datoteke preberejo le deloma (približno 16 MB ali 64 MB pri regularnem izrazu).</li>
 <li>Iskanje znotraj arhivov sestopi do štirih ravni vgnezdenih arhivov.</li>
 <li><strong>Vključi mape v rezultate</strong> našteje tudi mape, katerih imena se ujemajo, ne le datoteke.</li>
 <li>Spotlight pokriva le indeksirane lokalne mape; za omrežne lokacije ali ujemanje po vzorcu ga pustite izklopljenega in pustite, da Poišči datoteke pregleduje.</li>

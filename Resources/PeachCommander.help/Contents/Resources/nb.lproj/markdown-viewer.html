@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown og HTML i viseren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown og HTML i viseren</h1>
+<p>Trykk F3 på en <code>.md</code>- eller <code>.html</code>-fil, og den vises formatert i stedet for som kildetekst: overskrifter, lister, tabeller, lenker, oppgavelister og kodeblokker farget etter språk. Diagrammer skrevet som <code>```mermaid</code>-blokker tegnes, og matematikk skrevet mellom dollartegn settes.</p>
+<p>Dette er et plugin. Alt på denne siden kommer fra <strong>Markdown and HTML</strong>, som du kan slå av i <strong>Konfigurasjon ▸ Plugins…</strong> — lenger ned står det hva som da endres.</p>
+<h2 id="hvor-den-formaterte-visningen-vises">Hvor den formaterte visningen vises</h2>
+<ul>
+<li><strong>Viseren (F3).</strong> Den formaterte siden. Menyen <strong>Visning</strong> tilbyr fortsatt Tekst, Kode og Hex, så kildeteksten er ett klikk unna, og navnet på pluginet står også i listen.</li>
+<li><strong>Quick View (Ctrl+Q) og infosiden</strong> i sidepanelet viser samme gjengivelse, slik at en forhåndsvisning og en full visning av samme fil aldri er uenige.</li>
+<li><strong>Galleriet</strong> viser et lite bilde av begynnelsen på en Markdown-fil i stedet for et generisk dokumentikon.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> er macOS' egen forhåndsvisning og påvirkes <em>ikke</em> — det panelet tilhører systemet, og ingen plugin kan tegne i det.</li>
+</ul>
+<h2 id="symboloversikten">Symboloversikten</h2>
+<p>Trykk <strong>Symboler</strong> i viseren for å få dokumentets overskrifter, nøstet slik de er skrevet, og klikk på en for å hoppe dit på siden. Det virker på den formaterte visningen og på kildeteksten, og de to er enige om hvor en overskrift står.</p>
+<h2 id="diagrammer-og-matematikk">Diagrammer og matematikk</h2>
+<p>En kodeblokk med språket <code>mermaid</code> blir et diagram; <code>$…$</code> og <code>$$…$$</code> blir satt matematikk. Begge tegnes <strong>på din Mac</strong>, av motorer som følger med inne i pluginet — ingenting lastes ned, og ingen del av dokumentet ditt sendes noe sted. Et dollartegn inne i en kodeblokk eller i inline-kode forblir et dollartegn.</p>
+<p>Et dokument uten diagram og uten formel laster ingen av motorene, så en vanlig README koster ingenting ekstra. Et diagram som ikke kan leses viser feilen der blokken sto, med blokkens egen tekst under, i stedet for å forsvinne.</p>
+<p>Begge kan slås av hver for seg i <strong>Konfigurasjon ▸ Innstillinger ▸ Markdown</strong>, der man også ser hvilken versjon som er i bruk og hvor den kommer fra.</p>
+<h2 id="din-egen-versjon">Din egen versjon</h2>
+<p>Trenger du en nyere eller annen utgave av Mermaid eller KaTeX, legg den i mappen som knappen <strong>Engine Folder…</strong> åpner, og den brukes i stedet for den medfølgende. Filnavnene er <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> og <code>auto-render.min.js</code>. Ingenting hentes noen gang fra internett for deg.</p>
+<h2 id="hva-den-formaterte-siden-ikke-gjr">Hva den formaterte siden ikke gjør</h2>
+<p>Den formaterte siden er bevisst avstengt, for en Markdown-fil er innhold som kommer et annet sted fra:</p>
+<ul>
+<li><strong>Den laster ingenting over nettet.</strong> Et bilde med en adresse som begynner med <code>http</code> forblir tomt med hensikt: å hente det ville fortelle den serveren når du åpnet filen, og fra hvilken adresse. Et bilde som ligger ved siden av dokumentet på disken lastes som normalt.</li>
+<li><strong>Dokumentets egne skript og HTML kjører aldri.</strong> HTML som står inne i en Markdown-fil vises som tekst, og en <code>.html</code>-fil vises med skript slått av.</li>
+</ul>
+<h2 id="sla-det-av">Slå det av</h2>
+<p>Slå pluginet av i <strong>Konfigurasjon ▸ Plugins…</strong>, og <code>.md</code>- og <code>.html</code>-filer åpnes som tekst. Oversikten virker fortsatt, syntaksfargingen virker fortsatt, og ingenting annet endres — den formaterte visningen tilbys bare ikke. Det samme gjelder om du bare slår av den formaterte visningen på pluginets innstillingsside.</p>
+<h2 id="grenser">Grenser</h2>
+<ul>
+<li>Filer over en størrelsesgrense (8 MB som standard, på innstillingssiden) åpnes som tekst i stedet. Å gjøre et svært stort generert dokument til en formatert side er langsomt, og tekstviseren åpner det med én gang.</li>
+<li>Den formaterte siden kan ikke redigeres. Bruk F4 til det, eller visningen Tekst til <strong>Formater</strong>, <strong>Koding</strong> og <strong>Gå til</strong>, som gjelder kildetekst og ikke en gjengitt side.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="viewing-files.html">Vise filer</a></li><li><a href="privacy-and-security.html">Personvern og sikkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

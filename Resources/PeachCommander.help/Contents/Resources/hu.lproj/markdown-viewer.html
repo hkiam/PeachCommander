@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown és HTML a megjelenítőben</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown és HTML a megjelenítőben</h1>
+<p>Nyomja meg az F3-at egy <code>.md</code> vagy <code>.html</code> fájlon, és formázva jelenik meg, nem forrásként: címsorok, listák, táblázatok, hivatkozások, tennivaló-listák és nyelv szerint színezett kódblokkok. A <code>```mermaid</code> blokként írt diagramok kirajzolódnak, a dollárjelek közé írt matematika pedig szedésre kerül.</p>
+<p>Ez egy bővítmény. Minden, ami ezen az oldalon szerepel, a <strong>Markdown and HTML</strong> bővítménytől jön, amelyet kikapcsolhat a <strong>Konfiguráció ▸ Bővítmények…</strong> menüben — lentebb olvasható, mi változik akkor.</p>
+<h2 id="hol-jelenik-meg-a-formazott-nezet">Hol jelenik meg a formázott nézet</h2>
+<ul>
+<li><strong>A megjelenítő (F3).</strong> A formázott oldal. A <strong>Nézet</strong> menü továbbra is felajánlja a Szöveg, Kód és Hex lehetőséget, tehát a forrás egy kattintásra van, és a bővítmény neve is szerepel abban a listában.</li>
+<li><strong>A Quick View (Ctrl+Q) és az oldalsáv információs lapja</strong> ugyanazt a megjelenítést mutatja, így egy előnézet és egy teljes nézet ugyanarról a fájlról soha nem mond ellent egymásnak.</li>
+<li><strong>A galéria</strong> egy Markdown-fájl kezdetének kis képét mutatja általános dokumentumikon helyett.</li>
+<li><strong>A Quick Look (Cmd+Y)</strong> a macOS saját előnézete, és <em>nem</em> érinti — az a panel a rendszeré, és egyetlen bővítmény sem rajzolhat bele.</li>
+</ul>
+<h2 id="a-szimbolumvazlat">A szimbólumvázlat</h2>
+<p>Nyomja meg a <strong>Szimbólumok</strong> gombot a megjelenítőben a dokumentum címsoraiért, úgy egymásba ágyazva, ahogy meg vannak írva, és kattintson egyre, hogy az oldalon odaugorjon. Működik a formázott nézetben és a forrásban is, és a kettő egyetért abban, hol van egy címsor.</p>
+<h2 id="diagramok-es-matematika">Diagramok és matematika</h2>
+<p>Egy <code>mermaid</code> nyelvű kódblokk diagrammá válik; a <code>$…$</code> és a <code>$$…$$</code> szedett matematikává. Mindkettőt <strong>az Ön Macén</strong> rajzolja ki a bővítményben szállított két eszköz — semmi sem töltődik le, és a dokumentum egyetlen része sem kerül elküldésre. Egy dollárjel kódblokkban vagy soron belüli kódban dollárjel marad.</p>
+<p>Egy diagram és formula nélküli dokumentum egyik eszközt sem tölti be, tehát egy hétköznapi README nem kerül semmi többe. Egy olvashatatlan diagram ott jelzi a hibát, ahol a blokk volt, alatta a blokk saját szövegével, ahelyett hogy eltűnne.</p>
+<p>Mindkettő külön kikapcsolható a <strong>Konfiguráció ▸ Beállítások ▸ Markdown</strong> oldalon, ahol az is látszik, melyik verzió van használatban és honnan származik.</p>
+<h2 id="a-sajat-verzioja">A saját verziója</h2>
+<p>Ha a Mermaid vagy a KaTeX újabb vagy más változatára van szüksége, tegye abba a mappába, amelyet az <strong>Engine Folder…</strong> gomb megnyit, és a szállított helyett azt fogja használni. A fájlnevek: <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> és <code>auto-render.min.js</code>. Az internetről soha semmit nem tölt le Ön helyett.</p>
+<h2 id="amit-a-formazott-oldal-nem-tesz-meg">Amit a formázott oldal nem tesz meg</h2>
+<p>A formázott oldal szándékosan el van szigetelve, mert egy Markdown-fájl máshonnan érkezett tartalom:</p>
+<ul>
+<li><strong>Semmit nem tölt be a hálózaton.</strong> Egy kép, amelynek címe <code>http</code>-vel kezdődik, szándékosan üresen marad: a letöltése elárulná annak a kiszolgálónak, mikor nyitotta meg a fájlt, és milyen címről. A dokumentum mellett a lemezen fekvő kép rendesen betöltődik.</li>
+<li><strong>A dokumentum saját szkriptjei és HTML-je soha nem futnak le.</strong> A Markdown-fájlba írt HTML szövegként jelenik meg, a <code>.html</code> fájl pedig kikapcsolt szkriptekkel kerül megjelenítésre.</li>
+</ul>
+<h2 id="kikapcsolas">Kikapcsolás</h2>
+<p>Kapcsolja ki a bővítményt a <strong>Konfiguráció ▸ Bővítmények…</strong> menüben, és a <code>.md</code> és <code>.html</code> fájlok szövegként nyílnak meg. A vázlat továbbra is működik, a szintaxisszínezés továbbra is működik, és semmi más nem változik — a formázott nézet egyszerűen nem elérhető többé. Ugyanez igaz, ha a bővítmény beállítási lapján csak a formázott nézetet kapcsolja ki.</p>
+<h2 id="korlatok">Korlátok</h2>
+<ul>
+<li>A méretkorlát (alapértelmezés szerint 8 MB, a beállítási lapon) felett a fájlok szövegként nyílnak meg. Egy nagyon nagy generált dokumentumot formázott oldallá alakítani lassú, a szövegmegjelenítő pedig azonnal megnyitja.</li>
+<li>A formázott oldal nem szerkeszthető. Ehhez használja az F4-et, vagy a Szöveg nézetet a <strong>Formázás</strong>, <strong>Kódolás</strong> és <strong>Ugrás</strong> funkciókhoz, amelyek a forrásra érvényesek és nem egy kirajzolt oldalra.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="privacy-and-security.html">Adatvédelem és biztonság</a></li></ul></section>
+</main>
+</body>
+</html>

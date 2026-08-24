@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown i HTML w podglądzie</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown i HTML w podglądzie</h1>
+<p>Naciśnij F3 na pliku <code>.md</code> lub <code>.html</code> i pojawi się sformatowany, a nie jako źródło: nagłówki, listy, tabele, odnośniki, listy zadań i bloki kodu pokolorowane według języka. Diagramy zapisane jako bloki <code>```mermaid</code> są rysowane, a matematyka między znakami dolara jest składana.</p>
+<p>To wtyczka. Wszystko na tej stronie pochodzi z <strong>Markdown and HTML</strong>, którą można wyłączyć w <strong>Konfiguracja ▸ Wtyczki…</strong> — niżej opisano, co się wtedy zmienia.</p>
+<h2 id="gdzie-pojawia-sie-widok-sformatowany">Gdzie pojawia się widok sformatowany</h2>
+<ul>
+<li><strong>Podgląd (F3).</strong> Strona sformatowana. Menu <strong>Widok</strong> nadal oferuje Tekst, Kod i Hex, więc źródło jest w jednym kliknięciu, a nazwa wtyczki również znajduje się na tej liście.</li>
+<li><strong>Quick View (Ctrl+Q) i strona informacji</strong> w panelu bocznym pokazują to samo, więc podgląd i pełny widok tego samego pliku nigdy się nie różnią.</li>
+<li><strong>Galeria</strong> pokazuje mały obraz początku pliku Markdown zamiast ogólnej ikony dokumentu.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> to własny podgląd systemu macOS i <em>nie</em> jest objęty — ten panel należy do systemu i żadna wtyczka nie może w nim rysować.</li>
+</ul>
+<h2 id="zestawienie-symboli">Zestawienie symboli</h2>
+<p>Naciśnij <strong>Symbole</strong> w podglądzie, aby uzyskać nagłówki dokumentu, zagnieżdżone tak, jak zostały zapisane, i kliknij jeden, aby przejść do niego na stronie. Działa w widoku sformatowanym i w źródle, a oba są zgodne co do miejsca nagłówka.</p>
+<h2 id="diagramy-i-matematyka">Diagramy i matematyka</h2>
+<p>Blok kodu o języku <code>mermaid</code> staje się diagramem; <code>$…$</code> i <code>$$…$$</code> stają się złożoną matematyką. Oba są rysowane <strong>na Twoim Macu</strong>, przez silniki dostarczone wewnątrz wtyczki — nic nie jest pobierane i żadna część dokumentu nigdzie nie jest wysyłana. Znak dolara w bloku kodu lub w kodzie wewnątrz wiersza pozostaje znakiem dolara.</p>
+<p>Dokument bez diagramu i bez formuły nie ładuje żadnego silnika, więc zwyczajny README nie kosztuje nic dodatkowo. Diagram, którego nie da się odczytać, pokazuje błąd tam, gdzie był blok, z jego własnym tekstem poniżej, zamiast zniknąć.</p>
+<p>Oba można wyłączyć osobno w <strong>Konfiguracja ▸ Ustawienia ▸ Markdown</strong>, gdzie widać także, która wersja jest używana i skąd pochodzi.</p>
+<h2 id="wasna-wersja">Własna wersja</h2>
+<p>Jeśli potrzebujesz nowszej lub innej wersji Mermaid albo KaTeX, umieść ją w folderze, który otwiera przycisk <strong>Engine Folder…</strong>, i zostanie użyta zamiast dostarczonej. Nazwy plików to <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> i <code>auto-render.min.js</code>. Nic nigdy nie jest pobierane z internetu.</p>
+<h2 id="czego-strona-sformatowana-nie-zrobi">Czego strona sformatowana nie zrobi</h2>
+<p>Strona sformatowana jest celowo odcięta, bo plik Markdown to treść, która przyszła z zewnątrz:</p>
+<ul>
+<li><strong>Nie ładuje niczego przez sieć.</strong> Obraz, którego adres zaczyna się od <code>http</code>, celowo pozostaje pusty: pobranie go powiedziałoby tamtemu serwerowi, kiedy otworzyłeś plik i z jakiego adresu. Obraz leżący obok dokumentu na dysku ładuje się normalnie.</li>
+<li><strong>Skrypty i HTML dokumentu nigdy się nie wykonują.</strong> HTML zapisany w pliku Markdown jest pokazywany jako tekst, a plik <code>.html</code> jest wyświetlany z wyłączonymi skryptami.</li>
+</ul>
+<h2 id="wyaczanie">Wyłączanie</h2>
+<p>Wyłącz wtyczkę w <strong>Konfiguracja ▸ Wtyczki…</strong>, a pliki <code>.md</code> i <code>.html</code> otworzą się jako tekst. Zestawienie nadal działa, kolorowanie składni nadal działa i nic więcej się nie zmienia — widok sformatowany po prostu nie jest już oferowany. To samo dotyczy wyłączenia samego widoku sformatowanego na stronie ustawień wtyczki.</p>
+<h2 id="ograniczenia">Ograniczenia</h2>
+<ul>
+<li>Pliki powyżej limitu rozmiaru (domyślnie 8 MB, na stronie ustawień) otwierają się jako tekst. Zamiana bardzo dużego wygenerowanego dokumentu w stronę sformatowaną jest wolna, a podgląd tekstu otwiera go od razu.</li>
+<li>Strony sformatowanej nie da się edytować. Użyj do tego F4 albo widoku Tekst dla <strong>Formatuj</strong>, <strong>Kodowanie</strong> i <strong>Idź do</strong>, które dotyczą źródła, a nie strony wyrenderowanej.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="privacy-and-security.html">Prywatność i bezpieczeństwo</a></li></ul></section>
+</main>
+</body>
+</html>

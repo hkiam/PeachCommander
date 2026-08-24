@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown et HTML dans la visionneuse</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown et HTML dans la visionneuse</h1>
+<p>Appuyez sur F3 sur un fichier <code>.md</code> ou <code>.html</code> et il apparaît mis en forme plutôt qu'en source : titres, listes, tableaux, liens, listes de tâches et blocs de code colorés selon le langage. Les diagrammes écrits comme blocs <code>```mermaid</code> sont dessinés, et les mathématiques écrites entre signes dollar sont composées.</p>
+<p>C'est un plugin. Tout ce qui est décrit ici vient de <strong>Markdown and HTML</strong>, que vous pouvez désactiver dans <strong>Configuration ▸ Plugins…</strong> — voyez plus bas ce qui change alors.</p>
+<h2 id="ou-apparait-la-vue-mise-en-forme">Où apparaît la vue mise en forme</h2>
+<ul>
+<li><strong>La visionneuse (F3).</strong> La page mise en forme. Le menu <strong>Affichage</strong> propose toujours Texte, Code et Hex, la source est donc à un clic, et le nom du plugin figure aussi dans cette liste.</li>
+<li><strong>Quick View (Ctrl+Q) et la page d'informations</strong> du panneau latéral montrent le même rendu, si bien qu'un aperçu et une vue complète d'un même fichier ne se contredisent jamais.</li>
+<li><strong>La galerie</strong> montre une petite image du début d'un fichier Markdown au lieu d'une icône de document générique.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> est l'aperçu de macOS lui-même et n'est <em>pas</em> concerné — ce panneau appartient au système, et aucun plugin ne peut y dessiner.</li>
+</ul>
+<h2 id="le-plan-des-symboles">Le plan des symboles</h2>
+<p>Appuyez sur <strong>Symboles</strong> dans la visionneuse pour obtenir les titres du document, imbriqués tels qu'ils sont écrits, et cliquez sur l'un d'eux pour y sauter dans la page. Cela fonctionne sur la vue mise en forme comme sur la source, et les deux s'accordent sur l'emplacement d'un titre.</p>
+<h2 id="diagrammes-et-mathematiques">Diagrammes et mathématiques</h2>
+<p>Un bloc de code dont le langage est <code>mermaid</code> devient un diagramme ; <code>$…$</code> et <code>$$…$$</code> deviennent des mathématiques composées. Les deux sont dessinés <strong>sur votre Mac</strong>, par des moteurs livrés dans le plugin — rien n'est téléchargé, et aucune partie de votre document n'est envoyée où que ce soit. Un signe dollar dans un bloc de code ou du code en ligne reste un signe dollar.</p>
+<p>Un document sans diagramme ni formule ne charge aucun des deux moteurs : un README ordinaire ne coûte donc rien de plus. Un diagramme illisible affiche l'erreur là où le bloc se trouvait, avec le texte du bloc en dessous, au lieu de disparaître.</p>
+<p>Les deux peuvent être désactivés séparément dans <strong>Configuration ▸ Réglages ▸ Markdown</strong>, où l'on voit aussi quelle version est utilisée et d'où elle vient.</p>
+<h2 id="votre-propre-version">Votre propre version</h2>
+<p>Si vous avez besoin d'une version plus récente ou différente de Mermaid ou de KaTeX, placez-la dans le dossier qu'ouvre le bouton <strong>Engine Folder…</strong> et elle sera utilisée à la place de celle fournie. Les noms de fichiers sont <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> et <code>auto-render.min.js</code>. Rien n'est jamais récupéré sur Internet pour vous.</p>
+<h2 id="ce-que-la-page-mise-en-forme-ne-fera-pas">Ce que la page mise en forme ne fera pas</h2>
+<p>La page mise en forme est délibérément isolée, car un fichier Markdown est un contenu venu d'ailleurs :</p>
+<ul>
+<li><strong>Elle ne charge rien par le réseau.</strong> Une image dont l'adresse commence par <code>http</code> reste vide à dessein : la récupérer indiquerait à ce serveur quand vous avez ouvert le fichier, et depuis quelle adresse. Une image posée à côté du document sur le disque se charge normalement.</li>
+<li><strong>Les scripts et le HTML du document ne s'exécutent jamais.</strong> Le HTML écrit dans un fichier Markdown est montré comme du texte, et un fichier <code>.html</code> est affiché avec les scripts désactivés.</li>
+</ul>
+<h2 id="le-desactiver">Le désactiver</h2>
+<p>Désactivez le plugin dans <strong>Configuration ▸ Plugins…</strong>, et les fichiers <code>.md</code> et <code>.html</code> s'ouvrent en texte. Le plan continue de fonctionner, la coloration syntaxique aussi, et rien d'autre ne change — la vue mise en forme n'est simplement plus proposée. Il en va de même si vous ne désactivez que la vue mise en forme sur la page de réglages du plugin.</p>
+<h2 id="limites">Limites</h2>
+<ul>
+<li>Les fichiers dépassant une taille limite (8 Mo par défaut, sur la page de réglages) s'ouvrent en texte. Transformer un très gros document généré en page mise en forme est lent, et la visionneuse de texte l'ouvre immédiatement.</li>
+<li>La page mise en forme ne peut pas être modifiée. Utilisez F4 pour cela, ou la vue Texte pour <strong>Formater</strong>, <strong>Encodage</strong> et <strong>Aller à</strong>, qui s'appliquent à la source et non à une page rendue.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="privacy-and-security.html">Confidentialité et sécurité</a></li></ul></section>
+</main>
+</body>
+</html>

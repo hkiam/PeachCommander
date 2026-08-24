@@ -993,6 +993,42 @@ SCENARIOS = [
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
     ("viewer-beacon", ["active left", "left /Users/admin/pc-beacon", "wait 1200",
                        "focus beacon.md", "wait 400", "cmd cm_List", "wait 3000"], 10),
+    # Markdown and HTML are a plugin's now (F-465…F-469), and three things about that can only be
+    # judged in a real WebKit. The fixtures are made by the scenario rather than baked into the demo
+    # tree, so what each one proves is next to what it renders.
+    #
+    # A diagram and a formula, drawn with engines that ship inside the plugin. The report names the
+    # rendered kinds; the screenshot is what says they are actually *drawn*.
+    ("markdown-diagram", ["probe /Users/admin/md-rich-seed.txt|mkdir -p ~/pc-md && "
+                          "{ printf '# Diagramm und Formel\\n\\n'; "
+                          "printf '```mermaid\\ngraph LR\\n  A[Datei] --> B[Plugin]\\n```\\n\\n'; "
+                          "printf 'Inline $E = mc^2$ und abgesetzt:\\n\\n$$\\n\\\\sum_{i=1}^{n} i\\n$$\\n'; } "
+                          "> ~/pc-md/rich.md && wc -l < ~/pc-md/rich.md",
+                          "wait 800",
+                          "view /Users/admin/pc-md/rich.md", "wait 5000",
+                          "listerdump /Users/admin/md-rich.txt", "wait 500"], 12),
+    # The rule whose loss would be a security defect: the page runs the two engines, so a document's
+    # own script must not run with them, and an image on a server must not be fetched. The witness for
+    # the second half is the beacon server — see EXTERNAL_CHECKS.
+    ("markdown-html-escape", ["probe /Users/admin/md-escape-seed.txt|mkdir -p ~/pc-mdesc && "
+                              "{ printf '# Roh-HTML\\n\\n<script>document.title=\"RAN\"</script>\\n\\n'; "
+                              "printf '![p](http://127.0.0.1:8899/mdesc.png)\\n'; } "
+                              "> ~/pc-mdesc/raw.md && wc -c < ~/pc-mdesc/raw.md",
+                              "wait 800",
+                              "view /Users/admin/pc-mdesc/raw.md", "wait 4000",
+                              "listerdump /Users/admin/md-escape.txt", "wait 500"], 12),
+    # And the other half of the two-configuration rule: a foreign .html file may run nothing at all.
+    # Its own script tries to replace the sentence in the page; the dump reports the window's title,
+    # which that script also tries to change.
+    ("html-no-javascript", ["probe /Users/admin/md-html-seed.txt|mkdir -p ~/pc-mdhtml && "
+                            "{ printf '<!DOCTYPE html><html><head><title>QUIET</title></head><body>\\n'; "
+                            "printf '<p id=\"v\">unchanged</p>\\n'; "
+                            "printf '<script>document.getElementById(\"v\").textContent=\"SCRIPTS RAN\";"
+                            "document.title=\"SCRIPTS RAN\";</script>\\n</body></html>\\n'; } "
+                            "> ~/pc-mdhtml/page.html && wc -c < ~/pc-mdhtml/page.html",
+                            "wait 800",
+                            "view /Users/admin/pc-mdhtml/page.html", "wait 4000",
+                            "listerdump /Users/admin/md-html.txt", "wait 500"], 12),
     # Does a crafted archive write outside the folder the user chose (F-131)? The archive extractor
     # refused this; the panel's own extract walk — this one — did not, and nothing in the unit tests
     # reaches it, because nothing there constructs a MainWindowController. The report says where files
@@ -1461,6 +1497,11 @@ EXTERNAL_CHECKS = {
     "viewer-beacon": ("if grep -q viewer.png ~/beacon-hits.log 2>/dev/null; then echo viewer-fetched; "
                       "elif grep -q selftest ~/beacon-hits.log 2>/dev/null; then echo only-selftest; "
                       "else echo server-not-running; fi", "only-selftest"),
+    # The same three answers for the plugin's own page, which now runs JavaScript: an engine in the
+    # page must not make a remote image reachable that was not reachable before.
+    "markdown-html-escape": ("if grep -q mdesc.png ~/beacon-hits.log 2>/dev/null; then echo image-fetched; "
+                             "elif grep -q selftest ~/beacon-hits.log 2>/dev/null; then echo only-selftest; "
+                             "else echo server-not-running; fi", "only-selftest"),
     # The downloaded file must be byte-identical to the original — asked of `cmp`, not of the downloader.
     "sftp-download": ("cmp -s ~/sftp-demo/big.txt ~/got.txt && echo identical || echo differs",
                       "identical"),
@@ -2066,6 +2107,21 @@ REPORTS = {
     # The viewer's outline for rendered Markdown (F-410). The dump answers "can it be opened at all and
     # what does it hold" — including the underlined (setext) heading, which the renderer used to draw as a
     # paragraph and a rule.
+    # Markdown and HTML through the plugin. What the dump can say is which representation actually
+    # drew the file — a plugin, named — and that the outline is alive for it; the diagram and the
+    # formula themselves are judged from the screenshot, because nothing outside the page can read
+    # an SVG WebKit produced.
+    "markdown-diagram": ("/Users/admin/md-rich.txt",
+                         ["status=Plugin", "Markdown and HTML", "symboltoggle=enabled",
+                          "[H  Diagramm und Formel]", "!ERROR"]),
+    # Raw HTML shown as text rather than run: the title stays the file's name, and the outline still
+    # has the heading. The image on a server is the beacon server's business (EXTERNAL_CHECKS).
+    "markdown-html-escape": ("/Users/admin/md-escape.txt",
+                             ["status=Plugin", "raw.md", "!RAN", "!ERROR"]),
+    # A foreign .html file: its own script tries to replace both the sentence and the title, and the
+    # dump reports the title the window carries.
+    "html-no-javascript": ("/Users/admin/md-html.txt",
+                           ["status=Plugin", "page.html", "!SCRIPTS RAN", "!ERROR"]),
     "viewer-md-outline": ("/Users/admin/md-viewer.txt",
                           ["symboltoggle=enabled", "[H  Titel]", "[H  Ziel]", "!ERROR"]),
     # And the click: the page moved, and the heading came to rest at the top of the view.

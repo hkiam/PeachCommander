@@ -1,0 +1,2 @@
+if grep -q mdesc.png ~/beacon-hits.log 2>/dev/null; then echo image-fetched; elif grep -q selftest ~/beacon-hits.log 2>/dev/null; then echo only-selftest; else echo server-not-running; fi
+only-selftest

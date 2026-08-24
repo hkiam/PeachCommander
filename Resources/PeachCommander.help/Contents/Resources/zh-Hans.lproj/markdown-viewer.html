@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>查看器中的 Markdown 与 HTML</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>查看器中的 Markdown 与 HTML</h1>
+<p>在 <code>.md</code> 或 <code>.html</code> 文件上按 F3，它会以排版后的样子出现，而不是源码：标题、列表、表格、链接、任务列表，以及按语言着色的代码块。写成 <code>```mermaid</code> 块的图会被绘制出来，写在美元符号之间的数学式会被排版。</p>
+<p>这是一个插件。本页所述的一切都来自 <strong>Markdown and HTML</strong>，可以在<strong>配置 ▸ 插件…</strong>中关闭；关闭后有什么变化见下文。</p>
+<h2 id="_1">排版视图出现在哪里</h2>
+<ul>
+<li><strong>查看器（F3）。</strong> 排版后的页面。<strong>视图</strong>弹出菜单仍提供文本、代码和十六进制，因此源码只差一次点击，插件的名称也在该列表中。</li>
+<li><strong>Quick View（Ctrl+Q）与侧栏的信息页</strong>显示同一份渲染结果，因此同一文件的预览和完整视图从不彼此矛盾。</li>
+<li><strong>画廊</strong>显示 Markdown 文件开头的小图，而不是通用的文档图标。</li>
+<li><strong>Quick Look（Cmd+Y）</strong> 是 macOS 自己的预览，<em>不</em>受影响——那个面板属于系统，任何插件都无法在其中绘制。</li>
+</ul>
+<h2 id="_2">符号大纲</h2>
+<p>在查看器中按<strong>符号</strong>即可获得文档的标题，按写法层层嵌套；点击其中一个即可跳到页面中的相应位置。它在排版视图和源码中都有效，两者对标题所在位置的判断一致。</p>
+<h2 id="_3">图与数学式</h2>
+<p>语言为 <code>mermaid</code> 的代码块会变成图；<code>$…$</code> 与 <code>$$…$$</code> 会变成排版后的数学式。两者都由插件内附带的引擎<strong>在你的 Mac 上</strong>绘制——不下载任何东西，文档的任何部分都不会被发送到别处。代码块或行内代码中的美元符号仍然是美元符号。</p>
+<p>既无图也无公式的文档不会加载任何引擎，因此一份普通的 README 不会有额外开销。无法解析的图会在原来块的位置显示错误，并在下方保留该块的原文，而不是消失。</p>
+<p>两者可以在<strong>配置 ▸ 设置 ▸ Markdown</strong> 中分别关闭；那里也能看到正在使用哪个版本、来自何处。</p>
+<h2 id="_4">你自己的版本</h2>
+<p>如果需要更新或不同的 Mermaid、KaTeX 构建，把它放进<strong>Engine Folder…</strong>按钮打开的文件夹，就会用它代替随附的那份。文件名为 <code>mermaid.min.js</code>、<code>katex.min.js</code>、<code>katex.min.css</code> 和 <code>auto-render.min.js</code>。永远不会替你从互联网获取任何东西。</p>
+<h2 id="_5">排版页面不会做的事</h2>
+<p>排版页面是刻意隔离的，因为 Markdown 文件是来自别处的内容：</p>
+<ul>
+<li><strong>它不通过网络加载任何东西。</strong> 地址以 <code>http</code> 开头的图片会故意保持空白：获取它会让那台服务器知道你何时打开了文件、来自哪个地址。与文档同放在磁盘上的图片则正常显示。</li>
+<li><strong>文档自带的脚本和 HTML 从不运行。</strong> 写在 Markdown 文件里的 HTML 会以文本显示，<code>.html</code> 文件在脚本关闭的状态下显示。</li>
+</ul>
+<h2 id="_6">关闭它</h2>
+<p>在<strong>配置 ▸ 插件…</strong>中关闭该插件，<code>.md</code> 和 <code>.html</code> 文件就会以文本打开。大纲仍然可用，语法着色仍然可用，其他一切不变——只是不再提供排版视图。若只在插件的设置页关闭排版视图，效果相同。</p>
+<h2 id="_7">限制</h2>
+<ul>
+<li>超过大小上限（默认 8 MB，见设置页）的文件会改以文本打开。把非常大的生成文档变成排版页面很慢，而文本查看器可以立即打开它。</li>
+<li>排版页面不能编辑。请用 F4，或在文本视图中使用<strong>格式化</strong>、<strong>编码</strong>和<strong>跳转</strong>，它们作用于源码而非渲染后的页面。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="viewing-files.html">查看文件</a></li><li><a href="privacy-and-security.html">隐私与安全</a></li></ul></section>
+</main>
+</body>
+</html>

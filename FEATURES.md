@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**89 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**90 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -129,6 +129,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Disk Map | user | — | ✅ |
 | Filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs, FAT, exFAT, NTFS) | user, expert | — | ✅ |
 | Java decompiler plugin (F3 on a .class file) | user, expert | — | ✅ |
+| Markdown and HTML (plugin) | user, expert | F3 | ✅ |
 | Plugin ABIs | plugin, sdk | — | ✅ |
 | Plugin architecture | developer, plugin | — | ✅ |
 | Plugin views follow the colour theme | user, plugin, sdk | — | ✅ |

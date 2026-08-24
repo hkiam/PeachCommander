@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown und HTML im Betrachter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown und HTML im Betrachter</h1>
+<p>Drücken Sie F3 auf einer <code>.md</code>- oder <code>.html</code>-Datei, und sie erscheint formatiert statt als Quelltext: Überschriften, Listen, Tabellen, Links, Aufgabenlisten und Codeblöcke, nach Sprache gefärbt. Diagramme, die als <code>```mermaid</code>-Block geschrieben sind, werden gezeichnet, und Mathematik zwischen Dollarzeichen wird gesetzt.</p>
+<p>Das ist ein Plugin. Alles auf dieser Seite kommt von <strong>Markdown and HTML</strong>, das Sie in <strong>Konfiguration ▸ Plugins…</strong> abschalten können — was sich dann ändert, steht weiter unten.</p>
+<h2 id="wo-die-formatierte-ansicht-erscheint">Wo die formatierte Ansicht erscheint</h2>
+<ul>
+<li><strong>Im Betrachter (F3).</strong> Die formatierte Seite. Das Auswahlmenü <strong>Ansicht</strong> bietet weiterhin Text, Code und Hex, der Quelltext ist also einen Klick entfernt, und der Name des Plugins steht ebenfalls in dieser Liste.</li>
+<li><strong>Quick View (Ctrl+Q) und die Infoseite</strong> der Seitenleiste zeigen dieselbe Darstellung, sodass Vorschau und Vollansicht einer Datei nie voneinander abweichen.</li>
+<li><strong>Die Galerie</strong> zeigt ein kleines Bild vom Anfang einer Markdown-Datei statt eines allgemeinen Dokumentsymbols.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> ist die Vorschau von macOS selbst und ist <em>nicht</em> betroffen — dieses Fenster gehört dem System, und kein Plugin kann darin zeichnen.</li>
+</ul>
+<h2 id="die-symbolgliederung">Die Symbolgliederung</h2>
+<p>Drücken Sie <strong>Symbole</strong> im Betrachter, um die Überschriften des Dokuments zu erhalten, so verschachtelt wie sie geschrieben sind, und klicken Sie eine an, um in der Seite dorthin zu springen. Das funktioniert in der formatierten Ansicht wie im Quelltext, und beide sind sich darüber einig, wo eine Überschrift steht.</p>
+<h2 id="diagramme-und-mathematik">Diagramme und Mathematik</h2>
+<p>Ein Codeblock mit der Sprache <code>mermaid</code> wird zu einem Diagramm; <code>$…$</code> und <code>$$…$$</code> werden zu gesetzter Mathematik. Beides wird <strong>auf Ihrem Mac</strong> gezeichnet, von Programmteilen, die im Plugin mitgeliefert werden — nichts wird heruntergeladen, und kein Teil Ihres Dokuments wird irgendwohin gesendet. Ein Dollarzeichen in einem Codeblock oder in Inline-Code bleibt ein Dollarzeichen.</p>
+<p>Ein Dokument ohne Diagramm und ohne Formel lädt keinen der beiden Programmteile, eine gewöhnliche README kostet also nichts zusätzlich. Ein Diagramm, das nicht gelesen werden kann, zeigt den Fehler dort, wo der Block stand, mit dem Text des Blocks darunter, statt zu verschwinden.</p>
+<p>Beides lässt sich getrennt abschalten in <strong>Konfiguration ▸ Einstellungen ▸ Markdown</strong>, wo auch steht, welche Fassung im Einsatz ist und woher sie kommt.</p>
+<h2 id="ihre-eigene-fassung">Ihre eigene Fassung</h2>
+<p>Wenn Sie eine neuere oder andere Fassung von Mermaid oder KaTeX brauchen, legen Sie sie in den Ordner, den die Schaltfläche <strong>Engine Folder…</strong> öffnet, und sie wird anstelle der mitgelieferten benutzt. Die Dateinamen sind <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> und <code>auto-render.min.js</code>. Aus dem Internet wird nie etwas für Sie geholt.</p>
+<h2 id="was-die-formatierte-seite-nicht-tut">Was die formatierte Seite nicht tut</h2>
+<p>Die formatierte Seite ist bewusst abgeschottet, denn eine Markdown-Datei ist Inhalt, der von woanders kommt:</p>
+<ul>
+<li><strong>Sie lädt nichts über das Netz.</strong> Ein Bild, dessen Adresse mit <code>http</code> beginnt, bleibt absichtlich leer: es zu holen würde jenem Server verraten, wann Sie die Datei geöffnet haben und von welcher Adresse. Ein Bild, das neben dem Dokument auf der Platte liegt, wird normal geladen.</li>
+<li><strong>Skripte und HTML des Dokuments laufen nie.</strong> HTML, das in einer Markdown-Datei steht, wird als Text gezeigt, und eine <code>.html</code>-Datei wird mit abgeschalteter Skriptausführung dargestellt.</li>
+</ul>
+<h2 id="abschalten">Abschalten</h2>
+<p>Schalten Sie das Plugin in <strong>Konfiguration ▸ Plugins…</strong> ab, und <code>.md</code>- und <code>.html</code>-Dateien öffnen sich als Text. Die Gliederung funktioniert weiter, die Syntaxfärbung funktioniert weiter, und sonst ändert sich nichts — die formatierte Ansicht wird einfach nicht mehr angeboten. Dasselbe gilt, wenn Sie auf der Einstellungsseite des Plugins nur die formatierte Ansicht abschalten.</p>
+<h2 id="grenzen">Grenzen</h2>
+<ul>
+<li>Dateien über einer Größengrenze (voreingestellt 8 MB, auf der Einstellungsseite) öffnen sich stattdessen als Text. Ein sehr großes erzeugtes Dokument in eine formatierte Seite zu verwandeln ist langsam, und der Textbetrachter öffnet es sofort.</li>
+<li>Die formatierte Seite lässt sich nicht bearbeiten. Nehmen Sie dafür F4, oder die Ansicht Text für <strong>Formatieren</strong>, <strong>Kodierung</strong> und <strong>Gehe zu</strong>, die für Quelltext gelten und nicht für eine gerenderte Seite.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li></ul></section>
+</main>
+</body>
+</html>

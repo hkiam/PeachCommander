@@ -24,7 +24,7 @@
 <ol>
 <li>Chcete-li hledat uvnitř souborů, zadejte text do pole <strong>Najít text</strong> na kartě Obecné — hledá se to, co je v poli, prázdné pole hledá jen podle názvů. Možnosti umožňují učinit jej <strong>rozlišujícím velikost</strong>, shodovat se jen s <strong>celým slovem</strong>, zacházet s textem jako s <strong>regulárním výrazem</strong>, provést <strong>hexadecimální hledání obsahu</strong> nebo najít soubory, které text <strong>neobsahují</strong>.</li>
 <li>Přepněte na kartu <strong>Pokročilé</strong> pro zúžení výsledků podle <strong>velikosti</strong> (například <code>10K</code> až <code>5M</code>), podle rozsahu <strong>data změny</strong> nebo na soubory změněné za posledních N dní.</li>
-<li>Zapněte <strong>Hledat uvnitř archivů</strong> pro nahlédnutí do archivů rodiny zip (zip, jar, war a podobné).</li>
+<li>Zapněte <strong>Hledat uvnitř archivů</strong>, abyste nahlédli do nalezených archivů — stejné formáty, jaké lze otevřít klávesou Enter, včetně těch, které přidá balicí zásuvný modul. Archivy, které nešlo otevřít, se ohlásí po dokončení hledání.</li>
 <li>Chcete-li omezit hledání jen na to, co jste už vybrali, zapněte před spuštěním <strong>Hledat jen ve vybraných položkách</strong>.</li>
 <li>Zapněte <strong>Hledat i v komentářích souborů</strong> a text se bude hledat vedle obsahu také v komentáři každého souboru. Tak najdete soubor znovu podle toho, co jste o něm napsali — „originál zákazníka“, „nahrazeno exportem 2026“ —, když v samotném souboru nic takového není. Takto nalezený výsledek zobrazí komentář místo řádku souboru a žádné číslo řádku, protože nález neleží v textu souboru. Velikost písmen, celé slovo i regulární výrazy platí pro komentář stejně jako pro obsah; hexadecimální hledání ne, neboť komentář je napsaný text. <strong>Neobsahující</strong> zůstává bezesporné: soubor se vypíše, když text není ani v obsahu, ani v komentáři. Je-li zapnutý modul Poznámky, je jeho poznámka dostupná jako obsahové pole, na které lze v části <strong>Plugins</strong> nasadit podmínku — viz <a href="plugins.html">Práce s moduly</a>.</li>
 <li>Některé zásuvné moduly umí ze souboru udělat text, který sám soubor neobsahuje — modul dekompilátoru udělá z <code>.class</code> zdrojový kód Javy. Zapněte <strong>Hledat v textu od zásuvných modulů</strong> a takové soubory se prohledávají jako ten text, ne jako vlastní bajty, takže obrat ze zdrojového kódu se najde ve zkompilované třídě. Volba se objeví jen tehdy, je-li takový modul nainstalován, a je pomalejší: vytvoření textu může znamenat jeden dekompilátor na soubor.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Hledání obsahu čte celé soubory u místních složek; na jiných umístěních se velmi velké soubory přeskočí (zhruba 16 MB, nebo 64 MB při použití regulárního výrazu).</li>
+<li>Hledání v obsahu čte celé soubory u místních složek i v archivech; v síťových umístěních se velmi velké soubory čtou jen zčásti (přibližně 16 MB, nebo 64 MB při použití regulárního výrazu).</li>
 <li>Hledání uvnitř archivů sestupuje až do čtyř úrovní vnořených archivů.</li>
 <li><strong>Zahrnout složky do výsledků</strong> rovněž uvádí složky, jejichž názvy odpovídají, nejen soubory.</li>
 <li>Spotlight pokrývá jen zaindexované místní složky; pro síťová umístění nebo shodu podle vzoru jej nechte vypnutý a nechte Najít soubory skenovat.</li>

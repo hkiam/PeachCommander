@@ -24,7 +24,7 @@
 <ol>
 <li>To search inside files, type the text into <strong>Find text</strong> on the General tab — anything in that field is searched for, and an empty field searches by name only. Options let you make it <strong>Case sensitive</strong>, match only a <strong>Whole word</strong>, treat the text as a <strong>Regular expression</strong>, do a <strong>Hex content search</strong>, or find files that are <strong>Not containing</strong> the text.</li>
 <li>Switch to the <strong>Advanced</strong> tab to narrow results by <strong>Size</strong> (for example <code>10K</code> to <code>5M</code>), by <strong>modified date</strong> range, or to files changed in the last N days.</li>
-<li>Turn on <strong>Search inside archives</strong> to look within zip-family archives (zip, jar, war, and similar).</li>
+<li>Turn on <strong>Search inside archives</strong> to look inside the archives the search finds — the same formats you can open with Enter, including any a packer plugin adds. Archives that could not be opened are reported when the search finishes.</li>
 <li>To limit the search to what you already picked, turn on <strong>Search in selected items only</strong> before starting.</li>
 <li>Turn on <strong>Also search file comments</strong> and the text is looked for in each file's comment as well as in its contents. That is how you find a file again by what you wrote <em>about</em> it — "the customer's original", "superseded by the 2026 export" — when nothing of the sort appears inside the file. A result found that way shows the comment instead of a line of the file, and no line number, because the match is not in the file's text. Case sensitivity, whole word and regular expressions apply to a comment exactly as they do to contents; a hex search does not, since a comment is text somebody typed. <strong>Not containing</strong> stays consistent: a file is listed when the text is in neither its contents nor its comment. If the Notes plugin is switched on, its note is available as a content field, which you can filter on under <strong>Plugins</strong> — see <a href="plugins.html">Working with plugins</a>.</li>
 <li>Some plugins can turn a file into text that the file itself does not contain — the decompiler plugin turns a <code>.class</code> into Java source. Turn on <strong>Search text provided by plugins</strong> and those files are searched as that text instead of as their own bytes, so a phrase from the source is found in a compiled class. The option only appears when such a plugin is installed, and it is slower: producing the text can mean running a decompiler once per file.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>Content search reads whole files for local folders; on other locations very large files are skipped (roughly 16 MB, or 64 MB when using a regular expression).</li>
+<li>Content search reads whole files for local folders and for archives; on network locations very large files are read only in part (roughly 16 MB, or 64 MB when using a regular expression).</li>
 <li>Searching inside archives descends up to four levels of nested archives.</li>
 <li><strong>Include folders in results</strong> also lists folders whose names match, not just files.</li>
 <li>Spotlight covers indexed local folders only; for network locations or pattern-based matching, leave it off and let Find Files scan.</li>

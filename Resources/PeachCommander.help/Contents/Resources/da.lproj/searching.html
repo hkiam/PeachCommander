@@ -24,7 +24,7 @@
 <ol>
 <li>For at søge inde i filer skal du skrive teksten i <strong>Find tekst</strong> på fanen Generelt — det, der står i feltet, søges efter, og et tomt felt søger kun på navne. Indstillinger lader dig gøre den <strong>forskel på store/små</strong>, kun matche et <strong>helt ord</strong>, behandle teksten som et <strong>regulært udtryk</strong>, lave en <strong>hex-indholdssøgning</strong> eller finde filer, der <strong>ikke indeholder</strong> teksten.</li>
 <li>Skift til fanen <strong>Avanceret</strong> for at indsnævre resultater efter <strong>størrelse</strong> (for eksempel <code>10K</code> til <code>5M</code>), efter <strong>ændringsdato</strong>-interval eller til filer ændret inden for de sidste N dage.</li>
-<li>Slå <strong>Søg inde i arkiver</strong> til for at kigge i arkiver af zip-familien (zip, jar, war og lignende).</li>
+<li>Slå <strong>Søg inde i arkiver</strong> til for at kigge ind i de fundne arkiver — de samme formater, du kan åbne med Enter, inklusive dem et pakker-plugin tilføjer. Arkiver, der ikke kunne åbnes, rapporteres, når søgningen er færdig.</li>
 <li>For at begrænse søgningen til det, du allerede har valgt, slå <strong>Søg kun i valgte emner</strong> til før start.</li>
 <li>Slå <strong>Søg også i filkommentarer</strong> til, og teksten søges i hver fils kommentar ud over dens indhold. Sådan finder du en fil igen ud fra det, du skrev <em>om</em> den — “kundens original”, “erstattet af 2026-eksporten” — når intet af den slags står i selve filen. Et resultat, der findes sådan, viser kommentaren i stedet for en linje fra filen, og intet linjenummer, for fundet ligger ikke i filens tekst. Store/små bogstaver, helt ord og regulære udtryk gælder for en kommentar præcis som for indhold; en hex-søgning gør ikke, for en kommentar er tekst, nogen har skrevet. <strong>Indeholder ikke</strong> forbliver konsistent: en fil vises, når teksten hverken er i indholdet eller i kommentaren. Er Noter-pluginet slået til, findes dets note som et indholdsfelt, som du kan filtrere på under <strong>Plugins</strong> — se <a href="plugins.html">Arbejd med plugins</a>.</li>
 <li>Nogle plugins kan gøre en fil til tekst, som filen selv ikke indeholder — dekompilator-pluginet gør en <code>.class</code> til Java-kildekode. Slå <strong>Søg i tekst fra plugins</strong> til, og de filer søges som den tekst i stedet for som deres egne bytes, så en formulering fra kildekoden findes i en oversat klasse. Indstillingen vises kun, når et sådant plugin er installeret, og den er langsommere: at fremstille teksten kan betyde én dekompilator pr. fil.</li>
@@ -67,7 +67,7 @@
 </table>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
-<li>Indholdssøgning læser hele filer for lokale mapper; på andre placeringer springes meget store filer over (cirka 16 MB, eller 64 MB ved brug af et regulært udtryk).</li>
+<li>Indholdssøgning læser hele filer for lokale mapper og for arkiver; på netværksplaceringer læses meget store filer kun delvist (cirka 16 MB, eller 64 MB ved brug af et regulært udtryk).</li>
 <li>Søgning inde i arkiver går ned til fire niveauer af indlejrede arkiver.</li>
 <li><strong>Inkludér mapper i resultater</strong> viser også mapper, hvis navne matcher, ikke kun filer.</li>
 <li>Spotlight dækker kun indekserede lokale mapper; for netværksplaceringer eller mønsterbaseret matching, lad det være slået fra og lad Find filer scanne.</li>

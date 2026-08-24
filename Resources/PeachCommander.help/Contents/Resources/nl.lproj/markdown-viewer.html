@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markdown en HTML in de viewer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markdown en HTML in de viewer</h1>
+<p>Druk op F3 op een <code>.md</code>- of <code>.html</code>-bestand en het verschijnt opgemaakt in plaats van als broncode: koppen, lijsten, tabellen, koppelingen, takenlijsten en codeblokken gekleurd per taal. Diagrammen die als <code>```mermaid</code>-blok zijn geschreven worden getekend, en wiskunde tussen dollartekens wordt gezet.</p>
+<p>Dit is een plugin. Alles op deze pagina komt van <strong>Markdown and HTML</strong>, dat u kunt uitschakelen in <strong>Configuratie ▸ Plugins…</strong> — verderop staat wat er dan verandert.</p>
+<h2 id="waar-de-opgemaakte-weergave-verschijnt">Waar de opgemaakte weergave verschijnt</h2>
+<ul>
+<li><strong>De viewer (F3).</strong> De opgemaakte pagina. Het menu <strong>Weergave</strong> biedt nog steeds Tekst, Code en Hex, dus de broncode is één klik weg, en de naam van de plugin staat ook in die lijst.</li>
+<li><strong>Quick View (Ctrl+Q) en de infopagina</strong> van het zijpaneel tonen dezelfde weergave, zodat een voorbeeld en een volledige weergave van hetzelfde bestand elkaar nooit tegenspreken.</li>
+<li><strong>De galerij</strong> toont een kleine afbeelding van het begin van een Markdown-bestand in plaats van een algemeen documentpictogram.</li>
+<li><strong>Quick Look (Cmd+Y)</strong> is het eigen voorbeeld van macOS en wordt <em>niet</em> beïnvloed — dat paneel is van het systeem, en geen plugin kan daarin tekenen.</li>
+</ul>
+<h2 id="het-symbooloverzicht">Het symbooloverzicht</h2>
+<p>Druk op <strong>Symbolen</strong> in de viewer voor de koppen van het document, genest zoals ze geschreven zijn, en klik er een aan om er in de pagina naartoe te springen. Het werkt in de opgemaakte weergave en in de broncode, en beide zijn het erover eens waar een kop staat.</p>
+<h2 id="diagrammen-en-wiskunde">Diagrammen en wiskunde</h2>
+<p>Een codeblok met de taal <code>mermaid</code> wordt een diagram; <code>$…$</code> en <code>$$…$$</code> worden gezette wiskunde. Beide worden <strong>op uw Mac</strong> getekend, door onderdelen die in de plugin worden meegeleverd — er wordt niets gedownload, en geen deel van uw document wordt ergens naartoe gestuurd. Een dollarteken in een codeblok of in inline code blijft een dollarteken.</p>
+<p>Een document zonder diagram en zonder formule laadt geen van beide onderdelen, dus een gewone README kost niets extra. Een diagram dat niet gelezen kan worden toont de fout waar het blok stond, met de tekst van het blok eronder, in plaats van te verdwijnen.</p>
+<p>Beide kunnen apart worden uitgeschakeld in <strong>Configuratie ▸ Instellingen ▸ Markdown</strong>, waar ook staat welke versie in gebruik is en waar die vandaan komt.</p>
+<h2 id="uw-eigen-versie">Uw eigen versie</h2>
+<p>Hebt u een nieuwere of andere versie van Mermaid of KaTeX nodig, zet die dan in de map die de knop <strong>Engine Folder…</strong> opent; die wordt dan gebruikt in plaats van de meegeleverde. De bestandsnamen zijn <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> en <code>auto-render.min.js</code>. Er wordt nooit iets van internet voor u gehaald.</p>
+<h2 id="wat-de-opgemaakte-pagina-niet-doet">Wat de opgemaakte pagina niet doet</h2>
+<p>De opgemaakte pagina is opzettelijk afgeschermd, want een Markdown-bestand is inhoud die van elders komt:</p>
+<ul>
+<li><strong>Hij laadt niets via het netwerk.</strong> Een afbeelding waarvan het adres met <code>http</code> begint blijft met opzet leeg: die ophalen zou die server vertellen wanneer u het bestand opende, en van welk adres. Een afbeelding die naast het document op de schijf staat wordt gewoon geladen.</li>
+<li><strong>Scripts en HTML van het document worden nooit uitgevoerd.</strong> HTML die in een Markdown-bestand staat wordt als tekst getoond, en een <code>.html</code>-bestand wordt weergegeven met scripts uitgeschakeld.</li>
+</ul>
+<h2 id="uitschakelen">Uitschakelen</h2>
+<p>Schakel de plugin uit in <strong>Configuratie ▸ Plugins…</strong> en <code>.md</code>- en <code>.html</code>-bestanden openen als tekst. Het overzicht blijft werken, de syntaxiskleuring blijft werken, en verder verandert er niets — de opgemaakte weergave wordt simpelweg niet meer aangeboden. Hetzelfde geldt als u op de instellingenpagina van de plugin alleen de opgemaakte weergave uitschakelt.</p>
+<h2 id="grenzen">Grenzen</h2>
+<ul>
+<li>Bestanden boven een groottelimiet (standaard 8 MB, op de instellingenpagina) openen als tekst. Een zeer groot gegenereerd document in een opgemaakte pagina veranderen is langzaam, en de tekstviewer opent het meteen.</li>
+<li>De opgemaakte pagina kan niet worden bewerkt. Gebruik daarvoor F4, of de weergave Tekst voor <strong>Opmaken</strong>, <strong>Codering</strong> en <strong>Ga naar</strong>, die voor broncode gelden en niet voor een gerenderde pagina.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li></ul></section>
+</main>
+</body>
+</html>

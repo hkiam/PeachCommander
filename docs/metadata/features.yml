@@ -439,6 +439,26 @@ features:
     screenshots: [ftp-connection-manager]
     notes: "Plain FTP, FTPS explicit (AUTH TLS) + implicit (990), active/passive, resume (REST), MLSD/UNIX/DOS listings, keep-alive, self-signed opt-in, SOCKS5 proxy, wincmd import."
 
+  - id: markdown-viewer
+    name: Markdown und HTML (Plugin)
+    name_en: Markdown and HTML (plugin)
+    category: plugins
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [], shortcuts: [F3], commands: [] }
+    source: { modules: [Plugins/Markdown], types: [MarkdownRenderer, HTMLEmitter, MarkdownEngines] }
+    documentation: { integrated_help: true, website: true, developer_docs: false }
+    notes: >-
+      The application's only renderer for .md and .html — both formats left the core, so this ships
+      enabled. A PLX lister plugin on the widened ABI (ListLoadEx, ListGetOutline, ListGotoAnchor,
+      ListGetText), which is what lets it serve the viewer, the preview panel, Quick View and the
+      gallery's thumbnails from one renderer. Parsing is swift-markdown over cmark-gfm, compiled into
+      the plugin and linked by nothing else; Mermaid and KaTeX ship inside the bundle, so diagrams and
+      mathematics are drawn on the machine and nothing is ever fetched. Two web-view configurations,
+      not one with a switch: the generated Markdown page may run the engines, a foreign .html file may
+      run nothing. Raw HTML in a document is escaped, never emitted. Own settings page; switched off,
+      both formats show as text with the outline intact.
+
   - id: amazon-s3
     name: Amazon S3 (Plugin)
     name_en: Amazon S3 (plugin)

@@ -676,8 +676,8 @@ targets:
   # matters more here than there, because the application no longer has a Markdown or HTML renderer
   # at all — if this bundle does not run, nothing checks the only one there is.
   #
-  # markdown_lister.swift is deliberately absent: its C entry points need the plugin's bridging
-  # header, and they hold no logic the view behind them does not.
+  # markdown_lister.swift and MarkdownSettings.swift are deliberately absent: both need the plugin's
+  # bridging header for PcHostServices, and neither holds logic the types behind them do not.
   PCMarkdownTests:
     type: bundle.unit-test
     platform: macOS
@@ -691,6 +691,7 @@ targets:
       - path: Plugins/Markdown/MarkdownAssets.swift
       - path: Plugins/Markdown/MarkdownEngines.swift
       - path: Plugins/Markdown/MarkdownHTML.swift
+      - path: Plugins/Markdown/MarkdownOptions.swift
     settings:
       PRODUCT_NAME: PCMarkdownTests
       CODE_SIGNING_ALLOWED: NO
