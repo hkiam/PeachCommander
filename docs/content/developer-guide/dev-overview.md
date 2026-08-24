@@ -109,7 +109,7 @@ Peach Commander leans heavily on the platform rather than third-party code.
 | UI | **AppKit** (`NSWindow`/`NSView`/`NSTableView`), custom drawing |
 | Networking | **Network.framework** (custom FTP/FTPS client in `PCNet`) |
 | Secrets | **Security** framework — Keychain via `SecretStore` |
-| Help & rich text views | **WebKit** (`WKWebView`, local content only) |
+| Help & rich text views | **Apple Help Book** (`NSHelpManager`) and AppKit text views. No `WKWebView` anywhere in the application: rendering Markdown and HTML moved into the Markdown lister plugin, which owns the only web view and the policy around it. |
 | Syntax highlighting (editor/Lister) | **tree-sitter** via `SwiftTreeSitter` + `Neon` |
 | SFTP transport | **libssh2** (vendored, exposed through the `CSSH2` module) |
 | Directory enumeration | `getattrlistbulk(2)` custom enumerator (ADR-009) |

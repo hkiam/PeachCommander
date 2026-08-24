@@ -42,26 +42,27 @@ public enum DeclarationOutline {
 
     public static func supports(ext: String) -> Bool {
         let e = ext.lowercased()
-        return grammars[e] != nil || markdownExtensions.contains(e)
+        return grammars[e] != nil || MarkdownFileType.extensions.contains(e)
     }
 
-    static let markdownExtensions: Set<String> = ["md", "markdown", "mdown", "mkd", "mdx"]
 
     /// The language name shown for an extension this can outline (for diagnostics and status text).
     public static func displayName(ext: String) -> String? {
         let e = ext.lowercased()
-        if markdownExtensions.contains(e) { return "Markdown" }
+        if MarkdownFileType.extensions.contains(e) { return "Markdown" }
         return grammars[e]?.name
     }
 
     /// Every extension with an outline, for tests and for reporting coverage.
-    public static var supportedExtensions: [String] { (Array(grammars.keys) + markdownExtensions).sorted() }
+    public static var supportedExtensions: [String] {
+        (Array(grammars.keys) + MarkdownFileType.extensions).sorted()
+    }
 
     public static func parse(_ text: String, ext: String) -> [SymbolNode] {
         // Markdown is not a declaration language and gets its own pass: its "declarations" are headings,
         // its nesting is a number rather than a brace, and its fenced code blocks are full of lines that
         // every rule table here would misread.
-        if markdownExtensions.contains(ext.lowercased()) { return parseMarkdown(text) }
+        if MarkdownFileType.matches(ext) { return parseMarkdown(text) }
         guard let grammar = grammars[ext.lowercased()] else { return [] }
         return scan(text, grammar: grammar)
     }

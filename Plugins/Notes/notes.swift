@@ -5,9 +5,15 @@
 // which have a note (a subtle ● column), and contribution commands "Edit Note…" /
 // "Notes Overview…". Notes are markdown, keyed globally / per-directory / per-file,
 // stored under ~/Library/Application Support/PeachCommander/notes/. The editor
-// shows a live markdown preview; external links open normally and internal links
+// renders the note as rich text while it is edited (MarkdownRich in
+// notes_wysiwyg.swift); external links open normally and internal links
 // (peach://<path> or a filesystem path) are resolved in the host via the openPath
-// service. Self-contained (Foundation + AppKit); talks to the host only through
+// service.
+//
+// It said "a live markdown preview" and pointed at a `NotesStore.render` that had no
+// callers — the only place in the repository that used Apple's
+// `NSAttributedString(markdown:)`, and dead the whole time. Both are gone; the editor
+// has always been the WYSIWYG one. Self-contained (Foundation + AppKit); talks to the host only through
 // the PcHostServices C-ABI.
 
 import AppKit
@@ -89,44 +95,6 @@ final class MarkdownSourceTextView: NSTextView {
         imgs.forEach { onDropImage?($0) }
         _ = first
         return true
-    }
-}
-
-extension NotesStore {
-    /// Render markdown to an attributed string, resolving `![](path)` images
-    /// (relative paths are under the notes base dir) as inline attachments.
-    static func render(_ source: String) -> NSAttributedString {
-        let out = NSMutableAttributedString()
-        let opts = AttributedString.MarkdownParsingOptions(interpretedSyntax: .full)
-        func appendText(_ s: String) {
-            if !s.isEmpty, let a = try? NSAttributedString(markdown: Data(s.utf8), options: opts, baseURL: nil) {
-                out.append(a)
-            } else if !s.isEmpty {
-                out.append(NSAttributedString(string: s))
-            }
-        }
-        let ns = source as NSString
-        let re = try! NSRegularExpression(pattern: #"!\[[^\]]*\]\(([^)]+)\)"#)
-        var loc = 0
-        re.enumerateMatches(in: source, range: NSRange(location: 0, length: ns.length)) { m, _, _ in
-            guard let m else { return }
-            if m.range.location > loc {
-                appendText(ns.substring(with: NSRange(location: loc, length: m.range.location - loc)))
-            }
-            let path = ns.substring(with: m.range(at: 1))
-            let url = path.hasPrefix("/") ? URL(fileURLWithPath: path) : shared.baseDir.appendingPathComponent(path)
-            if let img = NSImage(contentsOf: url) {
-                let att = NSTextAttachment(); att.image = img
-                out.append(NSAttributedString(attachment: att))
-                out.append(NSAttributedString(string: "\n"))
-            } else {
-                appendText(ns.substring(with: m.range))
-            }
-            loc = m.range.location + m.range.length
-        }
-        if loc < ns.length { appendText(ns.substring(from: loc)) }
-        out.addAttribute(.foregroundColor, value: NSColor.labelColor, range: NSRange(location: 0, length: out.length))
-        return out
     }
 }
 

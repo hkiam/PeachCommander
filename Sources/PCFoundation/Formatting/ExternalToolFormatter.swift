@@ -118,7 +118,7 @@ public enum DefaultExternalFormatters {
             ExternalToolFormatter(tool: "sql-formatter", arguments: [], extensions: ["sql"]),
             // Markdown: prettier normalises lists, tables and emphasis consistently.
             ExternalToolFormatter(tool: "prettier", arguments: ["--parser", "markdown"],
-                                  extensions: ["md", "markdown", "mdown"]),
+                                  extensions: MarkdownFileType.sorted),
             // The remaining ones only take over from a built-in when installed, because these
             // tools are stricter and usually closer to what the ecosystem expects.
             ExternalToolFormatter(tool: "jq", arguments: ["--indent", "2", "."], extensions: ["json"]),

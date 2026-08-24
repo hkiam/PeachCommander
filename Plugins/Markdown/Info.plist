@@ -11,14 +11,19 @@
 	<key>PCPluginAPIVersion</key><integer>1</integer>
 	<key>PCPluginName</key><string>Markdown and HTML</string>
 	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<!-- The Markdown half of both keys is PCFoundation's MarkdownFileType set, written out here
+	     because a manifest cannot compute. ListGetDetectString builds the string this plugin
+	     actually claims by from the same set at call time, so these two are the copy — if they ever
+	     disagree, this file is the one that is wrong. `mdx` is in it because the outline and the
+	     Format button have always treated it as Markdown. -->
 	<key>PCPluginExtensions</key>
 	<array>
-		<string>md</string><string>markdown</string><string>mdown</string>
-		<string>mkd</string><string>mkdn</string><string>mdwn</string>
+		<string>markdown</string><string>md</string><string>mdown</string>
+		<string>mdwn</string><string>mdx</string><string>mkd</string><string>mkdn</string>
 		<string>html</string><string>htm</string><string>xhtml</string>
 	</array>
 	<key>PCPluginDetectString</key>
-	<string>EXT="MD" | EXT="MARKDOWN" | EXT="MDOWN" | EXT="MKD" | EXT="MKDN" | EXT="MDWN" | EXT="HTM" | EXT="HTML" | EXT="XHTML"</string>
+	<string>EXT="MARKDOWN" | EXT="MD" | EXT="MDOWN" | EXT="MDWN" | EXT="MDX" | EXT="MKD" | EXT="MKDN" | EXT="HTM" | EXT="HTML" | EXT="XHTML"</string>
 	<!-- Contribution facet: this plugin's own page in Settings. Not a page built into the host —
 	     the plugin is removable, and a host page for something that may not be installed is dead
 	     UI, while settings in the host's own file would outlive the plugin that meant something

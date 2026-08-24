@@ -30,10 +30,11 @@ final class MarkdownListerView: NSView {
         case markdown
         case html
 
-        /// The extensions this plugin claims. Kept here rather than in the manifest alone because
-        /// `ListGetDetectString` and the load path have to agree about them, and two lists agree
-        /// only until somebody edits one.
-        static let markdownExtensions: Set<String> = ["md", "markdown", "mdown", "mkd", "mkdn", "mdwn"]
+        /// The extensions this plugin claims. Markdown's set comes from PCFoundation, so the file
+        /// this renders and the file the host will outline and reformat are the same file — three
+        /// sets that disagreed is what MarkdownFileType exists to end. HTML's is here because
+        /// nothing else in the application has an opinion about it any more.
+        static var markdownExtensions: Set<String> { MarkdownFileType.extensions }
         static let htmlExtensions: Set<String> = ["html", "htm", "xhtml"]
 
         static func forExtension(_ ext: String) -> Kind? {
