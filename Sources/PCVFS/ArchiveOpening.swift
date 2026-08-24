@@ -108,14 +108,22 @@ public struct OpenedArchive: Sendable {
     public let isTemporary: Bool
     public let memberAccessCost: MemberAccessCost
     public let backendID: String
+    /// Something the caller must pass on even though the open succeeded.
+    ///
+    /// An encrypted archive is the case this exists for: it opens, its member names are
+    /// in clear and still match, and only the content cannot be read. Reporting it as a
+    /// skip would be wrong and saying nothing would be worse, so it is neither.
+    public let warning: SearchNotice.Reason?
 
     public init(fs: VirtualFileSystem, localURL: URL, isTemporary: Bool,
-                memberAccessCost: MemberAccessCost, backendID: String) {
+                memberAccessCost: MemberAccessCost, backendID: String,
+                warning: SearchNotice.Reason? = nil) {
         self.fs = fs
         self.localURL = localURL
         self.isTemporary = isTemporary
         self.memberAccessCost = memberAccessCost
         self.backendID = backendID
+        self.warning = warning
     }
 }
 
@@ -314,14 +322,16 @@ public final class ArchiveRegistry: ArchiveOpening, @unchecked Sendable {
             return .opened(OpenedArchive(fs: opened.fs, localURL: localURL,
                                          isTemporary: isTemporary,
                                          memberAccessCost: opened.memberAccessCost,
-                                         backendID: opened.backendID),
+                                         backendID: opened.backendID,
+                                         warning: opened.warning),
                            dispose: dispose)
         }
         if let fallback {
             return .opened(OpenedArchive(fs: fallback.fs, localURL: localURL,
                                          isTemporary: isTemporary,
                                          memberAccessCost: fallback.memberAccessCost,
-                                         backendID: fallback.backendID),
+                                         backendID: fallback.backendID,
+                                         warning: fallback.warning),
                            dispose: dispose)
         }
         await dispose()

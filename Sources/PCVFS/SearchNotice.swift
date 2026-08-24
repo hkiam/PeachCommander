@@ -19,24 +19,21 @@ public struct SearchNotice: Sendable, Equatable {
     /// clauses too — assembling them from fragments at run time does not survive
     /// Hungarian or Korean.
     public enum Reason: Sendable, Equatable {
-        /// Nothing — no backend, no plugin — claimed the file.
-        case noHandler
-        /// Something claimed it and then failed to parse it.
+        /// A name we recognised, and then could not parse.
         case unreadable
-        /// Encrypted, and no password was available. Names still matched: a zip
-        /// stores them in clear, so only the *content* went unsearched.
+        /// Encrypted, and no password was available. The names still matched — a zip
+        /// stores them in clear — so only the *content* went unsearched.
         case needsPassword
-        /// Larger than the search is willing to open. Carries both numbers so the
-        /// message can say how far over the limit it was.
+        /// Larger than a search is willing to open. Carries the size and the ceiling,
+        /// so the message can say how far over it was rather than only that it was.
         case tooLarge(Int64, limit: Int64)
         /// Nested deeper than `maxArchiveDepth` (the zip-bomb guard).
         case tooDeep
-        /// A single member too large to scan in full.
-        case memberTooLarge(Int64)
-        /// The open exceeded its time budget and was abandoned.
-        case timedOut
-        /// Classified as binary and skipped by request.
-        case skippedBinary
+
+        // Deliberately no `noHandler`, `timedOut`, `memberTooLarge` or `skippedBinary`.
+        // Each was written down first and emitted by nothing, and a case nobody raises is
+        // a promise the dialog cannot keep — this type exists to stop the search claiming
+        // more than it did.
     }
 
     /// The archive or member, as the user would recognise it (display path).

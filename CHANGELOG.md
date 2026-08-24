@@ -72,6 +72,16 @@ does not have.
   temp directory that nothing ever removed; the extraction now belongs to the descent that made it,
   and an archive mount — built-in or plugin-backed — cleans up everything it extracted when it goes
   away. Anything earlier builds already left behind is cleared out at the next launch.
+- **Opening an archive with many files in one folder is no longer quadratic.** A tar holding 20,000
+  files in a single directory took 30 seconds to open — an unpacked source tree or a `node_modules`
+  tarball is exactly that shape. Under three seconds now. This one is older than the archive-search
+  work and surfaced only once its performance budgets were written.
+- **A search says which archives it could not read, not just how many.** The new **Details…** button
+  in Find Files lists each one with the reason: it could not be opened, it is password protected
+  (the names inside were searched, the contents were not), it is larger than a search opens, or it
+  is nested deeper than a search descends. The button stays hidden when a run had nothing to report.
+- **A password-protected archive is reported instead of quietly passed over.** Its member names were
+  always searched and its contents never were, and nothing said so.
 - **A condition on the Plugins tab no longer discards every result found inside an archive.** The
   condition was checked against the result's displayed path, which for an archive hit is not a file,
   so those rows were dropped without a word as soon as any condition was set.

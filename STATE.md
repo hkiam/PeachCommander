@@ -1222,6 +1222,30 @@ and editing has always worked. The condition is "the file I would edit is not th
 names", so SFTP keeps its write-back (F-214), the branch view keeps editing originals, and only
 the archive case is refused.
 
+**The last two, and what the second one found.** The Details… button lists which archives were
+not searched and why — the count in the status line says a run was incomplete, but only a path
+says which file to go and look at yourself. The reasons are whole sentences per case, because a
+clause assembled at run time survives neither Hungarian nor Korean, and four cases that had been
+written down and emitted by nothing were deleted: `noHandler`, `timedOut`, `memberTooLarge`,
+`skippedBinary`. A case nobody raises is a promise the dialog cannot keep, in a type that exists
+to stop the search claiming more than it did.
+
+Encrypted archives were still being skipped in silence, which the plan had listed under Stage 3
+and the first pass had not done. They are not a skip: the member names are stored in clear and
+still match, only the content cannot be read — so `OpenedArchive` grew a `warning` for the case
+where an open succeeds and there is still something to say. Reported only for a background walk;
+Enter prompts and then knows the answer.
+
+`ArchiveSearchPerfTests` then earned its place on the first run. **Opening a 20,000-member tar
+took 30 seconds.** `ArchiveFS`'s tree build hid two O(n) steps in `addChild`: a linear
+`contains` over every name already added, and — because the array was read into a local before
+appending — a copy-on-write duplication of the whole array, written back, per member. Together,
+quadratic in the number of files in one directory. An unpacked source tree or a `node_modules`
+tarball is exactly that shape. It was tolerable only while nothing but Enter could reach it; a
+search walks a folder of them. Under three seconds now, and the budget is a floor against it
+coming back rather than a tuning target. That defect is older than this work and was found only
+because the perf tests were finally written.
+
 **Verified in the running app**, not only in tests: `status=Fertig: 2 gefunden — ein Archiv wurde
 nicht durchsucht`, with `backup.tar.gz/etc/app.conf|line=2` among the hits and both rows surviving
 Feed to Listbox. **3080 tests, 0 failures.**

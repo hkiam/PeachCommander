@@ -94,6 +94,7 @@ public final class FindFilesWindowController: NSWindowController {
     private let startStopButton = NSButton()
     private let viewButton = NSButton()
     private let feedButton = NSButton()
+    private let detailsButton = NSButton()
     private let closeButton = NSButton()
 
     private static let resultColumnIdentifier = NSUserInterfaceItemIdentifier("path")
@@ -285,10 +286,31 @@ public final class FindFilesWindowController: NSWindowController {
     public func clearResults() {
         results.removeAll()
         tableView.reloadData()
+        setNotices([])
     }
 
     /// How many archives the last run could not look inside (F-463), for diagnostics.
     public var skippedCount = 0
+
+    /// Which archives, and why — shown by the Details… button.
+    ///
+    /// A count in the status line says a search was incomplete; it does not say *which*
+    /// file to go and look at yourself, which is the only thing a person can act on.
+    private var notices: [(path: String, message: String)] = []
+
+    /// Hand the dialog what the last run declined to look inside.
+    public func setNotices(_ entries: [(path: String, message: String)]) {
+        notices = entries
+        skippedCount = entries.count
+        detailsButton.isHidden = entries.isEmpty
+    }
+
+    @objc private func handleDetails() {
+        ErrorLogWindowController.present(
+            over: window,
+            summary: String(localized: "These archives were not searched, or not searched in full:"),
+            entries: notices)
+    }
 
     /// Update the status line (e.g. "42 found — searching…" / "Done: 42 found").
     public func setStatus(_ text: String) {
@@ -538,6 +560,15 @@ public final class FindFilesWindowController: NSWindowController {
         feedButton.action = #selector(handleFeed)
         feedButton.target = self
 
+        // Hidden unless the last run had something to report. A button that is always
+        // there but usually does nothing is a button people stop reading, and the whole
+        // point of the count beside it is that it means something when it appears.
+        detailsButton.title = String(localized: "Details…")
+        detailsButton.bezelStyle = .rounded
+        detailsButton.action = #selector(handleDetails)
+        detailsButton.target = self
+        detailsButton.isHidden = true
+
         closeButton.title = String(localized: "Close")
         closeButton.bezelStyle = .rounded
         closeButton.keyEquivalent = "\u{1B}"
@@ -547,6 +578,7 @@ public final class FindFilesWindowController: NSWindowController {
         buttons.addView(startStopButton, in: .trailing)
         buttons.addView(viewButton, in: .trailing)
         buttons.addView(feedButton, in: .trailing)
+        buttons.addView(detailsButton, in: .trailing)
         buttons.addView(closeButton, in: .trailing)
         content.addSubview(buttons)
 

@@ -3632,7 +3632,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     // Silence stays the normal case: a line that appears on every search
                     // is a line people stop reading.
                     let notices = await engine.takeNotices()
-                    win.skippedCount = notices.count
+                    win.setNotices(notices.map { ($0.path, Self.sentence(for: $0.reason)) })
                     for notice in notices {
                         self.logger.info("search skipped \(notice.path, privacy: .public): \(String(describing: notice.reason), privacy: .public)")
                     }
@@ -3695,6 +3695,27 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 } else { NSSound.beep() }
             }
             win.showWindow()
+        }
+    }
+
+    /// What to tell somebody about one archive the search did not read (F-463).
+    ///
+    /// Whole sentences, one per reason, rather than clauses glued together at run time:
+    /// a phrase assembled from parts survives neither Hungarian nor Korean, and these are
+    /// read by people trying to work out whether the thing they were looking for might be
+    /// in the file the search walked past.
+    private static func sentence(for reason: SearchNotice.Reason) -> String {
+        switch reason {
+        case .unreadable:
+            return String(localized: "It could not be opened as an archive.")
+        case .needsPassword:
+            return String(localized: "It is password protected: the names inside it were searched, but not their contents.")
+        case .tooLarge(let size, let limit):
+            let sizeText = ByteSize(size).formatted(style: .mb)
+            let limitText = ByteSize(limit).formatted(style: .mb)
+            return String(localized: "It is \(sizeText), and a search opens archives up to \(limitText).")
+        case .tooDeep:
+            return String(localized: "It is nested inside more archives than a search descends into.")
         }
     }
 

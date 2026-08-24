@@ -704,6 +704,8 @@ targets:
       - target: PCFoundation
       - target: PCVFS
       - target: PCCommands
+      # F-463: the budgets for opening an archive during a search need the readers.
+      - target: PCArchive
     frameworks:
       - XCTest
 

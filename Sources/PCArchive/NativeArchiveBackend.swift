@@ -50,6 +50,20 @@ public struct NativeArchiveBackend: ArchiveBackend {
                        splitFirstPartStems: ["zip"])
     }
 
+    /// Something worth saying about an archive that opened anyway.
+    ///
+    /// An encrypted archive is searched by name and not by content: the member names are
+    /// stored in clear and still match, and every attempt to read the bytes throws and is
+    /// swallowed. That used to be the whole of it — the term could be sitting in a file
+    /// the search had walked straight past, and nothing said so.
+    ///
+    /// Only for a background walk. Enter prompts for a password and then knows the answer;
+    /// a walk must never prompt, so all it can do is report.
+    private static func warning(for fs: ArchiveFS, intent: ArchiveOpenIntent) -> SearchNotice.Reason? {
+        guard intent == .background, fs.hasEncryptedEntries, !fs.passwordIsValid() else { return nil }
+        return .needsPassword
+    }
+
     public func nameSet() async -> ArchiveNameSet { Self.nameSet }
 
     /// All of it: the built-in readers are compiled in, so nothing has to load first.
@@ -69,7 +83,8 @@ public struct NativeArchiveBackend: ArchiveBackend {
         if let cached = ArchiveDirectoryCache.shared.archive(for: localFile) {
             return .opened(OpenedArchive(fs: cached, localURL: localFile, isTemporary: false,
                                          memberAccessCost: cached.memberAccessCost,
-                                         backendID: backendID),
+                                         backendID: backendID,
+                                         warning: Self.warning(for: cached, intent: intent)),
                            dispose: {})
         }
         let ceiling = intent == .background ? Self.backgroundMaxExpandedBytes : 0
@@ -82,7 +97,8 @@ public struct NativeArchiveBackend: ArchiveBackend {
             if intent == .interactive { ArchiveDirectoryCache.shared.store(fs, for: localFile) }
             return .opened(OpenedArchive(fs: fs, localURL: localFile, isTemporary: false,
                                          memberAccessCost: fs.memberAccessCost,
-                                         backendID: backendID),
+                                         backendID: backendID,
+                                         warning: Self.warning(for: fs, intent: intent)),
                            dispose: {})
         }
         // Distinguish declining from not recognising: if this is a gzip stream whose own

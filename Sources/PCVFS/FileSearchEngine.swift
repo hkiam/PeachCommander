@@ -715,6 +715,11 @@ public actor FileSearchEngine {
             // summary of every cancelled search with archives that were perfectly fine.
             if !Task.isCancelled { notices.append(SearchNotice(path: display, reason: reason)) }
         case .opened(let opened, let dispose):
+            // It opened, and there may still be something to say about it — an encrypted
+            // archive matches by name and never by content.
+            if let warning = opened.warning, !Task.isCancelled {
+                notices.append(SearchNotice(path: display, reason: warning))
+            }
             // Walk the archive's whole tree ignoring maxDepth/scope (those apply to the
             // outer walk); hits display as "<archive path>/<inner path>". Nested archives
             // recurse (archiveDepth + 1) up to maxArchiveDepth.

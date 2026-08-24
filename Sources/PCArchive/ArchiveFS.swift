@@ -28,16 +28,15 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
     /// on entering such an archive and assigns `password`.
     public var hasEncryptedEntries: Bool { source.members.contains { $0.isEncrypted } }
 
-    /// Forwarded from the backend that actually opened this archive, so a caller
-    /// choosing a read strategy asks the mount rather than guessing from the name (F-463).
     /// Bytes this mount keeps alive, forwarded from its backend — what the archive cache
     /// budgets against, so a mapped zip costs nothing and an inflated tar costs its size.
     public var retainedBytes: Int64 { source.retainedBytes }
 
+    /// Forwarded from the backend that actually opened this archive, so a caller
+    /// choosing a read strategy asks the mount rather than guessing from the name (F-463).
     public var memberAccessCost: MemberAccessCost {
         source.readsMembersByProcess ? .processPerMember : .cheapRandomAccess
     }
-
 
     /// Whether the current `password` actually decrypts the archive: tries the
     /// first encrypted file entry (true when nothing is encrypted). Lets the host
@@ -103,13 +102,20 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
             "": Node(name: "", isDirectory: true, size: -1, modified: fallbackModified, memberIndex: nil)
         ]
         var childOrder: [String: [String]] = [:]
+        /// Full paths already linked to a parent. A tar may legitimately carry the same
+        /// member twice, and the listing must not show it twice.
+        var linked = Set<String>()
 
+        /// Two O(n) steps used to hide in here, and together they made opening an archive
+        /// quadratic in the number of files in one directory. `siblings.contains(fullPath)`
+        /// scanned every name already added; and reading the array out into a local before
+        /// appending gave it a second reference, so `append` copied the whole thing and the
+        /// copy was written back. A tar of 20,000 files in one directory — an unpacked
+        /// source tree, a node_modules — took **30 seconds** to open, which was tolerable
+        /// only while nothing but Enter could reach it. A search walks a folder of them.
         func addChild(parent: String, fullPath: String) {
-            var siblings = childOrder[parent] ?? []
-            if !siblings.contains(fullPath) {
-                siblings.append(fullPath)
-                childOrder[parent] = siblings
-            }
+            guard linked.insert(fullPath).inserted else { return }
+            childOrder[parent, default: []].append(fullPath)
         }
 
         /// Ensures directory nodes exist for `components[0...upToIndex]`,
