@@ -56,6 +56,21 @@ packages:
   SwiftTerm:
     url: https://github.com/migueldeicaza/SwiftTerm
     revision: 1ca24414f7c48831d93c01cff01b1b1a47fb9112
+  # The Markdown parser, and the C library behind it. Declared here and depended on by no target —
+  # the same arrangement SwiftTerm has, and for the same reason: Tools/build-markdown-plugin.sh
+  # compiles the sources straight into the plugin bundle, so nothing links them into the app, while
+  # Tools/generate-third-party-notices.py still reads their licences from Package.resolved.
+  #
+  # swift-cmark is declared as its own entry although swift-markdown already asks for it: without
+  # that, it appears in Package.resolved as a transitive pin with no row of its own, and an
+  # undescribed pin is exactly what the notices gate is there to notice. `branch: gfm` is what
+  # swift-markdown's own manifest requires — a version requirement here would conflict with it.
+  SwiftMarkdown:
+    url: https://github.com/apple/swift-markdown.git
+    exactVersion: "0.8.0"
+  SwiftCMark:
+    url: https://github.com/swiftlang/swift-cmark.git
+    branch: gfm
 
 targets:
   PCFoundation:
@@ -675,12 +690,19 @@ targets:
       - path: Plugins/Markdown/MarkdownThumbnail.swift
       - path: Plugins/Markdown/MarkdownAssets.swift
       - path: Plugins/Markdown/MarkdownEngines.swift
+      - path: Plugins/Markdown/MarkdownHTML.swift
     settings:
       PRODUCT_NAME: PCMarkdownTests
       CODE_SIGNING_ALLOWED: NO
     dependencies:
       - target: PCFoundation
       - target: PCVFS
+      # As a *product* here, where a module can exist. The plugin build compiles the same sources
+      # into its own module instead (see MarkdownDocument.swift's conditional import), because
+      # pc_swiftc builds one slice per architecture and a per-slice module path cannot be threaded
+      # through it.
+      - package: SwiftMarkdown
+        product: Markdown
     frameworks:
       - XCTest
       - WebKit

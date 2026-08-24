@@ -6,6 +6,9 @@
 # build that silently skips this script produces an app in which pressing F3 on a README shows its
 # source. Hence the hard failures below rather than warnings.
 #
+# The parser is swift-markdown over cmark-gfm, compiled in below. That is the freedom this plugin was
+# created for: the application links neither, and never will.
+#
 # It links two of the host's frameworks and carries no copy of what they provide:
 #
 #   * PCFoundation — SyntaxHighlighter (so a fence is coloured the way the editor colours the same
@@ -59,6 +62,68 @@ if [ -f "$FW_BIN" ]; then
   fi
 fi
 
+# ---- The parser -----------------------------------------------------------------------------
+#
+# swift-markdown over cmark-gfm, compiled into the plugin. Referenced, not vendored: both are pinned
+# in project.yml and resolved into build/spm, exactly as build-terminal-plugin.sh does with SwiftTerm
+# and for the reason it gives — 30 000 lines of somebody else's code stay out of this repository,
+# while Tools/generate-third-party-notices.py still reads their licences from Package.resolved.
+#
+# No CMake is needed, which was the assumption this step had to check first: swift-cmark ships a
+# prebuilt `cmark-gfm_config.h` for exactly the case where CMake did not run (`CMARK_USE_CMAKE_HEADERS`
+# undefined), so the C sources compile with nothing but include paths.
+SPM_DIR="$ROOT/build/spm"
+CMARK="$SPM_DIR/checkouts/swift-cmark"
+MARKDOWN="$SPM_DIR/checkouts/swift-markdown"
+if [ ! -d "$CMARK/src" ] || [ ! -d "$MARKDOWN/Sources/Markdown" ]; then
+  echo "==> Resolving swift-markdown + swift-cmark (pinned in project.yml) into build/spm…"
+  if [ ! -f "$ROOT/PeachCommander.xcodeproj/project.pbxproj" ]; then
+    echo "==> No generated project yet; running xcodegen for the pins"
+    (cd "$ROOT" && xcodegen generate >/dev/null)
+  fi
+  xcodebuild -project "$ROOT/PeachCommander.xcodeproj" -resolvePackageDependencies \
+    -clonedSourcePackagesDirPath "$SPM_DIR" >/dev/null
+fi
+for d in "$CMARK/src" "$CMARK/extensions" "$MARKDOWN/Sources/Markdown" "$MARKDOWN/Sources/CAtomic"; do
+  [ -d "$d" ] || { echo "error: missing after resolve: $d" >&2; exit 1; }
+done
+
+# The C half: cmark-gfm, its extensions, and swift-markdown's one-file atomics shim. clang takes
+# several -arch flags and emits a fat object, so this is one call however many slices are wanted.
+COBJ_DIR="$(mktemp -d)"
+trap 'rm -rf "$COBJ_DIR"' EXIT
+CMARK_INCLUDES=(-I "$CMARK/src/include" -I "$CMARK/extensions/include"
+                -I "$MARKDOWN/Sources/CAtomic/include")
+(cd "$COBJ_DIR" && pc_clang -c -O2 -std=gnu11 -mmacosx-version-min="$PC_PLUGIN_DEPLOY" \
+   "${CMARK_INCLUDES[@]}" \
+   "$CMARK"/src/*.c "$CMARK"/extensions/*.c "$MARKDOWN/Sources/CAtomic/CAtomic.c")
+CMARK_OBJS=()
+while IFS= read -r -d '' o; do CMARK_OBJS+=("$o"); done < <(find "$COBJ_DIR" -name '*.o' -print0)
+[ "${#CMARK_OBJS[@]}" -gt 0 ] || { echo "error: cmark produced no objects" >&2; exit 1; }
+
+# The Swift half. swift-markdown's directories have SPACES in them ("Block Nodes"), so the file list
+# goes through an array and -print0 — word splitting and swiftc response files both break on it, and
+# the failure reads as "error opening input file 'Blocks/BlockQuote.swift'", naming a path that does
+# not exist and no file that does.
+MARKDOWN_SOURCES=()
+while IFS= read -r -d '' f; do MARKDOWN_SOURCES+=("$f"); done \
+  < <(find "$MARKDOWN/Sources/Markdown" -name '*.swift' -print0 | sort -z)
+[ "${#MARKDOWN_SOURCES[@]}" -gt 0 ] || { echo "error: no swift-markdown sources found" >&2; exit 1; }
+
+# Compiled into the plugin's own module rather than a separate `Markdown` one. A two-step build would
+# keep the names namespaced, but `pc_swiftc` compiles one slice per architecture and a per-slice
+# module path cannot be threaded through it — and there is no collision to solve: swift-markdown's
+# Document, Table, Text and Image meet nothing of ours. Should one ever appear, the fix is a
+# per-architecture loop here, not a rename over there.
+MODULE_FLAGS=(
+  -Xcc -I"$CMARK/src/include"
+  -Xcc -I"$CMARK/extensions/include"
+  -Xcc -I"$MARKDOWN/Sources/CAtomic/include"
+  -Xcc -fmodule-map-file="$CMARK/src/include/module.modulemap"
+  -Xcc -fmodule-map-file="$CMARK/extensions/include/module.modulemap"
+  -Xcc -fmodule-map-file="$MARKDOWN/Sources/CAtomic/include/module.modulemap"
+)
+
 rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/Markdown/Info.plist" "$BUNDLE/Contents/Info.plist"
@@ -72,7 +137,11 @@ pc_swiftc -emit-library -O \
   -Xlinker -rpath -Xlinker "@executable_path/../Frameworks" \
   -import-objc-header "$ROOT/Plugins/Markdown/MarkdownBridging.h" \
   -Xcc -I"$ROOT/Plugins/SDK" \
+  "${MODULE_FLAGS[@]}" \
   -o "$BUNDLE/Contents/MacOS/Markdown" \
+  "${MARKDOWN_SOURCES[@]}" \
+  "${CMARK_OBJS[@]}" \
+  "$ROOT/Plugins/Markdown/MarkdownHTML.swift" \
   "$ROOT/Plugins/Markdown/markdown_lister.swift" \
   "$ROOT/Plugins/Markdown/MarkdownListerView.swift" \
   "$ROOT/Plugins/Markdown/MarkdownWebView.swift" \

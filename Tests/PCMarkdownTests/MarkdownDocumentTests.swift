@@ -166,16 +166,27 @@ final class MarkdownDocumentTests: XCTestCase {
         XCTAssertTrue(html.hasPrefix("<pre><code class=\"language-python\">"), html)
     }
 
+    /// Changed with the parser swap, and this is the reason: `fenceInfo` used to be handed the whole
+    /// opening line and had to find the marker in it. cmark hands over the *info string* — everything
+    /// after the backticks — so the marker argument is gone and the job is what remains: reduce the
+    /// info string to the word that names a language. The cases are the same cases.
     func testFenceInfoIsTheFirstWordOnly() {
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("```swift", marker: "```"), "swift")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("``` Swift", marker: "```"), "swift")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("````py", marker: "```"), "py")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("~~~sh", marker: "~~~"), "sh")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("swift"), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo(" Swift"), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("py"), "py")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("sh"), "sh")
         // The forms other tools attach to a fence, none of which is part of the language name.
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("```swift title=\"A.swift\"", marker: "```"), "swift")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("```py,linenos", marker: "```"), "py")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("```{.python}", marker: "```"), "python")
-        XCTAssertEqual(MarkdownRenderer.fenceInfo("```", marker: "```"), "")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("swift title=\"A.swift\""), "swift")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("py,linenos"), "py")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo("{.python}"), "python")
+        XCTAssertEqual(MarkdownRenderer.fenceInfo(""), "")
+    }
+
+    /// And the whole way through, which is what actually matters: a fence in a document still becomes
+    /// a `<code>` carrying its language.
+    func testAFenceInADocumentStillCarriesItsLanguage() {
+        XCTAssertTrue(body("```swift title=\"A.swift\"\nlet x = 1\n```")
+            .hasPrefix("<pre><code class=\"language-swift\">"))
     }
 
     func testTheNamesAuthorsWriteResolveToALexer() {
@@ -241,6 +252,105 @@ final class MarkdownDocumentTests: XCTestCase {
         XCTAssertTrue(doc.contains("<style>"))          // embedded CSS, no network
         XCTAssertTrue(doc.contains("<h1 id=\"hi\">Hi</h1>"))
         XCTAssertFalse(doc.lowercased().contains("http://") || doc.lowercased().contains("https://"))
+    }
+
+    // MARK: - What the real parser buys
+    //
+    // Each of these is something the hand-written parser could not do, and the reason for taking a
+    // dependency the application itself does not have.
+
+    func testNestedListsNest() {
+        // The old parser flattened them: every item became a sibling, whatever its indentation.
+        let html = body("- eins\n  - tiefer\n- zwei")
+        XCTAssertEqual(html, """
+        <ul>
+        <li>eins
+        <ul>
+        <li>tiefer</li>
+        </ul></li>
+        <li>zwei</li>
+        </ul>
+        """)
+    }
+
+    func testTaskListsGetTheirBoxes() {
+        let html = body("- [x] erledigt\n- [ ] offen")
+        XCTAssertTrue(html.contains("<input type=\"checkbox\" checked disabled> erledigt"), html)
+        XCTAssertTrue(html.contains("<input type=\"checkbox\" disabled> offen"), html)
+    }
+
+    func testBlankLinesBetweenItemsMakeTheWholeListLoose() {
+        // CommonMark's rule, and the one a reader notices as spacing: the blank line belongs to the
+        // *list*, so both items keep their paragraphs even though neither contains two.
+        let html = body("- eins\n\n- zwei")
+        XCTAssertTrue(html.contains("<li><p>eins</p></li>"), html)
+        XCTAssertTrue(html.contains("<li><p>zwei</p></li>"), html)
+    }
+
+    func testTextAfterAListDoesNotMakeItLoose() {
+        // Found in a picture, not in a test: every fixture here ended with its list, and cmark counts
+        // the blank line that separates a list from the next paragraph inside the *last* item's
+        // range. So a task list followed by anything came out loose, with each box on its own line
+        // above its text.
+        let html = body("- eins\n- [x] zwei\n\nEin Absatz danach.")
+        XCTAssertTrue(html.contains("<li>eins</li>"), html)
+        XCTAssertTrue(html.contains("checked disabled> zwei</li>"), html)
+        XCTAssertFalse(html.contains("<li><p>"), html)
+    }
+
+    func testALooseItemKeepsItsParagraphsAndATightOneDoesNot() {
+        // The distinction a reader sees as spacing. A single paragraph is tight and takes no <p>;
+        // two paragraphs in one item keep theirs, or the item would run together.
+        XCTAssertEqual(body("- eins"), "<ul>\n<li>eins</li>\n</ul>")
+        let loose = body("- eins\n\n  noch etwas")
+        XCTAssertTrue(loose.contains("<li><p>eins</p>"), loose)
+        XCTAssertTrue(loose.contains("<p>noch etwas</p></li>"), loose)
+    }
+
+    func testReferenceLinksResolve() {
+        // Defined at the bottom, used at the top — which the old parser rendered as literal brackets.
+        let html = body("Siehe [die Seite][ref].\n\n[ref]: https://example.test/x")
+        XCTAssertEqual(html, "<p>Siehe <a href=\"https://example.test/x\">die Seite</a>.</p>")
+    }
+
+    func testTableAlignmentSurvives() {
+        let html = body("| A | B | C |\n|:--|:-:|--:|\n| 1 | 2 | 3 |")
+        XCTAssertTrue(html.contains("<th style=\"text-align:left\">A</th>"), html)
+        XCTAssertTrue(html.contains("<th style=\"text-align:center\">B</th>"), html)
+        XCTAssertTrue(html.contains("<th style=\"text-align:right\">C</th>"), html)
+    }
+
+    func testStrikethroughAndSetextHeadings() {
+        XCTAssertEqual(body("~~weg~~"), "<p><del>weg</del></p>")
+        XCTAssertEqual(body("Titel\n====="), "<h1 id=\"titel\">Titel</h1>")
+    }
+
+    func testABareURLIsStillALink() {
+        // cmark's autolink extension is not among the three swift-markdown enables, so this is done
+        // here — losing it would have been a regression rather than a difference.
+        XCTAssertEqual(body("siehe http://example.test/x jetzt"),
+                       "<p>siehe <a href=\"http://example.test/x\">http://example.test/x</a> jetzt</p>")
+        // …but not inside code, where a URL is text about a URL.
+        XCTAssertEqual(body("`http://example.test/x`"),
+                       "<p><code>http://example.test/x</code></p>")
+    }
+
+    // MARK: - Raw HTML is escaped, never emitted
+    //
+    // The rule whose loss would be a security defect and not a cosmetic one: this page runs the
+    // diagram and formula engines, so a document's own <script> would run with them.
+
+    func testARawHTMLBlockIsShownAsText() {
+        let html = body("<script>alert(1)</script>")
+        XCTAssertEqual(html, "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>")
+        XCTAssertFalse(html.contains("<script>"))
+    }
+
+    func testRawInlineHTMLIsShownAsText() {
+        let html = body("Text mit <b>fett</b> und <img src=\"http://example.test/p.png\"> darin.")
+        XCTAssertFalse(html.contains("<b>"), html)
+        XCTAssertFalse(html.contains("<img src="), html)
+        XCTAssertTrue(html.contains("&lt;b&gt;fett&lt;/b&gt;"), html)
     }
 
     // MARK: - The rendered document must not be able to phone home

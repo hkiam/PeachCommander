@@ -1,28 +1,40 @@
 // SPDX-License-Identifier: Apache-2.0
-// MarkdownDocument.swift - Markdown -> HTML for the Markdown lister plugin.
+// MarkdownDocument.swift — Markdown -> HTML for the Markdown lister plugin.
 //
-// Was Sources/PCFoundation/MarkdownRenderer.swift until the whole subject left the
-// core: rendering a document format is not something the application has to know
-// how to do, and inside a plugin this can use JavaScript, link a parser the app
-// does not have, and ship engines with it. The file moved rather than being
-// rewritten, and its tests moved with it — they assert the *output* HTML, which is
-// what makes them a safety net for the parser swap that follows.
+// Was Sources/PCFoundation/MarkdownRenderer.swift, a hand-written parser, until the whole subject
+// left the core. Inside a plugin it can link what the application will not, so the parsing is
+// `swift-markdown` (Apache-2.0 with Runtime Library Exception) over cmark-gfm, compiled straight into
+// the bundle by Tools/build-markdown-plugin.sh. What that buys, none of which the hand-written parser
+// could do: nested lists, task lists, loose and tight list items, reference links, and GFM tables
+// with alignment — parsed by the implementation the format's own specification is tested against
+// rather than by a set of regular expressions.
 //
-// It covers the common constructs found in real-world Markdown: ATX headings,
-// fenced code (coloured when the fence names a language), blockquotes,
-// ordered/unordered lists, thematic breaks, GFM pipe tables, paragraphs, and the
-// usual inline spans (code, images, links, bold, italic, strikethrough, hard line
-// breaks). Indented code blocks are NOT among them — the header used to claim they
-// were.
+// What did NOT change is everything around the parse, and that is deliberate: the same GitHub-like
+// stylesheet, the same Content-Security-Policy, the same element ids keyed by source line so the
+// viewer's outline can scroll the page, the same fence-language colouring through
+// SyntaxHighlighter, and the same escaping. The tests moved here with the file and assert the
+// *output HTML*, so they carried across the swap unchanged except where the parser legitimately does
+// better — which is the point of having pinned the output rather than the parse.
 //
-// Output is a self-contained HTML document with embedded, theme-aware CSS so it
-// renders cleanly in a WKWebView without any network access.
+// One rule is load-bearing and easy to lose: **raw HTML in the document is escaped, never emitted.**
+// cmark hands it over as `HTMLBlock` and `InlineHTML`, and a real Markdown renderer would pass it
+// through. This one must not: the page it produces runs JavaScript (the diagram and formula engines
+// need to), so passing a document's own `<script>` through would hand a file the ability to run code
+// in the viewer. See `visitHTMLBlock` and `visitInlineHTML`.
 
 import Foundation
-// SyntaxHighlighter and its token kinds: the plugin links the host's framework rather than
-// carrying a second lexer, which is also what keeps a fence coloured the same way the editor
-// colours the same language.
+// SyntaxHighlighter and its token kinds: the plugin links the host's framework rather than carrying a
+// second lexer, which is also what keeps a fence coloured the same way the editor colours the same
+// language.
 import PCFoundation
+// The parser. In the plugin build there is no `Markdown` module: swift-markdown's sources are
+// compiled into the plugin's own module, so its types are already in scope. The test bundle takes it
+// as a SwiftPM product instead, where the module does exist. Conditional for exactly that reason —
+// the same arrangement Plugins/SDK/PluginTheme.swift uses for CContrib, and what lets one file
+// compile unchanged in both places.
+#if canImport(Markdown)
+import Markdown
+#endif
 
 public enum MarkdownRenderer {
     /// What the rendered document is allowed to load.
@@ -36,8 +48,12 @@ public enum MarkdownRenderer {
     /// beside it, which resolves against the base URL the viewer passes. Measured too, both halves: with
     /// this policy the sibling image still loads (naturalWidth 1) and the remote one does not (0).
     /// `style-src 'unsafe-inline'` is for the stylesheet below, which is part of this document.
+    ///
+    /// No `script-src`, although the page runs two engines: they are injected as `WKUserScript`
+    /// through WebKit's own channel rather than authored by the page, and the page's policy governs
+    /// the page. `blob:` is in `img-src` because Mermaid draws through one.
     public static let contentSecurityPolicy =
-        "default-src 'none'; img-src file: data:; style-src 'unsafe-inline'; font-src file: data:"
+        "default-src 'none'; img-src file: data: blob:; style-src 'unsafe-inline'; font-src file: data:"
 
     /// A rendered document plus the anchors its headings were given.
     ///
@@ -83,130 +99,94 @@ public enum MarkdownRenderer {
 
     /// The inner HTML plus its heading anchors.
     public static func render(_ markdown: String) -> Rendered {
-        // Normalize line endings and expand tabs used for indentation.
+        var emitter = HTMLEmitter()
+        // Line endings normalised before the parse rather than after: cmark counts source lines, and
+        // the anchors are keyed by them, so a CRLF document would otherwise get anchors the outline
+        // cannot match. (A CRLF is one Swift `Character`, which is how six other defects in this
+        // repository started.)
         let normalized = markdown.replacingOccurrences(of: "\r\n", with: "\n")
                                  .replacingOccurrences(of: "\r", with: "\n")
-        let lines = normalized.components(separatedBy: "\n")
-        var out: [String] = []
-        var i = 0
-        var anchors: [Int: String] = [:]
-        var usedAnchors = Set<String>()
+        emitter.visit(Document(parsing: normalized))
+        return Rendered(html: emitter.out, anchors: emitter.anchors)
+    }
 
-        func flushParagraph(_ buf: inout [String]) {
-            guard !buf.isEmpty else { return }
-            let joined = buf.joined(separator: "\n")
-            out.append("<p>\(inline(joined))</p>")
-            buf.removeAll()
+    /// A fence rendered as `<pre><code>`, carrying the GFM `language-…` class and, where there is
+    /// a lexer for it, `<span class="tok-…">` around comments, strings, numbers and keywords.
+    ///
+    /// Classes and an embedded stylesheet, never a `style=` attribute and never a script: the
+    /// document's `default-src 'none'` policy is the point and is not relaxed for colour.
+    static func codeBlock(_ code: String, info: String) -> String {
+        let attr = isLanguageToken(info) ? " class=\"language-\(info)\"" : ""
+        guard let language = fenceLanguage(info) else {
+            return "<pre><code\(attr)>\(escape(code))</code></pre>"
         }
+        return "<pre><code\(attr)>\(highlighted(code, language: language))</code></pre>"
+    }
 
-        var para: [String] = []
-        while i < lines.count {
-            let line = lines[i]
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
+    /// The language word of a fence's info string, lowercased — `swift` from ```` ```swift ````, and
+    /// from ```` ```swift title="A.swift" ```` too. Empty when the fence names nothing.
+    ///
+    /// The parser hands over the whole info string; this reduces it to the word that names a
+    /// language. The hand-written renderer skipped the opening line entirely, so every code block in
+    /// every rendered `.md` arrived as an unmarked `<pre><code>` (F-461).
+    static func fenceInfo(_ infoString: String) -> String {
+        // `{.python}` (Pandoc) and `swift,linenos` name a language as much as a bare word does.
+        infoString.trimmingCharacters(in: .whitespaces)
+                  .drop(while: { $0 == "{" || $0 == "." })
+                  .prefix(while: { !$0.isWhitespace && $0 != "," && $0 != "}" && $0 != "=" })
+                  .lowercased()
+    }
 
-            // Blank line: paragraph break.
-            if trimmed.isEmpty {
-                flushParagraph(&para)
-                i += 1
-                continue
-            }
+    /// Names Markdown authors write on a fence that are not the file extension the lexer is
+    /// keyed by. The ones that already *are* an extension — `swift`, `json`, `go`, `rs`, `java`,
+    /// `bash`, `yaml`, `css`, `sql`, `lua` — need no entry and deliberately have none.
+    static let fenceLanguageAliases: [String: String] = [
+        "python": "py", "python3": "py",
+        "javascript": "js", "node": "js", "typescript": "ts",
+        "shell": "sh", "console": "sh", "terminal": "sh", "shell-session": "sh",
+        "c++": "cpp", "objective-c": "m", "objectivec": "m", "objc": "m",
+        "c#": "cs", "csharp": "cs",
+        "rust": "rs", "golang": "go", "ruby": "rb", "kotlin": "kt",
+        "perl": "pl", "haskell": "hs", "elixir": "ex", "powershell": "ps1",
+    ]
 
-            // Fenced code block ``` or ~~~.
-            if let fence = fenceMarker(trimmed) {
-                flushParagraph(&para)
-                let info = fenceInfo(trimmed, marker: fence)
-                var code: [String] = []
-                i += 1
-                while i < lines.count {
-                    let l = lines[i].trimmingCharacters(in: .whitespaces)
-                    if l.hasPrefix(fence) { i += 1; break }
-                    code.append(lines[i])
-                    i += 1
-                }
-                out.append(codeBlock(code.joined(separator: "\n"), info: info))
-                continue
-            }
+    /// The lexer for a fence's language word, or nil — which is the answer for `mermaid`, `text`
+    /// and everything else this app has no lexer for, and means an uncoloured block rather than
+    /// a failure.
+    static func fenceLanguage(_ info: String) -> SyntaxLanguage? {
+        guard !info.isEmpty else { return nil }
+        if let language = SyntaxHighlighter.language(forExtension: info) { return language }
+        guard let ext = fenceLanguageAliases[info] else { return nil }
+        return SyntaxHighlighter.language(forExtension: ext)
+    }
 
-            // ATX heading: #..###### followed by space.
-            if let (level, text) = atxHeading(trimmed) {
-                flushParagraph(&para)
-                let id = uniqueAnchor(for: text, used: &usedAnchors)
-                anchors[i + 1] = id
-                out.append("<h\(level) id=\"\(escape(id))\">\(inline(text))</h\(level)>")
-                i += 1
-                continue
-            }
-
-            // Thematic break.
-            if isThematicBreak(trimmed) {
-                flushParagraph(&para)
-                out.append("<hr>")
-                i += 1
-                continue
-            }
-
-            // Blockquote.
-            if trimmed.hasPrefix(">") {
-                flushParagraph(&para)
-                var quote: [String] = []
-                while i < lines.count {
-                    let l = lines[i].trimmingCharacters(in: .whitespaces)
-                    guard l.hasPrefix(">") else { break }
-                    var content = String(l.dropFirst())
-                    if content.hasPrefix(" ") { content.removeFirst() }
-                    quote.append(content)
-                    i += 1
-                }
-                out.append("<blockquote>\(bodyHTML(from: quote.joined(separator: "\n")))</blockquote>")
-                continue
-            }
-
-            // GFM pipe table: header row + delimiter row.
-            if line.contains("|"), i + 1 < lines.count, isTableDelimiter(lines[i + 1]) {
-                flushParagraph(&para)
-                let (html, consumed) = parseTable(lines, from: i)
-                out.append(html)
-                i += consumed
-                continue
-            }
-
-            // Lists (unordered / ordered).
-            if listItem(line) != nil {
-                flushParagraph(&para)
-                let (html, consumed) = parseList(lines, from: i)
-                out.append(html)
-                i += consumed
-                continue
-            }
-
-            // Underlined (setext) heading: `Title` over a run of `=` (level 1) or `-` (level 2).
-            //
-            // Last of the block rules on purpose: a table's delimiter row and a list item that happens to
-            // be followed by dashes are decided above. Without this, `Title` + `---` rendered as a
-            // paragraph followed by a horizontal rule — it *looked* like a heading and was none, so the
-            // outline (which has always read this form) offered an entry the page had no anchor for. The
-            // one-line rule and the line the heading is reported on are DeclarationOutline.parseMarkdown's,
-            // so the two agree about what a heading is and where it starts.
-            if i + 1 < lines.count {
-                let under = lines[i + 1].trimmingCharacters(in: .whitespaces)
-                if under.count >= 2,
-                   under.allSatisfy({ $0 == "=" }) || under.allSatisfy({ $0 == "-" }) {
-                    flushParagraph(&para)
-                    let level = under.first == "=" ? 1 : 2
-                    let id = uniqueAnchor(for: trimmed, used: &usedAnchors)
-                    anchors[i + 1] = id
-                    out.append("<h\(level) id=\"\(escape(id))\">\(inline(trimmed))</h\(level)>")
-                    i += 2
-                    continue
-                }
-            }
-
-            // Otherwise: paragraph text.
-            para.append(trimmed)
-            i += 1
+    /// Whether an info string is plausibly a language name, and so safe to put in a class
+    /// attribute. `escape` would make anything else harmless, but `class="language-&quot;&gt;"`
+    /// is noise in the page rather than information in it.
+    static func isLanguageToken(_ info: String) -> Bool {
+        !info.isEmpty && info.allSatisfy {
+            $0.isLetter || $0.isNumber || "+#-_.".contains($0)
         }
-        flushParagraph(&para)
-        return Rendered(html: out.joined(separator: "\n"), anchors: anchors)
+    }
+
+    /// `code`, HTML-escaped, with the lexer's spans wrapped in `<span class="tok-…">`.
+    private static func highlighted(_ code: String, language: SyntaxLanguage) -> String {
+        let chars = Array(code)
+        var out = ""
+        var cursor = 0
+        for token in SyntaxHighlighter.tokens(code, language: language) {
+            // The lexer is single-pass, so its ranges arrive in order and cannot overlap. Clamped
+            // anyway: this is the one place that turns those offsets into string indices, and a
+            // wrong range should cost colour, not a crash in a file viewer.
+            let lower = min(max(token.range.lowerBound, cursor), chars.count)
+            let upper = min(max(token.range.upperBound, lower), chars.count)
+            if lower > cursor { out += escape(String(chars[cursor..<lower])) }
+            out += "<span class=\"tok-\(token.kind.rawValue)\">"
+                 + escape(String(chars[lower..<upper])) + "</span>"
+            cursor = upper
+        }
+        if cursor < chars.count { out += escape(String(chars[cursor...])) }
+        return out
     }
 
     /// A heading's element id: its text reduced to letters, digits, `-` and `_`, lowercased, with a
@@ -240,285 +220,6 @@ public enum MarkdownRenderer {
         }
         used.insert(base)
         return base
-    }
-
-    // MARK: - Block helpers
-
-    private static func fenceMarker(_ trimmed: String) -> String? {
-        if trimmed.hasPrefix("```") { return "```" }
-        if trimmed.hasPrefix("~~~") { return "~~~" }
-        return nil
-    }
-
-    /// The language word of a fence's info string, lowercased — `swift` from ```` ```swift ````,
-    /// and from ```` ```swift title="A.swift" ```` too. Empty when the fence names nothing.
-    ///
-    /// The whole opening line used to be skipped, so every code block in every rendered `.md`
-    /// arrived as an unmarked `<pre><code>`: no `class="language-…"` for anything reading the
-    /// page, and nothing for the stylesheet to colour.
-    static func fenceInfo(_ trimmed: String, marker: String) -> String {
-        guard let fenceChar = marker.first else { return "" }
-        let rest = trimmed.drop(while: { $0 == fenceChar })   // ```` and longer are fences too
-        // `{.python}` (Pandoc) and `swift,linenos` name a language as much as a bare word does.
-        return rest.trimmingCharacters(in: .whitespaces)
-                   .drop(while: { $0 == "{" || $0 == "." })
-                   .prefix(while: { !$0.isWhitespace && $0 != "," && $0 != "}" && $0 != "=" })
-                   .lowercased()
-    }
-
-    /// Names Markdown authors write on a fence that are not the file extension the lexer is
-    /// keyed by. The ones that already *are* an extension — `swift`, `json`, `go`, `rs`, `java`,
-    /// `bash`, `yaml`, `css`, `sql`, `lua` — need no entry and deliberately have none.
-    static let fenceLanguageAliases: [String: String] = [
-        "python": "py", "python3": "py",
-        "javascript": "js", "node": "js", "typescript": "ts",
-        "shell": "sh", "console": "sh", "terminal": "sh", "shell-session": "sh",
-        "c++": "cpp", "objective-c": "m", "objectivec": "m", "objc": "m",
-        "c#": "cs", "csharp": "cs",
-        "rust": "rs", "golang": "go", "ruby": "rb", "kotlin": "kt",
-        "perl": "pl", "haskell": "hs", "elixir": "ex", "powershell": "ps1",
-    ]
-
-    /// The lexer for a fence's language word, or nil — which is the answer for `mermaid`, `text`
-    /// and everything else this app has no lexer for, and means an uncoloured block rather than
-    /// a failure.
-    static func fenceLanguage(_ info: String) -> SyntaxLanguage? {
-        guard !info.isEmpty else { return nil }
-        if let language = SyntaxHighlighter.language(forExtension: info) { return language }
-        guard let ext = fenceLanguageAliases[info] else { return nil }
-        return SyntaxHighlighter.language(forExtension: ext)
-    }
-
-    /// A fence rendered as `<pre><code>`, carrying the GFM `language-…` class and, where there is
-    /// a lexer for it, `<span class="tok-…">` around comments, strings, numbers and keywords.
-    ///
-    /// Classes and an embedded stylesheet, never a `style=` attribute and never a script: the
-    /// document's `default-src 'none'` policy is the point and is not relaxed for colour.
-    private static func codeBlock(_ code: String, info: String) -> String {
-        let attr = isLanguageToken(info) ? " class=\"language-\(info)\"" : ""
-        guard let language = fenceLanguage(info) else {
-            return "<pre><code\(attr)>\(escape(code))</code></pre>"
-        }
-        return "<pre><code\(attr)>\(highlighted(code, language: language))</code></pre>"
-    }
-
-    /// Whether an info string is plausibly a language name, and so safe to put in a class
-    /// attribute. `escape` would make anything else harmless, but `class="language-&quot;&gt;"`
-    /// is noise in the page rather than information in it.
-    static func isLanguageToken(_ info: String) -> Bool {
-        !info.isEmpty && info.allSatisfy {
-            $0.isLetter || $0.isNumber || "+#-_.".contains($0)
-        }
-    }
-
-    /// `code`, HTML-escaped, with the lexer's spans wrapped in `<span class="tok-…">`.
-    private static func highlighted(_ code: String, language: SyntaxLanguage) -> String {
-        let chars = Array(code)
-        var out = ""
-        var cursor = 0
-        for token in SyntaxHighlighter.tokens(code, language: language) {
-            // The lexer is single-pass, so its ranges arrive in order and cannot overlap. Clamped
-            // anyway: this is the one place that turns those offsets into string indices, and a
-            // wrong range should cost colour, not a crash in a file viewer.
-            let lower = min(max(token.range.lowerBound, cursor), chars.count)
-            let upper = min(max(token.range.upperBound, lower), chars.count)
-            if lower > cursor { out += escape(String(chars[cursor..<lower])) }
-            out += "<span class=\"tok-\(token.kind.rawValue)\">"
-                 + escape(String(chars[lower..<upper])) + "</span>"
-            cursor = upper
-        }
-        if cursor < chars.count { out += escape(String(chars[cursor...])) }
-        return out
-    }
-
-    private static func atxHeading(_ trimmed: String) -> (Int, String)? {
-        var level = 0
-        for ch in trimmed { if ch == "#" { level += 1 } else { break } }
-        guard level >= 1, level <= 6 else { return nil }
-        let rest = trimmed.dropFirst(level)
-        guard rest.first == " " || rest.isEmpty else { return nil }
-        var text = rest.trimmingCharacters(in: .whitespaces)
-        // Strip optional trailing #'s.
-        while text.hasSuffix("#") { text.removeLast() }
-        return (level, text.trimmingCharacters(in: .whitespaces))
-    }
-
-    private static func isThematicBreak(_ trimmed: String) -> Bool {
-        let stripped = trimmed.replacingOccurrences(of: " ", with: "")
-        guard stripped.count >= 3 else { return false }
-        return stripped.allSatisfy { $0 == "-" } || stripped.allSatisfy { $0 == "*" } || stripped.allSatisfy { $0 == "_" }
-    }
-
-    /// Returns (marker-kind, item content) if the line begins a list item.
-    private static func listItem(_ line: String) -> (ordered: Bool, content: String, indent: Int)? {
-        let indent = line.prefix { $0 == " " }.count
-        let trimmed = line.trimmingCharacters(in: .whitespaces)
-        // Unordered: - * + followed by space.
-        if let first = trimmed.first, "-*+".contains(first) {
-            let after = trimmed.dropFirst()
-            if after.first == " " {
-                return (false, String(after.dropFirst()).trimmingCharacters(in: .whitespaces), indent)
-            }
-        }
-        // Ordered: digits then '.' or ')' then space.
-        var digits = ""
-        for ch in trimmed { if ch.isNumber { digits.append(ch) } else { break } }
-        if !digits.isEmpty {
-            let after = trimmed.dropFirst(digits.count)
-            if let sep = after.first, sep == "." || sep == ")" {
-                let rest = after.dropFirst()
-                if rest.first == " " {
-                    return (true, String(rest.dropFirst()).trimmingCharacters(in: .whitespaces), indent)
-                }
-            }
-        }
-        return nil
-    }
-
-    private static func parseList(_ lines: [String], from start: Int) -> (String, Int) {
-        guard let firstItem = listItem(lines[start]) else { return ("", 1) }
-        let ordered = firstItem.ordered
-        var items: [String] = []
-        var i = start
-        while i < lines.count, let item = listItem(lines[i]), item.ordered == ordered {
-            items.append(inline(item.content))
-            i += 1
-        }
-        let tag = ordered ? "ol" : "ul"
-        let body = items.map { "<li>\($0)</li>" }.joined(separator: "\n")
-        return ("<\(tag)>\n\(body)\n</\(tag)>", i - start)
-    }
-
-    private static func isTableDelimiter(_ line: String) -> Bool {
-        let trimmed = line.trimmingCharacters(in: .whitespaces)
-        guard trimmed.contains("-"), trimmed.contains("|") || trimmed.hasPrefix(":") || trimmed.hasPrefix("-") else { return false }
-        let cells = splitRow(trimmed)
-        guard !cells.isEmpty else { return false }
-        return cells.allSatisfy { cell in
-            let c = cell.trimmingCharacters(in: .whitespaces)
-            guard !c.isEmpty else { return false }
-            return c.allSatisfy { $0 == "-" || $0 == ":" }
-        }
-    }
-
-    private static func parseTable(_ lines: [String], from start: Int) -> (String, Int) {
-        let header = splitRow(lines[start])
-        let aligns = splitRow(lines[start + 1]).map { cell -> String in
-            let c = cell.trimmingCharacters(in: .whitespaces)
-            let left = c.hasPrefix(":"), right = c.hasSuffix(":")
-            if left && right { return "center" }
-            if right { return "right" }
-            if left { return "left" }
-            return ""
-        }
-        func styled(_ tag: String, _ cell: String, _ idx: Int) -> String {
-            let align = idx < aligns.count ? aligns[idx] : ""
-            let attr = align.isEmpty ? "" : " style=\"text-align:\(align)\""
-            return "<\(tag)\(attr)>\(inline(cell.trimmingCharacters(in: .whitespaces)))</\(tag)>"
-        }
-        var rows: [String] = []
-        rows.append("<tr>" + header.enumerated().map { styled("th", $1, $0) }.joined() + "</tr>")
-        var i = start + 2
-        while i < lines.count, lines[i].contains("|"), !lines[i].trimmingCharacters(in: .whitespaces).isEmpty {
-            let cells = splitRow(lines[i])
-            rows.append("<tr>" + cells.enumerated().map { styled("td", $1, $0) }.joined() + "</tr>")
-            i += 1
-        }
-        return ("<table>\n\(rows.joined(separator: "\n"))\n</table>", i - start)
-    }
-
-    private static func splitRow(_ line: String) -> [String] {
-        var s = line.trimmingCharacters(in: .whitespaces)
-        if s.hasPrefix("|") { s.removeFirst() }
-        if s.hasSuffix("|") { s.removeLast() }
-        // Split on unescaped pipes.
-        var cells: [String] = []
-        var cur = ""
-        var escaped = false
-        for ch in s {
-            if escaped { cur.append(ch); escaped = false; continue }
-            if ch == "\\" { escaped = true; cur.append(ch); continue }
-            if ch == "|" { cells.append(cur); cur = "" } else { cur.append(ch) }
-        }
-        cells.append(cur)
-        return cells
-    }
-
-    // MARK: - Inline
-
-    /// Apply inline formatting to already-block-split text. HTML-escapes first,
-    /// so raw `<`,`>`,`&` in the source render literally.
-    static func inline(_ text: String) -> String {
-        // Protect code spans first: extract `...` runs, escape their content, and
-        // substitute placeholders so later passes don't touch them.
-        var placeholders: [String] = []
-        var working = ""
-        var idx = text.startIndex
-        while idx < text.endIndex {
-            if text[idx] == "`" {
-                // Find matching closing backtick run of equal length.
-                var tickCount = 0
-                var j = idx
-                while j < text.endIndex, text[j] == "`" { tickCount += 1; j = text.index(after: j) }
-                let fence = String(repeating: "`", count: tickCount)
-                if let closeRange = text.range(of: fence, range: j..<text.endIndex) {
-                    let code = String(text[j..<closeRange.lowerBound])
-                    let token = "\u{0}CODE\(placeholders.count)\u{0}"
-                    placeholders.append("<code>\(escape(code))</code>")
-                    working += token
-                    idx = closeRange.upperBound
-                    continue
-                }
-            }
-            working.append(text[idx])
-            idx = text.index(after: idx)
-        }
-
-        var s = escape(working)
-        s = applyRegex(s, #"!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)"#) { m in
-            "<img alt=\"\(m[1])\" src=\"\(m[2])\">"
-        }
-        s = applyRegex(s, #"\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)"#) { m in
-            "<a href=\"\(m[2])\">\(m[1])</a>"
-        }
-        // Autolinks <http://...> already escaped to &lt;...&gt;; handle bare URLs.
-        s = applyRegex(s, #"(^|[\s(])((?:https?://|www\.)[^\s<)]+)"#) { m in
-            let url = m[2].hasPrefix("www.") ? "http://\(m[2])" : m[2]
-            return "\(m[1])<a href=\"\(url)\">\(m[2])</a>"
-        }
-        s = applyRegex(s, #"\*\*([^*]+)\*\*"#) { "<strong>\($0[1])</strong>" }
-        s = applyRegex(s, #"__([^_]+)__"#) { "<strong>\($0[1])</strong>" }
-        s = applyRegex(s, #"(?<![\w*])\*([^*\n]+)\*(?![\w*])"#) { "<em>\($0[1])</em>" }
-        s = applyRegex(s, #"(?<![\w_])_([^_\n]+)_(?![\w_])"#) { "<em>\($0[1])</em>" }
-        s = applyRegex(s, #"~~([^~]+)~~"#) { "<del>\($0[1])</del>" }
-        // Hard line break: two+ trailing spaces before newline, or backslash newline.
-        s = s.replacingOccurrences(of: "  \n", with: "<br>\n")
-        s = s.replacingOccurrences(of: "\\\n", with: "<br>\n")
-        s = s.replacingOccurrences(of: "\n", with: " ")
-
-        for (n, html) in placeholders.enumerated() {
-            s = s.replacingOccurrences(of: "\u{0}CODE\(n)\u{0}", with: html)
-        }
-        return s
-    }
-
-    private static func applyRegex(_ input: String, _ pattern: String, _ transform: ([String]) -> String) -> String {
-        guard let re = try? NSRegularExpression(pattern: pattern, options: [.anchorsMatchLines]) else { return input }
-        let ns = input as NSString
-        var result = ""
-        var last = 0
-        for match in re.matches(in: input, range: NSRange(location: 0, length: ns.length)) {
-            result += ns.substring(with: NSRange(location: last, length: match.range.location - last))
-            var groups: [String] = []
-            for g in 0..<match.numberOfRanges {
-                let r = match.range(at: g)
-                groups.append(r.location == NSNotFound ? "" : ns.substring(with: r))
-            }
-            result += transform(groups)
-            last = match.range.location + match.range.length
-        }
-        result += ns.substring(from: last)
-        return result
     }
 
     static func escape(_ text: String) -> String {
@@ -567,6 +268,12 @@ public enum MarkdownRenderer {
     }
     .markdown-body ul, .markdown-body ol { margin: 0 0 1em; padding-left: 2em; }
     .markdown-body li { margin: .2em 0; }
+    /* A task item shows its box instead of a bullet, and the box sits on the text's line rather
+       than above it — both of which the first picture of this got wrong. */
+    .markdown-body li.task { list-style-type: none; margin-left: -1.2em; }
+    .markdown-body li.task > input[type="checkbox"] {
+      margin: 0 .4em 0 0; vertical-align: -0.05em;
+    }
     .markdown-body table { border-collapse: collapse; margin: 0 0 1em; display: block; overflow: auto; }
     .markdown-body th, .markdown-body td { border: 1px solid #d0d7de; padding: 6px 13px; }
     .markdown-body th { background: rgba(129,139,152,.12); font-weight: 600; }
