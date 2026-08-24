@@ -1,7 +1,7 @@
 ---
 title: Markdown in HTML v pregledovalniku
 slug: markdown-viewer
-section: Plugins
+section: Vtičniki
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

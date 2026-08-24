@@ -1,7 +1,7 @@
 ---
 title: Markdown și HTML în vizualizator
 slug: markdown-viewer
-section: Plugins
+section: Pluginuri
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

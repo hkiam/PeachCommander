@@ -1,7 +1,7 @@
 ---
 title: Markdown i HTML w podglądzie
 slug: markdown-viewer
-section: Plugins
+section: Wtyczki
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

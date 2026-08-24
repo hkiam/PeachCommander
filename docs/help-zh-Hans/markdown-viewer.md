@@ -1,7 +1,7 @@
 ---
 title: 查看器中的 Markdown 与 HTML
 slug: markdown-viewer
-section: Plugins
+section: 插件
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

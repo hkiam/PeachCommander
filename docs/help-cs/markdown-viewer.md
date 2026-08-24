@@ -1,7 +1,7 @@
 ---
 title: Markdown a HTML v prohlížeči
 slug: markdown-viewer
-section: Plugins
+section: Zásuvné moduly
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

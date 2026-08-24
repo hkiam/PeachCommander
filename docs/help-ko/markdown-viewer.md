@@ -1,7 +1,7 @@
 ---
 title: 뷰어의 Markdown과 HTML
 slug: markdown-viewer
-section: Plugins
+section: 플러그인
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

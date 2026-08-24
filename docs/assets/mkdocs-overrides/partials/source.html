@@ -1,0 +1,28 @@
+{#-
+  Material's own partials/source.html, minus one attribute.
+
+  The original carries `data-md-component="source"`, and Material's bundle attaches to that: it
+  fetches https://api.github.com/repos/<owner>/<repo> to put the star and fork counts under the
+  repository name in the header. That is a request to a third party on every page view of a
+  documentation site whose whole promise is "fully offline output" (DOCUMENTATION.md:100) — and a
+  reader who opens a page tells GitHub they did.
+
+  Dropping the attribute keeps the link, the icon and the repository name, and stops the fetch. The
+  counts go with it, which is the trade: two numbers nobody navigates by, against every visitor's
+  page view staying between them and this site.
+
+  Kept as a copy rather than patched at build time on purpose — an override is a file Material
+  documents, and a sed over somebody else's template is a thing that breaks silently on upgrade. When
+  Material changes this partial, this copy has to be refreshed; the diff against
+  site-packages/material/templates/partials/source.html is one attribute wide, which is what makes
+  that cheap to check.
+-#}
+<a href="{{ config.repo_url }}" title="{{ lang.t('source') }}" class="md-source">
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

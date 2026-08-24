@@ -1,7 +1,7 @@
 ---
 title: Markdown és HTML a megjelenítőben
 slug: markdown-viewer
-section: Plugins
+section: Bővítmények
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

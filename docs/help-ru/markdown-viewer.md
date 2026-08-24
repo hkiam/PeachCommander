@@ -1,7 +1,7 @@
 ---
 title: Markdown и HTML в просмотрщике
 slug: markdown-viewer
-section: Plugins
+section: Плагины
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

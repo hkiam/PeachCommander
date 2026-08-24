@@ -9,6 +9,15 @@
  */
 
 :root {
+  /* The faces, said out loud. With `font: false` in the theme (see build-site.py — it is what stops
+     the request to fonts.googleapis.com) Material leaves --md-text-font unset, and its own
+     `var(--md-text-font,_)` then puts the placeholder family `_` at the head of every stack. That
+     works only because no font is called `_`, which is a poor thing for a stylesheet to rely on.
+     These are Material's own fallbacks, chosen deliberately instead of reached by accident, and on a
+     Mac they are the faces the application itself draws with. */
+  --md-text-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --md-code-font: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
   --pc-peach-50:  #fff5ef;
   --pc-peach-100: #ffe8db;
   --pc-peach-200: #ffd0b5;

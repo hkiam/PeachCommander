@@ -1,7 +1,7 @@
 ---
 title: Markdown och HTML i visaren
 slug: markdown-viewer
-section: Plugins
+section: Insticksprogram
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

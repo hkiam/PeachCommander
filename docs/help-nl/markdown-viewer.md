@@ -1,7 +1,7 @@
 ---
 title: Markdown en HTML in de viewer
 slug: markdown-viewer
-section: Plugins
+section: Plug-ins
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

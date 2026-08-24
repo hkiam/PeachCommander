@@ -118,6 +118,21 @@ MKDOCS_YML = """site_name: {site_name}
 site_description: A fast, keyboard-driven, dual-panel file manager for macOS.
 theme:
   name: material
+  # Two remote requests removed, both of them Material's defaults rather than choices of ours.
+  #
+  # `font: false` stops the <link> to fonts.googleapis.com (and the preconnect to fonts.gstatic.com)
+  # that Material emits unless the key is set. Nothing has to replace Roboto: Material's own CSS reads
+  # `var(--md-text-font,_),-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif`, so with the
+  # variable unset the page falls through to the system stack — on a Mac, the same face the
+  # application itself uses. Checked in the stylesheet rather than assumed.
+  #
+  # `custom_dir` overrides partials/source.html to drop one attribute, which is what makes the bundle
+  # fetch api.github.com for the star and fork counts. See that file for the trade.
+  #
+  # DOCUMENTATION.md:100 gives "fully offline output" as the reason this generator was chosen. It was
+  # not true: opening any page told Google and GitHub that somebody had.
+  font: false
+  custom_dir: overrides
   logo: assets/peachcommander-icon.png
   favicon: assets/peachcommander-icon.png
   palette:
@@ -189,6 +204,11 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
     # wired up through extra_css/extra_javascript, plus the icon used as logo/favicon.
     if (ASSETS / "website").exists():
         shutil.copytree(ASSETS / "website", docs / "assets/website")
+    # Theme overrides, beside mkdocs.yml rather than under docs/: `custom_dir` is resolved relative to
+    # the configuration file, and a template staged into the docs tree would also be *published* as a
+    # page of the site.
+    if (ASSETS / "mkdocs-overrides").exists():
+        shutil.copytree(ASSETS / "mkdocs-overrides", work / "overrides")
     if (ASSETS / "peachcommander-icon.png").exists():
         shutil.copy2(ASSETS / "peachcommander-icon.png", docs / "assets")
     # The Mermaid engine, and only for the site that draws diagrams. Material renders the

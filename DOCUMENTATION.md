@@ -101,6 +101,26 @@ iteration logs) rather than being duplicated.
   and an optional PDF exporter — matching every website/online-docs requirement
   without bespoke web code. The Markdown source stays tool-agnostic, so MkDocs is
   a renderer, not a lock-in.
+
+  **"Fully offline output" was a claim before it was a fact, and it is now stated
+  precisely.** Out of the box Material has the site fetch Roboto from
+  `fonts.googleapis.com` and the repository's star and fork counts from
+  `api.github.com` on *every* page view — so opening any page told two third
+  parties that somebody had, and none of it worked without a network. Both are
+  gone: `theme.font: false` and an override of `partials/source.html` that keeps
+  the repository link and drops the one attribute the counts hang on
+  (`docs/assets/mkdocs-overrides/`). Mermaid is served from the site's own
+  `assets/vendor/` rather than unpkg.com for the same reason (F-460). Measured, not
+  assumed: on a documentation page,
+  `performance.getEntriesByType('resource')` names one host, and it is the server
+  the page came from.
+
+  **One deliberate exception, and only on the homepage.** The download button asks
+  GitHub for the newest published release, because that cannot be known offline.
+  It is progressive enhancement — the markup already links to the releases page, so
+  the buttons work with JavaScript off, offline, and against a rate-limited API —
+  and the request happens only where such a button exists. No documentation page
+  makes it.
 - The **Apple Help Book** has bundle-specific requirements (an `AppleTitle` meta
   tag, an `hiutil`-built search index, anchor-based context-sensitive help) that
   no site generator emits, so a **small custom generator** renders the

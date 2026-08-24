@@ -1,7 +1,7 @@
 ---
 title: Markdown og HTML i viseren
 slug: markdown-viewer
-section: Plugins
+section: Programtillegg
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---

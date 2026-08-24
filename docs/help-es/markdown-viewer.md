@@ -1,7 +1,7 @@
 ---
 title: Markdown y HTML en el visor
 slug: markdown-viewer
-section: Plugins
+section: Complementos
 order: 136
 related: [plugins, viewing-files, privacy-and-security]
 ---
