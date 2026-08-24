@@ -3779,6 +3779,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Media starts by itself here and not in the side panel: Quick View is the gesture for "show me
         // this", and the panel's info page merely follows the cursor.
         preview.autostartsMedia = true
+        // Quick View takes half the window; the side panel's info page takes a column. A renderer is
+        // allowed to lay itself out differently for the two, so it is told which it is.
+        preview.surfaceName = "quickview"
         quickViewPreview = preview
         quickViewHostPanel = host
         host.view.setQuickViewOverlay(preview)
@@ -8808,8 +8811,14 @@ final class PanelView: NSView {
         if viewMode == .gallery { requestThumbnails(for: entries, generation: gridGeneration) }
     }
 
-    /// Generate QuickLook thumbnails for the gallery and swap them in as they
-    /// arrive (grid index = entry index + 1 for the synthetic "..").
+    /// Generate thumbnails for the gallery and swap them in as they arrive (grid index = entry index
+    /// + 1 for the synthetic "..").
+    ///
+    /// A lister plugin is asked first, through `ListGetPreviewBitmap` — the window-less half of the
+    /// PLX ABI, which had been in the header since the beginning with no caller in the application at
+    /// all. It is what makes the gallery show a Markdown file's *rendered* first page rather than a
+    /// generic document icon, and it costs nothing for a plugin that does not export it. QuickLook
+    /// stays the answer for everything else, which is most things.
     private func requestThumbnails(for entries: [VFSEntry], generation: Int) {
         guard !currentPath.isEmpty else { return }
         let scale = window?.backingScaleFactor ?? 2
@@ -8817,6 +8826,10 @@ final class PanelView: NSView {
         for (i, entry) in entries.enumerated() where !PanelEntryHelpers.isDirectoryLike(entry.kind) {
             let gridIndex = i + 1
             let url = URL(fileURLWithPath: (currentPath as NSString).appendingPathComponent(entry.name))
+            if let image = pluginThumbnail(for: url, size: px) {
+                iconGrid.setThumbnail(image, at: gridIndex)
+                continue
+            }
             let request = QLThumbnailGenerator.Request(fileAt: url, size: px, scale: scale,
                                                        representationTypes: .thumbnail)
             QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { [weak self] rep, _ in
@@ -8827,6 +8840,30 @@ final class PanelView: NSView {
                 }
             }
         }
+    }
+
+    /// A thumbnail from a lister plugin, or nil when none claims the file or none can draw one.
+    ///
+    /// Synchronous, unlike the QuickLook path: `ListGetPreviewBitmap` is a synchronous C call and
+    /// wrapping it in a Task would only move the same work while adding a generation check for a
+    /// result that cannot arrive late. A plugin that renders slowly is a plugin problem, and the ABI
+    /// gives it a size to render *to* precisely so it stays cheap.
+    private func pluginThumbnail(for url: URL, size: CGSize) -> NSImage? {
+        guard !FilePreviewView.listerPlugins.isEmpty else { return nil }
+        let head = (try? FileHandle(forReadingFrom: url)).map { handle -> [UInt8] in
+            defer { try? handle.close() }
+            return [UInt8](handle.readData(ofLength: 4096))
+        } ?? []
+        let bytes = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int64) ?? 0
+        let context = DetectContext(ext: url.pathExtension, size: bytes ?? 0, bytes: head)
+        for lister in FilePreviewView.listerPlugins where lister.canPreview && lister.handles(context) {
+            if let data = lister.previewBitmap(file: url.path,
+                                               maxWidth: Int(size.width), maxHeight: Int(size.height)),
+               let image = NSImage(data: data) {
+                return image
+            }
+        }
+        return nil
     }
 
     /// Mirror the table's cursor onto the grid without rebuilding items. Called on
@@ -9141,6 +9178,9 @@ extension MainWindowController: ContributionHost {
             guard let self else { body(nil); return }
             ContributionRegistry.shared.withListerServices(host: self, extras: extras, body)
         })
+        // The same plugins the F3 window gets, kept for the previews. Opened once here rather than per
+        // file: `makeListerPlugins` does a `dlopen` per plugin, and the preview follows the cursor.
+        Task { @MainActor in FilePreviewView.listerPlugins = await self.makeListerPlugins() }
     }
 
     /// Let the viewer reach the Notes plugin, if it is installed (F-379).

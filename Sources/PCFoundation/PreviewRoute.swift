@@ -12,6 +12,10 @@
 // docx/odt/rtf — which also gives them the zoom the image route already had, and makes both *checkable*
 // from the harness. QuickLook keeps everything else, where it earns its keep.
 //
+// A fourth renderer joined them when Markdown and HTML left the application: a lister plugin's own
+// view. That one is not a format this file knows about — it is whichever formats the installed
+// plugins claim — so it arrives as a `hasPlugin` answer from the caller rather than an extension set.
+//
 // The decision itself lives here, away from any view, because it is a fact about a file name and the only
 // part of this worth a test.
 
@@ -24,6 +28,13 @@ public enum PreviewRoute: String, Sendable, Equatable {
     case pdf
     /// AppKit reads the document into an attributed string: .docx, .odt, .rtf, .rtfd, .doc.
     case rich
+    /// A lister plugin's own view — the same renderer the F3 window uses for that format.
+    ///
+    /// Ranked above QuickLook and below the in-process readers: a plugin that claims a format has
+    /// said it can render it, and it renders it *the way the viewer does*, which is what makes a
+    /// preview and a full view of the same file agree. The in-process readers stay ahead because
+    /// they are the two formats a file manager is asked about most and they carry zoom.
+    case plugin
     /// Everything else — QuickLook, which handles the long tail.
     case quickLook
 
@@ -46,13 +57,26 @@ public enum PreviewRoute: String, Sendable, Equatable {
     /// to Quick Look — which is what somebody wants who trusts the system's preview more than ours, or who
     /// has a Quick Look extension for a format AppKit reads worse. Images are unaffected either way: their
     /// own route predates this and is not what the switch is about.
-    public static func route(forExtension ext: String, isImage: Bool,
+    ///
+    /// `hasPlugin` is whether a lister plugin claims this file, passed in for the same reason `isImage`
+    /// is: answering it means asking the loaded plugins, which belongs to the caller's layer, and
+    /// keeping it out leaves this a pure function of its arguments. It is *not* covered by
+    /// `rendersDocumentsInApp` — that switch is about who renders PDFs and word-processor documents,
+    /// and turning it off to prefer the system's PDF reader should not also take Markdown away.
+    public static func route(forExtension ext: String, isImage: Bool, hasPlugin: Bool = false,
                             rendersDocumentsInApp: Bool = true) -> PreviewRoute {
         let lower = ext.lowercased()
         if isImage { return .image }
-        guard rendersDocumentsInApp else { return .quickLook }
-        if pdfExtensions.contains(lower) { return .pdf }
-        if richExtensions.contains(lower) { return .rich }
+        // The switch governs the two document families and nothing else. Turned off, a PDF goes to
+        // Quick Look even when a plugin claims it — the reader asked for the system's document
+        // preview — but Markdown is not a document family here, so a plugin still gets it.
+        if pdfExtensions.contains(lower) {
+            return rendersDocumentsInApp ? .pdf : .quickLook
+        }
+        if richExtensions.contains(lower) {
+            return rendersDocumentsInApp ? .rich : .quickLook
+        }
+        if hasPlugin { return .plugin }
         return .quickLook
     }
 }

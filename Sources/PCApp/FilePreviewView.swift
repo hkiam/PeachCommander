@@ -4,8 +4,10 @@
 //
 // It answers one question per file. An **image** is drawn by us, in a scroll view we own, so it can be
 // zoomed — `QLPreviewView` renders and exposes nothing, so a zoom control has nothing to act on there.
-// Everything else QuickLook can render (a PDF, a video, a Keynote deck) still goes to QuickLook
-// untouched, and what QuickLook has no generator for falls back to the file's icon.
+// A format a **lister plugin** claims is shown by that plugin, so a preview of a Markdown file and the
+// F3 window looking at it are the same rendering rather than two that disagree. Everything else
+// QuickLook can render (a PDF, a video, a Keynote deck) still goes to QuickLook untouched, and what
+// QuickLook has no generator for falls back to the file's icon.
 //
 // One class rather than the same routing written twice: the two callers had the same complaint from the
 // same user ("no zoom in the quick preview"), and two copies of a rule is how they come to disagree —
@@ -15,6 +17,8 @@ import AppKit
 import PDFKit
 import Quartz
 import PCFoundation
+// PLXLister + DetectContext: a preview may be drawn by the same plugin the F3 window uses.
+import PCPluginHost
 
 @MainActor
 final class FilePreviewView: NSView {
@@ -29,6 +33,9 @@ final class FilePreviewView: NSView {
     private var pdfView: PDFView?
     private var richScroll: NSScrollView?
     private var richText: NSTextView?
+    /// The plugin view currently showing, and what it took to get it — kept whole so `ListLoadNext`
+    /// can reuse it for the next file instead of tearing a web view down per cursor row.
+    private var pluginRoute: (lister: PLXLister, handle: PLXHandle, view: NSView)?
     /// Which renderer is showing, so the zoom buttons act on the right one.
     private var route: PreviewRoute = .quickLook
 
@@ -38,6 +45,23 @@ final class FilePreviewView: NSView {
     /// Static, because every preview in the window — the side panel, Quick View, the info page — must answer
     /// the same way, and the setting is one switch rather than one per view. Read at startup and on change.
     @MainActor static var rendersDocumentsInApp = true
+
+    /// The lister plugins a preview may use, installed by the host when the enabled plugin set
+    /// changes.
+    ///
+    /// Static for the same reason `rendersDocumentsInApp` is: every preview in the window — the side
+    /// panel, Quick View, the info page — must answer the same way, and the set is one fact about
+    /// the installation rather than one per view. Opening a plugin library costs a `dlopen`, and the
+    /// cursor walking a directory would otherwise pay it per row.
+    @MainActor static var listerPlugins: [PLXLister] = []
+
+    /// Which host surface this preview is, for the plugin's `lister.surface` context.
+    ///
+    /// The side panel's info page and the embedded Quick View are the same class doing the same job
+    /// at different sizes, and a renderer is allowed to care: Quick View takes half the window,
+    /// the info page a column.
+    var surfaceName = "preview"
+
     private let iconView = NSImageView()
     private let imageScroll = NSScrollView()
     private let imageView = NSImageView()
@@ -197,6 +221,7 @@ final class FilePreviewView: NSView {
         iconView.isHidden = true
         let ext = (path as NSString).pathExtension
         route = PreviewRoute.route(forExtension: ext, isImage: Self.isImage(path),
+                                   hasPlugin: Self.lister(claiming: path) != nil,
                                    rendersDocumentsInApp: Self.rendersDocumentsInApp)
         if route != .image, route != .pdf {
             // Neither of the zoomable routes: no bar, and no number left over from the file before —
@@ -221,6 +246,8 @@ final class FilePreviewView: NSView {
         hideImage()
         if route == .pdf, showPDF(path) { return }
         if route == .rich, showRich(path) { return }
+        if route == .plugin, showPlugin(path) { return }
+        hidePlugin()
         // Either the file is something else, or the in-process reader could not read it — an .doc AppKit
         // declines, a PDF that is not one. QuickLook is the fallback rather than an error, because it can
         // often still show something.
@@ -374,6 +401,78 @@ final class FilePreviewView: NSView {
 
     @objc private func pdfScaleChanged() { refreshLevel() }
 
+    /// Show `path` through the plugin that claims it. False when there is none, or it declines.
+    ///
+    /// `ListLoadNext` first: the cursor walking a directory of Markdown files would otherwise build
+    /// and tear down a web view per row, and reusing the view is exactly what that entry point is
+    /// for. A plugin that does not export it, or cannot reuse its view for this file, gets a fresh
+    /// load — which is the same contract the F3 window's viewer cycling has.
+    private func showPlugin(_ path: String) -> Bool {
+        guard let lister = Self.lister(claiming: path) else { return false }
+        quickLook?.previewItem = nil
+        quickLook?.isHidden = true
+
+        if let current = pluginRoute, current.lister === lister,
+           lister.loadNext(parent: Unmanaged.passUnretained(self).toOpaque(),
+                           listWin: current.handle, file: path) {
+            current.view.isHidden = false
+            return true
+        }
+        hidePlugin()
+
+        let parent = Unmanaged.passUnretained(self).toOpaque()
+        let extras = ["lister.surface": surfaceName,
+                      "lister.width": String(Int(bounds.width)),
+                      "lister.height": String(Int(bounds.height))]
+        var handle: PLXHandle?
+        if let context = ListerPluginContext.shared {
+            context.withServices(extras) { services in
+                handle = lister.loadEx(parent: parent, file: path, services: services)
+            }
+        } else {
+            handle = lister.load(parent: parent, file: path)
+        }
+        guard let handle else { return false }
+        let view = Unmanaged<NSView>.fromOpaque(handle).takeUnretainedValue()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(view)
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: topAnchor),
+            view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        pluginRoute = (lister, handle, view)
+        return true
+    }
+
+    private func hidePlugin() {
+        guard let current = pluginRoute else { return }
+        current.view.removeFromSuperview()
+        current.lister.close(current.handle)
+        pluginRoute = nil
+    }
+
+    /// The first lister plugin whose detect string claims `path`.
+    ///
+    /// Detection only — no file is opened here. The plugin decides for itself in `ListLoad`, and a
+    /// decline falls through to QuickLook, so a claim is a candidate rather than a promise.
+    @MainActor
+    private static func lister(claiming path: String) -> PLXLister? {
+        guard !listerPlugins.isEmpty else { return nil }
+        // The first 4 KB, because a detect string may probe bytes (`[0]=77`) and not only the
+        // extension. Read here rather than lazily: this runs after the 0.18 s debounce, once per
+        // file the cursor settles on, and a plugin that answers on bytes must be given them.
+        let url = URL(fileURLWithPath: path)
+        let head = (try? FileHandle(forReadingFrom: url)).map { handle -> [UInt8] in
+            defer { try? handle.close() }
+            return [UInt8](handle.readData(ofLength: 4096))
+        } ?? []
+        let size = (try? FileManager.default.attributesOfItem(atPath: path)[.size] as? Int64) ?? 0
+        let context = DetectContext(ext: url.pathExtension, size: size ?? 0, bytes: head)
+        return listerPlugins.first { $0.handles(context) }
+    }
+
     private func hidePDF() {
         pdfView?.document = nil
         pdfView?.isHidden = true
@@ -444,9 +543,11 @@ final class FilePreviewView: NSView {
         case .image:
             levelLabel.stringValue = zoom.levelText
             return
-        case .rich, .quickLook:
-            // Neither is zoomable, and the image controller still has a level from the file before — which
-            // is how "100 %" kept appearing beside a hidden bar (measured twice, F-429).
+        case .rich, .quickLook, .plugin:
+            // None of them is zoomable — a plugin brings its own chrome and its own idea of scale, and
+            // the ABI's font-size commands are the F3 window's business, not a preview's. The image
+            // controller still has a level from the file before, which is how "100 %" kept appearing
+            // beside a hidden bar (measured twice, F-429).
             levelLabel.stringValue = ""
             return
         case .pdf:
@@ -543,6 +644,9 @@ final class FilePreviewView: NSView {
         if !imageScroll.isHidden, zoom.hasImage { route = "image" }
         else if pdfView?.isHidden == false { route = "pdf" }
         else if richScroll?.isHidden == false { route = "rich" }
+        // Before quicklook: a plugin view is what is on screen when there is one, and the QuickLook
+        // view is only hidden rather than gone.
+        else if let plugin = pluginRoute, !plugin.view.isHidden { route = "plugin · \(plugin.lister.name)" }
         else if quickLook?.isHidden == false { route = "quicklook" }
         else { route = "icon" }
         let size = zoom.hasImage ? ImageZoomController.pixelSize(of: imageView.image ?? NSImage()) : .zero

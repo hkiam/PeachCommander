@@ -25,6 +25,7 @@
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
+//   mainshot <out.png>    a PNG of the main window (the gallery's thumbnails, the panels, the bars)
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
@@ -383,6 +384,23 @@ extension MainWindowController {
                                                               caseInsensitive: false)
                         ?? "ERROR: no lister window\n"
                     try? out.write(toFile: f[2], atomically: true, encoding: .utf8)
+                }
+            case "mainshot":                            // mainshot <out.png>: a picture of the main window
+                // The main window draws with AppKit, so it can hand over its own picture — which the
+                // gallery's thumbnails need and no text dump can show. `screencapture` is the obvious
+                // alternative and returns a black frame without Screen Recording permission, which a
+                // verification run has no business asking a machine for.
+                if let view = window?.contentView,
+                   let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
+                    view.cacheDisplay(in: view.bounds, to: rep)
+                    if let png = rep.representation(using: .png, properties: [:]) {
+                        try? png.write(to: URL(fileURLWithPath: arg))
+                        NSLog("[automation] mainshot: %.0fx%.0f", view.bounds.width, view.bounds.height)
+                    } else {
+                        NSLog("[automation] mainshot: no png")
+                    }
+                } else {
+                    NSLog("[automation] mainshot: no content view")
                 }
             case "listershot":                          // listershot <out.png>: a picture of the viewer's content
                 // The one thing about the viewer that cannot be dumped as text. Awaited, because the
