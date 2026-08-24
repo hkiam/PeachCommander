@@ -126,6 +126,17 @@ does not have.
   Only files on this Mac are shown: an image address on the internet is left as visible text and is
   never fetched, because loading one would tell that server when you read the answer.
 
+- **The documentation website no longer tells anyone that you are reading it.** Every page used to
+  fetch a font from Google and the repository's star count from GitHub, so opening a page reported
+  it to two third parties — and none of the typography worked without a network. Both are gone; the
+  site now uses the fonts your Mac already has. The only remaining request is the download button on
+  the front page asking GitHub for the newest release, which cannot be known offline and still works
+  without JavaScript.
+
+- **`.mdx`, `.mkdn` and `.mdwn` files are now treated as Markdown everywhere.** Three places in the
+  app disagreed about which extensions count: one of them gave `.mdx` an outline but would not render
+  it, another rendered `.mkdn` but would not reformat it. All three read one list now.
+
 - **Diagrams on the documentation website now render without an internet connection.** The
   architecture pages draw 34 diagrams, and the engine that draws them was fetched from a third-party
   CDN the moment a page was opened — so the diagrams were missing offline, and reading one told that

@@ -1596,6 +1596,75 @@ blanked *every* plugin column for any connection id containing a dot; F-458 gave
 a progress bar and a Cancel that works. None of those are S3 features. They were all found by trying
 to make one plugin work properly.
 
+## 2026-08-24 (F-471, F-472) — The site stopped reporting its readers, and three sets became one
+
+The two things F-460…F-470 left on the floor, done rather than listed.
+
+### The site asked Google and GitHub who was reading it (F-471)
+
+`DOCUMENTATION.md` gave "fully offline output" as the reason MkDocs Material was chosen. F-460 found
+the first breach — the diagrams came from unpkg.com. There were two more, both Material's defaults
+rather than choices of ours, and both on **every page view**: Roboto from `fonts.googleapis.com`
+(with a preconnect to `fonts.gstatic.com`), and the repository's star and fork counts from
+`api.github.com`.
+
+`theme.font: false` removes the first, and nothing has to replace Roboto — Material's own CSS reads
+`var(--md-text-font,_),-apple-system,…`, so the page falls through to the system stack. Read out of
+the stylesheet rather than assumed. `peach.css` now names those faces itself, because the fallback
+only worked by relying on no font being called `_`.
+
+The second needed a theme override — Material's own `partials/source.html` minus
+`data-md-component="source"`, the attribute its bundle hangs the fetch on. Link, icon and repository
+name stay; the two counts go. Kept as a copy under `docs/assets/mkdocs-overrides/` rather than
+patched at build time: an override is a documented extension point, and a sed over somebody else's
+template breaks silently on upgrade. The diff is one attribute wide, which is what makes checking an
+upgrade cheap.
+
+**Measured from inside the page, not from the HTML:**
+`performance.getEntriesByType('resource')` on a documentation page names exactly one host, and it is
+the server the page came from. Seven diagrams still render, the homepage still shows
+"Download v0.7.2 for macOS" with its size and date.
+
+**One deliberate exception, and now the only one.** The homepage's download button asks GitHub for the
+newest release, because that cannot be known offline; `download.js` is progressive enhancement and the
+markup already links to the releases page. What changed is that this is the *only* request and happens
+only where such a button exists — before, the same host was contacted from every page for an unrelated
+reason. `DOCUMENTATION.md` now says that instead of promising something narrower than it meant.
+
+Found by the build's own warning rather than by review: seventeen of the translated help topics I had
+just written carried `section: Plugins` verbatim, while every language already had its own word —
+Extensions, Complementos, Wtyczki, Плагины, 插件. Two sections in one navigation group, and the group
+lost its label. Taken from each language's own `amazon-s3.md` rather than invented.
+
+### Three answers to "is this Markdown" (F-472)
+
+    DeclarationOutline     md markdown mdown mkd mdx          which files get an outline
+    ExternalToolFormatter  md markdown mdown                  which files Format reformats
+    the Markdown plugin    md markdown mdown mkd mkdn mdwn    which files are rendered
+
+So a `.mdx` file had an outline and could not be rendered, a `.mkdn` file was rendered and could not
+be reformatted, and nothing anywhere said that was intended — the sets were written at three
+different times by whoever needed one. `MarkdownFileType` in PCFoundation is now the union and the
+only answer; the plugin links the framework, so the file it renders is the file the host will outline
+and reformat. Verified in the running app, because a set agreeing with itself proves nothing: F3 on a
+`.mdx` and on a `.mkdn` both report `Plugin · Markdown and HTML` **and** an outline, which neither
+managed before.
+
+`NotesStore.render` is gone — no callers, and the last user in the repository of Apple's
+`NSAttributedString(markdown:)`. Its file header advertised "a live markdown preview" that the
+function did not provide and nothing invoked; the editor has always been the WYSIWYG one in
+`notes_wysiwyg.swift`.
+
+And `dev-overview.md` said "Help & rich text views | **WebKit** (`WKWebView`, local content only)".
+There is no `WKWebView` in the application any more: the Help Book is an Apple Help Book through
+`NSHelpManager`, rich text is AppKit, and the only web view in the product belongs to the Markdown
+plugin along with the policy around it.
+
+**Evidence.** Full suite **3,130 tests, 0 failures**; the five static gates touched by this green;
+`check-docs`, `check-translations` (`behind=0`) and `check-translation-drift` (`drifted=0`) green after
+the section fix. Four new tests pin the single set — including that the outline and the Format button
+read *it* rather than one of their own, which is the part that would rot silently.
+
 ## 2026-08-24 (F-464…F-470) — Formats leave the core, and the lister ABI grows up
 
 F-460…F-462 closed three gaps and left three open — diagrams, mathematics, and a real parser. All
