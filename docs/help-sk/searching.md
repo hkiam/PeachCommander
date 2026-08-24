@@ -22,7 +22,7 @@ Keď potrebujete vystopovať súbory kdekoľvek na svojom Macu — podľa názvu
 
 1. Ak chcete hľadať vnútri súborov, zadajte text do poľa **Nájsť text** na karte Všeobecné — hľadá sa to, čo je v poli, prázdne pole hľadá len podľa názvov. Možnosti umožňujú urobiť ho **rozlišujúcim veľkosť**, zhodovať sa len s **celým slovom**, zaobchádzať s textom ako s **regulárnym výrazom**, urobiť **šestnástkové hľadanie obsahu** alebo nájsť súbory, ktoré text **neobsahujú**.
 2. Prepnite na kartu **Rozšírené** na zúženie výsledkov podľa **veľkosti** (napríklad `10K` až `5M`), podľa rozsahu **dátumu úpravy**, alebo na súbory zmenené za posledných N dní.
-3. Zapnite **Hľadať vnútri archívov** na nazretie do archívov rodiny zip (zip, jar, war a podobné).
+3. Zapnite **Hľadať vnútri archívov**, aby ste nazreli do nájdených archívov — rovnaké formáty, aké možno otvoriť klávesom Enter, vrátane tých, ktoré pridá baliaci zásuvný modul. Archívy, ktoré sa nepodarilo otvoriť, sa ohlásia po dokončení hľadania.
 4. Na obmedzenie hľadania na to, čo ste už vybrali, zapnite pred štartom **Hľadať len vo vybraných položkách**.
 5. Zapnite **Hľadať aj v komentároch súborov** a text sa bude hľadať okrem obsahu aj v komentári každého súboru. Tak nájdete súbor znova podľa toho, čo ste o ňom napísali — „originál zákazníka“, „nahradené exportom 2026“ —, keď v samotnom súbore nič také nie je. Takto nájdený výsledok zobrazí komentár namiesto riadku súboru a žiadne číslo riadku, pretože nález neleží v texte súboru. Veľkosť písmen, celé slovo aj regulárne výrazy platia pre komentár rovnako ako pre obsah; hexadecimálne hľadanie nie, keďže komentár je napísaný text. **Neobsahujúce** zostáva bezosporné: súbor sa vypíše, keď text nie je ani v obsahu, ani v komentári. Ak je zapnutý modul Poznámky, jeho poznámka je dostupná ako obsahové pole, na ktoré možno v časti **Plugins** nasadiť podmienku — pozri [Práca s modulmi](plugins.md).
 6. Niektoré zásuvné moduly dokážu zo súboru urobiť text, ktorý sám súbor neobsahuje — modul dekompilátora urobí z `.class` zdrojový kód Javy. Zapnite **Hľadať v texte od zásuvných modulov** a takéto súbory sa prehľadávajú ako ten text, nie ako vlastné bajty, takže obrat zo zdrojového kódu sa nájde v skompilovanej triede. Voľba sa zobrazí len vtedy, ak je takýto modul nainštalovaný, a je pomalšia: vytvorenie textu môže znamenať jeden dekompilátor na súbor.
@@ -55,7 +55,7 @@ Pri lokálnych priečinkoch, ktoré macOS už zaindexoval, zapnite **Použiť Sp
 
 ## Poznámky
 
-- Hľadanie obsahu číta celé súbory pri lokálnych priečinkoch; na iných umiestneniach sa veľmi veľké súbory preskočia (zhruba 16 MB, alebo 64 MB pri použití regulárneho výrazu).
+- Hľadanie v obsahu číta celé súbory pri miestnych priečinkoch aj v archívoch; v sieťových umiestneniach sa veľmi veľké súbory čítajú len sčasti (približne 16 MB, alebo 64 MB pri použití regulárneho výrazu).
 - Hľadanie vnútri archívov zostupuje až do štyroch úrovní vnorených archívov.
 - **Zahrnúť priečinky do výsledkov** uvádza aj priečinky, ktorých názvy sa zhodujú, nielen súbory.
 - Spotlight pokrýva len zaindexované lokálne priečinky; pri sieťových umiestneniach alebo zhode podľa vzoru ho nechajte vypnutý a nechajte Nájsť súbory skenovať.

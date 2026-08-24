@@ -7,24 +7,73 @@
 // directly under "/"), so the real path doubles as both a unique name and
 // the key needed to resolve `stat`/`openRead`/`localFileIfAvailable` back
 // to the underlying file.
+//
+// A result found *inside* an archive has no such path — `/dir/a.tar.gz/etc/app.conf`
+// cannot be `lstat`ed — and used to be dropped by the `compactMap` in `list` without
+// a word, so feeding ten archive hits to a panel produced an empty one and no
+// explanation. Those entries now carry their own listing snapshot plus the archive
+// chain they came from, and resolve through a host-supplied resolver only when
+// something actually reads them (F-463).
 
 import Foundation
 
-/// Presents a fixed set of real local file paths as a single flat "/"
-/// directory listing.
+/// One row of a results listing: a real file, or a member of an archive.
+public enum ResultsEntrySource: Sendable {
+    /// A real absolute local path, resolved by `lstat` as it always was.
+    case local(String)
+    /// A file inside one or more archives: the path as displayed, the listing
+    /// snapshot taken during the walk, and the archive chain needed to reach it.
+    case member(display: String, entry: VFSEntry, origin: SearchOrigin)
+
+    /// The flat name this row is listed and addressed under.
+    public var display: String {
+        switch self {
+        case .local(let path): return path
+        case .member(let display, _, _): return display
+        }
+    }
+}
+
+/// Extracts an archive member to a local file. Supplied by the host, because
+/// resolving one means opening archives — which PCVFS has no way to do.
+public typealias ResultsMemberResolver = @Sendable (SearchOrigin) async -> URL?
+
+/// Presents a fixed set of results — real local files and archive members — as a
+/// single flat "/" directory listing.
 public final class ResultsFS: VirtualFileSystem, @unchecked Sendable {
     public let scheme = "results"
     public var capabilities: VFSCapabilities { [.read] }
 
-    private let paths: [String]
+    private let sources: [ResultsEntrySource]
     private let fsID: String
+    private let resolveMember: ResultsMemberResolver?
 
     /// - Parameters:
     ///   - paths: Real absolute local paths to expose as the root listing.
     ///   - fsID: The `VFSPath.filesystemId` this instance is mounted under.
-    public init(paths: [String], fsID: String) {
-        self.paths = paths
+    public convenience init(paths: [String], fsID: String) {
+        self.init(sources: paths.map { .local($0) }, fsID: fsID, resolveMember: nil)
+    }
+
+    /// - Parameters:
+    ///   - sources: The rows to list, real files and archive members alike.
+    ///   - fsID: The `VFSPath.filesystemId` this instance is mounted under.
+    ///   - resolveMember: Extracts an archive member on demand. Without it, member
+    ///     rows still list — they just cannot be read, which is the honest answer
+    ///     for a caller that never offered a way to reach them.
+    public init(sources: [ResultsEntrySource], fsID: String,
+                resolveMember: ResultsMemberResolver? = nil) {
+        self.sources = sources
         self.fsID = fsID
+        self.resolveMember = resolveMember
+    }
+
+    /// The member row addressed by `path`, if this filesystem has one.
+    private func member(at path: String) -> (entry: VFSEntry, origin: SearchOrigin)? {
+        for case .member(let display, let entry, let origin) in sources where display == path {
+            return (entry, origin)
+        }
+        return nil
     }
 
     /// Builds a `results` `VFSPath` rooted at this instance's mount.
@@ -37,13 +86,31 @@ public final class ResultsFS: VirtualFileSystem, @unchecked Sendable {
                 continuation.finish()
                 return
             }
-            let entries = paths.compactMap(ResultsStat.entry(atRealPath:))
+            let entries: [VFSEntry] = self.sources.compactMap { source in
+                switch source {
+                case .local(let realPath):
+                    return ResultsStat.entry(atRealPath: realPath)
+                case .member(let display, let entry, _):
+                    // Listed from the snapshot the walk already took. Opening 90 archives
+                    // to fill in a size column would make showing the results cost more
+                    // than finding them did. Only the name changes: like every other row
+                    // here, it is the full display path rather than a bare filename.
+                    var listed = entry
+                    listed.name = display
+                    return listed
+                }
+            }
             continuation.yield(VFSEntryBatch(entries: entries, isLastBatch: true))
             continuation.finish()
         }
     }
 
     public func stat(_ path: VFSPath) async throws -> VFSEntry {
+        if let found = member(at: path.path) {
+            var listed = found.entry
+            listed.name = path.path
+            return listed
+        }
         guard let entry = ResultsStat.entry(atRealPath: path.path) else {
             throw VFSError.notFound(path.path)
         }
@@ -51,6 +118,11 @@ public final class ResultsFS: VirtualFileSystem, @unchecked Sendable {
     }
 
     public func openRead(_ path: VFSPath) async throws -> VFSReadStream {
+        if let found = member(at: path.path) {
+            guard let resolveMember,
+                  let url = await resolveMember(found.origin) else { throw VFSError.notFound(path.path) }
+            return ResultsReadStream(data: try Data(contentsOf: url))
+        }
         guard FileManager.default.fileExists(atPath: path.path) else {
             throw VFSError.notFound(path.path)
         }
@@ -87,7 +159,10 @@ public final class ResultsFS: VirtualFileSystem, @unchecked Sendable {
     }
 
     public func localFileIfAvailable(_ path: VFSPath) async throws -> URL? {
-        FileManager.default.fileExists(atPath: path.path) ? URL(fileURLWithPath: path.path) : nil
+        if let found = member(at: path.path) {
+            return await resolveMember?(found.origin)
+        }
+        return FileManager.default.fileExists(atPath: path.path) ? URL(fileURLWithPath: path.path) : nil
     }
 
     /// Whether `path` refers to this filesystem's single flat root ("/",

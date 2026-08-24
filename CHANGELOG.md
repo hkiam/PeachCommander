@@ -16,6 +16,23 @@ does not have.
 
 ### Added
 
+- **Searching inside archives now means every archive the app can open.** Turning on **Search inside
+  archives** used to descend into the zip family only, so a `.tar.gz` holding a config file with the
+  search term reported nothing found — even though pressing Enter opens that same file. Search, the
+  panel's Enter, unpack, Test Archive and archive reload now share one authority for "is this an
+  archive and who opens it", so tar, tar.gz/tgz, 7z, rar, xz, zst, iso, cpio, squashfs, single-file
+  `.gz` streams, split zips (`name.zip.001`) and anything a packer plugin or the **Extra archive
+  extensions** setting adds are all searched wherever they are browsable. Two long-standing gaps
+  closed with it: unpacking a plugin-only format (Alt+F9 on a 7z) used to fail with "select an
+  archive first" on a file the panel opens happily, and reloading an archive could silently swap a
+  plugin's mount for the built-in zip reader.
+- **A search that could not look somewhere now says so.** Archives that were unreadable, encrypted,
+  over the size ceiling or nested deeper than four levels used to be skipped in silence, which reads
+  exactly like "the term is not in there". The status line now ends with how many were not searched.
+- **Results found inside archives are usable.** F3 opened them with a beep and **Feed to Listbox**
+  dropped them without a word; both now work, as does copying one out with F5, because a hit carries
+  the archive chain it came from instead of a path string nothing could resolve.
+
 - **Amazon S3 and S3-compatible storage as a drive.** **Net ▸ Amazon S3 Connect…** connects to Amazon
   S3, MinIO, Ceph, Cloudflare R2, Wasabi, Backblaze B2 or DigitalOcean Spaces, and the bucket list
   becomes the top level of a panel with each bucket a folder below it. Reading, writing, new folders
@@ -47,6 +64,22 @@ does not have.
 
 ### Fixed
 
+- **The same bytes now give the same answer inside an archive as on disk.** Content search stopped
+  after 16 MB of an archive member while a loose file had no such limit, so a match further into an
+  archived log was reported as no match at all. Members past that point are extracted and searched
+  exactly as local files.
+- **Searching no longer leaves extracted archives behind.** Descending into a nested archive wrote a
+  temp directory that nothing ever removed; the extraction now belongs to the descent that made it,
+  and an archive mount — built-in or plugin-backed — cleans up everything it extracted when it goes
+  away. Anything earlier builds already left behind is cleared out at the next launch.
+- **A long search can be stopped while it is opening an archive.** Cancelling checked only between
+  archives, so a search that had just started on a large one had to see it through first.
+- **Entering an archive twice no longer reads it twice.** An open archive is remembered — up to 32 of
+  them, and only while they stay small enough to be worth remembering — so leaving one and going back
+  in, or unpacking it afterwards, no longer re-reads the whole directory.
+- **Reading a tar is no longer paid for in full.** The reader read whole files into memory before it
+  could tell whether they were tars at all — so a large `.xz`, `.zst` or `.7z` was read cover to
+  cover only to be handed on, and a `dump.sql.gz` was decompressed entirely before being rejected.
 - **Images in an assistant answer are shown as images.** An answer pointing at a picture on your Mac
   used to print the Markdown for it, brackets and all. It now appears, scaled to the width of the chat.
   Only files on this Mac are shown: an image address on the internet is left as visible text and is

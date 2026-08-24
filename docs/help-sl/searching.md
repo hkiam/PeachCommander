@@ -22,7 +22,7 @@ Ko morate izslediti datoteke kjer koli na svojem Macu — po imenu, po tem, kaj 
 
 1. Za iskanje znotraj datotek vnesite besedilo v polje **Najdi besedilo** na zavihku Splošno — išče se to, kar je v polju, prazno polje išče samo po imenih. Možnosti vam omogočajo, da ga naredite **razlikuje velikost**, ujema le **celo besedo**, obravnava besedilo kot **regularni izraz**, izvede **šestnajstiško iskanje vsebine** ali najde datoteke, ki besedila **ne vsebujejo**.
 2. Preklopite na zavihek **Napredno**, da zožite rezultate po **velikosti** (na primer od `10K` do `5M`), po obsegu **datuma spremembe**, ali na datoteke, spremenjene v zadnjih N dneh.
-3. Vklopite **Išči znotraj arhivov**, da pogledate v arhive družine zip (zip, jar, war in podobne).
+3. Vklopite **Išči v arhivih**, da pogledate v najdene arhive — iste zapise, ki jih lahko odprete z Enter, vključno s tistimi, ki jih doda vtičnik za pakiranje. Arhivi, ki jih ni bilo mogoče odpreti, so sporočeni ob koncu iskanja.
 4. Za omejitev iskanja na to, kar ste že izbrali, pred začetkom vklopite **Išči le v izbranih elementih**.
 5. Vklopite **Iskati tudi v komentarjih datotek** in besedilo se bo poleg vsebine iskalo tudi v komentarju vsake datoteke. Tako datoteko spet najdete po tem, kar ste o njej zapisali — »izvirnik stranke«, »nadomeščeno z izvozom 2026« —, kadar v datoteki sami ni ničesar takega. Tako najden zadetek prikaže komentar namesto vrstice datoteke in nobene številke vrstice, saj zadetek ni v besedilu datoteke. Velikost črk, cela beseda in regularni izrazi za komentar veljajo enako kot za vsebino; šestnajstiško iskanje ne, saj je komentar natipkano besedilo. **Ne vsebuje** ostane skladno: datoteka je navedena, kadar besedila ni niti v vsebini niti v komentarju. Če je vstavek Zapiski vklopljen, je njegov zapisek na voljo kot vsebinsko polje, na katero lahko v razdelku **Plugins** postavite pogoj — glejte [Delo z vstavki](plugins.md).
 6. Nekateri vstavki znajo datoteko pretvoriti v besedilo, ki ga datoteka sama ne vsebuje — vstavek dekompilatorja iz `.class` naredi izvorno kodo Jave. Vklopite **Iskanje po besedilu, ki ga dajo vstavki**, in takšne datoteke se preiščejo kot to besedilo namesto kot lastni bajti, tako da se besedna zveza iz izvorne kode najde v prevedenem razredu. Možnost se pokaže le, kadar je tak vstavek namenščen, in je počasnejša: izdelava besedila lahko pomeni en dekompilator na datoteko.
@@ -55,7 +55,7 @@ Za lokalne mape, ki jih je macOS že indeksiral, vklopite **Uporabi Spotlight** 
 
 ## Opombe
 
-- Iskanje po vsebini bere celotne datoteke za lokalne mape; na drugih lokacijah so zelo velike datoteke preskočene (približno 16 MB, ali 64 MB pri uporabi regularnega izraza).
+- Iskanje po vsebini prebere cele datoteke v krajevnih mapah in v arhivih; na omrežnih mestih se zelo velike datoteke preberejo le deloma (približno 16 MB ali 64 MB pri regularnem izrazu).
 - Iskanje znotraj arhivov sestopi do štirih ravni vgnezdenih arhivov.
 - **Vključi mape v rezultate** našteje tudi mape, katerih imena se ujemajo, ne le datoteke.
 - Spotlight pokriva le indeksirane lokalne mape; za omrežne lokacije ali ujemanje po vzorcu ga pustite izklopljenega in pustite, da Poišči datoteke pregleduje.

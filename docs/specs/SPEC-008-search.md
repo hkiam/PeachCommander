@@ -11,7 +11,8 @@ Go To File, Feed To Listbox, New Search.
 - General: "Search for" masks (space-separated, `|` excludes, dir masks with
   trailing `/`), "Search in" (start dirs, multiple via `;`, dropdown history +
   "current dir" default + browse), depth limit combo ("all" / 1..N levels),
-  checkboxes: search archives (F-153), only selected files/dirs.
+  checkboxes: search archives (F-153; label names no formats — the set follows what
+  the panel can open), only selected files/dirs.
 - "Find text" checkbox + field: encodings (auto/UTF-8/UTF-16/Latin-1/hex),
   case-sensitive, whole words, NOT containing, regex (F-154).
 - Advanced: date between/older-than (units), size (=,>,< with units),
@@ -27,8 +28,15 @@ Go To File, Feed To Listbox, New Search.
   firmlink duplicates & /Volumes recursion into startup disk clone.
 - Pipeline per performance.md: enumerator → bounded channel → matcher workers.
   Name match first (cheap), then attribute filters, then content (expensive).
-- Content: mmap when local & regular; VFS streams otherwise; archives: iterate
-  entries via ArchiveFS without full unpack when format allows.
+- Content: mmap when local & regular; VFS streams otherwise (16 MB cap). An archive
+  member above that cap is extracted and searched as a local file, so the same bytes
+  answer the same whether they sit on disk or inside an archive (F-463).
+- Archives: opened through the shared `ArchiveOpening` registry (SPEC-007 §2), not by
+  the engine's own format list — so plugin formats and user-configured extensions are
+  searched wherever they are browsable. A walk prefers a backend with random access
+  over one that spawns a process per member, and honours `Search.ArchiveMaxBytes`.
+- Skips are reported, never silent: unreadable, encrypted, over-size and too-deeply-
+  nested archives are collected as `SearchNotice`s and named in the status line (F-463).
 - Regex: Swift Regex; TC-dialect notes: TC uses its own flavor — document the
   few differences in help (no need to emulate exactly; parity of capability).
 - Results stream to UI (batch 100/100 ms); count + current-dir status line.

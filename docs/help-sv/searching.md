@@ -22,7 +22,7 @@ När du behöver spåra upp filer var som helst på din Mac — efter namn, efte
 
 1. För att söka inuti filer skriver du texten i **Sök text** på fliken Allmänt — det som står i fältet söks efter, och ett tomt fält söker bara på namn. Alternativ låter dig göra den **Skiftlägeskänslig**, matcha endast ett **Helt ord**, behandla texten som ett **Reguljärt uttryck**, göra en **Hexadecimal innehållssökning**, eller hitta filer som **Inte innehåller** texten.
 2. Växla till fliken **Avancerat** för att smalna av resultaten efter **Storlek** (till exempel `10K` till `5M`), efter **ändringsdatum**-intervall, eller till filer ändrade de senaste N dagarna.
-3. Slå på **Sök inuti arkiv** för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).
+3. Slå på **Sök inuti arkiv** för att titta in i arkiven som hittas — samma format som du kan öppna med Retur, inklusive de som ett packar-tillägg lägger till. Arkiv som inte kunde öppnas rapporteras när sökningen är klar.
 4. För att begränsa sökningen till det du redan valt, slå på **Sök endast i markerade objekt** innan du startar.
 5. Slå på **Sök även i filkommentarer** och texten söks i varje fils kommentar utöver dess innehåll. Så hittar du en fil igen via det du skrev *om* den — ”kundens original”, ”ersatt av 2026-exporten” — när inget sådant står i själva filen. Ett träff som hittas så visar kommentaren i stället för en rad ur filen, och inget radnummer, eftersom träffen inte finns i filens text. Skiftläge, helt ord och reguljära uttryck gäller för en kommentar precis som för innehåll; en hex-sökning gör det inte, eftersom en kommentar är text någon skrivit. **Innehåller inte** förblir konsekvent: en fil listas när texten varken finns i innehållet eller i kommentaren. Är insticksmodulen Anteckningar påslagen finns dess anteckning som ett innehållsfält, som du kan filtrera på under **Plugins** — se [Arbeta med insticksmoduler](plugins.md).
 6. Vissa insticksmoduler kan göra en fil till text som filen själv inte innehåller — dekompilator-modulen gör en `.class` till Java-källkod. Slå på **Sök i text som insticksmoduler tillhandahåller** och sådana filer söks som den texten i stället för som sina egna byte, så att en formulering ur källkoden hittas i en kompilerad klass. Alternativet visas bara när en sådan modul är installerad, och det är långsammare: att skapa texten kan innebära en dekompilator per fil.
@@ -55,7 +55,7 @@ För lokala mappar som macOS redan har indexerat, slå på **Använd Spotlight**
 
 ## Anmärkningar
 
-- Innehållssökning läser hela filer för lokala mappar; på andra platser hoppas mycket stora filer över (ungefär 16 MB, eller 64 MB när ett reguljärt uttryck används).
+- Innehållssökning läser hela filer för lokala mappar och för arkiv; på nätverksplatser läses mycket stora filer bara delvis (ungefär 16 MB, eller 64 MB med ett reguljärt uttryck).
 - Sökning inuti arkiv går ner upp till fyra nivåer av nästlade arkiv.
 - **Inkludera mappar i resultaten** listar även mappar vars namn matchar, inte bara filer.
 - Spotlight täcker endast indexerade lokala mappar; för nätverksplatser eller mönsterbaserad matchning, lämna det av och låt Hitta filer söka igenom.

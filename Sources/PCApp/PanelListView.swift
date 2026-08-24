@@ -321,31 +321,15 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private var springLoadRow: Int = -1
     private var springLoadTimer: Timer?
 
-    /// File extensions treated as browsable archives.
-    /// Extensions treated as browsable archives: the built-in zip and tar
-    /// families (ArchiveFS reads both natively) plus any registered by enabled
-    /// packer plugins. "gz"/"tgz" cover the common .tar.gz case (pathExtension
-    /// of "x.tar.gz" is "gz"); a non-tar .gz simply beeps.
-    private var archiveExtensions: Set<String> = ["zip", "tar", "gz", "tgz", "taz",
-                                                  // F-130: libarchive formats via the bsdtar shell source.
-                                                  "cpio", "iso", "cab", "lzh", "lha", "xar", "pax", "cpgz"]
-
-    /// Add plugin-provided archive extensions (lowercased, no dot).
-    func addArchiveExtensions(_ exts: Set<String>) {
-        archiveExtensions.formUnion(exts.map { $0.lowercased() })
-    }
-
-    /// `name.zip.001`, the first part of a plainly split archive (F-382).
+    /// Does this name look like something we can open as an archive?
     ///
-    /// Not simply "001" in `archiveExtensions`: a numbered part belongs to whatever was split, and
-    /// most of those are not archives. Anything not recognised here is handed to NSWorkspace, so
-    /// claiming every `.001` would take that away from the ones that are not zips and give them a
-    /// beep instead. The stem has to say `.zip` for this to be our business.
-    static func isFirstPartOfSplitZip(_ path: String) -> Bool {
-        let ext = (path as NSString).pathExtension
-        guard ext.count == 3, ext.allSatisfy(\.isNumber), Int(ext) == 1 else { return false }
-        return ((path as NSString).deletingPathExtension as NSString).pathExtension.lowercased() == "zip"
-    }
+    /// Asked rather than kept. This used to be a private set that accumulated from
+    /// three sources and was still a different answer from the one the search used —
+    /// which is how a `.tar.gz` came to be openable with Enter and invisible to a
+    /// content search at the same time. The window controller wires this to the
+    /// shared registry (F-463); nil until then, so an unwired panel simply opens
+    /// files the way it always would.
+    var isArchiveName: (@Sendable (String) -> Bool)?
 
     // The ordered, configurable set of visible columns. Built-in columns keep
     // fieldID == PanelColumn.rawValue (so sort/arrow code is unchanged); plugin
@@ -1812,7 +1796,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             HistoryService.shared.recordFile(path)
             NSWorkspace.shared.open(URL(fileURLWithPath: path))
         case .file, .symlinkFile:
-            if archiveExtensions.contains(entry.ext.lowercased()) || Self.isFirstPartOfSplitZip(path) {
+            if isArchiveName?(entry.name) == true {
                 onEnterArchive?(path)
             } else if let probe = onProbeThenEnterArchive {
                 // A content-detecting packer plugin is enabled: let it look before the file

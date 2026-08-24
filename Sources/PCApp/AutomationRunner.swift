@@ -1109,6 +1109,35 @@ extension MainWindowController {
                     try? (findWindow?.automationResults() ?? "ERROR: no find window\n")
                         .write(toFile: a[3], atomically: true, encoding: .utf8)
                 }
+            case "findarchives":                           // findarchives <mask>|<text>|<dir>|<out> (F-463)
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 4 {
+                    showFindFiles()
+                    try? await Task.sleep(nanoseconds: 700_000_000)
+                    findWindow?.automationSearchArchives(mask: a[0], text: a[1], directory: a[2])
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)   // let the walk finish
+                    // The status line goes into the report too: a search that quietly
+                    // skipped an archive is the defect this feature exists to remove, so
+                    // "it said so" has to be checkable rather than assumed.
+                    let report = "status=" + (findWindow?.automationStatus() ?? "?") + "\n"
+                        + "skipped=\(findWindow?.automationSkippedCount() ?? -1)\n"
+                        + (findWindow?.automationResults() ?? "ERROR: no find window\n")
+                    try? report.write(toFile: a[3], atomically: true, encoding: .utf8)
+                }
+            case "findfeedarchives":                       // findfeedarchives <mask>|<text>|<dir>|<out> (F-463)
+                // Search into archives, then send the results to the panel. A hit inside an
+                // archive used to be dropped by ResultsFS without a word, so the panel came
+                // up short and said nothing — the dump is how that stays fixed.
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 4 {
+                    showFindFiles()
+                    try? await Task.sleep(nanoseconds: 700_000_000)
+                    findWindow?.automationSearchArchives(mask: a[0], text: a[1], directory: a[2])
+                    try? await Task.sleep(nanoseconds: 3_000_000_000)
+                    findWindow?.automationFeedToListbox()
+                    try? await Task.sleep(nanoseconds: 1_500_000_000)   // the mount is a Task
+                    await dumpActivePanel(to: a[3])
+                }
             case "httpget":                                // httpget <url>|<dir>|<name>[|<sha256>] (F-330)
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count >= 3 {

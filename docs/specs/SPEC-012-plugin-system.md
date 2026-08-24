@@ -32,8 +32,11 @@ MULTIPLE/DELETE/OPTIONS/MEMPACK/BY_CONTENT/SEARCHTEXT/HIDE/ENCRYPT),
 `ConfigurePacker(parentView)`, `StartMemPack/PackToMem/DoneMemPack`,
 `CanYouHandleThisFile(char* name)`, `PackSetDefaultParams`, `PkSetCryptCallback`,
 `GetBackgroundFlags`.
-Integration: PCArchive format registry consults plugin associations first
-(plugins.ini `[PackerAssoc] ext=plugin`), built-ins second.
+Integration: the archive-open registry consults plugin associations first
+(plugins.ini `[PackerAssoc] ext=plugin`), built-ins second. It lives as
+`ArchiveOpening`/`ArchiveRegistry` in PCVFS rather than in PCArchive — PCArchive
+cannot see `PluginManager`, and PCVFS is the module both sides already depend on;
+`PCXArchiveBackend` carries the plugin half (F-463).
 
 ## §3 PDX — content plugins (WDX port) (F-234)
 

@@ -14,7 +14,7 @@ import PCVFS
 /// Presents a zip or tar archive as a read-only `VirtualFileSystem` at "/".
 public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
     public let scheme = "zip"
-    public var capabilities: VFSCapabilities { [.read] }
+    public var capabilities: VFSCapabilities { [.read, .localExtraction] }
 
     private let source: ArchiveSource
     private let fsID: String
@@ -27,6 +27,17 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
     /// True when any member is encrypted — the host prompts for a password once
     /// on entering such an archive and assigns `password`.
     public var hasEncryptedEntries: Bool { source.members.contains { $0.isEncrypted } }
+
+    /// Forwarded from the backend that actually opened this archive, so a caller
+    /// choosing a read strategy asks the mount rather than guessing from the name (F-463).
+    /// Bytes this mount keeps alive, forwarded from its backend — what the archive cache
+    /// budgets against, so a mapped zip costs nothing and an inflated tar costs its size.
+    public var retainedBytes: Int64 { source.retainedBytes }
+
+    public var memberAccessCost: MemberAccessCost {
+        source.readsMembersByProcess ? .processPerMember : .cheapRandomAccess
+    }
+
 
     /// Whether the current `password` actually decrypts the archive: tries the
     /// first encrypted file entry (true when nothing is encrypted). Lets the host
@@ -47,6 +58,11 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
         let memberIndex: Int?
     }
 
+    /// Everything this mount extracted, removed when the mount goes away.
+    private let tempLock = NSLock()
+    private var tempRoot: URL?
+    private var tempCounter = 0
+
     private var nodes: [String: Node] = [:]
     /// Parent full path -> ordered list of child full paths.
     private var childOrder: [String: [String]] = [:]
@@ -55,17 +71,26 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
     /// first and then the tar / tar.gz reader. Returns `nil` if the file cannot
     /// be parsed as any supported archive. `fsID` uniquely identifies this mount
     /// and is used as the `filesystemId` for paths built via `path(_:)`.
-    public init?(archiveFileURL: URL, fsID: String) {
+    public convenience init?(archiveFileURL: URL, fsID: String) {
+        self.init(archiveFileURL: archiveFileURL, fsID: fsID, tarLimits: .unlimited)
+    }
+
+    /// - Parameter tarLimits: ceiling on what a gzip-wrapped tar may expand to. The
+    ///   default is no ceiling, which is right for a keypress; a background walk passes
+    ///   one so a folder of build artefacts cannot inflate itself into memory.
+    public init?(archiveFileURL: URL, fsID: String, tarLimits: TarReader.Limits) {
         // For libarchive-only formats (cpio/iso/cab/lzh…) try the bsdtar shell
         // source first — the lenient TarReader would otherwise mis-claim them (F-130).
         let ext = archiveFileURL.pathExtension.lowercased()
         let source: ArchiveSource?
         if ShellArchiveSource.handledExtensions.contains(ext) {
             source = ShellArchiveSource(fileURL: archiveFileURL)
-                ?? ZipReader(fileURL: archiveFileURL) ?? TarReader(fileURL: archiveFileURL)
+                ?? ZipReader(fileURL: archiveFileURL)
+                ?? TarReader(fileURL: archiveFileURL, limits: tarLimits)
         } else {
             source = ZipReader(fileURL: archiveFileURL)
-                ?? TarReader(fileURL: archiveFileURL) ?? ShellArchiveSource(fileURL: archiveFileURL)
+                ?? TarReader(fileURL: archiveFileURL, limits: tarLimits)
+                ?? ShellArchiveSource(fileURL: archiveFileURL)
         }
         guard let source else { return nil }
         self.source = source
@@ -108,6 +133,9 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
         }
 
         for (memberIndex, member) in source.members.enumerated() {
+            // Same reason as the reader's header loop: a cancelled search must not have to
+            // wait for a huge archive's tree to finish being built before it can stop.
+            if memberIndex % 4096 == 4095, Task.isCancelled { return nil }
             let components = member.path.split(separator: "/", omittingEmptySubsequences: true).map(String.init)
             guard let lastComponent = components.last else { continue }
             let entryModified = member.modified ?? fallbackModified
@@ -197,12 +225,42 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
         guard !node.isDirectory, let index = node.memberIndex else { return nil }
 
         let data = try source.data(atIndex: index, password: password)
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PCArchive-\(fsID)-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let fileURL = tempDir.appendingPathComponent(node.name)
+        let fileURL = try extractionDirectory().appendingPathComponent(node.name)
         try data.write(to: fileURL, options: .atomic)
         return fileURL
+    }
+
+    /// A fresh directory to extract one member into, inside this mount's own temp root.
+    ///
+    /// Per member rather than one shared directory because two members in different
+    /// folders may share a name, and the extracted file has to keep its own — the viewer
+    /// and every "open with" downstream go by it.
+    ///
+    /// The root is per *mount* and is removed in `deinit`. It used to be a fresh
+    /// `PCArchive-<fsID>-<uuid>` directory per call that nothing ever deleted, and since
+    /// `fsID` carries the archive's path, `appendingPathComponent` quietly turned the
+    /// slashes in it into more directories — so every extraction left a small tree
+    /// behind in the temp directory for the OS to reap whenever it got round to it.
+    private func extractionDirectory() throws -> URL {
+        tempLock.lock()
+        defer { tempLock.unlock() }
+        let root: URL
+        if let tempRoot {
+            root = tempRoot
+        } else {
+            root = FileManager.default.temporaryDirectory
+                .appendingPathComponent("PCArchive-\(UUID().uuidString)", isDirectory: true)
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+            tempRoot = root
+        }
+        tempCounter += 1
+        let dir = root.appendingPathComponent("\(tempCounter)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
+    deinit {
+        if let tempRoot { try? FileManager.default.removeItem(at: tempRoot) }
     }
 
     /// Normalizes a `VFSPath.path` ("/" for root, "/a/b", "/a/b/" all

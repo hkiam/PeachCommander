@@ -38,6 +38,33 @@ public protocol ArchiveSource: AnyObject {
     /// by formats that support per-member encryption (zip). Directories yield
     /// empty data.
     func data(atIndex index: Int, password: String?) throws -> Data
+
+    /// Whether reading one member costs a subprocess (F-463).
+    ///
+    /// False for both native readers: the zip reader seeks to a member through a
+    /// mapped central directory, and the tar reader already holds the stream, so a
+    /// member is a slice. A backend that shells out per member is the exception and
+    /// says so, because a caller with a content filter must then read the archive
+    /// once instead of member by member.
+    ///
+    /// A plain `Bool` rather than PCVFS's `MemberAccessCost`: these files are compiled
+    /// on their own by `Tools/check-archive-listing.sh`, which checks this app's
+    /// reading of an archive against an independent one, and an import of a sibling
+    /// framework would put that check out of reach. `ArchiveFS` does the mapping.
+    var readsMembersByProcess: Bool { get }
+
+    /// Bytes this backend keeps alive for as long as it exists (F-463).
+    ///
+    /// Zero for the readers that map or that only hold a listing; the whole payload for
+    /// the tar reader, which has to inflate a gzip stream before any member can be read.
+    /// A cache of open archives needs the number: 32 mapped zips cost nothing, and 32
+    /// inflated tars would turn a passing memory spike into a permanent one.
+    var retainedBytes: Int64 { get }
+}
+
+public extension ArchiveSource {
+    var readsMembersByProcess: Bool { false }
+    var retainedBytes: Int64 { 0 }
 }
 
 /// Adapts `ZipReader` to `ArchiveSource`. Member order mirrors `entries`, so an

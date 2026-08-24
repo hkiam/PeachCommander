@@ -136,6 +136,13 @@ public struct VFSCapabilities: Sendable, OptionSet {
     public static let watch = VFSCapabilities(rawValue: 1 << 3)
     public static let execute = VFSCapabilities(rawValue: 1 << 4)
     public static let seekableStreams = VFSCapabilities(rawValue: 1 << 5)
+    /// `localFileIfAvailable` produces a real file cheaply, from data already at hand (F-463).
+    ///
+    /// Declared by the archive filesystems and deliberately not by the network ones: for
+    /// FTP, SFTP, S3 and WebDAV the same call downloads the whole file, so a caller that
+    /// escalates to it to avoid a size cap would turn a bounded read into an unbounded
+    /// transfer. Extracting a member from an archive that is already open is not that.
+    public static let localExtraction = VFSCapabilities(rawValue: 1 << 6)
 }
 
 /// Path within a virtual file system

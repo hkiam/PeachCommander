@@ -22,7 +22,7 @@ Wanneer je bestanden ergens op je Mac wilt opsporen — op naam, op wat ze bevat
 
 1. Om binnen bestanden te zoeken, typ je de tekst in **Tekst zoeken** op het tabblad Algemeen — wat in dat veld staat wordt gezocht, een leeg veld zoekt alleen op naam. Met opties kun je het **Hoofdlettergevoelig** maken, alleen een **Heel woord** laten overeenkomen, de tekst als een **Reguliere expressie** behandelen, een **Hex-inhoudszoekopdracht** uitvoeren, of bestanden vinden die de tekst **Niet bevatten**.
 2. Schakel naar het tabblad **Geavanceerd** om resultaten te versmallen op **Grootte** (bijvoorbeeld `10K` tot `5M`), op **gewijzigde datum**-bereik, of op bestanden die in de laatste N dagen zijn gewijzigd.
-3. Zet **In archieven zoeken** aan om binnen zip-achtige archieven te kijken (zip, jar, war en dergelijke).
+3. Schakel **In archieven zoeken** in om in de gevonden archieven te kijken — dezelfde formaten die u met Enter kunt openen, inclusief die van een pakker-plug-in. Archieven die niet geopend konden worden, worden aan het eind van de zoekopdracht gemeld.
 4. Om de zoekopdracht te beperken tot wat je al hebt gekozen, zet je **Alleen in geselecteerde items zoeken** aan voordat je begint.
 5. Zet **Ook bestandscommentaar doorzoeken** aan en de tekst wordt naast de inhoud ook in het commentaar van elk bestand gezocht. Zo vind je een bestand terug via wat je *erover* hebt geschreven — “het origineel van de klant”, “vervangen door de export van 2026” — als daar in het bestand zelf niets van staat. Een zo gevonden resultaat toont het commentaar in plaats van een regel uit het bestand, en geen regelnummer, want de treffer zit niet in de tekst van het bestand. Hoofdlettergevoeligheid, heel woord en reguliere expressies gelden voor een commentaar precies als voor inhoud; een hex-zoekopdracht niet, want een commentaar is getypte tekst. **Niet bevattend** blijft consistent: een bestand komt in de lijst wanneer de tekst noch in de inhoud noch in het commentaar staat. Staat de Notities-plug-in aan, dan is haar notitie beschikbaar als inhoudsveld waarop je onder **Plugins** kunt filteren — zie [Werken met plug-ins](plugins.md).
 6. Sommige plugins kunnen een bestand omzetten in tekst die het bestand zelf niet bevat — de decompiler-plugin maakt van een `.class` Java-broncode. Zet **Zoek in tekst die plugins aanleveren** aan en die bestanden worden als die tekst doorzocht in plaats van als hun eigen bytes, zodat een zin uit de broncode in een gecompileerde klasse gevonden wordt. De optie verschijnt alleen als zo'n plugin geïnstalleerd is, en is langzamer: de tekst maken kan per bestand een decompiler starten.
@@ -55,7 +55,7 @@ Voor lokale mappen die macOS al heeft geïndexeerd, zet je **Spotlight gebruiken
 
 ## Opmerkingen
 
-- Inhoudszoeken leest hele bestanden voor lokale mappen; op andere locaties worden zeer grote bestanden overgeslagen (ruwweg 16 MB, of 64 MB bij gebruik van een reguliere expressie).
+- Zoeken op inhoud leest hele bestanden voor lokale mappen en voor archieven; op netwerklocaties worden zeer grote bestanden maar gedeeltelijk gelezen (ongeveer 16 MB, of 64 MB bij een reguliere expressie).
 - Zoeken binnen archieven daalt af tot vier niveaus van geneste archieven.
 - **Mappen in resultaten opnemen** vermeldt ook mappen waarvan de namen overeenkomen, niet alleen bestanden.
 - Spotlight dekt alleen geïndexeerde lokale mappen; laat het voor netwerklocaties of op patronen gebaseerde overeenkomsten uit en laat Bestanden zoeken scannen.

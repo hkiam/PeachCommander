@@ -23,7 +23,7 @@ When you need to track down files anywhere on your Mac — by name, by what they
 
 1. To search inside files, type the text into **Find text** on the General tab — anything in that field is searched for, and an empty field searches by name only. Options let you make it **Case sensitive**, match only a **Whole word**, treat the text as a **Regular expression**, do a **Hex content search**, or find files that are **Not containing** the text.
 2. Switch to the **Advanced** tab to narrow results by **Size** (for example `10K` to `5M`), by **modified date** range, or to files changed in the last N days.
-3. Turn on **Search inside archives** to look within zip-family archives (zip, jar, war, and similar).
+3. Turn on **Search inside archives** to look inside the archives the search finds — the same formats you can open with Enter, including any a packer plugin adds. Archives that could not be opened are reported when the search finishes.
 4. To limit the search to what you already picked, turn on **Search in selected items only** before starting.
 5. Turn on **Also search file comments** and the text is looked for in each file's comment as well as in its contents. That is how you find a file again by what you wrote *about* it — "the customer's original", "superseded by the 2026 export" — when nothing of the sort appears inside the file. A result found that way shows the comment instead of a line of the file, and no line number, because the match is not in the file's text. Case sensitivity, whole word and regular expressions apply to a comment exactly as they do to contents; a hex search does not, since a comment is text somebody typed. **Not containing** stays consistent: a file is listed when the text is in neither its contents nor its comment. If the Notes plugin is switched on, its note is available as a content field, which you can filter on under **Plugins** — see [Working with plugins](plugins.md).
 6. Some plugins can turn a file into text that the file itself does not contain — the decompiler plugin turns a `.class` into Java source. Turn on **Search text provided by plugins** and those files are searched as that text instead of as their own bytes, so a phrase from the source is found in a compiled class. The option only appears when such a plugin is installed, and it is slower: producing the text can mean running a decompiler once per file.
@@ -56,7 +56,7 @@ For local folders that macOS has already indexed, turn on **Use Spotlight** on t
 
 ## Notes
 
-- Content search reads whole files for local folders; on other locations very large files are skipped (roughly 16 MB, or 64 MB when using a regular expression).
+- Content search reads whole files for local folders and for archives; on network locations very large files are read only in part (roughly 16 MB, or 64 MB when using a regular expression).
 - Searching inside archives descends up to four levels of nested archives.
 - **Include folders in results** also lists folders whose names match, not just files.
 - Spotlight covers indexed local folders only; for network locations or pattern-based matching, leave it off and let Find Files scan.

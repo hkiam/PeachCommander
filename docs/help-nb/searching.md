@@ -22,7 +22,7 @@ Når du trenger å spore opp filer hvor som helst på Macen din — etter navn, 
 
 1. For å søke inne i filer skriver du teksten i **Finn tekst** på Generelt-fanen — det som står i feltet, blir søkt etter, og et tomt felt søker bare på navn. Alternativer lar deg gjøre den **Skiller mellom store og små bokstaver**, samsvare bare med et **Helt ord**, behandle teksten som et **Regulært uttrykk**, gjøre et **Heksadesimalt innholdssøk**, eller finne filer som **Ikke inneholder** teksten.
 2. Bytt til **Avansert**-fanen for å snevre inn resultatene etter **Størrelse** (for eksempel `10K` til `5M`), etter **endret dato**-område, eller til filer som er endret de siste N dagene.
-3. Slå på **Søk inni arkiver** for å se i zip-familiens arkiver (zip, jar, war og lignende).
+3. Slå på **Søk inne i arkiver** for å se inn i arkivene som blir funnet — de samme formatene du kan åpne med Enter, inkludert dem en pakke-utvidelse legger til. Arkiver som ikke kunne åpnes, rapporteres når søket er ferdig.
 4. For å begrense søket til det du allerede har valgt, slå på **Søk bare i merkede elementer** før du starter.
 5. Slå på **Søk også i filkommentarer**, og teksten søkes i hver fils kommentar i tillegg til innholdet. Slik finner du en fil igjen ut fra det du skrev *om* den — «kundens original», «erstattet av 2026-eksporten» — når ingenting av det står i selve filen. Et treff funnet slik viser kommentaren i stedet for en linje fra filen, og ingen linjenummer, for treffet ligger ikke i filens tekst. Store/små bokstaver, helt ord og regulære uttrykk gjelder for en kommentar akkurat som for innhold; et heksadesimalt søk gjør det ikke, siden en kommentar er tekst noen har skrevet. **Inneholder ikke** forblir konsistent: en fil listes når teksten verken er i innholdet eller i kommentaren. Er Notater-tillegget slått på, finnes notatet som et innholdsfelt du kan filtrere på under **Plugins** — se [Arbeid med tillegg](plugins.md).
 6. Noen programtillegg kan gjøre en fil til tekst som filen selv ikke inneholder — dekompilator-tillegget gjør en `.class` til Java-kildekode. Slå på **Søk i tekst fra programtillegg**, og slike filer søkes som den teksten i stedet for som sine egne byte, slik at en formulering fra kildekoden finnes i en kompilert klasse. Valget vises bare når et slikt tillegg er installert, og det er tregere: å lage teksten kan bety én dekompilator per fil.
@@ -55,7 +55,7 @@ For lokale mapper som macOS allerede har indeksert, slå på **Bruk Spotlight** 
 
 ## Merknader
 
-- Innholdssøk leser hele filer for lokale mapper; på andre plasseringer hoppes svært store filer over (omtrent 16 MB, eller 64 MB når du bruker et regulært uttrykk).
+- Innholdssøk leser hele filer for lokale mapper og for arkiver; på nettverksplasseringer leses svært store filer bare delvis (omtrent 16 MB, eller 64 MB ved bruk av et regulært uttrykk).
 - Søk inni arkiver stiger ned opptil fire nivåer av nestede arkiver.
 - **Inkluder mapper i resultatene** lister også opp mapper hvis navn samsvarer, ikke bare filer.
 - Spotlight dekker bare indekserte lokale mapper; for nettverksplasseringer eller mønsterbasert samsvar, la det være av og la Finn filer skanne.

@@ -410,7 +410,12 @@ public final class ZipReader {
         entries.reserveCapacity(Int(min(totalEntries, UInt64(data.count / 46))))
         var reader = ByteReader(data: data, at: Int(centralDirOffset))
 
+        var seen = 0
         for _ in 0..<totalEntries {
+            // A zip can declare hundreds of thousands of entries; the walk that is reading
+            // this one may already have been cancelled (see TarReader.parse).
+            seen += 1
+            if seen % 4096 == 0, Task.isCancelled { throw CancellationError() }
             let entrySignature = try reader.readUInt32LE()
             guard entrySignature == centralDirSignature else {
                 throw ZipError.malformed("bad central directory header signature")

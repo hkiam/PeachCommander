@@ -30,6 +30,12 @@ public struct SearchTemplate: Codable, Equatable, Sendable {
     public var requireReadOnly: Bool?
     /// Report empty folders instead of files. See `SearchQuery.emptyDirectoriesOnly`.
     public var emptyDirectoriesOnly: Bool = false
+    /// Whether the search descends into archives (F-153).
+    ///
+    /// Saved with the template because a saved search that silently drops one of its
+    /// options is the same defect in miniature: the user stores "find this in my
+    /// tarballs", loads it a week later, and gets nothing with no indication why.
+    public var searchArchives: Bool = false
 
     public init(name: String, nameMask: String = "*.*", contentText: String? = nil,
                 caseSensitive: Bool = false, useRegex: Bool = false, wholeWord: Bool = false,
@@ -84,6 +90,7 @@ public struct SearchTemplate: Codable, Equatable, Sendable {
         requireHidden = try c.decodeIfPresent(Bool.self, forKey: .requireHidden)
         requireReadOnly = try c.decodeIfPresent(Bool.self, forKey: .requireReadOnly)
         emptyDirectoriesOnly = try c.decodeIfPresent(Bool.self, forKey: .emptyDirectoriesOnly) ?? false
+        searchArchives = try c.decodeIfPresent(Bool.self, forKey: .searchArchives) ?? false
     }
 
     /// Build a runnable query, supplying the per-search directory/scope.
@@ -96,6 +103,7 @@ public struct SearchTemplate: Codable, Equatable, Sendable {
                     includeDirectories: includeDirectories, contentEncodingAware: contentEncodingAware,
                     requireHidden: requireHidden, requireReadOnly: requireReadOnly)
         query.emptyDirectoriesOnly = emptyDirectoriesOnly
+        query.searchArchives = searchArchives
         return query
     }
 }

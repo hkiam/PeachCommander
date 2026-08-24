@@ -14,7 +14,7 @@ import Foundation
 import PCFoundation
 
 /// Enough of a file's identity to tell a rewrite from an untouched file.
-public struct FileStamp: Equatable, Sendable {
+public struct FileStamp: Hashable, Sendable {
     public let size: Int64
     public let modified: TimeInterval
     public let inode: UInt64

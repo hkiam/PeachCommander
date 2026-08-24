@@ -82,6 +82,15 @@ done
 # A sample archive
 ( cd "$ROOT/Documents" && /usr/bin/zip -q -r "$ROOT/Archives/documents.zip" report.txt notes.md inventory.csv )
 
+# The archive-search case, as it was reported (F-463): a config file inside a .tar.gz whose
+# text is nowhere else in the tree, plus an archive nothing can read. The first proves the
+# search goes in; the second proves it says so when it cannot.
+mkdir -p "$ROOT/Archives/stage/etc"
+printf 'listen = 0.0.0.0\nsecret_token = swordfish\n' > "$ROOT/Archives/stage/etc/app.conf"
+( cd "$ROOT/Archives/stage" && /usr/bin/tar -czf "$ROOT/Archives/backup.tar.gz" etc )
+rm -rf "$ROOT/Archives/stage"
+printf 'this is not an archive at all' > "$ROOT/Archives/broken.tar.gz"
+
 # A few larger placeholder files so the Size column is interesting
 mkfile 2m "$ROOT/Downloads/installer.dmg" 2>/dev/null || dd if=/dev/zero of="$ROOT/Downloads/installer.dmg" bs=1m count=2 2>/dev/null
 mkfile 512k "$ROOT/Music/track01.m4a" 2>/dev/null || dd if=/dev/zero of="$ROOT/Music/track01.m4a" bs=1k count=512 2>/dev/null

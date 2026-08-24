@@ -232,11 +232,45 @@ public final class FindFilesWindowController: NSWindowController {
     }
 
     /// Diagnostic: the result rows as shown, one per line, with the preview column.
+    ///
+    /// The full path, not just the last component, for archive hits: `secret.txt` alone
+    /// cannot say whether the walk went inside `backup.tar.gz` — which is the whole
+    /// question a scenario about searching archives is asking.
     public func automationResults() -> String {
         "count=\(results.count)\n" + results.map { row in
-            let name = (row.path as NSString).lastPathComponent
-            return "\(name)|line=\(row.line.map(String.init) ?? "-")|\(row.preview ?? "")"
+            "\(row.path)|line=\(row.line.map(String.init) ?? "-")|\(row.preview ?? "")"
         }.joined(separator: "\n") + "\n"
+    }
+
+    /// Diagnostic: the status line, which is where a run says what it could not look
+    /// inside (F-463). A scenario has to be able to read it, or "it reported the skip"
+    /// stays an assumption.
+    public func automationStatus() -> String { statusLabel.stringValue }
+
+    /// Diagnostic: how many places the last run declined to look, as a number.
+    ///
+    /// Beside the status line rather than parsed out of it: that line is translated into
+    /// nineteen languages, so a check written against its words would pass or fail on the
+    /// guest machine's locale rather than on the behaviour.
+    public func automationSkippedCount() -> Int { skippedCount }
+
+    /// Send every result to the panel, the way the button does (F-463).
+    public func automationFeedToListbox() { onFeedToListbox?(results.map(\.path)) }
+
+    /// Open the first result in the viewer, the way F3 does (F-463).
+    public func automationViewResult(at index: Int) {
+        guard results.indices.contains(index) else { return }
+        onView?(results[index].path)
+    }
+
+    /// Run a search that descends into archives (F-153/F-463).
+    public func automationSearchArchives(mask: String, text: String, directory: String) {
+        nameMaskField.stringValue = mask
+        findTextField.stringValue = text
+        searchArchivesCheckbox.state = .on
+        startDirField.stringValue = directory
+        updateOptionAvailability()
+        handleStartStop()
     }
     #endif
 
@@ -252,6 +286,9 @@ public final class FindFilesWindowController: NSWindowController {
         results.removeAll()
         tableView.reloadData()
     }
+
+    /// How many archives the last run could not look inside (F-463), for diagnostics.
+    public var skippedCount = 0
 
     /// Update the status line (e.g. "42 found — searching…" / "Done: 42 found").
     public func setStatus(_ text: String) {
@@ -324,9 +361,12 @@ public final class FindFilesWindowController: NSWindowController {
         emptyDirsCheckbox.toolTip = String(localized: "List folders that contain nothing at all — including invisible entries, so a folder holding only a .DS_Store or a .git does not count as empty. Files are not listed.")
         emptyDirsCheckbox.target = self
         emptyDirsCheckbox.action = #selector(optionsChanged)
-        searchArchivesCheckbox.title = String(localized: "Search inside archives (zip, jar, war, …)")
+        // No format list, in either string. It was "zip, jar, war" while the panel could
+        // already open tar, 7z and whatever a plugin added — and any list written here is
+        // wrong again the next time a plugin ships, in nineteen languages at once.
+        searchArchivesCheckbox.title = String(localized: "Search inside archives")
         searchArchivesCheckbox.font = Fonts.system13
-        searchArchivesCheckbox.toolTip = String(localized: "Open zip-family archives (zip/jar/war/apk/…) and search their contents too")
+        searchArchivesCheckbox.toolTip = String(localized: "Open archives found during the search and search their contents too — the same formats you can open with Enter. Slower. Archives that could not be opened are reported when the search finishes.")
         pluginTextCheckbox.title = String(localized: "Search text provided by plugins (e.g. decompiled source)")
         pluginTextCheckbox.font = Fonts.system13
         pluginTextCheckbox.toolTip = String(localized: "For files a plugin can turn into text — a .class as decompiled Java — search that text instead of the file's bytes. Slower: producing the text can mean running a decompiler.")
@@ -818,7 +858,7 @@ public final class FindFilesWindowController: NSWindowController {
         // agree, or a saved search would carry a term the engine ignores.
         let hasText = hasContentTerm && emptyDirsCheckbox.state != .on
         let isHex = hexCheckbox.state == .on
-        return SearchTemplate(
+        var template = SearchTemplate(
             name: name,
             nameMask: mask,
             contentText: (hasText && !isHex) ? text : nil,
@@ -837,6 +877,10 @@ public final class FindFilesWindowController: NSWindowController {
             requireHidden: Self.triState(hiddenAttrPopup),
             requireReadOnly: Self.triState(readOnlyAttrPopup),
             emptyDirectoriesOnly: emptyDirsCheckbox.state == .on)
+        // Set after construction rather than added to the 17-argument memberwise
+        // initialiser, which every caller would then have to be taught about.
+        template.searchArchives = searchArchivesCheckbox.state == .on
+        return template
     }
 
     /// Map an Any/Yes/No popup to nil / true / false (F-152).
@@ -867,6 +911,7 @@ public final class FindFilesWindowController: NSWindowController {
         encodingCheckbox.state = t.contentEncodingAware ? .on : .off
         includeDirsCheckbox.state = t.includeDirectories ? .on : .off
         emptyDirsCheckbox.state = t.emptyDirectoriesOnly ? .on : .off
+        searchArchivesCheckbox.state = t.searchArchives ? .on : .off
         sizeMinField.stringValue = t.minSize.map { ByteSize($0).formatted(style: .kb) } ?? ""
         sizeMaxField.stringValue = t.maxSize.map { ByteSize($0).formatted(style: .kb) } ?? ""
         dateAfterCheckbox.state = t.modifiedAfter != nil ? .on : .off

@@ -1038,6 +1038,16 @@ SCENARIOS = [
                        "comment table.csv|superseded by the 2026 export", "wait 800",
                        "findcomments *.csv|superseded|/Users/admin/pc-demo|/Users/admin/found.txt",
                        "wait 1000"], 11),
+    # Searching inside archives (F-153/F-463). The term sits in a config file inside a .tar.gz
+    # and nowhere else in the tree, so a hit can only come from going in — this is the reported
+    # defect, which used to report nothing at all because the engine's own extension list knew
+    # the zip family only. `broken.tar.gz` is there so the other half is covered too: a search
+    # that could not look somewhere has to say so instead of quietly returning fewer rows.
+    ("find-archives", ["active left", "left /Users/admin/pc-demo/Archives", "wait 1200",
+                       "findarchives *.*|swordfish|/Users/admin/pc-demo/Archives|/Users/admin/arch-found.txt",
+                       "wait 1000",
+                       "findfeedarchives *.*|swordfish|/Users/admin/pc-demo/Archives|/Users/admin/arch-panel.txt",
+                       "wait 1200"], 11),
     # What the two search fields remember (F-406). Three searches in one dialog: the second must sit
     # above the first, re-running the first must promote it rather than duplicate it, and Clear must
     # leave both dropdowns empty. A dropdown is a list AppKit draws in a window of its own, so the
@@ -2122,6 +2132,19 @@ REPORTS = {
     # (`esc-find2.txt` is the primary entry above: the second Esc closes the window.)
     # The hit, and the preview saying where the term was: a row whose text is nowhere in the file needs
     # to explain itself.
+    # The hit has to name the archive it came from — `app.conf` alone would not say the walk
+    # went inside — and the run has to admit the one archive it could not read. The count is
+    # checked rather than the sentence: that line is translated, so its words would make the
+    # check depend on the guest's locale instead of on the behaviour.
+    # Primary is the panel dump because it is the *last* file the scenario writes: the guest
+    # waits for the primary, so anything written after it would be a race the app loses on a
+    # slow launch. That the hit survives being sent to a panel is the stronger claim anyway —
+    # `ResultsFS` resolved every row with `lstat`, so a path inside an archive used to be
+    # dropped without a word and the panel came up short.
+    "find-archives": ("/Users/admin/arch-panel.txt",
+                      ["backup.tar.gz/etc/app.conf", "count=1", "!ERROR"]),
+    "find-archives-found": ("/Users/admin/arch-found.txt",
+                            ["backup.tar.gz/etc/app.conf", "skipped=1", "count=1", "!ERROR"]),
     "find-comments": ("/Users/admin/found.txt",
                       ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
     # F-409: both of these had only a settle time and an external check, so a slow launch failed them

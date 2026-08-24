@@ -1108,6 +1108,108 @@ cases. Bundle `x86_64 arm64`; `check-plugin-sources`, `verify-shipping`, `check-
 conformance suite, AWS live tests, the VM scenario, transfer progress in the Transfer Manager, content
 columns, presigned links, eighteen translations and a help topic.
 
+## 2026-08-23 (F-463) — the archive the search could not see, and the seven other places that disagreed
+
+A search for text in a folder holding a `.tar.gz` reported nothing found, though the config file
+inside plainly contained the term. `FileSearchEngine.archiveExtensions` listed the zip family, and
+`("x.tar.gz" as NSString).pathExtension` is `"gz"`.
+
+**Widening that list would have been the wrong fix, and quietly so.** The search built a bare
+`ArchiveFS` and never asked a plugin; Enter goes through the PCX packers first. `Archive.pcxplugin`
+("libarchive Reader") ships enabled by default and claims `tgz;gz;7z;rar;xz;zst`, so Enter had been
+opening these files all along. Adding `"gz"` to the engine's list would have pointed the search at
+`TarReader` — a *different* reader from the one the panel uses for the same file. Eight authorities
+answered "is this an archive": the engine, the panel's Enter gate, `ShellArchiveSource`,
+`ArchiveWriteSupport`, `PackEngine`, the `Pack.ArchiveExtensions` setting (which only ever reached
+the panels), the PCX manifests, and a `hasSuffix(".zip")` in Test Archive. The asymmetry ran both
+ways: `jar` and `apk` were searchable and not enterable.
+
+**One authority, and the layering decided where it lives.** `project.yml` has PCVFS depending on
+PCFoundation alone, and PCPluginHost depending on PCVFS but not on PCArchive — which is why the
+extension set had been copied into PCVFS in the first place. So: mechanism in PCVFS
+(`ArchiveOpening`, `ArchiveBackend`, `ArchiveRegistry` — no format named in the file), knowledge in
+whichever module owns the readers (`NativeArchiveBackend`, `PCXArchiveBackend`), assembly in PCApp.
+`SPEC-012 §2` had asked for this registry; it exists now, one module lower than the spec guessed.
+`FileSearchEngine.archiveExtensions` is deleted outright — a retained fallback would have been
+silently right for zip and silently wrong for tar.gz, which is the same defect, better hidden.
+
+**Two bugs fell out that nobody had reported.** Alt+F9 on a 7z or a squashfs failed with "select an
+archive first" on a file the panel opens with Enter, because unpack built its own `ArchiveFS`.
+Reloading an archive rebuilt one unconditionally, so a refresh could replace a plugin's mount with
+the zip reader. Split zips (`name.zip.001`) were browsable and never searchable, because the name
+rule lived in the panel; it is part of `ArchiveNameSet` now, so both sides see it.
+
+**The silence was the actual complaint.** The dialog already special-cases an invalid regular
+expression because a silent zero result "reads exactly like 'the term is not in these files'"
+(F-154) — and then skipped unreadable, encrypted, over-size and too-deeply-nested archives without a
+word. Skips are `SearchNotice`s now, counted in the status line, and a clean run still says only
+what it always said.
+
+**Hits inside archives were display-only.** `ResultsFS` resolved every row with `lstat`, so
+`/dir/a.tar.gz/etc/app.conf` was dropped by a `compactMap` — feeding ten archive hits to a panel
+produced an empty panel and no explanation. F3 beeped, because it fell back to the *panel's*
+filesystem. `SearchHit` carries a `SearchOrigin` (the container chain plus the member) now, and the
+results filesystem holds member rows with the listing snapshot the walk already took, so nothing is
+opened merely to fill in a size column. View, Feed to Listbox and F5-copy-out all work.
+
+**Guards, because widening the gate made the reader's cost reachable.** `TarReader` read whole files
+unmapped before it could tell whether they were tars — a 4 GB `.xz` handed to it by the reader
+ordering was read cover to cover and then rejected, and a `dump.sql.gz` was inflated in full. It maps
+now, so `parse` decides from one 512-byte block, and a gzip payload declaring more than the ceiling
+is refused before anything is allocated. Refusing is not losing: `ArchiveFS` falls through to the
+bsdtar-backed reader, which streams. A background walk also prefers a backend with random access over
+one that spawns a process per member — the difference between reading a 5,000-member tarball once and
+re-scanning it 5,000 times.
+
+**And the 16 MB asymmetry.** An archive member was searched through a streaming path that stopped at
+16 MB while a loose file had no cap, so the same bytes answered differently depending on where they
+sat. Members past the cap are extracted and searched as local files, gated on a new
+`VFSCapabilities.localExtraction` that the archive filesystems declare and the network ones
+deliberately do not — on FTP or S3 the same call downloads the whole file.
+
+**Evidence.** `SearchInArchiveTests` 16 tests (the reported `.tar.gz` among them), `ResultsFSTests`
+16, full suite **3069 tests, 0 failures**. `check-archive-listing.sh` green (`archives=8 problems=0`)
+— it compiles the PCArchive readers standalone, which is why `ArchiveSource` states the per-member
+cost as a plain `Bool` rather than importing PCVFS. `check-tests-registered`, `check-inventory`,
+`check-strings-extracted`, `check-translations` (behind=0) and `check-translation-drift` (drifted=0)
+all green; three new UI strings and the help topic translated into eighteen languages.
+
+**The four that were left, closed in order.**
+
+*Cancellation.* The readers run synchronously on the task that started the search, so they can read
+its cancellation directly — no flag had to be threaded down. Checks sit in the tar header walk, the
+zip central-directory walk and the node-tree build. The test asserts the mechanism rather than a
+stopwatch: an archive small enough to build in a test opens in milliseconds, so a timing test would
+have passed whether the checks existed or not. A cancelled open no longer reports the archive as
+unreadable either — true, and useless.
+
+*The archive cache* (`performance.md`: 32 archives, path+mtime). Keyed on size, mtime **and** inode:
+the usual way a program rewrites an archive is to write a temporary file and rename it over the old
+one, and a rename carries the source's mtime across. Two rules keep it from turning a passing cost
+into a permanent one — a byte budget beside the entry count, because "32 archives" says nothing about
+memory when one of them is a tar.gz the reader had to inflate whole, and only interactive opens are
+remembered, because a walk meets archives it will never see again. Encrypted archives are not cached,
+so a password typed for one panel cannot silently apply elsewhere. The first `DISPATCH_SOURCE_TYPE_MEMORYPRESSURE`
+hookup in the codebase drops it under pressure. A test caught the staging filter being too broad —
+it excluded the whole temp directory, and somebody's archive is allowed to live in /tmp.
+
+*The sweeper.* `PCXArchiveFS` had the same leak as `ArchiveFS` — a directory per extracted member,
+never removed, with the fsID's slashes quietly becoming more directories. Both own one root per mount
+now and remove it in `deinit`; a launch sweep clears what earlier builds already left behind, bounded
+to our own `PCArchive-`/`PCX-` staging names and to what is over a day old.
+
+*The scenario, and the running app.* `findarchives` and `findfeedarchives` drive the real dialog;
+`find-archives` is registered in the VM harness with the reported fixture (a config file inside a
+`.tar.gz`, plus an archive nothing can read). `check-scenario-reports.py` earned its keep immediately:
+the guest waits for the primary report, so a scenario that writes another file afterwards is a race
+the app loses on a slow launch — the panel dump is the primary now. The skip is reported as
+`skipped=1` rather than by its sentence, which is translated into nineteen languages and would have
+made the check depend on the guest's locale.
+
+**Verified in the running app**, not only in tests: `status=Fertig: 2 gefunden — ein Archiv wurde
+nicht durchsucht`, with `backup.tar.gz/etc/app.conf|line=2` among the hits and both rows surviving
+Feed to Listbox. **3080 tests, 0 failures.**
+
 ## 2026-08-23 (F-456) — S3 against a server that is not ours, and the drive chip that only looks like a shortcut
 
 Fourth wave: bounded retries, keys a filesystem cannot hold, a listing longer than three pages, a

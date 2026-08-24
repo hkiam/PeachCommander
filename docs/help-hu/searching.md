@@ -22,7 +22,7 @@ Amikor fájlokat kell felkutatnia bárhol a Macjén — név szerint, tartalmuk 
 
 1. Ha a fájlokon belül szeretne keresni, írja be a szöveget a **Szöveg keresése** mezőbe az Általános lapon — amit a mezőbe ír, arra keres a program, üres mező esetén csak a nevekre. A beállítások lehetővé teszik, hogy **kis- és nagybetűre érzékennyé** tegye, csak **egész szó**-ra illesszen, a szöveget **reguláris kifejezés**-ként kezelje, **hexadecimális tartalomkeresést** végezzen, vagy olyan fájlokat találjon, amelyek **nem tartalmazzák** a szöveget.
 2. Váltson a **Speciális** lapra az eredmények **méret** szerinti szűkítéséhez (például `10K`-tól `5M`-ig), **módosítási dátum** tartomány szerint, vagy az utolsó N napban módosított fájlokra.
-3. Kapcsolja be a **Keresés archívumokon belül** lehetőséget a zip-családú archívumokon (zip, jar, war és hasonlók) belüli nézéshez.
+3. Kapcsolja be a **Keresés archívumokban** lehetőséget, hogy a megtalált archívumokba is belenézzen — ugyanazok a formátumok, amelyeket az Enterrel meg tud nyitni, beleértve a tömörítő bővítmények által hozzáadottakat is. A meg nem nyitható archívumokról a keresés végén kap jelzést.
 4. A keresés arra korlátozásához, amit már kiválasztott, kapcsolja be a **Keresés csak a kijelölt elemekben** lehetőséget indítás előtt.
 5. Kapcsolja be a **Keresés a fájlmegjegyzésekben is** lehetőséget, és a szöveget a tartalom mellett minden fájl megjegyzésében is keresi. Így talál meg egy fájlt abból, amit *róla* írt — „a megrendelő eredetije”, „a 2026-os exporttal leváltva” —, amikor ilyen a fájlban magában nem szerepel. Az így talált találat a fájl egy sora helyett a megjegyzést mutatja, és nem ad sorszámot, mert a találat nem a fájl szövegében van. A kis- és nagybetű, a teljes szó és a reguláris kifejezések a megjegyzésre ugyanúgy érvényesek, mint a tartalomra; a hexadecimális keresés nem, hiszen a megjegyzés begépelt szöveg. A **Nem tartalmazó** következetes marad: egy fájl akkor kerül a listára, ha a szöveg sem a tartalmában, sem a megjegyzésében nincs benne. Ha a Jegyzetek bővítmény be van kapcsolva, a jegyzete tartalmi mezőként elérhető, amelyre a **Plugins** fülön lehet feltételt szabni — lásd [Munka a bővítményekkel](plugins.md).
 6. Némely bővítmény olyan szöveggé tud alakítani egy fájlt, amit a fájl maga nem tartalmaz — a visszafejtő bővítmény egy `.class`-ból Java forrást csinál. Kapcsolja be a **Keresés a bővítmények által adott szövegben** lehetőséget, és ezeket a fájlokat a keresés ebben a szövegben végzi, nem a saját bájtjaikban, így egy forrásbeli fordulat megtalálható egy lefordított osztályban. A lehetőség csak akkor jelenik meg, ha van ilyen bővítmény, és lassabb: a szöveg előállítása fájlonként egy visszafejtő futtatását jelentheti.
@@ -55,7 +55,7 @@ Olyan helyi mappákhoz, amelyeket a macOS már indexelt, kapcsolja be a **Spotli
 
 ## Megjegyzések
 
-- A tartalomkeresés helyi mappáknál teljes fájlokat olvas; más helyeken a nagyon nagy fájlok kimaradnak (nagyjából 16 MB, vagy 64 MB reguláris kifejezés használatakor).
+- A tartalomkeresés helyi mappákban és archívumokban a teljes fájlt olvassa; hálózati helyeken a nagyon nagy fájlokat csak részben (nagyjából 16 MB, reguláris kifejezésnél 64 MB).
 - Az archívumokon belüli keresés a beágyazott archívumok négy szintjéig ereszkedik.
 - A **Mappák bevonása az eredményekbe** azokat a mappákat is felsorolja, amelyek nevei egyeznek, nem csak a fájlokat.
 - A Spotlight csak az indexelt helyi mappákat fedi le; hálózati helyekhez vagy mintaalapú egyezéshez hagyja kikapcsolva, és hagyja, hogy a Fájlok keresése beolvasson.

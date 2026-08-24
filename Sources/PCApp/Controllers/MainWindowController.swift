@@ -221,6 +221,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// The content term of the last search, handed to the viewer a hit is opened in (F-407). Nil for a
     /// name-only search: there is no hit inside the file to jump to.
     private var lastSearchSeed: ViewerSearchSeed?
+    /// Where each archive-backed result row actually lives, keyed by the path shown (F-463).
+    ///
+    /// The dialog hands back the display string and nothing else, and that string cannot
+    /// be resolved: `/dir/data.tar.gz/etc/app.conf` is not a file. This is how View and
+    /// Feed-to-Listbox find the archive again instead of beeping or dropping the row.
+    private var lastSearchOrigins: [String: (origin: SearchOrigin, entry: VFSEntry)] = [:]
     /// Viewer.SearchFromFind — may a viewer opened from a content search adopt that search (F-407)?
     private var viewerSearchFromFind = true
     private var renameWindow: MultiRenameWindowController?
@@ -246,6 +252,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private lazy var pluginManager = PluginManager(pluginsDir: configPaths.pluginsDirectory,
                                                    configURL: configPaths.pluginsConfig,
                                                    bundledPluginsDir: Bundle.main.builtInPlugInsURL)
+    /// The one answer to "is this an archive, and who opens it" (F-463).
+    ///
+    /// Plugins first, as SPEC-012 §2 requires: a user who installed a reader for a
+    /// format meant it to win over the built-in one. Everything that used to keep its
+    /// own list — the panel's Enter gate, the search, unpack, test-archive — asks this
+    /// instead, so a newly enabled plugin or a newly configured extension reaches all
+    /// of them at once rather than whichever ones were remembered.
+    private lazy var archiveRegistry = ArchiveRegistry(
+        backends: [PCXArchiveBackend(pluginManager: pluginManager), NativeArchiveBackend()])
+
     private var pluginsWindow: PluginsWindowController?
     private lazy var workspaceStore = WorkspaceStore(url: configPaths.workspaces)
     /// Content-field registry (rebuilt when enabled PDX plugins change) + the
@@ -483,6 +499,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         loadButtonBar()
         seedSyncBarButtonsIfNeeded()
         loadPlugins()
+        // Extractions left in the temp directory by builds that did not clean up after
+        // themselves (F-463). Off the main thread and best-effort: it reads one directory
+        // listing, and a launch must never wait on it.
+        Task.detached(priority: .utility) { ArchiveTempSweeper.sweep() }
         Task { @MainActor in
             await self.commandRegistry.registerDefaultCommands()
             // Cache the numeric-id → cm_ name map so a .mnu can reference TC ids (F-257),
@@ -3088,16 +3108,25 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     func showTestArchive() {
         guard let panel = activePanel else { return }
         Task { @MainActor in
+            // Selection asks the registry, verification stays zip-only: CRC checking is
+            // a ZipReader capability. Splitting the two means a `.tar.gz` under the cursor
+            // is told that verification is not available for it, instead of being told to
+            // "select a .zip first" — which reads like the app cannot see the file at all.
             let zipPath: String?
             if !panel.isInArchive, let cursor = panel.tableView.cursorItemFullPath(),
-               cursor.lowercased().hasSuffix(".zip") {
+               self.archiveRegistry.mightBeArchive(name: (cursor as NSString).lastPathComponent) {
+                guard cursor.lowercased().hasSuffix(".zip") else {
+                    self.presentInfo(String(localized: "Test Archive"),
+                                     String(localized: "Integrity checking is only available for zip archives."))
+                    return
+                }
                 zipPath = cursor
             } else {
                 zipPath = panel.currentArchiveZipPath
             }
             guard let zip = zipPath else {
                 self.presentInfo(String(localized: "Test Archive"),
-                                 String(localized: "Select a .zip archive (or open one) first."))
+                                 String(localized: "Select an archive (or open one) first."))
                 return
             }
             let name = (zip as NSString).lastPathComponent
@@ -3135,11 +3164,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 sourceFS = panel.currentFileSystem
                 archiveName = ((panel.currentArchiveZipPath ?? "archive") as NSString).lastPathComponent
             } else if let cursor = panel.tableView.cursorItemFullPath(),
-                      let archive = ArchiveFS(archiveFileURL: URL(fileURLWithPath: cursor), fsID: "zip:\(cursor)") {
-                if archive.hasEncryptedEntries {
-                    _ = resolveArchivePassword(for: archive, localPath: cursor)
+                      case .opened(let opened, _) = await self.archiveRegistry.open(
+                          fs: LocalFS(), path: cursor, intent: .interactive) {
+                // Through the registry rather than a bare `ArchiveFS`: unpacking a 7z or a
+                // filesystem image used to fail with "select an archive first" on a file the
+                // panel would happily open with Enter, because only Enter asked the plugins.
+                if let native = opened.fs as? ArchiveFS, native.hasEncryptedEntries {
+                    _ = resolveArchivePassword(for: native, localPath: cursor)
                 }
-                sourceFS = archive
+                sourceFS = opened.fs
                 archiveName = (cursor as NSString).lastPathComponent
             } else {
                 self.presentInfo(String(localized: "Unpack"),
@@ -3456,6 +3489,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 // Remembered per search, not per hit: it is the term *this* search ran with that a
                 // viewer opened from its results should carry (F-407).
                 self.lastSearchSeed = ViewerSearchSeed(template: template)
+                self.lastSearchOrigins = [:]
                 self.searchTask = Task { @MainActor in
                     guard let panel = self.activePanel else { return }
                     // Search over the panel's current filesystem, so a panel inside
@@ -3502,19 +3536,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     }
                     var count = 0
                     let engine = FileSearchEngine()
-                    // Open a zip-family archive found during the walk as an ArchiveFS.
-                    // On disk it's opened directly; inside another archive it's
-                    // extracted to a temp file first (enabling nested archive search).
-                    let opener: FileSearchEngine.ArchiveOpener = { fs, path in
-                        let localURL: URL
-                        if fs is LocalFS {
-                            localURL = URL(fileURLWithPath: path)
-                        } else if let url = (try? await fs.localFileIfAvailable(
-                            VFSPath(filesystemId: fs.scheme, path: path))) ?? nil {
-                            localURL = url
-                        } else { return nil }
-                        return ArchiveFS(archiveFileURL: localURL, fsID: "zip:\(localURL.path)")
-                    }
+                    // Archives found during the walk are opened by the same authority the
+                    // panel's Enter uses (F-463). This closure used to build a bare `ArchiveFS`
+                    // and never ask a plugin, which is why a `.tar.gz` — a format the shipped,
+                    // enabled libarchive reader claims and Enter opens happily — was reported
+                    // as containing nothing at all.
+                    let opener = self.archiveRegistry
                     let registry = self.contentFieldRegistry
                     // Text from the loaded content plugins, for files whose own bytes are not text
                     // (F-351). Passed only when asked for: producing it can run a decompiler, and the
@@ -3554,11 +3581,31 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                                          forFileAt: URL(fileURLWithPath: hit.path))
                             if !pred.evaluate(v) { continue }
                         }
+                        if let origin = hit.origin, let entry = hit.entry {
+                            self.lastSearchOrigins[hit.path] = (origin, entry)
+                        }
                         win.addResult(hit.path, matchLine: hit.matchLine, matchPreview: hit.matchPreview)
                         count += 1
                         if count % 25 == 0 { win.setStatus(String(localized: "\(count) found — searching…")) }
                     }
-                    win.setStatus(String(localized: "Done: \(count) found"))
+                    // What the run declined to look inside (F-463). A search that quietly
+                    // skipped an archive reads exactly like "the term is not in there" —
+                    // the same trap the invalid-regex message above exists to avoid.
+                    // Silence stays the normal case: a line that appears on every search
+                    // is a line people stop reading.
+                    let notices = await engine.takeNotices()
+                    win.skippedCount = notices.count
+                    for notice in notices {
+                        self.logger.info("search skipped \(notice.path, privacy: .public): \(String(describing: notice.reason), privacy: .public)")
+                    }
+                    switch notices.count {
+                    case 0:
+                        win.setStatus(String(localized: "Done: \(count) found"))
+                    case 1:
+                        win.setStatus(String(localized: "Done: \(count) found — one archive was not searched"))
+                    default:
+                        win.setStatus(String(localized: "Done: \(count) found — \(notices.count) archives were not searched"))
+                    }
                     win.searchFinished()
                 }
             }
@@ -3567,7 +3614,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             win.onFeedToListbox = { [weak self, weak win] paths in
                 win?.close()
-                Task { @MainActor in await self?.activePanel?.enterResults(paths) }
+                Task { @MainActor in
+                    guard let self else { return }
+                    // Archive hits used to be dropped here without a word: `ResultsFS`
+                    // resolved every row with `lstat`, and `/dir/a.tar.gz/etc/app.conf`
+                    // is not a file. They now travel with the archive chain that reaches
+                    // them, so the panel lists them and F3/F5 work on them.
+                    let sources: [ResultsEntrySource] = paths.map { path in
+                        guard let found = self.lastSearchOrigins[path] else { return .local(path) }
+                        return .member(display: path, entry: found.entry, origin: found.origin)
+                    }
+                    let resolver: ResultsMemberResolver = { [weak self] origin in
+                        await self?.localFile(for: origin)
+                    }
+                    await self.activePanel?.enterResults(sources, resolveMember: resolver)
+                }
             }
             win.onView = { [weak self] path in
                 guard let self else { return }
@@ -3576,8 +3637,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 let seed = self.viewerSearchFromFind ? self.lastSearchSeed : nil
                 if FileManager.default.fileExists(atPath: path) {
                     self.openLister(files: [path], index: 0, searchSeed: seed)
-                } else if let fs = self.lastSearchFS {
-                    // Archive/network hit: extract to a temp file, then view it.
+                } else if let origin = self.lastSearchOrigins[path]?.origin {
+                    // A hit the walk found inside an archive: reopen that archive and
+                    // extract the member. This used to go through `lastSearchFS`, which is
+                    // the *panel's* filesystem — `LocalFS` for an ordinary search — so
+                    // viewing anything found inside an archive simply beeped.
+                    Task { @MainActor in
+                        if let url = await self.localFile(for: origin) {
+                            self.openLister(files: [url.path], index: 0, searchSeed: seed)
+                        } else { NSSound.beep() }
+                    }
+                } else if let fs = self.lastSearchFS, !(fs is LocalFS) {
+                    // The search ran over a mounted panel (archive/FTP) to begin with.
                     Task { @MainActor in
                         if let url = (try? await fs.localFileIfAvailable(VFSPath(filesystemId: fs.scheme, path: path))) ?? nil {
                             self.openLister(files: [url.path], index: 0, searchSeed: seed)
@@ -3587,6 +3658,28 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             win.showWindow()
         }
+    }
+
+    /// A local file for a search hit that lives inside one or more archives (F-463).
+    ///
+    /// Walks the containers outermost first, exactly as `enterArchive` does for a nested
+    /// archive: open the first one off the disk, then extract each next one out of the
+    /// one before, then extract the member itself. The intermediate extractions are
+    /// disposed of on the way out — only the member's own temp file outlives the call,
+    /// because that is what the viewer is about to read.
+    func localFile(for origin: SearchOrigin) async -> URL? {
+        var current: VirtualFileSystem = LocalFS()
+        var disposers: [@Sendable () async -> Void] = []
+        defer { let ds = disposers; Task { for dispose in ds { await dispose() } } }
+
+        for container in origin.containers {
+            guard case .opened(let opened, let dispose) = await archiveRegistry.open(
+                    fs: current, path: container, intent: .interactive) else { return nil }
+            disposers.append(dispose)
+            current = opened.fs
+        }
+        let member = VFSPath(filesystemId: current.scheme, path: origin.member)
+        return (try? await current.localFileIfAvailable(member)) ?? nil
     }
 
     private func openLister(files: [String], index: Int, plugins: [PLXLister] = [],
@@ -5636,28 +5729,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     // MARK: - Plugins (I14)
 
     private func loadPlugins() {
-        // Wire each panel to resolve a plugin-backed VFS for an associated archive.
-        let opener: (String) async -> VirtualFileSystem? = { [weak self] path in
-            guard let self else { return nil }
-            let ext = (path as NSString).pathExtension.lowercased()
-            if let plugin = await self.pluginManager.packerPlugin(forExtension: ext),
-               case .success(let lib) = PluginHost.openLibrary(plugin),
-               let fs = PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)") {
-                return fs
-            }
-            // Nothing matched by name, or what did could not open it. Ask the plugins that
-            // offered to decide by content — a filesystem image called `firmware.bin` is
-            // the case an extension list can never cover.
-            for plugin in await self.pluginManager.packerPlugins() {
-                guard case .success(let lib) = PluginHost.openLibrary(plugin) else { continue }
-                let archive = PCXArchive(library: lib, pluginID: plugin.manifest.name)
-                guard archive.detectsByContent, archive.canHandle(fileName: path) == true else { continue }
-                if let fs = PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)") { return fs }
-            }
-            return nil
-        }
-        leftPanelController?.resolvePluginArchive = opener
-        rightPanelController?.resolvePluginArchive = opener
+        // Both panels open archives through the same registry the search uses. The
+        // plugin-resolving closure that used to live here moved into
+        // `PCXArchiveBackend` — in the module that owns `PluginManager` and
+        // `PCXArchiveFS`, where it is reachable from tests and, more to the point,
+        // from every consumer instead of only from the two panels.
+        leftPanelController?.archiveOpening = archiveRegistry
+        rightPanelController?.archiveOpening = archiveRegistry
 
         // Pack dialog: offer enabled PCX packer plugins' formats (F-137).
         let formats: () async -> [(ext: String, label: String)] = { [weak self] in
@@ -5689,15 +5767,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
         Task { @MainActor in
             await self.pluginManager.reload()
-            // Teach the panels which extensions enabled packer plugins can browse.
-            let exts = await self.pluginManager.enabledPlugins()
-                .filter { $0.manifest.type == .pcx }
-                .flatMap { $0.manifest.extensions }
-            let set = Set(exts)
-            if !set.isEmpty {
-                self.leftPanelController?.tableView.addArchiveExtensions(set)
-                self.rightPanelController?.tableView.addArchiveExtensions(set)
-            }
+            // Re-ask every backend what it can open now that plugins have loaded. The
+            // panels used to be told directly and the search never was, which is how a
+            // plugin format could be browsable and unsearchable at the same time.
+            await self.archiveRegistry.refresh()
+            self.refreshArchiveNameGate()
 
             // Enable the by-content probe only if some enabled packer actually asked for
             // it. Costed deliberately: the probe reads a header off every file whose
@@ -5714,18 +5788,41 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             // User-configured extra archive extensions (F-274).
             self.applyExtraArchiveExtensions(await self.mainConfig.string("Pack", "ArchiveExtensions", default: ""))
+            // What a *background* search will open (F-463). Enter has no ceiling — somebody
+            // who presses it has asked for this one archive and is waiting for it. A walk has
+            // not: it can meet a hundred of them in a folder of build artefacts, and up to
+            // four can be live at once through nested descent, against a whole-app budget of
+            // 300 MB. Exceeding it is reported, never silently skipped.
+            let maxBytes = Int64(await self.mainConfig.string("Search", "ArchiveMaxBytes",
+                                                              default: "268435456")) ?? 268_435_456
+            self.archiveRegistry.setBackgroundLimits(ArchiveOpenLimits(maxBytes: maxBytes))
         }
     }
 
-    /// Register user-configured extra archive extensions on both panels (F-274).
+    /// Register user-configured extra archive extensions (F-274).
     /// Space/comma-separated, dots stripped; additive (removals need a restart).
+    ///
+    /// These go to the registry rather than to the two panels, so the setting whose
+    /// hint reads "additional file extensions to open as archives" finally applies to
+    /// the search as well — it used to reach the Enter gate and nothing else.
     func applyExtraArchiveExtensions(_ raw: String) {
         let set = Set(raw.split(whereSeparator: { $0 == " " || $0 == "," || $0 == ";" })
             .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: ". \t")).lowercased() }
             .filter { !$0.isEmpty })
         guard !set.isEmpty else { return }
-        leftPanelController?.tableView.addArchiveExtensions(set)
-        rightPanelController?.tableView.addArchiveExtensions(set)
+        archiveRegistry.addExtensions(set)
+        refreshArchiveNameGate()
+    }
+
+    /// Hand both panels the current "does this name look like an archive" answer.
+    ///
+    /// A closure rather than a copied set: the registry is the only thing that knows,
+    /// and handing out copies is how the eight disagreeing lists happened.
+    func refreshArchiveNameGate() {
+        let registry = archiveRegistry
+        let gate: @Sendable (String) -> Bool = { registry.mightBeArchive(name: $0) }
+        leftPanelController?.tableView.isArchiveName = gate
+        rightPanelController?.tableView.isArchiveName = gate
     }
 
     func showPluginsManager() {
@@ -6742,8 +6839,14 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// it opens a NEW tab so the current tab's location is never disturbed; branch
     /// view mounts in place.
     func enterResults(_ paths: [String], inNewTab: Bool = true) async {
+        await enterResults(paths.map { .local($0) }, resolveMember: nil, inNewTab: inNewTab)
+    }
+
+    func enterResults(_ sources: [ResultsEntrySource],
+                      resolveMember: ResultsMemberResolver?,
+                      inNewTab: Bool = true) async {
         if inNewTab { await openNewTab() }  // fresh tab (resets to LocalFS), current tab preserved
-        let results = ResultsFS(paths: paths, fsID: "results")
+        let results = ResultsFS(sources: sources, fsID: "results", resolveMember: resolveMember)
         let hostPath = await model.getPath()
         mountStack.append((fs: fs, returnPath: hostPath, archivePath: hostPath,
                            driveVolume: mountedDriveVolume))
@@ -6836,9 +6939,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
         volatileRefreshTask = nil
     }
 
-    /// Resolves a plugin-backed VFS for a local archive path (set by the window
-    /// controller); consulted before the built-in zip reader.
-    var resolvePluginArchive: ((String) async -> VirtualFileSystem?)?
+    /// The shared archive authority (set by the window controller), consulted by
+    /// Enter, Ctrl+PageDown, unpack and archive reload — the same instance the
+    /// search uses, so the two can no longer disagree about what an archive is (F-463).
+    var archiveOpening: ArchiveRegistry?
 
     /// Formats offered by enabled PCX packer plugins (extension + label), for the
     /// Pack dialog (F-137). Set by the window controller.
@@ -6857,35 +6961,30 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// have opened it anyway instead of beeping at somebody who pressed Enter on a
     /// text file.
     func enterArchive(_ pathToOpen: String, speculative: Bool = false) async {
-        var localPath = pathToOpen
-        // Nested archive (F-134): when we're already inside an archive/network
-        // mount, `pathToOpen` is a vpath, not a local file — extract the inner
-        // archive to a temp file and open that.
-        if !(fs is LocalFS) {
-            let vpath = VFSPath(filesystemId: fs.scheme, path: pathToOpen)
-            guard let tmp = (try? await fs.localFileIfAvailable(vpath)) ?? nil else {
-                NSSound.beep()
-                return
+        guard let opening = archiveOpening else { NSSound.beep(); return }
+
+        // The registry does the nested-archive extraction (F-134) itself, so the three
+        // call sites that each used to do it — and each had a different idea of who
+        // deletes the result — now share one.
+        var opened: OpenedArchive?
+        switch await opening.open(fs: fs, path: pathToOpen, intent: .interactive) {
+        case .opened(let archive, _):
+            opened = archive
+        case .skipped, .notAnArchive:
+            // Nothing claimed it by name. Give the content-detecting plugins a look:
+            // a filesystem image called `firmware.bin`, or a rootfs with no extension
+            // at all, is exactly the file somebody installs an image reader for.
+            if fs is LocalFS {
+                opened = await opening.probeByContent(localFile: URL(fileURLWithPath: pathToOpen))
             }
-            localPath = tmp.path
-            tempExtractedArchives.insert(localPath)
         }
-        if let pluginFS = await resolvePluginArchive?(localPath) {
-            let hostPath = await model.getPath()
-            mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath,
-                               driveVolume: mountedDriveVolume))
-            fs = pluginFS
-            setMountedDrive(nil)   // an archive inside a drive is not that drive (see `enterResults`)
-            await loadDirectory("/")
-            return
-        }
-        guard let archive = ArchiveFS(archiveFileURL: URL(fileURLWithPath: localPath),
-                                      fsID: "zip:\(localPath)") else {
+
+        guard let archive = opened else {
             if speculative {
                 // Nobody claimed it, and nobody said it was an archive in the first
                 // place. Carry on with the open that would have happened.
-                HistoryService.shared.recordFile(localPath)
-                NSWorkspace.shared.open(URL(fileURLWithPath: localPath))
+                HistoryService.shared.recordFile(pathToOpen)
+                NSWorkspace.shared.open(URL(fileURLWithPath: pathToOpen))
                 return
             }
             // Not a (readable) archive — e.g. Ctrl+PageDown on a plain file. Beep
@@ -6893,14 +6992,20 @@ final class PanelController: NSObject, PanelControllerProtocol {
             NSSound.beep()
             return
         }
+
+        let localPath = archive.localURL.path
+        if archive.isTemporary { tempExtractedArchives.insert(localPath) }
         // Encrypted archive: use a remembered Keychain password or prompt (F-136).
-        if archive.hasEncryptedEntries {
-            _ = resolveArchivePassword(for: archive, localPath: localPath)
+        // Only the built-in reader exposes per-member encryption; a plugin handles
+        // its own. Prompting belongs here and never in the registry, which has to
+        // stay usable from a background search that must not throw up a modal.
+        if let native = archive.fs as? ArchiveFS, native.hasEncryptedEntries {
+            _ = resolveArchivePassword(for: native, localPath: localPath)
         }
         let hostPath = await model.getPath()
         mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath,
                            driveVolume: mountedDriveVolume))
-        fs = archive
+        fs = archive.fs
         setMountedDrive(nil)   // an archive inside a drive is not that drive (see `enterResults`)
         await loadDirectory("/")
     }
@@ -6930,10 +7035,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// after an in-archive edit). Falls back to the archive root if the subpath
     /// is gone.
     func reloadCurrentArchive() async {
-        guard let zip = mountStack.last?.archivePath,
-              let fresh = ArchiveFS(archiveFileURL: URL(fileURLWithPath: zip), fsID: "zip:\(zip)") else { return }
+        // Re-opened the way it was opened: rebuilding an `ArchiveFS` unconditionally
+        // would quietly replace a plugin mount with the built-in zip reader.
+        guard let zip = mountStack.last?.archivePath, let opening = archiveOpening,
+              case .opened(let fresh, _) = await opening.open(
+                  fs: LocalFS(), path: zip, intent: .interactive) else { return }
         let sub = await model.getPath()
-        fs = fresh
+        fs = fresh.fs
         watchedArchiveStamp = FileStamp.of(zip)
         await loadDirectory(sub)
     }

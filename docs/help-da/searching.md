@@ -22,7 +22,7 @@ Når du har brug for at spore filer hvor som helst på din Mac — efter navn, e
 
 1. For at søge inde i filer skal du skrive teksten i **Find tekst** på fanen Generelt — det, der står i feltet, søges efter, og et tomt felt søger kun på navne. Indstillinger lader dig gøre den **forskel på store/små**, kun matche et **helt ord**, behandle teksten som et **regulært udtryk**, lave en **hex-indholdssøgning** eller finde filer, der **ikke indeholder** teksten.
 2. Skift til fanen **Avanceret** for at indsnævre resultater efter **størrelse** (for eksempel `10K` til `5M`), efter **ændringsdato**-interval eller til filer ændret inden for de sidste N dage.
-3. Slå **Søg inde i arkiver** til for at kigge i arkiver af zip-familien (zip, jar, war og lignende).
+3. Slå **Søg inde i arkiver** til for at kigge ind i de fundne arkiver — de samme formater, du kan åbne med Enter, inklusive dem et pakker-plugin tilføjer. Arkiver, der ikke kunne åbnes, rapporteres, når søgningen er færdig.
 4. For at begrænse søgningen til det, du allerede har valgt, slå **Søg kun i valgte emner** til før start.
 5. Slå **Søg også i filkommentarer** til, og teksten søges i hver fils kommentar ud over dens indhold. Sådan finder du en fil igen ud fra det, du skrev *om* den — “kundens original”, “erstattet af 2026-eksporten” — når intet af den slags står i selve filen. Et resultat, der findes sådan, viser kommentaren i stedet for en linje fra filen, og intet linjenummer, for fundet ligger ikke i filens tekst. Store/små bogstaver, helt ord og regulære udtryk gælder for en kommentar præcis som for indhold; en hex-søgning gør ikke, for en kommentar er tekst, nogen har skrevet. **Indeholder ikke** forbliver konsistent: en fil vises, når teksten hverken er i indholdet eller i kommentaren. Er Noter-pluginet slået til, findes dets note som et indholdsfelt, som du kan filtrere på under **Plugins** — se [Arbejd med plugins](plugins.md).
 6. Nogle plugins kan gøre en fil til tekst, som filen selv ikke indeholder — dekompilator-pluginet gør en `.class` til Java-kildekode. Slå **Søg i tekst fra plugins** til, og de filer søges som den tekst i stedet for som deres egne bytes, så en formulering fra kildekoden findes i en oversat klasse. Indstillingen vises kun, når et sådant plugin er installeret, og den er langsommere: at fremstille teksten kan betyde én dekompilator pr. fil.
@@ -55,7 +55,7 @@ For lokale mapper, macOS allerede har indekseret, slå **Brug Spotlight** til p�
 
 ## Bemærkninger
 
-- Indholdssøgning læser hele filer for lokale mapper; på andre placeringer springes meget store filer over (cirka 16 MB, eller 64 MB ved brug af et regulært udtryk).
+- Indholdssøgning læser hele filer for lokale mapper og for arkiver; på netværksplaceringer læses meget store filer kun delvist (cirka 16 MB, eller 64 MB ved brug af et regulært udtryk).
 - Søgning inde i arkiver går ned til fire niveauer af indlejrede arkiver.
 - **Inkludér mapper i resultater** viser også mapper, hvis navne matcher, ikke kun filer.
 - Spotlight dækker kun indekserede lokale mapper; for netværksplaceringer eller mønsterbaseret matching, lad det være slået fra og lad Find filer scanne.

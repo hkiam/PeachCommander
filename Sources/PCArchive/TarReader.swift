@@ -16,12 +16,42 @@ public final class TarReader: ArchiveSource {
     /// Byte range of each member's file data within `tar`, parallel to `members`.
     private let ranges: [Range<Int>]
 
+    /// How much this reader is willing to materialise (F-463).
+    ///
+    /// A gzip-wrapped tar has to be inflated whole before any member can be read, so
+    /// the compressed size on disk says almost nothing about the cost: 200 MB of
+    /// tar.gz is routinely 2 GB of tar. A background walk that meets a folder of build
+    /// artefacts needs a ceiling on the *expanded* size; a keypress does not, because
+    /// somebody asked for that one archive and is waiting for it.
+    public struct Limits: Sendable, Equatable {
+        /// Largest uncompressed payload to inflate. 0 means no ceiling.
+        public var maxExpandedBytes: Int64
+        public init(maxExpandedBytes: Int64 = 0) { self.maxExpandedBytes = maxExpandedBytes }
+        public static let unlimited = Limits()
+    }
+
     /// Parses `fileURL` as tar or tar.gz. Returns `nil` if it is not a readable
     /// tar stream (no valid ustar header found).
-    public init?(fileURL: URL) {
-        guard let raw = try? Data(contentsOf: fileURL) else { return nil }
+    public convenience init?(fileURL: URL) {
+        self.init(fileURL: fileURL, limits: .unlimited)
+    }
+
+    /// Parses `fileURL`, refusing a gzip payload larger than `limits` allows.
+    ///
+    /// Refused *before* inflating, not after: the declared size is what `inflate`
+    /// preallocates, so checking it first is the difference between declining to open
+    /// an archive and allocating a gigabyte to discover we should have declined.
+    public init?(fileURL: URL, limits: Limits) {
+        // Mapped, not read. `parse` decides from the first 512-byte block, so for a plain
+        // tar only the header pages are ever touched — O(members) instead of O(bytes) —
+        // and a `.xz`/`.zst`/`.7z` handed here by `ArchiveFS`'s reader ordering is now
+        // rejected after one page instead of after reading the whole file into memory.
+        guard let raw = try? Data(contentsOf: fileURL, options: [.mappedIfSafe]) else { return nil }
         let tar: Data
         if Self.isGzip(raw) {
+            if limits.maxExpandedBytes > 0,
+               let declared = Self.declaredExpandedSize(raw),
+               declared > limits.maxExpandedBytes { return nil }
             guard let inflated = Self.gunzip(raw) else { return nil }
             tar = inflated
         } else {
@@ -33,6 +63,9 @@ public final class TarReader: ArchiveSource {
         self.ranges = ranges
     }
 
+    /// The inflated tar, held for the reader's lifetime so members can be sliced out of it.
+    public var retainedBytes: Int64 { Int64(tar.count) }
+
     public func data(atIndex index: Int, password: String?) throws -> Data {
         guard ranges.indices.contains(index) else { return Data() }
         let r = ranges[index]
@@ -42,6 +75,20 @@ public final class TarReader: ArchiveSource {
 
     // MARK: - gzip
 
+    /// The uncompressed size a gzip stream claims in its 4-byte ISIZE trailer.
+    ///
+    /// Exact up to 4 GiB; beyond that it wraps, which is why a value smaller than the
+    /// compressed payload of a large file is not to be believed. Both cases end the
+    /// same way — the archive is not opened — but for a stated reason.
+    static func declaredExpandedSize(_ d: Data) -> Int64? {
+        let n = d.count
+        guard n > 18 else { return nil }
+        func byte(_ i: Int) -> UInt8 { d[d.startIndex + i] }
+        let isize = Int64(byte(n - 4)) | (Int64(byte(n - 3)) << 8)
+                  | (Int64(byte(n - 2)) << 16) | (Int64(byte(n - 1)) << 24)
+        return isize > 0 ? isize : nil
+    }
+
     private static func isGzip(_ d: Data) -> Bool {
         d.count > 18 && d[d.startIndex] == 0x1f && d[d.startIndex + 1] == 0x8b
     }
@@ -50,28 +97,35 @@ public final class TarReader: ArchiveSource {
     /// sizing the output from the 4-byte ISIZE trailer (exact for archives up to
     /// 4 GiB uncompressed; larger ones wrap and are unsupported here).
     private static func gunzip(_ d: Data) -> Data? {
-        let bytes = [UInt8](d)
-        guard bytes.count > 18, bytes[0] == 0x1f, bytes[1] == 0x8b, bytes[2] == 8 else { return nil }
-        let flg = bytes[3]
+        // Indexed through `d` rather than through a `[UInt8](d)` copy: that copy was a
+        // second full-size duplicate of the compressed file, made only to read a dozen
+        // header bytes, and it landed on top of the inflated output.
+        let n = d.count
+        func byte(_ i: Int) -> UInt8 { d[d.startIndex + i] }
+        guard n > 18, byte(0) == 0x1f, byte(1) == 0x8b, byte(2) == 8 else { return nil }
+        let flg = byte(3)
         var idx = 10
         if flg & 0x04 != 0 {                       // FEXTRA
-            guard idx + 2 <= bytes.count else { return nil }
-            let xlen = Int(bytes[idx]) | (Int(bytes[idx + 1]) << 8)
+            guard idx + 2 <= n else { return nil }
+            let xlen = Int(byte(idx)) | (Int(byte(idx + 1)) << 8)
             idx += 2 + xlen
         }
         if flg & 0x08 != 0 {                       // FNAME (NUL-terminated)
-            while idx < bytes.count, bytes[idx] != 0 { idx += 1 }
+            while idx < n, byte(idx) != 0 { idx += 1 }
             idx += 1
         }
         if flg & 0x10 != 0 {                       // FCOMMENT (NUL-terminated)
-            while idx < bytes.count, bytes[idx] != 0 { idx += 1 }
+            while idx < n, byte(idx) != 0 { idx += 1 }
             idx += 1
         }
         if flg & 0x02 != 0 { idx += 2 }            // FHCRC
-        let n = bytes.count
         guard idx <= n - 8 else { return nil }
-        let isize = Int(bytes[n - 4]) | (Int(bytes[n - 3]) << 8)
-                  | (Int(bytes[n - 2]) << 16) | (Int(bytes[n - 1]) << 24)
+        let isize = Int(byte(n - 4)) | (Int(byte(n - 3)) << 8)
+                  | (Int(byte(n - 2)) << 16) | (Int(byte(n - 1)) << 24)
+        // ISIZE is what `inflate` preallocates, so a nonsense value is refused before
+        // anything is allocated rather than after. Above 4 GiB it wraps — documented as
+        // unsupported — and a wrapped value now fails here instead of part-way through.
+        guard isize > 0 else { return nil }
         let payload = d.subdata(in: (d.startIndex + idx)..<(d.startIndex + n - 8))
         return try? ZipReader.inflate(payload, expectedSize: isize)
     }
@@ -92,7 +146,14 @@ public final class TarReader: ArchiveSource {
         var pendingPaxPath: String?      // pax 'x'/'g' path= override for the next header
         var sawValidHeader = false
 
+        var blocksSeen = 0
         while offset + blockSize <= end {
+            // Reading the headers of a 200,000-member tar takes long enough that a user
+            // who pressed Cancel deserves to be heard. This runs synchronously on the
+            // task that started the search, so its cancellation is visible right here —
+            // no flag has to be threaded down through the reader to find out.
+            blocksSeen += 1
+            if blocksSeen % 1024 == 0, Task.isCancelled { return nil }
             let block = tar.subdata(in: offset..<(offset + blockSize))
             // Two consecutive all-zero blocks mark end-of-archive; a single zero
             // block also effectively terminates a well-formed stream.

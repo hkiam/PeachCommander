@@ -19,6 +19,11 @@ public final class ShellArchiveSource: ArchiveSource, @unchecked Sendable {
 
     /// Extensions handled by this shell backend (not covered by the native
     /// zip/tar readers). Used to extend the panel's "enterable archive" set.
+    /// One `bsdtar -xOf` per member, and each one re-scans the archive from the
+    /// start — so a caller with a content filter must read this archive once
+    /// rather than member by member (F-463).
+    public var readsMembersByProcess: Bool { true }
+
     public static let handledExtensions: Set<String> =
         ["cpio", "iso", "cab", "lzh", "lha", "xar", "pax", "ar", "cpgz", "img"]
 

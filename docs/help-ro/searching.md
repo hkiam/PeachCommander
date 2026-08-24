@@ -22,7 +22,7 @@ Când trebuie să depistați fișiere oriunde pe Mac-ul dvs. — după nume, dup
 
 1. Pentru a căuta în interiorul fișierelor, tastați textul în **Găsește text** pe fila General — se caută ce se află în câmp, iar un câmp gol caută doar după nume. Opțiunile vă permit să-l faceți **Sensibil la majuscule**, să potrivească doar un **Cuvânt întreg**, să trateze textul ca o **Expresie regulată**, să facă o **Căutare de conținut hexazecimal** sau să găsească fișiere care **Nu conțin** textul.
 2. Comutați la fila **Avansat** pentru a îngusta rezultatele după **Dimensiune** (de exemplu `10K` până la `5M`), după interval de **dată de modificare**, sau la fișiere modificate în ultimele N zile.
-3. Activați **Caută în interiorul arhivelor** pentru a privi în arhivele din familia zip (zip, jar, war și similare).
+3. Activați **Caută în arhive** pentru a privi în arhivele găsite — aceleași formate pe care le puteți deschide cu Enter, inclusiv cele adăugate de un plugin de arhivare. Arhivele care nu au putut fi deschise sunt raportate la finalul căutării.
 4. Pentru a limita căutarea la ce ați ales deja, activați **Caută doar în elementele selectate** înainte de a începe.
 5. Activați **Caută și în comentariile fișierelor** și textul va fi căutat în comentariul fiecărui fișier pe lângă conținutul său. Așa regăsiți un fișier după ceea ce ați scris *despre* el — „originalul clientului”, „înlocuit de exportul din 2026” — când în fișierul însuși nu apare nimic de felul acesta. Un rezultat găsit astfel arată comentariul în loc de o linie din fișier și niciun număr de linie, fiindcă potrivirea nu se află în textul fișierului. Majusculele, cuvântul întreg și expresiile regulate se aplică unui comentariu exact ca unui conținut; o căutare hexazecimală nu, pentru că un comentariu este text scris de cineva. **Care nu conține** rămâne coerent: un fișier este listat când textul nu se află nici în conținut, nici în comentariu. Dacă modulul Note este activat, nota sa este disponibilă ca câmp de conținut, pe care puteți pune o condiție la **Plugins** — vedeți [Lucrul cu module](plugins.md).
 6. Unele pluginuri pot transforma un fișier în text pe care fișierul însuși nu îl conține — pluginul de decompilare face din `.class` sursă Java. Activați **Caută în textul oferit de pluginuri** și acele fișiere sunt căutate ca acel text în loc de octeții proprii, astfel încât o formulare din sursă se găsește într-o clasă compilată. Opțiunea apare doar când un astfel de plugin este instalat și este mai lentă: producerea textului poate însemna un decompilator pe fișier.
@@ -55,7 +55,7 @@ Pentru folderele locale pe care macOS le-a indexat deja, activați **Folosește 
 
 ## Note
 
-- Căutarea de conținut citește fișierele întregi pentru folderele locale; în alte locații fișierele foarte mari sunt omise (aproximativ 16 MB, sau 64 MB când se folosește o expresie regulată).
+- Căutarea în conținut citește fișierele întregi pentru dosarele locale și pentru arhive; în locațiile din rețea fișierele foarte mari sunt citite doar parțial (aproximativ 16 MB, sau 64 MB când se folosește o expresie regulată).
 - Căutarea în interiorul arhivelor coboară până la patru niveluri de arhive imbricate.
 - **Include folderele în rezultate** listează de asemenea folderele ale căror nume se potrivesc, nu doar fișierele.
 - Spotlight acoperă doar folderele locale indexate; pentru locații de rețea sau potrivire bazată pe tipar, lăsați-l dezactivat și lăsați Găsește fișiere să scaneze.

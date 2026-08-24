@@ -12,7 +12,7 @@ import PCVFS
 
 public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
     public let scheme = "pcx"
-    public var capabilities: VFSCapabilities { [.read] }
+    public var capabilities: VFSCapabilities { [.read, .localExtraction] }
 
     private let archive: PCXArchive
     private let archivePath: String
@@ -25,6 +25,11 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
         let modified: Date
         let entryPath: String?   // the plugin's original entry path (files only)
     }
+
+    /// Everything this mount extracted, removed when the mount goes away.
+    private let tempLock = NSLock()
+    private var tempRoot: URL?
+    private var tempCounter = 0
 
     private var nodes: [String: Node] = [:]
     private var childOrder: [String: [String]] = [:]
@@ -126,12 +131,38 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
         guard let node = nodes[key], !node.isDirectory, let entryPath = node.entryPath else {
             throw VFSError.notFound(path.path)
         }
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PCX-\(fsID)-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let out = tempDir.appendingPathComponent(node.name)
+        let out = try extractionDirectory().appendingPathComponent(node.name)
         try archive.extract(archivePath: archivePath, entryPath: entryPath, to: out.path)
         return out
+    }
+
+    /// A fresh directory for one extracted member, inside this mount's own temp root (F-463).
+    ///
+    /// Per member because two entries in different folders may share a name and the
+    /// extracted file has to keep its own. The root is per mount and is removed in
+    /// `deinit`: this used to be a `PCX-<fsID>-<uuid>` directory per call that nothing
+    /// ever deleted — and since `fsID` carries the archive's path, the slashes in it
+    /// quietly became more directories.
+    private func extractionDirectory() throws -> URL {
+        tempLock.lock()
+        defer { tempLock.unlock() }
+        let root: URL
+        if let tempRoot {
+            root = tempRoot
+        } else {
+            root = FileManager.default.temporaryDirectory
+                .appendingPathComponent("PCX-\(UUID().uuidString)", isDirectory: true)
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+            tempRoot = root
+        }
+        tempCounter += 1
+        let dir = root.appendingPathComponent("\(tempCounter)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
+    deinit {
+        if let tempRoot { try? FileManager.default.removeItem(at: tempRoot) }
     }
 
     private static func key(for path: String) -> String {

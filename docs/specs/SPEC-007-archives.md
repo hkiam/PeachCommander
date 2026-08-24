@@ -18,6 +18,11 @@ PCX plugins (I14) extend/override by extension (plugins.ini associations F-137).
 
 ## §2 ArchiveFS (VirtualFileSystem)
 
+- Who opens what: one `ArchiveOpening` registry (protocol in PCVFS, knowledge in
+  `NativeArchiveBackend`/`PCXArchiveBackend`, assembled in PCApp). Enter, Ctrl+PgDn,
+  unpack, test-archive, archive reload and the search all consult it, so a plugin
+  format or a user-configured extension reaches every one of them at once (F-463).
+  Background opens (a search walk) carry a size ceiling and never prompt.
 - Open: read central directory / scan headers ONCE → in-memory tree (cache by
   archive path+mtime, performance.md cache table). zip: own central-directory
   parser (seek to EOCD) → O(entries) open without decompressing.

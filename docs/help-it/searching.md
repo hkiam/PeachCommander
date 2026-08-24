@@ -22,7 +22,7 @@ Quando devi rintracciare file ovunque sul tuo Mac — per nome, per ciò che con
 
 1. Per cercare all'interno dei file, digita il testo in **Trova testo** nella scheda Generale: viene cercato ciò che è nel campo, e un campo vuoto cerca solo per nome. Le opzioni ti permettono di renderlo **Distingui maiuscole**, corrispondere solo a una **Parola intera**, trattare il testo come un'**Espressione regolare**, fare una **Ricerca contenuto esadecimale** o trovare file **Non contenenti** il testo.
 2. Passa alla scheda **Avanzate** per restringere i risultati per **Dimensione** (per esempio da `10K` a `5M`), per intervallo di **data di modifica**, o ai file modificati negli ultimi N giorni.
-3. Attiva **Cerca dentro gli archivi** per guardare negli archivi della famiglia zip (zip, jar, war e simili).
+3. Attiva **Cerca dentro gli archivi** per guardare dentro gli archivi trovati — gli stessi formati che puoi aprire con Invio, compresi quelli aggiunti da un plugin di archiviazione. Gli archivi che non è stato possibile aprire vengono segnalati al termine della ricerca.
 4. Per limitare la ricerca a ciò che hai già scelto, attiva **Cerca solo negli elementi selezionati** prima di avviare.
 5. Attivate **Cercare anche nei commenti dei file** e il testo verrà cercato nel commento di ogni file oltre che nel suo contenuto. È così che si ritrova un file per quello che si è scritto *su* di esso — «l'originale del cliente», «sostituito dall'esportazione 2026» — quando nel file non compare nulla di simile. Un risultato trovato così mostra il commento invece di una riga del file, e nessun numero di riga, perché la corrispondenza non è nel testo del file. Maiuscole/minuscole, parola intera ed espressioni regolari valgono per il commento esattamente come per il contenuto; una ricerca esadecimale no, perché un commento è testo digitato. **Non contenente** resta coerente: un file è elencato quando il testo non è né nel contenuto né nel commento. Se il plugin Note è attivo, la sua nota è disponibile come campo di contenuto, sul quale potete filtrare in **Plugins** — vedete [Lavorare con i plugin](plugins.md).
 6. Alcuni plugin sanno trasformare un file in un testo che il file non contiene — il plugin di decompilazione trasforma un `.class` in sorgente Java. Attivate **Cerca nel testo fornito dai plugin** e quei file vengono cercati come quel testo invece che come i propri byte, così una frase del sorgente si trova in una classe compilata. L’opzione appare solo se un plugin del genere è installato, ed è più lenta: produrre il testo può significare eseguire un decompilatore per ogni file.
@@ -55,7 +55,7 @@ Per le cartelle locali che macOS ha già indicizzato, attiva **Usa Spotlight** n
 
 ## Note
 
-- La ricerca per contenuto legge i file interi per le cartelle locali; su altre posizioni i file molto grandi vengono saltati (circa 16 MB, o 64 MB quando si usa un'espressione regolare).
+- La ricerca nel contenuto legge i file per intero nelle cartelle locali e negli archivi; nelle posizioni di rete i file molto grandi vengono letti solo in parte (circa 16 MB, o 64 MB con un'espressione regolare).
 - La ricerca dentro gli archivi scende fino a quattro livelli di archivi annidati.
 - **Includi cartelle nei risultati** elenca anche le cartelle i cui nomi corrispondono, non solo i file.
 - Spotlight copre solo le cartelle locali indicizzate; per posizioni di rete o corrispondenza basata su schemi, lascialo disattivato e lascia che Trova file scansioni.

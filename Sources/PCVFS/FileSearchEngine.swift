@@ -172,11 +172,76 @@ public struct SearchHit: Sendable, Equatable {
     public let path: String
     public let matchLine: Int?
     public let matchPreview: String?
+    /// The listing entry behind the hit, when the walk had one.
+    ///
+    /// Carried so a results panel can show an archive member's size and date without
+    /// reopening the archive to ask — listing 400 hits from 90 archives would otherwise
+    /// mean opening 90 archives to fill in a column.
+    public let entry: VFSEntry?
+    /// Set when the hit lives inside an archive rather than on the filesystem (F-463).
+    ///
+    /// `path` alone cannot say so: it is the archive's path and the member's path glued
+    /// together, which is byte-identical to a hit in a real folder that happens to be
+    /// named `data.zip`. Everything downstream — view, feed-to-panel, copy out — needs
+    /// to know which archive to reopen, and used to have no way to find out.
+    public let origin: SearchOrigin?
 
-    public init(path: String, matchLine: Int? = nil, matchPreview: String? = nil) {
+    public init(path: String, matchLine: Int? = nil, matchPreview: String? = nil,
+                origin: SearchOrigin? = nil, entry: VFSEntry? = nil) {
         self.path = path
         self.matchLine = matchLine
         self.matchPreview = matchPreview
+        self.origin = origin
+        self.entry = entry
+    }
+
+    /// Two hits are the same hit when they name the same thing in the same place.
+    ///
+    /// Written out rather than synthesised because `VFSEntry` is not `Equatable` — and
+    /// it should not take part anyway: it is a listing snapshot carried for display, so
+    /// a differing mtime would make one hit two.
+    public static func == (a: SearchHit, b: SearchHit) -> Bool {
+        a.path == b.path && a.matchLine == b.matchLine
+            && a.matchPreview == b.matchPreview && a.origin == b.origin
+    }
+}
+
+/// Which archive (or archives) a hit lives in, and where inside the innermost one.
+public struct SearchOrigin: Sendable, Equatable {
+    /// Outermost archive first; each entry is expressed in its parent's coordinates,
+    /// so resolving means opening `containers[0]` locally and then extracting each
+    /// next one out of the one before — the same walk `enterArchive` does by hand.
+    public let containers: [String]
+    /// Path of the matching file within the innermost archive.
+    public let member: String
+
+    public init(containers: [String], member: String) {
+        self.containers = containers
+        self.member = member
+    }
+}
+
+/// Where the walk currently is: the display prefix built from the archives descended
+/// into, plus those archives themselves.
+///
+/// The two travel together because they are the same fact. Threading a second
+/// parallel parameter beside `prefix` through nine signatures was the alternative,
+/// and it would have let them drift apart at the first mistake.
+struct SearchTrail: Sendable {
+    var prefix: String = ""
+    var containers: [String] = []
+
+    /// "<archive path>/<inner path>", exactly as before — no existing expectation moves.
+    func display(_ path: String) -> String { prefix.isEmpty ? path : prefix + path }
+
+    /// Descending into the archive at `path`, named in the current filesystem's terms.
+    func entering(_ path: String) -> SearchTrail {
+        SearchTrail(prefix: display(path), containers: containers + [path])
+    }
+
+    /// Provenance for a hit at `path`, or nil when the walk is on the real filesystem.
+    func origin(for path: String) -> SearchOrigin? {
+        containers.isEmpty ? nil : SearchOrigin(containers: containers, member: path)
     }
 }
 
@@ -184,10 +249,12 @@ public struct SearchHit: Sendable, Equatable {
 public actor FileSearchEngine {
     public init() {}
 
-    /// Opens the archive at `path` on `fs` as a searchable filesystem (the app
-    /// supplies this, backed by ArchiveFS — extracting to a temp file first when
-    /// the archive itself lives inside another archive). Returns nil if it can't.
-    public typealias ArchiveOpener = @Sendable (_ fs: VirtualFileSystem, _ path: String) async -> VirtualFileSystem?
+    // Archive descent is driven by `ArchiveOpening` (see ArchiveOpening.swift), which the
+    // app supplies. It answers two questions rather than one: the cheap "is this name worth
+    // touching" and the actual open. One closure could not do that without the engine keeping
+    // its own list of what to try — which is precisely the defect that made a `.tar.gz` full
+    // of matching text report as empty — or trial-parsing every file it walks past, which for
+    // the tar reader means reading and inflating whole files to discover they were not archives.
 
     /// Text a plugin can produce for a file whose own bytes are not text (F-351): the app supplies
     /// this, backed by the full-text fields of the loaded content plugins. Returns nil when no plugin
@@ -212,10 +279,19 @@ public actor FileSearchEngine {
     private var textSearcher: TextSearcher?
     private var commentProvider: CommentProvider?
 
-    /// Zip-format extensions searched when `searchArchives` is on — plain zip plus
-    /// its many specializations (Java, Android, browser, docs stay excluded here).
-    public static let archiveExtensions: Set<String> =
-        ["zip", "zipx", "jar", "war", "ear", "apk", "aar", "ipa", "jmod", "xpi", "crx", "epub"]
+    /// What this run could not look inside (F-463). Read after the stream finishes.
+    ///
+    /// Kept beside the stream rather than folded into it: making the element an enum would
+    /// have touched every consumer and every test to carry a value that is not a hit, and a
+    /// non-file row in the results list breaks Feed-to-Listbox and the count the user reads.
+    private var notices: [SearchNotice] = []
+
+    /// How much of a streamed file is accumulated before the search gives up on it.
+    ///
+    /// Shared by the streaming matcher and by the check that escalates past it, so the
+    /// two cannot drift apart — which is exactly how a file on disk and the same file in
+    /// an archive came to give different answers.
+    static let streamedSizeLimit = 16 * 1024 * 1024
 
     /// Cap on nested archive-in-archive descent (guards against zip bombs / cycles).
     private static let maxArchiveDepth = 4
@@ -235,13 +311,14 @@ public actor FileSearchEngine {
     /// `Task.isCancelled` between directories and entries so it stops
     /// promptly instead of running to completion in the background.
     public func search(_ query: SearchQuery, fs: VirtualFileSystem,
-                       archiveOpener: ArchiveOpener? = nil,
+                       archiveOpener: (any ArchiveOpening)? = nil,
                        textProvider: TextProvider? = nil,
                        textSearcher: TextSearcher? = nil,
                        commentProvider: CommentProvider? = nil) -> AsyncStream<SearchHit> {
         self.textProvider = textProvider
         self.textSearcher = textSearcher
         self.commentProvider = commentProvider
+        self.notices = []
         return AsyncStream { continuation in
             let regexOptions: NSRegularExpression.Options = query.caseSensitive ? [] : [.caseInsensitive]
             let matchesEverything = query.nameMask.isEmpty || query.nameMask == "*" || query.nameMask == "*.*"
@@ -276,12 +353,12 @@ public actor FileSearchEngine {
                             }
                             await self.walkDirectory(path: path, depth: 1, query: query,
                                                      compiled: compiled, fs: fs, continuation: continuation,
-                                                     prefix: "", archiveOpener: archiveOpener)
+                                                     trail: SearchTrail(), archiveOpener: archiveOpener)
                         } else {
                             await self.consider(entry: entry, path: path, query: query,
-                                                compiled: compiled, fs: fs, continuation: continuation, prefix: "")
+                                                compiled: compiled, fs: fs, continuation: continuation, trail: SearchTrail())
                             await self.descendArchive(entry: entry, path: path, query: query, compiled: compiled,
-                                                      fs: fs, continuation: continuation, prefix: "",
+                                                      fs: fs, continuation: continuation, trail: SearchTrail(),
                                                       archiveOpener: archiveOpener, archiveDepth: 0)
                         }
                     }
@@ -296,7 +373,7 @@ public actor FileSearchEngine {
                             compiled: compiled,
                             fs: fs,
                             continuation: continuation,
-                            prefix: "",
+                            trail: SearchTrail(),
                             archiveOpener: archiveOpener
                         )
                     }
@@ -309,12 +386,6 @@ public actor FileSearchEngine {
 
     /// Lists `path`, recursing into subdirectories (subject to `maxDepth`)
     /// and emitting a hit for every file that passes all filters.
-    /// A hit's display path: the fs-internal `path`, prefixed with the containing
-    /// archive's display path when searching inside an archive.
-    private static func display(_ prefix: String, _ path: String) -> String {
-        prefix.isEmpty ? path : prefix + path
-    }
-
     private func walkDirectory(
         path: String,
         depth: Int,
@@ -322,8 +393,8 @@ public actor FileSearchEngine {
         compiled: CompiledQuery,
         fs: VirtualFileSystem,
         continuation: AsyncStream<SearchHit>.Continuation,
-        prefix: String,
-        archiveOpener: ArchiveOpener?,
+        trail: SearchTrail,
+        archiveOpener: (any ArchiveOpening)?,
         archiveDepth: Int = 0
     ) async {
         if Task.isCancelled { return }
@@ -356,7 +427,7 @@ public actor FileSearchEngine {
                 let modified = (try? await fs.stat(dirPath))?.modified
                 passes = modified.map { Self.datePasses($0, query: query) } ?? false
             }
-            if passes { continuation.yield(SearchHit(path: Self.display(prefix, path))) }
+            if passes { continuation.yield(SearchHit(path: trail.display(path), origin: trail.origin(for: path))) }
         }
 
         var files: [(entry: VFSEntry, childPath: String)] = []
@@ -375,7 +446,7 @@ public actor FileSearchEngine {
                 if query.includeDirectories, !query.emptyDirectoriesOnly,
                    Self.nameMatches(entry.name, compiled: compiled),
                    Self.datePasses(entry.modified, query: query) {
-                    continuation.yield(SearchHit(path: Self.display(prefix, childPath)))
+                    continuation.yield(SearchHit(path: trail.display(childPath), origin: trail.origin(for: childPath)))
                 }
                 if query.maxDepth == 0 || depth < query.maxDepth {
                     await walkDirectory(
@@ -385,7 +456,7 @@ public actor FileSearchEngine {
                         compiled: compiled,
                         fs: fs,
                         continuation: continuation,
-                        prefix: prefix,
+                        trail: trail,
                         archiveOpener: archiveOpener,
                         archiveDepth: archiveDepth
                     )
@@ -413,15 +484,15 @@ public actor FileSearchEngine {
         // it is opt-in.
         if fs.scheme == "file", hasContentFilter, query.searchPluginText {
             await matchProvidedTextConcurrently(files, query: query, compiled: compiled,
-                                                continuation: continuation, prefix: prefix)
+                                                continuation: continuation, trail: trail)
         } else if fs.scheme == "file", hasContentFilter, !query.searchComments {
             await matchFilesConcurrently(files, query: query, compiled: compiled,
-                                         continuation: continuation, prefix: prefix)
+                                         continuation: continuation, trail: trail)
         } else {
             for f in files {
                 if Task.isCancelled { return }
                 await consider(entry: f.entry, path: f.childPath, query: query, compiled: compiled,
-                               fs: fs, continuation: continuation, prefix: prefix)
+                               fs: fs, continuation: continuation, trail: trail)
             }
         }
         // Archive descent (opt-in, sequential; the opener may not be reentrant).
@@ -429,7 +500,7 @@ public actor FileSearchEngine {
             for f in files {
                 if Task.isCancelled { return }
                 await descendArchive(entry: f.entry, path: f.childPath, query: query, compiled: compiled,
-                                     fs: fs, continuation: continuation, prefix: prefix,
+                                     fs: fs, continuation: continuation, trail: trail,
                                      archiveOpener: archiveOpener, archiveDepth: archiveDepth)
             }
         }
@@ -444,7 +515,7 @@ public actor FileSearchEngine {
     private func matchProvidedTextConcurrently(
         _ files: [(entry: VFSEntry, childPath: String)],
         query: SearchQuery, compiled: CompiledQuery,
-        continuation: AsyncStream<SearchHit>.Continuation, prefix: String
+        continuation: AsyncStream<SearchHit>.Continuation, trail: SearchTrail
     ) async {
         let maxConcurrent = 8
         await withTaskGroup(of: SearchHit?.self) { group in
@@ -457,7 +528,7 @@ public actor FileSearchEngine {
                     if let hit = result { continuation.yield(hit) }
                 }
                 let path = f.childPath
-                let display = Self.display(prefix, path)
+                let display = trail.display(path)
                 group.addTask { [self] in
                     let match = await firstContentMatch(path: path, query: query,
                                                        contentRegex: compiled.contentRegex, fs: LocalFS())
@@ -484,7 +555,7 @@ public actor FileSearchEngine {
     private func matchFilesConcurrently(
         _ files: [(entry: VFSEntry, childPath: String)],
         query: SearchQuery, compiled: CompiledQuery,
-        continuation: AsyncStream<SearchHit>.Continuation, prefix: String
+        continuation: AsyncStream<SearchHit>.Continuation, trail: SearchTrail
     ) async {
         let maxConcurrent = 8
         let sregex = SendableRegex(regex: compiled.contentRegex)
@@ -498,7 +569,7 @@ public actor FileSearchEngine {
                     if let hit = result { continuation.yield(hit) }
                 }
                 let path = f.childPath
-                let displayPath = Self.display(prefix, f.childPath)
+                let displayPath = trail.display(f.childPath)
                 group.addTask {
                     Task.isCancelled ? nil
                         : Self.localContentHit(path: path, displayPath: displayPath, query: query, contentRegex: sregex.regex)
@@ -542,7 +613,7 @@ public actor FileSearchEngine {
         compiled: CompiledQuery,
         fs: VirtualFileSystem,
         continuation: AsyncStream<SearchHit>.Continuation,
-        prefix: String
+        trail: SearchTrail
     ) async {
         // A search for empty folders is not a search for files. The walk still descends — a folder
         // is only known to be empty by listing it — but nothing it passes on the way is a hit.
@@ -551,7 +622,9 @@ public actor FileSearchEngine {
 
         let hasContentFilter = (query.contentText?.isEmpty == false) || (query.hexContent?.isEmpty == false)
         if hasContentFilter {
-            let match = await firstContentMatch(path: path, query: query, contentRegex: compiled.contentRegex, fs: fs)
+            let match = await firstContentMatch(path: path, query: query,
+                                                contentRegex: compiled.contentRegex, fs: fs,
+                                                size: entry.size)
             // The comment is a second place the term may be (F-373), asked only when the content did not
             // answer the question — one small file read per directory, and none at all for a file whose
             // content already matched.
@@ -561,17 +634,22 @@ public actor FileSearchEngine {
             if query.contentNotContaining {
                 // Hit only when the term is in neither the content nor the comment.
                 guard match == nil, commentMatch == nil else { return }
-                continuation.yield(SearchHit(path: Self.display(prefix, path)))
+                continuation.yield(SearchHit(path: trail.display(path),
+                                             origin: trail.origin(for: path), entry: entry))
             } else if let match {
-                continuation.yield(SearchHit(path: Self.display(prefix, path), matchLine: match.line, matchPreview: match.preview))
+                continuation.yield(SearchHit(path: trail.display(path), matchLine: match.line,
+                                             matchPreview: match.preview,
+                                             origin: trail.origin(for: path), entry: entry))
             } else if let commentMatch {
-                continuation.yield(SearchHit(path: Self.display(prefix, path), matchLine: commentMatch.line,
-                                             matchPreview: commentMatch.preview))
+                continuation.yield(SearchHit(path: trail.display(path), matchLine: commentMatch.line,
+                                             matchPreview: commentMatch.preview,
+                                             origin: trail.origin(for: path), entry: entry))
             }
             return
         }
 
-        continuation.yield(SearchHit(path: Self.display(prefix, path)))
+        continuation.yield(SearchHit(path: trail.display(path),
+                                     origin: trail.origin(for: path), entry: entry))
     }
 
     /// Does the file's comment contain the search term (F-373)?
@@ -597,9 +675,13 @@ public actor FileSearchEngine {
         return (0, "comment: " + comment.replacingOccurrences(of: "\n", with: " ").prefix(160))
     }
 
-    /// If `entry` is a zip-family archive and the query opts in, open it via
-    /// `archiveOpener` and search inside, prefixing hits with the archive's path.
-    /// Only descends into archives on the real filesystem (not archive-in-archive).
+    /// If `entry` looks like an archive and the query opts in, open it through the
+    /// shared authority and search inside, prefixing hits with the archive's path.
+    ///
+    /// What counts as an archive is not decided here. The engine asks the opener the
+    /// app gave it, so a format a plugin added, or an extension the user configured,
+    /// is searched the moment it is browsable — instead of waiting for a second list
+    /// in this file to be remembered.
     private func descendArchive(
         entry: VFSEntry,
         path: String,
@@ -607,23 +689,55 @@ public actor FileSearchEngine {
         compiled: CompiledQuery,
         fs: VirtualFileSystem,
         continuation: AsyncStream<SearchHit>.Continuation,
-        prefix: String,
-        archiveOpener: ArchiveOpener?,
+        trail: SearchTrail,
+        archiveOpener: (any ArchiveOpening)?,
         archiveDepth: Int
     ) async {
-        guard query.searchArchives, archiveDepth < Self.maxArchiveDepth, let archiveOpener,
-              Self.archiveExtensions.contains((entry.name as NSString).pathExtension.lowercased()),
-              let subFS = await archiveOpener(fs, path) else { return }
-        // Walk the archive's whole tree ignoring maxDepth/scope (those apply to the
-        // outer walk); hits display as "<archive path>/<inner path>". Nested archives
-        // recurse (archiveDepth + 1) up to maxArchiveDepth.
-        var inner = query
-        inner.maxDepth = 0
-        inner.scopePaths = nil
-        await walkDirectory(path: "/", depth: 1, query: inner, compiled: compiled, fs: subFS,
-                            continuation: continuation, prefix: Self.display(prefix, path),
-                            archiveOpener: archiveOpener, archiveDepth: archiveDepth + 1)
+        guard query.searchArchives, let archiveOpener,
+              archiveOpener.mightBeArchive(name: entry.name) else { return }
+        let display = trail.display(path)
+
+        // The zip-bomb / cycle guard. Now that we know this *is* an archive we were
+        // willing to open, stopping here is something the user has to be told about
+        // rather than a silent end to the walk.
+        guard archiveDepth < Self.maxArchiveDepth else {
+            notices.append(SearchNotice(path: display, reason: .tooDeep))
+            return
+        }
+        if Task.isCancelled { return }
+
+        switch await archiveOpener.open(fs: fs, path: path, intent: .background) {
+        case .notAnArchive:
+            return
+        case .skipped(let reason):
+            // A cancelled open comes back as "could not read it", which is true and
+            // useless: the run was stopped, not defeated. Reporting it would fill the
+            // summary of every cancelled search with archives that were perfectly fine.
+            if !Task.isCancelled { notices.append(SearchNotice(path: display, reason: reason)) }
+        case .opened(let opened, let dispose):
+            // Walk the archive's whole tree ignoring maxDepth/scope (those apply to the
+            // outer walk); hits display as "<archive path>/<inner path>". Nested archives
+            // recurse (archiveDepth + 1) up to maxArchiveDepth.
+            var inner = query
+            inner.maxDepth = 0
+            inner.scopePaths = nil
+            await walkDirectory(path: "/", depth: 1, query: inner, compiled: compiled, fs: opened.fs,
+                                continuation: continuation, trail: trail.entering(path),
+                                archiveOpener: archiveOpener, archiveDepth: archiveDepth + 1)
+            // Reached on the cancelled path too: `walkDirectory` returns rather than
+            // throwing, so an abandoned search still hands back what it extracted.
+            // Whoever opened the archive owns its extraction for exactly the duration
+            // of the descent, and that used to be nobody.
+            await dispose()
+        }
     }
+
+    /// Everything this run declined to look inside, in the order it happened.
+    ///
+    /// Read after the stream finishes. Empty is the normal case and must stay silent:
+    /// a dialog that says "nothing was skipped" on every ordinary search teaches people
+    /// to stop reading the line that matters.
+    public func takeNotices() -> [SearchNotice] { notices }
 
     /// Whether a modification date falls within the query's date bounds.
     private static func datePasses(_ modified: Date, query: SearchQuery) -> Bool {
@@ -655,7 +769,8 @@ public actor FileSearchEngine {
     /// stream through the VFS with a cap, since accumulating an unbounded remote
     /// file in memory is unsafe.
     private func firstContentMatch(path: String, query: SearchQuery,
-                                   contentRegex: NSRegularExpression?, fs: VirtualFileSystem) async -> (line: Int, preview: String)? {
+                                   contentRegex: NSRegularExpression?, fs: VirtualFileSystem,
+                                   size: Int64 = 0) async -> (line: Int, preview: String)? {
         // A plugin's text takes precedence over the file's own bytes, where there is any. Not an
         // addition to the byte search but a replacement: searching a .class for "hello" as bytes
         // finds the constant pool entry and misses everything the source says, so combining the two
@@ -695,6 +810,23 @@ public actor FileSearchEngine {
         }
         if fs.scheme == "file", let slice = FileSlice(path: path) {
             return Self.matchInSlice(slice, query: query, contentRegex: contentRegex)
+        }
+        // A member larger than the streaming cap, on a filesystem that can hand us a real
+        // file cheaply: extract it and search it exactly as a local file. Otherwise the
+        // same bytes answer differently depending on where they live — a match past 16 MB
+        // in an archived log was reported as no match at all, which is the failure this
+        // whole change exists to remove, one level down.
+        //
+        // Only above the cap. Below it the streamed path reaches every byte anyway and
+        // costs no temp file. And only where the capability is declared: on FTP or S3 the
+        // same call downloads the whole file.
+        if size > Int64(Self.streamedSizeLimit), fs.capabilities.contains(.localExtraction),
+           let url = (try? await fs.localFileIfAvailable(
+               VFSPath(filesystemId: fs.scheme, path: path))) ?? nil {
+            defer { try? FileManager.default.removeItem(at: url) }
+            if let slice = FileSlice(path: url.path) {
+                return Self.matchInSlice(slice, query: query, contentRegex: contentRegex)
+            }
         }
         return await firstContentMatchStreamed(path: path, query: query, contentRegex: contentRegex, fs: fs)
     }
@@ -773,7 +905,7 @@ public actor FileSearchEngine {
     /// 16 MB through `fs.openRead` and matches in memory.
     private func firstContentMatchStreamed(path: String, query: SearchQuery,
                                            contentRegex: NSRegularExpression?, fs: VirtualFileSystem) async -> (line: Int, preview: String)? {
-        let sizeLimit = 16 * 1024 * 1024
+        let sizeLimit = Self.streamedSizeLimit
         let filePath = VFSPath(filesystemId: fs.scheme, path: path)
 
         var haystack = [UInt8]()
