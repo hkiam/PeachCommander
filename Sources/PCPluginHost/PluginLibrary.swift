@@ -52,6 +52,11 @@ public enum PLXSymbols {
     public static let optional = [
         "ListLoadNext", "ListCloseWindow", "ListGetDetectString", "ListSearchText",
         "ListSendCommand", "ListPrint", "ListGetPreviewBitmap", "ListSetDefaultParams",
+        // The additive set: the host's services table at load time, and the three
+        // questions a surface other than the F3 window needs answered. A symbol
+        // missing from this list is invisible to `lib.symbol`, however faithfully the
+        // plugin exports it — which is how a new export gets silently ignored.
+        "ListLoadEx", "ListGetOutline", "ListGotoAnchor", "ListGetText",
         "PcGetApiVersion", "PcSafeToUnload",
     ]
 }

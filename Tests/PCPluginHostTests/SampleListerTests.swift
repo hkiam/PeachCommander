@@ -2,8 +2,24 @@
 // SampleListerTests.swift - End-to-end run through the real SampleLister C plugin
 // (Plugins/SampleLister/sample_lister.c) via the PLX adapter.
 
+import CContrib
 import XCTest
 @testable import PCPluginHost
+
+// The additive PLX entry points (ListLoadEx, ListGetOutline, ListGotoAnchor, ListGetText) are
+// exercised here against the real C sample rather than a mock, and *before* any shipping plugin
+// depends on them — an ABI designed against one caller tends to fit only that caller.
+
+/// What the fake host answers for a context key. Global because a `@convention(c)` function
+/// cannot capture; the same pattern PluginThemeTests uses.
+private nonisolated(unsafe) var fakeListerContext: [String: String] = [:]
+
+private func fakeListerGetContext(_ host: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?,
+                                  _ out: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
+    guard let key, let out, let v = fakeListerContext[String(cString: key)] else { return 0 }
+    _ = strlcpy(out, v, Int(maxlen))
+    return 1
+}
 
 final class SampleListerTests: XCTestCase {
     private var dir: URL!
@@ -47,10 +63,16 @@ final class SampleListerTests: XCTestCase {
         // Also resolve the test-only live-count helper alongside the PLX symbols.
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PLXSymbols.required,
-            optional: PLXSymbols.optional + ["SampleGetLiveCount"]) else {
+            optional: PLXSymbols.optional + ["SampleGetLiveCount", "SampleGetScrolledLine",
+                                             "SampleGotServices", "SampleGetSurface"]) else {
             XCTFail("open failed"); return nil
         }
         return lib
+    }
+
+    /// Resolve a test-only helper the sample exports beside the ABI.
+    private func helper<T>(_ lib: PluginLibrary, _ name: String, as: T.Type) -> T? {
+        lib.symbol(name).map { unsafeBitCast($0, to: T.self) }
     }
 
     private func liveCount(_ lib: PluginLibrary) -> Int {
@@ -133,6 +155,110 @@ final class SampleListerTests: XCTestCase {
         XCTAssertTrue(lister.send(.newParams([.wrapText, .darkMode]), to: handle))
         XCTAssertTrue(lister.canPrint)
         XCTAssertTrue(lister.printFile(path, in: handle))
+    }
+
+    // MARK: - The additive entry points
+
+    func testLoadExDeliversTheHostsContextToThePlugin() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        XCTAssertTrue(lister.takesServices)
+        let path = try writeFile("ctx.txt", "body")
+
+        // The one fact ListLoadEx exists to deliver: which of the host's surfaces this is.
+        fakeListerContext = ["lister.surface": "preview", "lister.width": "240"]
+        var services = PcHostServices()
+        services.getContext = fakeListerGetContext
+        let handle = try XCTUnwrap(withUnsafePointer(to: &services) { ptr in
+            lister.loadEx(parent: nil, file: path, services: UnsafeRawPointer(ptr))
+        })
+        defer { lister.close(handle) }
+
+        typealias GotFn = @convention(c) (UnsafeMutableRawPointer?) -> Int32
+        typealias SurfaceFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafePointer<CChar>?
+        XCTAssertEqual(helper(lib, "SampleGotServices", as: GotFn.self)?(handle), 1)
+        let surface = helper(lib, "SampleGetSurface", as: SurfaceFn.self)?(handle)
+        XCTAssertEqual(surface.map { String(cString: $0) }, "preview",
+                       "the plugin must read the surface the host published, not guess it")
+    }
+
+    func testLoadExFallsBackToListLoadWhenThePluginHasOnlyThat() throws {
+        // The promise that makes the addition additive: nothing breaks for a plugin that never
+        // heard of ListLoadEx. Simulated by asking the adapter to load with a nil table, which is
+        // also what a host with nothing to offer passes.
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        let path = try writeFile("fallback.txt", "still loads")
+        let handle = try XCTUnwrap(lister.loadEx(parent: nil, file: path, services: nil))
+        defer { lister.close(handle) }
+        XCTAssertEqual(lister.text(of: handle), "still loads")
+    }
+
+    func testOutlineIsParsedIntoRows() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        XCTAssertTrue(lister.canOutline)
+        let path = try writeFile("out.txt", "# Top\nbody\n## Nested\nmore\n# Second\n")
+        let handle = try XCTUnwrap(lister.load(parent: nil, file: path))
+        defer { lister.close(handle) }
+
+        let rows = lister.outline(of: handle)
+        XCTAssertEqual(rows.map(\.title), ["Top", "Nested", "Second"])
+        XCTAssertEqual(rows.map(\.depth), [0, 1, 0])
+        XCTAssertEqual(rows.map(\.line), [1, 3, 5])
+        XCTAssertEqual(rows.map(\.anchor), ["h1", "h3", "h5"])
+    }
+
+    func testAnOutlineAnchorRoundTripsBackToThePlugin() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        XCTAssertTrue(lister.canGotoAnchor)
+        let path = try writeFile("nav.txt", "# One\nx\n# Two\n")
+        let handle = try XCTUnwrap(lister.load(parent: nil, file: path))
+        defer { lister.close(handle) }
+
+        let second = try XCTUnwrap(lister.outline(of: handle).last)
+        XCTAssertTrue(lister.gotoAnchor(second.anchor, in: handle))
+        // Asserting the effect, not the return code: a plugin that answers OK and scrolls nowhere
+        // is exactly the failure a boolean cannot show.
+        typealias ScrolledFn = @convention(c) (UnsafeMutableRawPointer?) -> Int32
+        XCTAssertEqual(helper(lib, "SampleGetScrolledLine", as: ScrolledFn.self)?(handle), 3)
+        XCTAssertFalse(lister.gotoAnchor("nonsense", in: handle))
+    }
+
+    func testTextComesBackWholeThroughTheTwoCallSizing() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        XCTAssertTrue(lister.canProvideText)
+        // Longer than any buffer the adapter could have guessed at, which is the point of asking
+        // the plugin for the size first.
+        let body = String(repeating: "Zeile mit Umlauten: äöü ß\n", count: 5_000)
+        let path = try writeFile("big.txt", body)
+        let handle = try XCTUnwrap(lister.load(parent: nil, file: path))
+        defer { lister.close(handle) }
+        XCTAssertEqual(lister.text(of: handle), body)
+    }
+
+    func testAnEmptyDocumentHasNoOutlineAndNoText() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        let path = try writeFile("empty.txt", "")
+        let handle = try XCTUnwrap(lister.load(parent: nil, file: path))
+        defer { lister.close(handle) }
+        // Nil and empty are normal answers here, not errors — the caller falls back to what it did
+        // before, and a plugin showing an image says the same thing.
+        XCTAssertEqual(lister.outline(of: handle), [])
+        XCTAssertNil(lister.text(of: handle))
+    }
+
+    func testTheNewCommandsAreAccepted() throws {
+        guard let lib = try buildSampleLister() else { throw XCTSkip("clang unavailable") }
+        let lister = PLXLister(library: lib)
+        let path = try writeFile("cmd.txt", "x")
+        let handle = try XCTUnwrap(lister.load(parent: nil, file: path))
+        defer { lister.close(handle) }
+        XCTAssertTrue(lister.send(.reload, to: handle))
+        XCTAssertTrue(lister.send(.themeChanged, to: handle))
     }
 
     func testPreviewBitmapReturnsPNG() throws {

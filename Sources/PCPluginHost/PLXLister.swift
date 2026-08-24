@@ -2,10 +2,16 @@
 // PLXLister.swift - PLX lister plugin adapter (I16 T01).
 //
 // Drives a loaded PLX plugin's C ABI (plx.h via the CPLX module): load a file into
-// a plugin view, cycle to the next file, search, send viewer commands, print, and
-// render a window-less preview thumbnail. Detection reuses the shared F-238 detect
-// string engine (DetectString) so viewer dispatch is consistent with the rest of
-// the plugin system.
+// a plugin view, cycle to the next file, search, send viewer commands, print,
+// render a window-less preview thumbnail, and ask the view for its outline, its
+// text and to scroll somewhere. Detection reuses the shared F-238 detect string
+// engine (DetectString) so viewer dispatch is consistent with the rest of the
+// plugin system.
+//
+// Every entry point except ListLoad is optional and guarded by `lib.symbol(…)`, so
+// a plugin built against an older header keeps working and simply reports the
+// capability as absent. That is what makes the ABI additive in practice rather
+// than only on paper.
 //
 // View handles are opaque `UnsafeMutableRawPointer` (an NSView* on the app side):
 // the app passes its container view's pointer to `load` and casts the returned
@@ -40,9 +46,35 @@ public struct PLXSearchOptions: OptionSet, Sendable {
     public static let findFirst = PLXSearchOptions(rawValue: Int32(PC_LCS_FINDFIRST))
 }
 
+/// One row of a plugin's document outline (`ListGetOutline`).
+public struct PLXOutlineEntry: Sendable, Equatable {
+    /// 0-based nesting depth.
+    public let depth: Int
+    /// 1-based source line, or 0 when the plugin has no line to name.
+    public let line: Int
+    /// Opaque token to hand back to `gotoAnchor`.
+    public let anchor: String
+    /// What the sidebar shows.
+    public let title: String
+
+    public init(depth: Int, line: Int, anchor: String, title: String) {
+        self.depth = depth
+        self.line = line
+        self.anchor = anchor
+        self.title = title
+    }
+}
+
 /// A viewer command sent to a loaded view (PC_LC_*).
 public enum PLXCommand: Sendable {
     case copy, selectAll, fontPlus, fontMinus
+    /// Re-read the file from disk — the viewer's reload, which a plugin view could
+    /// not be told about before and so kept showing the previous contents.
+    case reload
+    /// The host's colour theme changed. `PcNotifyThemeChanged` addresses a plugin's
+    /// own windows and `PcNotifyView` only views built by `PcMakeView`; a lister view
+    /// is neither, so without this it had no way to hear about a theme switch.
+    case themeChanged
     case newParams(PLXShowFlags)
 
     var command: Int32 {
@@ -51,6 +83,8 @@ public enum PLXCommand: Sendable {
         case .selectAll: return Int32(PC_LC_SELECTALL)
         case .fontPlus: return Int32(PC_LC_FONTPLUS)
         case .fontMinus: return Int32(PC_LC_FONTMINUS)
+        case .reload: return Int32(PC_LC_RELOAD)
+        case .themeChanged: return Int32(PC_LC_THEMECHANGED)
         case .newParams: return Int32(PC_LC_NEWPARAMS)
         }
     }
@@ -83,9 +117,22 @@ public final class PLXLister: @unchecked Sendable {
     private typealias PrintFn = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<CChar>?, Int32) -> Int32
     private typealias PreviewFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32, Int32,
                                                   UnsafeMutableRawPointer?, Int32) -> Int32
+    /// `services` is `const struct PcHostServices *`, declared but not defined in plx.h so the
+    /// header stays standalone C11. Typed as a raw pointer here for the same reason: this module
+    /// only forwards it, and the host that builds the table is the one that knows its shape.
+    private typealias LoadExFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?,
+                                                 Int32, UnsafeRawPointer?) -> UnsafeMutableRawPointer?
+    private typealias SizedFn = @convention(c) (UnsafeMutableRawPointer?,
+                                                UnsafeMutablePointer<CChar>?, Int32) -> Int32
+    private typealias AnchorFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?) -> Int32
 
     private static let detectStringCapacity = 1024
     private static let previewBufferCapacity = 512 * 1024   // 512 KiB PNG ceiling
+    /// Ceilings for the two-call size protocol. A plugin answers how much it needs and the host
+    /// allocates that — but a wrong answer must cost a truncated outline, not the address space,
+    /// so what a plugin asks for is clamped rather than trusted.
+    private static let outlineCeiling = 4 * 1024 * 1024      // 4 MiB of outline lines
+    private static let textCeiling = 64 * 1024 * 1024        // 64 MiB of document text
 
     // MARK: - Capabilities
 
@@ -93,6 +140,15 @@ public final class PLXLister: @unchecked Sendable {
     public var canSearch: Bool { lib.symbol("ListSearchText") != nil }
     public var canPreview: Bool { lib.symbol("ListGetPreviewBitmap") != nil }
     public var canPrint: Bool { lib.symbol("ListPrint") != nil }
+    /// Whether the plugin takes the host's services table, and so can be told which surface it is
+    /// being embedded in.
+    public var takesServices: Bool { lib.symbol("ListLoadEx") != nil }
+    /// Whether the plugin can describe the document's structure (the viewer's symbol sidebar).
+    public var canOutline: Bool { lib.symbol("ListGetOutline") != nil }
+    /// Whether the plugin can scroll to an anchor from its own outline.
+    public var canGotoAnchor: Bool { lib.symbol("ListGotoAnchor") != nil }
+    /// Whether the plugin can hand over the document's plain text (find, copy, mark, print).
+    public var canProvideText: Bool { lib.symbol("ListGetText") != nil }
 
     // MARK: - Loading
 
@@ -102,6 +158,21 @@ public final class PLXLister: @unchecked Sendable {
         guard let ptr = lib.symbol("ListLoad") else { return nil }
         let fn = unsafeBitCast(ptr, to: LoadFn.self)
         return file.withCString { fn(parent, UnsafeMutablePointer(mutating: $0), showFlags.rawValue) }
+    }
+
+    /// Load `file` under `parent`, handing the plugin the host's services table so it can read the
+    /// surface it is being embedded in, the container's size, the theme and the config root.
+    ///
+    /// Falls back to `load` when the plugin exports only `ListLoad` — which is every plugin written
+    /// before this existed, and stays a valid thing to be. `services` is the `PcHostServices*` the
+    /// contribution host already builds; this module never looks inside it.
+    public func loadEx(parent: PLXHandle?, file: String, showFlags: PLXShowFlags = [],
+                       services: UnsafeRawPointer?) -> PLXHandle? {
+        guard let ptr = lib.symbol("ListLoadEx") else {
+            return load(parent: parent, file: file, showFlags: showFlags)
+        }
+        let fn = unsafeBitCast(ptr, to: LoadExFn.self)
+        return file.withCString { fn(parent, $0, showFlags.rawValue, services) }
     }
 
     /// Reuse `listWin` for another file (viewer cycling). Returns false if the
@@ -164,6 +235,60 @@ public final class PLXLister: @unchecked Sendable {
         let rc = file.withCString { fn(listWin, UnsafeMutablePointer(mutating: $0), flags) }
         return rc == Int32(PC_LISTER_OK)
     }
+
+    // MARK: - What the view knows about its document
+
+    /// The document's structure, as the plugin describes it: `(depth, line, anchor, title)` per row.
+    ///
+    /// Empty when the plugin has no outline for this file, which is a normal answer and not a
+    /// failure — the caller then falls back to whatever it did before. Malformed rows are dropped
+    /// rather than guessed at: a row without the four fields says nothing a sidebar could show.
+    public func outline(of listWin: PLXHandle) -> [PLXOutlineEntry] {
+        guard let text = sizedString("ListGetOutline", listWin, ceiling: Self.outlineCeiling) else {
+            return []
+        }
+        return text.split(separator: "\n", omittingEmptySubsequences: true).compactMap { line in
+            let f = line.split(separator: "\t", maxSplits: 3, omittingEmptySubsequences: false)
+            guard f.count == 4, let depth = Int(f[0]), let source = Int(f[1]) else { return nil }
+            return PLXOutlineEntry(depth: max(0, depth), line: max(0, source),
+                                   anchor: String(f[2]), title: String(f[3]))
+        }
+    }
+
+    /// Scroll the view to an anchor from `outline(of:)`. False if the plugin lacks the export or
+    /// does not know the anchor.
+    public func gotoAnchor(_ anchor: String, in listWin: PLXHandle) -> Bool {
+        guard let ptr = lib.symbol("ListGotoAnchor") else { return false }
+        let fn = unsafeBitCast(ptr, to: AnchorFn.self)
+        return anchor.withCString { fn(listWin, $0) } == Int32(PC_LISTER_OK)
+    }
+
+    /// The plain text of what the view shows, or nil when the plugin cannot say (an image lister,
+    /// or one built before the export existed).
+    public func text(of listWin: PLXHandle) -> String? {
+        sizedString("ListGetText", listWin, ceiling: Self.textCeiling)
+    }
+
+    /// The two-call size protocol shared by `ListGetOutline` and `ListGetText`: ask with a NULL
+    /// buffer how much is needed, then ask again with one that big.
+    ///
+    /// Two calls rather than a growing retry loop because the ABI offers the size and a loop would
+    /// re-render the document each round. The answer is clamped to `ceiling` — a plugin that
+    /// reports nonsense should cost a truncated result, not an allocation the host cannot make —
+    /// and a plugin that then writes less than it asked for is taken at its second word.
+    private func sizedString(_ symbol: String, _ listWin: PLXHandle, ceiling: Int) -> String? {
+        guard let ptr = lib.symbol(symbol) else { return nil }
+        let fn = unsafeBitCast(ptr, to: SizedFn.self)
+        let needed = fn(listWin, nil, 0)
+        guard needed > 0 else { return nil }
+        let cap = Swift.min(Int(needed), ceiling)
+        var buf = [CChar](repeating: 0, count: cap + 1)
+        let written = buf.withUnsafeMutableBufferPointer { fn(listWin, $0.baseAddress, Int32(cap + 1)) }
+        guard written > 0 else { return nil }
+        return String(cString: buf)
+    }
+
+    // MARK: - Thumbnails
 
     /// Render a window-less preview thumbnail (PNG bytes), or nil if unsupported.
     public func previewBitmap(file: String, maxWidth: Int, maxHeight: Int) -> Data? {

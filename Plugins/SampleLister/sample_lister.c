@@ -11,9 +11,22 @@
  * adapter and its choreography can be tested headlessly; a real plugin would
  * return an NSView*. A live-handle counter (SampleGetLiveCount) lets tests assert
  * the load/close memory lifecycle is balanced.
+ *
+ * It also exports the additive entry points — ListLoadEx, ListGetOutline,
+ * ListGotoAnchor, ListGetText — so the host adapter is exercised against a real
+ * C plugin *before* any shipping plugin depends on them. That order matters: an
+ * ABI designed against one caller tends to fit only that caller.
+ *
+ * The outline it produces is deliberately trivial (one entry per line beginning
+ * with '#'), because what is under test here is the protocol — the two-call
+ * sizing, the tab-separated rows, the anchor round-trip — and not anybody's idea
+ * of what a heading is.
  */
 
 #include "plx.h"
+/* For PcHostServices, so ListLoadEx can actually *read* the context rather than only
+ * confirm a pointer arrived. plx.h forward-declares the struct; this completes it. */
+#include "contrib.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +38,13 @@ static int g_live = 0;
 typedef struct {
     char  *text;   /* file contents (NUL-terminated)          */
     size_t len;
+    /* Where ListGotoAnchor last landed, so a test can see that the call reached the
+     * view rather than only that it returned OK. */
+    int    scrolledToLine;
+    /* Whether the host handed over its services table, and what it said the surface
+     * was — the two facts ListLoadEx exists to deliver. */
+    int    gotServices;
+    char   surface[32];
 } SLView;
 
 /* Read a whole file into a freshly-malloc'd, NUL-terminated buffer. */
@@ -53,6 +73,28 @@ static const char *ci_strstr(const char *hay, const char *needle) {
         if (!*n) return hay;
     }
     return NULL;
+}
+
+/* Write at most `maxlen` bytes of `src` into `out`, NUL-terminated, and return the
+ * length `src` needs. With out == NULL this is a pure "how much would you need",
+ * which is the first half of the ABI's two-call sizing protocol. */
+static int sized_copy(const char *src, char *out, int maxlen) {
+    int need = (int)strlen(src);
+    if (!out) return need;
+    if (maxlen <= 0) return -1;
+    int n = need < maxlen - 1 ? need : maxlen - 1;
+    memcpy(out, src, (size_t)n);
+    out[n] = '\0';
+    return n;
+}
+
+/* The line an anchor names. Anchors here are "h<line>" — opaque to the host by
+ * contract, and readable here on purpose: a test that has to decode base64 to see
+ * what went wrong is a test nobody reads. */
+static int sl_anchor_line(const char *anchor) {
+    if (!anchor || anchor[0] != 'h') return 0;
+    int want = atoi(anchor + 1);
+    return want > 0 ? want : 0;
 }
 
 /* ---- required PLX export ------------------------------------------------ */
@@ -119,6 +161,8 @@ int ListSendCommand(PC_LISTER_HANDLE listWin, int command, int parameter) {
     case PC_LC_NEWPARAMS:
     case PC_LC_FONTPLUS:
     case PC_LC_FONTMINUS:
+    case PC_LC_RELOAD:
+    case PC_LC_THEMECHANGED:
         return PC_LISTER_OK;
     default:
         return PC_LISTER_ERROR;
@@ -144,7 +188,93 @@ int ListGetPreviewBitmap(char *fileToLoad, int maxWidth, int maxHeight,
     return (int)sizeof(png_sig);
 }
 
+/* As ListLoad, plus the services table. Records what the host said the surface was,
+ * so a test can prove the context arrived rather than only that the call worked. */
+PC_LISTER_HANDLE ListLoadEx(PC_LISTER_HANDLE parent, const char *fileToLoad,
+                            int showFlags, const struct PcHostServices *services) {
+    SLView *v = (SLView *)ListLoad(parent, (char *)fileToLoad, showFlags);
+    if (!v) return NULL;
+    v->gotServices = services != NULL;
+    v->surface[0] = '\0';
+    if (services && services->getContext) {
+        /* The whole point of the call: which of the host's four surfaces this view is
+         * about to be embedded in. Recorded verbatim so a test asserts the string the
+         * host published, not an interpretation of it. */
+        if (!services->getContext(services->host, "lister.surface",
+                                  v->surface, (int)sizeof(v->surface))) {
+            v->surface[0] = '\0';
+        }
+    }
+    return (PC_LISTER_HANDLE)v;
+}
+
+/* One outline row per line starting with '#': "<depth>\t<line>\t<anchor>\t<title>". */
+int ListGetOutline(PC_LISTER_HANDLE listWin, char *out, int maxlen) {
+    SLView *v = (SLView *)listWin;
+    if (!v) return -1;
+    /* Built into a heap buffer first, because the size has to be known before the
+     * caller can be told it — the same reason the ABI asks twice. */
+    size_t cap = v->len + 256, used = 0;
+    char *buf = (char *)malloc(cap);
+    if (!buf) return -1;
+    buf[0] = '\0';
+    int line = 1;
+    const char *p = v->text;
+    while (p && *p) {
+        const char *eol = strchr(p, '\n');
+        size_t n = eol ? (size_t)(eol - p) : strlen(p);
+        if (n > 0 && p[0] == '#') {
+            int depth = 0;
+            while ((size_t)depth < n && p[depth] == '#') depth++;
+            const char *title = p + depth;
+            size_t tlen = n - (size_t)depth;
+            while (tlen > 0 && *title == ' ') { title++; tlen--; }
+            /* 32 covers "<depth>\t<line>\th<line>\t" for any plausible file. */
+            if (used + tlen + 64 < cap) {
+                used += (size_t)snprintf(buf + used, cap - used, "%d\t%d\th%d\t%.*s\n",
+                                         depth - 1, line, line, (int)tlen, title);
+            }
+        }
+        if (!eol) break;
+        p = eol + 1;
+        line++;
+    }
+    int rc = sized_copy(buf, out, maxlen);
+    free(buf);
+    return rc;
+}
+
+int ListGotoAnchor(PC_LISTER_HANDLE listWin, const char *anchor) {
+    SLView *v = (SLView *)listWin;
+    if (!v) return PC_LISTER_ERROR;
+    int line = sl_anchor_line(anchor);
+    if (line <= 0) return PC_LISTER_ERROR;
+    v->scrolledToLine = line;
+    return PC_LISTER_OK;
+}
+
+int ListGetText(PC_LISTER_HANDLE listWin, char *out, int maxlen) {
+    SLView *v = (SLView *)listWin;
+    if (!v) return -1;
+    return sized_copy(v->text, out, maxlen);
+}
+
 int PcGetApiVersion(void) { return PC_API_VERSION; }
 
-/* Test-only helper (not part of the PLX ABI): number of open views. */
+/* Test-only helpers (not part of the PLX ABI). */
 int SampleGetLiveCount(void) { return g_live; }
+/* Which line ListGotoAnchor last scrolled to, and whether ListLoadEx got a table —
+ * the two effects that are otherwise invisible from outside the plugin. */
+int SampleGetScrolledLine(PC_LISTER_HANDLE listWin) {
+    SLView *v = (SLView *)listWin;
+    return v ? v->scrolledToLine : -1;
+}
+int SampleGotServices(PC_LISTER_HANDLE listWin) {
+    SLView *v = (SLView *)listWin;
+    return v ? v->gotServices : -1;
+}
+/* The `lister.surface` the host published at load time, or "" if it published none. */
+const char *SampleGetSurface(PC_LISTER_HANDLE listWin) {
+    SLView *v = (SLView *)listWin;
+    return v ? v->surface : "";
+}
