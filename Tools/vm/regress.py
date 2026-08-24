@@ -2633,9 +2633,33 @@ def boot(app: str, run: str):
     return ip, host, port, pw
 
 
+# Plugins a scenario needs switched ON, which ship switched off.
+#
+# `plugin-context-menu` asserts the AI plugin's context items and went red the day that plugin's
+# default changed (F-448) — it was testing a *plugin's* contributions and had no way to say which
+# plugin it meant. This is that way.
+#
+# Written per scenario and removed afterwards, in the same breath as the session reset below: a
+# plugins.ini left behind would enable the plugin for every scenario after it, changing what each one
+# sees — an extra menu, an extra column, an extra sidebar view — and `surface-colours` counts
+# surfaces. `Enabled=` is additive rather than an allow-list (PluginConfig.isEnabled is
+# `enabledByDefault || enabled.contains`), so naming one plugin here leaves every default-on plugin
+# exactly as it was.
+PLUGINS_ON = {
+    "plugin-context-menu": ["AI Assistant"],
+}
+
+
 def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     body = "\n".join(script)
     ssh_guest(ip, f"cat > ~/auto.txt <<'PCEOF'\n{body}\nPCEOF")
+    # Plugins this scenario needs on, and *off* for every other one — see PLUGINS_ON.
+    wanted = PLUGINS_ON.get(name)
+    if wanted:
+        ssh_guest(ip, "mkdir -p ~/pc-cfg && printf '[Plugins]\\nEnabled=%s\\n' > ~/pc-cfg/plugins.ini"
+                  % ";".join(wanted))
+    else:
+        ssh_guest(ip, "rm -f ~/pc-cfg/plugins.ini; true")
     # Fresh session state per scenario: a persisted panel directory or view mode from the previous one
     # would make this scenario show something else entirely. (Learned the hard way — twice.)
     # The guest-side half is a script, not an ssh one-liner: the log predicate carries quotes at three
