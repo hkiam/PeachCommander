@@ -243,6 +243,13 @@ website stops reporting its readers to anyone.
 
 ### Fixed
 
+- **Two libraries the app had started using were missing from its attributions.** The Markdown
+  plugin's parser — Swift Markdown, and the cmark-gfm it is built on — were pinned as dependencies
+  but named nowhere, so **Help ▸ Open Source & Third-Party Software…** did not list them and their
+  licences were not shipped. Both are there now, with their full texts. The generator had been
+  looking in one place for the licence files while these two are resolved into another, and it warned
+  about exactly that on every build without anyone acting on the warning.
+
 - **A large folder now fills in as it loads.** A directory with thousands of entries — a big folder on
   disk, an FTP or SFTP listing, an S3 bucket — showed an empty panel until the very last entry had
   arrived. The rows now appear as they come in. Navigating away while a folder is still loading no
