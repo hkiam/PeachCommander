@@ -206,6 +206,14 @@ final class PreviewPanelView: NSView {
         }
     }
 
+    /// Re-show the current file, for a setting that changes which renderer it gets (F-429).
+    ///
+    /// Deliberately *outside* the `#if DEBUG` block below, and it was inside it once: it reads like the
+    /// automation diagnostics it was written next to, but its caller is `refreshOpenPreviews()`, which is
+    /// ordinary behaviour and is not guarded. Debug compiled, Release did not, and CI only ever builds
+    /// Debug — so the first build that saw it was the release DMG.
+    func reloadPreview() { previewArea.reloadCurrent() }
+
     #if DEBUG
     /// Diagnostic: select the preview tab with this title (a built-in or a plugin view), as a click would.
     /// Returns the titles when there is no match, so a failing scenario says what *was* there (F-372).
@@ -216,9 +224,6 @@ final class PreviewPanelView: NSView {
 
     /// Diagnostic: which tab is showing, so a sweep can put it back.
     var automationSelectedTab: String { segmented.label(forSegment: segmented.selectedSegment) ?? "" }
-
-    /// Re-show the current file, for a setting that changes which renderer it gets (F-429).
-    func reloadPreview() { previewArea.reloadCurrent() }
 
     @discardableResult
     func automationSelectTab(titled title: String) -> String {

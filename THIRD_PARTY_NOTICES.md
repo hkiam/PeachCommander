@@ -28,6 +28,22 @@ This product includes the following open-source software — plus, where a row s
 - Repository: https://github.com/apple/swift-argument-parser
 - License text: `Resources/Licenses/swift-argument-parser.txt`
 
+## Swift Markdown 0.8.0
+
+- **License:** Apache-2.0
+- **Copyright (c) 2021 Apple Inc. and the Swift project authors.**
+- CommonMark/GitHub-Flavored Markdown parser behind the Markdown lister plugin; its syntax tree is what the plugin walks to emit HTML.
+- Repository: https://github.com/apple/swift-markdown
+- License text: `Resources/Licenses/swift-markdown.txt`
+
+## swift-cmark (cmark-gfm) gfm (7898f1b)
+
+- **License:** BSD-2-Clause AND MIT
+- **Copyright (c) 2014 John MacFarlane; portions (c) 2011 Vicent Marti and (c) 2009 Natacha Porte; GFM extensions (c) 2017 GitHub, Inc.**
+- The C parser under Swift Markdown: cmark-gfm and its GitHub-Flavored extensions (tables, task lists, strikethrough, autolinks), compiled into the Markdown lister plugin.
+- Repository: https://github.com/apple/swift-cmark
+- License text: `Resources/Licenses/swift-cmark.txt`
+
 ## SwiftTreeSitter main (0f40435)
 
 - **License:** BSD-3-Clause

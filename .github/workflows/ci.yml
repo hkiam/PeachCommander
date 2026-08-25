@@ -157,6 +157,23 @@ jobs:
       - name: Build the app and every shipping plugin
         run: ./Tools/build.sh
 
+      # Debug is what build.sh builds, and Debug is not what ships. The difference is not academic:
+      # a member declared inside `#if DEBUG` and called from ordinary code compiles here and fails
+      # only in Release, so the first build that ever saw it was the release DMG — twenty-five
+      # minutes into a pipeline, on the day of a release. One architecture is enough to catch that
+      # (the conditional has nothing to do with arm64 vs x86_64); the DMG run still builds both.
+      # This job finishes inside the Test job's wall clock, so CI costs about a minute more.
+      - name: Build Release too, because Release is what ships
+        run: |
+          xcodebuild -project PeachCommander.xcodeproj \
+            -scheme PeachCommander \
+            -configuration Release \
+            -derivedDataPath build/release-check \
+            -destination "platform=macOS" \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
   tests:
     name: Test
     runs-on: macos-26

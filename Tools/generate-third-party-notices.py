@@ -57,14 +57,26 @@ SOFTWARE.
 
 
 def find_checkouts():
+    """Every directory a SwiftPM checkout may live in, most-likely first.
+
+    A list rather than the first hit, because there is more than one resolver at work: Xcode resolves
+    the packages the *app* links into its DerivedData, while `build-markdown-plugin.sh` resolves
+    swift-markdown and swift-cmark into `build/spm` with plain `swift package resolve` — the plugin
+    compiles them, the app does not link them, and the two checkout trees have no reason to meet.
+    Returning only the first root meant the licence text of anything resolved by the other one could
+    not be found, which is how two Apache/BSD dependencies reached a DMG with a warning instead of an
+    attribution.
+    """
+    roots = []
     for pat in [
         os.path.expanduser("~/Library/Developer/Xcode/DerivedData/PeachCommander-*/SourcePackages/checkouts"),
         os.path.join(REPO, "build", "*", "SourcePackages", "checkouts"),
+        os.path.join(REPO, "build", "spm", "checkouts"),
     ]:
         for d in sorted(glob.glob(pat)):
-            if os.path.isdir(d):
-                return d
-    return None
+            if os.path.isdir(d) and d not in roots:
+                roots.append(d)
+    return roots
 
 
 def resolved_pins():
@@ -99,12 +111,11 @@ PINS = resolved_pins()
 
 
 def checkout_license(name):
-    if not CHECKOUTS:
-        return None
-    for fn in ("LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING"):
-        p = os.path.join(CHECKOUTS, name, fn)
-        if os.path.isfile(p):
-            return open(p, encoding="utf-8", errors="replace").read()
+    for root in CHECKOUTS:
+        for fn in ("LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING"):
+            p = os.path.join(root, name, fn)
+            if os.path.isfile(p):
+                return open(p, encoding="utf-8", errors="replace").read()
     return None
 
 
@@ -179,6 +190,31 @@ COMPONENTS = [
          description="Resolved as a dependency of SwiftTerm's command-line sample target; not compiled "
                      "into, or shipped with, this application.",
          text=lambda: checkout_license("swift-argument-parser")),
+    # Compiled into the Markdown lister plugin, not linked into the app — the same arrangement as
+    # SwiftTerm, and the reason the plugin can carry a parser the application does not. Resolved by
+    # `build-markdown-plugin.sh` into build/spm rather than by Xcode, which is why `find_checkouts`
+    # has to look in more than one place to find these two licence files at all.
+    dict(key="swift-markdown", name="Swift Markdown", spdx="Apache-2.0", pin="swift-markdown",
+         website="https://github.com/apple/swift-markdown",
+         repository="https://github.com/apple/swift-markdown",
+         copyright="Copyright (c) 2021 Apple Inc. and the Swift project authors.",
+         description="CommonMark/GitHub-Flavored Markdown parser behind the Markdown lister plugin; "
+                     "its syntax tree is what the plugin walks to emit HTML.",
+         text=lambda: checkout_license("swift-markdown")),
+    # COPYING is a stack of licences, and the stack is the honest answer: cmark itself is BSD-2-Clause
+    # (John MacFarlane), the houdini escaping routines and the generated scanners came from sundown and
+    # are MIT (Vicent Marti / Natacha Porte), and the CommonMark spec inside test/ is CC-BY-SA — which
+    # is not compiled in and not shipped. The expression names the two that are.
+    dict(key="swift-cmark", name="swift-cmark (cmark-gfm)", spdx="BSD-2-Clause AND MIT",
+         pin="swift-cmark",
+         website="https://github.com/apple/swift-cmark",
+         repository="https://github.com/apple/swift-cmark",
+         copyright="Copyright (c) 2014 John MacFarlane; portions (c) 2011 Vicent Marti and "
+                   "(c) 2009 Natacha Porte; GFM extensions (c) 2017 GitHub, Inc.",
+         description="The C parser under Swift Markdown: cmark-gfm and its GitHub-Flavored extensions "
+                     "(tables, task lists, strikethrough, autolinks), compiled into the Markdown "
+                     "lister plugin.",
+         text=lambda: checkout_license("swift-cmark")),
     dict(key="SwiftTreeSitter", name="SwiftTreeSitter", spdx="BSD-3-Clause", pin="swifttreesitter",
          website="https://github.com/ChimeHQ/SwiftTreeSitter",
          repository="https://github.com/ChimeHQ/SwiftTreeSitter",
@@ -423,7 +459,8 @@ def main():
     print("Wrote %s and %d license files in %s"
           % (os.path.relpath(MD_OUT, REPO), len(components_json), os.path.relpath(LIC_DIR, REPO)))
     if CHECKOUTS:
-        print("SwiftPM checkouts: %s" % CHECKOUTS)
+        print("SwiftPM checkouts: %d root(s), first %s"
+              % (len(CHECKOUTS), os.path.relpath(CHECKOUTS[0], REPO)))
     else:
         print("WARNING: no SwiftPM checkouts dir found — kept any existing license texts.")
     for w in warnings:

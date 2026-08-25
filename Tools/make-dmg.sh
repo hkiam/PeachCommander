@@ -41,6 +41,8 @@ echo "==> Preparing universal libssh2 + openssl…"
 Tools/make-universal-deps.sh
 SSH2_PREFIX="$PWD/build/universal-deps"
 
+BUILD_LOG="$PWD/build/make-dmg-$CONFIG.log"
+mkdir -p "$(dirname "$BUILD_LOG")"
 echo "==> Building ${CONFIG} (universal: arm64 + x86_64)..."
 # No ARCHS/ONLY_ACTIVE_ARCH override here on purpose: overriding them is what used
 # to reduce the shipped DMG to a single slice while the docs advertised universal.
@@ -51,7 +53,16 @@ xcodebuild -project PeachCommander.xcodeproj \
   -destination "platform=macOS" \
   PC_SSH2_PREFIX="$SSH2_PREFIX" \
   CODE_SIGNING_ALLOWED=NO \
-  build >/dev/null
+  build >"$BUILD_LOG" 2>&1 || {
+    # The output was going to /dev/null, and xcodebuild prints its diagnostics on stdout: a release
+    # run that failed to compile showed "BUILD FAILED" and the list of files in the batch, and not
+    # one word about what was wrong. Twenty-five minutes of pipeline to learn nothing. Keep the log,
+    # and on failure print the lines that say why.
+    echo "error: the $CONFIG build failed. Diagnostics:" >&2
+    grep -E "error:|warning: .*will never be executed" "$BUILD_LOG" | head -40 >&2 || true
+    echo "(full log: $BUILD_LOG)" >&2
+    exit 1
+  }
 
 APP="$DERIVED/Build/Products/$CONFIG/PeachCommander.app"
 APPNAME="$(basename "$APP")"
