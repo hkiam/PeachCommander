@@ -199,9 +199,11 @@ disabled (`Sparkle/` is gitignored; the feed is not published).
 ## Version numbers
 
 The version the app reports lives in `project.yml` — `CFBundleShortVersionString`
-and `CFBundleVersion` under the app target's `info.properties` (currently `0.1.0`
-and `1`). `Tools/bootstrap.sh` generates `Sources/PCApp/Info.plist` from it, so
-`project.yml` is the single place to edit.
+and `CFBundleVersion` under the app target's `info.properties`; `Tools/check-version.sh`
+with no argument prints what they currently say. `Tools/bootstrap.sh` generates
+`Sources/PCApp/Info.plist` from it, so `project.yml` is the single place to edit —
+the generated plist is tracked, so commit it along with the bump rather than leaving
+it to drift until somebody's next bootstrap picks it up.
 
 Bump it **before** tagging. `Tools/check-version.sh` enforces the match and runs as
 the first step of the release workflow, so a mismatched tag fails in seconds

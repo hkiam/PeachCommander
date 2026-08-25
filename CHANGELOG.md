@@ -14,6 +14,15 @@ does not have.
 
 ## [Unreleased]
 
+## [0.7.3] — 2026-08-25
+
+Markdown and HTML leave the core: both formats are now drawn by a plugin that renders
+diagrams and mathematics on your Mac, on every surface that shows a file — the viewer, the preview
+panel, Quick View and the gallery. Searching inside archives reaches every archive the app can open,
+says what it could not read, and no longer leaves extracted copies behind. Amazon S3 joins the drives,
+the assistant summarises whole files and looks through your disk for one, and the documentation
+website stops reporting its readers to anyone.
+
 ### Added
 
 - **Searching inside archives now means every archive the app can open.** Turning on **Search inside
@@ -45,6 +54,119 @@ does not have.
   **Amazon S3 and S3-compatible storage** describes what to expect of it — including that a bucket
   cannot be renamed, that an archived object must be restored before it can be read, and that unlike a
   disk, every request to a paid service costs money.
+
+- **You can agree to part of the assistant's plan.** When a plan covers several files — renaming a
+  folder full of them, clearing out your Downloads — each one is a ticked line above the buttons. Untick
+  what you want left alone and press **Confirm & run**: the rest goes ahead and the unticked files are
+  not touched. Until now the only answers were all and nothing, so wanting all-but-three meant rejecting
+  the plan and describing the exception in words for the assistant to get right on a second try.
+  Unticking everything is the same as cancelling, and it says so rather than reporting that it did
+  nothing.
+
+- **Ask the assistant to find a file and it looks through your whole disk.** *"Find the PDF invoice from
+  last month"*, *"where are all my node_modules folders?"*, *"which file mentions the Aachen contract?"*
+  — including words **inside** files, which the ordinary search can only do once you point it at a
+  folder. It uses the index macOS already keeps, so there is nothing to build and no waiting for it to
+  catch up, and it tells you where it looked: your home folder, the whole computer, or just the folder a
+  panel is showing. Two honest limits: macOS keeps some places out of its index, so "nothing found" is
+  not proof a file is absent, and a file created moments ago may not be indexed yet — **Find Files**
+  walks the folders itself and will still see it.
+
+- **One click puts one panel's folder in the other, and says which side.** **Go ▸ Left = Right** shows
+  the right panel's folder on the left, **Go ▸ Right = Left** does the reverse, and both are on the
+  button bar by default. *Target = source* (Ctrl+=) has always done this relative to whichever panel is
+  active — which is the wrong shape for a button, because the same click then means two different
+  things depending on where the focus happens to be. These name the side outright. An existing button
+  bar gains the two buttons once; remove them and they stay removed.
+
+- **The whole empty space at the right of a path bar opens the path for typing.** Not just the pencil,
+  which is eighteen points wide. Clicking a folder in the breadcrumb still goes there, and the narrow
+  gaps between folder names still do nothing, so a click that just misses a name is a miss rather than
+  a mode change. A click on a path bar now also makes that panel the active one.
+
+- **The assistant summarises a whole file, however long.** Its on-device model takes in a few
+  thousand words at a time, so "summarise this report" failed outright on anything past about six
+  kilobytes — measured on this machine: a four-kilobyte slice is answered, an eight-kilobyte one is
+  refused, and the assistant was asking for sixty-four. It now reads a long file in slices and folds
+  the slice summaries into one, so the length of a file costs time instead of failing. A 38 KB report
+  comes back summarised, including what its last page says.
+
+- **What the assistant did, and taking it back.** **Actions ▾** in the chat shows every change it
+  made — what was asked of it, how it turned out, and the attempts the autonomy setting refused —
+  and takes back the last change that has an inverse: a rename is renamed back, a move is moved back.
+  Where nothing can be taken back the list says why, rather than offering a button that would lie.
+  An external agent connected over MCP writes to the same log. You can also just ask the assistant
+  to undo it.
+
+- **An "AI ▸" action over a whole selection.** Mark forty files and the action runs over all of
+  them, one after another, with progress in the status line; Stop ends the run between files. This
+  is the part a two-panel file manager was missing: the assistant could only ever act on the file
+  under the cursor.
+
+- **Answers you can act on.** The chat renders the model's Markdown: a table is a table, a fenced
+  block is a code block, a list is a list, and a path is clickable. *(Make a table* produces a
+  well-formed Markdown table by construction, and the chat used to show it as rows of pipe
+  characters.) **Suggest a name** now ends in a **Rename** button carrying the proposed name —
+  pressing it is the approval, so nothing is asked twice.
+
+- **Your own "AI ▸" actions.** What each action asks the model is a file you can edit
+  (`aichat/skills.json`, `aichat/folder-skills.json`), written out with the built-in wording on
+  first run — and an action you invent is a real command: name `plugin.ai.skill.<your-id>` in the
+  user menu, on the button bar or on a keyboard shortcut and it runs. A plugin can now declare that
+  a command family is open to ids it does not itself list, which is what makes this possible without
+  the host having to load a plugin to find out what it offers. Name an id that does not exist and
+  the assistant says so rather than doing nothing.
+
+- **An AI Summary panel column.** It shows the first line of the summary for each file the assistant
+  has already summarised, and stays empty for the rest — the column shows work already done and
+  never starts a model itself. The plugin's other column, which detects a text file's language
+  without any model, is now called **Language** rather than "AI Language".
+
+- **The Git panel and its windows follow the colour scheme.** In every dark palette the Git panel in the
+  side panel was a white rectangle with white labels on it; the history, blame, branches, conflict and rebase
+  windows ignored the scheme entirely. They now take their colours from the app — and follow a change while
+  they are open.
+
+- **PDFs and Word documents render in the preview, with zoom.** The side panel's preview, Quick View and
+  the info page now draw PDFs themselves — page by page, with the same zoom buttons a picture has (zoom in,
+  zoom out, actual size, fit) — and show Word, OpenDocument and RTF documents as formatted, selectable text.
+  Everything else is still previewed by macOS Quick Look. Reported as "PDF and DOCX are no longer rendered":
+  what those formats went through before renders outside the application, where nothing inside it can tell a
+  rendered page from a blank one — so this also makes the preview something that can be checked. If you
+  prefer the system's preview for everything, switch *Render PDFs and documents in the preview* off in
+  **Configuration ▸ Edit/View**.
+
+- **Plugin column headers are translated, and can carry an icon.** *Git Status* and the other plugin columns
+  showed English headers in every language; they now use the plugin's own translations — while your saved
+  column sets keep working, because only the header changed and not the column's identity. Git's status
+  column also shows a real icon next to the word instead of a text glyph.
+
+- **Blame in the editor's gutter.** `Git ▸ Blame in the Editor` opens the file and writes who last touched
+  each line next to the line numbers, with the commit, author, date and subject on hover; clicking a line
+  opens that commit against its parent in the compare window. The mechanism is a new host service, so any
+  plugin can annotate lines this way — coverage, a linter, anything per line.
+
+- **The bundled plugins are the pitch now, not a footnote.** Seventeen plugins ship inside the
+  app and the landing page said so in one run-on sentence, two thirds of the way down, under a
+  heading about the SDK — while the feature card above it advertised the *ability* to write
+  plugins rather than the fourteen that are switched on the moment you launch. There is now a
+  showcase near the top: what each one does in a line, the three that are off by default marked
+  as such, the plugins window as proof that every one of them is there and individually
+  switchable, and Disk Map, Git and the Uninstaller shown rather than described. The SDK keeps
+  its own section further down, where it belongs.
+
+- **Card grids were choosing their column count by font size.** Every grid on the landing page
+  used a `rem` track minimum, and Material sets `html { font-size: 125% }` — so 1rem is 20px on
+  a default browser and was measured at 24px on another. A `minmax(14rem, …)` meant for three
+  columns silently rendered two in an 826px content column. The minimums are in px now; the
+  gaps stay in rem, because spacing should scale with type.
+
+- **The terminal and the log viewer are shown, not just listed.** Two of the most visual bundled
+  plugins had no screenshot anywhere. Both are captured now — the terminal with the shell sitting
+  in the folder the panel above it shows, the log viewer with a service log colour-coded by level
+  — and the showcase strip on the landing page carries five pictures instead of three. Both help
+  pages embed theirs too, in all nineteen languages, so they are no longer the only plugin pages
+  without a picture.
 
 ### Changed
 
@@ -85,6 +207,39 @@ does not have.
   and colours comments, strings, numbers and keywords the way the editor does. A fence naming
   something the app has no lexer for, such as `mermaid`, stays a plain block rather than failing. The
   rendered page still loads nothing from the network.
+
+- **The assistant is offered only the tools it is allowed to use.** Under "read-only" the write and
+  delete tools are no longer offered and then refused: for a model with a few thousand tokens of
+  context, a round of attempts that can only fail is the budget for the real answer. Memory
+  (`remember`/`recall`) and the semantic search reached only the cloud path before — the on-device
+  default, which is what most people run, had no memory at all.
+
+- **"Which file is about X" finds it.** The semantic search ranked file *names* only, with an
+  English-only embedding, so a German query fell back to counting shared words and the "semantic"
+  part quietly did nothing. It now reads the beginning of each file too, follows the language of the
+  query, and returns what is close to the best match instead of the whole folder.
+
+- **A copy or a move is reported as done when it is done.** Both tools queued the transfer and
+  returned immediately, so the assistant announced a copy before a byte had moved — and a plan of
+  several steps ran against a queue that had not started. They now wait for the transfer, which is
+  still an ordinary background job in the Transfer Manager.
+
+- **Reading, hashing and searching no longer block the window.** The automation tools ran on the
+  main thread, and "find duplicates" mapped every file into memory there. Hashing is streamed now,
+  and the file-system tools run off the main actor.
+
+- **A model change in Settings takes effect at once.** The chat kept the provider and the system
+  prompt it was built with, so switching to a cloud model looked like it did nothing until the panel
+  happened to be rebuilt.
+
+- **The MCP server follows the autonomy setting.** It was fixed at "confirm changes", so "read-only"
+  on the AI page held for the assistant in the window and not for an external agent on the socket —
+  both of which are configured on that same page.
+
+- **The Git menu reads like a menu.** Inside a submenu already called *Git*, every entry said "Git" again:
+  `Git ▸ Git Status…`. The titles are now `Status…`, `Stage`, `Commit…`, `Push`, `Pull`, `Panel`, `Diff…`,
+  `History…` next to `File History…`, `Branches, Stashes & Tags…` and `Blame (list)…` beside the new
+  `Blame in the Editor` — and the entries are in a sensible order instead of the order they were added in.
 
 ### Fixed
 
@@ -193,166 +348,11 @@ does not have.
   not open" sent you looking for a permission that was never the problem. The panel now names it:
   *macOS keeps <folder> private — see Commands ▸ Full Disk Access…*.
 
-### Added
-
-- **You can agree to part of the assistant's plan.** When a plan covers several files — renaming a
-  folder full of them, clearing out your Downloads — each one is a ticked line above the buttons. Untick
-  what you want left alone and press **Confirm & run**: the rest goes ahead and the unticked files are
-  not touched. Until now the only answers were all and nothing, so wanting all-but-three meant rejecting
-  the plan and describing the exception in words for the assistant to get right on a second try.
-  Unticking everything is the same as cancelling, and it says so rather than reporting that it did
-  nothing.
-
-- **Ask the assistant to find a file and it looks through your whole disk.** *"Find the PDF invoice from
-  last month"*, *"where are all my node_modules folders?"*, *"which file mentions the Aachen contract?"*
-  — including words **inside** files, which the ordinary search can only do once you point it at a
-  folder. It uses the index macOS already keeps, so there is nothing to build and no waiting for it to
-  catch up, and it tells you where it looked: your home folder, the whole computer, or just the folder a
-  panel is showing. Two honest limits: macOS keeps some places out of its index, so "nothing found" is
-  not proof a file is absent, and a file created moments ago may not be indexed yet — **Find Files**
-  walks the folders itself and will still see it.
-
-- **One click puts one panel's folder in the other, and says which side.** **Go ▸ Left = Right** shows
-  the right panel's folder on the left, **Go ▸ Right = Left** does the reverse, and both are on the
-  button bar by default. *Target = source* (Ctrl+=) has always done this relative to whichever panel is
-  active — which is the wrong shape for a button, because the same click then means two different
-  things depending on where the focus happens to be. These name the side outright. An existing button
-  bar gains the two buttons once; remove them and they stay removed.
-
-- **The whole empty space at the right of a path bar opens the path for typing.** Not just the pencil,
-  which is eighteen points wide. Clicking a folder in the breadcrumb still goes there, and the narrow
-  gaps between folder names still do nothing, so a click that just misses a name is a miss rather than
-  a mode change. A click on a path bar now also makes that panel the active one.
-
-- **The assistant summarises a whole file, however long.** Its on-device model takes in a few
-  thousand words at a time, so "summarise this report" failed outright on anything past about six
-  kilobytes — measured on this machine: a four-kilobyte slice is answered, an eight-kilobyte one is
-  refused, and the assistant was asking for sixty-four. It now reads a long file in slices and folds
-  the slice summaries into one, so the length of a file costs time instead of failing. A 38 KB report
-  comes back summarised, including what its last page says.
-
-- **What the assistant did, and taking it back.** **Actions ▾** in the chat shows every change it
-  made — what was asked of it, how it turned out, and the attempts the autonomy setting refused —
-  and takes back the last change that has an inverse: a rename is renamed back, a move is moved back.
-  Where nothing can be taken back the list says why, rather than offering a button that would lie.
-  An external agent connected over MCP writes to the same log. You can also just ask the assistant
-  to undo it.
-
-- **An "AI ▸" action over a whole selection.** Mark forty files and the action runs over all of
-  them, one after another, with progress in the status line; Stop ends the run between files. This
-  is the part a two-panel file manager was missing: the assistant could only ever act on the file
-  under the cursor.
-
-- **Answers you can act on.** The chat renders the model's Markdown: a table is a table, a fenced
-  block is a code block, a list is a list, and a path is clickable. *(Make a table* produces a
-  well-formed Markdown table by construction, and the chat used to show it as rows of pipe
-  characters.) **Suggest a name** now ends in a **Rename** button carrying the proposed name —
-  pressing it is the approval, so nothing is asked twice.
-
-- **Your own "AI ▸" actions.** What each action asks the model is a file you can edit
-  (`aichat/skills.json`, `aichat/folder-skills.json`), written out with the built-in wording on
-  first run — and an action you invent is a real command: name `plugin.ai.skill.<your-id>` in the
-  user menu, on the button bar or on a keyboard shortcut and it runs. A plugin can now declare that
-  a command family is open to ids it does not itself list, which is what makes this possible without
-  the host having to load a plugin to find out what it offers. Name an id that does not exist and
-  the assistant says so rather than doing nothing.
-
-- **An AI Summary panel column.** It shows the first line of the summary for each file the assistant
-  has already summarised, and stays empty for the rest — the column shows work already done and
-  never starts a model itself. The plugin's other column, which detects a text file's language
-  without any model, is now called **Language** rather than "AI Language".
-
-- **The Git panel and its windows follow the colour scheme.** In every dark palette the Git panel in the
-  side panel was a white rectangle with white labels on it; the history, blame, branches, conflict and rebase
-  windows ignored the scheme entirely. They now take their colours from the app — and follow a change while
-  they are open.
-
-- **PDFs and Word documents render in the preview, with zoom.** The side panel's preview, Quick View and
-  the info page now draw PDFs themselves — page by page, with the same zoom buttons a picture has (zoom in,
-  zoom out, actual size, fit) — and show Word, OpenDocument and RTF documents as formatted, selectable text.
-  Everything else is still previewed by macOS Quick Look. Reported as "PDF and DOCX are no longer rendered":
-  what those formats went through before renders outside the application, where nothing inside it can tell a
-  rendered page from a blank one — so this also makes the preview something that can be checked. If you
-  prefer the system's preview for everything, switch *Render PDFs and documents in the preview* off in
-  **Configuration ▸ Edit/View**.
-
-- **Plugin column headers are translated, and can carry an icon.** *Git Status* and the other plugin columns
-  showed English headers in every language; they now use the plugin's own translations — while your saved
-  column sets keep working, because only the header changed and not the column's identity. Git's status
-  column also shows a real icon next to the word instead of a text glyph.
-
-- **Blame in the editor's gutter.** `Git ▸ Blame in the Editor` opens the file and writes who last touched
-  each line next to the line numbers, with the commit, author, date and subject on hover; clicking a line
-  opens that commit against its parent in the compare window. The mechanism is a new host service, so any
-  plugin can annotate lines this way — coverage, a linter, anything per line.
-
-
-- **The bundled plugins are the pitch now, not a footnote.** Seventeen plugins ship inside the
-  app and the landing page said so in one run-on sentence, two thirds of the way down, under a
-  heading about the SDK — while the feature card above it advertised the *ability* to write
-  plugins rather than the fourteen that are switched on the moment you launch. There is now a
-  showcase near the top: what each one does in a line, the three that are off by default marked
-  as such, the plugins window as proof that every one of them is there and individually
-  switchable, and Disk Map, Git and the Uninstaller shown rather than described. The SDK keeps
-  its own section further down, where it belongs.
-
-- **Card grids were choosing their column count by font size.** Every grid on the landing page
-  used a `rem` track minimum, and Material sets `html { font-size: 125% }` — so 1rem is 20px on
-  a default browser and was measured at 24px on another. A `minmax(14rem, …)` meant for three
-  columns silently rendered two in an 826px content column. The minimums are in px now; the
-  gaps stay in rem, because spacing should scale with type.
-
-
-- **The terminal and the log viewer are shown, not just listed.** Two of the most visual bundled
-  plugins had no screenshot anywhere. Both are captured now — the terminal with the shell sitting
-  in the folder the panel above it shows, the log viewer with a service log colour-coded by level
-  — and the showcase strip on the landing page carries five pictures instead of three. Both help
-  pages embed theirs too, in all nineteen languages, so they are no longer the only plugin pages
-  without a picture.
-
-### Changed
-
-- **The assistant is offered only the tools it is allowed to use.** Under "read-only" the write and
-  delete tools are no longer offered and then refused: for a model with a few thousand tokens of
-  context, a round of attempts that can only fail is the budget for the real answer. Memory
-  (`remember`/`recall`) and the semantic search reached only the cloud path before — the on-device
-  default, which is what most people run, had no memory at all.
-
-- **"Which file is about X" finds it.** The semantic search ranked file *names* only, with an
-  English-only embedding, so a German query fell back to counting shared words and the "semantic"
-  part quietly did nothing. It now reads the beginning of each file too, follows the language of the
-  query, and returns what is close to the best match instead of the whole folder.
-
-- **A copy or a move is reported as done when it is done.** Both tools queued the transfer and
-  returned immediately, so the assistant announced a copy before a byte had moved — and a plan of
-  several steps ran against a queue that had not started. They now wait for the transfer, which is
-  still an ordinary background job in the Transfer Manager.
-
-- **Reading, hashing and searching no longer block the window.** The automation tools ran on the
-  main thread, and "find duplicates" mapped every file into memory there. Hashing is streamed now,
-  and the file-system tools run off the main actor.
-
-- **A model change in Settings takes effect at once.** The chat kept the provider and the system
-  prompt it was built with, so switching to a cloud model looked like it did nothing until the panel
-  happened to be rebuilt.
-
-- **The MCP server follows the autonomy setting.** It was fixed at "confirm changes", so "read-only"
-  on the AI page held for the assistant in the window and not for an external agent on the socket —
-  both of which are configured on that same page.
-
-- **The Git menu reads like a menu.** Inside a submenu already called *Git*, every entry said "Git" again:
-  `Git ▸ Git Status…`. The titles are now `Status…`, `Stage`, `Commit…`, `Push`, `Pull`, `Panel`, `Diff…`,
-  `History…` next to `File History…`, `Branches, Stashes & Tags…` and `Blame (list)…` beside the new
-  `Blame in the Editor` — and the entries are in a sensible order instead of the order they were added in.
-
-### Fixed
-
 - **`FEATURES.md` listed "Archives" twice.** One feature record of eighty-eight said
   `category: archives` where the rest say `archive`; the label table has no plural, so the
   generator fell back to capitalising the raw value — which produces the same heading the
   singular already produces. The record is fixed, and the generator now refuses a category that
   is not in the registry's own list instead of inventing a heading for it.
-
 
 - **The other eighteen languages got the same site, and a front page.** The translated help
   was published as a flat list of twelve sections with a three-line stub for a landing page —
@@ -366,7 +366,6 @@ does not have.
   plugin topics sat under the translated word and six under the English one, because whoever
   added the later plugin pages copied the English `section:` along with them. Every reader of
   those sixteen languages saw two plugin sections in the Help Book, one of them untranslated.
-
 
 - **The documentation site opened with the API reference.** The first two navigation entries
   were *API reference* and *Developer guide*; *Getting started* came third, and the user
@@ -397,7 +396,6 @@ does not have.
   languages. The table of contents was always correct, which is why nothing looked wrong from
   the outside.
 
-
 - **Toggling hidden files could kill the app, and switching panels showed the wrong thing first.**
   Both commands ran their handler on a background thread and reached straight into AppKit from there:
   `cm_SwitchHidSys` called `NSTableView.reloadData` while the main thread was drawing, and AppKit's
@@ -423,7 +421,6 @@ does not have.
   script is driven from: the script ran on inside the nested runloop, wrote its files, and then never
   quit. Both are skipped under `-AutomationScript`. The crash watermark is deliberately left alone, so
   the report still greets the user on their next ordinary launch.
-
 
 ## [0.7.2] — 2026-08-19
 
