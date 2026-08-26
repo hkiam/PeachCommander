@@ -344,8 +344,16 @@ final class DirectActionRunner {
             ? String(format: String(localized: "Looked at the first %1$lld of %2$lld files.",
                                     comment: "AI: organise cap"), considered.count, files.count)
             : ""
+        // The sheet says which of the two it is doing. `marked` above already decides between "these"
+        // and "this folder"; the title claimed the folder either way, so a tidy-up of four marked
+        // files announced itself as one of the whole folder — and the reader's way to check that is
+        // to count the rows, which is the sheet's job, not theirs.
+        let title = marked.isEmpty
+            ? String(localized: "Organize this folder", comment: "AI: organise sheet title")
+            : String(localized: "Organize the selected files",
+                     comment: "AI: organise sheet title when a selection drove it")
         AIProposalSheet.ask(
-            title: String(localized: "Organize this folder", comment: "AI: organise sheet title"),
+            title: title,
             message: capped, rows: rows,
             applyTitle: String(localized: "Move", comment: "AI: apply organise"),
             parent: progress.parentWindow) { [weak self] kept in
