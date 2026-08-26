@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI-assistent</h1>
-<p>De AI-assistent is een optionele, verwijderbare plug-in die je helpt in gewone taal met je bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of proeflezen, gegevens in een tabel zetten en zelfs een map ordenen — en hij kan bestandsacties voor je uitvoeren nadat hij je eerst een plan heeft getoond. Hij draait op het apparaat met Apple Intelligence indien beschikbaar, of je kunt hem naar een cloudmodel laten wijzen. Omdat het een plug-in is, kun je hem volledig uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<p>De AI-assistent is een optionele, verwijderbare plug-in die je helpt in gewone taal met je bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of proeflezen, gegevens in een tabel zetten en zelfs een map ordenen — en hij kan bestandsacties voor je uitvoeren nadat hij je eerst een plan heeft getoond. Hij bestaat uit twee plug-ins: <strong>AI On-Device</strong> draait op Apple Intelligence en levert de acties die een voorstel tonen en toepassen, terwijl <strong>AI Assistant</strong> de chat is en een cloudmodel nodig heeft. Schakel er één in, of allebei. Omdat het een plug-in is, kun je hem volledig uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
 <h2 id="de-assistent-openen">De assistent openen</h2>
 <p>Kies <strong>Opdrachten ▸ AI Assistant</strong> om de assistent te tonen in een vastgezet paneel aan de rechterkant van het venster. Typ een verzoek en druk op Return; de assistent kan bestanden lezen, dingen opzoeken en — met jouw bevestiging — wijzigingen aanbrengen.</p>
 <p><img alt="De AI-assistentchat vastgezet naast de bestandspanelen" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>De snelste manier om de assistent te gebruiken is het <strong>AI ▸</strong>-submenu in het rechtsklikmenu:</p>
 <ul>
 <li><strong>Op een bestand</strong> — Samenvatten, Uitleggen, Naam voorstellen, Opmerking voorstellen, Vertalen naar Engels, Proeflezen, Taken detecteren en Tabel maken.</li>
-<li><strong>Op de paneelachtergrond</strong> — Deze map ordenen en Waarschijnlijke duplicaten vinden.</li>
+<li><strong>Op de paneelachtergrond</strong> — Zoeken op betekenis, Deze map ordenen en Waarschijnlijke duplicaten vinden.</li>
 </ul>
-<p>Elke <strong>AI ▸</strong>-actie opent zijn <strong>eigen chat met titel</strong> (bijvoorbeeld <em>Samenvatten – report.txt</em>), zodat verschillende taken gescheiden blijven in plaats van op te stapelen in één lang gesprek. Wanneer je zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.</p>
+<p><strong>Samenvatten</strong>, <strong>Uitleggen</strong>, <strong>Naam voorstellen</strong>, <strong>Opmerking voorstellen</strong> en <strong>Deze map ordenen</strong> komen uit de plug-in <strong>AI On-Device</strong> en doen hun werk zonder een chat te openen: ze tonen hun voorstel in een blad, u vinkt uit wat u ongemoeid wilt laten, en er verandert niets op schijf tot u akkoord gaat. De overige acties horen bij de plug-in <strong>AI Assistant</strong> en openen hun eigen benoemde chat, zodat verschillende taken gescheiden blijven. Wanneer u zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.</p>
 <h2 id="je-chats-beheren">Je chats beheren</h2>
 <ul>
 <li>Gebruik de chatwisselaar boven in het paneel om tussen gesprekken te schakelen.</li>
@@ -32,7 +32,7 @@
 <h2 id="instellingen">Instellingen</h2>
 <p>Open <strong>Configuratie ▸ Instellingen ▸ AI</strong> om de assistent op één pagina te configureren:</p>
 <ul>
-<li><strong>Voorkeursmodel</strong> — Automatisch (cloud indien geconfigureerd, anders op het apparaat), Op het apparaat (Apple Intelligence) of Cloud.</li>
+<li><strong>Voorkeursmodel</strong> — welk model de chat <strong>AI Assistant</strong> gebruikt. Sinds de acties op het apparaat een eigen plug-in zijn, geldt dit alleen voor de chat: <em>Cloud</em> en <em>Automatisch</em> gebruiken beide het eindpunt hieronder, en <em>Op het apparaat</em> zegt de chat dat hij niet nodig is.</li>
 <li><strong>Cloud-eindpunt, model en API-sleutel</strong> — om een OpenAI-compatibel model te gebruiken in plaats van dat op het apparaat. De sleutel wordt bewaard in de macOS-sleutelhanger, nooit in je configuratiebestanden.</li>
 <li><strong>Autonomie van de assistent</strong> — alleen-lezen, wijzigingen bevestigen (de standaard) of autonoom.</li>
 <li><strong>Aangepaste systeemprompt</strong> — optionele instructies die bepalen hoe de assistent antwoordt.</li>

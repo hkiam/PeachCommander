@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI Assistant</h1>
-<p>AI-assistenten er et valgfritt programtillegg du kan fjerne, som hjelper deg å arbeide med filene dine i vanlig språk. Den kan oppsummere eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med organisere en mappe – og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den kjører på enheten med Apple Intelligence når det er tilgjengelig, eller du kan peke den mot en skymodell. Fordi det er et programtillegg, kan du deaktivere eller fjerne det helt fra <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<p>AI-assistenten er et valgfritt programtillegg du kan fjerne, som hjelper deg å arbeide med filene dine i vanlig språk. Den kan oppsummere eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med organisere en mappe – og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den består av to utvidelser: <strong>AI On-Device</strong> kjører på Apple Intelligence og gir deg handlingene som viser et forslag og utfører det, mens <strong>AI Assistant</strong> er chatten og trenger en skymodell. Slå på den ene, eller begge. Fordi det er et programtillegg, kan du deaktivere eller fjerne det helt fra <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
 <h2 id="apne-assistenten">Åpne assistenten</h2>
 <p>Velg <strong>Kommandoer ▸ AI Assistant</strong> for å vise assistenten i et forankret panel til høyre i vinduet. Skriv en forespørsel og trykk Return; assistenten kan lese filer, slå opp ting og – med din bekreftelse – gjøre endringer.</p>
 <p><img alt="AI-assistentens chat forankret ved siden av filpanelene" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Den raskeste måten å bruke assistenten på er undermenyen <strong>AI ▸</strong> i høyreklikkmenyen:</p>
 <ul>
 <li><strong>På en fil</strong> – Oppsummer, Forklar, Foreslå et navn, Foreslå en kommentar, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.</li>
-<li><strong>På panelbakgrunnen</strong> – Organiser denne mappen og Finn sannsynlige duplikater.</li>
+<li><strong>På panelbakgrunnen</strong> – Søk etter betydning, Organiser denne mappen og Finn sannsynlige duplikater.</li>
 </ul>
-<p>Hver <strong>AI ▸</strong>-handling åpner sin <strong>egen navngitte chat</strong> (for eksempel <em>Oppsummer – rapport.txt</em>), slik at ulike oppgaver holder seg atskilt i stedet for å hope seg opp i én lang samtale. Når du selv skriver i inndatafeltet, fortsetter forespørselen den gjeldende chatten.</p>
+<p><strong>Oppsummer</strong>, <strong>Forklar</strong>, <strong>Foreslå et navn</strong>, <strong>Foreslå en kommentar</strong> og <strong>Organiser denne mappen</strong> kommer fra utvidelsen <strong>AI On-Device</strong> og gjør jobben helt uten chat: de viser forslaget sitt i et ark, du fjerner haken ved det du vil la være, og ingenting på disken endres før du godkjenner det. De øvrige handlingene hører til utvidelsen <strong>AI Assistant</strong> og åpner sin egen navngitte chat, slik at ulike oppgaver holdes atskilt. Når du selv skriver i inndatafeltet, fortsetter forespørselen den gjeldende chatten.</p>
 <h2 id="behandle-chattene-dine">Behandle chattene dine</h2>
 <ul>
 <li>Bruk chat-velgeren øverst i panelet for å bevege deg mellom samtaler.</li>
@@ -32,7 +32,7 @@
 <h2 id="innstillinger">Innstillinger</h2>
 <p>Åpne <strong>Konfigurasjon ▸ Innstillinger ▸ AI</strong> for å sette opp assistenten på én enkelt side:</p>
 <ul>
-<li><strong>Foretrukket modell</strong> – Automatisk (sky hvis konfigurert, ellers på enheten), På enheten (Apple Intelligence) eller Sky.</li>
+<li><strong>Foretrukket modell</strong> – hvilken modell chatten <strong>AI Assistant</strong> bruker. Etter at handlingene på enheten ble sin egen utvidelse, gjelder dette bare chatten: <em>Sky</em> og <em>Automatisk</em> bruker begge endepunktet nedenfor, og <em>På enheten</em> sier til chatten at den ikke trengs.</li>
 <li><strong>Skyendepunkt, modell og API-nøkkel</strong> – for å bruke en OpenAI-kompatibel modell i stedet for den på enheten. Nøkkelen lagres i macOS-nøkkelringen, aldri i konfigurasjonsfilene dine.</li>
 <li><strong>Assistentens autonomi</strong> – skrivebeskyttet, bekreft endringer (standard) eller autonom.</li>
 <li><strong>Egendefinert systemledetekst</strong> – valgfrie instruksjoner som former hvordan assistenten svarer.</li>

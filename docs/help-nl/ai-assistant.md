@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-De AI-assistent is een optionele, verwijderbare plug-in die je helpt in gewone taal met je bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of proeflezen, gegevens in een tabel zetten en zelfs een map ordenen — en hij kan bestandsacties voor je uitvoeren nadat hij je eerst een plan heeft getoond. Hij draait op het apparaat met Apple Intelligence indien beschikbaar, of je kunt hem naar een cloudmodel laten wijzen. Omdat het een plug-in is, kun je hem volledig uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**.
+De AI-assistent is een optionele, verwijderbare plug-in die je helpt in gewone taal met je bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of proeflezen, gegevens in een tabel zetten en zelfs een map ordenen — en hij kan bestandsacties voor je uitvoeren nadat hij je eerst een plan heeft getoond. Hij bestaat uit twee plug-ins: **AI On-Device** draait op Apple Intelligence en levert de acties die een voorstel tonen en toepassen, terwijl **AI Assistant** de chat is en een cloudmodel nodig heeft. Schakel er één in, of allebei. Omdat het een plug-in is, kun je hem volledig uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**.
 
 ## De assistent openen
 
@@ -20,9 +20,9 @@ Kies **Opdrachten ▸ AI Assistant** om de assistent te tonen in een vastgezet p
 De snelste manier om de assistent te gebruiken is het **AI ▸**-submenu in het rechtsklikmenu:
 
 - **Op een bestand** — Samenvatten, Uitleggen, Naam voorstellen, Opmerking voorstellen, Vertalen naar Engels, Proeflezen, Taken detecteren en Tabel maken.
-- **Op de paneelachtergrond** — Deze map ordenen en Waarschijnlijke duplicaten vinden.
+- **Op de paneelachtergrond** — Zoeken op betekenis, Deze map ordenen en Waarschijnlijke duplicaten vinden.
 
-Elke **AI ▸**-actie opent zijn **eigen chat met titel** (bijvoorbeeld *Samenvatten – report.txt*), zodat verschillende taken gescheiden blijven in plaats van op te stapelen in één lang gesprek. Wanneer je zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.
+**Samenvatten**, **Uitleggen**, **Naam voorstellen**, **Opmerking voorstellen** en **Deze map ordenen** komen uit de plug-in **AI On-Device** en doen hun werk zonder een chat te openen: ze tonen hun voorstel in een blad, u vinkt uit wat u ongemoeid wilt laten, en er verandert niets op schijf tot u akkoord gaat. De overige acties horen bij de plug-in **AI Assistant** en openen hun eigen benoemde chat, zodat verschillende taken gescheiden blijven. Wanneer u zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.
 
 ## Je chats beheren
 
@@ -37,7 +37,7 @@ Voor alles wat bestanden wijzigt — verplaatsen, hernoemen, schrijven, verwijde
 
 Open **Configuratie ▸ Instellingen ▸ AI** om de assistent op één pagina te configureren:
 
-- **Voorkeursmodel** — Automatisch (cloud indien geconfigureerd, anders op het apparaat), Op het apparaat (Apple Intelligence) of Cloud.
+- **Voorkeursmodel** — welk model de chat **AI Assistant** gebruikt. Sinds de acties op het apparaat een eigen plug-in zijn, geldt dit alleen voor de chat: *Cloud* en *Automatisch* gebruiken beide het eindpunt hieronder, en *Op het apparaat* zegt de chat dat hij niet nodig is.
 - **Cloud-eindpunt, model en API-sleutel** — om een OpenAI-compatibel model te gebruiken in plaats van dat op het apparaat. De sleutel wordt bewaard in de macOS-sleutelhanger, nooit in je configuratiebestanden.
 - **Autonomie van de assistent** — alleen-lezen, wijzigingen bevestigen (de standaard) of autonoom.
 - **Aangepaste systeemprompt** — optionele instructies die bepalen hoe de assistent antwoordt.

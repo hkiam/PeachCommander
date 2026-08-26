@@ -14,6 +14,96 @@ does not have.
 
 ## [Unreleased]
 
+The assistant is split in two. What ran on your Mac was a chat that could not read a file: measured
+against Apple Intelligence, the thirty-two tools it offered the model cost 3442 of the model's 4096
+tokens, leaving 473 for your question, the file and the answer together — so it answered in the wrong
+language, mistook folders for files, and died on the second message telling you to start a new chat,
+which changed nothing. That was the default every new reader landed on.
+
+### Added
+
+- **AI On-Device — five actions that do the work instead of talking about it.** Right-click a file and
+  **Summarize**, **Explain**, **Suggest a name** or **Suggest a comment**; right-click the panel
+  background and **Organize this folder**. Each one reads what it needs, shows you exactly what it
+  proposes, and lets you untick anything you want left alone before a single file is touched. Nothing
+  opens a chat, and the model is offered no tools at all — which is what leaves the whole context
+  window for your file instead of for a list of things the model may call.
+
+  **Suggest a name** and **Organize this folder** go through the same confirm-then-apply path as any
+  other change, so both land in the assistant's action log and **Undo last change** takes them back.
+  Renaming a marked selection is one step and one undo, not one per file. Organising asks once what
+  folders the set needs and then sorts into those, because sorting file by file produced a folder
+  named after the first file with everything else in it.
+
+  It is a plugin and it arrives switched off, alongside the chat and the AI Column. If you had the
+  assistant switched on and no cloud model configured, it is switched on for you once, with a note
+  saying why.
+
+- **Find by meaning.** Right-click the panel background and **AI ▸ Find by meaning**, describe what
+  you are after — "the invoice about the roof" — and the folder is ranked by how close each file is
+  to that. No model is involved: it compares meaning with on-device sentence embeddings, so it
+  answers instantly and cannot invent a file that is not there. Pick a match to jump to it.
+
+- **Organize** works on what you marked. Mark a few files and it tidies up those; mark nothing and
+  it takes the folder, as before.
+
+- **Suggested comments now set real Finder tags.** The tags were being glued onto the end of the
+  comment text, where nothing could search or colour them. They are now the tags Finder and
+  Spotlight see, added to whatever tags the file already had — and **Undo last change** puts the
+  old set back, because the previous tags are recorded with the change.
+
+- **Classify, and rename by what a file is.** Mark a few files and **AI ▸ Classify**: each one gets
+  a topic, the date it actually states, and a category worked out across the whole selection — so an
+  invoice and a receipt land in one category rather than each in its own. The answers fill three new
+  panel columns, **AI Kind**, **AI Topic** and **AI Date**, and they are usable in a multi-rename
+  mask: `[=ai_column.ai_topic]-[Y]-[M].[E]` renames a folder of `dokument1.pdf` files by what they
+  are. Nothing new was built for that — the rename mask has always resolved `[=provider.field]`
+  through the column system, so classifying once is what makes it work.
+
+  A date is only taken when the document states a full one. Asked about "Reisenotizen Kreta, Sommer
+  2023" the model offered 12 July 2023; a date invented in a file name outlives every chance of
+  noticing it, so the text now has to contain the day and the year or the field stays empty.
+
+- **Make a table** works without a chat, and saves. Put the cursor on a log, a measurement series
+  or a badly exported CSV and pick **AI ▸ Make a table**: the columns come from the data's own
+  names, the rows from the data, and **Save as CSV…** writes it beside the file — through the same
+  confirmed, logged path as any other change. A decimal comma is quoted, so a German file survives
+  being opened again as a spreadsheet.
+
+  It reads the beginning of the file, not all of it, and the sheet says so when there is more. A
+  few dozen rows is what fits; a database export is not what this is for.
+
+- **Scans and screenshots are readable.** Apple Intelligence cannot see a picture — it takes text
+  and nothing else — so the words are read off the image first, on your Mac, and the assistant works
+  from those. Nothing new to learn: **Suggest a name** turns `scan_0042.png` into
+  `rechnung_meier_2024_03_12.png`, **Classify** files it with the invoices rather than the photos,
+  and **Make a table** reads a screenshot of a table back into columns. For a photograph with no
+  words on it, what the picture appears to show is used instead.
+
+- **Explain** stopped being a second name for **Summarize**. Summarize reads the whole file and
+  folds it, which is right for prose; Explain reads the opening and answers "what is this and what
+  would I use it for", which is the right question for a config file, a script or a data dump.
+
+### Changed
+
+- **The AI Assistant chat now needs a cloud model** — any OpenAI-compatible endpoint, which includes a
+  local server such as Ollama or LM Studio, not only a paid service. The on-device chat is gone rather
+  than fixed: it is the on-device *actions* that work, and pretending otherwise cost people their first
+  impression of the feature. The **Settings ▸ AI** page now says which setting belongs to which half.
+
+### Fixed
+
+- **The AI Summary column never showed anything, for anyone.** The column and the assistant each
+  worked out their own key for a file and disagreed on both halves of it — one counted seconds from
+  2001 and the other from 1970, and they rounded the number differently — so no file ever matched.
+  They now share one definition, and the summary appears as soon as an action has read the file.
+- **Unticking a line in the assistant's plan did nothing.** 0.7.3 said you could agree to part of a
+  plan; the ticks were drawn and collected and then thrown away, so everything ran regardless. They
+  are now passed on, which is what that release promised.
+- **The tests that use the real on-device model had never run.** The documented way to switch them on
+  set a variable the test process could not see, so six checks reported as skipped in every run since
+  they were written — including the one that would have caught the defect above.
+
 ## [0.7.3] — 2026-08-25
 
 Markdown and HTML leave the core: both formats are now drawn by a plugin that renders

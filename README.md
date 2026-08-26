@@ -170,6 +170,7 @@ Peach Commander keeps the core small and pushes special-purpose features out int
 | **Terminal** | A real shell inside the window — tabs, splits, restored after a restart |
 | **Disk Map** | Treemap / sunburst space visualizer with a cleanup collector |
 | **AI Assistant** | Optional, removable natural-language assistant (see below) |
+| **AI On-Device** | Optional, removable: summarize, rename, tag and tidy with Apple Intelligence, no chat |
 | **Git** | Repository status shown right in the panel |
 | **System Monitor** | Live CPU / memory / system activity |
 | **Task Manager** | Running processes, browsable like files |

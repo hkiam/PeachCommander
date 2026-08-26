@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Asystent AI</h1>
-<p>Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Działa na urządzeniu z Apple Intelligence, gdy jest dostępne, lub możesz skierować go na model w chmurze. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<p>Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Składa się z dwóch wtyczek: <strong>AI On-Device</strong> działa na Apple Intelligence i udostępnia działania, które pokazują propozycję i ją stosują, a <strong>AI Assistant</strong> to czat wymagający modelu w chmurze. Włącz jedną z nich albo obie. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
 <h2 id="otwarcie-asystenta">Otwarcie asystenta</h2>
 <p>Wybierz <strong>Polecenia ▸ Asystent AI</strong>, aby wyświetlić asystenta w zadokowanym panelu po prawej stronie okna. Wpisz zapytanie i naciśnij Enter; asystent może czytać pliki, wyszukiwać informacje i — za Twoim potwierdzeniem — wprowadzać zmiany.</p>
 <p><img alt="Czat asystenta AI zadokowany obok paneli plików" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Najszybszym sposobem korzystania z asystenta jest podmenu <strong>AI ▸</strong> w menu prawego przycisku:</p>
 <ul>
 <li><strong>Na pliku</strong> — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Zaproponuj komentarz, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.</li>
-<li><strong>Na tle panelu</strong> — Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.</li>
+<li><strong>Na tle panelu</strong> — Szukaj według znaczenia, Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.</li>
 </ul>
-<p>Każda akcja <strong>AI ▸</strong> otwiera <strong>własny zatytułowany czat</strong> (na przykład <em>Podsumuj – raport.txt</em>), dzięki czemu różne zadania pozostają oddzielone, zamiast piętrzyć się w jednej długiej rozmowie. Gdy sam wpisujesz coś w polu wejściowym, to zapytanie kontynuuje bieżący czat.</p>
+<p><strong>Podsumuj</strong>, <strong>Wyjaśnij</strong>, <strong>Zaproponuj nazwę</strong>, <strong>Zaproponuj komentarz</strong> i <strong>Uporządkuj ten folder</strong> pochodzą z wtyczki <strong>AI On-Device</strong> i wykonują swoją pracę bez otwierania czatu: pokazują propozycję w arkuszu, odznaczasz to, co ma pozostać bez zmian, a na dysku nic się nie zmienia, dopóki nie zatwierdzisz. Pozostałe działania należą do wtyczki <strong>AI Assistant</strong> i otwierają własny nazwany czat, dzięki czemu zadania pozostają rozdzielone. Gdy sam wpiszesz coś w polu wejściowym, to żądanie kontynuuje bieżący czat.</p>
 <h2 id="zarzadzanie-czatami">Zarządzanie czatami</h2>
 <ul>
 <li>Użyj przełącznika czatów u góry panelu, aby przechodzić między rozmowami.</li>
@@ -32,7 +32,7 @@
 <h2 id="ustawienia">Ustawienia</h2>
 <p>Otwórz <strong>Konfiguracja ▸ Ustawienia ▸ AI</strong>, aby skonfigurować asystenta na jednej stronie:</p>
 <ul>
-<li><strong>Preferowany model</strong> — Automatyczny (chmura, jeśli skonfigurowana, w przeciwnym razie na urządzeniu), Na urządzeniu (Apple Intelligence) lub Chmura.</li>
+<li><strong>Preferowany model</strong> — jakiego modelu używa czat <strong>AI Assistant</strong>. Odkąd działania na urządzeniu stały się osobną wtyczką, dotyczy to tylko czatu: <em>Chmura</em> i <em>Automatycznie</em> korzystają z punktu końcowego poniżej, a <em>Na urządzeniu</em> mówi czatowi, że nie jest potrzebny.</li>
 <li><strong>Punkt końcowy chmury, model i klucz API</strong> — aby użyć modelu zgodnego z OpenAI zamiast tego na urządzeniu. Klucz jest przechowywany w pęku kluczy macOS, nigdy w plikach konfiguracji.</li>
 <li><strong>Autonomia asystenta</strong> — tylko do odczytu, potwierdzaj zmiany (domyślnie) lub autonomiczny.</li>
 <li><strong>Niestandardowy monit systemowy</strong> — opcjonalne instrukcje kształtujące odpowiedzi asystenta.</li>

@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-Asistent AI je voliteľný zásuvný modul, ktorý možno odstrániť a pomáha vám pracovať so súbormi v prirodzenom jazyku. Dokáže zhrnúť alebo vysvetliť dokument, navrhnúť lepší názov súboru, preložiť alebo skorigovať text, premeniť údaje na tabuľku a dokonca usporiadať priečinok — a môže za vás vykonať operácie so súbormi po tom, ako vám najprv ukáže plán. Beží na zariadení s Apple Intelligence, keď je k dispozícii, alebo ho môžete nasmerovať na cloudový model. Keďže ide o zásuvný modul, môžete ho zakázať alebo úplne odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
+Asistent AI je voliteľný zásuvný modul, ktorý možno odstrániť a pomáha vám pracovať so súbormi v prirodzenom jazyku. Dokáže zhrnúť alebo vysvetliť dokument, navrhnúť lepší názov súboru, preložiť alebo skorigovať text, premeniť údaje na tabuľku a dokonca usporiadať priečinok — a môže za vás vykonať operácie so súbormi po tom, ako vám najprv ukáže plán. Tvoria ho dva moduly: **AI On-Device** beží na Apple Intelligence a ponúka akcie, ktoré ukážu návrh a vykonajú ho, zatiaľ čo **AI Assistant** je chat a potrebuje cloudový model. Zapnite jeden z nich alebo oba. Keďže ide o zásuvný modul, môžete ho zakázať alebo úplne odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
 
 ## Otvorenie asistenta
 
@@ -20,9 +20,9 @@ Vyberte **Príkazy ▸ Asistent AI** na zobrazenie asistenta v ukotvenom paneli 
 Najrýchlejší spôsob použitia asistenta je podponuka **AI ▸** v kontextovej ponuke:
 
 - **Na súbore** — Zhrnúť, Vysvetliť, Navrhnúť názov, Navrhnúť komentár, Preložiť do angličtiny, Skorigovať, Zistiť úlohy a Vytvoriť tabuľku.
-- **Na pozadí panela** — Usporiadať tento priečinok a Nájsť pravdepodobné duplikáty.
+- **Na pozadí panela** — Hľadať podľa významu, Usporiadať tento priečinok a Nájsť pravdepodobné duplikáty.
 
-Každá akcia **AI ▸** otvorí **svoj vlastný pomenovaný chat** (napríklad *Zhrnúť – správa.txt*), takže rôzne úlohy zostávajú oddelené namiesto toho, aby sa kopili v jednej dlhej konverzácii. Keď sami zadáte niečo do vstupného poľa, táto požiadavka pokračuje v aktuálnom chate.
+**Zhrnúť**, **Vysvetliť**, **Navrhnúť názov**, **Navrhnúť komentár** a **Usporiadať tento priečinok** pochádzajú z modulu **AI On-Device** a svoju prácu urobia úplne bez chatu: ukážu návrh v samostatnom liste, vy odškrtnete všetko, čo má zostať nezmenené, a na disku sa nič nezmení, kým nesúhlasíte. Ostatné akcie patria modulu **AI Assistant** a otvoria vlastný pomenovaný chat, takže rôzne úlohy zostávajú oddelené. Keď do vstupného poľa napíšete niečo sami, táto požiadavka pokračuje v aktuálnom chate.
 
 ## Správa chatov
 
@@ -37,7 +37,7 @@ Pri všetkom, čo mení súbory — presúvanie, premenovanie, zápis, mazanie �
 
 Otvorte **Konfigurácia ▸ Nastavenia ▸ AI** na nastavenie asistenta na jednej stránke:
 
-- **Preferovaný model** — Automaticky (cloud, ak je nakonfigurovaný, inak na zariadení), Na zariadení (Apple Intelligence) alebo Cloud.
+- **Preferovaný model** — aký model používa chat **AI Assistant**. Odkedy sa akcie v zariadení stali vlastným modulom, týka sa to len chatu: *Cloud* aj *Automaticky* používajú koncový bod nižšie a *V zariadení* hovorí chatu, že nie je potrebný.
 - **Cloudový koncový bod, model a kľúč API** — na použitie modelu kompatibilného s OpenAI namiesto toho na zariadení. Kľúč je uložený v zväzku kľúčov macOS, nikdy vo vašich konfiguračných súboroch.
 - **Autonómia asistenta** — iba na čítanie, potvrdzovať zmeny (predvolené) alebo autonómny.
 - **Vlastná systémová výzva** — voliteľné pokyny, ktoré tvarujú, ako asistent odpovedá.

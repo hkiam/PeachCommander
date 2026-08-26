@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-AI-assistenten er et valgfrit plugin, der kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan opsummere eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, omdanne data til en tabel og endda organisere en mappe — og den kan udføre filhandlinger for dig, efter at den først har vist dig en plan. Den kører på enheden med Apple Intelligence, når det er tilgængeligt, eller du kan pege den mod en cloud-model. Fordi den er et plugin, kan du deaktivere eller fjerne den helt fra **Konfiguration ▸ Plugins…**.
+AI-assistenten er et valgfrit plugin, der kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan opsummere eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, omdanne data til en tabel og endda organisere en mappe — og den kan udføre filhandlinger for dig, efter at den først har vist dig en plan. Den består af to plugins: **AI On-Device** kører på Apple Intelligence og giver dig de handlinger, der viser et forslag og udfører det, mens **AI Assistant** er chatten og kræver en cloud-model. Slå det ene til, eller begge. Fordi den er et plugin, kan du deaktivere eller fjerne den helt fra **Konfiguration ▸ Plugins…**.
 
 ## Åbn assistenten
 
@@ -20,9 +20,9 @@ Vælg **Kommandoer ▸ AI-assistent** for at vise assistenten i et forankret pan
 Den hurtigste måde at bruge assistenten på er undermenuen **AI ▸** i højrekliksmenuen:
 
 - **På en fil** — Opsummér, Forklar, Foreslå et navn, Foreslå en kommentar, Oversæt til engelsk, Korrekturlæs, Registrér opgaver og Lav en tabel.
-- **På panelets baggrund** — Organisér denne mappe og Find sandsynlige dubletter.
+- **På panelets baggrund** — Søg efter betydning, Organisér denne mappe og Find sandsynlige dubletter.
 
-Hver **AI ▸**-handling åbner sin **egen navngivne chat** (for eksempel *Opsummér – report.txt*), så forskellige opgaver holdes adskilt i stedet for at hobe sig op i én lang samtale. Når du selv skriver i inputfeltet, fortsætter den anmodning den aktuelle chat.
+**Opsummer**, **Forklar**, **Foreslå et navn**, **Foreslå en kommentar** og **Organiser denne mappe** kommer fra pluginet **AI On-Device** og udfører deres arbejde helt uden chat: de viser deres forslag i et ark, du fjerner fluebenet ved det, du vil lade være, og intet på disken ændres, før du godkender det. De øvrige handlinger hører til pluginet **AI Assistant** og åbner deres eget navngivne chatvindue, så forskellige opgaver holdes adskilt. Når du selv skriver i indtastningsfeltet, fortsætter den anmodning den aktuelle chat.
 
 ## Håndtér dine chats
 
@@ -37,7 +37,7 @@ For alt, der ændrer filer — flytning, omdøbning, skrivning, sletning — vis
 
 Åbn **Konfiguration ▸ Indstillinger ▸ AI** for at konfigurere assistenten på en enkelt side:
 
-- **Foretrukken model** — Automatisk (cloud hvis konfigureret, ellers på enheden), På enheden (Apple Intelligence) eller Cloud.
+- **Foretrukken model** — hvilken model chatten **AI Assistant** bruger. Siden handlingerne på enheden blev deres eget plugin, gælder dette kun chatten: *Cloud* og *Automatisk* bruger begge slutpunktet nedenfor, og *På enheden* fortæller chatten, at den ikke er nødvendig.
 - **Cloud-slutpunkt, model og API-nøgle** — for at bruge en OpenAI-kompatibel model i stedet for den på enheden. Nøglen gemmes i macOS-nøgleringen, aldrig i dine konfigurationsfiler.
 - **Assistentens selvstændighed** — skrivebeskyttet, bekræft ændringer (standarden) eller selvstændig.
 - **Tilpasset systemprompt** — valgfrie instruktioner, der former, hvordan assistenten svarer.

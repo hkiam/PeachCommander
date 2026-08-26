@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-Az MI-asszisztens egy opcionális, eltávolítható bővítmény, amely segít abban, hogy hétköznapi nyelven dolgozhasson a fájljaival. Össze tud foglalni vagy elmagyarázni egy dokumentumot, jobb fájlnevet javasolhat, szöveget fordíthat vagy korrektúrázhat, adatokat táblázattá alakíthat, sőt egy mappát is rendszerezhet – és fájlműveleteket is végrehajthat Ön helyett, miután először bemutatott egy tervet. Ha elérhető, az Apple Intelligence segítségével a készüléken fut, vagy egy felhőalapú modellre is irányíthatja. Mivel bővítményről van szó, teljesen letilthatja vagy eltávolíthatja a **Beállítások ▸ Bővítmények…** menüpontból.
+Az MI-asszisztens egy opcionális, eltávolítható bővítmény, amely segít abban, hogy hétköznapi nyelven dolgozhasson a fájljaival. Össze tud foglalni vagy elmagyarázni egy dokumentumot, jobb fájlnevet javasolhat, szöveget fordíthat vagy korrektúrázhat, adatokat táblázattá alakíthat, sőt egy mappát is rendszerezhet – és fájlműveleteket is végrehajthat Ön helyett, miután először bemutatott egy tervet. Két bővítményből áll: az **AI On-Device** az Apple Intelligence-t használja, és azokat a műveleteket adja, amelyek javaslatot mutatnak és alkalmazzák, míg az **AI Assistant** a csevegés, amelyhez felhőmodell kell. Kapcsolja be bármelyiket, vagy mindkettőt. Mivel bővítményről van szó, teljesen letilthatja vagy eltávolíthatja a **Beállítások ▸ Bővítmények…** menüpontból.
 
 ## Az asszisztens megnyitása
 
@@ -20,9 +20,9 @@ Válassza a **Parancsok ▸ MI-asszisztens** menüpontot, hogy az asszisztens me
 Az asszisztens leggyorsabb használati módja a jobb gombos menü **MI ▸** almenüje:
 
 - **Egy fájlon** – Összefoglalás, Magyarázat, Névjavaslat, Megjegyzésjavaslat, Fordítás angolra, Korrektúra, Feladatok felismerése és Táblázat készítése.
-- **A panel hátterén** – Mappa rendszerezése és Valószínű duplikátumok keresése.
+- **A panel hátterén** – Keresés jelentés szerint, Mappa rendszerezése és Valószínű duplikátumok keresése.
 
-Minden **MI ▸** művelet a **saját, címmel ellátott csevegését** nyitja meg (például *Összefoglalás – report.txt*), így a különböző feladatok elkülönülnek, ahelyett hogy egyetlen hosszú beszélgetésbe torlódnának. Amikor Ön saját maga ír a beviteli mezőbe, az a kérés az aktuális csevegést folytatja.
+A(z) **Összefoglalás**, **Magyarázat**, **Névjavaslat**, **Megjegyzésjavaslat** és **Mappa rendezése** az **AI On-Device** bővítményből származik, és csevegés nélkül végzi a dolgát: egy lapon megmutatja a javaslatát, Ön kiveszi a pipát onnan, amit változatlanul hagyna, és a lemezen semmi sem változik, amíg jóvá nem hagyja. A többi művelet az **AI Assistant** bővítményhez tartozik, és saját nevesített csevegést nyit, így a különböző feladatok elkülönülnek. Ha Ön ír a beviteli mezőbe, az a kérés a jelenlegi csevegést folytatja.
 
 ## A csevegések kezelése
 
@@ -37,7 +37,7 @@ Bármi olyan előtt, ami fájlokat módosít – áthelyezés, átnevezés, ír�
 
 Nyissa meg a **Beállítások ▸ Beállítások ▸ MI** oldalt, hogy egyetlen lapon konfigurálja az asszisztenst:
 
-- **Előnyben részesített modell** – Automatikus (felhő, ha be van állítva, egyébként a készüléken), Készüléken (Apple Intelligence) vagy Felhő.
+- **Előnyben részesített modell** – milyen modellt használ az **AI Assistant** csevegés. Amióta az eszközön futó műveletek külön bővítmény lettek, ez csak a csevegésre vonatkozik: a *Felhő* és az *Automatikus* egyaránt az alábbi végpontot használja, az *Eszközön* pedig azt jelzi a csevegésnek, hogy nincs rá szükség.
 - **Felhővégpont, modell és API-kulcs** – a készüléken futó helyett egy OpenAI-kompatibilis modell használatához. A kulcs a macOS Kulcskarikán tárolódik, soha nem a konfigurációs fájlokban.
 - **Az asszisztens önállósága** – csak olvasható, módosítások megerősítése (az alapértelmezett) vagy önálló.
 - **Egyéni rendszerprompt** – opcionális utasítások, amelyek befolyásolják, ahogy az asszisztens válaszol.

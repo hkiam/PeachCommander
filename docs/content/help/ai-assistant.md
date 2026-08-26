@@ -7,7 +7,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. **It arrives switched off.** Turn it on in **Configuration ▸ Plugins…** and restart, or leave it off and nothing about it appears — no AI ▸ menu, no chat, no column. That is deliberate while it is in beta: it can rename, move and delete files and run shell commands for you, each behind a plan you approve, and that is a lot of reach to hand a new feature by default. Without an API key it works entirely on your Mac, so this is about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a panel column from the same model, arrives switched off with it. You can also remove either one entirely from the same page.
+The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It comes as two plugins: **AI On-Device** runs on Apple Intelligence and gives you the actions that show a proposal and apply it, while **AI Assistant** is the chat and needs a cloud model. Enable either, or both. **It arrives switched off.** Turn it on in **Configuration ▸ Plugins…** and restart, or leave it off and nothing about it appears — no AI ▸ menu, no chat, no column. That is deliberate while it is in beta: it can rename, move and delete files and run shell commands for you, each behind a plan you approve, and that is a lot of reach to hand a new feature by default. Without an API key it works entirely on your Mac, so this is about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a panel column from the same model, arrives switched off with it. You can also remove either one entirely from the same page.
 
 **On-device or cloud.** The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a *whole* long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once; you choose in **Settings ▸ AI** and the assistant switches over straight away.
 
@@ -22,12 +22,12 @@ Choose **Commands ▸ AI Assistant** to show the assistant in a docked panel on 
 
 The quickest way to use the assistant is the **AI ▸** submenu in the right-click menu:
 
-- **On a file** — Summarize, Explain, Suggest a name, Suggest a comment, Translate to English, Proofread, Detect tasks, and Make a table.
-- **On the panel background** — Organize this folder and Find likely duplicates.
+- **On a file** — Summarize, Explain, Classify, Suggest a name, Suggest a comment, Translate to English, Proofread, Detect tasks, and Make a table.
+- **On the panel background** — Organize this folder, Find by meaning, and Find likely duplicates.
 
-Each **AI ▸** action opens its **own titled chat** (for example, *Summarize – report.txt*), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.
+**Summarize**, **Explain**, **Classify**, **Suggest a name**, **Suggest a comment**, **Make a table** and **Organize this folder** come from the **AI On-Device** plugin and do their work without opening a chat at all — on a scan or a screenshot too, because the words are read off the picture first: they show what they propose in a sheet, you untick anything you want left alone, and nothing on disk changes until you approve it. The remaining actions belong to the **AI Assistant** plugin and open their **own titled chat** (for example, *Translate – report.txt*), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.
 
-**Several files at once.** Mark a selection and the action runs over every marked file, one after another, with the progress in the status line. **Stop** ends the run between files, so you can look at the first few results and call it off.
+**Several files at once.** Mark a selection and the action runs over every marked file, one after another. The actions that use a sheet show their progress in it and **Cancel** stops between files; the ones that open a chat put the progress in the status line, where **Stop** does the same. Either way you can look at the first few results and call it off.
 
 **Suggest a name** ends in a button rather than a sentence: the proposed name appears in a bar under the conversation with a **Rename** button beside it. Pressing it is the approval — you are not asked twice.
 
@@ -77,7 +77,7 @@ The assistant's summaries are available as a panel column. Add **AI Summary** fr
 
 Open **Configuration ▸ Settings ▸ AI** to configure the assistant on a single page:
 
-- **Preferred model** — Automatic (cloud if configured, otherwise on-device), On-device (Apple Intelligence), or Cloud.
+- **Preferred model** — which model the **AI Assistant** chat uses. Since the on-device actions became their own plugin, this settles the chat only: *Cloud* and *Automatic* both use the endpoint below, and *On-device* tells the chat it is not wanted, leaving the AI On-Device plugin to do that work.
 - **Cloud endpoint, model, and API key** — to use an OpenAI-compatible model instead of the on-device one. The key is stored in the macOS Keychain, never in your configuration files.
 - **Assistant autonomy** — read-only, confirm changes (the default), or autonomous.
 - **Custom system prompt** — optional instructions that shape how the assistant replies.

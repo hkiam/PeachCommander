@@ -49,8 +49,9 @@ def gen_features():
              "_Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. "
              "Do not edit by hand._", "",
              f"**{len(FEATURES)} features** across {len(by_cat)} categories. "
-             "AI ships as an optional, removable plugin (on-device Apple Intelligence, "
-             "optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.", ""]
+             "AI ships as two optional, removable plugins: AI On-Device (Apple Intelligence, "
+             "actions only, no chat) and AI Assistant (the chat, needs an OpenAI-compatible "
+             "endpoint). Auto-update (Sparkle) is planned but not yet integrated.", ""]
     order = [c for c in CAT_LABEL if c in by_cat] + [c for c in by_cat if c not in CAT_LABEL]
     for cat in order:
         lines.append(f"## {CAT_LABEL.get(cat, cat.title())}")

@@ -1164,7 +1164,7 @@ features:
     source: { modules: [PCPluginHost, PCApp], types: [PluginManager, PluginsWindowController] }
     documentation: { integrated_help: true, website: true }
     screenshots: [plugins-window]
-    notes: "Enable/disable, install from .zip, per-extension association. Bundled: AIAssistant, AIColumn, Archive, CSVLister, Git, iCloud, LogViewer, Notes, SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV."
+    notes: "Enable/disable, install from .zip, per-extension association. Bundled: AIAssistant, AILocal, AIColumn, Archive, CSVLister, Git, iCloud, LogViewer, Notes, SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV."
 
   - id: disk-map
     name: Disk Map (Speicher-Visualisierung)
@@ -1185,13 +1185,17 @@ features:
     audiences: [user]
     status: stable
     ui: { menus: [Commands] }
-    source: { modules: [AIAssistant, PCAutomation], types: [AIChatViewController, RemoteAutomationCore, DefaultAutomationCore] }
+    source: { modules: [AIAssistant, AILocal, PCAutomation], types: [AIChatViewController, DirectActionPlan, RemoteAutomationCore, DefaultAutomationCore] }
     documentation: { integrated_help: true, website: true }
     screenshots: [ai-chat, settings-ai]
     notes: >-
-      Optional/removable .ptxplugin, and it ships SWITCHED OFF along with AIColumn (F-448): beta, and its
-      catalogue holds writes, permanent deletion and a shell. On-device Apple Intelligence or OpenAI-compatible cloud; AI ▸
-      context actions (each opens its own chat); plan-then-confirm writes; unified AI settings page;
+      TWO optional/removable .ptxplugins, both shipping SWITCHED OFF along with AIColumn (F-448): beta, and the
+      catalogue holds writes, permanent deletion and a shell. AILocal runs on-device and offers the model NO tools —
+      measured, the 32 tool schemas cost 3442 of Apple Intelligence's 4096 tokens, which left 473 for the file, the
+      question and the answer together, so the chat could not read a file at all on that path. Its five AI ▸ actions
+      (summarize, explain, suggest a name, suggest a comment, organize) show a proposal sheet with per-row approval
+      instead of a conversation. AIAssistant is the chat, now OpenAI-compatible cloud only; remaining AI ▸
+      context actions open their own chat; plan-then-confirm writes; unified AI settings page;
       optional MCP server. Automation core lives in PCAutomation. `find_files` (F-446) asks Spotlight
       rather than walking a tree, so "the PDF from last month" and "all my node_modules folders" are
       answerable without knowing the folder, and words *inside* files are searchable — the index is

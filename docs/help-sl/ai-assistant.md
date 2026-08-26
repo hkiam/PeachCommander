@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Deluje na napravi z Apple Intelligence, kadar je na voljo, ali pa ga usmerite na model v oblaku. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v **Konfiguracija ▸ Vtičniki…**.
+Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Sestavljata ga dva vtičnika: **AI On-Device** teče na Apple Intelligence in ponuja dejanja, ki pokažejo predlog in ga uveljavijo, **AI Assistant** pa je klepet in potrebuje model v oblaku. Vklopite enega ali oba. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v **Konfiguracija ▸ Vtičniki…**.
 
 ## Odpiranje pomočnika
 
@@ -20,9 +20,9 @@ Izberite **Ukazi ▸ Pomočnik UI**, da prikažete pomočnika v zasidranem podok
 Najhitrejši način uporabe pomočnika je podmeni **UI ▸** v priročnem meniju:
 
 - **Na datoteki** — Povzemi, Razloži, Predlagaj ime, Predlagaj komentar, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.
-- **Na ozadju podokna** — Uredi to mapo in Poišči verjetne dvojnike.
+- **Na ozadju podokna** — Iskanje po pomenu, Uredi to mapo in Poišči verjetne dvojnike.
 
-Vsako dejanje **UI ▸** odpre **svoj naslovljen klepet** (na primer *Povzemi – poročilo.txt*), tako da različna opravila ostanejo ločena, namesto da se kopičijo v en dolg pogovor. Ko sami vnesete nekaj v vnosno polje, ta zahteva nadaljuje trenutni klepet.
+**Povzemi**, **Pojasni**, **Predlagaj ime**, **Predlagaj opombo** in **Uredi to mapo** prihajajo iz vtičnika **AI On-Device** in svoje delo opravijo brez klepeta: predlog pokažejo na listu, odkljukate, kar naj ostane nespremenjeno, in na disku se nič ne spremeni, dokler ne pritrdite. Preostala dejanja spadajo k vtičniku **AI Assistant** in odprejo svoj poimenovani klepet, tako da naloge ostanejo ločene. Ko sami tipkate v vnosno polje, ta zahteva nadaljuje trenutni klepet.
 
 ## Upravljanje klepetov
 
@@ -37,7 +37,7 @@ Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje 
 
 Odprite **Konfiguracija ▸ Nastavitve ▸ UI**, da nastavite pomočnika na eni strani:
 
-- **Prednostni model** — Samodejno (oblak, če je nastavljen, sicer na napravi), Na napravi (Apple Intelligence) ali Oblak.
+- **Prednostni model** — kateri model uporablja klepet **AI Assistant**. Odkar so dejanja v napravi samostojen vtičnik, to zadeva le klepet: *Oblak* in *Samodejno* uporabljata končno točko spodaj, *V napravi* pa klepetu pove, da ni potreben.
 - **Končna točka oblaka, model in ključ API** — za uporabo modela, združljivega z OpenAI, namesto tistega na napravi. Ključ je shranjen v ključavnici macOS, nikoli v vaših konfiguracijskih datotekah.
 - **Avtonomija pomočnika** — samo za branje, potrdi spremembe (privzeto) ali samostojno.
 - **Poljuben sistemski poziv** — izbirna navodila, ki oblikujejo, kako pomočnik odgovarja.

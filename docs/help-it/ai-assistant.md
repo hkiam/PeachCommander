@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-L'assistente AI è un plugin opzionale e rimovibile che vi aiuta a lavorare con i vostri file usando il linguaggio naturale. Può riassumere o spiegare un documento, suggerire un nome di file migliore, tradurre o correggere un testo, trasformare i dati in una tabella e persino organizzare una cartella — e può eseguire azioni sui file al posto vostro dopo avervi mostrato prima un piano. Funziona sul dispositivo con Apple Intelligence quando disponibile, oppure potete indirizzarlo verso un modello nel cloud. Trattandosi di un plugin, potete disattivarlo o rimuoverlo completamente da **Configurazione ▸ Plugin…**.
+L'assistente AI è un plugin opzionale e rimovibile che vi aiuta a lavorare con i vostri file usando il linguaggio naturale. Può riassumere o spiegare un documento, suggerire un nome di file migliore, tradurre o correggere un testo, trasformare i dati in una tabella e persino organizzare una cartella — e può eseguire azioni sui file al posto vostro dopo avervi mostrato prima un piano. È composto da due plugin: **AI On-Device** funziona con Apple Intelligence e offre le azioni che mostrano una proposta e la applicano, mentre **AI Assistant** è la chat e richiede un modello cloud. Attiva uno dei due, o entrambi. Trattandosi di un plugin, potete disattivarlo o rimuoverlo completamente da **Configurazione ▸ Plugin…**.
 
 ## Aprire l'assistente
 
@@ -20,9 +20,9 @@ Scegliete **Comandi ▸ Assistente AI** per mostrare l'assistente in un pannello
 Il modo più rapido per usare l'assistente è il sottomenu **AI ▸** nel menu del clic destro:
 
 - **Su un file** — Riassumi, Spiega, Suggerisci un nome, Suggerisci un commento, Traduci in inglese, Correggi, Rileva attività e Crea una tabella.
-- **Sullo sfondo del pannello** — Organizza questa cartella e Trova probabili duplicati.
+- **Sullo sfondo del pannello** — Cerca per significato, Organizza questa cartella e Trova probabili duplicati.
 
-Ogni azione **AI ▸** apre una **propria chat con titolo** (ad esempio, *Riassumi – report.txt*), così le diverse attività restano separate invece di accumularsi in un'unica lunga conversazione. Quando digitate voi stessi nel campo di immissione, quella richiesta prosegue la chat corrente.
+**Riassumi**, **Spiega**, **Suggerisci un nome**, **Suggerisci un commento** e **Organizza questa cartella** provengono dal plugin **AI On-Device** e svolgono il loro lavoro senza aprire alcuna chat: mostrano la proposta in un foglio, tu deselezioni ciò che vuoi lasciare invariato e sul disco non cambia nulla finché non approvi. Le altre azioni appartengono al plugin **AI Assistant** e aprono la propria chat con un titolo, così i vari compiti restano separati. Quando scrivi tu nel campo di immissione, la richiesta prosegue la chat corrente.
 
 ## Gestire le chat
 
@@ -37,7 +37,7 @@ Per qualsiasi operazione che modifica i file — spostare, rinominare, scrivere,
 
 Aprite **Configurazione ▸ Impostazioni ▸ AI** per configurare l'assistente in un'unica pagina:
 
-- **Modello preferito** — Automatico (cloud se configurato, altrimenti sul dispositivo), Sul dispositivo (Apple Intelligence) o Cloud.
+- **Modello preferito** — quale modello usa la chat **AI Assistant**. Da quando le azioni sul dispositivo sono un plugin a sé, questo riguarda solo la chat: *Cloud* e *Automatico* usano entrambi l’endpoint qui sotto, e *Sul dispositivo* dice alla chat che non serve.
 - **Endpoint cloud, modello e chiave API** — per usare un modello compatibile con OpenAI invece di quello sul dispositivo. La chiave è archiviata nel Portachiavi di macOS, mai nei vostri file di configurazione.
 - **Autonomia dell'assistente** — sola lettura, conferma delle modifiche (impostazione predefinita) o autonoma.
 - **Prompt di sistema personalizzato** — istruzioni facoltative che modellano il modo in cui l'assistente risponde.

@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Działa na urządzeniu z Apple Intelligence, gdy jest dostępne, lub możesz skierować go na model w chmurze. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w **Konfiguracja ▸ Wtyczki…**.
+Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Składa się z dwóch wtyczek: **AI On-Device** działa na Apple Intelligence i udostępnia działania, które pokazują propozycję i ją stosują, a **AI Assistant** to czat wymagający modelu w chmurze. Włącz jedną z nich albo obie. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w **Konfiguracja ▸ Wtyczki…**.
 
 ## Otwarcie asystenta
 
@@ -20,9 +20,9 @@ Wybierz **Polecenia ▸ Asystent AI**, aby wyświetlić asystenta w zadokowanym 
 Najszybszym sposobem korzystania z asystenta jest podmenu **AI ▸** w menu prawego przycisku:
 
 - **Na pliku** — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Zaproponuj komentarz, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.
-- **Na tle panelu** — Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.
+- **Na tle panelu** — Szukaj według znaczenia, Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.
 
-Każda akcja **AI ▸** otwiera **własny zatytułowany czat** (na przykład *Podsumuj – raport.txt*), dzięki czemu różne zadania pozostają oddzielone, zamiast piętrzyć się w jednej długiej rozmowie. Gdy sam wpisujesz coś w polu wejściowym, to zapytanie kontynuuje bieżący czat.
+**Podsumuj**, **Wyjaśnij**, **Zaproponuj nazwę**, **Zaproponuj komentarz** i **Uporządkuj ten folder** pochodzą z wtyczki **AI On-Device** i wykonują swoją pracę bez otwierania czatu: pokazują propozycję w arkuszu, odznaczasz to, co ma pozostać bez zmian, a na dysku nic się nie zmienia, dopóki nie zatwierdzisz. Pozostałe działania należą do wtyczki **AI Assistant** i otwierają własny nazwany czat, dzięki czemu zadania pozostają rozdzielone. Gdy sam wpiszesz coś w polu wejściowym, to żądanie kontynuuje bieżący czat.
 
 ## Zarządzanie czatami
 
@@ -37,7 +37,7 @@ W przypadku wszystkiego, co modyfikuje pliki — przenoszenia, zmiany nazwy, zap
 
 Otwórz **Konfiguracja ▸ Ustawienia ▸ AI**, aby skonfigurować asystenta na jednej stronie:
 
-- **Preferowany model** — Automatyczny (chmura, jeśli skonfigurowana, w przeciwnym razie na urządzeniu), Na urządzeniu (Apple Intelligence) lub Chmura.
+- **Preferowany model** — jakiego modelu używa czat **AI Assistant**. Odkąd działania na urządzeniu stały się osobną wtyczką, dotyczy to tylko czatu: *Chmura* i *Automatycznie* korzystają z punktu końcowego poniżej, a *Na urządzeniu* mówi czatowi, że nie jest potrzebny.
 - **Punkt końcowy chmury, model i klucz API** — aby użyć modelu zgodnego z OpenAI zamiast tego na urządzeniu. Klucz jest przechowywany w pęku kluczy macOS, nigdy w plikach konfiguracji.
 - **Autonomia asystenta** — tylko do odczytu, potwierdzaj zmiany (domyślnie) lub autonomiczny.
 - **Niestandardowy monit systemowy** — opcjonalne instrukcje kształtujące odpowiedzi asystenta.

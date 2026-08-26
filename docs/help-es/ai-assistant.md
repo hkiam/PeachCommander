@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-El asistente de IA es un complemento opcional y desinstalable que le ayuda a trabajar con sus archivos en lenguaje natural. Puede resumir o explicar un documento, sugerir un mejor nombre de archivo, traducir o corregir un texto, convertir datos en una tabla e incluso organizar una carpeta; además, puede realizar acciones sobre los archivos por usted tras mostrarle primero un plan. Funciona en el dispositivo con Apple Intelligence cuando está disponible, o puede dirigirlo a un modelo en la nube. Al ser un complemento, puede desactivarlo o eliminarlo por completo desde **Configuración ▸ Complementos…**.
+El asistente de IA es un complemento opcional y desinstalable que le ayuda a trabajar con sus archivos en lenguaje natural. Puede resumir o explicar un documento, sugerir un mejor nombre de archivo, traducir o corregir un texto, convertir datos en una tabla e incluso organizar una carpeta; además, puede realizar acciones sobre los archivos por usted tras mostrarle primero un plan. Consta de dos complementos: **AI On-Device** funciona con Apple Intelligence y ofrece las acciones que muestran una propuesta y la aplican, mientras que **AI Assistant** es el chat y necesita un modelo en la nube. Active uno de los dos, o ambos. Al ser un complemento, puede desactivarlo o eliminarlo por completo desde **Configuración ▸ Complementos…**.
 
 ## Abrir el asistente
 
@@ -22,7 +22,7 @@ La forma más rápida de usar el asistente es el submenú **IA ▸** del menú c
 - **Sobre un archivo**: Resumir, Explicar, Sugerir un nombre, Sugerir un comentario, Traducir al inglés, Corregir, Detectar tareas y Crear una tabla.
 - **Sobre el fondo del panel**: Organizar esta carpeta y Buscar posibles duplicados.
 
-Cada acción **IA ▸** abre su **propio chat con título** (por ejemplo, *Resumir – report.txt*), de modo que las distintas tareas se mantienen separadas en lugar de amontonarse en una única conversación larga. Cuando escribe usted mismo en el campo de entrada, esa petición continúa el chat actual.
+**Resumir**, **Explicar**, **Sugerir un nombre**, **Sugerir un comentario** y **Organizar esta carpeta** provienen del complemento **AI On-Device** y hacen su trabajo sin abrir ningún chat: muestran su propuesta en una hoja, usted desmarca lo que quiera dejar como está y nada cambia en el disco hasta que lo aprueba. Las demás acciones pertenecen al complemento **AI Assistant** y abren su propio chat con nombre, de modo que las distintas tareas se mantienen separadas. Cuando escribe usted mismo en el campo de entrada, esa petición continúa el chat actual.
 
 ## Gestionar los chats
 

@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI 助手</h1>
-<p>AI 助手是一个可选、可移除的插件，帮助你用自然语言处理文件。它可以总结或解释文档、建议更合适的文件名、翻译或校对文本、将数据整理成表格，甚至整理文件夹——并且在先向你展示一份计划后，可以替你执行文件操作。它会在 Apple Intelligence 可用时于设备本地运行，你也可以将其指向某个云端模型。由于它是插件，你可以从 <strong>配置 ▸ 插件…</strong> 中将其停用或彻底移除。</p>
+<p>它由两个插件组成：<strong>AI On-Device</strong> 基于 Apple Intelligence，提供先给出提案再应用的操作；<strong>AI Assistant</strong> 则是聊天，需要云端模型。启用其中之一，或两者都启用。</p>
 <h2 id="_1">打开助手</h2>
 <p>选择 <strong>命令 ▸ AI Assistant</strong>，即可在窗口右侧的停靠面板中显示助手。输入请求并按 Return；助手可以读取文件、查找信息，并在你确认后进行更改。</p>
 <p><img alt="停靠在文件面板旁边的 AI 助手聊天" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>使用助手最快捷的方式是右键菜单中的 <strong>AI ▸</strong> 子菜单：</p>
 <ul>
 <li><strong>在文件上</strong> —— 总结、解释、建议名称、建议备注、翻译成英文、校对、检测任务和生成表格。</li>
-<li><strong>在面板背景上</strong> —— 整理此文件夹和查找可能的重复文件。</li>
+<li><strong>在面板背景上</strong> —— 按含义查找、整理此文件夹和查找可能的重复文件。</li>
 </ul>
-<p>每个 <strong>AI ▸</strong> 操作都会打开<strong>各自带标题的聊天</strong>（例如 <em>Summarize – report.txt</em>），因此不同任务会保持独立，而不会堆积到一段冗长的对话中。当你自己在输入框中输入内容时，该请求会延续当前聊天。</p>
+<p><strong>摘要</strong>、<strong>解释</strong>、<strong>建议名称</strong>、<strong>建议注释</strong> 和 <strong>整理此文件夹</strong> 来自 <strong>AI On-Device</strong> 插件，完全不打开聊天即可完成工作：它们在一张面板中给出提案，你取消勾选想保持原样的项，在你批准之前磁盘上不会有任何改动。其余操作属于 <strong>AI Assistant</strong> 插件，会各自打开带标题的聊天，让不同任务彼此分开。你自己在输入框中输入时，该请求会延续当前聊天。</p>
 <h2 id="_2">管理你的聊天</h2>
 <ul>
 <li>使用面板顶部的聊天切换器在多个对话之间移动。</li>
@@ -32,7 +32,7 @@
 <h2 id="_4">设置</h2>
 <p>打开 <strong>配置 ▸ 设置 ▸ AI</strong>，可在单个页面上配置助手：</p>
 <ul>
-<li><strong>首选模型</strong> —— 自动（如已配置则用云端，否则用设备本地）、设备本地（Apple Intelligence）或云端。</li>
+<li><strong>首选模型</strong> —— <strong>AI Assistant</strong> 聊天使用哪个模型。自设备端操作独立成插件后，这项只决定聊天：<em>云端</em> 与 <em>自动</em> 都使用下方的端点，而 <em>设备端</em> 表示不需要聊天来做这件事。</li>
 <li><strong>云端端点、模型和 API 密钥</strong> —— 用于使用兼容 OpenAI 的模型代替设备本地模型。密钥存储在 macOS 钥匙串中，绝不会存入你的配置文件。</li>
 <li><strong>助手自主级别</strong> —— 只读、确认更改（默认）或自主。</li>
 <li><strong>自定义系统提示</strong> —— 可选指令，用于塑造助手回复的方式。</li>

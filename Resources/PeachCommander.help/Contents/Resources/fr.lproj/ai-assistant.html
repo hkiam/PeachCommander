@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Assistant IA</h1>
-<p>L'assistant IA est une extension facultative et amovible qui vous aide à travailler avec vos fichiers en langage naturel. Il peut résumer ou expliquer un document, suggérer un meilleur nom de fichier, traduire ou relire du texte, transformer des données en tableau et même organiser un dossier — et il peut effectuer des actions sur les fichiers pour vous après vous avoir d'abord montré un plan. Il fonctionne sur l'appareil avec Apple Intelligence lorsque c'est disponible, ou vous pouvez le diriger vers un modèle cloud. Comme il s'agit d'une extension, vous pouvez la désactiver ou la supprimer entièrement depuis <strong>Configuration ▸ Extensions…</strong>.</p>
+<p>L'assistant IA est une extension facultative et amovible qui vous aide à travailler avec vos fichiers en langage naturel. Il peut résumer ou expliquer un document, suggérer un meilleur nom de fichier, traduire ou relire du texte, transformer des données en tableau et même organiser un dossier — et il peut effectuer des actions sur les fichiers pour vous après vous avoir d'abord montré un plan. Il se compose de deux modules : <strong>AI On-Device</strong> fonctionne avec Apple Intelligence et fournit les actions qui montrent une proposition et l’appliquent, tandis que <strong>AI Assistant</strong> est le chat et nécessite un modèle cloud. Activez l’un, ou les deux. Comme il s'agit d'une extension, vous pouvez la désactiver ou la supprimer entièrement depuis <strong>Configuration ▸ Extensions…</strong>.</p>
 <h2 id="ouvrir-lassistant">Ouvrir l'assistant</h2>
 <p>Choisissez <strong>Commandes ▸ Assistant IA</strong> pour afficher l'assistant dans un panneau ancré à droite de la fenêtre. Saisissez une requête et appuyez sur Retour ; l'assistant peut lire des fichiers, chercher des informations et — avec votre confirmation — effectuer des modifications.</p>
 <p><img alt="Le chat de l'assistant IA ancré à côté des panneaux de fichiers" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Le moyen le plus rapide d'utiliser l'assistant est le sous-menu <strong>IA ▸</strong> du menu contextuel :</p>
 <ul>
 <li><strong>Sur un fichier</strong> — Résumer, Expliquer, Suggérer un nom, Suggérer un commentaire, Traduire en anglais, Relire, Détecter les tâches et Créer un tableau.</li>
-<li><strong>Sur l'arrière-plan du panneau</strong> — Organiser ce dossier et Trouver les doublons probables.</li>
+<li><strong>Sur l'arrière-plan du panneau</strong> — Rechercher par sens, Organiser ce dossier et Trouver les doublons probables.</li>
 </ul>
-<p>Chaque action <strong>IA ▸</strong> ouvre son <strong>propre chat intitulé</strong> (par exemple <em>Résumer – rapport.txt</em>), afin que les différentes tâches restent séparées au lieu de s'entasser dans une seule longue conversation. Lorsque vous saisissez vous-même dans le champ de saisie, cette requête poursuit le chat en cours.</p>
+<p><strong>Résumer</strong>, <strong>Expliquer</strong>, <strong>Proposer un nom</strong>, <strong>Proposer un commentaire</strong> et <strong>Organiser ce dossier</strong> proviennent du module <strong>AI On-Device</strong> et font leur travail sans ouvrir de chat : ils montrent leur proposition dans une feuille, vous décochez ce que vous voulez laisser tel quel, et rien ne change sur le disque avant votre approbation. Les autres actions appartiennent au module <strong>AI Assistant</strong> et ouvrent leur propre chat nommé, si bien que les tâches restent séparées. Lorsque vous écrivez vous-même dans le champ de saisie, cette demande poursuit le chat en cours.</p>
 <h2 id="gerer-vos-chats">Gérer vos chats</h2>
 <ul>
 <li>Utilisez le sélecteur de chat en haut du panneau pour passer d'une conversation à l'autre.</li>
@@ -32,7 +32,7 @@
 <h2 id="reglages">Réglages</h2>
 <p>Ouvrez <strong>Configuration ▸ Réglages ▸ IA</strong> pour configurer l'assistant sur une seule page :</p>
 <ul>
-<li><strong>Modèle préféré</strong> — Automatique (cloud si configuré, sinon sur l'appareil), Sur l'appareil (Apple Intelligence) ou Cloud.</li>
+<li><strong>Modèle préféré</strong> — quel modèle le chat <strong>AI Assistant</strong> utilise. Depuis que les actions sur l’appareil forment un module distinct, cela ne concerne que le chat : <em>Cloud</em> et <em>Automatique</em> utilisent le point de terminaison ci-dessous, et <em>Sur l’appareil</em> indique au chat qu’il n’est pas requis.</li>
 <li><strong>Point de terminaison cloud, modèle et clé API</strong> — pour utiliser un modèle compatible OpenAI au lieu de celui sur l'appareil. La clé est stockée dans le trousseau macOS, jamais dans vos fichiers de configuration.</li>
 <li><strong>Autonomie de l'assistant</strong> — lecture seule, confirmer les modifications (par défaut) ou autonome.</li>
 <li><strong>Invite système personnalisée</strong> — instructions facultatives qui façonnent les réponses de l'assistant.</li>

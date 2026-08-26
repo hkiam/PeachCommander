@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Assistente AI</h1>
-<p>L'assistente AI è un plugin opzionale e rimovibile che vi aiuta a lavorare con i vostri file usando il linguaggio naturale. Può riassumere o spiegare un documento, suggerire un nome di file migliore, tradurre o correggere un testo, trasformare i dati in una tabella e persino organizzare una cartella — e può eseguire azioni sui file al posto vostro dopo avervi mostrato prima un piano. Funziona sul dispositivo con Apple Intelligence quando disponibile, oppure potete indirizzarlo verso un modello nel cloud. Trattandosi di un plugin, potete disattivarlo o rimuoverlo completamente da <strong>Configurazione ▸ Plugin…</strong>.</p>
+<p>L'assistente AI è un plugin opzionale e rimovibile che vi aiuta a lavorare con i vostri file usando il linguaggio naturale. Può riassumere o spiegare un documento, suggerire un nome di file migliore, tradurre o correggere un testo, trasformare i dati in una tabella e persino organizzare una cartella — e può eseguire azioni sui file al posto vostro dopo avervi mostrato prima un piano. È composto da due plugin: <strong>AI On-Device</strong> funziona con Apple Intelligence e offre le azioni che mostrano una proposta e la applicano, mentre <strong>AI Assistant</strong> è la chat e richiede un modello cloud. Attiva uno dei due, o entrambi. Trattandosi di un plugin, potete disattivarlo o rimuoverlo completamente da <strong>Configurazione ▸ Plugin…</strong>.</p>
 <h2 id="aprire-lassistente">Aprire l'assistente</h2>
 <p>Scegliete <strong>Comandi ▸ Assistente AI</strong> per mostrare l'assistente in un pannello agganciato sul lato destro della finestra. Digitate una richiesta e premete Return; l'assistente può leggere i file, cercare informazioni e — con la vostra conferma — apportare modifiche.</p>
 <p><img alt="La chat dell'assistente AI agganciata accanto ai pannelli dei file" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Il modo più rapido per usare l'assistente è il sottomenu <strong>AI ▸</strong> nel menu del clic destro:</p>
 <ul>
 <li><strong>Su un file</strong> — Riassumi, Spiega, Suggerisci un nome, Suggerisci un commento, Traduci in inglese, Correggi, Rileva attività e Crea una tabella.</li>
-<li><strong>Sullo sfondo del pannello</strong> — Organizza questa cartella e Trova probabili duplicati.</li>
+<li><strong>Sullo sfondo del pannello</strong> — Cerca per significato, Organizza questa cartella e Trova probabili duplicati.</li>
 </ul>
-<p>Ogni azione <strong>AI ▸</strong> apre una <strong>propria chat con titolo</strong> (ad esempio, <em>Riassumi – report.txt</em>), così le diverse attività restano separate invece di accumularsi in un'unica lunga conversazione. Quando digitate voi stessi nel campo di immissione, quella richiesta prosegue la chat corrente.</p>
+<p><strong>Riassumi</strong>, <strong>Spiega</strong>, <strong>Suggerisci un nome</strong>, <strong>Suggerisci un commento</strong> e <strong>Organizza questa cartella</strong> provengono dal plugin <strong>AI On-Device</strong> e svolgono il loro lavoro senza aprire alcuna chat: mostrano la proposta in un foglio, tu deselezioni ciò che vuoi lasciare invariato e sul disco non cambia nulla finché non approvi. Le altre azioni appartengono al plugin <strong>AI Assistant</strong> e aprono la propria chat con un titolo, così i vari compiti restano separati. Quando scrivi tu nel campo di immissione, la richiesta prosegue la chat corrente.</p>
 <h2 id="gestire-le-chat">Gestire le chat</h2>
 <ul>
 <li>Usate il selettore di chat in cima al pannello per passare da una conversazione all'altra.</li>
@@ -32,7 +32,7 @@
 <h2 id="impostazioni">Impostazioni</h2>
 <p>Aprite <strong>Configurazione ▸ Impostazioni ▸ AI</strong> per configurare l'assistente in un'unica pagina:</p>
 <ul>
-<li><strong>Modello preferito</strong> — Automatico (cloud se configurato, altrimenti sul dispositivo), Sul dispositivo (Apple Intelligence) o Cloud.</li>
+<li><strong>Modello preferito</strong> — quale modello usa la chat <strong>AI Assistant</strong>. Da quando le azioni sul dispositivo sono un plugin a sé, questo riguarda solo la chat: <em>Cloud</em> e <em>Automatico</em> usano entrambi l’endpoint qui sotto, e <em>Sul dispositivo</em> dice alla chat che non serve.</li>
 <li><strong>Endpoint cloud, modello e chiave API</strong> — per usare un modello compatibile con OpenAI invece di quello sul dispositivo. La chiave è archiviata nel Portachiavi di macOS, mai nei vostri file di configurazione.</li>
 <li><strong>Autonomia dell'assistente</strong> — sola lettura, conferma delle modifiche (impostazione predefinita) o autonoma.</li>
 <li><strong>Prompt di sistema personalizzato</strong> — istruzioni facoltative che modellano il modo in cui l'assistente risponde.</li>

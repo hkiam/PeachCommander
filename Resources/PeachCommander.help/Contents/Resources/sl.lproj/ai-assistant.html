@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Pomočnik UI</h1>
-<p>Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Deluje na napravi z Apple Intelligence, kadar je na voljo, ali pa ga usmerite na model v oblaku. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<p>Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Sestavljata ga dva vtičnika: <strong>AI On-Device</strong> teče na Apple Intelligence in ponuja dejanja, ki pokažejo predlog in ga uveljavijo, <strong>AI Assistant</strong> pa je klepet in potrebuje model v oblaku. Vklopite enega ali oba. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
 <h2 id="odpiranje-pomocnika">Odpiranje pomočnika</h2>
 <p>Izberite <strong>Ukazi ▸ Pomočnik UI</strong>, da prikažete pomočnika v zasidranem podoknu na desni strani okna. Vnesite zahtevo in pritisnite Enter; pomočnik lahko bere datoteke, išče informacije in — z vašo potrditvijo — izvaja spremembe.</p>
 <p><img alt="Klepet pomočnika UI, zasidran ob podoknih z datotekami" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Najhitrejši način uporabe pomočnika je podmeni <strong>UI ▸</strong> v priročnem meniju:</p>
 <ul>
 <li><strong>Na datoteki</strong> — Povzemi, Razloži, Predlagaj ime, Predlagaj komentar, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.</li>
-<li><strong>Na ozadju podokna</strong> — Uredi to mapo in Poišči verjetne dvojnike.</li>
+<li><strong>Na ozadju podokna</strong> — Iskanje po pomenu, Uredi to mapo in Poišči verjetne dvojnike.</li>
 </ul>
-<p>Vsako dejanje <strong>UI ▸</strong> odpre <strong>svoj naslovljen klepet</strong> (na primer <em>Povzemi – poročilo.txt</em>), tako da različna opravila ostanejo ločena, namesto da se kopičijo v en dolg pogovor. Ko sami vnesete nekaj v vnosno polje, ta zahteva nadaljuje trenutni klepet.</p>
+<p><strong>Povzemi</strong>, <strong>Pojasni</strong>, <strong>Predlagaj ime</strong>, <strong>Predlagaj opombo</strong> in <strong>Uredi to mapo</strong> prihajajo iz vtičnika <strong>AI On-Device</strong> in svoje delo opravijo brez klepeta: predlog pokažejo na listu, odkljukate, kar naj ostane nespremenjeno, in na disku se nič ne spremeni, dokler ne pritrdite. Preostala dejanja spadajo k vtičniku <strong>AI Assistant</strong> in odprejo svoj poimenovani klepet, tako da naloge ostanejo ločene. Ko sami tipkate v vnosno polje, ta zahteva nadaljuje trenutni klepet.</p>
 <h2 id="upravljanje-klepetov">Upravljanje klepetov</h2>
 <ul>
 <li>Uporabite preklopnik klepetov na vrhu podokna za prehajanje med pogovori.</li>
@@ -32,7 +32,7 @@
 <h2 id="nastavitve">Nastavitve</h2>
 <p>Odprite <strong>Konfiguracija ▸ Nastavitve ▸ UI</strong>, da nastavite pomočnika na eni strani:</p>
 <ul>
-<li><strong>Prednostni model</strong> — Samodejno (oblak, če je nastavljen, sicer na napravi), Na napravi (Apple Intelligence) ali Oblak.</li>
+<li><strong>Prednostni model</strong> — kateri model uporablja klepet <strong>AI Assistant</strong>. Odkar so dejanja v napravi samostojen vtičnik, to zadeva le klepet: <em>Oblak</em> in <em>Samodejno</em> uporabljata končno točko spodaj, <em>V napravi</em> pa klepetu pove, da ni potreben.</li>
 <li><strong>Končna točka oblaka, model in ključ API</strong> — za uporabo modela, združljivega z OpenAI, namesto tistega na napravi. Ključ je shranjen v ključavnici macOS, nikoli v vaših konfiguracijskih datotekah.</li>
 <li><strong>Avtonomija pomočnika</strong> — samo za branje, potrdi spremembe (privzeto) ali samostojno.</li>
 <li><strong>Poljuben sistemski poziv</strong> — izbirna navodila, ki oblikujejo, kako pomočnik odgovarja.</li>

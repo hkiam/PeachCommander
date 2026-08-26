@@ -10,7 +10,7 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI-assistent</h1>
-<p>AI-assistenten er et valgfrit plugin, der kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan opsummere eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, omdanne data til en tabel og endda organisere en mappe — og den kan udføre filhandlinger for dig, efter at den først har vist dig en plan. Den kører på enheden med Apple Intelligence, når det er tilgængeligt, eller du kan pege den mod en cloud-model. Fordi den er et plugin, kan du deaktivere eller fjerne den helt fra <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<p>AI-assistenten er et valgfrit plugin, der kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan opsummere eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, omdanne data til en tabel og endda organisere en mappe — og den kan udføre filhandlinger for dig, efter at den først har vist dig en plan. Den består af to plugins: <strong>AI On-Device</strong> kører på Apple Intelligence og giver dig de handlinger, der viser et forslag og udfører det, mens <strong>AI Assistant</strong> er chatten og kræver en cloud-model. Slå det ene til, eller begge. Fordi den er et plugin, kan du deaktivere eller fjerne den helt fra <strong>Konfiguration ▸ Plugins…</strong>.</p>
 <h2 id="abn-assistenten">Åbn assistenten</h2>
 <p>Vælg <strong>Kommandoer ▸ AI-assistent</strong> for at vise assistenten i et forankret panel til højre i vinduet. Skriv en anmodning, og tryk på Return; assistenten kan læse filer, slå ting op og — med din bekræftelse — foretage ændringer.</p>
 <p><img alt="AI-assistentens chat forankret ved siden af filpanelerne" src="images/ai-chat.png" />
@@ -19,9 +19,9 @@
 <p>Den hurtigste måde at bruge assistenten på er undermenuen <strong>AI ▸</strong> i højrekliksmenuen:</p>
 <ul>
 <li><strong>På en fil</strong> — Opsummér, Forklar, Foreslå et navn, Foreslå en kommentar, Oversæt til engelsk, Korrekturlæs, Registrér opgaver og Lav en tabel.</li>
-<li><strong>På panelets baggrund</strong> — Organisér denne mappe og Find sandsynlige dubletter.</li>
+<li><strong>På panelets baggrund</strong> — Søg efter betydning, Organisér denne mappe og Find sandsynlige dubletter.</li>
 </ul>
-<p>Hver <strong>AI ▸</strong>-handling åbner sin <strong>egen navngivne chat</strong> (for eksempel <em>Opsummér – report.txt</em>), så forskellige opgaver holdes adskilt i stedet for at hobe sig op i én lang samtale. Når du selv skriver i inputfeltet, fortsætter den anmodning den aktuelle chat.</p>
+<p><strong>Opsummer</strong>, <strong>Forklar</strong>, <strong>Foreslå et navn</strong>, <strong>Foreslå en kommentar</strong> og <strong>Organiser denne mappe</strong> kommer fra pluginet <strong>AI On-Device</strong> og udfører deres arbejde helt uden chat: de viser deres forslag i et ark, du fjerner fluebenet ved det, du vil lade være, og intet på disken ændres, før du godkender det. De øvrige handlinger hører til pluginet <strong>AI Assistant</strong> og åbner deres eget navngivne chatvindue, så forskellige opgaver holdes adskilt. Når du selv skriver i indtastningsfeltet, fortsætter den anmodning den aktuelle chat.</p>
 <h2 id="handter-dine-chats">Håndtér dine chats</h2>
 <ul>
 <li>Brug chat-skifteren øverst i panelet til at bevæge dig mellem samtaler.</li>
@@ -32,7 +32,7 @@
 <h2 id="indstillinger">Indstillinger</h2>
 <p>Åbn <strong>Konfiguration ▸ Indstillinger ▸ AI</strong> for at konfigurere assistenten på en enkelt side:</p>
 <ul>
-<li><strong>Foretrukken model</strong> — Automatisk (cloud hvis konfigureret, ellers på enheden), På enheden (Apple Intelligence) eller Cloud.</li>
+<li><strong>Foretrukken model</strong> — hvilken model chatten <strong>AI Assistant</strong> bruger. Siden handlingerne på enheden blev deres eget plugin, gælder dette kun chatten: <em>Cloud</em> og <em>Automatisk</em> bruger begge slutpunktet nedenfor, og <em>På enheden</em> fortæller chatten, at den ikke er nødvendig.</li>
 <li><strong>Cloud-slutpunkt, model og API-nøgle</strong> — for at bruge en OpenAI-kompatibel model i stedet for den på enheden. Nøglen gemmes i macOS-nøgleringen, aldrig i dine konfigurationsfiler.</li>
 <li><strong>Assistentens selvstændighed</strong> — skrivebeskyttet, bekræft ændringer (standarden) eller selvstændig.</li>
 <li><strong>Tilpasset systemprompt</strong> — valgfrie instruktioner, der former, hvordan assistenten svarer.</li>
