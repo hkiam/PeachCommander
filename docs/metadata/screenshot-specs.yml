@@ -274,10 +274,14 @@ screenshots:
 
   - id: settings-ai
     feature: ai-assistant
-    alt: "Settings — the unified AI page (model, cloud, autonomy, system prompt, MCP)"
-    caption: "All assistant options live on one AI page in Settings."
+    alt: "Settings — the AI page, grouped by which plugin each setting belongs to"
+    caption: "One AI page, in sections: the chat's model and endpoint, what either assistant may do, and external agents."
     pages: [settings, ai-assistant]
-    script: [*main, settingspage AI, wait 800]
+    # Longer than the others on purpose. The window has to exist before the page can be
+    # selected, and in the capture VM it does not by 800 ms — the shot then showed Settings
+    # sitting on the page it opens with, or the window not yet raised at all.
+    script: [*main, settingspage AI, wait 3000]
+    settle: 14
 
   - id: settings-colors
     feature: theming

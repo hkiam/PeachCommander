@@ -970,11 +970,27 @@ extension MainWindowController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { win.compareNow() }
                 }
             case "settingspage":                           // open Settings + select a page (F-274)
+                // Waits for the window rather than guessing how long it takes. A fixed 0.6 s was
+                // enough on the machine this was written on and not in the capture VM, where the
+                // window arrived later — `settingsWindow` was still nil, the page was never
+                // selected, and the screenshot showed Settings sitting on whatever page it opens
+                // with. Silently: there is nothing to fail when the optional is empty.
                 showSettings()
                 let title = arg
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
-                    self?.settingsWindow?.showPage(titled: title)
+                func selectWhenReady(_ attempt: Int) {
+                    guard let window = settingsWindow else {
+                        guard attempt < 25 else {          // five seconds, then give up loudly
+                            NSLog("[automation] settingspage %@: no settings window", title)
+                            return
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            selectWhenReady(attempt + 1)
+                        }
+                        return
+                    }
+                    window.showPage(titled: title)
                 }
+                selectWhenReady(0)
             case "settingspagedump":                       // settingspagedump <out> (F-409)
                 try? (settingsWindow?.automationPageDump() ?? "ERROR: no settings window\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)
