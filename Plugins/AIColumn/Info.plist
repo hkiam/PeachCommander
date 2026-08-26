@@ -12,8 +12,12 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<!-- Ships switched off with the assistant it shares a model with (F-448). A column that calls the
-	     model once per visible row while the assistant itself is off would be the inconsistent half. -->
+	<!-- Ships switched off with the rest of the AI family (F-448), and stays optional by decision.
+	     NOT because it is expensive or far-reaching: it starts no model, links nothing, and answers
+	     each row from a JSON file the on-device actions wrote. The older reason recorded here — "a
+	     column that calls the model once per visible row" — described something this plugin has
+	     never done. It shows nothing at all until somebody both switches it on and adds one of its
+	     columns to a column set, which is why being off costs a reader nothing they can see. -->
 	<key>PCPluginEnabledByDefault</key><false/>
 	<key>PCPluginType</key>
 	<string>pdx</string>
