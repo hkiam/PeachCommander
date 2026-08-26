@@ -466,7 +466,7 @@ final class DirectActionRunner {
         }
         // The columns exist but a reader has to add them once, like any other content column —
         // saying so here is the difference between a feature and a puzzle.
-        let hint = String(localized: "Add the AI Kind, AI Topic or AI Date column to see these in the panel, or use [=ai_column.ai_topic] in a multi-rename mask.",
+        let hint = String(localized: "Switch the AI Column plugin on, then add the AI Kind, AI Topic or AI Date column to see these in the panel — or use [=ai_column.ai_topic] in a multi-rename mask.",
                           comment: "AI: where the classified facts show up")
         AITextSheet.show(title: String(localized: "Classified", comment: "AI: classify sheet title"),
                          body: lines.joined(separator: "\n\n") + "\n\n" + hint,
