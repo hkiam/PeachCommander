@@ -211,6 +211,15 @@ extension MainWindowController {
                     panel.tableView.focusEntry(named: arg)
                     panel.tableView.markNames([arg])
                 }
+            case "marknames":                           // marknames <a>,<b>,…: mark exactly these
+                // One call, because `markNames` clears first: two `markone` lines in a row leave
+                // only the second marked. And it marks on a Task, so a `seldump` on the next line
+                // reads the old state — put a `wait` in between.
+                if let panel = activePanel {
+                    let names = arg.split(separator: ",").map {
+                        $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+                    panel.tableView.markNames(Set(names))
+                }
             case "seldump":                             // seldump <outfile>: what is marked, by name
                 // The marked *names*, not a count alone: "one is marked" and "the right one is marked"
                 // are different claims, and the selection-restore scenario needs the second (F-056).

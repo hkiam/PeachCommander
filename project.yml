@@ -824,6 +824,8 @@ schemes:
     test:
       gatherCoverageData: false
       configuration: Debug
+      environmentVariables:
+        PC_AI_LIVE: "$(PC_AI_LIVE)"
       targets:
         - name: PCFoundationTests
           parallelizable: true
@@ -888,6 +890,13 @@ schemes:
     test:
       gatherCoverageData: false
       configuration: Debug
+      # PC_AI_LIVE reaches the tests only if the scheme forwards it. xcodebuild does not hand its own
+      # environment to the xctest process, so `PC_AI_LIVE=1 Tools/test.sh` set a variable the gate in
+      # LiveModelGate never saw: every live test skipped, silently, since the gate was introduced.
+      # Tools/test.sh passes the value through as a build setting and this expands it; unset, it
+      # expands to empty and the gate stays shut.
+      environmentVariables:
+        PC_AI_LIVE: "$(PC_AI_LIVE)"
       targets:
         - name: PCFoundationTests
           parallelizable: true

@@ -77,6 +77,16 @@ if [ "$LIST_ONLY" = "1" ]; then
     exit 0
 fi
 
+# xcodebuild does not hand its own environment to the xctest process, so exporting PC_AI_LIVE
+# here reaches nothing on its own: the schemes forward it as $(PC_AI_LIVE), which expands from a
+# build setting, which is what this passes. Without it the documented `PC_AI_LIVE=1 Tools/test.sh`
+# ran the whole suite with every live test silently skipped.
+LIVE=()
+if [ -n "${PC_AI_LIVE:-}" ]; then
+    LIVE+=("PC_AI_LIVE=$PC_AI_LIVE")
+    echo "Live on-device model tests: enabled (PC_AI_LIVE=$PC_AI_LIVE)"
+fi
+
 echo "Running tests..."
 xcodebuild \
     -project PeachCommander.xcodeproj \
@@ -85,6 +95,7 @@ xcodebuild \
     -derivedDataPath build \
     "${ONLY[@]}" \
     "${EXTRA[@]}" \
+    "${LIVE[@]}" \
     test
 
 echo "All tests passed."
