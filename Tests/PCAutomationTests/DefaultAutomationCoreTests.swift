@@ -68,6 +68,8 @@ actor FakeBridge: AutomationHostBridge {
         setCommentCalls.append((path, comment))
         if let comment { comments[path] = comment } else { comments[path] = nil }
     }
+    var clipboard: String?
+    func copyToClipboard(_ text: String) { clipboard = text }
 }
 
 final class DefaultAutomationCoreTests: XCTestCase {
@@ -314,5 +316,48 @@ final class DefaultAutomationCoreTests: XCTestCase {
         guard case .needsConfirmation = out else { return XCTFail("expected confirmation, got \(out)") }
         let ran = await bridge.ranCommand
         XCTAssertNil(ran)
+    }
+
+    // MARK: - Handing the answer over (copy_to_clipboard)
+    //
+    // The tool exists because of a reported dialogue that ended "copy the folder names to the
+    // clipboard" and could not be answered: there was no tool for it at all, in either assistant.
+
+    func test_copyToClipboard_runsWithoutConfirmation_andReportsWhatItPut() async throws {
+        let bridge = FakeBridge()
+        let core = DefaultAutomationCore(bridge: bridge)
+        let out = try await core.invoke(tool: "copy_to_clipboard",
+                                        arguments: argsData(["text": "Documents\nPictures\nMusic"]),
+                                        policy: .standard)
+        guard case .ok(let payload) = out else { return XCTFail("expected ok, got \(out)") }
+        let text = await bridge.clipboard
+        XCTAssertEqual(text, "Documents\nPictures\nMusic")
+        let reported = try JSONSerialization.jsonObject(with: XCTUnwrap(payload)) as? [String: Any]
+        XCTAssertEqual(reported?["lines"] as? Int, 3)
+        XCTAssertEqual(reported?["characters"] as? Int, 24)
+    }
+
+    func test_copyToClipboard_worksUnderReadOnly() async throws {
+        // The decision this pins: a session that may not touch the file system may still hand the
+        // user its answer. Classified `.write` it would be refused here — and reading a folder you
+        // then cannot be told about is most of the point of asking, gone.
+        let bridge = FakeBridge()
+        let core = DefaultAutomationCore(bridge: bridge)
+        let out = try await core.invoke(tool: "copy_to_clipboard",
+                                        arguments: argsData(["text": "/a/f.txt"]), policy: .readOnly)
+        guard case .ok = out else { return XCTFail("expected ok, got \(out)") }
+        let text = await bridge.clipboard
+        XCTAssertEqual(text, "/a/f.txt")
+    }
+
+    func test_copyToClipboard_emptyTextCountsNoLines() async throws {
+        // Splitting "" yields one empty piece, so the honest count has to be special-cased. The model
+        // reads this number back to the user; "1 line" for nothing copied is a small lie it would tell.
+        let core = DefaultAutomationCore(bridge: FakeBridge())
+        let out = try await core.invoke(tool: "copy_to_clipboard",
+                                        arguments: argsData(["text": ""]), policy: .standard)
+        guard case .ok(let payload) = out else { return XCTFail("expected ok, got \(out)") }
+        let reported = try JSONSerialization.jsonObject(with: XCTUnwrap(payload)) as? [String: Any]
+        XCTAssertEqual(reported?["lines"] as? Int, 0)
     }
 }

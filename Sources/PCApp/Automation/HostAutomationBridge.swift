@@ -471,6 +471,14 @@ final class HostAutomationBridge: AutomationHostBridge {
     func setSelection(mask: String) async throws { throw AutomationError.notImplemented("set_selection") }
     func runCommand(_ id: String) async throws { host?.contribInvokeCommand(id) }
 
+    /// `clearContents()` first, because setString alone leaves any other representation of the
+    /// previous owner in place — a pasteboard still advertising the last copy's file URLs next to
+    /// the new text, which pastes as the old files in anything that prefers them.
+    func copyToClipboard(_ text: String) async throws {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
     func runShell(_ command: String) async throws -> String {
         guard let host else { throw AutomationError.notImplemented("run_shell") }
         return try await host.runShellVisibly(command)

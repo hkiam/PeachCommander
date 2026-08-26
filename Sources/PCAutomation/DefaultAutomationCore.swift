@@ -346,6 +346,15 @@ public actor DefaultAutomationCore: AutomationCore {
             case "open_path":     try await bridge.openPath(try a.string("path")); return .ok(payload: nil)
             case "open_in_panel": try await bridge.openInPanel(try a.string("path"), side: try a.string("side")); return .ok(payload: nil)
             case "set_selection": try await bridge.setSelection(mask: try a.string("mask")); return .ok(payload: nil)
+            case "copy_to_clipboard":
+                let text = try a.string("text")
+                try await bridge.copyToClipboard(text)
+                // What landed there, counted. Without it the model has to claim success from the
+                // absence of an error, and "I copied the three names" is a sentence it should be
+                // able to check before writing.
+                return .ok(payload: try json([
+                    "characters": text.count,
+                    "lines": text.isEmpty ? 0 : text.split(separator: "\n", omittingEmptySubsequences: false).count]))
             case "run_command":   try await bridge.runCommand(try a.string("command_id")); return .ok(payload: nil)
             case "run_shell":
                 let out = try await bridge.runShell(try a.string("command"))

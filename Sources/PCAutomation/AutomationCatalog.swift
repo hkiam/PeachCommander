@@ -105,6 +105,12 @@ public enum AutomationCatalog {
                .init("side", .string, "\"left\", \"right\", or \"new-tab\".")]),
         .init("set_selection", .navigate, "Select entries in the active panel by a wildcard mask.",
               [.init("mask", .string, "Wildcard mask, e.g. \"*.txt\".")]),
+        // Not a `.write`: nothing on disk changes, and what it replaces is a scratch buffer, not
+        // data. Gating it like a rename would mean a confirmation sheet for the thing the user just
+        // asked for in words — and a read-only session could then read a folder but not hand the
+        // answer over, which is most of what asking was for.
+        .init("copy_to_clipboard", .navigate, "Put text on the clipboard, ready to paste somewhere else. Use it whenever the user asks to copy an answer — a list of names, a table, a path. Replaces whatever was on the clipboard. To put the FILES themselves on the clipboard rather than text about them, select them and run the cm_CopyToClipboard command instead.",
+              [.init("text", .string, "The exact text to place on the clipboard.")]),
         // write (gated / confirmed)
         .init("copy", .write, "Copy files/folders to a destination folder.",
               [.init("sources", .array, "Absolute paths to copy."),

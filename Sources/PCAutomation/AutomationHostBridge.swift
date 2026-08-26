@@ -142,6 +142,12 @@ public protocol AutomationHostBridge: Sendable {
     func describeImage(_ path: String) async throws -> ImageDescription
     /// Replace the Finder tags on `path`. An empty list removes them.
     func setTags(_ path: String, tags: [String]) async throws
+
+    /// Put `text` on the system clipboard, replacing what was there.
+    ///
+    /// The host's, not the Core's: which pasteboard, and whether this machine has one at all, is
+    /// something only the host knows — the MCP server runs the same Core with no UI behind it.
+    func copyToClipboard(_ text: String) async throws
 }
 
 public extension AutomationHostBridge {
@@ -183,6 +189,7 @@ public extension AutomationHostBridge {
     func getTags(_ path: String) async throws -> [String] { throw AutomationError.notImplemented("get_tags") }
     func describeImage(_ path: String) async throws -> ImageDescription { throw AutomationError.notImplemented("describe_image") }
     func setTags(_ path: String, tags: [String]) async throws { throw AutomationError.notImplemented("set_tags") }
+    func copyToClipboard(_ text: String) async throws { throw AutomationError.notImplemented("copy_to_clipboard") }
 }
 
 public extension AutomationHostBridge {
