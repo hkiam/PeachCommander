@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>AIAssistant</string>
+	<string>AILocal</string>
 	<key>CFBundleName</key>
-	<string>AIAssistant</string>
+	<string>AILocal</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
@@ -18,70 +18,110 @@
 		<array>
 			<dict>
 				<key>category</key>
-				<string>Commands</string>
-				<key>id</key>
-				<string>plugin.ai.toggle</string>
-				<key>title</key>
-				<string>AI Assistant</string>
-			</dict>
-			<dict>
-				<key>acceptsSuffix</key>
-				<true/>
-				<key>category</key>
 				<string>AI</string>
 				<key>id</key>
-				<string>plugin.ai.skill.custom</string>
+				<string>plugin.ailocal.summarize</string>
 				<key>title</key>
-				<string>Custom AI action</string>
+				<string>Summarize</string>
 			</dict>
 			<dict>
 				<key>category</key>
 				<string>AI</string>
 				<key>id</key>
-				<string>plugin.ai.skill.translate</string>
+				<string>plugin.ailocal.explain</string>
 				<key>title</key>
-				<string>Translate to English</string>
+				<string>Explain</string>
 			</dict>
 			<dict>
 				<key>category</key>
 				<string>AI</string>
 				<key>id</key>
-				<string>plugin.ai.skill.check</string>
+				<string>plugin.ailocal.rename</string>
 				<key>title</key>
-				<string>Proofread</string>
+				<string>Suggest a name</string>
 			</dict>
 			<dict>
 				<key>category</key>
 				<string>AI</string>
 				<key>id</key>
-				<string>plugin.ai.skill.detect-tasks</string>
+				<string>plugin.ailocal.comment</string>
 				<key>title</key>
-				<string>Detect tasks</string>
-			</dict>
-			<dict>
-				<key>acceptsSuffix</key>
-				<true/>
-				<key>category</key>
-				<string>AI</string>
-				<key>id</key>
-				<string>plugin.ai.folderskill.custom</string>
-				<key>title</key>
-				<string>Custom AI folder action</string>
+				<string>Suggest a comment</string>
 			</dict>
 			<dict>
 				<key>category</key>
 				<string>AI</string>
 				<key>id</key>
-				<string>plugin.ai.folderskill.find-duplicates</string>
+				<string>plugin.ailocal.organize</string>
 				<key>title</key>
-				<string>Find likely duplicates</string>
+				<string>Organize this folder</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>AI</string>
+				<key>id</key>
+				<string>plugin.ailocal.find</string>
+				<key>title</key>
+				<string>Find by meaning</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>AI</string>
+				<key>id</key>
+				<string>plugin.ailocal.classify</string>
+				<key>title</key>
+				<string>Classify</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>AI</string>
+				<key>id</key>
+				<string>plugin.ailocal.table</string>
+				<key>title</key>
+				<string>Make a table</string>
 			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
 			<dict>
 				<key>command</key>
-				<string>plugin.ai.skill.translate</string>
+				<string>plugin.ailocal.summarize</string>
+				<key>group</key>
+				<string>6_ai</string>
+				<key>order</key>
+				<integer>10</integer>
+				<key>submenu</key>
+				<string>AI</string>
+				<key>surface</key>
+				<string>panel.item</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.ailocal.explain</string>
+				<key>group</key>
+				<string>6_ai</string>
+				<key>order</key>
+				<integer>20</integer>
+				<key>submenu</key>
+				<string>AI</string>
+				<key>surface</key>
+				<string>panel.item</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.ailocal.rename</string>
+				<key>group</key>
+				<string>6_ai</string>
+				<key>order</key>
+				<integer>30</integer>
+				<key>submenu</key>
+				<string>AI</string>
+				<key>surface</key>
+				<string>panel.item</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.ailocal.comment</string>
 				<key>group</key>
 				<string>6_ai</string>
 				<key>order</key>
@@ -93,31 +133,19 @@
 			</dict>
 			<dict>
 				<key>command</key>
-				<string>plugin.ai.skill.check</string>
+				<string>plugin.ailocal.organize</string>
 				<key>group</key>
 				<string>6_ai</string>
 				<key>order</key>
-				<integer>50</integer>
+				<integer>10</integer>
 				<key>submenu</key>
 				<string>AI</string>
 				<key>surface</key>
-				<string>panel.item</string>
+				<string>panel.background</string>
 			</dict>
 			<dict>
 				<key>command</key>
-				<string>plugin.ai.skill.detect-tasks</string>
-				<key>group</key>
-				<string>6_ai</string>
-				<key>order</key>
-				<integer>60</integer>
-				<key>submenu</key>
-				<string>AI</string>
-				<key>surface</key>
-				<string>panel.item</string>
-			</dict>
-			<dict>
-				<key>command</key>
-				<string>plugin.ai.folderskill.find-duplicates</string>
+				<string>plugin.ailocal.find</string>
 				<key>group</key>
 				<string>6_ai</string>
 				<key>order</key>
@@ -127,29 +155,29 @@
 				<key>surface</key>
 				<string>panel.background</string>
 			</dict>
-		</array>
-		<key>menus</key>
-		<array>
 			<dict>
 				<key>command</key>
-				<string>plugin.ai.toggle</string>
+				<string>plugin.ailocal.classify</string>
 				<key>group</key>
 				<string>6_ai</string>
-				<key>menu</key>
-				<string>Commands</string>
 				<key>order</key>
-				<integer>125</integer>
-			</dict>
-		</array>
-		<key>views</key>
-		<array>
-			<dict>
-				<key>container</key>
-				<string>sidebar</string>
-				<key>id</key>
-				<string>plugin.ai.view</string>
-				<key>title</key>
+				<integer>45</integer>
+				<key>submenu</key>
 				<string>AI</string>
+				<key>surface</key>
+				<string>panel.item</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.ailocal.table</string>
+				<key>group</key>
+				<string>6_ai</string>
+				<key>order</key>
+				<integer>50</integer>
+				<key>submenu</key>
+				<string>AI</string>
+				<key>surface</key>
+				<string>panel.item</string>
 			</dict>
 		</array>
 	</dict>
@@ -160,7 +188,7 @@
 	<key>PCPluginMinHostVersion</key>
 	<integer>1</integer>
 	<key>PCPluginName</key>
-	<string>AI Assistant</string>
+	<string>AI On-Device</string>
 	<key>PCPluginType</key>
 	<string>ptx</string>
 </dict>

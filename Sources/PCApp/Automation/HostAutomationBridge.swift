@@ -278,14 +278,24 @@ final class HostAutomationBridge: AutomationHostBridge {
     }
 
     /// The sentence embedding for the query's language, English as the fallback.
+    /// The sentence embedding for the query's own language, or nil when there is none.
+    ///
+    /// Nil matters: the caller then scores by word overlap instead, which works in any language.
+    /// This used to fall back to the ENGLISH embedding for a language Apple has no model for,
+    /// which is worse than having none — it returns finite distances, so the lexical fallback was
+    /// never reached and a French or Russian query was ranked against English vectors. Measured on
+    /// macOS 26.4: sentence embeddings existed for German, English and Italian and for none of the
+    /// other sixteen languages this app ships in.
+    ///
+    /// A query too short to place is still tried against English, which is the right guess for a
+    /// bare word and costs nothing when it is wrong (the score simply loses to the lexical one).
     nonisolated private static func embedding(for query: String) -> NLEmbedding? {
         let recognizer = NLLanguageRecognizer()
         recognizer.processString(query)
-        if let language = recognizer.dominantLanguage,
-           let embedding = NLEmbedding.sentenceEmbedding(for: language) {
-            return embedding
+        guard let language = recognizer.dominantLanguage else {
+            return NLEmbedding.sentenceEmbedding(for: .english)
         }
-        return NLEmbedding.sentenceEmbedding(for: .english)
+        return NLEmbedding.sentenceEmbedding(for: language)
     }
 
     nonisolated private static func tokens(of text: String) -> [String] {
@@ -342,6 +352,25 @@ final class HostAutomationBridge: AutomationHostBridge {
     func getComment(_ path: String) async throws -> String? {
         guard let host else { throw AutomationError.notImplemented("host released") }
         return host.contribFileComment(await resolveExisting(path))
+    }
+
+    /// Vision, on the device, with no language model involved — see `ImageReader`, which both this
+    /// and the tests call so that one implementation is the only implementation.
+    func describeImage(_ path: String) async throws -> ImageDescription {
+        try await ImageReader.describe(path: path)
+    }
+
+    func getTags(_ path: String) async throws -> [String] {
+        FinderTagColor.rawTags(forPath: path)
+    }
+
+    /// Written through `FinderTagColor`, which writes the raw `_kMDItemUserTags` xattr rather than
+    /// `URLResourceValues.tagNames` — the latter drops the colour, and a colourless tag is not the
+    /// thing the reader sees in Finder.
+    func setTags(_ path: String, tags: [String]) async throws {
+        guard FinderTagColor.writeRawTags(tags, toPath: path) else {
+            throw AutomationError.notImplemented("set_tags: could not write the tags on \(path)")
+        }
     }
 
     func setComment(_ path: String, comment: String?) async throws {

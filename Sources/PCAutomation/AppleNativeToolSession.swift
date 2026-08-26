@@ -56,27 +56,6 @@ final class NativeToolContext: @unchecked Sendable {
     /// with the provider that has the window, not in the shared core.
     static let readBudget = 4096
 
-    /// Execute tool `name` and return the result with the notes the *model* needs to read it
-    /// correctly. Use `runRaw` from Swift: the notes are prose appended to a JSON payload, so
-    /// they are help for a reader and noise for a parser.
-    func run(_ name: String, _ args: [String: Any]) async -> String {
-        let payload = await runRaw(name, args)
-        // Nudge the small model to chain search/list → read_file for CONTENTS (it otherwise
-        // answers from names alone or fabricates).
-        if name == "search" || name == "list_directory" {
-            return payload + "\n\n[Note: this lists file names/paths only, NOT their "
-                + "contents. To read what is inside a file, call read_file with its path.]"
-        }
-        // A slice must not be mistaken for the file. Saying so in the result is what stops the
-        // model summarising the first 4 KB of a report as the report.
-        if name == "read_file", Self.readWasTruncated(payload) {
-            return payload + "\n\n[Note: this is only the beginning of the file — more "
-                + "remains. Do NOT describe this as the whole file. To cover all of it, "
-                + "call summarize_file with the same path.]"
-        }
-        return payload
-    }
-
     /// Execute tool `name` with JSON `args`, returning the payload verbatim.
     /// Gated tools wait for the broker; a decline is reported back to the model.
     func runRaw(_ name: String, _ args: [String: Any]) async -> String {
@@ -295,20 +274,14 @@ final class NativeToolContext: @unchecked Sendable {
         let payload = await ctx.runRaw("stat_path", ["path": path])
         guard let d = payload.data(using: .utf8),
               let o = try? JSONSerialization.jsonObject(with: d) as? [String: Any] else { return path }
-        let size = (o["size"] as? NSNumber)?.stringValue ?? "?"
-        let modified = (o["modified"] as? NSNumber)?.stringValue ?? "?"
-        return "\(path)|\(size)|\(modified)"
-    }
-
-    /// Fold a conversation down to a few sentences, for when the context window fills.
-    static func summarize(conversation: String) async -> String {
-        let slice = String(conversation.suffix(6000))   // the recent part is what matters
-        let out = await generate(
-            "Summarise this conversation between a user and a file-manager assistant in at most "
-            + "four sentences: what the user wants, what has been established, what is still "
-            + "open. Keep file names and paths that were agreed on, and write in the SAME "
-            + "LANGUAGE the user is speaking.\n\n" + slice)
-        return out.hasPrefix("(this section") ? "" : out
+        // Through SummaryStore, which is the definition. Written out here by hand, this produced a
+        // key the panel's AI column could never match: `NSNumber.stringValue` rounds a Double to
+        // about six decimals where interpolation does not, so the two dylibs agreed on the file and
+        // disagreed on the string. (The column had a second bug of its own — the 1970 epoch against
+        // this one's 2001 — so it had never matched at all.)
+        let size = (o["size"] as? NSNumber)?.int64Value ?? -1
+        let modified = (o["modified"] as? NSNumber)?.doubleValue ?? -1
+        return SummaryStore.fingerprint(path: path, size: size, modified: modified)
     }
 
     /// One short generation with no tools and no history — the unit the folding is built from.
@@ -321,511 +294,6 @@ final class NativeToolContext: @unchecked Sendable {
     }
 }
 
-/// Build a JSON dict, dropping empty-string values so optional args are simply omitted.
-@available(macOS 26, *)
-private func ntArgs(_ pairs: [String: Any]) -> [String: Any] {
-    pairs.filter { !(($0.value as? String)?.isEmpty ?? false) }
-}
-
-// MARK: - Native tool definitions (one per catalogue entry)
-
-@available(macOS 26, *)
-struct NTGetContext: Tool {
-    let ctx: NativeToolContext
-    var name: String { "get_context" }
-    var description: String { "Get the current UI context: active folder, selection, cursor, tabs and view." }
-    @Generable struct Arguments {}
-    func call(arguments: Arguments) async throws -> String { await ctx.run("get_context", [:]) }
-}
-
-@available(macOS 26, *)
-struct NTListDirectory: Tool {
-    let ctx: NativeToolContext
-    var name: String { "list_directory" }
-    var description: String { "List the entries of a folder." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path or VFS path to list") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("list_directory", ["path": a.path])
-    }
-}
-
-@available(macOS 26, *)
-struct NTStatPath: Tool {
-    let ctx: NativeToolContext
-    var name: String { "stat_path" }
-    var description: String { "Get metadata (size, kind, dates) for a path." }
-    @Generable struct Arguments {
-        @Guide(description: "Path to inspect") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("stat_path", ["path": a.path]) }
-}
-
-@available(macOS 26, *)
-struct NTReadFile: Tool {
-    let ctx: NativeToolContext
-    var name: String { "read_file" }
-    var description: String {
-        "Read text from a file, starting at a byte offset. Returns at most "
-        + "\(NativeToolContext.readBudget) bytes per call; the result says whether more remains. "
-        + "For a whole long file, call summarize_file instead of reading it in slices."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file to read") var path: String
-        @Guide(description: "Byte offset to start at; 0 for the beginning") var offset: Int
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("read_file", ["path": a.path, "offset": max(0, a.offset),
-                                    "max_bytes": NativeToolContext.readBudget])
-    }
-}
-
-@available(macOS 26, *)
-struct NTHashFile: Tool {
-    let ctx: NativeToolContext
-    var name: String { "hash_file" }
-    var description: String { "Compute the SHA-256 hash of a file's bytes." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file to hash") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("hash_file", ["path": a.path]) }
-}
-
-@available(macOS 26, *)
-struct NTWriteFile: Tool {
-    let ctx: NativeToolContext
-    var name: String { "write_file" }
-    var description: String { "Create or overwrite a text file with the given content." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file to write") var path: String
-        @Guide(description: "The full text content to write into the file") var content: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("write_file", ["path": a.path, "content": a.content])
-    }
-}
-
-@available(macOS 26, *)
-struct NTGetComment: Tool {
-    let ctx: NativeToolContext
-    var name: String { "get_comment" }
-    var description: String { "Read the comment attached to a file or folder. Empty when it has none." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file or folder") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("get_comment", ["path": a.path]) }
-}
-
-@available(macOS 26, *)
-struct NTSetComment: Tool {
-    let ctx: NativeToolContext
-    var name: String { "set_comment" }
-    var description: String {
-        "Attach a short comment to a file or folder describing what it is for, or clear it with an "
-        + "empty string. Use this when the user asks you to note, label, annotate or describe a file. "
-        + "The comment is stored beside the file and shown in the panel's Comment column."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file or folder") var path: String
-        @Guide(description: "The comment text; empty removes the comment") var comment: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        // Not ntArgs: an empty comment is how a comment is *removed*, and dropping empty strings
-        // would turn "clear this" into a call with no comment argument at all.
-        await ctx.run("set_comment", ["path": a.path, "comment": a.comment])
-    }
-}
-
-@available(macOS 26, *)
-struct NTMergeFiles: Tool {
-    let ctx: NativeToolContext
-    var name: String { "merge_files" }
-    var description: String {
-        "Combine/merge/concatenate the currently selected files (e.g. CSV files) into one "
-        + "new file. Use this for any 'merge/combine the selected files into a new file' "
-        + "request. It operates on the current selection, so you ONLY provide the "
-        + "destination file name — do not read the files yourself."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Name of the new merged file, e.g. combined.csv") var destination: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("merge_files", ["destination": a.destination])
-    }
-}
-
-@available(macOS 26, *)
-struct NTSearch: Tool {
-    let ctx: NativeToolContext
-    var name: String { "search" }
-    var description: String {
-        // The mask is a *file name* pattern. Left to itself the small model puts the user's
-        // subject in it — "which file is about the roof repair" became mask=*dachreparatur*,
-        // which matches nothing and gets reported as "there is no such file".
-        "Find files by a NAME pattern, or by exact words occurring inside them. The mask matches "
-        + "file names only: to search by content, put the words in `text` and leave `mask` as *. "
-        + "For 'which file is about X', prefer semantic_search."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Filename wildcard mask; use * unless the user named a name pattern") var mask: String
-        @Guide(description: "Words to find INSIDE the files; empty for none") var text: String
-        @Guide(description: "Absolute folder to search in; empty for the active folder") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        var mask = a.mask.trimmingCharacters(in: .whitespaces)
-        var text = a.text.trimmingCharacters(in: .whitespaces)
-        // Measured against the real model, asked "which file is about the roof repair": it calls
-        // search with mask="Dachreparatur" — the subject where the file-name pattern goes —
-        // sometimes with the same word in `text` as well. Either way the name pattern matches
-        // nothing, and the honest answer to that ("no file has that name") is useless to the
-        // user. A mask that is a bare word rather than a pattern is read as what is being looked
-        // for; a mask with a wildcard or an extension is left alone, because that is a caller
-        // who means it. The description tells the model the right shape; this makes the wrong
-        // shape work anyway.
-        if Self.isBareWord(mask) {
-            if text.isEmpty { text = mask }
-            mask = "*"
-        }
-        return await ctx.run("search", ["query": ntArgs(["mask": mask, "text": text, "path": a.path])])
-    }
-
-    /// A word, not a file-name pattern: no wildcard and no extension.
-    static func isBareWord(_ mask: String) -> Bool {
-        guard !mask.isEmpty, mask != "*" else { return false }
-        return !mask.contains("*") && !mask.contains("?") && !mask.contains(".") && !mask.contains("/")
-    }
-}
-
-@available(macOS 26, *)
-struct NTGetConfig: Tool {
-    let ctx: NativeToolContext
-    var name: String { "get_config" }
-    var description: String { "Read a configuration value by its Section.Key." }
-    @Generable struct Arguments {
-        @Guide(description: "Config key, e.g. Display.NaturalSort") var key: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("get_config", ["key": a.key]) }
-}
-
-@available(macOS 26, *)
-struct NTListCommands: Tool {
-    let ctx: NativeToolContext
-    var name: String { "list_commands" }
-    var description: String { "List the available commands (id, name, category)." }
-    @Generable struct Arguments {}
-    func call(arguments: Arguments) async throws -> String { await ctx.run("list_commands", [:]) }
-}
-
-@available(macOS 26, *)
-struct NTListPlugins: Tool {
-    let ctx: NativeToolContext
-    var name: String { "list_plugins" }
-    var description: String { "List enabled plugins and their contributed commands." }
-    @Generable struct Arguments {}
-    func call(arguments: Arguments) async throws -> String { await ctx.run("list_plugins", [:]) }
-}
-
-@available(macOS 26, *)
-struct NTOpenPath: Tool {
-    let ctx: NativeToolContext
-    var name: String { "open_path" }
-    var description: String { "Open a folder (or reveal a file) in the active panel." }
-    @Generable struct Arguments {
-        @Guide(description: "Path to open") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("open_path", ["path": a.path]) }
-}
-
-@available(macOS 26, *)
-struct NTOpenInPanel: Tool {
-    let ctx: NativeToolContext
-    var name: String { "open_in_panel" }
-    var description: String { "Open a path in a specific panel or a new tab." }
-    @Generable struct Arguments {
-        @Guide(description: "Path to open") var path: String
-        @Guide(description: "left, right, or new-tab") var side: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("open_in_panel", ["path": a.path, "side": a.side])
-    }
-}
-
-@available(macOS 26, *)
-struct NTSetSelection: Tool {
-    let ctx: NativeToolContext
-    var name: String { "set_selection" }
-    var description: String { "Select entries in the active panel by a wildcard mask." }
-    @Generable struct Arguments {
-        @Guide(description: "Wildcard mask, e.g. *.txt") var mask: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("set_selection", ["mask": a.mask]) }
-}
-
-@available(macOS 26, *)
-struct NTCopy: Tool {
-    let ctx: NativeToolContext
-    var name: String { "copy" }
-    var description: String { "Copy files/folders to a destination folder." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute paths to copy") var sources: [String]
-        @Guide(description: "Destination folder") var destination: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("copy", ["sources": a.sources, "destination": a.destination])
-    }
-}
-
-@available(macOS 26, *)
-struct NTMove: Tool {
-    let ctx: NativeToolContext
-    var name: String { "move" }
-    var description: String { "Move files/folders to a destination folder." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute paths to move") var sources: [String]
-        @Guide(description: "Destination folder") var destination: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("move", ["sources": a.sources, "destination": a.destination])
-    }
-}
-
-@available(macOS 26, *)
-struct NTRename: Tool {
-    let ctx: NativeToolContext
-    var name: String { "rename" }
-    var description: String { "Rename a single entry in place." }
-    @Generable struct Arguments {
-        @Guide(description: "Entry to rename") var path: String
-        @Guide(description: "New name (one path component)") var newName: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("rename", ["path": a.path, "new_name": a.newName])
-    }
-}
-
-@available(macOS 26, *)
-struct NTMakeDirectory: Tool {
-    let ctx: NativeToolContext
-    var name: String { "make_directory" }
-    var description: String { "Create a new folder." }
-    @Generable struct Arguments {
-        @Guide(description: "Folder path to create") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("make_directory", ["path": a.path]) }
-}
-
-@available(macOS 26, *)
-struct NTSetConfig: Tool {
-    let ctx: NativeToolContext
-    var name: String { "set_config" }
-    var description: String { "Set a configuration value by its Section.Key." }
-    @Generable struct Arguments {
-        @Guide(description: "Config key") var key: String
-        @Guide(description: "New value") var value: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("set_config", ["key": a.key, "value": a.value])
-    }
-}
-
-@available(macOS 26, *)
-struct NTMoveToTrash: Tool {
-    let ctx: NativeToolContext
-    var name: String { "move_to_trash" }
-    var description: String { "Move files/folders to the Trash (reversible)." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute paths to move to the Trash") var paths: [String]
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("move_to_trash", ["paths": a.paths]) }
-}
-
-@available(macOS 26, *)
-struct NTDeletePermanently: Tool {
-    let ctx: NativeToolContext
-    var name: String { "delete_permanently" }
-    var description: String { "Delete files/folders permanently (NOT reversible)." }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute paths to delete permanently") var paths: [String]
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("delete_permanently", ["paths": a.paths]) }
-}
-
-@available(macOS 26, *)
-struct NTRunCommand: Tool {
-    let ctx: NativeToolContext
-    var name: String { "run_command" }
-    var description: String { "Invoke a named command (cm_*) by id." }
-    @Generable struct Arguments {
-        @Guide(description: "The command id, e.g. cm_PackFiles") var commandId: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("run_command", ["command_id": a.commandId]) }
-}
-
-@available(macOS 26, *)
-struct NTSemanticSearch: Tool {
-    let ctx: NativeToolContext
-    var name: String { "semantic_search" }
-    var description: String {
-        "THE tool for 'which file is about X' / 'find the file about X': ranks the folder's files "
-        + "by how well their names AND their contents match a description, even when the file "
-        + "name says nothing. Use summarize_file or read_file on a match."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "What to look for, in plain words") var query: String
-        @Guide(description: "Folder to search; empty for the active folder") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("semantic_search", ntArgs(["query": a.query, "path": a.path]))
-    }
-}
-
-@available(macOS 26, *)
-struct NTFindFiles: Tool {
-    let ctx: NativeToolContext
-    var name: String { "find_files" }
-    var description: String {
-        "THE tool for finding a file when you do not know which folder it is in: it asks the system's "
-        + "own file index, so it covers the whole disk or the home folder without walking it. "
-        + "\"that PDF from last month\" is kind=pdf with within_days=30; \"all my node_modules "
-        + "folders\" is kind=folder with name=node_modules. Leave a field empty to not narrow by it."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Words or wildcards in the FILE NAME; empty to not filter by name") var name: String
-        @Guide(description: "Words to find INSIDE the files; empty to not search contents") var text: String
-        @Guide(description: "pdf, image, movie, audio, text, source, archive, folder or application; empty for any")
-        var kind: String
-        @Guide(description: "Modified in the last N days; 0 for any time")
-        var withinDays: Int
-        @Guide(description: "Where: home, disk, here, or an absolute path. Empty means home")
-        var scope: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        // A zero window means "no window", not "the last zero days": the tool argument is optional and
-        // `@Generable` has no absent value, so zero is how absence arrives here.
-        var args = ntArgs(["name": a.name, "text": a.text, "kind": a.kind, "scope": a.scope])
-        if a.withinDays > 0 { args["within_days"] = a.withinDays }
-        return await ctx.run("find_files", args)
-    }
-}
-
-@available(macOS 26, *)
-struct NTRenameBatch: Tool {
-    let ctx: NativeToolContext
-    var name: String { "rename_batch" }
-    var description: String {
-        "Rename MANY files in one step. Build the new names yourself and pass the two lists in the same "
-        + "order; the user sees them as a table and agrees once, and undo takes the whole batch back. "
-        + "Use this instead of calling rename over and over — that asks the user once per file."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "The current file names, without a folder") var oldNames: [String]
-        @Guide(description: "The new names, in the same order as oldNames") var newNames: [String]
-        @Guide(description: "Folder the files are in; empty for the active folder") var directory: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        var args: [String: Any] = ["old_names": a.oldNames, "new_names": a.newNames]
-        if !a.directory.isEmpty { args["directory"] = a.directory }
-        return await ctx.run("rename_batch", args)
-    }
-}
-
-@available(macOS 26, *)
-struct NTRemember: Tool {
-    let ctx: NativeToolContext
-    var name: String { "remember" }
-    var description: String {
-        "Save a short note to long-term memory, kept across chats. Use it when the user "
-        + "states a durable fact or preference, or asks you to remember something."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "The note to remember, one sentence") var text: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("remember", ["text": a.text]) }
-}
-
-@available(macOS 26, *)
-struct NTRecall: Tool {
-    let ctx: NativeToolContext
-    var name: String { "recall" }
-    var description: String { "Look up notes saved earlier in long-term memory. Empty query = the most recent notes." }
-    @Generable struct Arguments {
-        @Guide(description: "Text to match; empty for the most recent notes") var query: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.run("recall", ntArgs(["query": a.query]))
-    }
-}
-
-@available(macOS 26, *)
-struct NTRecentActions: Tool {
-    let ctx: NativeToolContext
-    var name: String { "list_recent_actions" }
-    var description: String {
-        "List what has recently been done to the user's files (tool, arguments, outcome), "
-        + "newest first. Use it when the user asks what you did or what changed."
-    }
-    @Generable struct Arguments {}
-    func call(arguments: Arguments) async throws -> String { await ctx.run("list_recent_actions", [:]) }
-}
-
-@available(macOS 26, *)
-struct NTUndoLast: Tool {
-    let ctx: NativeToolContext
-    var name: String { "undo_last_action" }
-    var description: String {
-        "Undo the most recent change that can be undone (a rename or a move). Use it when the "
-        + "user asks to take back what was just done. It answers with why if it cannot."
-    }
-    @Generable struct Arguments {}
-    func call(arguments: Arguments) async throws -> String { await ctx.run("undo_last_action", [:]) }
-}
-
-@available(macOS 26, *)
-struct NTRunShell: Tool {
-    let ctx: NativeToolContext
-    var name: String { "run_shell" }
-    var description: String { "Run a shell command in a visible terminal tab and return what it printed." }
-    @Generable struct Arguments {
-        @Guide(description: "The command line, exactly as it should be run") var command: String
-    }
-    func call(arguments a: Arguments) async throws -> String { await ctx.run("run_shell", ["command": a.command]) }
-}
-
-/// Summarise a whole file, however long, by reading it in slices and folding the slice
-/// summaries together (map-reduce).
-///
-/// This is the tool the on-device model cannot be without. Its context window holds a few
-/// thousand tokens — measured on this machine, a 4 KB slice is answerable and an 8 KB one is
-/// not — so "summarise this file" over anything longer than a note either fails outright or,
-/// worse, silently summarises the first slice and presents it as the whole. The folding runs
-/// in Swift, with a fresh tool-less session per slice, so no single generation ever sees more
-/// than one slice and the window can't overflow.
-@available(macOS 26, *)
-struct NTSummarizeFile: Tool {
-    let ctx: NativeToolContext
-    var name: String { "summarize_file" }
-    var description: String {
-        "Summarise a whole file of any length — reads it completely, in slices. Use this for "
-        + "'summarise/explain/what is in this file' whenever the file may be longer than a "
-        + "few thousand bytes, INSTEAD OF read_file. The result is the finished summary: "
-        + "report it to the user and call no further tools."
-    }
-    @Generable struct Arguments {
-        @Guide(description: "Absolute path of the file to summarise") var path: String
-    }
-    func call(arguments a: Arguments) async throws -> String {
-        await ctx.summarizeWholeFile(path: a.path)
-    }
-}
-
-// Guided-generation types for reliable STRUCTURED output (KI-09): the model fills a
-// typed schema (constrained decoding) instead of free text, so a table is always
-// well-formed.
-@available(macOS 26, *)
-@Generable struct GeneratedTableRow {
-    @Guide(description: "the cell values, one per column, in header order") var cells: [String]
-}
 /// A file name proposed by the model, with its reason. Guided generation, so what comes back
 /// is a name and not a sentence containing one — the difference between a button the user can
 /// press and a line they have to retype.
@@ -835,10 +303,84 @@ struct NTSummarizeFile: Tool {
     @Guide(description: "one short sentence saying why, in the language of the file") var reason: String
 }
 
+
+/// A comment proposed for a file, with the tags that belong beside it. Guided generation, so
+/// what comes back is a comment and a word list — not a sentence describing both, which is what
+/// a file manager would then have to parse before it could store either.
+@available(macOS 26, *)
+@Generable struct GeneratedComment {
+    @Guide(description: "one sentence saying what the file is for, in the language of the file")
+    var comment: String
+    @Guide(description: "up to four single-word tags, lower case, no punctuation")
+    var tags: [String]
+}
+
+/// A table pulled out of a file, as a typed value the model fills cell by cell. Guided generation
+/// is what makes this worth doing on a small model at all: a table asked for as text comes back
+/// with a missing separator row or a stray sentence after it often enough to be useless, and a
+/// typed schema cannot.
+@available(macOS 26, *)
+@Generable struct GeneratedTableRow {
+    @Guide(description: "the cell values, one per column, in header order") var cells: [String]
+}
+
 @available(macOS 26, *)
 @Generable struct GeneratedTable {
     @Guide(description: "the column headers") var headers: [String]
     @Guide(description: "the data rows") var rows: [GeneratedTableRow]
+}
+
+/// One topic and the category it was put in. A pair rather than two lists, because two lists let
+/// the model return four topics and three categories, and nothing downstream could tell which was
+/// missing.
+@available(macOS 26, *)
+@Generable struct GeneratedTopicGroup {
+    @Guide(description: "the topic, copied exactly as it was given to you") var topic: String
+    @Guide(description: "the category it belongs to") var category: String
+}
+
+@available(macOS 26, *)
+@Generable struct GeneratedTopicGroups {
+    @Guide(description: "one entry for each topic you were given") var groups: [GeneratedTopicGroup]
+}
+
+/// The three short facts a file manager can act on: what kind of thing a file is, what it is
+/// about, and the date it concerns. Guided generation, so each comes back as its own value rather
+/// than as a sentence something would have to parse — and `date` can come back empty, which is
+/// what a model should do when a document has no date rather than inventing one.
+@available(macOS 26, *)
+@Generable struct GeneratedFacts {
+    @Guide(description: "exactly one of the categories you were given, copied as written")
+    var kind: String
+    @Guide(description: "two or three words naming what this file is about, lower case, no punctuation")
+    var topic: String
+    @Guide(description: "the document's own full date as YYYY-MM-DD, only if it states day, month and year; otherwise empty")
+    var date: String
+}
+
+/// Where one file belongs when a folder is tidied up. The subfolder is a plain name and never a
+/// path: the caller creates it inside the folder being organised, so a model that answered with
+/// a path would be proposing a move out of it.
+@available(macOS 26, *)
+/// The folders a whole batch should be sorted into, chosen before any file is assigned.
+///
+/// Asking per file with a growing list of "folders chosen so far" was measured to fail in both
+/// directions at once: for the first file the model answered with that file's own base name, and
+/// the instruction to prefer an existing folder then pulled every other file into it — one folder
+/// for four unrelated documents, named after one of them. Choosing the categories while looking at
+/// the whole set is what makes them categories.
+@available(macOS 26, *)
+@Generable struct GeneratedFolders {
+    @Guide(description: "two to six short folder names, each one path component, in the language of the file names")
+    var folders: [String]
+}
+
+@available(macOS 26, *)
+@Generable struct GeneratedFolder {
+    @Guide(description: "the subfolder name, one path component, no slashes")
+    var subfolder: String
+    @Guide(description: "a few words saying why, in the language of the file name")
+    var reason: String
 }
 
 /// A conversation that drives the file manager via the on-device Apple model using
@@ -847,65 +389,45 @@ struct NTSummarizeFile: Tool {
 @available(macOS 26, *)
 public actor AppleNativeToolSession {
     private let ctx: NativeToolContext
-    private let instructions: String
-    private var llm: LanguageModelSession
-    /// The tool names the session was built with, so a policy change can be recognised as
-    /// one that changes the offered set (and only then costs a rebuild).
-    private var offeredTools: [String]
-    private let onPartial: (@Sendable (String) async -> Void)?
 
-    public init(core: AutomationCore, policy: PermissionPolicy, instructions: String,
+    /// A session for the direct actions. The model is offered no tools, ever.
+    ///
+    /// This used to be one of two initialisers; the other built a chat that handed the model
+    /// thirty-two tools, and their schemas were what the window went on. Measured on macOS 26.4:
+    /// 3442 of 4096 tokens, leaving 473 for the file, the question and the answer together — so
+    /// it could not read a 4 KB slice. Each direct action is instead one generation over one
+    /// file's text, and the window is the file's.
+    ///
+    /// Reading still goes through the Automation Core, so the policy and the audit log apply as
+    /// they always did; it is simply the caller that decides to read, not the model.
+    public init(directActionsOn core: AutomationCore, policy: PermissionPolicy,
                 broker: ConfirmationBroker? = nil,
                 onProgress: (@Sendable (String) async -> Void)? = nil,
-                onPartial: (@Sendable (String) async -> Void)? = nil,
                 summaryStore: SummaryStore? = nil) {
         let ctx = NativeToolContext(core: core, policy: policy, broker: broker,
                                     onProgress: onProgress, summaryStore: summaryStore)
         self.ctx = ctx
-        self.instructions = instructions
-        self.onPartial = onPartial
-        let tools = Self.makeTools(ctx, policy: policy)
-        self.offeredTools = tools.map(\.name)
-        self.llm = LanguageModelSession(tools: tools, instructions: instructions)
-    }
-
-    /// Apply a new policy. A tool the session may not use is not offered to the model at
-    /// all: offering it produces a round of attempts answered with "Refused", and on a model
-    /// with a few thousand tokens of context those rounds are the budget for the real answer.
-    /// The transcript carries over, so the conversation is not restarted for a setting change.
-    public func setPolicy(_ p: PermissionPolicy) {
-        ctx.policy = p
-        let tools = Self.makeTools(ctx, policy: p)
-        let names = tools.map(\.name)
-        guard names != offeredTools else { return }
-        offeredTools = names
-        llm = LanguageModelSession(tools: tools, transcript: llm.transcript)
-    }
-
-    /// Produce a well-formed Markdown table from data IN the instruction via guided
-    /// generation (constrained decoding fills a typed schema — always valid). Uses a
-    /// fresh tool-less session: guided generation + tool-calling don't mix reliably
-    /// (the model returns prose after a tool call), so reading happens separately.
-    public func generateMarkdownTable(_ instruction: String) async throws -> String {
-        let session = LanguageModelSession(instructions: "You produce structured tabular data.")
-        let t = try await session.respond(to: instruction, generating: GeneratedTable.self).content
-        var md = "| " + t.headers.joined(separator: " | ") + " |\n"
-        md += "| " + t.headers.map { _ in "---" }.joined(separator: " | ") + " |\n"
-        for r in t.rows { md += "| " + r.cells.joined(separator: " | ") + " |\n" }
-        return md
     }
 
     /// Read a file and propose a name for it, as data rather than prose.
     public func suggestFileName(path: String) async throws -> (newName: String, reason: String) {
-        let raw = await ctx.runRaw("read_file", ["path": path, "max_bytes": NativeToolContext.readBudget])
-        let content = NativeToolContext.readContent(raw)
+        let content = await readable(path, maxBytes: NativeToolContext.readBudget)
         let current = (path as NSString).lastPathComponent
+        // Named, not described. A German invoice was proposed "Repair_Bill_4711.txt" with the
+        // language left implicit — the same failure the folding code measured four times out of
+        // four before it started naming the language outright.
+        let language = NativeToolContext.languageName(of: content)
         let session = LanguageModelSession(
             instructions: "You name files. Keep the existing extension. Use only characters that "
-                + "are safe in a file name, and no path.")
+                + "are safe in a file name, and no path. Keep it short — a few words, not a "
+                + "summary of the contents."
+                + NativeToolContext.languageClause(language)
+                + (language == nil ? "" : " Name the file in that language."))
         let out = try await session.respond(
             to: "The file is currently called \"\(current)\". Propose a clearer, descriptive name "
-                + "based on what it contains.\n\nContents (may be truncated):\n\(content)",
+                + "based on what it contains. Do not keep any part of the current name unless it "
+                + "already says something about the contents — \"scan_0042\" does not.\n\n"
+                + "Contents (may be truncated):\n\(content)",
             generating: GeneratedName.self).content
         return (Self.sanitize(name: out.newName, fallbackFrom: current), out.reason)
     }
@@ -927,239 +449,290 @@ public actor AppleNativeToolSession {
         return String(candidate.prefix(200))
     }
 
-    /// Read a file through the core, then guided-generate a Markdown table from its
-    /// contents — the two reliable steps combined (used by the "Make a table" action).
-    public func tabulateFile(path: String) async throws -> String {
-        let raw = await ctx.run("read_file", ["path": path])
-        let content: String
-        if let d = raw.data(using: .utf8),
-           let o = try? JSONSerialization.jsonObject(with: d) as? [String: Any],
-           let c = o["content"] as? String { content = c } else { content = raw }
-        return try await generateMarkdownTable("Turn the following data into a Markdown table.\n\nData:\n\(content)")
-    }
 
-    /// Why a turn failed. Every FoundationModels error used to reach the user as one
-    /// catch-all "invalid tool call" message, which told them to rephrase even when the
-    /// cause was a full context window or a model that hadn't finished downloading —
-    /// and the raw cause was logged only in DEBUG builds, so a shipped build gave no
-    /// way to tell those apart. Each kind now has its own message and retry answer.
-    private enum TurnFailure {
-        case inputRejected   // the input guardrail refused the prompt as sent
-        case badToolCall     // the model's tool arguments didn't deserialize
-        case contextFull     // the conversation no longer fits the window
-        case modelNotReady   // assets missing / still downloading
-        case rateLimited
-        case busy            // a request is already running on this session
-        case refused         // the model declined to answer
-        case unknown
-    }
-
-    private static func classify(_ error: Error) -> TurnFailure {
-        guard let e = error as? LanguageModelSession.GenerationError else { return .unknown }
-        switch e {
-        // Both arrive when the guardrail rejects the *input*: the locale case is what a
-        // path-dominated prompt trips, whatever language the user actually wrote in.
-        case .unsupportedLanguageOrLocale, .guardrailViolation: return .inputRejected
-        case .decodingFailure, .unsupportedGuide:               return .badToolCall
-        case .exceededContextWindowSize:                        return .contextFull
-        case .assetsUnavailable:                                return .modelNotReady
-        case .rateLimited:                                      return .rateLimited
-        case .concurrentRequests:                               return .busy
-        case .refusal:                                          return .refused
-        @unknown default:                                       return .unknown
-        }
-    }
-
-    private static func message(for failure: TurnFailure) -> String {
-        // Localized like every other user-facing text in the app: these are read by the person
-        // in front of the chat, and the chat around them speaks their language. `String(localized:)`
-        // resolves in the main bundle, which is the app whose catalogue holds these keys.
-        switch failure {
-        case .inputRejected:
-            return String(localized: "The on-device model refused that request before answering. Ask in plain words, or switch to a cloud model in Settings ▸ AI.",
-                          comment: "AI: the on-device input guardrail rejected the prompt")
-        case .badToolCall:
-            return String(localized: "I couldn’t do that reliably — the on-device model called a tool incorrectly. Try one step at a time, or switch to a cloud model in Settings ▸ AI.",
-                          comment: "AI: the model produced an invalid tool call")
-        case .contextFull:
-            return String(localized: "This conversation is too long for the on-device model. Start a new chat, or switch to a cloud model in Settings ▸ AI.",
-                          comment: "AI: the model's context window is full")
-        case .modelNotReady:
-            return String(localized: "Apple Intelligence isn’t ready yet — the on-device model is still downloading. Try again shortly.",
-                          comment: "AI: the on-device model is unavailable")
-        case .rateLimited:
-            return String(localized: "The on-device model is busy right now. Please try again in a moment.",
-                          comment: "AI: the model is rate-limited")
-        case .busy:
-            return String(localized: "A request is still running in this chat. Wait for it, or press Stop.",
-                          comment: "AI: a request is already in flight")
-        case .refused:
-            return String(localized: "The on-device model declined to answer that.",
-                          comment: "AI: the model refused")
-        case .unknown:
-            return String(localized: "I couldn’t do that — the on-device model failed unexpectedly. Try again, or switch to a cloud model in Settings ▸ AI.",
-                          comment: "AI: an unexpected model failure")
-        }
-    }
-
-    /// Send a user message and run the whole native tool loop to a final answer,
-    /// streaming the growing answer text through `onPartial` (cumulative snapshots).
-    /// The small on-device model can throw or return an empty answer, so a turn gets a
-    /// second attempt — but only where a second attempt can change the outcome.
-    public func send(_ text: String) async throws -> String {
-        var failure: TurnFailure?
-        var prompt = text
-        for attempt in 0..<2 {
-            do {
-                var final = ""
-                var snapshots = 0
-                for try await partial in llm.streamResponse(to: prompt) {
-                    final = partial.content
-                    snapshots += 1
-                    await onPartial?(final)
-                }
-                #if DEBUG
-                NSLog("[native] streamed %d snapshots (attempt %d)", snapshots, attempt + 1)
-                #endif
-                if !final.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return final }
-                failure = nil   // an empty answer is not an error; retry once
-            } catch {
-                let kind = Self.classify(error)
-                failure = kind
-                // Always logged, not just in DEBUG: this is the only record of WHY a turn
-                // failed, and the user-facing message is deliberately coarse.
-                Self.log.error("on-device turn failed (attempt \(attempt + 1, privacy: .public)): \(String(describing: error), privacy: .public)")
-                switch kind {
-                case .inputRejected:
-                    // Resending the same text is refused the same way every time; the one
-                    // thing that can change the verdict is different text. It is the paths
-                    // in the composed header that read as non-natural language, so retry
-                    // with those reduced to names — the model keeps what it needs and has
-                    // get_context for the exact paths.
-                    let safe = ChatComposer.stripPaths(prompt)
-                    guard safe != prompt, !safe.isEmpty else { return Self.message(for: kind) }
-                    prompt = safe
-                case .contextFull:
-                    // The window is full, not the conversation over. Fold what was said so far
-                    // into a short summary, start a session that holds it, and ask again — the
-                    // alternative is telling the user to abandon a chat they are in the middle of.
-                    guard attempt == 0, await compactTranscript() else {
-                        return Self.message(for: kind)
-                    }
-                case .modelNotReady, .busy, .refused:
-                    return Self.message(for: kind)   // a retry cannot change these
-                case .badToolCall, .rateLimited, .unknown:
-                    break                            // a retry may
-                }
-            }
-        }
-        // Failed even after the second attempt: report the kind, and don't abort the chat.
-        if let failure { return Self.message(for: failure) }
-        return ""
-    }
-
-    /// Start the session over, carrying a summary of the conversation instead of all of it.
+    /// Summarise a whole file, however long it is, and keep the result for the AI column.
     ///
-    /// What fills the window is mostly *tool output* — the file contents the model read — and
-    /// none of that is worth carrying: the conclusions drawn from it are in the answers. So the
-    /// recovery is the fresh session; the summary is what keeps the thread. Returns false only
-    /// when there is nothing left to drop, i.e. the very first turn was itself too large, where
-    /// saying so is more use than trying the same thing again.
-    private func compactTranscript() async -> Bool {
-        let transcript = llm.transcript
-        let said = Self.spokenText(of: transcript)
-        // A transcript of just the instructions and the prompt that failed: nothing to drop.
-        guard transcript.count > 2 else { return false }
-        var carried = ""
-        if said.count > 200 {
-            let summary = await NativeToolContext.summarize(conversation: said)
-            // Summarising something short can make it longer; then it is not a summary.
-            if !summary.isEmpty, summary.count < said.count { carried = summary }
+    /// The folding itself lives on the context, because it needs the read tool and the summary
+    /// store. This is the way in from outside the module: the chat reaches the folding through
+    /// the `summarize_file` tool, and a direct action has no tools to reach it through.
+    public func summarize(file path: String) async -> String {
+        // A picture has no slices to fold: what there is to say about it fits in one description,
+        // and reading a JPEG's bytes as text produces mojibake for a model to hallucinate over.
+        guard !DirectActionPlan.isImage((path as NSString).lastPathComponent) else {
+            let described = await readable(path, maxBytes: NativeToolContext.readBudget)
+            guard !described.isEmpty else { return "" }
+            let language = NativeToolContext.languageName(of: described)
+            return await NativeToolContext.generate(
+                "Say in two or three sentences what this picture is and what it shows."
+                + NativeToolContext.languageClause(language)
+                + "\n\n" + described)
         }
-        Self.log.notice("compacted transcript (\(transcript.count, privacy: .public) entries, \(said.count, privacy: .public) chars said → \(carried.count, privacy: .public) carried)")
-        let tools = Self.makeTools(ctx, policy: ctx.policy)
-        offeredTools = tools.map(\.name)
-        llm = LanguageModelSession(
-            tools: tools,
-            instructions: carried.isEmpty ? instructions
-                                          : instructions + "\n\nEarlier in this conversation: " + carried)
-        return true
+        return await ctx.summarizeWholeFile(path: path)
     }
 
-    /// What was actually said — the user's prompts and the model's answers, in order. Tool
-    /// calls and their output are left out: they are the bulk of the transcript and the least
-    /// worth carrying, since the conclusions drawn from them are in the answers.
-    static func spokenText(of transcript: Transcript) -> String {
-        var lines: [String] = []
-        for entry in transcript {
-            switch entry {
-            case .prompt(let p):
-                lines.append("User: " + text(of: p.segments))
-            case .response(let r):
-                lines.append("Assistant: " + text(of: r.segments))
-            case .instructions, .toolCalls, .toolOutput:
-                continue
-            @unknown default:
-                continue
-            }
+    /// The text an action should reason about: the file's own text, or — for a picture — the words
+    /// Vision could read on it and what it appears to show.
+    ///
+    /// This is the whole of image understanding, and it is deliberately not a new action. Apple
+    /// Intelligence is text-only, so a picture becomes readable by being described first; once it
+    /// is, every action that already asks "what is this file" works on a scan or a photograph with
+    /// nothing else changed. Naming, commenting, explaining and classifying all came for free.
+    ///
+    /// A picture with nothing on it and nothing recognisable in it comes back empty, and the
+    /// caller treats that as it treats an empty file.
+    func readable(_ path: String, maxBytes: Int) async -> String {
+        guard DirectActionPlan.isImage((path as NSString).lastPathComponent) else {
+            let raw = await ctx.runRaw("read_file", ["path": path, "max_bytes": maxBytes])
+            return raw.hasPrefix("Failed:") || raw.hasPrefix("Refused:")
+                ? "" : NativeToolContext.readContent(raw)
         }
-        return lines.joined(separator: "\n")
+        let raw = await ctx.runRaw("describe_image", ["path": path])
+        guard let data = raw.data(using: .utf8),
+              let described = try? JSONDecoder().decode(ImageDescription.self, from: data),
+              !described.isEmpty else { return "" }
+        var parts: [String] = []
+        // The words first and unlabelled, for two reasons. A scan is a document that happens to be
+        // pixels, and a model handed "beach, sand" above an invoice's text names the file after the
+        // beach. And the caller works out the language from this string: an English scaffolding
+        // sentence in front of German text was enough to make it name a German invoice "receipt".
+        if !described.text.isEmpty {
+            parts.append(String(described.text.prefix(maxBytes)))
+        }
+        // Kept even when there is text. Suppressing them looked right — a scanned invoice's own
+        // words should outweigh "document, text" — and made the classification measurably WORSE,
+        // one run in four instead of two in three. The labels are apparently what tells the model
+        // it is looking at a page rather than at prose.
+        if !described.labels.isEmpty {
+            parts.append("[" + described.labels.joined(separator: ", ") + "]")
+        }
+        return parts.joined(separator: "\n\n")
     }
 
-    private static func text(of segments: [Transcript.Segment]) -> String {
-        segments.compactMap { if case .text(let t) = $0 { return t.content } else { return nil } }
-            .joined(separator: " ")
+    /// How much of a file one read takes in. Public because a caller showing a partial result has
+    /// to be able to say how partial it is, and "the beginning" is not an answer somebody can act on.
+    public static var readSliceBytes: Int { NativeToolContext.readBudget }
+
+    /// Read the beginning of a file and pull a table out of it.
+    ///
+    /// One slice, and that bound is the honest part: a 4096-token window holds a few dozen rows,
+    /// not a database export. A log, a measurement series or a CSV somebody exported badly is
+    /// exactly the size this helps with, and the caller is told how much was read so it can say so.
+    ///
+    /// Guided generation and no tools, like every other direct action — the table arrives as cells
+    /// rather than as text that has to be parsed back into cells.
+    public func tabulate(file path: String) async throws -> (table: DirectActionPlan.Table, truncated: Bool) {
+        // Through `readable`, so a screenshot of a table is a table: Vision reads the cells and the
+        // model arranges them. That is the case this is most useful for — a picture of a table is
+        // the one shape a file manager cannot do anything with otherwise.
+        let content = await readable(path, maxBytes: NativeToolContext.readBudget)
+        guard !content.isEmpty else { return (DirectActionPlan.Table(headers: [], rows: []), false) }
+        let truncated = DirectActionPlan.isImage((path as NSString).lastPathComponent)
+            ? false
+            : NativeToolContext.readWasTruncated(
+                await ctx.runRaw("stat_path", ["path": path])) || content.utf8.count >= NativeToolContext.readBudget
+        let language = NativeToolContext.languageName(of: content)
+        let session = LanguageModelSession(
+            instructions: "You turn data into a table. Use the column names the data itself uses, "
+                + "and take the values from the data — never invent a row."
+                + NativeToolContext.languageClause(language))
+        let out = try await session.respond(
+            to: "Turn the following into a table.\n\n\(content)",
+            generating: GeneratedTable.self).content
+        return (DirectActionPlan.table(headers: out.headers, rows: out.rows.map(\.cells)), truncated)
+    }
+
+    /// What this file *is* — as opposed to what it says, which is `summarize(file:)`.
+    ///
+    /// Two menu entries used to run the same code, which is a defect and not a nuance. The
+    /// distinction that earns them both: a summary is for prose and reads the whole file; this
+    /// answers "what is this and what would I use it for" from the opening alone, which is the
+    /// right question for a config file, a script or a data dump — the cases where a summary of
+    /// the text is the wrong shape of answer entirely.
+    ///
+    /// One slice, one generation. No folding: the answer does not get better for having seen
+    /// page nine.
+    public func explain(file path: String) async throws -> String {
+        let content = await readable(path, maxBytes: NativeToolContext.readBudget)
+        let current = (path as NSString).lastPathComponent
+        let language = NativeToolContext.languageName(of: content)
+        let session = LanguageModelSession(
+            instructions: "You say what a file is and what someone would use it for, in three "
+                + "sentences at most. Describe its kind and purpose, not its contents line by "
+                + "line. If it is configuration, code or data, say what it configures, does or "
+                + "records." + NativeToolContext.languageClause(language))
+        return try await session.respond(
+            to: "The file is called \"\(current)\". What is it, and what would someone use it "
+                + "for?\n\nIt begins:\n\(content)").content
+    }
+
+    /// Propose a comment and tags for a file, from what it says rather than what it is called.
+    ///
+    /// One slice, not the whole file: a comment says what a document *is*, and that is settled in
+    /// its opening. Folding a long file here would cost a generation per 4 KB for a sentence.
+    public func suggestComment(path: String) async throws -> (comment: String, tags: [String]) {
+        let content = await readable(path, maxBytes: NativeToolContext.readBudget)
+        let current = (path as NSString).lastPathComponent
+        // The language NAMED, not described. Measured in the folding code next door: asking for
+        // "the same language as the text" gave an English answer to a German file four times out
+        // of four, and naming the language is what this model follows.
+        let language = NativeToolContext.languageName(of: content)
+        let session = LanguageModelSession(
+            instructions: "You describe a file in one short sentence."
+                + NativeToolContext.languageClause(language))
+        let out = try await session.respond(
+            to: "The file is called \"\(current)\". Write a one-sentence comment saying what it "
+                + "is for, and up to four short tags.\n\nContents (may be truncated):\n\(content)",
+            generating: GeneratedComment.self).content
+        return (out.comment.trimmingCharacters(in: .whitespacesAndNewlines),
+                DirectActionPlan.sanitize(tags: out.tags))
+    }
+
+    /// The folders a folder-tidy should use, chosen once while looking at every name.
+    ///
+    /// One generation for the whole batch. The language is left to the names themselves rather than
+    /// detected: `NLLanguageRecognizer` on a list of file names is guessing at tokens, not reading
+    /// prose — asked about "dokument1.txt dokument2.txt notizen.txt" it answered Polish, and every
+    /// category came back as "tekstowe".
+    ///
+    /// What comes back is filtered by `DirectActionPlan`:
+    /// a name that is really one of the files is not a category, and two spellings of one folder
+    /// are one folder.
+    public func proposeFolders(forNames names: [String]) async throws -> [String] {
+        // Every clause here answers a measured failure. "As few as sensibly possible" alone made
+        // the model answer with the file names for a set of two — both were then dropped as
+        // non-categories and the action reported that nothing groups at all. Naming a KIND, being
+        // told the count, and being forbidden the file names is what produces categories.
+        let session = LanguageModelSession(
+            instructions: "You group files into folders by what KIND of thing they are — Invoices, "
+                + "Photos, Contracts. A folder name is a category, never the name of a document. "
+                + "Answer with folder names only: no paths, and never a file name. Name the "
+                + "folders in the same language as the file names you are given.")
+        let out = try await session.respond(
+            to: "Propose folders for these \(names.count) files. Use FEWER folders than there are "
+                + "files — a folder holding one file has grouped nothing. One folder for all of "
+                + "them is a fine answer when they are all the same kind.\n\n"
+                + names.joined(separator: "\n"),
+            generating: GeneratedFolders.self).content
+        let usable = DirectActionPlan.usableFolders(out.folders, fileNames: names)
+        guard usable.isEmpty else { return usable }
+
+        // Everything came back as a file name, so nothing survived the filter and the action would
+        // report that a folder full of related documents groups into nothing. On a small set this
+        // happens intermittently — the same two files pass one run and fail the next — so it is
+        // worth one blunter second ask rather than a shrug.
+        let retry = try await session.respond(
+            to: "Do not repeat the file names. Name the KIND of thing these \(names.count) files "
+                + "are — one or two words, like Invoices or Photos. One category for all of them "
+                + "is a fine answer.\n\n" + names.joined(separator: "\n"),
+            generating: GeneratedFolders.self).content
+        let second = DirectActionPlan.usableFolders(retry.folders, fileNames: names)
+        guard second.isEmpty else { return second }
+        // Neither ask produced a category. If the names all begin with the same word, that word is
+        // the category and no model is needed to see it.
+        return DirectActionPlan.commonPrefixCategory(of: names).map { [$0] } ?? []
+    }
+
+    /// What this file is, is about, and is dated — in one generation.
+    ///
+    /// The kind is chosen from a closed list the caller worked out over the whole selection, for
+    /// the same reason folders are: categories only exist relative to a set, and a model asked
+    /// per file invents a new one each time. Topic and date are per file by nature, and asking for
+    /// all three together is what keeps this at one generation per file instead of three.
+    public func facts(forFile path: String, among kinds: [String]) async throws -> AIFileFacts {
+        let name = (path as NSString).lastPathComponent
+        let peek = await readable(path, maxBytes: 1024)
+        let language = NativeToolContext.languageName(of: peek.isEmpty ? name : peek)
+        let session = LanguageModelSession(
+            instructions: "You describe a file in a few words so it can be filed and renamed. "
+                + "Give a category from the list you are handed, a short topic, and the document's "
+                + "own date ONLY if it states a full day, month and year. \"Summer 2023\" or "
+                + "\"March\" is not a date — answer with nothing rather than filling in a day. "
+                + "Never today's date, and never a guess."
+                + NativeToolContext.languageClause(language))
+        // With no categories on offer, the categories are not mentioned at all. Writing
+        // "Categories: none" put the word *none* into the answer — as the topic, on its way into a
+        // file name — because a small model given a field and no options fills it with what it saw.
+        let offered = kinds.isEmpty ? "Leave the category empty.\n\n"
+                                    : "Categories: \(kinds.joined(separator: ", "))\n\n"
+        // No special pleading for scans here. Handed a category list and a ".png", this model
+        // answers "Photos" for a scanned invoice however it is asked — and the Classify action
+        // never hands it one: it asks for topic and date with no categories at all, then works the
+        // categories out from the topics afterwards. The topic for a scan is reliable, and that is
+        // the value this path is asked for.
+        let out = try await session.respond(
+            to: offered + "The file is called \"\(name)\"."
+                + (peek.isEmpty ? "" : "\n\nIt begins:\n\(peek)"),
+            generating: GeneratedFacts.self).content
+        // The date is checked against the text rather than taken on trust — see `dateSupported`.
+        let date = DirectActionPlan.sanitize(date: out.date)
+        return AIFileFacts(kind: DirectActionPlan.snap(out.kind, to: kinds) ?? "",
+                           topic: DirectActionPlan.sanitize(topic: out.topic),
+                           date: DirectActionPlan.dateSupported(date, by: peek) ? date : "")
+    }
+
+    /// Group topics into categories, and say which topic went where — in one generation.
+    ///
+    /// Two earlier shapes failed measurably. Proposing categories from FILE NAMES gave "Dokument"
+    /// for everything, because `dokument1.txt` carries no meaning. Proposing them from the topics
+    /// and then matching by string gave English categories for German topics ("Financial" for
+    /// "rechnung") — and even in one language a category is a synonym of its members, not a
+    /// substring of them, so no amount of matching would have joined them.
+    ///
+    /// So the model does the assigning as well, and the language is NAMED from the topics, which
+    /// are words taken from the files' own contents and therefore worth detecting on.
+    public func groupTopics(_ topics: [String]) async throws -> [String: String] {
+        let unique = Array(Set(topics.filter { !DirectActionPlan.isPlaceholder($0) })).sorted()
+        guard unique.count > 1 else { return [:] }
+        let language = NativeToolContext.languageName(of: unique.joined(separator: " "))
+        let session = LanguageModelSession(
+            instructions: "You sort topics into a few categories and say which topic went where. "
+                + "Use fewer categories than there are topics. A category is a kind of document — "
+                + "Invoices, Contracts, Travel — never a copy of one topic."
+                + NativeToolContext.languageClause(language)
+                + (language == nil ? "" : " Name the categories in that language."))
+        let out = try await session.respond(
+            to: "Sort these \(unique.count) topics into categories:\n\n"
+                + unique.joined(separator: "\n"),
+            generating: GeneratedTopicGroups.self).content
+
+        var mapping: [String: String] = [:]
+        for pair in out.groups {
+            // The model is asked to echo the topic; snapping puts a paraphrase back on the one it
+            // meant, and drops an answer that resembles none of them.
+            guard let topic = DirectActionPlan.snap(pair.topic, to: unique) else { continue }
+            let category = DirectActionPlan.sanitize(folder: pair.category, matching: [])
+            guard !category.isEmpty, !DirectActionPlan.isPlaceholder(category) else { continue }
+            mapping[topic] = category
+        }
+        return mapping
+    }
+
+    /// Which of `folders` this file belongs in, or an empty name when none of them fits.
+    ///
+    /// A closed list, deliberately: the model choosing from names it can see is the thing small
+    /// models are good at, and it is what stops the answer being a fresh near-synonym per file.
+    public func assignFolder(forFile path: String,
+                             among folders: [String]) async throws -> (subfolder: String, reason: String) {
+        guard !folders.isEmpty else { return ("", "") }
+        let name = (path as NSString).lastPathComponent
+        // A peek, not a read: the name carries most of the signal, and the rest is what rescues
+        // "scan001.pdf" from being sorted by its number.
+        let peek = await readable(path, maxBytes: 1024)
+        let session = LanguageModelSession(
+            instructions: "You file documents. Choose exactly one of the folders you are given, "
+                + "copying its name as written. If none of them fits, answer with an empty name.")
+        let out = try await session.respond(
+            to: "Folders: \(folders.joined(separator: ", "))\n\n"
+                + "Which one does \"\(name)\" belong in?"
+                + (peek.isEmpty ? "" : "\n\nIt begins:\n\(peek)"),
+            generating: GeneratedFolder.self).content
+        // Snapped to the list rather than trusted: an answer nothing in the list resembles means
+        // "none fits", and a file that stays where it is beats a folder nobody asked for.
+        let cleaned = DirectActionPlan.sanitize(folder: out.subfolder, matching: folders)
+        return (DirectActionPlan.snap(cleaned, to: folders) ?? "", out.reason)
     }
 
     private static let log = Logger(subsystem: "com.peachcommander", category: "AI")
 }
 
-@available(macOS 26, *)
-extension AppleNativeToolSession: NativeTurnRunner {
-    public func runTurn(_ text: String, policy: PermissionPolicy) async throws -> String {
-        #if DEBUG
-        NSLog("[native] runTurn (native tool-calling path)")
-        #endif
-        setPolicy(policy)
-        return try await send(text)
-    }
-
-    public func makeTable(fromFile path: String) async throws -> String? {
-        try await tabulateFile(path: path)
-    }
-
-    public func suggestName(forFile path: String) async throws -> (newName: String, reason: String)? {
-        try await suggestFileName(path: path)
-    }
-
-    /// Every native tool, in catalogue order. `summarize_file` is the one that has no
-    /// catalogue entry: summarising needs a model, and the Automation Core deliberately has
-    /// none — so it is a capability of this session, gated as the read it is built from.
-    static func allTools(_ ctx: NativeToolContext) -> [any Tool] {
-        [NTGetContext(ctx: ctx), NTListDirectory(ctx: ctx), NTStatPath(ctx: ctx), NTReadFile(ctx: ctx),
-         NTSummarizeFile(ctx: ctx), NTHashFile(ctx: ctx), NTSemanticSearch(ctx: ctx), NTSearch(ctx: ctx),
-         NTFindFiles(ctx: ctx),
-         NTGetConfig(ctx: ctx), NTRemember(ctx: ctx), NTRecall(ctx: ctx),
-         NTGetComment(ctx: ctx), NTRecentActions(ctx: ctx), NTListCommands(ctx: ctx), NTListPlugins(ctx: ctx),
-         NTOpenPath(ctx: ctx), NTOpenInPanel(ctx: ctx), NTSetSelection(ctx: ctx),
-         NTCopy(ctx: ctx), NTMove(ctx: ctx), NTRename(ctx: ctx), NTMakeDirectory(ctx: ctx),
-         NTRenameBatch(ctx: ctx),
-         NTWriteFile(ctx: ctx), NTMergeFiles(ctx: ctx), NTSetComment(ctx: ctx),
-         NTSetConfig(ctx: ctx), NTMoveToTrash(ctx: ctx), NTDeletePermanently(ctx: ctx),
-         NTUndoLast(ctx: ctx), NTRunCommand(ctx: ctx), NTRunShell(ctx: ctx)]
-    }
-
-    /// The tools `policy` permits. The capability comes from `AutomationCatalog`, so the
-    /// native path and the text/MCP paths gate on the same declaration rather than on two
-    /// lists that can drift apart.
-    static func makeTools(_ ctx: NativeToolContext, policy: PermissionPolicy) -> [any Tool] {
-        allTools(ctx).filter { policy.permits(capability(of: $0.name)) }
-    }
-
-    /// `summarize_file` reads, and nothing else; everything else is declared.
-    static func capability(of toolName: String) -> Capability {
-        if toolName == "summarize_file" { return .read }
-        return AutomationCatalog.tool(named: toolName)?.capability ?? .read
-    }
-}
 #endif

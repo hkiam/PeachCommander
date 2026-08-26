@@ -38,6 +38,21 @@ public struct AutomationCommandInfo: Sendable, Equatable {
     public static let unknown = AutomationCommandInfo(capability: .write)
 }
 
+/// What Vision could make of a picture. Text first, because a scan or a screenshot is a document
+/// that happens to be stored as pixels, and its words are what a file manager can act on; the
+/// labels are the fallback for a photograph, which has none.
+public struct ImageDescription: Codable, Sendable, Equatable {
+    /// The text found on the image, in reading order.
+    public var text: String
+    /// What the image appears to show, most confident first — "beach", "document", "cat".
+    public var labels: [String]
+    public init(text: String = "", labels: [String] = []) {
+        self.text = text
+        self.labels = labels
+    }
+    public var isEmpty: Bool { text.isEmpty && labels.isEmpty }
+}
+
 public protocol AutomationHostBridge: Sendable {
     // Context / reads
     func context() async throws -> AutomationContext
@@ -121,6 +136,12 @@ public protocol AutomationHostBridge: Sendable {
     /// about all of them.
     func getComment(_ path: String) async throws -> String?
     func setComment(_ path: String, comment: String?) async throws
+    /// The macOS Finder tags on `path`.
+    func getTags(_ path: String) async throws -> [String]
+    /// What is in a picture: the text on it, and what it appears to show. Vision, on-device.
+    func describeImage(_ path: String) async throws -> ImageDescription
+    /// Replace the Finder tags on `path`. An empty list removes them.
+    func setTags(_ path: String, tags: [String]) async throws
 }
 
 public extension AutomationHostBridge {
@@ -159,6 +180,9 @@ public extension AutomationHostBridge {
     }
     func getComment(_ path: String) async throws -> String? { throw AutomationError.notImplemented("get_comment") }
     func setComment(_ path: String, comment: String?) async throws { throw AutomationError.notImplemented("set_comment") }
+    func getTags(_ path: String) async throws -> [String] { throw AutomationError.notImplemented("get_tags") }
+    func describeImage(_ path: String) async throws -> ImageDescription { throw AutomationError.notImplemented("describe_image") }
+    func setTags(_ path: String, tags: [String]) async throws { throw AutomationError.notImplemented("set_tags") }
 }
 
 public extension AutomationHostBridge {

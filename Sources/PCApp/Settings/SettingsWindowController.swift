@@ -357,10 +357,14 @@ public final class SettingsWindowController: NSWindowController {
     private let aiCloudKeyField = NSSecureTextField()
     private let aiModelPrefPopup = NSPopUpButton()
     private let aiSystemPromptView = NSTextView()
+    /// What the CHAT uses. The stored values are unchanged so an existing configuration keeps
+    /// meaning what it meant, but the labels no longer promise an on-device chat: that path was
+    /// measured to leave 473 of 4096 tokens for the conversation and is now the AI On-Device
+    /// plugin, which has no chat and offers the model no tools at all.
     private let aiModelPrefs: [(raw: String, label: String)] = [
-        ("auto", String(localized: "Automatic (cloud if configured, else on-device)")),
-        ("local", String(localized: "On-device (Apple Intelligence)")),
-        ("cloud", String(localized: "Cloud (configured endpoint)")),
+        ("auto", String(localized: "The cloud endpoint below, when one is set")),
+        ("local", String(localized: "Nothing — leave the work to the AI On-Device plugin")),
+        ("cloud", String(localized: "The cloud endpoint below, always")),
     ]
     private let aiAutonomies: [(raw: String, label: String)] = [
         ("readonly", String(localized: "Read-only (analyze, never change)")),
@@ -1015,7 +1019,7 @@ public final class SettingsWindowController: NSWindowController {
         aiAllowShellCheck.action = #selector(aiChanged)
         aiAllowShellCheck.toolTip = String(localized: "Off by default. When on, the assistant may propose a command; it runs in a visible terminal tab and only after you approve the exact wording. Never offered to external agents over MCP.")
         aiCloudBaseField.stringValue = snapshot.aiCloudBase
-        aiCloudBaseField.placeholderString = "https://api.openai.com/v1  (empty = on-device)"
+        aiCloudBaseField.placeholderString = "https://api.openai.com/v1  ·  http://localhost:11434/v1"
         aiCloudBaseField.target = self; aiCloudBaseField.action = #selector(aiChanged)
         aiCloudModelField.stringValue = snapshot.aiCloudModel
         aiCloudModelField.target = self; aiCloudModelField.action = #selector(aiChanged)
@@ -1044,18 +1048,24 @@ public final class SettingsWindowController: NSWindowController {
         promptScroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 96).isActive = true
         promptScroll.widthAnchor.constraint(greaterThanOrEqualToConstant: 440).isActive = true
 
-        let note = NSTextField(wrappingLabelWithString: String(localized: "The assistant runs on-device with Apple Intelligence when available; set a Cloud endpoint to use an OpenAI-compatible model instead (the key is kept in the Keychain, never in config). The MCP server is local-only (127.0.0.1) and off by default; connect an external agent with a stdio bridge to the chosen port, optionally protected by a token. Write actions are always confirmed unless autonomy is raised."))
+        let note = NSTextField(wrappingLabelWithString: String(localized: "The AI On-Device plugin needs no settings: it uses Apple Intelligence and offers its actions in the AI ▸ menu. The chat needs an OpenAI-compatible endpoint — a cloud service, or a local server such as Ollama or LM Studio — and its key is kept in the Keychain, never in config. The MCP server is local-only (127.0.0.1) and off by default; connect an external agent with a stdio bridge to the chosen port, optionally protected by a token. Write actions are always confirmed unless autonomy is raised."))
         note.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         note.textColor = .secondaryLabelColor
+        // Grouped by which plugin a setting belongs to. One page, because there is one thing here a
+        // reader is looking for — and two pages for two halves of one feature would be worse than
+        // the unlabelled list this replaces.
         return makePageStack(rows: [
-            labeledRow(title: String(localized: "Preferred model:"), control: aiModelPrefPopup),
+            sectionLabel(String(localized: "Chat — the AI Assistant plugin")),
+            labeledRow(title: String(localized: "Chat model:"), control: aiModelPrefPopup),
             labeledRow(title: String(localized: "Cloud endpoint (base URL):"), control: aiCloudBaseField),
             labeledRow(title: String(localized: "Cloud model:"), control: aiCloudModelField),
             labeledRow(title: String(localized: "Cloud API key:"), control: aiCloudKeyField),
-            labeledRow(title: String(localized: "Assistant autonomy:"), control: aiAutonomyPopup),
-            aiAllowShellCheck,
             sectionLabel(String(localized: "Custom system prompt (optional):")),
             promptScroll,
+            sectionLabel(String(localized: "What either assistant may do")),
+            labeledRow(title: String(localized: "Assistant autonomy:"), control: aiAutonomyPopup),
+            aiAllowShellCheck,
+            sectionLabel(String(localized: "External agents")),
             aiMCPCheckbox,
             labeledRow(title: String(localized: "MCP server port:"), control: aiPortField),
             labeledRow(title: String(localized: "MCP auth token:"), control: aiTokenField),

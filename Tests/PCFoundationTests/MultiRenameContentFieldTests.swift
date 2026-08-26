@@ -30,6 +30,40 @@ final class MultiRenameContentFieldTests: XCTestCase {
         XCTAssertEqual(names, ["01_800 × 600.png", "02_640 × 480.png"])
     }
 
+    // MARK: - The AI fields as rename tokens
+    //
+    // The AI On-Device plugin's Classify action writes a kind, a topic and a date into a cache that
+    // the AI Column plugin serves as content fields. Nothing about renaming was built for that —
+    // `[=provider.field]` has always resolved through the content-field registry — which is exactly
+    // why it is worth a test: the feature is the composition, and a composition breaks silently.
+
+    func testAnAITopicIsARenameToken() {
+        let input = RenameInput(name: "dokument1.pdf", modified: epoch,
+                                fields: ["ai_column.ai_topic": "dachreparatur",
+                                         "ai_column.ai_date": "2024-03-12"])
+        let spec = RenameSpec(nameMask: "[=ai_column.ai_topic]-[=ai_column.ai_date]", extMask: "[E]")
+        XCTAssertEqual(MultiRenameEngine.compute([input], spec: spec).first?.newName,
+                       "dachreparatur-2024-03-12.pdf")
+    }
+
+    func testAnAIKindCombinesWithTheFilesOwnDate() {
+        // The mask carries the calendar tokens; the model only ever supplies the words. That split
+        // is the point — a date the file system knows is not a date a model should be inventing.
+        let input = RenameInput(name: "scan.png", modified: Date(timeIntervalSince1970: 1_700_000_000),
+                                fields: ["ai_column.ai_kind": "Rechnungen"])
+        let spec = RenameSpec(nameMask: "[=ai_column.ai_kind]-[Y]-[M]", extMask: "[E]")
+        XCTAssertEqual(MultiRenameEngine.compute([input], spec: spec).first?.newName,
+                       "Rechnungen-2023-11.png")
+    }
+
+    func testAFileTheAssistantKnowsNothingAboutKeepsItsName() {
+        // Classify skips what it cannot place, so a mask made of AI tokens has to degrade to
+        // something rather than produce a file called "-".
+        let input = RenameInput(name: "unknown.bin", modified: epoch, fields: [:])
+        let spec = RenameSpec(nameMask: "[=ai_column.ai_topic]", extMask: "[E]")
+        XCTAssertEqual(MultiRenameEngine.compute([input], spec: spec).first?.newName, ".bin")
+    }
+
     // MARK: - What an unresolved field placeholder does (F-172)
     //
     // The values behind `[=provider.field]` are fetched before the dialog opens, and that was capped at

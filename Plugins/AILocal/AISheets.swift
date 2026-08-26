@@ -23,6 +23,11 @@ enum AISheetProbe {
         ProcessInfo.processInfo.environment["PC_AI_DIRECT_APPLY"] == "1"
     }
 
+    /// What to type into an asking sheet during a probe run. Nil means the reader cancelled.
+    static var answer: String? {
+        ProcessInfo.processInfo.environment["PC_AI_DIRECT_ASK"]
+    }
+
     /// Append one record, because a single run exercises several actions.
     static func record(_ lines: [String]) {
         guard let path = dumpPath else { return }
@@ -183,16 +188,83 @@ enum AIProposalSheet {
     }
 }
 
-/// A block of text the reader can read and copy — what a summary is.
+/// Ask for one line of text — a search phrase.
 @MainActor
-enum AITextSheet {
-    static func show(title: String, body: String, parent: NSWindow?) {
+enum AIAskSheet {
+    static func ask(title: String, message: String, placeholder: String, actionTitle: String,
+                    parent: NSWindow?, then: @escaping (String) -> Void) {
         if AISheetProbe.dumpPath != nil {
-            AISheetProbe.record(["TEXT \(title)", body])
+            AISheetProbe.record(["ASK \(title)", message])
+            if let typed = AISheetProbe.answer, !typed.isEmpty { then(typed) }
             return
         }
         let alert = NSAlert()
         alert.messageText = title
+        alert.informativeText = message
+        alert.addButton(withTitle: actionTitle)
+        alert.addButton(withTitle: String(localized: "Cancel", comment: "AI: decline the proposals"))
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 24))
+        field.placeholderString = placeholder
+        alert.accessoryView = field
+        let handler: (NSApplication.ModalResponse) -> Void = { response in
+            let text = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard response == .alertFirstButtonReturn, !text.isEmpty else { return }
+            then(text)
+        }
+        if let parent {
+            alert.beginSheetModal(for: parent) { r in handler(r) }
+            // The reader is about to type; the field has to be where the keystrokes go.
+            parent.makeFirstResponder(field)
+        } else {
+            handler(alert.runModal())
+        }
+    }
+}
+
+/// Offer a ranked list and let the reader pick one. A popup rather than a table: the list is
+/// already in the order that answers the question, so the first entry is usually the answer and
+/// the rest are the second guesses.
+@MainActor
+enum AIPickSheet {
+    static func pick(title: String, message: String, items: [String], actionTitle: String,
+                     parent: NSWindow?, then: @escaping (Int) -> Void) {
+        guard !items.isEmpty else { return }
+        if AISheetProbe.dumpPath != nil {
+            AISheetProbe.record(["PICK \(title)", message] + items)
+            if AISheetProbe.appliesEverything { then(0) }
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.addButton(withTitle: actionTitle)
+        alert.addButton(withTitle: String(localized: "Close", comment: "AI: dismiss the summary"))
+        let popup = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 420, height: 26))
+        for item in items { popup.addItem(withTitle: item) }
+        alert.accessoryView = popup
+        let handler: (NSApplication.ModalResponse) -> Void = { response in
+            guard response == .alertFirstButtonReturn else { return }
+            then(popup.indexOfSelectedItem)
+        }
+        if let parent { alert.beginSheetModal(for: parent, completionHandler: handler) }
+        else { handler(alert.runModal()) }
+    }
+}
+
+/// A block of text the reader can read and copy — what a summary is.
+@MainActor
+enum AITextSheet {
+    /// - Parameter extra: an optional first button — "Save as CSV…" for a table — run when picked.
+    static func show(title: String, body: String, parent: NSWindow?,
+                     extra: (title: String, action: () -> Void)? = nil) {
+        if AISheetProbe.dumpPath != nil {
+            AISheetProbe.record(["TEXT \(title)", body])
+            if AISheetProbe.appliesEverything, let extra { extra.action() }
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = title
+        if let extra { alert.addButton(withTitle: extra.title) }
         alert.addButton(withTitle: String(localized: "Copy", comment: "AI: copy the summary"))
         alert.addButton(withTitle: String(localized: "Close", comment: "AI: dismiss the summary"))
 
@@ -209,7 +281,10 @@ enum AITextSheet {
         alert.accessoryView = scroll
 
         let handler: (NSApplication.ModalResponse) -> Void = { response in
-            guard response == .alertFirstButtonReturn else { return }
+            if let extra, response == .alertFirstButtonReturn { return extra.action() }
+            let copy: NSApplication.ModalResponse = extra == nil ? .alertFirstButtonReturn
+                                                                 : .alertSecondButtonReturn
+            guard response == copy else { return }
             // The clipboard, honestly: the assistant used to be asked for this and answered by
             // calling the file-copy tool and reporting a success that never happened.
             NSPasteboard.general.clearContents()

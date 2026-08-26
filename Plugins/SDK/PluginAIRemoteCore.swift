@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-// RemoteAutomationCore.swift — an AutomationCore backed by the host's contrib C-ABI.
+// PluginAIRemoteCore.swift — an AutomationCore backed by the host's contrib C-ABI.
+//
+// In the shared SDK pool because both AI plugins need it: the on-device one (AILocal) to run the
+// direct actions, the cloud one (AIAssistant) to run the chat. Compiled into each dylib, the way
+// the two decompiler plugins share their runner.
 //
 // The AI assistant runs inside a removable plugin bundle; it does NOT own the file
 // manager. Instead it drives the host's automation engine over the PcHostServices

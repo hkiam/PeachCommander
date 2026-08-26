@@ -35,6 +35,7 @@ SCRIPTS=(
   build-taskmanager-plugin
   build-terminal-plugin
   build-ai-plugin
+  build-ailocal-plugin
   build-aicolumn-plugin
   build-pfx-plugins
   build-s3-plugin

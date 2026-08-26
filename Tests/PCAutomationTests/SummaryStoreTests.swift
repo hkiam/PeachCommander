@@ -56,4 +56,15 @@ final class SummaryStoreTests: XCTestCase {
         store.save("zweite Fassung", for: key, path: "/a/f.txt")
         XCTAssertEqual(store.summary(for: key), "zweite Fassung")
     }
+
+    func testTheFingerprintShapeTwoDylibsDependOn() {
+        // `Plugins/AIColumn` links nothing and re-implements this expression, so its exact shape is
+        // a contract between two binaries rather than an implementation detail. It was broken in
+        // both halves at once — the column used the 1970 epoch while the writer used 2001, and the
+        // writer rounded the Double through `NSNumber.stringValue` while the column interpolated it
+        // — so the AI Summary column had never shown a value for any file. Pinned here because
+        // nothing else can see both sides.
+        XCTAssertEqual(SummaryStore.fingerprint(path: "/a/b.txt", size: 77, modified: 809429740.471769),
+                       "/a/b.txt|77|809429740.471769")
+    }
 }

@@ -158,6 +158,15 @@ public struct ConfigPaths: Sendable {
 
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
 
+        // Publish the answer to the process, because some of the code that needs it cannot be
+        // told. A content-field plugin is a dylib the panel calls with a file name and nothing
+        // else — no services table, no host token — so the AI Column read the *default* location
+        // and could never see an isolated session's data. That made the column not merely empty
+        // under `-ConfigRoot` but unverifiable, which is why it stayed broken. The variable is one
+        // this file already understands on the way in, so a plugin reading it agrees with the host
+        // by construction.
+        setenv("PEACHCMD_CONFIG_ROOT", root.path, 1)
+
         return ConfigPaths(root: root)
     }
 

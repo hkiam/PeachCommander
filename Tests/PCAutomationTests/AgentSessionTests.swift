@@ -109,17 +109,6 @@ final class AgentSessionTests: XCTestCase {
         guard case .ok = outcome else { return XCTFail("expected .ok, got \(outcome)") }
     }
 
-    func test_nativeRunner_delegatesWholeTurn() async throws {
-        struct MockNative: NativeTurnRunner {
-            func runTurn(_ text: String, policy: PermissionPolicy) async throws -> String { "native: \(text)" }
-        }
-        let session = AgentSession(core: DefaultAutomationCore(bridge: FakeBridge()),
-                                   provider: ScriptedProvider([]), nativeRunner: MockNative())
-        let result = try await session.send("hello")
-        XCTAssertEqual(result, .answer("native: hello"))
-        let count = await session.messageCount
-        XCTAssertEqual(count, 2)   // user + assistant, loop skipped
-    }
 
     func test_progressHandler_reportsToolNames() async throws {
         let session = AgentSession(core: DefaultAutomationCore(bridge: FakeBridge()),
@@ -157,44 +146,29 @@ final class AgentSessionTests: XCTestCase {
     }
 }
 
-// A runner that produces a structured name, so the suggestion path can be tested without a
-// model. `runTurn` is never reached in these tests.
-struct NamingRunner: NativeTurnRunner {
-    let name: String
-    func runTurn(_ text: String, policy: PermissionPolicy) async throws -> String { "unused" }
-    func suggestName(forFile path: String) async throws -> (newName: String, reason: String)? {
-        (name, "because of what it contains")
-    }
-}
+// The structured rename suggestion came from the on-device runner, which went with the on-device
+// chat. What survives — and is worth keeping — is what happens when the reader ACCEPTS a proposal:
+// the rename runs without asking a second time, and a read-only policy refuses it anyway. Those
+// two are now reached by handing `apply` a suggestion directly, which is also how the AI On-Device
+// plugin reaches them.
 
 final class SuggestionTests: XCTestCase {
 
     private func session(_ bridge: FakeBridge, policy: PermissionPolicy = .standard) -> AgentSession {
         AgentSession(core: DefaultAutomationCore(bridge: bridge), provider: ScriptedProvider([]),
-                     policy: policy, nativeRunner: NamingRunner(name: "quartalsbericht-q3.txt"))
+                     policy: policy)
     }
 
-    func test_suggestRename_returnsAnApplicableAction() async throws {
-        let result = try await session(FakeBridge()).suggestRename(path: "/a/f.txt", displayName: "f.txt")
-        guard case .suggestion(let text, let action) = result else {
-            return XCTFail("expected a suggestion, got \(result)")
-        }
-        XCTAssertTrue(text.contains("quartalsbericht-q3.txt"))
-        XCTAssertEqual(action.kind, .rename)
-        XCTAssertEqual(action.path, "/a/f.txt")
-        XCTAssertEqual(action.value, "quartalsbericht-q3.txt")
+    private var rename: AgentSession.Suggestion {
+        AgentSession.Suggestion(kind: .rename, path: "/a/f.txt", value: "quartalsbericht-q3.txt",
+                                explanation: "because of what it contains")
     }
 
     // Accepting the proposal is the approval: the rename runs, and the user is not asked the
     // same question a second time in a dialog.
     func test_apply_performsTheRename_withoutASecondConfirmation() async throws {
         let bridge = FakeBridge()
-        let s = session(bridge)
-        guard case .suggestion(_, let action) =
-                try await s.suggestRename(path: "/a/f.txt", displayName: "f.txt") else {
-            return XCTFail("no suggestion")
-        }
-        let applied = try await s.apply(action)
+        let applied = try await session(bridge).apply(rename)
         guard case .answer(let message) = applied else { return XCTFail("expected an answer") }
         XCTAssertTrue(message.contains("quartalsbericht-q3.txt"), "got: \(message)")
         let renamed = await bridge.renamed
@@ -205,12 +179,10 @@ final class SuggestionTests: XCTestCase {
     // Read-only forbids the change, and accepting a proposal must not be a way around that.
     func test_apply_underReadOnly_isRefused_andNothingRuns() async throws {
         let bridge = FakeBridge()
-        let s = session(bridge, policy: .readOnly)
-        guard case .suggestion(_, let action) =
-                try await s.suggestRename(path: "/a/f.txt", displayName: "f.txt") else {
-            return XCTFail("no suggestion")
+        guard case .answer(let message) =
+                try await session(bridge, policy: .readOnly).apply(rename) else {
+            return XCTFail("expected an answer")
         }
-        guard case .answer(let message) = try await s.apply(action) else { return XCTFail("expected an answer") }
         XCTAssertTrue(message.hasPrefix("Refused:"), "got: \(message)")
         let renamed = await bridge.renamed
         XCTAssertNil(renamed, "a refused rename must not reach the bridge")

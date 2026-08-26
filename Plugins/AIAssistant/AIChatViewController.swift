@@ -21,17 +21,8 @@ struct BatchRequest {
     let title: String
 }
 
-/// A Sendable bridge so a native (Apple) tool session — built in a `@Sendable` factory
-/// before the view exists — can route plan-then-confirm to the chat view once it does.
-final class ConfirmationRelay: ConfirmationBroker, @unchecked Sendable {
-    weak var target: AIChatViewController?
-    func confirmPlan(_ plan: String) async -> Bool { await target?.confirmPlan(plan) ?? false }
-    func reportProgress(_ toolName: String) async { await target?.nativeActivity(toolName) }
-    func reportPartial(_ text: String) async { await target?.streamPartial(text) }
-}
-
 @MainActor
-final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextViewDelegate, ConfirmationBroker {
+final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextViewDelegate {
     private let manager: SessionManager
     private let providerName: String
     private let contextProvider: (@MainActor () async -> ChatContext?)?
@@ -61,7 +52,6 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     private var watchdog: Task<Void, Never>?
     private static let runTimeout: UInt64 = 120 * 1_000_000_000   // 120s watchdog
     // Native (Apple) plan-then-confirm suspends the turn here until the user decides.
-    private var nativeConfirm: CheckedContinuation<Bool, Never>?
     // Streaming: index in the transcript where the growing assistant answer body starts
     // (nil = no answer streaming right now).
     private var streamBodyStart: Int?
@@ -187,15 +177,14 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     // DEBUG: drive the confirm bar from the automation hook (host verification of the
     // plan-then-confirm flow). Each logs whether a confirmation was actually pending.
-    func debugConfirm() { NSLog("[aidebug] confirm (pending=%@)", nativeConfirm != nil ? "yes" : "no"); confirmTapped() }
-    func debugCancel()  { NSLog("[aidebug] cancel (pending=%@)",  nativeConfirm != nil ? "yes" : "no"); cancelTapped() }
+    func debugConfirm() { NSLog("[aidebug] confirm"); confirmTapped() }
+    func debugCancel()  { NSLog("[aidebug] cancel"); cancelTapped() }
     func debugStop()    { NSLog("[aidebug] stop"); stopTapped() }
 
     func cancelActiveRun() {
         guard busy else { return }
         runGeneration += 1
         watchdog?.cancel(); watchdog = nil
-        resolveNativeConfirm(false)
         finalizeStreamIfActive()
         busy = false
         setBusyUI(false)
@@ -572,17 +561,21 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     @objc private func confirmTapped() {
         // Native path: a turn is suspended awaiting this decision.
-        if nativeConfirm != nil { resolveNativeConfirm(true); return }
         // Text path: resume the loop with confirmed tokens.
         guard !busy, !pendingTokens.isEmpty else { return }
         let tokens = pendingTokens
+        // Read BEFORE the rows are torn down, and actually passed on (F-450). `rejectedRows()` was
+        // written, tested underneath, and never called: this called `confirm(tokens:)`, whose
+        // overload forwards `rejecting: [:]`. The checkboxes drew, the reader unticked them, and
+        // every row was carried out anyway — the one failure a plan is meant to make impossible.
+        let rejected = rejectedRows()
         pendingTokens = []
         confirmBar.isHidden = true
-        beginRun { try await $0.confirm(tokens: tokens) }
+        clearPlanRows()
+        beginRun { try await $0.confirm(tokens: tokens, rejecting: rejected) }
     }
 
     @objc private func cancelTapped() {
-        if nativeConfirm != nil { resolveNativeConfirm(false); return }
         pendingTokens = []
         confirmBar.isHidden = true
         clearPlanRows()
@@ -841,7 +834,6 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         guard busy else { return }
         runGeneration += 1   // invalidate the in-flight run
         watchdog?.cancel(); watchdog = nil
-        resolveNativeConfirm(false)   // unblock a suspended native turn (if any)
         finalizeStreamIfActive()      // close any partial streamed bubble
         busy = false
         setBusyUI(false)
@@ -851,14 +843,6 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     // MARK: - Native (Apple) plan-then-confirm broker
 
     /// Resolve a pending native confirmation, re-arming the watchdog if the turn resumes.
-    private func resolveNativeConfirm(_ ok: Bool) {
-        guard let cont = nativeConfirm else { return }
-        nativeConfirm = nil
-        confirmBar.isHidden = true
-        if ok, busy, let id = currentRunId { armWatchdog(gen: runGeneration, id: id) }
-        cont.resume(returning: ok)
-    }
-
     private func setBusyUI(_ on: Bool) {
         sendButton.isHidden = on
         stopButton.isHidden = !on
@@ -872,7 +856,6 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     /// once the run is superseded/stopped (stale generation).
     /// Progress from a native (Apple) turn, routed via the relay; shown if this is the
     /// live run.
-    func nativeActivity(_ toolName: String) { showActivity(toolName, gen: runGeneration) }
 
     /// Host colour theme (F-338). The chat is a sidebar panel sitting beside the file panels, so
     /// it follows the theme; a standalone window would stay in system colours.
@@ -957,7 +940,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         // Progress re-arms the watchdog. It is there to free the UI from a model that is stuck,
         // and a turn that reads a long file in slices takes a generation per slice — without this
         // it would be cut off at two minutes and reported as too slow while it was working.
-        if let id = currentRunId, nativeConfirm == nil { armWatchdog(gen: gen, id: id) }
+        if let id = currentRunId { armWatchdog(gen: gen, id: id) }
         statusLabel.stringValue = String(format: String(localized: "Model: %1$@ — %2$@", comment: "AI: model + current activity"),
                                           providerName, Self.friendlyActivity(toolName))
     }
@@ -1126,20 +1109,6 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         m.append(NSAttributedString(string: "\n\n", attributes: [.font: NSFont.systemFont(ofSize: 13)]))
         transcript.textStorage?.append(m)
         transcript.scrollToEndOfDocument(nil)
-    }
-
-    // MARK: - ConfirmationBroker (native path)
-
-    /// Called from inside a native turn when a gated action needs approval. Shows the
-    /// plan + confirm bar and suspends the turn until the user decides.
-    func confirmPlan(_ plan: String) async -> Bool {
-        watchdog?.cancel(); watchdog = nil   // don't time user think-time
-        pendingTokens = []
-        let header = String(localized: "I’d like to:", comment: "AI: plan header")
-        let footer = String(localized: "Confirm to proceed.", comment: "AI: plan footer")
-        append(role: assistantLabel, text: header + "\n• " + plan + "\n\n" + footer)
-        confirmBar.isHidden = false
-        return await withCheckedContinuation { cont in nativeConfirm = cont }
     }
 
     // Clicking a file link opens it in the active panel (or reveals it in Finder).

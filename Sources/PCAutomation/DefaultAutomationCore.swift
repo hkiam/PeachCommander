@@ -323,6 +323,13 @@ public actor DefaultAutomationCore: AutomationCore {
                 // "" rather than a missing key: an agent that has to tell "no comment" from "the tool
                 // did not answer" will get it wrong, and the difference does not matter here.
                 return .ok(payload: try json(["comment": try await bridge.getComment(try a.string("path")) ?? ""]))
+            case "describe_image":
+                return .ok(payload: try encode(try await bridge.describeImage(try a.string("path"))))
+            case "get_tags":
+                return .ok(payload: try json(["tags": try await bridge.getTags(try a.string("path"))]))
+            case "set_tags":
+                try await bridge.setTags(try a.string("path"), tags: (try? a.strings("tags")) ?? [])
+                return .ok(payload: nil)
             case "set_comment":
                 let text = try a.string("comment")
                 try await bridge.setComment(try a.string("path"), comment: text.isEmpty ? nil : text)
@@ -422,6 +429,13 @@ public actor DefaultAutomationCore: AutomationCore {
             let n = (try? a.strings("sources"))?.count
             let dst = (try? a.string("destination")) ?? "?"
             return "Merge \(n.map { "\($0)" } ?? "the selected") file(s) into \(dst)."
+        case "set_tags":
+            let path = (try? a.string("path")) ?? "?"
+            let tags = (try? a.strings("tags")) ?? []
+            // The tags themselves: the reader is approving these words being attached to their
+            // file, where Spotlight and every Finder window will show them.
+            return tags.isEmpty ? "Remove the tags from \(path)."
+                                : "Tag \(path) with \(tags.joined(separator: ", "))."
         case "set_comment":
             let path = (try? a.string("path")) ?? "?"
             let text = (try? a.string("comment")) ?? ""

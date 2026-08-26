@@ -232,12 +232,7 @@ enum AIPlugin {
         // without documentation archaeology.
         SkillStore(directory: URL(fileURLWithPath: root).appendingPathComponent("aichat"))
             .seedTemplateIfMissing()
-        let (provider, providerName, useNative) = await pickProvider(svc, preference: cfg.modelPreference)
-        let relay = ConfirmationRelay()
-        // Kept between runs so the panel's "AI Summary" column can show what the assistant
-        // has already read, and a second ask does not pay for the folding again.
-        let summaries = SummaryStore(url: URL(fileURLWithPath: root)
-            .appendingPathComponent("aichat/summaries.json"))
+        let (provider, providerName) = await pickProvider(svc, preference: cfg.modelPreference)
         let defaultSys = "You are the Peach Commander assistant. Help the user manage files in the "
             + "two-panel file manager. To answer what is INSIDE a file, you MUST call read_file "
             + "with its path — use get_context and list_directory to find exact paths in the "
@@ -251,19 +246,13 @@ enum AIPlugin {
             + "Always reply in the same language the user writes in."
         let sys = cfg.systemPrompt.isEmpty ? defaultSys : cfg.systemPrompt
         let factory: @Sendable (AgentSession.Snapshot?) -> AgentSession = { snapshot in
-            var native: (any NativeTurnRunner)?
-            #if canImport(FoundationModels)
-            if useNative, #available(macOS 26, *) {
-                native = AppleNativeToolSession(core: core, policy: .standard, instructions: sys, broker: relay,
-                                                onProgress: { n in await relay.reportProgress(n) },
-                                                onPartial: { t in await relay.reportPartial(t) },
-                                                summaryStore: summaries)
-            }
-            #endif
+            // No native runner: this plugin is the cloud half, and the on-device tool session it
+            // used to build is the thing whose schemas filled the window. The AI On-Device plugin
+            // owns that path now, without tools.
             if let snapshot {
-                return AgentSession(restoring: snapshot, core: core, provider: provider, policy: .standard, nativeRunner: native)
+                return AgentSession(restoring: snapshot, core: core, provider: provider, policy: .standard)
             }
-            return AgentSession(core: core, provider: provider, policy: .standard, systemPrompt: sys, nativeRunner: native)
+            return AgentSession(core: core, provider: provider, policy: .standard, systemPrompt: sys)
         }
         let dir = URL(fileURLWithPath: root).appendingPathComponent("aichat/sessions")
         let manager = SessionManager(store: SessionStore(directory: dir), makeSession: factory,
@@ -276,30 +265,28 @@ enum AIPlugin {
             },
             onOpenPath: { path in path.withCString { p in svc.openPath?(svc.host, p) } },
             policyProvider: nil)   // the host applies its configured autonomy policy
-        relay.target = vc
         return vc
     }
 
     @MainActor
-    private static func pickProvider(_ svc: PcHostServices, preference: String) async -> (any ModelProvider, String, Bool) {
+    private static func pickProvider(_ svc: PcHostServices, preference: String) async -> (any ModelProvider, String) {
         let env = ProcessInfo.processInfo.environment
         let base = env["PEACHCMD_AI_BASE"] ?? hostContext(svc, "AI.CloudBaseURL")
         let cloudConfigured = (base?.isEmpty == false)
-        // The plugin's model preference (Settings pane) gates the choice; "auto" prefers
-        // a configured cloud endpoint, else the on-device model.
-        let wantCloud = preference == "cloud" || (preference == "auto" && cloudConfigured)
+        // "local" means "not this plugin" now — the on-device assistant is its own bundle. Any
+        // other preference uses the endpoint when one is configured.
+        let wantCloud = preference != "local" && cloudConfigured
         if wantCloud, let base, let url = URL(string: base) {
             let model = env["PEACHCMD_AI_MODEL"] ?? hostContext(svc, "AI.CloudModel") ?? "local"
             return (OpenAICompatibleProvider(baseURL: url, model: model, apiKey: cloudKey(svc)),
-                    String(format: String(localized: "Cloud: %@"), model), false)
+                    String(format: String(localized: "Cloud: %@"), model))
         }
-        if preference != "cloud", #available(macOS 26, *) {   // don't fall back to local if cloud was explicitly required
-            let fm = AppleFoundationModelsProvider()
-            if await fm.isAvailable {
-                return (fm, String(localized: "Apple Intelligence (on-device)"), true)
-            }
-        }
-        return (PlaceholderModelProvider(), String(localized: "No model configured"), false)
+        // No on-device fallback any more. This chat offers the model thirty-two tools, and their
+        // schemas cost 3442 of the on-device model's 4096 tokens — measured — which left 473 for
+        // the question, the file and the answer together. That is not a chat that works badly; it
+        // is one that cannot work, and it was the default every new reader landed on. The
+        // on-device assistant is the AI On-Device plugin, which offers no tools at all.
+        return (PlaceholderModelProvider(), String(localized: "No cloud model configured"))
     }
 
     /// Connect to an external MCP server if configured (env PEACHCMD_MCP_HOST/PORT) and
@@ -340,12 +327,10 @@ enum AIPlugin {
         return SkillStore(directory: URL(fileURLWithPath: root).appendingPathComponent("aichat"))
     }
 
-    /// Read a host context value via the getContext service callback.
+    /// Read a host context value via the getContext service callback. Shared with the on-device
+    /// plugin through `AIHost`, which is where the C-ABI fiddliness lives now.
     static func hostContext(_ svc: PcHostServices, _ key: String) -> String? {
-        guard let fn = svc.getContext else { return nil }
-        var buf = [CChar](repeating: 0, count: 4096)
-        let ok = key.withCString { k in fn(svc.host, k, &buf, 4096) }
-        return ok == 1 ? String(cString: buf) : nil
+        AIHost.context(svc, key)
     }
 
     /// The Cloud API key: from the environment, else the host Keychain via crypt.
@@ -358,26 +343,9 @@ enum AIPlugin {
         return key.isEmpty ? nil : key
     }
 
-    /// Every selected path, or just the cursor's when nothing is marked. This is what makes an
-    /// "AI ▸" action a commander action: the same skill over forty files, not one.
-    static func selectedPaths(_ svc: PcHostServices) -> [String] {
-        guard let count = svc.selectionCount, let pathAt = svc.selectionPath else {
-            return cursorPath(svc).map { [$0] } ?? []
-        }
-        let n = Int(count(svc.host))
-        guard n > 0 else { return cursorPath(svc).map { [$0] } ?? [] }
-        var paths: [String] = []
-        for i in 0..<n {
-            var buf = [CChar](repeating: 0, count: 4096)
-            if pathAt(svc.host, Int32(i), &buf, 4096) == 1 { paths.append(String(cString: buf)) }
-        }
-        return paths.isEmpty ? (cursorPath(svc).map { [$0] } ?? []) : paths
-    }
+    /// Every selected path, or just the cursor's when nothing is marked.
+    static func selectedPaths(_ svc: PcHostServices) -> [String] { AIHost.selectedPaths(svc) }
 
     /// The full path of the file under the cursor (for "AI ▸" skills).
-    static func cursorPath(_ svc: PcHostServices) -> String? {
-        guard let fn = svc.cursorPath else { return nil }
-        var buf = [CChar](repeating: 0, count: 4096)
-        return fn(svc.host, &buf, 4096) == 1 ? String(cString: buf) : nil
-    }
+    static func cursorPath(_ svc: PcHostServices) -> String? { AIHost.cursorPath(svc) }
 }

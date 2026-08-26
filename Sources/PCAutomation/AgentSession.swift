@@ -10,23 +10,6 @@
 
 import Foundation
 
-/// A provider that runs a whole turn natively (model + tool loop + plan-then-confirm)
-/// and returns the final answer — e.g. Apple FoundationModels native tool-calling.
-/// When set on a session, it replaces the manual respond-loop for that session.
-public protocol NativeTurnRunner: Sendable {
-    func runTurn(_ text: String, policy: PermissionPolicy) async throws -> String
-    /// Read a file and guided-generate a Markdown table from it (nil = unsupported).
-    func makeTable(fromFile path: String) async throws -> String?
-    /// Read a file and guided-generate a better name for it (nil = unsupported). Structured
-    /// rather than prose, because a name the user has to retype by hand is not a suggestion —
-    /// it is homework.
-    func suggestName(forFile path: String) async throws -> (newName: String, reason: String)?
-}
-
-public extension NativeTurnRunner {
-    func makeTable(fromFile path: String) async throws -> String? { nil }
-    func suggestName(forFile path: String) async throws -> (newName: String, reason: String)? { nil }
-}
 
 public actor AgentSession {
     public let id: String
@@ -35,34 +18,30 @@ public actor AgentSession {
     private let provider: ModelProvider
     private var policy: PermissionPolicy
     private let maxToolIterations: Int
-    private let nativeRunner: (any NativeTurnRunner)?
     public private(set) var history: [ModelMessage]
 
     public init(id: String = UUID().uuidString, title: String = "New chat",
                 core: AutomationCore, provider: ModelProvider,
                 policy: PermissionPolicy = .standard, systemPrompt: String? = nil,
-                maxToolIterations: Int = 8, nativeRunner: (any NativeTurnRunner)? = nil) {
+                maxToolIterations: Int = 8) {
         self.id = id
         self.title = title
         self.core = core
         self.provider = provider
         self.policy = policy
         self.maxToolIterations = maxToolIterations
-        self.nativeRunner = nativeRunner
         self.history = systemPrompt.map { [ModelMessage(role: .system, content: $0)] } ?? []
     }
 
     /// Restore a saved conversation.
     public init(restoring snapshot: Snapshot, core: AutomationCore, provider: ModelProvider,
-                policy: PermissionPolicy = .standard, maxToolIterations: Int = 8,
-                nativeRunner: (any NativeTurnRunner)? = nil) {
+                policy: PermissionPolicy = .standard, maxToolIterations: Int = 8) {
         self.id = snapshot.id
         self.title = snapshot.title
         self.core = core
         self.provider = provider
         self.policy = policy
         self.maxToolIterations = maxToolIterations
-        self.nativeRunner = nativeRunner
         self.history = snapshot.messages
     }
 
@@ -129,13 +108,6 @@ public actor AgentSession {
     public func suggestRename(path: String, displayName: String) async throws -> Result {
         history.append(ModelMessage(role: .user,
                                     content: "Suggest a better name for \(displayName)."))
-        if let s = try await nativeRunner?.suggestName(forFile: path) {
-            let text = "\(displayName) → **\(s.newName)**\n\n\(s.reason)"
-            history.append(ModelMessage(role: .assistant, content: text))
-            return .suggestion(text: text,
-                               action: Suggestion(kind: .rename, path: path,
-                                                  value: s.newName, explanation: s.reason))
-        }
         return try await runLoop()
     }
 
@@ -176,11 +148,6 @@ public actor AgentSession {
         history.append(ModelMessage(role: .user, content: userText))
         // Native path: the runner drives the model + tool loop + plan-then-confirm
         // (via its own broker) and returns the final answer; the manual loop is skipped.
-        if let nativeRunner {
-            let answer = try await nativeRunner.runTurn(userText, policy: policy)
-            history.append(ModelMessage(role: .assistant, content: answer))
-            return .answer(answer)
-        }
         return try await runLoop()
     }
 
@@ -188,10 +155,6 @@ public actor AgentSession {
     /// Falls back to a normal turn if the runner can't do structured generation.
     public func makeTableFromFile(_ path: String, displayName: String) async throws -> Result {
         history.append(ModelMessage(role: .user, content: "Make a table from \(displayName)."))
-        if let md = try await nativeRunner?.makeTable(fromFile: path) {
-            history.append(ModelMessage(role: .assistant, content: md))
-            return .answer(md)
-        }
         return try await runLoop()
     }
 

@@ -28,55 +28,51 @@ import FoundationModels
 #endif
 
 enum AIDirectAction: String {
-    case summarize, explain, rename, comment, organize
+    case summarize, explain, rename, comment, organize, find, classify, table
 
-    /// The command ids these take over from the chat.
+    /// The commands this plugin contributes.
     static func forCommand(_ id: String) -> AIDirectAction? {
         switch id {
-        case "plugin.ai.skill.summarize":        return .summarize
-        case "plugin.ai.skill.explain":          return .explain
-        case "plugin.ai.skill.suggest-rename":   return .rename
-        case "plugin.ai.skill.suggest-comment":  return .comment
-        case "plugin.ai.folderskill.organize":   return .organize
-        default:                                 return nil
+        case "plugin.ailocal.summarize": return .summarize
+        case "plugin.ailocal.explain":   return .explain
+        case "plugin.ailocal.rename":    return .rename
+        case "plugin.ailocal.comment":   return .comment
+        case "plugin.ailocal.organize":  return .organize
+        case "plugin.ailocal.find":      return .find
+        case "plugin.ailocal.classify":  return .classify
+        case "plugin.ailocal.table":     return .table
+        default:                         return nil
         }
     }
 }
 
 enum AIDirect {
 
-    /// Take `id` if it is a direct action and the on-device model is the one in use.
+    /// Take `id` if it is one of ours and the on-device model is actually there.
     ///
-    /// A configured cloud model keeps the old behaviour: these actions are shaped around a 4096
-    /// token window, and a model that does not have that limit is better served by the chat, which
-    /// can follow up. Returns true when it handled the command.
+    /// No preference to consult: this bundle *is* the on-device assistant, so which model runs is
+    /// settled by which plugin the reader enabled rather than by a setting that used to default to
+    /// "auto" and quietly picked the path that did not work.
     static func handle(_ id: String, _ svc: PcHostServices) -> Bool {
-        guard let action = AIDirectAction.forCommand(id), isOnDevice(svc) else { return false }
+        guard let action = AIDirectAction.forCommand(id) else { return false }
         #if canImport(FoundationModels)
-        if #available(macOS 26, *) {
+        if #available(macOS 26, *), SystemLanguageModel.default.availability == .available {
             Task { @MainActor in await DirectActionRunner(svc).run(action) }
             return true
         }
         #endif
-        return false
+        Task { @MainActor in AIDirect.reportUnavailable(svc) }
+        return true
     }
 
-    /// Is the on-device model the one this chat would use? Mirrors `AIPlugin.pickProvider`'s
-    /// decision without building a provider: preference "cloud" (or "auto" with an endpoint
-    /// configured) means cloud, and everything else means on-device if it is actually there.
-    private static func isOnDevice(_ svc: PcHostServices) -> Bool {
-        #if canImport(FoundationModels)
-        guard #available(macOS 26, *) else { return false }
-        let root = AIHost.configRoot(svc)
-        let preference = AIPluginConfig.load(root: root).modelPreference
-        let base = ProcessInfo.processInfo.environment["PEACHCMD_AI_BASE"]
-            ?? AIHost.context(svc, "AI.CloudBaseURL")
-        let cloudConfigured = (base?.isEmpty == false)
-        if preference == "cloud" || (preference == "auto" && cloudConfigured) { return false }
-        return SystemLanguageModel.default.availability == .available
-        #else
-        return false
-        #endif
+    /// Said once, plainly: this plugin has nothing to run on.
+    @MainActor
+    private static func reportUnavailable(_ svc: PcHostServices) {
+        guard let fn = svc.presentInfo else { return }
+        let title = String(localized: "AI", comment: "AI: info title")
+        let text = String(localized: "Apple Intelligence is not available on this Mac, so the on-device actions cannot run.",
+                          comment: "AI: the on-device model is missing entirely")
+        title.withCString { t in text.withCString { m in fn(svc.host, t, m) } }
     }
 }
 
@@ -89,6 +85,7 @@ final class DirectActionRunner {
     private let core: RemoteAutomationCore
     private let session: AppleNativeToolSession
     private let progress: AIProgressSheet
+    private let facts: FileFactStore
 
     init(_ svc: PcHostServices) {
         self.svc = svc
@@ -99,6 +96,8 @@ final class DirectActionRunner {
         // wrote it, which is why that column was empty for anyone who never chatted.
         let summaries = SummaryStore(url: URL(fileURLWithPath: root)
             .appendingPathComponent("aichat/summaries.json"))
+        self.facts = FileFactStore(url: URL(fileURLWithPath: root)
+            .appendingPathComponent("aichat/facts.json"))
         self.session = AppleNativeToolSession(directActionsOn: core, policy: .standard,
                                               summaryStore: summaries)
         self.progress = AIProgressSheet(parent: AIHost.parentWindow(svc))
@@ -106,10 +105,14 @@ final class DirectActionRunner {
 
     func run(_ action: AIDirectAction) async {
         switch action {
-        case .summarize, .explain: await summarize()
+        case .summarize:           await summarize()
+        case .explain:             await explain()
         case .rename:              await rename()
         case .comment:             await comment()
         case .organize:            await organize()
+        case .find:                await findByMeaning()
+        case .classify:            await classify()
+        case .table:               await makeTable()
         }
     }
 
@@ -130,6 +133,27 @@ final class DirectActionRunner {
         progress.end()
         guard !parts.isEmpty else { return }
         AITextSheet.show(title: String(localized: "Summary", comment: "AI: summary sheet title"),
+                         body: parts.joined(separator: "\n\n"), parent: progress.parentWindow)
+    }
+
+    // MARK: - Explain
+
+    private func explain() async {
+        let paths = AIHost.selectedPaths(svc)
+        guard !paths.isEmpty else { return }
+        progress.begin(String(localized: "Reading…", comment: "AI: direct action progress title"))
+        var parts: [String] = []
+        for (i, path) in paths.enumerated() {
+            if progress.isCancelled { break }
+            progress.update((path as NSString).lastPathComponent, done: i, total: paths.count)
+            guard let text = try? await session.explain(file: path) else { continue }
+            parts.append(paths.count == 1 ? text
+                         : "\((path as NSString).lastPathComponent)\n\(text)")
+        }
+        progress.end()
+        guard !parts.isEmpty else { return }
+        AITextSheet.show(title: String(localized: "What this is",
+                                       comment: "AI: explain sheet title"),
                          body: parts.joined(separator: "\n\n"), parent: progress.parentWindow)
     }
 
@@ -197,20 +221,20 @@ final class DirectActionRunner {
         let paths = AIHost.selectedPaths(svc)
         guard !paths.isEmpty else { return }
         progress.begin(String(localized: "Reading…", comment: "AI: direct action progress title"))
-        var proposals: [(path: String, comment: String)] = []
+        var proposals: [(path: String, comment: String, tags: [String])] = []
         for (i, path) in paths.enumerated() {
             if progress.isCancelled { break }
             progress.update((path as NSString).lastPathComponent, done: i, total: paths.count)
             guard let out = try? await session.suggestComment(path: path) else { continue }
-            let tags = out.tags.isEmpty ? "" : "  [\(out.tags.joined(separator: ", "))]"
-            proposals.append((path, out.comment + tags))
+            proposals.append((path, out.comment, out.tags))
         }
         progress.end()
         guard !proposals.isEmpty else { return }
 
-        let rows = proposals.map {
-            AIProposalSheet.Row(id: $0.path, text: ($0.path as NSString).lastPathComponent,
-                                detail: $0.comment)
+        let rows = proposals.map { p in
+            AIProposalSheet.Row(id: p.path, text: (p.path as NSString).lastPathComponent,
+                                detail: p.tags.isEmpty ? p.comment
+                                    : p.comment + "   " + p.tags.map { "#" + $0 }.joined(separator: " "))
         }
         AIProposalSheet.ask(
             title: String(localized: "Suggested comments", comment: "AI: comment sheet title"),
@@ -224,12 +248,27 @@ final class DirectActionRunner {
             }
     }
 
-    private func applyComments(_ proposals: [(path: String, comment: String)]) async {
+    private func applyComments(_ proposals: [(path: String, comment: String, tags: [String])]) async {
         var failure: String?
         for p in proposals {
             // The set_comment TOOL, not services.setFileComment: the tool is audited and the
             // action shows up in "what the assistant did", which a direct write would not.
             if let why = await perform("set_comment", ["path": p.path, "comment": p.comment]) {
+                failure = why; break
+            }
+            guard !p.tags.isEmpty else { continue }
+            // Real Finder tags, not words glued onto the comment. They were being concatenated
+            // into the comment text, where nothing could search or colour them — the app has
+            // written the `_kMDItemUserTags` xattr, with colours, all along.
+            //
+            // The tags already there are read first and handed over, which is what makes tagging
+            // forty files undoable in one step instead of forty manual corrections.
+            let existing = await readTags(p.path)
+            let merged = existing + p.tags.filter { new in
+                !existing.contains { $0.caseInsensitiveCompare(new) == .orderedSame }
+            }
+            if let why = await perform("set_tags", ["path": p.path, "tags": merged,
+                                                    "previous_tags": existing]) {
                 failure = why; break
             }
         }
@@ -247,14 +286,22 @@ final class DirectActionRunner {
     private func organize() async {
         guard let folder = AIHost.context(svc, "dir") else { return }
         var isDir: ObjCBool = false
-        let files = ((try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? [])
-            .filter { name in
-                guard DirectActionPlan.isOrganisable(name) else { return false }
-                let full = (folder as NSString).appendingPathComponent(name)
-                guard FileManager.default.fileExists(atPath: full, isDirectory: &isDir) else { return false }
-                return !isDir.boolValue
-            }
-            .sorted()
+        func organisable(_ name: String, in dir: String) -> Bool {
+            guard DirectActionPlan.isOrganisable(name) else { return false }
+            let full = (dir as NSString).appendingPathComponent(name)
+            guard FileManager.default.fileExists(atPath: full, isDirectory: &isDir) else { return false }
+            return !isDir.boolValue
+        }
+        // A marked selection means "these"; nothing marked means "this folder". `selectedPaths`
+        // falls back to the cursor, which would have turned an unmarked folder into one file.
+        let marked = AIHost.markedCount(svc) > 1
+            ? AIHost.selectedPaths(svc).map { ($0 as NSString).lastPathComponent }
+                .filter { organisable($0, in: folder) }.sorted()
+            : []
+        let files = marked.isEmpty
+            ? ((try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? [])
+                .filter { organisable($0, in: folder) }.sorted()
+            : marked
         guard files.count > 1 else { return }
         let considered = Array(files.prefix(Self.organizeLimit))
 
@@ -325,7 +372,164 @@ final class DirectActionRunner {
                                                     comment: "AI: organise applied"), moved))
     }
 
+    // MARK: - Make a table
+
+    /// Pull a table out of the file under the cursor.
+    ///
+    /// One file, not a selection: a table is a shape a single document has. And one slice of it —
+    /// the window holds a few dozen rows, not a database export — so when the file is longer than
+    /// that the sheet says which part it read rather than letting the reader assume it saw all of it.
+    private func makeTable() async {
+        guard let path = AIHost.cursorPath(svc) else { return }
+        progress.begin(String(localized: "Reading…", comment: "AI: direct action progress title"))
+        let result = try? await session.tabulate(file: path)
+        progress.end()
+        guard let result, !result.table.isEmpty else {
+            note(String(localized: "No table could be read out of this file.",
+                        comment: "AI: tabulate found nothing"))
+            return
+        }
+        let markdown = DirectActionPlan.markdown(result.table)
+        let head = result.truncated
+            ? String(format: String(localized: "From the first %lld bytes of the file — more remains.",
+                                    comment: "AI: the table covers only the beginning"),
+                     Int64(AppleNativeToolSession.readSliceBytes)) + "\n\n"
+            : ""
+        let destination = ((path as NSString).deletingPathExtension) + ".csv"
+        AITextSheet.show(
+            title: String(localized: "Table", comment: "AI: table sheet title"),
+            body: head + markdown, parent: progress.parentWindow,
+            extra: (title: String(localized: "Save as CSV…", comment: "AI: save the table"),
+                    action: { [weak self] in
+                        guard let self else { return }
+                        let csv = DirectActionPlan.csv(result.table)
+                        Task { @MainActor in await self.saveTable(csv, to: destination) }
+                    }))
+    }
+
+    private func saveTable(_ csv: String, to destination: String) async {
+        // Through write_file, so the reader is shown what is about to be written where and it
+        // lands in the action log like every other change.
+        let failure = await perform("write_file", ["path": destination, "content": csv])
+        finish(failure, done: String(format: String(localized: "Saved %@.",
+                                                    comment: "AI: the table was written"),
+                                     (destination as NSString).lastPathComponent))
+    }
+
+    // MARK: - Classify
+
+    /// Work out what each file IS, what it is about and what date it carries — and keep the answer.
+    ///
+    /// Changes nothing on disk. What it produces goes into the fact cache, which three things read:
+    /// the panel's AI Kind / AI Topic / AI Date columns, and — the reason this action is worth its
+    /// generations — the multi-rename mask, where `[=ai_column.ai_topic]-[Y]-[M].[E]` becomes a
+    /// rename by what the files are, through the app's existing rename engine.
+    ///
+    /// The categories are chosen once over the whole selection and then handed to each file, for
+    /// the reason folders are: a category only means something relative to a set, and a model asked
+    /// per file invents a fresh one every time.
+    private func classify() async {
+        let paths = AIHost.selectedPaths(svc)
+        guard !paths.isEmpty else { return }
+        progress.begin(String(localized: "Sorting…", comment: "AI: direct action progress title"))
+        // Topic and date first, from each file's own contents. The categories come afterwards,
+        // from those topics — asked over file names like "dokument1.txt" the only honest category
+        // is "Dokument", and every file gets it.
+        var found: [(path: String, facts: AIFileFacts)] = []
+        for (i, path) in paths.enumerated() {
+            if progress.isCancelled { break }
+            progress.update((path as NSString).lastPathComponent, done: i, total: paths.count)
+            guard let f = try? await session.facts(forFile: path, among: []), !f.isEmpty else { continue }
+            found.append((path, f))
+        }
+        let kinds = (try? await session.groupTopics(found.map(\.facts.topic))) ?? [:]
+
+        var lines: [String] = []
+        var written = 0
+        for (path, base) in found {
+            // The category came back with the topic it belongs to, so this is a lookup rather
+            // than a second question for the model.
+            var f = base
+            f.kind = kinds[base.topic] ?? ""
+            if let stamp = FileFactStore.fingerprint(forFileAt: path) {
+                facts.save(f, for: stamp, path: path)
+                written += 1
+            }
+            let parts = [f.kind, f.topic, f.date].filter { !$0.isEmpty }
+            lines.append("\((path as NSString).lastPathComponent)\n    \(parts.joined(separator: "  ·  "))")
+        }
+        progress.end()
+        guard written > 0 else {
+            note(String(localized: "Nothing could be worked out about these files.",
+                        comment: "AI: classify produced nothing"))
+            return
+        }
+        // The columns exist but a reader has to add them once, like any other content column —
+        // saying so here is the difference between a feature and a puzzle.
+        let hint = String(localized: "Add the AI Kind, AI Topic or AI Date column to see these in the panel, or use [=ai_column.ai_topic] in a multi-rename mask.",
+                          comment: "AI: where the classified facts show up")
+        AITextSheet.show(title: String(localized: "Classified", comment: "AI: classify sheet title"),
+                         body: lines.joined(separator: "\n\n") + "\n\n" + hint,
+                         parent: progress.parentWindow)
+    }
+
+    // MARK: - Find by meaning
+
+    /// Rank this folder by how close each file is to a phrase.
+    ///
+    /// No language model is involved: the Automation Core scores names and file openings with
+    /// on-device sentence embeddings, falling back to word overlap for a language Apple has no
+    /// embedding for. That makes this the one AI action that answers instantly and cannot make
+    /// something up — which is also why it belongs in this plugin rather than in a chat, where it
+    /// spent its whole existence as a tool nothing could reach.
+    private func findByMeaning() async {
+        guard let folder = AIHost.context(svc, "dir") else { return }
+        AIAskSheet.ask(
+            title: String(localized: "Find by meaning", comment: "AI: semantic search title"),
+            message: String(localized: "Files in this folder are ranked by how close they are to what you describe. Nothing leaves your Mac.",
+                            comment: "AI: semantic search explanation"),
+            placeholder: String(localized: "for example: the invoice about the roof",
+                                comment: "AI: semantic search placeholder"),
+            actionTitle: String(localized: "Search", comment: "AI: run the semantic search"),
+            parent: progress.parentWindow) { [weak self] phrase in
+                guard let self else { return }
+                Task { @MainActor in await self.runSearch(phrase, in: folder) }
+            }
+    }
+
+    private func runSearch(_ phrase: String, in folder: String) async {
+        let data = try? JSONSerialization.data(withJSONObject: ["query": phrase, "path": folder,
+                                                                "limit": 15])
+        guard let outcome = try? await core.invoke(tool: "semantic_search", arguments: data,
+                                                   policy: .standard),
+              case .ok(let payload) = outcome, let payload,
+              let hits = try? JSONDecoder().decode([AutomationEntry].self, from: payload),
+              !hits.isEmpty else {
+            note(String(localized: "Nothing here comes close to that.",
+                        comment: "AI: semantic search found nothing"))
+            return
+        }
+        AIPickSheet.pick(
+            title: String(localized: "Closest matches", comment: "AI: semantic search results"),
+            message: phrase, items: hits.map(\.name),
+            actionTitle: String(localized: "Show in panel", comment: "AI: reveal a search hit"),
+            parent: progress.parentWindow) { [weak self] index in
+                guard let self, hits.indices.contains(index), let open = self.svc.openPath else { return }
+                hits[index].path.withCString { open(self.svc.host, $0) }
+            }
+    }
+
     // MARK: - Talking to the core
+
+    /// The Finder tags a file already has, or none when it cannot be asked.
+    private func readTags(_ path: String) async -> [String] {
+        let data = try? JSONSerialization.data(withJSONObject: ["path": path])
+        guard let outcome = try? await core.invoke(tool: "get_tags", arguments: data, policy: .standard),
+              case .ok(let payload) = outcome, let payload,
+              let o = try? JSONSerialization.jsonObject(with: payload) as? [String: Any],
+              let tags = o["tags"] as? [String] else { return [] }
+        return tags
+    }
 
     /// Run one tool and answer the host's gate for it. Returns nil on success, else why not.
     ///

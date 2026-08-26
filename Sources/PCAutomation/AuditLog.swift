@@ -147,6 +147,13 @@ public enum AuditInverse {
             var swapped: [String: Any] = ["old_names": new, "new_names": old]
             if let directory = arguments["directory"] as? String { swapped["directory"] = directory }
             return ("rename_batch", swapped)
+        case "set_tags":
+            // Undoable, unlike a comment, because the caller is asked to hand over what was there
+            // before. Tagging forty files on a model's suggestion is exactly the change somebody
+            // wants back in one step.
+            guard let path = arguments["path"] as? String,
+                  let previous = arguments["previous_tags"] as? [String] else { return nil }
+            return ("set_tags", ["path": path, "tags": previous, "previous_tags": arguments["tags"] ?? []])
         case "set_comment":
             // The previous comment is not in the arguments; the caller records it if it wants
             // this undoable. Nothing to build here.

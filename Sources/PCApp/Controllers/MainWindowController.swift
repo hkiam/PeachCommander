@@ -1351,6 +1351,44 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         connectToSite(url.toSite(), password: password)
     }
 
+    /// Turn the on-device assistant on for a reader who was already using the assistant that way.
+    ///
+    /// The AI assistant used to pick the on-device model itself when no cloud endpoint was
+    /// configured, which was the default. It no longer does — that path is its own plugin now — so
+    /// somebody who deliberately switched the assistant on and never configured a cloud model would
+    /// open it after this update and be told there is no model. They would have lost a feature by
+    /// standing still, and the people affected are exactly the ones who cared enough to enable it.
+    ///
+    /// Done once, and only for that case: the assistant enabled, no cloud endpoint, and the
+    /// on-device bundle present but off. Enabling a plugin on somebody's behalf is not something to
+    /// do quietly, so it is said plainly the first time the window opens.
+    private func adoptOnDeviceAssistantIfNeeded() async {
+        guard await mainConfig.bool("AI", "OnDeviceAdopted", default: false) == false else { return }
+        let discovered = await pluginManager.discovered
+        guard discovered.contains(where: { $0.manifest.name == Self.onDeviceAssistantName }) else { return }
+        await mainConfig.setBool(true, "AI", "OnDeviceAdopted")   // asked once, whatever the answer
+
+        let assistantOn = await pluginManager.isEnabled("AI Assistant")
+        let localOn = await pluginManager.isEnabled(Self.onDeviceAssistantName)
+        let cloudConfigured = !(await mainConfig.string("AI", "CloudBaseURL", default: "")).isEmpty
+        guard assistantOn, !localOn, !cloudConfigured else { return }
+
+        await pluginManager.setEnabled(Self.onDeviceAssistantName, true)
+        // `presentInfo` is `runModal`, and a modal at launch owns the main queue an automation
+        // script is driven from: the script runs inside the modal's nested runloop, its `quit`
+        // never lands, and the run hangs until somebody clicks. That is F-436, and this is a third
+        // launch-time prompt walking into it. The adoption itself still happens — only the telling
+        // is skipped, and a scripted run has no reader to tell.
+        guard LaunchOptions.parse(CommandLine.arguments).automationScript == nil else { return }
+        presentInfo(String(localized: "AI", comment: "AI: info title"),
+                    String(localized: "The assistant's on-device features are now a separate plugin, and it has been switched on for you. The chat itself needs a cloud model, which you can configure in Settings ▸ AI.",
+                           comment: "AI: the on-device half became its own plugin"))
+    }
+
+    /// The manifest name of the on-device assistant bundle. A literal in one place, because the
+    /// enable/disable state is keyed by it and a typo would silently do nothing.
+    static let onDeviceAssistantName = "AI On-Device"
+
     /// Re-aggregate every enabled external plugin's contributions (menus, context,
     /// views — declared in its Info.plist, no plugin code run to decide presence)
     /// and its file-system adapters. Called at startup and whenever a plugin is
@@ -1358,6 +1396,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     func loadExternalPlugins() {
         Task { @MainActor in
             await pluginManager.reload()   // scan the plugins dir (discovered is empty until this runs)
+            await adoptOnDeviceAssistantIfNeeded()
             let enabled = await pluginManager.enabledPlugins()
             ContributionRegistry.shared.removeAll()
             FileSystemPluginRegistry.shared.removeAll()
@@ -9497,7 +9536,10 @@ extension MainWindowController: ContributionHost {
     /// keeps the provider and system prompt it was built with: switching to a cloud model in
     /// Settings looked like it did nothing until the panel happened to be rebuilt.
     func notifyAIConfigChanged() {
-        _ = ViewContainerRegistry.shared.notifyView(viewId: "plugin.ai.view", key: "aiconfig", value: "")
+        _ = // Every mounted view, not one hardcoded id: there are two AI plugins now, and a settings
+        // change concerns whichever of them is on screen. A view that does not understand the key
+        // ignores it, which is what PcNotifyView's default branch already does.
+        ViewContainerRegistry.shared.notifyViews(key: "aiconfig", value: "")
     }
 
     // AI plugin config (aichat/config.json) — shared with the plugin, which reads it
