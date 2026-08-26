@@ -244,8 +244,16 @@ def main():
                 break
             time.sleep(2)
         # deploy app + demo content
-        sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
-            f"{app}/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
+        # Checked, for the same reason demo-content.sh below is: when this fails the guest keeps
+        # whatever app the golden image already had, the -AutomationScript hook may not exist in it
+        # at all, and every spec then photographs the app sitting in its default state. That looks
+        # like the feature being broken rather than like the deploy never happening — and it cost a
+        # capture here before this check existed.
+        deployed = sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
+                       f"{app}/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
+        if deployed.returncode != 0:
+            sys.exit(f"rsync of the app failed ({deployed.returncode}):\n"
+                     f"{deployed.stdout}\n{deployed.stderr}")
         ssh_guest(ip, "xattr -dr com.apple.quarantine ~/pc-test 2>/dev/null || true")
         # Checked, not fired and forgotten. A spec whose panel content never arrived
         # still captures a screenshot — of the app sitting in the home directory — and
