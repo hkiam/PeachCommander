@@ -29,6 +29,7 @@
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
+//   renamemask <mask>|<out>    resolve a multi-rename mask over the active panel, write old -> new
 //                               (":confirm" agrees to a gated plan; ":confirm:<id>,<id>" strikes rows out)
 //   pathbardump <side>|<out>   the path bar's state: editing, its text, the breadcrumb, where it ends
 //   pathbarclick <side>|<region>|<clicks>|<out>   click a path bar region (first/last/gap/trailing/pencil)
@@ -219,6 +220,35 @@ extension MainWindowController {
                     let names = arg.split(separator: ",").map {
                         $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
                     panel.tableView.markNames(Set(names))
+                }
+            case "renamemask":                          // renamemask <mask>|<outfile>: old -> new, resolved
+                // The multi-rename dialog's own two steps, with no dialog: resolve every content-field
+                // value for the panel's files, then run the mask through MultiRenameEngine. It exists
+                // for the `[=provider.field]` tokens — a plugin-contributed field only becomes a rename
+                // token if the plugin loaded, the slug matched and a value was found, and none of that
+                // is visible from a unit test, which sees neither plugins nor panels. Nothing is
+                // renamed; this reports what the dialog's preview column would show.
+                let rp = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if rp.count == 2, let panel = activePanel {
+                    let (dir, base) = await panel.renameInputs()
+                    let inputs = await enrichRenameInputs(base, dir: dir)
+                    let spec = RenameSpec(nameMask: rp[0], extMask: "[E]")
+                    let results = MultiRenameEngine.compute(inputs, spec: spec)
+                    // The resolved fields as well as the names: "the token produced nothing" and "the
+                    // token is unknown" look identical in the output alone, and they have different fixes.
+                    // `valid` and `collides` as well as the name: the engine already refuses a value
+                    // carrying a path separator by marking the row, and the dialog greys it out and
+                    // leaves it out of the batch. Reporting only the name hides that — it reads as a
+                    // name the app would go on to create, which cost a wrong conclusion here once.
+                    var text = "dir=\(dir)\n"
+                    for (input, result) in zip(inputs, results) {
+                        text += "old=\(input.name) new=\(result.newName)"
+                            + " valid=\(result.isValid) collides=\(result.collides)\n"
+                        for key in input.fields.keys.sorted() {
+                            text += "  field=\(key) value=\(input.fields[key] ?? "")\n"
+                        }
+                    }
+                    try? text.write(toFile: rp[1], atomically: true, encoding: .utf8)
                 }
             case "seldump":                             // seldump <outfile>: what is marked, by name
                 // The marked *names*, not a count alone: "one is marked" and "the right one is marked"

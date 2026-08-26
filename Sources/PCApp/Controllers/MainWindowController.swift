@@ -1232,8 +1232,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// feature exists for. The cap now only applies when the masks do not ask for these fields; when
     /// they do, the values are fetched however many files there are, because a wrong name is worse than
     /// a slow dialog.
-    private func enrichRenameInputs(_ inputs: [RenameInput], dir: String,
-                                    limit: Int = 500) async -> [RenameInput] {
+    /// Internal rather than private so the automation harness can resolve a mask without the dialog:
+    /// whether a plugin's field becomes a rename token is decided here, and a unit test cannot see it.
+    func enrichRenameInputs(_ inputs: [RenameInput], dir: String,
+                            limit: Int = 500) async -> [RenameInput] {
         let fields = contentFieldRegistry.allQualifiedFields()
         guard !fields.isEmpty, inputs.count <= limit else { return inputs }
         var out: [RenameInput] = []
