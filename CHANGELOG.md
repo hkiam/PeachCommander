@@ -116,8 +116,9 @@ which changed nothing. That was the default every new reader landed on.
   block of running text, which averages every document into the middle, and the file name was then
   given a further advantage over it. Both sides of the comparison are now reduced to their content
   words — "die Rechnung über das Dach" is three filler words and two real ones — and the name
-  competes with the content on equal terms. Over the same folder, six queries out of seven put the
-  right file first where one did before.
+  competes with the content on equal terms, its extension included — cut off, a search for "log"
+  could not find `app.log`, because the word is nowhere else in that file. Over the same folder,
+  seven queries out of seven put the right file first where one did before.
 - **A short search phrase could return nothing at all.** Two words are not enough to place a
   language: "Webserver Konfiguration" was read as Danish, which has no on-device sentence model, so
   the search quietly fell back to literal word matching and found nothing. It now falls back to the

@@ -50,10 +50,15 @@ public enum SemanticRanker {
         return out.joined(separator: " ")
     }
 
-    /// "quartals_bericht-q3.txt" → "quartals bericht q3": separators carry no meaning here.
+    /// "quartals_bericht-q3.txt" → "quartals bericht q3 txt": separators carry no meaning here.
+    ///
+    /// The extension stays. It used to be cut off, and then "log" could not find `app.log` — the
+    /// word appears nowhere else in that file, so the search ranked it last behind three documents
+    /// with nothing to do with logs. Measured over six queries, keeping it moved `app.log` to the
+    /// top for "log" and left the winner of every other query exactly where it was; the "txt" it
+    /// adds to every text file is noise that did not cost a single first place.
     public static func readableName(_ name: String) -> String {
-        (name as NSString).deletingPathExtension
-            .replacingOccurrences(of: "[_.\\-]", with: " ", options: .regularExpression)
+        name.replacingOccurrences(of: "[_.\\-]", with: " ", options: .regularExpression)
             .lowercased()
     }
 

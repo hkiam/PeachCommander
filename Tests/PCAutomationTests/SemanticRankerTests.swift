@@ -145,6 +145,13 @@ final class SemanticRankerTests: XCTestCase {
     }
 
     func testASeparatorInANameIsNotPartOfTheWord() {
-        XCTAssertEqual(SemanticRanker.readableName("quartals_bericht-q3.txt"), "quartals bericht q3")
+        XCTAssertEqual(SemanticRanker.readableName("quartals_bericht-q3.txt"),
+                       "quartals bericht q3 txt")
+    }
+
+    func testTheExtensionIsPartOfWhatIsSearched() {
+        // Cut off, "log" could not find app.log: the word is nowhere else in that file, and it
+        // ranked last behind three documents with nothing to do with logs.
+        XCTAssertEqual(SemanticRanker.readableName("app.log"), "app log")
     }
 }
