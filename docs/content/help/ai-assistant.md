@@ -9,7 +9,7 @@ related: [plugins, settings, privacy-and-security]
 
 The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It comes as two plugins: **AI On-Device** runs on Apple Intelligence and gives you the actions that show a proposal and apply it, while **AI Assistant** is the chat and needs a cloud model. Enable either, or both. **It arrives switched off.** Turn it on in **Configuration ▸ Plugins…** and restart, or leave it off and nothing about it appears — no AI ▸ menu, no chat, no column. That is deliberate while it is in beta: it can rename, move and delete files and run shell commands for you, each behind a plan you approve, and that is a lot of reach to hand a new feature by default. Without an API key it works entirely on your Mac, so this is about the reach and not about anything leaving the machine. The **AI Column** plugin shows what those actions worked out — a summary, a kind, a topic, a date — as panel columns; it starts no model of its own. It arrives switched off with them and stays optional, and shows nothing until you switch it on and add one of its columns. You can also remove either one entirely from the same page.
 
-**On-device or cloud.** The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a *whole* long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once; you choose in **Settings ▸ AI** and the assistant switches over straight away.
+**On-device or cloud.** The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a *whole* long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once. The right-click actions always run on your Mac; the chat is the half that wants an endpoint, and **Settings ▸ AI** is where you give it one.
 
 ## Open the assistant
 
@@ -71,13 +71,15 @@ You can also just ask: *"undo that"* and *"what did you change?"* reach the same
 
 ## Panel columns
 
-The assistant's summaries are available as a panel column. Add **AI Summary** from the column set editor: it shows the first line of the summary for each file the assistant has already summarized, and stays empty for the rest — the column shows work already done and never starts the model itself. **Language** in the same plugin detects the language a text file is written in, without a model.
+What the actions worked out is available as panel columns. Add them from the column set editor: **AI Summary** shows the first line of a summary, and **AI Kind**, **AI Topic** and **AI Date** show what **Classify** made of a file. Each stays empty until an action has read that file — these columns show work already done and never start the model themselves. **Language** in the same plugin detects the language a text file is written in, without a model at all.
+
+The same three are rename tokens. `[=ai_column.ai_topic]-[Y]-[M].[E]` in the multi-rename dialog (Ctrl+M) names a folder of `dokument1.pdf` files by what they are: nothing was built for that, because the rename mask has always resolved `[=provider.field]` through the column system. Classify first, then rename. The column names are the same in every language — they are not translated.
 
 ## Settings
 
 Open **Configuration ▸ Settings ▸ AI** to configure the assistant on a single page:
 
-- **Preferred model** — which model the **AI Assistant** chat uses. Since the on-device actions became their own plugin, this settles the chat only: *Cloud* and *Automatic* both use the endpoint below, and *On-device* tells the chat it is not wanted, leaving the AI On-Device plugin to do that work.
+- **Chat model** — what the **AI Assistant** chat runs on. Since the on-device actions became their own plugin there are two answers, not three: *The cloud endpoint below, when one is set*, or *Nothing — leave the work to the AI On-Device plugin*. The page is grouped the same way, with the chat's settings first and what either half may do below them.
 - **Cloud endpoint, model, and API key** — to use an OpenAI-compatible model instead of the on-device one. The key is stored in the macOS Keychain, never in your configuration files.
 - **Assistant autonomy** — read-only, confirm changes (the default), or autonomous.
 - **Custom system prompt** — optional instructions that shape how the assistant replies.
