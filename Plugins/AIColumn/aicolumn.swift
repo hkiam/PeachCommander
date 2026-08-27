@@ -31,6 +31,33 @@ private let fieldDate: Int32 = 4
 
 @_cdecl("PcGetApiVersion") public func PcGetApiVersion() -> Int32 { 1 }
 
+/// The column header, in the reader's language.
+///
+/// The *names* above stay English on purpose: the host derives a stable field id from them, and
+/// that id keys saved column sets — and, here, the `[=ai_column.ai_topic]` rename token. Only the
+/// header may change with the interface language (F-428).
+///
+/// This plugin was the only content plugin not exporting it, and had no Resources at all, so the
+/// panel said "AI Summary" in every language while sixteen translated help pages named a
+/// translated column that did not exist.
+@_cdecl("ContentGetSupportedFieldTitle")
+public func ContentGetSupportedFieldTitle(_ fieldIndex: Int32,
+                                          _ title: UnsafeMutablePointer<CChar>?,
+                                          _ maxlen: Int32) -> Int32 {
+    guard let title, maxlen > 0 else { return 0 }
+    let text: String
+    switch fieldIndex {
+    case fieldSummary:  text = L("AI Summary")
+    case fieldLanguage: text = L("Language")
+    case fieldKind:     text = L("AI Kind")
+    case fieldTopic:    text = L("AI Topic")
+    case fieldDate:     text = L("AI Date")
+    default: return 0
+    }
+    _ = text.withCString { strlcpy(title, $0, Int(maxlen)) }
+    return 1
+}
+
 @_cdecl("ContentGetSupportedField")
 public func ContentGetSupportedField(_ fieldIndex: Int32,
                                      _ fieldName: UnsafeMutablePointer<CChar>?,
@@ -38,6 +65,9 @@ public func ContentGetSupportedField(_ fieldIndex: Int32,
                                      _ maxlen: Int32) -> Int32 {
     guard let fieldName else { return PC_FT_NOMOREFIELDS }
     let name: String
+    // English, always: the host slugs these into the field ids that key saved column sets and the
+    // `[=ai_column.ai_topic]` rename token. The header the reader sees comes from
+    // ContentGetSupportedFieldTitle above.
     switch fieldIndex {
     case fieldSummary:  name = "AI Summary"
     case fieldLanguage: name = "Language"

@@ -71,9 +71,9 @@ Sie können auch einfach fragen: *„mach das rückgängig"* und *„was hast du
 
 ## Spalten im Dateifenster
 
-Was die Aktionen herausgefunden haben, gibt es als Spalten. Fügen Sie sie über den Spalten-Editor hinzu: **AI Summary** zeigt die erste Zeile einer Zusammenfassung, und **AI Kind**, **AI Topic** und **AI Date** zeigen, was **Einordnen** aus einer Datei gemacht hat. Jede bleibt leer, bis eine Aktion diese Datei gelesen hat — diese Spalten zeigen bereits geleistete Arbeit und starten das Modell niemals selbst. **Language** im selben Plugin erkennt ganz ohne Modell, in welcher Sprache eine Textdatei geschrieben ist.
+Was die Aktionen herausgefunden haben, gibt es als Spalten. Fügen Sie sie über den Spalten-Editor hinzu: **KI-Zusammenfassung** zeigt die erste Zeile einer Zusammenfassung, und **KI-Art**, **KI-Thema** und **KI-Datum** zeigen, was **Einordnen** aus einer Datei gemacht hat. Jede bleibt leer, bis eine Aktion diese Datei gelesen hat — diese Spalten zeigen bereits geleistete Arbeit und starten das Modell niemals selbst. **Language** im selben Plugin erkennt ganz ohne Modell, in welcher Sprache eine Textdatei geschrieben ist.
 
-Dieselben drei sind Umbenennen-Platzhalter. `[=ai_column.ai_topic]-[Y]-[M].[E]` im Mehrfach-Umbenennen (Strg+M) benennt einen Ordner voller `dokument1.pdf` danach, was sie sind: dafür wurde nichts gebaut, denn die Umbenennen-Maske löst `[=provider.field]` seit jeher über das Spaltensystem auf. Erst einordnen, dann umbenennen. Die Spaltennamen sind in jeder Sprache dieselben — sie werden nicht übersetzt.
+Dieselben drei sind Umbenennen-Platzhalter. `[=ai_column.ai_topic]-[Y]-[M].[E]` im Mehrfach-Umbenennen (Strg+M) benennt einen Ordner voller `dokument1.pdf` danach, was sie sind: dafür wurde nichts gebaut, denn die Umbenennen-Maske löst `[=provider.field]` seit jeher über das Spaltensystem auf. Erst einordnen, dann umbenennen. Die Überschrift folgt Ihrer Sprache, das `ai_column.ai_topic` in der Maske nicht — eine Maske funktioniert also weiter, wenn Sie die Sprache wechseln.
 
 ## Einstellungen
 

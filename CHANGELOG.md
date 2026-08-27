@@ -110,6 +110,13 @@ which changed nothing. That was the default every new reader landed on.
 - **Unticking a line in the assistant's plan did nothing.** 0.7.3 said you could agree to part of a
   plan; the ticks were drawn and collected and then thrown away, so everything ran regardless. They
   are now passed on, which is what that release promised.
+- **The AI panel columns had English headers in every language.** The AI Column plugin never told
+  the app what to call its columns in your language — it was the only content plugin that did not,
+  and the only one shipping no translations at all — so the panel said "AI Summary" while the
+  translated manuals named a column that did not exist. The headers are translated now. What you
+  write in a rename mask is unchanged and stays English: `[=ai_column.ai_topic]` keeps working, and
+  so does every saved column set, because those are keyed by a name that does not move with the
+  interface language.
 - **Find by meaning ranked the wrong files first.** Asked for "die Rechnung über das Dach" in a
   folder holding exactly that invoice, it put the invoice *last* and a web-server config first — and
   the same for a bare "Rechnung". Two causes, both measured: the file's opening was compared as a

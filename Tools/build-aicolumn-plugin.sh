@@ -16,5 +16,12 @@ cp "$ROOT/Plugins/AIColumn/Info.plist" "$BUNDLE/Contents/Info.plist"
 pc_swiftc -emit-library -O -module-name AIColumn -target "$TARGET" \
   -framework Foundation -framework NaturalLanguage \
   -o "$BUNDLE/Contents/MacOS/AIColumn" \
-  "$ROOT/Plugins/AIColumn/aicolumn.swift"
+  "$ROOT/Plugins/AIColumn/aicolumn.swift" \
+  "$ROOT/Plugins/SDK/PluginLoc.swift"
+
+# Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).
+if [ -d "$ROOT/Plugins/AIColumn/Resources" ]; then
+  mkdir -p "$BUNDLE/Contents/Resources"
+  cp -R "$ROOT/Plugins/AIColumn/Resources/." "$BUNDLE/Contents/Resources/"
+fi
 echo "Built $BUNDLE"

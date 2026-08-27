@@ -71,9 +71,9 @@ You can also just ask: *"undo that"* and *"what did you change?"* reach the same
 
 ## Panel columns
 
-What the actions worked out is available as panel columns. Add them from the column set editor: **AI Summary** shows the first line of a summary, and **AI Kind**, **AI Topic** and **AI Date** show what **Classify** made of a file. Each stays empty until an action has read that file — these columns show work already done and never start the model themselves. **Language** in the same plugin detects the language a text file is written in, without a model at all.
+What the actions worked out is available as panel columns. Add them from the column set editor: **AI Summary** shows the first line of a summary, and **AI Kind**, **AI Topic** and **AI Date** show what **Classify** made of a file — under those names in English, translated in every other language. Each stays empty until an action has read that file — these columns show work already done and never start the model themselves. **Language** in the same plugin detects the language a text file is written in, without a model at all.
 
-The same three are rename tokens. `[=ai_column.ai_topic]-[Y]-[M].[E]` in the multi-rename dialog (Ctrl+M) names a folder of `dokument1.pdf` files by what they are: nothing was built for that, because the rename mask has always resolved `[=provider.field]` through the column system. Classify first, then rename. The column names are the same in every language — they are not translated.
+The same three are rename tokens. `[=ai_column.ai_topic]-[Y]-[M].[E]` in the multi-rename dialog (Ctrl+M) names a folder of `dokument1.pdf` files by what they are: nothing was built for that, because the rename mask has always resolved `[=provider.field]` through the column system. Classify first, then rename. The header follows your language; the `ai_column.ai_topic` inside the mask does not, so a mask keeps working when you switch languages.
 
 ## Settings
 
