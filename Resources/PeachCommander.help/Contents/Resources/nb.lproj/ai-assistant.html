@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI Assistant</h1>
-<p>AI-assistenten er et valgfritt programtillegg du kan fjerne, som hjelper deg å arbeide med filene dine i vanlig språk. Den kan oppsummere eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med organisere en mappe – og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den består av to utvidelser: <strong>AI On-Device</strong> kjører på Apple Intelligence og gir deg handlingene som viser et forslag og utfører det, mens <strong>AI Assistant</strong> er chatten og trenger en skymodell. Slå på den ene, eller begge. Fordi det er et programtillegg, kan du deaktivere eller fjerne det helt fra <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<p>AI-assistenten er et valgfritt, fjernbart programtillegg som hjelper deg å arbeide med filene dine på vanlig språk. Den kan sammenfatte eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med rydde opp i en mappe — og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den kommer som to programtillegg: <strong>AI On-Device</strong> kjører på Apple Intelligence og gir deg handlingene som viser et forslag og utfører det, mens <strong>AI Assistant</strong> er praten og trenger en skymodell. Slå på det ene, eller begge. <strong>De kommer avslått.</strong> Slå dem på i <strong>Konfigurasjon ▸ Programtillegg…</strong> og start på nytt, eller la dem være av så vises ingenting — ingen AI ▸-meny, ingen prat, ingen kolonne. Det er med vilje så lenge dette er i beta: den kan gi filer nytt navn, flytte og slette dem og kjøre skallkommandoer for deg, hver bak en plan du godkjenner, og det er mye rekkevidde å gi noe nytt som standard. Uten API-nøkkel skjer alt på Macen din, så dette handler om rekkevidden og ikke om noe som forlater maskinen. Programtillegget <strong>AI Column</strong> viser hva de handlingene kom fram til — et sammendrag, en sort, et emne, en dato — som kolonner i panelet; det starter ingen egen modell. Det kommer avslått sammen med dem og forblir valgfritt, og viser ingenting før du slår det på og legger til en av kolonnene. Fra samme side kan du også fjerne begge helt.</p>
+<p><strong>På enheten eller i skyen.</strong> Den lokale modellen er privat og gratis, og den er liten: den tar inn noen tusen ord om gangen. Å lese en <em>hel</em> lang fil virker derfor annerledes — assistenten leser den i biter og føyer resultatene sammen, noe som tar lengre tid jo lengre filen er. For tungt arbeid over mange filer, eller for lange samtaler, er en skymodell raskere og holder mer på én gang. Handlingene i høyreklikkmenyen kjører alltid på Macen din; praten er halvparten som vil ha et endepunkt, og <strong>Innstillinger ▸ AI</strong> er der du gir den ett.</p>
 <h2 id="apne-assistenten">Åpne assistenten</h2>
-<p>Velg <strong>Kommandoer ▸ AI Assistant</strong> for å vise assistenten i et forankret panel til høyre i vinduet. Skriv en forespørsel og trykk Return; assistenten kan lese filer, slå opp ting og – med din bekreftelse – gjøre endringer.</p>
-<p><img alt="AI-assistentens chat forankret ved siden av filpanelene" src="images/ai-chat.png" />
-<em>(Figur: AI-assistenten, forankret til høyre, arbeider med en forespørsel.)</em></p>
-<h2 id="hyreklikkhandlinger-ai">Høyreklikkhandlinger (AI ▸)</h2>
-<p>Den raskeste måten å bruke assistenten på er undermenyen <strong>AI ▸</strong> i høyreklikkmenyen:</p>
+<p>Velg <strong>Kommandoer ▸ AI-assistent</strong> for å vise assistenten i et panel dokket til høyre i vinduet. Skriv en forespørsel og trykk Enter; assistenten kan lese filer, slå opp ting og — med din bekreftelse — gjøre endringer.</p>
+<p><img alt="AI-assistentens prat dokket ved siden av filpanelene" src="images/ai-chat.png" />
+<em>(Figur: AI-assistenten, dokket til høyre, arbeider med en forespørsel.)</em></p>
+<h2 id="handlinger-i-hyreklikkmenyen-ai">Handlinger i høyreklikkmenyen (AI ▸)</h2>
+<p>Raskeste måten å bruke assistenten på er undermenyen <strong>AI ▸</strong> i høyreklikkmenyen:</p>
 <ul>
-<li><strong>På en fil</strong> – Oppsummer, Forklar, Foreslå et navn, Foreslå en kommentar, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.</li>
-<li><strong>På panelbakgrunnen</strong> – Søk etter betydning, Organiser denne mappen og Finn sannsynlige duplikater.</li>
+<li><strong>På en fil</strong> — Sammenfatt, Forklar, Klassifiser, Foreslå et navn, Foreslå en kommentar, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.</li>
+<li><strong>På panelbakgrunnen</strong> — Rydd opp i denne mappen, Søk etter mening og Finn sannsynlige duplikater.</li>
 </ul>
-<p><strong>Oppsummer</strong>, <strong>Forklar</strong>, <strong>Foreslå et navn</strong>, <strong>Foreslå en kommentar</strong> og <strong>Organiser denne mappen</strong> kommer fra utvidelsen <strong>AI On-Device</strong> og gjør jobben helt uten chat: de viser forslaget sitt i et ark, du fjerner haken ved det du vil la være, og ingenting på disken endres før du godkjenner det. De øvrige handlingene hører til utvidelsen <strong>AI Assistant</strong> og åpner sin egen navngitte chat, slik at ulike oppgaver holdes atskilt. Når du selv skriver i inndatafeltet, fortsetter forespørselen den gjeldende chatten.</p>
-<h2 id="behandle-chattene-dine">Behandle chattene dine</h2>
+<p><strong>Sammenfatt</strong>, <strong>Forklar</strong>, <strong>Klassifiser</strong>, <strong>Foreslå et navn</strong>, <strong>Foreslå en kommentar</strong>, <strong>Lag en tabell</strong> og <strong>Rydd opp i denne mappen</strong> kommer fra programtillegget <strong>AI On-Device</strong> og gjør arbeidet uten å åpne noen prat i det hele tatt — også på en skanning eller et skjermbilde, fordi ordene først leses av bildet: de viser forslaget sitt i et ark, du fjerner haken ved det du vil la være, og ingenting på disken endres før du godkjenner. De øvrige handlingene hører til programtillegget <strong>AI Assistant</strong> og åpner sin <strong>egen prat med tittel</strong> (for eksempel <em>Oversett – rapport.txt</em>), slik at ulike oppgaver holdes fra hverandre i stedet for å hope seg opp i én lang samtale. Når du selv skriver i inntastingsfeltet, fortsetter den forespørselen den gjeldende praten.</p>
+<p><strong>Flere filer samtidig.</strong> Marker et utvalg, så kjører handlingen over hver markerte fil, én etter én. Handlingene som bruker et ark viser framdriften der, og <strong>Avbryt</strong> stanser mellom filer; de som åpner en prat legger framdriften i statuslinjen, der <strong>Stopp</strong> gjør det samme. Uansett kan du se på de første resultatene og avbryte.</p>
+<p><strong>Foreslå et navn</strong> ender i en knapp i stedet for en setning: det foreslåtte navnet vises i en linje under samtalen, med en <strong>Gi nytt navn</strong>-knapp ved siden av. Å trykke den er godkjenningen — du blir ikke spurt to ganger.</p>
+<h3 id="dine-egne-formuleringer">Dine egne formuleringer</h3>
+<p>Det hver handling ber modellen om er en tekstfil du kan redigere: <code>aichat/skills.json</code> for filhandlingene og <code>aichat/folder-skills.json</code> for mappehandlingene, i konfigurasjonsmappen din. Begge skrives ut med de innebygde formuleringene første gang assistenten kjører, så du ser formatet. <code>{name}</code> og <code>{path}</code> står for filen. Slett en fil for å gå tilbake til den innebygde formuleringen.</p>
+<p><strong>Egne handlinger.</strong> Legg til en oppføring med en <code>id</code> du velger selv, så kan den kjøres som enhver annen kommando ved å oppgi <code>plugin.ai.skill.&lt;id&gt;</code> — i brukermenyen, på knapperaden eller på en hurtigtast. (For en mappehandling, <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Undermenyen <strong>AI ▸</strong> lister bare de innebygde handlingene: den bygges fra programtilleggets manifest uten å laste det, slik at et avslått programtillegg ikke bidrar med noe — derfor plasserer du dine egne handlinger selv i stedet for at de dukker opp der. Oppgi en id som ikke finnes, og assistenten sier fra i stedet for å gjøre ingenting.</p>
+<h2 id="be-den-finne-en-fil">Be den finne en fil</h2>
+<p>Du trenger ikke vite hvor en fil ligger. Beskriv den, så slår assistenten den opp i indeksen macOS allerede holder over disken din — det er altså ingenting å bygge og ingen venting på at den skal ta igjen.</p>
 <ul>
-<li>Bruk chat-velgeren øverst i panelet for å bevege deg mellom samtaler.</li>
-<li><strong>Slett ▾</strong>-menyen tilbyr <strong>Slett denne chatten</strong> og <strong>Slett alle chatter</strong>, så du kan tømme alt på én gang når listen blir lang. Tomme chatter ryddes automatisk bort når du lukker panelet.</li>
+<li><em>«Finn PDF-fakturaen fra forrige måned»</em> — en sort, et ord i navnet og et tidsvindu.</li>
+<li><em>«Hvor er alle node_modules-mappene mine?»</em> — mapper, etter navn, hvor som helst i hjemmemappen din.</li>
+<li><em>«Hvilken fil nevner Aachen-kontrakten?»</em> — ord <strong>inne i</strong> filer, noe det vanlige Finn filer-søket ikke klarer med mindre du først peker ut en mappe.</li>
+</ul>
+<p>Du kan styre hvor den leter: hjemmemappen din som standard, hele maskinen, eller bare mappen et panel viser. Den sier hvilken av dem den brukte, slik at et tomt svar lar seg lese i stedet for å ligne et skuldertrekk.</p>
+<p>To grenser verdt å kjenne. macOS holder enkelte steder utenfor indeksen sin — og utenfor rekkevidde for enhver app uten Full diskatilgang — så «fant ingenting» er ikke bevis for at en fil ikke finnes; se <a href="troubleshooting">Feilsøking</a>. Og en nettopp opprettet fil er kanskje ikke indeksert ennå, og da finner <strong>Finn filer</strong> (Alt+F7), som går gjennom mappene selv, den likevel.</p>
+<h2 id="handtere-pratene-dine">Håndtere pratene dine</h2>
+<ul>
+<li>Bruk pratvelgeren øverst i panelet for å bytte mellom samtaler.</li>
+<li>Menyen <strong>Slett ▾</strong> tilbyr <strong>Slett denne praten</strong> og <strong>Slett alle prater</strong>, så du kan rydde alt på én gang når listen blir lang. Tomme prater ryddes automatisk når du lukker panelet.</li>
 </ul>
 <h2 id="endringer-bekreftes-frst">Endringer bekreftes først</h2>
-<p>For alt som endrer filer – flytting, navnebytte, skriving, sletting – viser assistenten en <strong>plan og venter på din bekreftelse</strong> før den handler. Du kan endre dette i Innstillinger ved å heve assistentens autonomi, eller senke den til skrivebeskyttet slik at den aldri endrer noe.</p>
-<h2 id="innstillinger">Innstillinger</h2>
-<p>Åpne <strong>Konfigurasjon ▸ Innstillinger ▸ AI</strong> for å sette opp assistenten på én enkelt side:</p>
+<p>For alt som endrer filer — flytte, gi nytt navn, skrive, slette — viser assistenten en <strong>plan og venter på bekreftelsen din</strong> før den handler. Du kan endre det i Innstillinger ved å heve assistentens selvstendighet, eller senke den til skrivebeskyttet så den aldri endrer noe. En kopiering eller flytting meldes som ferdig når den er ferdig: assistenten venter på at overføringen blir ferdig, og du kan følge den i Overføringsbehandleren som enhver annen operasjon.</p>
+<p><strong>Du kan godta deler av en plan.</strong> Når en plan omfatter flere filer — gi nytt navn til en hel mappe, rydde ut Nedlastinger — vises hver som en avkrysset linje over knappene. Fjern haken ved dem du vil la være, og trykk <strong>Bekreft og kjør</strong>: resten går videre, og det du fjernet haken ved røres ikke. Å fjerne alle haker er det samme som å avbryte, og assistenten sier det i stedet for å melde at den ikke gjorde noe. En plan som er én enkelt handling har ingen liste, siden Bekreft og Avbryt allerede sier ja og nei til den.</p>
+<h2 id="hva-assistenten-gjorde-og-hvordan-ta-det-tilbake">Hva assistenten gjorde, og hvordan ta det tilbake</h2>
+<p><strong>Handlinger ▾</strong> i praten har to oppføringer:</p>
 <ul>
-<li><strong>Foretrukket modell</strong> – hvilken modell chatten <strong>AI Assistant</strong> bruker. Etter at handlingene på enheten ble sin egen utvidelse, gjelder dette bare chatten: <em>Sky</em> og <em>Automatisk</em> bruker begge endepunktet nedenfor, og <em>På enheten</em> sier til chatten at den ikke trengs.</li>
-<li><strong>Skyendepunkt, modell og API-nøkkel</strong> – for å bruke en OpenAI-kompatibel modell i stedet for den på enheten. Nøkkelen lagres i macOS-nøkkelringen, aldri i konfigurasjonsfilene dine.</li>
-<li><strong>Assistentens autonomi</strong> – skrivebeskyttet, bekreft endringer (standard) eller autonom.</li>
-<li><strong>Egendefinert systemledetekst</strong> – valgfrie instruksjoner som former hvordan assistenten svarer.</li>
-<li><strong>MCP-server</strong> – en valgfri, kun-lokal server som lar en ekstern agent styre appen; av som standard og kan beskyttes med et token.</li>
+<li><strong>Vis hva assistenten gjorde…</strong> lister hver endring, den nyeste først, med hva den ble bedt om og hvordan det gikk — også forsøk som selvstendighetsinnstillingen avslo. En ekstern agent koblet til over MCP står i samme liste.</li>
+<li><strong>Angre siste endring</strong> tar tilbake den nyeste endringen som har en motsats: et navnebytte byttes tilbake, en flytting flyttes tilbake. Der ingenting kan tas tilbake, sier listen hvorfor — en overskrevet fil ble ikke tatt vare på noe sted, og elementer i Papirkurven gjenopprettes fra Finder.</li>
 </ul>
-<p><img alt="AI-siden i Innstillinger med autonomi og MCP-servervalgene" src="images/settings-ai.png" />
-<em>(Figur: Alle assistentvalg bor på én AI-side i Innstillinger.)</em></p>
+<p>Du kan også bare spørre: <em>«angre det»</em> og <em>«hva har du endret?»</em> når de samme to funksjonene.</p>
+<h2 id="kolonner-i-panelet">Kolonner i panelet</h2>
+<p>Det handlingene kom fram til finnes som kolonner. Legg dem til fra kolonnesettredigereren: <strong>KI-sammendrag</strong> viser første linje i et sammendrag, og <strong>KI-type</strong>, <strong>KI-emne</strong> og <strong>KI-dato</strong> viser hva <strong>Klassifiser</strong> gjorde ut av en fil — under de navnene på norsk, oversatt i hvert språk. Hver blir stående tom til en handling har lest akkurat den filen — disse kolonnene viser arbeid som alt er gjort, og starter aldri modellen selv. <strong>Språk</strong> i samme programtillegg kjenner igjen hvilket språk en tekstfil er skrevet på, helt uten modell.</p>
+<p>De samme tre er også navnebytte-plassholdere. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> i dialogen for å gi mange filer nytt navn (Ctrl+M) gir en mappe full av <code>dokument1.pdf</code> navn etter hva de er: ingenting ble bygd for det, for navnemasken har alltid løst opp <code>[=provider.field]</code> gjennom kolonnesystemet. Klassifiser først, gi nytt navn etterpå. Overskriften følger språket ditt; <code>ai_column.ai_topic</code> inne i masken gjør det ikke — en maske fortsetter altså å virke om du bytter språk.</p>
+<h2 id="innstillinger">Innstillinger</h2>
+<p>Åpne <strong>Konfigurasjon ▸ Innstillinger ▸ AI</strong> for å stille inn assistenten på én side:</p>
+<ul>
+<li><strong>Pratmodell</strong> — hva praten <strong>AI Assistant</strong> kjører på. Siden de lokale handlingene ble sitt eget programtillegg, finnes det to svar, ikke tre: <em>Skyendepunktet nedenfor, hvis du har oppgitt ett</em>, eller <em>Ingenting — la programtillegget AI On-Device gjøre arbeidet</em>. Siden er gruppert på samme måte: først pratens innstillinger, under dem hva begge halvdelene får gjøre.</li>
+<li><strong>Skyendepunkt, modell og API-nøkkel</strong> — for å bruke en OpenAI-kompatibel modell i stedet for den lokale. Nøkkelen ligger i macOS-nøkkelringen, aldri i konfigurasjonsfilene dine.</li>
+<li><strong>Assistentens selvstendighet</strong> — skrivebeskyttet, bekreft endringer (standard) eller selvstendig.</li>
+<li><strong>Egen systemledetekst</strong> — valgfrie anvisninger som former hvordan assistenten svarer.</li>
+<li><strong>MCP-tjener</strong> — en valgfri, kun lokal tjener som lar en ekstern agent styre appen; av som standard og mulig å beskytte med et symbol.</li>
+</ul>
+<p><img alt="AI-siden i Innstillinger med selvstendighet og MCP-tjenerens valg" src="images/settings-ai.png" />
+<em>(Figur: alle assistentens valg ligger på én AI-side i Innstillinger.)</em></p>
 <h2 id="personvern">Personvern</h2>
 <ul>
-<li>Med Apple Intelligence kjører assistenten <strong>på din Mac</strong>; ingenting forlater enheten.</li>
-<li>En skymodell brukes <strong>bare hvis du konfigurerer en</strong>, og API-nøkkelen dens holdes i nøkkelringen.</li>
-<li>Filendrende handlinger bekreftes før de kjører, med mindre du bevisst hever autonominivået.</li>
+<li>Med Apple Intelligence kjører assistenten <strong>på Macen din</strong>; ingenting forlater enheten.</li>
+<li>En skymodell brukes <strong>bare hvis du stiller inn en</strong>, og API-nøkkelen blir liggende i nøkkelringen.</li>
+<li>Handlinger som endrer filer bekreftes før de kjøres, med mindre du bevisst hever selvstendighetsnivået.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="settings.html">Innstillinger</a></li><li><a href="privacy-and-security.html">Personvern og sikkerhet</a></li></ul></section>
 </main>

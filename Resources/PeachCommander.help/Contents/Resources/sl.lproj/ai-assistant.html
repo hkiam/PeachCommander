@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Pomočnik UI</h1>
-<p>Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Sestavljata ga dva vtičnika: <strong>AI On-Device</strong> teče na Apple Intelligence in ponuja dejanja, ki pokažejo predlog in ga uveljavijo, <strong>AI Assistant</strong> pa je klepet in potrebuje model v oblaku. Vklopite enega ali oba. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<p>Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in ki vam pomaga delati z datotekami v vsakdanjem jeziku. Zna povzeti ali pojasniti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, podatke spremeniti v razpredelnico in celo pospraviti mapo — in zna namesto vas izvesti dejanja z datotekami, potem ko vam najprej pokaže načrt. Pride kot dva vtičnika: <strong>AI On-Device</strong> teče na Apple Intelligence in prinaša dejanja, ki pokažejo predlog in ga uveljavijo, medtem ko je <strong>AI Assistant</strong> klepet in potrebuje model v oblaku. Vklopite enega ali oba. <strong>Prideta izklopljena.</strong> Vklopite ju v <strong>Nastavitev ▸ Vtičniki…</strong> in znova zaženite, ali pa ju pustite izklopljena in ne pojavi se nič — noben meni UI ▸, noben klepet, noben stolpec. To je namerno, dokler je funkcija v beta različici: zna preimenovati, premikati in brisati datoteke ter namesto vas poganjati ukaze lupine, vsakega za načrtom, ki ga odobrite, in to je veliko dosega, da bi ga novosti dali privzeto. Brez ključa API se vse dogaja na vašem Macu, torej gre za doseg in ne za podatke, ki bi zapustili napravo. Vtičnik <strong>AI Column</strong> pokaže, kaj so ta dejanja ugotovila — povzetek, vrsto, temo, datum — kot stolpce v pultu; sam ne zažene nobenega modela. Pride izklopljen skupaj z njima in ostane izbiren ter ne pokaže ničesar, dokler ga ne vklopite in ne dodate enega od njegovih stolpcev. Z iste strani lahko katerega koli od njiju tudi povsem odstranite.</p>
+<p><strong>V napravi ali v oblaku.</strong> Krajevni model je zaseben in brezplačen, in je majhen: naenkrat sprejme nekaj tisoč besed. Brati <em>celotno</em> dolgo datoteko zato deluje drugače — pomočnik jo bere po delih in izide sestavlja skupaj, kar traja tem dlje, čim daljša je datoteka. Za zahtevno delo z mnogimi datotekami ali za dolge pogovore je model v oblaku hitrejši in naenkrat zadrži več. Dejanja iz kontekstnega menija vedno tečejo na vašem Macu; klepet je tista polovica, ki hoče končno točko, in <strong>Nastavitve ▸ UI</strong> je mesto, kjer mu jo daste.</p>
 <h2 id="odpiranje-pomocnika">Odpiranje pomočnika</h2>
-<p>Izberite <strong>Ukazi ▸ Pomočnik UI</strong>, da prikažete pomočnika v zasidranem podoknu na desni strani okna. Vnesite zahtevo in pritisnite Enter; pomočnik lahko bere datoteke, išče informacije in — z vašo potrditvijo — izvaja spremembe.</p>
-<p><img alt="Klepet pomočnika UI, zasidran ob podoknih z datotekami" src="images/ai-chat.png" />
-<em>(Slika: pomočnik UI, zasidran na desni, dela na zahtevi.)</em></p>
-<h2 id="dejanja-z-desnim-klikom-ui">Dejanja z desnim klikom (UI ▸)</h2>
-<p>Najhitrejši način uporabe pomočnika je podmeni <strong>UI ▸</strong> v priročnem meniju:</p>
+<p>Izberite <strong>Ukazi ▸ Pomočnik UI</strong>, da pokažete pomočnika v pultu, zasidranem na desni strani okna. Vpišite zahtevo in pritisnite Enter; pomočnik zna brati datoteke, poiskati podatke in — z vašo potrditvijo — izvesti spremembe.</p>
+<p><img alt="Klepet pomočnika UI, zasidran ob datotečnih pultih" src="images/ai-chat.png" />
+<em>(Slika: pomočnik UI, zasidran na desni, med delom na zahtevi.)</em></p>
+<h2 id="dejanja-kontekstnega-menija-ui">Dejanja kontekstnega menija (UI ▸)</h2>
+<p>Najhitreje pomočnika uporabite prek podmenija <strong>UI ▸</strong> v kontekstnem meniju:</p>
 <ul>
-<li><strong>Na datoteki</strong> — Povzemi, Razloži, Predlagaj ime, Predlagaj komentar, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.</li>
-<li><strong>Na ozadju podokna</strong> — Iskanje po pomenu, Uredi to mapo in Poišči verjetne dvojnike.</li>
+<li><strong>Na datoteki</strong> — Povzemi, Pojasni, Uvrsti, Predlagaj ime, Predlagaj opombo, Prevedi v angleščino, Lektoriraj, Poišči opravila in Naredi razpredelnico.</li>
+<li><strong>Na ozadju pulta</strong> — Pospravi to mapo, Išči po pomenu in Poišči verjetne dvojnike.</li>
 </ul>
-<p><strong>Povzemi</strong>, <strong>Pojasni</strong>, <strong>Predlagaj ime</strong>, <strong>Predlagaj opombo</strong> in <strong>Uredi to mapo</strong> prihajajo iz vtičnika <strong>AI On-Device</strong> in svoje delo opravijo brez klepeta: predlog pokažejo na listu, odkljukate, kar naj ostane nespremenjeno, in na disku se nič ne spremeni, dokler ne pritrdite. Preostala dejanja spadajo k vtičniku <strong>AI Assistant</strong> in odprejo svoj poimenovani klepet, tako da naloge ostanejo ločene. Ko sami tipkate v vnosno polje, ta zahteva nadaljuje trenutni klepet.</p>
+<p><strong>Povzemi</strong>, <strong>Pojasni</strong>, <strong>Uvrsti</strong>, <strong>Predlagaj ime</strong>, <strong>Predlagaj opombo</strong>, <strong>Naredi razpredelnico</strong> in <strong>Pospravi to mapo</strong> prihajajo iz vtičnika <strong>AI On-Device</strong> in svoje delo opravijo, ne da bi sploh odprli klepet — tudi na skenu ali posnetku zaslona, ker se besede najprej preberejo s slike: predlog pokažejo v listu, vi odkljukate, kar želite pustiti pri miru, in na disku se ne spremeni nič, dokler ne odobrite. Preostala dejanja pripadajo vtičniku <strong>AI Assistant</strong> in odprejo <strong>svoj naslovljeni klepet</strong> (na primer <em>Prevedi – porocilo.txt</em>), tako da različne naloge ostanejo ločene, namesto da bi se kopičile v enem dolgem pogovoru. Ko sami pišete v vnosno polje, ta zahteva nadaljuje trenutni klepet.</p>
+<p><strong>Več datotek hkrati.</strong> Označite izbor in dejanje se izvede nad vsako označeno datoteko, eno za drugo. Dejanja, ki uporabljajo list, v njem kažejo napredek in <strong>Prekliči</strong> se ustavi med datotekami; tista, ki odprejo klepet, dajo napredek v vrstico stanja, kjer <strong>Ustavi</strong> naredi isto. Tako ali tako si lahko ogledate prve izide in prekinete.</p>
+<p><strong>Predlagaj ime</strong> se konča z gumbom in ne s stavkom: predlagano ime se pokaže v vrstici pod pogovorom, ob njem pa gumb <strong>Preimenuj</strong>. Pritisniti ga pomeni odobriti — drugič vas ne vprašamo.</p>
+<h3 id="vase-lastne-ubeseditve">Vaše lastne ubeseditve</h3>
+<p>To, kar vsako dejanje zahteva od modela, je besedilna datoteka, ki jo lahko uredite: <code>aichat/skills.json</code> za dejanja nad datotekami in <code>aichat/folder-skills.json</code> za dejanja nad mapami, v vaši mapi z nastavitvami. Obe se ob prvem zagonu pomočnika zapišeta z vgrajenimi ubeseditvami, da vidite obliko. <code>{name}</code> in <code>{path}</code> stojita za datoteko. Izbrišite datoteko, da se vrnete k vgrajeni ubeseditvi.</p>
+<p><strong>Lastna dejanja.</strong> Dodajte vnos z <code>id</code> po svoji izbiri in izvedete ga lahko kot vsak drug ukaz, tako da navedete <code>plugin.ai.skill.&lt;id&gt;</code> — v uporabniškem meniju, na gumbni vrstici ali na tipkovni bližnjici. (Za dejanje nad mapo <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Podmeni <strong>UI ▸</strong> našteva le vgrajena dejanja: zgrajen je iz manifesta vtičnika, ne da bi ga naložil, tako da izklopljen vtičnik ne prispeva ničesar — zato svoja dejanja postavite sami, namesto da bi se pojavila tam. Navedite id, ki ne obstaja, in pomočnik to pove, namesto da ne bi naredil ničesar.</p>
+<h2 id="prosite-ga-naj-poisce-datoteko">Prosite ga, naj poišče datoteko</h2>
+<p>Ni treba vedeti, kje datoteka je. Opišite jo in pomočnik jo poišče v kazalu, ki ga macOS že vodi o vašem disku — torej ni ničesar graditi in ni čakanja, da bi kazalo dohitelo.</p>
+<ul>
+<li><em>»Poišči račun v PDF iz prejšnjega meseca«</em> — vrsta, beseda v imenu in časovno okno.</li>
+<li><em>»Kje so vse moje mape node_modules?«</em> — mape po imenu, kjer koli v vaši domači mapi.</li>
+<li><em>»Katera datoteka omenja aachensko pogodbo?«</em> — besede <strong>znotraj</strong> datotek, česar običajno iskanje Poišči datoteke ne zmore, dokler mu ne pokažete mape.</li>
+</ul>
+<p>Usmerite lahko, kje naj išče: privzeto vaša domača mapa, celoten računalnik ali le mapa, ki jo kaže pult. Pove vam, katero od tega je uporabil, tako da se prazen odgovor da prebrati, namesto da bi bil videti kot skomig z rameni.</p>
+<p>Dve meji, ki ju je vredno poznati. macOS nekatera mesta drži zunaj svojega kazala — in zunaj dosega vsake aplikacije brez Polnega dostopa do diska — torej »nič najdenega« ni dokaz, da datoteka ne obstaja; glejte <a href="troubleshooting">Odpravljanje težav</a>. Pravkar ustvarjena datoteka morda še ni v kazalu, in tedaj jo <strong>Poišči datoteke</strong> (Alt+F7), ki mape prehodi samo, vseeno najde.</p>
 <h2 id="upravljanje-klepetov">Upravljanje klepetov</h2>
 <ul>
-<li>Uporabite preklopnik klepetov na vrhu podokna za prehajanje med pogovori.</li>
-<li>Meni <strong>Izbriši ▾</strong> ponuja <strong>Izbriši ta klepet</strong> in <strong>Izbriši vse klepete</strong>, tako da lahko počistite vse naenkrat, ko postane seznam dolg. Prazni klepeti se samodejno počistijo, ko zaprete podokno.</li>
+<li>Z izbirnikom klepetov na vrhu pulta se premikate med pogovori.</li>
+<li>Meni <strong>Izbriši ▾</strong> ponuja <strong>Izbriši ta klepet</strong> in <strong>Izbriši vse klepete</strong>, da lahko vse počistite naenkrat, ko se seznam podaljša. Prazni klepeti se počistijo sami, ko pult zaprete.</li>
 </ul>
 <h2 id="spremembe-se-najprej-potrdijo">Spremembe se najprej potrdijo</h2>
-<p>Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje — pomočnik prikaže <strong>načrt in počaka na vašo potrditev</strong> pred dejanjem. To lahko spremenite v Nastavitvah tako, da dvignete avtonomijo pomočnika, ali jo znižate na samo za branje, da nikoli ničesar ne spremeni.</p>
-<h2 id="nastavitve">Nastavitve</h2>
-<p>Odprite <strong>Konfiguracija ▸ Nastavitve ▸ UI</strong>, da nastavite pomočnika na eni strani:</p>
+<p>Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje — pomočnik pokaže <strong>načrt in počaka na vašo potrditev</strong>, preden ukrepa. To lahko spremenite v Nastavitvah tako, da dvignete samostojnost pomočnika, ali jo spustite na samo za branje, da nikoli ničesar ne spremeni. Kopiranje ali premik je sporočen kot opravljen, ko je opravljen: pomočnik počaka, da se prenos konča, in lahko mu sledite v Upravitelju prenosov kot vsaki drugi operaciji.</p>
+<p><strong>S delom načrta se lahko strinjate.</strong> Ko načrt zajema več datotek — preimenovati celo mapo, počistiti Prenose — se vsaka pokaže kot obkljukana vrstica nad gumbi. Odkljukajte tiste, ki jih želite pustiti pri miru, in pritisnite <strong>Potrdi in izvedi</strong>: preostalo gre naprej, tistega, kar ste odkljukali, pa se ne dotakne. Odkljukati vse je isto kot preklicati, in pomočnik to pove, namesto da bi sporočil, da ni naredil ničesar. Načrt, ki je eno samo dejanje, seznama nima, ker mu Potrdi in Prekliči že rečeta da in ne.</p>
+<h2 id="kaj-je-pomocnik-naredil-in-kako-to-vzeti-nazaj">Kaj je pomočnik naredil in kako to vzeti nazaj</h2>
+<p><strong>Dejanja ▾</strong> v klepetu imajo dva vnosa:</p>
 <ul>
-<li><strong>Prednostni model</strong> — kateri model uporablja klepet <strong>AI Assistant</strong>. Odkar so dejanja v napravi samostojen vtičnik, to zadeva le klepet: <em>Oblak</em> in <em>Samodejno</em> uporabljata končno točko spodaj, <em>V napravi</em> pa klepetu pove, da ni potreben.</li>
-<li><strong>Končna točka oblaka, model in ključ API</strong> — za uporabo modela, združljivega z OpenAI, namesto tistega na napravi. Ključ je shranjen v ključavnici macOS, nikoli v vaših konfiguracijskih datotekah.</li>
-<li><strong>Avtonomija pomočnika</strong> — samo za branje, potrdi spremembe (privzeto) ali samostojno.</li>
-<li><strong>Poljuben sistemski poziv</strong> — izbirna navodila, ki oblikujejo, kako pomočnik odgovarja.</li>
-<li><strong>Strežnik MCP</strong> — izbirni, samo lokalni strežnik, ki zunanjemu agentu omogoča upravljanje aplikacije; privzeto izklopljen in ga je mogoče zaščititi z žetonom.</li>
+<li><strong>Pokaži, kaj je pomočnik naredil…</strong> našteje vsako spremembo, najnovejšo prvo, s tem, kar se je od njega zahtevalo, in kako se je izteklo — vključno s poskusi, ki jih je nastavitev samostojnosti zavrnila. Zunanji agent, povezan prek MCP, je na istem seznamu.</li>
+<li><strong>Razveljavi zadnjo spremembo</strong> vzame nazaj najnovejšo spremembo, ki ima nasprotje: preimenovanje se preimenuje nazaj, premik se premakne nazaj. Kjer ni mogoče vzeti nazaj ničesar, seznam pove zakaj — prepisana datoteka se ni nikjer ohranila, predmete v Košu pa obnovite iz Finderja.</li>
 </ul>
-<p><img alt="Stran UI v Nastavitvah z možnostmi avtonomije in strežnika MCP" src="images/settings-ai.png" />
-<em>(Slika: vse možnosti pomočnika so na eni strani UI v Nastavitvah.)</em></p>
+<p>Lahko tudi preprosto vprašate: <em>»razveljavi to«</em> in <em>»kaj si spremenil?«</em> dosežeta isti dve funkciji.</p>
+<h2 id="stolpci-v-pultu">Stolpci v pultu</h2>
+<p>To, kar so dejanja ugotovila, je na voljo kot stolpci. Dodajte jih v urejevalniku naborov stolpcev: <strong>Povzetek UI</strong> kaže prvo vrstico povzetka, <strong>Vrsta UI</strong>, <strong>Tema UI</strong> in <strong>Datum UI</strong> pa kažejo, kaj je <strong>Uvrsti</strong> naredil iz datoteke — pod temi imeni v slovenščini, prevedenimi v vsakem jeziku. Vsak ostane prazen, dokler kakšno dejanje te datoteke ne prebere — ti stolpci kažejo že opravljeno delo in modela nikoli ne zaženejo sami. <strong>Jezik</strong> v istem vtičniku prepozna, v katerem jeziku je napisana besedilna datoteka, povsem brez modela.</p>
+<p>Isti trije so tudi nadomestki pri preimenovanju. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> v pogovornem oknu za skupinsko preimenovanje (Ctrl+M) mapo, polno datotek <code>dokument1.pdf</code>, poimenuje po tem, kar so: za to ni bilo zgrajeno nič, kajti maska za preimenovanje je <code>[=provider.field]</code> od nekdaj razreševala prek sistema stolpcev. Najprej uvrstite, nato preimenujte. Glava sledi vašemu jeziku; <code>ai_column.ai_topic</code> znotraj maske ne — maska torej deluje naprej, če jezik zamenjate.</p>
+<h2 id="nastavitve">Nastavitve</h2>
+<p>Odprite <strong>Nastavitev ▸ Nastavitve ▸ UI</strong>, da pomočnika nastavite na eni sami strani:</p>
+<ul>
+<li><strong>Model klepeta</strong> — na čem teče klepet <strong>AI Assistant</strong>. Odkar so krajevna dejanja postala svoj vtičnik, sta odgovora dva in ne trije: <em>Končna točka v oblaku spodaj, če ste jo navedli</em>, ali <em>Nič — delo prepusti vtičniku AI On-Device</em>. Stran je združena enako: najprej nastavitve klepeta, pod njimi to, kar smeta obe polovici.</li>
+<li><strong>Končna točka v oblaku, model in ključ API</strong> — za uporabo modela, združljivega z OpenAI, namesto krajevnega. Ključ je shranjen v ključavnici macOS, nikoli v vaših datotekah z nastavitvami.</li>
+<li><strong>Samostojnost pomočnika</strong> — samo za branje, potrdi spremembe (privzeto) ali samostojen.</li>
+<li><strong>Lasten sistemski poziv</strong> — neobvezna navodila, ki oblikujejo, kako pomočnik odgovarja.</li>
+<li><strong>Strežnik MCP</strong> — neobvezen, izključno krajevni strežnik, ki zunanjemu agentu omogoči upravljanje programa; privzeto izklopljen in zaščitljiv z žetonom.</li>
+</ul>
+<p><img alt="Stran UI v Nastavitvah s samostojnostjo in možnostmi strežnika MCP" src="images/settings-ai.png" />
+<em>(Slika: vse možnosti pomočnika živijo na eni sami strani UI v Nastavitvah.)</em></p>
 <h2 id="zasebnost">Zasebnost</h2>
 <ul>
-<li>Z Apple Intelligence pomočnik deluje <strong>na vašem Macu</strong>; nič ne zapusti naprave.</li>
-<li>Model v oblaku se uporabi <strong>le, če ga nastavite</strong>, njegov ključ API pa je shranjen v ključavnici.</li>
-<li>Dejanja, ki spreminjajo datoteke, se potrdijo pred izvedbo, razen če namerno dvignete raven avtonomije.</li>
+<li>Z Apple Intelligence pomočnik teče <strong>na vašem Macu</strong>; naprave ne zapusti nič.</li>
+<li>Model v oblaku se uporabi <strong>le, če ga nastavite</strong>, njegov ključ API pa ostane v ključavnici.</li>
+<li>Dejanja, ki spreminjajo datoteke, se potrdijo, preden se izvedejo, razen če raven samostojnosti namenoma dvignete.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="settings.html">Nastavitve</a></li><li><a href="privacy-and-security.html">Zasebnost in varnost</a></li></ul></section>
 </main>

@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>AI-assistent</h1>
-<p>De AI-assistent is een optionele, verwijderbare plug-in die je helpt in gewone taal met je bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of proeflezen, gegevens in een tabel zetten en zelfs een map ordenen — en hij kan bestandsacties voor je uitvoeren nadat hij je eerst een plan heeft getoond. Hij bestaat uit twee plug-ins: <strong>AI On-Device</strong> draait op Apple Intelligence en levert de acties die een voorstel tonen en toepassen, terwijl <strong>AI Assistant</strong> de chat is en een cloudmodel nodig heeft. Schakel er één in, of allebei. Omdat het een plug-in is, kun je hem volledig uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<p>De AI-assistent is een optionele, verwijderbare plug-in die u helpt in gewone taal met uw bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of nalezen, gegevens in een tabel omzetten en zelfs een map opruimen — en hij kan bestandsacties voor u uitvoeren nadat hij u eerst een plan heeft getoond. Hij komt als twee plug-ins: <strong>AI On-Device</strong> draait op Apple Intelligence en levert de acties die een voorstel tonen en toepassen, terwijl <strong>AI Assistant</strong> de chat is en een cloudmodel nodig heeft. Schakel er één in, of beide. <strong>Ze komen uitgeschakeld binnen.</strong> Zet ze aan in <strong>Configuratie ▸ Plug-ins…</strong> en herstart, of laat ze uit en er verschijnt niets — geen AI ▸-menu, geen chat, geen kolom. Dat is bewust zolang dit in bèta is: hij kan bestanden hernoemen, verplaatsen en verwijderen en shell-opdrachten voor u uitvoeren, elk achter een plan dat u goedkeurt, en dat is veel bereik om standaard aan iets nieuws te geven. Zonder API-sleutel gebeurt alles op uw Mac, dus dit gaat over het bereik en niet over gegevens die het apparaat verlaten. De plug-in <strong>AI Column</strong> toont wat die acties hebben uitgezocht — een samenvatting, een soort, een onderwerp, een datum — als kolommen in het venster; hij start zelf geen model. Hij komt samen met de andere uitgeschakeld binnen en blijft optioneel, en toont niets tot u hem inschakelt en een van zijn kolommen toevoegt. Vanaf dezelfde pagina kunt u beide ook volledig verwijderen.</p>
+<p><strong>Op het apparaat of in de cloud.</strong> Het lokale model is privé en gratis, en het is klein: het neemt een paar duizend woorden tegelijk op. Een <em>heel</em> lang bestand lezen werkt daarom anders — de assistent leest het in stukken en voegt de resultaten samen, wat langer duurt naarmate het bestand langer is. Voor zwaar werk over veel bestanden, of voor lange gesprekken, is een cloudmodel sneller en houdt het meer tegelijk vast. De acties in het rechtermuisknopmenu draaien altijd op uw Mac; de chat is de helft die een eindpunt wil, en <strong>Instellingen ▸ AI</strong> is waar u er een opgeeft.</p>
 <h2 id="de-assistent-openen">De assistent openen</h2>
-<p>Kies <strong>Opdrachten ▸ AI Assistant</strong> om de assistent te tonen in een vastgezet paneel aan de rechterkant van het venster. Typ een verzoek en druk op Return; de assistent kan bestanden lezen, dingen opzoeken en — met jouw bevestiging — wijzigingen aanbrengen.</p>
-<p><img alt="De AI-assistentchat vastgezet naast de bestandspanelen" src="images/ai-chat.png" />
-<em>(Afbeelding: De AI-assistent, rechts vastgezet, werkt aan een verzoek.)</em></p>
-<h2 id="rechtsklikacties-ai">Rechtsklikacties (AI ▸)</h2>
-<p>De snelste manier om de assistent te gebruiken is het <strong>AI ▸</strong>-submenu in het rechtsklikmenu:</p>
+<p>Kies <strong>Opdrachten ▸ AI-assistent</strong> om de assistent in een vastgezet paneel rechts in het venster te tonen. Typ een verzoek en druk op Enter; de assistent kan bestanden lezen, dingen opzoeken en — met uw bevestiging — wijzigingen aanbrengen.</p>
+<p><img alt="De chat van de AI-assistent naast de bestandsvensters" src="images/ai-chat.png" />
+<em>(Afbeelding: de AI-assistent, rechts vastgezet, werkend aan een verzoek.)</em></p>
+<h2 id="acties-in-het-rechtermuisknopmenu-ai">Acties in het rechtermuisknopmenu (AI ▸)</h2>
+<p>De snelste manier om de assistent te gebruiken is het submenu <strong>AI ▸</strong> in het rechtermuisknopmenu:</p>
 <ul>
-<li><strong>Op een bestand</strong> — Samenvatten, Uitleggen, Naam voorstellen, Opmerking voorstellen, Vertalen naar Engels, Proeflezen, Taken detecteren en Tabel maken.</li>
-<li><strong>Op de paneelachtergrond</strong> — Zoeken op betekenis, Deze map ordenen en Waarschijnlijke duplicaten vinden.</li>
+<li><strong>Op een bestand</strong> — Samenvatten, Uitleggen, Indelen, Naam voorstellen, Opmerking voorstellen, Naar het Engels vertalen, Nalezen, Taken herkennen en Tabel maken.</li>
+<li><strong>Op de achtergrond van het venster</strong> — Deze map opruimen, Zoeken op betekenis en Waarschijnlijke duplicaten vinden.</li>
 </ul>
-<p><strong>Samenvatten</strong>, <strong>Uitleggen</strong>, <strong>Naam voorstellen</strong>, <strong>Opmerking voorstellen</strong> en <strong>Deze map ordenen</strong> komen uit de plug-in <strong>AI On-Device</strong> en doen hun werk zonder een chat te openen: ze tonen hun voorstel in een blad, u vinkt uit wat u ongemoeid wilt laten, en er verandert niets op schijf tot u akkoord gaat. De overige acties horen bij de plug-in <strong>AI Assistant</strong> en openen hun eigen benoemde chat, zodat verschillende taken gescheiden blijven. Wanneer u zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.</p>
-<h2 id="je-chats-beheren">Je chats beheren</h2>
+<p><strong>Samenvatten</strong>, <strong>Uitleggen</strong>, <strong>Indelen</strong>, <strong>Naam voorstellen</strong>, <strong>Opmerking voorstellen</strong>, <strong>Tabel maken</strong> en <strong>Deze map opruimen</strong> komen van de plug-in <strong>AI On-Device</strong> en doen hun werk zonder ook maar een chat te openen — ook op een scan of een schermafbeelding, omdat de woorden eerst van het beeld worden gelezen: ze tonen hun voorstel in een blad, u vinkt uit wat u met rust wilt laten, en er verandert niets op schijf tot u goedkeurt. De overige acties horen bij de plug-in <strong>AI Assistant</strong> en openen hun <strong>eigen chat met titel</strong> (bijvoorbeeld <em>Vertalen – rapport.txt</em>), zodat verschillende taken gescheiden blijven in plaats van zich op te stapelen in één lang gesprek. Wanneer u zelf in het invoerveld typt, zet dat verzoek de huidige chat voort.</p>
+<p><strong>Meerdere bestanden tegelijk.</strong> Markeer een selectie en de actie loopt over elk gemarkeerd bestand, het een na het ander. De acties die een blad gebruiken tonen daarin hun voortgang en <strong>Annuleren</strong> stopt tussen bestanden; die welke een chat openen zetten de voortgang in de statusbalk, waar <strong>Stoppen</strong> hetzelfde doet. In beide gevallen kunt u de eerste resultaten bekijken en het afbreken.</p>
+<p><strong>Naam voorstellen</strong> eindigt in een knop in plaats van een zin: de voorgestelde naam verschijnt in een balk onder het gesprek, met een knop <strong>Hernoemen</strong> ernaast. Die indrukken is de goedkeuring — er wordt niet twee keer gevraagd.</p>
+<h3 id="uw-eigen-formuleringen">Uw eigen formuleringen</h3>
+<p>Wat elke actie aan het model vraagt is een tekstbestand dat u kunt bewerken: <code>aichat/skills.json</code> voor de bestandsacties en <code>aichat/folder-skills.json</code> voor die van mappen, in uw configuratiemap. Beide worden bij de eerste start van de assistent met de ingebouwde formuleringen weggeschreven, zodat u het formaat ziet. <code>{name}</code> en <code>{path}</code> staan voor het bestand. Verwijder een bestand om terug te gaan naar de ingebouwde formulering.</p>
+<p><strong>Eigen acties.</strong> Voeg een item toe met een <code>id</code> naar keuze, en het kan als elke andere opdracht worden uitgevoerd door <code>plugin.ai.skill.&lt;id&gt;</code> te noemen — in het gebruikersmenu, op de knoppenbalk of op een sneltoets. (Voor een mapactie, <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Het submenu <strong>AI ▸</strong> somt alleen de ingebouwde acties op: het wordt uit het manifest van de plug-in opgebouwd zonder die te laden, zodat een uitgeschakelde plug-in er niets aan bijdraagt — daarom plaatst u uw eigen acties zelf in plaats van dat ze daar verschijnen. Noem een id dat niet bestaat en de assistent zegt dat, in plaats van niets te doen.</p>
+<h2 id="hem-een-bestand-laten-vinden">Hem een bestand laten vinden</h2>
+<p>U hoeft niet te weten waar een bestand staat. Beschrijf het en de assistent zoekt het op in de index die macOS al van uw schijf bijhoudt — er valt dus niets te bouwen en er hoeft niets ingelopen te worden.</p>
 <ul>
-<li>Gebruik de chatwisselaar boven in het paneel om tussen gesprekken te schakelen.</li>
-<li>Het menu <strong>Verwijder ▾</strong> biedt <strong>Deze chat verwijderen</strong> en <strong>Alle chats verwijderen</strong>, zodat je alles in één keer kunt wissen als de lijst lang wordt. Lege chats worden automatisch opgeruimd wanneer je het paneel sluit.</li>
+<li><em>"Zoek de PDF-factuur van vorige maand"</em> — een soort, een woord in de naam en een tijdvenster.</li>
+<li><em>"Waar staan al mijn node_modules-mappen?"</em> — mappen, op naam, overal in uw persoonlijke map.</li>
+<li><em>"Welk bestand noemt het contract van Aken?"</em> — woorden <strong>in</strong> bestanden, wat de gewone zoekfunctie Bestanden zoeken niet kan tenzij u haar eerst een map aanwijst.</li>
+</ul>
+<p>U kunt sturen waar hij kijkt: standaard uw persoonlijke map, de hele computer, of alleen de map die een venster toont. Hij vertelt welke daarvan hij gebruikte, zodat een leeg antwoord te lezen valt in plaats van op een schouderophalen te lijken.</p>
+<p>Twee grenzen die het weten waard zijn. macOS houdt sommige plaatsen buiten zijn index — en buiten bereik van elke app zonder Volledige schijftoegang — dus "niets gevonden" bewijst niet dat een bestand niet bestaat; zie <a href="troubleshooting">Problemen oplossen</a>. En een net aangemaakt bestand is misschien nog niet geïndexeerd, in welk geval <strong>Bestanden zoeken</strong> (Alt+F7), dat zelf door mappen loopt, het toch vindt.</p>
+<h2 id="uw-chats-beheren">Uw chats beheren</h2>
+<ul>
+<li>Gebruik de chatkiezer boven in het paneel om tussen gesprekken te wisselen.</li>
+<li>Het menu <strong>Verwijderen ▾</strong> biedt <strong>Deze chat verwijderen</strong> en <strong>Alle chats verwijderen</strong>, zodat u alles in één keer kunt opruimen als de lijst lang wordt. Lege chats worden automatisch opgeruimd wanneer u het paneel sluit.</li>
 </ul>
 <h2 id="wijzigingen-worden-eerst-bevestigd">Wijzigingen worden eerst bevestigd</h2>
-<p>Voor alles wat bestanden wijzigt — verplaatsen, hernoemen, schrijven, verwijderen — toont de assistent een <strong>plan en wacht op jouw bevestiging</strong> voordat hij handelt. Je kunt dit in Instellingen wijzigen door de autonomie van de assistent te verhogen, of deze naar alleen-lezen verlagen zodat hij nooit iets wijzigt.</p>
-<h2 id="instellingen">Instellingen</h2>
-<p>Open <strong>Configuratie ▸ Instellingen ▸ AI</strong> om de assistent op één pagina te configureren:</p>
+<p>Voor alles wat bestanden wijzigt — verplaatsen, hernoemen, schrijven, verwijderen — toont de assistent een <strong>plan en wacht op uw bevestiging</strong> voordat hij handelt. U kunt dat in de Instellingen veranderen door de autonomie van de assistent te verhogen, of hem tot alleen-lezen verlagen zodat hij nooit iets wijzigt. Een kopie of verplaatsing wordt als klaar gemeld wanneer die klaar is: de assistent wacht tot de overdracht voltooid is, en u kunt die in de Overdrachtsbeheerder volgen als elke andere bewerking.</p>
+<p><strong>U kunt met een deel van een plan instemmen.</strong> Wanneer een plan meerdere bestanden omvat — een hele map hernoemen, uw Downloads leegruimen — verschijnt elk als een aangevinkte regel boven de knoppen. Vink uit wat u met rust wilt laten en druk op <strong>Bevestigen en uitvoeren</strong>: de rest gaat door, en wat u uitvinkte blijft onaangeroerd. Alles uitvinken staat gelijk aan annuleren, en de assistent zegt dat in plaats van te melden dat hij niets deed. Een plan dat één enkele actie is heeft geen lijst, omdat Bevestigen en Annuleren daar al ja en nee tegen zeggen.</p>
+<h2 id="wat-de-assistent-deed-en-het-terugnemen">Wat de assistent deed, en het terugnemen</h2>
+<p><strong>Acties ▾</strong> in de chat heeft twee items:</p>
 <ul>
-<li><strong>Voorkeursmodel</strong> — welk model de chat <strong>AI Assistant</strong> gebruikt. Sinds de acties op het apparaat een eigen plug-in zijn, geldt dit alleen voor de chat: <em>Cloud</em> en <em>Automatisch</em> gebruiken beide het eindpunt hieronder, en <em>Op het apparaat</em> zegt de chat dat hij niet nodig is.</li>
-<li><strong>Cloud-eindpunt, model en API-sleutel</strong> — om een OpenAI-compatibel model te gebruiken in plaats van dat op het apparaat. De sleutel wordt bewaard in de macOS-sleutelhanger, nooit in je configuratiebestanden.</li>
-<li><strong>Autonomie van de assistent</strong> — alleen-lezen, wijzigingen bevestigen (de standaard) of autonoom.</li>
-<li><strong>Aangepaste systeemprompt</strong> — optionele instructies die bepalen hoe de assistent antwoordt.</li>
-<li><strong>MCP-server</strong> — een optionele, uitsluitend lokale server waarmee een externe agent de app kan aansturen; standaard uit en met een token te beschermen.</li>
+<li><strong>Tonen wat de assistent deed…</strong> somt elke wijziging op, de nieuwste eerst, met wat er gevraagd werd en hoe het afliep — inclusief pogingen die de autonomie-instelling weigerde. Een extern agent dat via MCP verbonden is staat in dezelfde lijst.</li>
+<li><strong>Laatste wijziging ongedaan maken</strong> neemt de meest recente wijziging terug die een omkering heeft: een hernoeming wordt teruggenoemd, een verplaatsing teruggeplaatst. Waar niets teruggenomen kan worden, zegt de lijst waarom — een overschreven bestand is nergens bewaard, en items in de Prullenmand herstelt u vanuit de Finder.</li>
 </ul>
-<p><img alt="De AI-pagina in Instellingen met de opties voor autonomie en de MCP-server" src="images/settings-ai.png" />
-<em>(Afbeelding: Alle assistentopties staan op één AI-pagina in Instellingen.)</em></p>
+<p>U kunt het ook gewoon vragen: <em>"maak dat ongedaan"</em> en <em>"wat heb je gewijzigd?"</em> bereiken dezelfde twee functies.</p>
+<h2 id="kolommen-in-het-venster">Kolommen in het venster</h2>
+<p>Wat de acties hebben uitgezocht is als kolommen beschikbaar. Voeg ze toe via de kolomseteditor: <strong>AI-samenvatting</strong> toont de eerste regel van een samenvatting, en <strong>AI-soort</strong>, <strong>AI-onderwerp</strong> en <strong>AI-datum</strong> tonen wat <strong>Indelen</strong> van een bestand maakte — onder die namen in het Nederlands, vertaald in elke taal. Elk blijft leeg tot een actie dat bestand gelezen heeft — deze kolommen tonen al verricht werk en starten het model nooit zelf. <strong>Taal</strong> in dezelfde plug-in herkent in welke taal een tekstbestand geschreven is, geheel zonder model.</p>
+<p>Diezelfde drie zijn ook hernoemtekens. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> in het venster voor meervoudig hernoemen (Ctrl+M) geeft een map vol <code>dokument1.pdf</code>-bestanden de naam van wat ze zijn: daarvoor is niets gebouwd, want het hernoemmasker heeft <code>[=provider.field]</code> altijd via het kolomsysteem opgelost. Eerst indelen, dan hernoemen. De kop volgt uw taal; de <code>ai_column.ai_topic</code> in het masker niet — een masker blijft dus werken als u van taal wisselt.</p>
+<h2 id="instellingen">Instellingen</h2>
+<p>Open <strong>Configuratie ▸ Instellingen ▸ AI</strong> om de assistent op één pagina in te stellen:</p>
+<ul>
+<li><strong>Chatmodel</strong> — waarop de chat <strong>AI Assistant</strong> draait. Sinds de lokale acties hun eigen plug-in werden zijn er twee antwoorden, geen drie: <em>Het cloudeindpunt hieronder, als u er een hebt opgegeven</em>, of <em>Niets — het werk aan de plug-in AI On-Device laten</em>. De pagina is net zo gegroepeerd: eerst de instellingen van de chat, daaronder wat beide helften mogen doen.</li>
+<li><strong>Cloudeindpunt, model en API-sleutel</strong> — om een OpenAI-compatibel model te gebruiken in plaats van het lokale. De sleutel staat in de macOS-sleutelhanger, nooit in uw configuratiebestanden.</li>
+<li><strong>Autonomie van de assistent</strong> — alleen-lezen, wijzigingen bevestigen (standaard) of autonoom.</li>
+<li><strong>Eigen systeemprompt</strong> — optionele aanwijzingen die bepalen hoe de assistent antwoordt.</li>
+<li><strong>MCP-server</strong> — een optionele, uitsluitend lokale server waarmee een extern agent de app kan aansturen; standaard uit en met een token te beveiligen.</li>
+</ul>
+<p><img alt="De AI-pagina in de Instellingen met autonomie en de MCP-serveropties" src="images/settings-ai.png" />
+<em>(Afbeelding: alle opties van de assistent staan op één AI-pagina in de Instellingen.)</em></p>
 <h2 id="privacy">Privacy</h2>
 <ul>
-<li>Met Apple Intelligence draait de assistent <strong>op je Mac</strong>; er verlaat niets het apparaat.</li>
-<li>Een cloudmodel wordt <strong>alleen gebruikt als je er een configureert</strong>, en de API-sleutel blijft in de sleutelhanger.</li>
-<li>Bestandswijzigende acties worden bevestigd voordat ze worden uitgevoerd, tenzij je het autonomieniveau bewust verhoogt.</li>
+<li>Met Apple Intelligence draait de assistent <strong>op uw Mac</strong>; er verlaat niets het apparaat.</li>
+<li>Een cloudmodel wordt <strong>alleen gebruikt als u er een instelt</strong>, en de API-sleutel blijft in de sleutelhanger.</li>
+<li>Acties die bestanden wijzigen worden bevestigd voordat ze draaien, tenzij u het autonomieniveau bewust verhoogt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="settings.html">Instellingen</a></li><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li></ul></section>
 </main>

@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Asystent AI</h1>
-<p>Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Składa się z dwóch wtyczek: <strong>AI On-Device</strong> działa na Apple Intelligence i udostępnia działania, które pokazują propozycję i ją stosują, a <strong>AI Assistant</strong> to czat wymagający modelu w chmurze. Włącz jedną z nich albo obie. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
-<h2 id="otwarcie-asystenta">Otwarcie asystenta</h2>
-<p>Wybierz <strong>Polecenia ▸ Asystent AI</strong>, aby wyświetlić asystenta w zadokowanym panelu po prawej stronie okna. Wpisz zapytanie i naciśnij Enter; asystent może czytać pliki, wyszukiwać informacje i — za Twoim potwierdzeniem — wprowadzać zmiany.</p>
+<p>Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami zwykłym językiem. Potrafi streścić lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i potrafi wykonać za Ciebie operacje na plikach, pokazawszy najpierw plan. Przychodzi jako dwie wtyczki: <strong>AI On-Device</strong> działa na Apple Intelligence i daje akcje, które pokazują propozycję i ją stosują, a <strong>AI Assistant</strong> to czat i wymaga modelu w chmurze. Włącz jedną albo obie. <strong>Przychodzą wyłączone.</strong> Włącz je w <strong>Konfiguracja ▸ Wtyczki…</strong> i uruchom ponownie, albo zostaw wyłączone i nic się nie pojawi — żadnego menu AI ▸, żadnego czatu, żadnej kolumny. To celowe, dopóki funkcja jest w wersji beta: potrafi zmieniać nazwy plików, przenosić je i usuwać oraz uruchamiać za Ciebie polecenia powłoki, każde za planem, który zatwierdzasz, a to dużo zasięgu, by domyślnie powierzać go nowości. Bez klucza API wszystko dzieje się na Twoim Macu, więc chodzi o zasięg, a nie o dane opuszczające maszynę. Wtyczka <strong>AI Column</strong> pokazuje, co te akcje ustaliły — streszczenie, rodzaj, temat, datę — jako kolumny panelu; sama nie uruchamia żadnego modelu. Przychodzi wyłączona razem z nimi i pozostaje opcjonalna, i nie pokazuje nic, dopóki jej nie włączysz i nie dodasz którejś z jej kolumn. Z tej samej strony możesz też usunąć każdą z nich całkowicie.</p>
+<p><strong>Na urządzeniu czy w chmurze.</strong> Model lokalny jest prywatny i darmowy, i jest mały: przyjmuje kilka tysięcy słów naraz. Przeczytanie <em>całego</em> długiego pliku działa więc inaczej — asystent czyta go partiami i składa wyniki, co trwa tym dłużej, im plik jest dłuższy. Do ciężkiej pracy na wielu plikach albo do długich rozmów model w chmurze jest szybszy i utrzymuje więcej naraz. Akcje z menu kontekstowego zawsze działają na Twoim Macu; to czat jest tą połową, która chce punktu końcowego, a <strong>Ustawienia ▸ AI</strong> to miejsce, gdzie mu go podajesz.</p>
+<h2 id="otwieranie-asystenta">Otwieranie asystenta</h2>
+<p>Wybierz <strong>Polecenia ▸ Asystent AI</strong>, aby pokazać asystenta w panelu zadokowanym po prawej stronie okna. Wpisz żądanie i naciśnij Enter; asystent potrafi czytać pliki, wyszukiwać informacje i — za Twoim potwierdzeniem — wprowadzać zmiany.</p>
 <p><img alt="Czat asystenta AI zadokowany obok paneli plików" src="images/ai-chat.png" />
-<em>(Rysunek: asystent AI, zadokowany po prawej, pracuje nad zapytaniem.)</em></p>
-<h2 id="akcje-prawego-przycisku-ai">Akcje prawego przycisku (AI ▸)</h2>
-<p>Najszybszym sposobem korzystania z asystenta jest podmenu <strong>AI ▸</strong> w menu prawego przycisku:</p>
+<em>(Rysunek: asystent AI, zadokowany po prawej, pracuje nad żądaniem.)</em></p>
+<h2 id="akcje-w-menu-kontekstowym-ai">Akcje w menu kontekstowym (AI ▸)</h2>
+<p>Najszybszy sposób użycia asystenta to podmenu <strong>AI ▸</strong> w menu kontekstowym:</p>
 <ul>
-<li><strong>Na pliku</strong> — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Zaproponuj komentarz, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.</li>
-<li><strong>Na tle panelu</strong> — Szukaj według znaczenia, Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.</li>
+<li><strong>Na pliku</strong> — Streść, Wyjaśnij, Zaklasyfikuj, Zaproponuj nazwę, Zaproponuj komentarz, Przetłumacz na angielski, Sprawdź tekst, Wykryj zadania i Utwórz tabelę.</li>
+<li><strong>Na tle panelu</strong> — Uporządkuj ten folder, Szukaj według znaczenia i Znajdź prawdopodobne duplikaty.</li>
 </ul>
-<p><strong>Podsumuj</strong>, <strong>Wyjaśnij</strong>, <strong>Zaproponuj nazwę</strong>, <strong>Zaproponuj komentarz</strong> i <strong>Uporządkuj ten folder</strong> pochodzą z wtyczki <strong>AI On-Device</strong> i wykonują swoją pracę bez otwierania czatu: pokazują propozycję w arkuszu, odznaczasz to, co ma pozostać bez zmian, a na dysku nic się nie zmienia, dopóki nie zatwierdzisz. Pozostałe działania należą do wtyczki <strong>AI Assistant</strong> i otwierają własny nazwany czat, dzięki czemu zadania pozostają rozdzielone. Gdy sam wpiszesz coś w polu wejściowym, to żądanie kontynuuje bieżący czat.</p>
+<p><strong>Streść</strong>, <strong>Wyjaśnij</strong>, <strong>Zaklasyfikuj</strong>, <strong>Zaproponuj nazwę</strong>, <strong>Zaproponuj komentarz</strong>, <strong>Utwórz tabelę</strong> i <strong>Uporządkuj ten folder</strong> pochodzą z wtyczki <strong>AI On-Device</strong> i wykonują swoją pracę bez otwierania czatu — także na skanie czy zrzucie ekranu, bo słowa są najpierw odczytywane z obrazu: pokazują propozycję w arkuszu, Ty odznaczasz to, co ma zostać nietknięte, i nic na dysku się nie zmienia, dopóki nie zatwierdzisz. Pozostałe akcje należą do wtyczki <strong>AI Assistant</strong> i otwierają <strong>własny, zatytułowany czat</strong> (na przykład <em>Przetłumacz – raport.txt</em>), dzięki czemu różne zadania pozostają rozdzielone, zamiast piętrzyć się w jednej długiej rozmowie. Gdy sam wpiszesz coś w polu wprowadzania, takie żądanie kontynuuje bieżący czat.</p>
+<p><strong>Kilka plików naraz.</strong> Zaznacz wybór, a akcja wykona się na każdym zaznaczonym pliku, jeden po drugim. Akcje korzystające z arkusza pokazują w nim postęp, a <strong>Anuluj</strong> zatrzymuje się między plikami; te, które otwierają czat, umieszczają postęp na pasku stanu, gdzie <strong>Zatrzymaj</strong> robi to samo. Tak czy inaczej możesz obejrzeć pierwsze wyniki i przerwać.</p>
+<p><strong>Zaproponuj nazwę</strong> kończy się przyciskiem, a nie zdaniem: proponowana nazwa pojawia się w pasku pod rozmową, a obok niej przycisk <strong>Zmień nazwę</strong>. Naciśnięcie go jest zatwierdzeniem — nie pytamy dwa razy.</p>
+<h3 id="wasne-sformuowania">Własne sformułowania</h3>
+<p>To, o co każda akcja prosi model, jest plikiem tekstowym, który możesz edytować: <code>aichat/skills.json</code> dla akcji na plikach i <code>aichat/folder-skills.json</code> dla akcji na folderach, w Twoim folderze konfiguracyjnym. Oba są zapisywane z wbudowanymi sformułowaniami przy pierwszym uruchomieniu asystenta, żebyś zobaczył format. <code>{name}</code> i <code>{path}</code> oznaczają plik. Usuń plik, aby wrócić do wbudowanego sformułowania.</p>
+<p><strong>Własne akcje.</strong> Dodaj wpis z wybranym przez siebie <code>id</code>, a będzie można go uruchomić jak każde inne polecenie, podając <code>plugin.ai.skill.&lt;id&gt;</code> — w menu użytkownika, na pasku przycisków lub na skrócie klawiszowym. (Dla akcji na folderze <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Podmenu <strong>AI ▸</strong> wymienia tylko akcje wbudowane: jest budowane z manifestu wtyczki bez jej ładowania, tak by wyłączona wtyczka nic do niego nie wnosiła — dlatego własne akcje umieszczasz sam, zamiast oczekiwać, że się tam pojawią. Podaj id, które nie istnieje, a asystent to powie, zamiast nie zrobić nic.</p>
+<h2 id="popros-go-o-znalezienie-pliku">Poproś go o znalezienie pliku</h2>
+<p>Nie musisz wiedzieć, gdzie plik leży. Opisz go, a asystent odszuka go w indeksie, który macOS już prowadzi dla Twojego dysku — nie ma więc nic do zbudowania ani czekania, aż nadrobi zaległości.</p>
+<ul>
+<li><em>„Znajdź fakturę PDF z zeszłego miesiąca"</em> — rodzaj, słowo w nazwie i okno czasowe.</li>
+<li><em>„Gdzie są wszystkie moje foldery node_modules?"</em> — foldery, po nazwie, gdziekolwiek w Twoim folderze domowym.</li>
+<li><em>„Który plik wspomina o umowie akwizgrańskiej?"</em> — słowa <strong>wewnątrz</strong> plików, czego zwykłe wyszukiwanie Znajdź pliki nie potrafi, dopóki nie wskażesz mu folderu.</li>
+</ul>
+<p>Możesz pokierować, gdzie ma szukać: domyślnie Twój folder domowy, cały komputer albo tylko folder pokazywany w panelu. Asystent mówi, którego użył, więc pustą odpowiedź da się przeczytać, zamiast przypominać wzruszenie ramionami.</p>
+<p>Dwie granice warte poznania. macOS trzyma niektóre miejsca poza swoim indeksem — i poza zasięgiem każdej aplikacji bez Pełnego dostępu do dysku — więc „nic nie znaleziono" nie jest dowodem, że plik nie istnieje; zobacz <a href="troubleshooting">Rozwiązywanie problemów</a>. A świeżo utworzony plik może jeszcze nie być zindeksowany, i wtedy <strong>Znajdź pliki</strong> (Alt+F7), które samo przechodzi foldery, znajdzie go mimo to.</p>
 <h2 id="zarzadzanie-czatami">Zarządzanie czatami</h2>
 <ul>
-<li>Użyj przełącznika czatów u góry panelu, aby przechodzić między rozmowami.</li>
-<li>Menu <strong>Usuń ▾</strong> oferuje <strong>Usuń ten czat</strong> i <strong>Usuń wszystkie czaty</strong>, dzięki czemu możesz wyczyścić wszystko naraz, gdy lista się wydłuży. Puste czaty są automatycznie usuwane po zamknięciu panelu.</li>
+<li>Przełącznikiem czatów u góry panelu przechodzisz między rozmowami.</li>
+<li>Menu <strong>Usuń ▾</strong> oferuje <strong>Usuń ten czat</strong> i <strong>Usuń wszystkie czaty</strong>, więc gdy lista się wydłuży, wyczyścisz wszystko naraz. Puste czaty są sprzątane automatycznie przy zamknięciu panelu.</li>
 </ul>
 <h2 id="zmiany-sa-najpierw-potwierdzane">Zmiany są najpierw potwierdzane</h2>
-<p>W przypadku wszystkiego, co modyfikuje pliki — przenoszenia, zmiany nazwy, zapisu, usuwania — asystent pokazuje <strong>plan i czeka na Twoje potwierdzenie</strong> przed działaniem. Możesz to zmienić w Ustawieniach, zwiększając autonomię asystenta, lub obniżyć ją do tylko do odczytu, aby nigdy niczego nie zmieniał.</p>
+<p>Przy wszystkim, co zmienia pliki — przenoszeniu, zmianie nazwy, zapisie, usuwaniu — asystent pokazuje <strong>plan i czeka na Twoje potwierdzenie</strong>, zanim zadziała. Możesz to zmienić w Ustawieniach, podnosząc samodzielność asystenta, albo obniżyć ją do tylko do odczytu, by nigdy niczego nie zmieniał. Kopiowanie lub przeniesienie jest zgłaszane jako wykonane, gdy jest wykonane: asystent czeka na zakończenie transferu, a Ty możesz go śledzić w Menedżerze transferów jak każdą inną operację.</p>
+<p><strong>Możesz zgodzić się na część planu.</strong> Gdy plan obejmuje kilka plików — zmianę nazw całego folderu, opróżnienie Pobranych — każdy pojawia się jako zaznaczony wiersz nad przyciskami. Odznacz te, które mają zostać nietknięte, i naciśnij <strong>Potwierdź i wykonaj</strong>: reszta idzie dalej, a to, co odznaczyłeś, nie zostaje ruszone. Odznaczenie wszystkiego jest tym samym co anulowanie, i asystent to mówi, zamiast zgłaszać, że nic nie zrobił. Plan będący pojedynczą akcją nie ma listy, bo Potwierdź i Anuluj już mówią mu tak i nie.</p>
+<h2 id="co-asystent-zrobi-i-jak-to-cofnac">Co asystent zrobił i jak to cofnąć</h2>
+<p><strong>Akcje ▾</strong> w czacie mają dwie pozycje:</p>
+<ul>
+<li><strong>Pokaż, co asystent zrobił…</strong> wymienia każdą zmianę, najnowszą jako pierwszą, z tym, o co go poproszono i jak się skończyło — łącznie z próbami, które ustawienie samodzielności odrzuciło. Zewnętrzny agent połączony przez MCP jest na tej samej liście.</li>
+<li><strong>Cofnij ostatnią zmianę</strong> wycofuje najnowszą zmianę, która ma odwrotność: zmiana nazwy zostaje odwrócona, przeniesienie przeniesione z powrotem. Tam, gdzie nic nie da się wycofać, lista mówi dlaczego — nadpisany plik nie został nigdzie zachowany, a elementy w Koszu przywraca się z Findera.</li>
+</ul>
+<p>Możesz też po prostu poprosić: <em>„cofnij to"</em> i <em>„co zmieniłeś?"</em> sięgają do tych samych dwóch funkcji.</p>
+<h2 id="kolumny-panelu">Kolumny panelu</h2>
+<p>To, co akcje ustaliły, jest dostępne jako kolumny. Dodaj je w edytorze zestawów kolumn: <strong>Podsumowanie AI</strong> pokazuje pierwszy wiersz streszczenia, a <strong>Rodzaj AI</strong>, <strong>Temat AI</strong> i <strong>Data AI</strong> pokazują, co <strong>Zaklasyfikuj</strong> zrobiło z pliku — pod tymi nazwami po polsku, przetłumaczonymi w każdym języku. Każda pozostaje pusta, dopóki jakaś akcja nie przeczyta danego pliku — te kolumny pokazują pracę już wykonaną i nigdy same nie uruchamiają modelu. <strong>Język</strong> w tej samej wtyczce rozpoznaje, w jakim języku napisany jest plik tekstowy, całkiem bez modelu.</p>
+<p>Te same trzy są też symbolami zmiany nazw. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> w oknie zbiorczej zmiany nazw (Ctrl+M) nadaje folderowi pełnemu plików <code>dokument1.pdf</code> nazwy według tego, czym są: nic do tego nie zbudowano, bo maska zmiany nazw od zawsze rozwiązuje <code>[=provider.field]</code> przez system kolumn. Najpierw zaklasyfikuj, potem zmień nazwy. Nagłówek podąża za Twoim językiem; <code>ai_column.ai_topic</code> wewnątrz maski nie — maska działa więc dalej, gdy zmienisz język.</p>
 <h2 id="ustawienia">Ustawienia</h2>
 <p>Otwórz <strong>Konfiguracja ▸ Ustawienia ▸ AI</strong>, aby skonfigurować asystenta na jednej stronie:</p>
 <ul>
-<li><strong>Preferowany model</strong> — jakiego modelu używa czat <strong>AI Assistant</strong>. Odkąd działania na urządzeniu stały się osobną wtyczką, dotyczy to tylko czatu: <em>Chmura</em> i <em>Automatycznie</em> korzystają z punktu końcowego poniżej, a <em>Na urządzeniu</em> mówi czatowi, że nie jest potrzebny.</li>
-<li><strong>Punkt końcowy chmury, model i klucz API</strong> — aby użyć modelu zgodnego z OpenAI zamiast tego na urządzeniu. Klucz jest przechowywany w pęku kluczy macOS, nigdy w plikach konfiguracji.</li>
-<li><strong>Autonomia asystenta</strong> — tylko do odczytu, potwierdzaj zmiany (domyślnie) lub autonomiczny.</li>
-<li><strong>Niestandardowy monit systemowy</strong> — opcjonalne instrukcje kształtujące odpowiedzi asystenta.</li>
-<li><strong>Serwer MCP</strong> — opcjonalny, tylko lokalny serwer, który pozwala zewnętrznemu agentowi sterować aplikacją; domyślnie wyłączony i chroniony tokenem.</li>
+<li><strong>Model czatu</strong> — na czym działa czat <strong>AI Assistant</strong>. Odkąd akcje lokalne stały się osobną wtyczką, odpowiedzi są dwie, nie trzy: <em>Punkt końcowy w chmurze poniżej, jeśli jakiś podałeś</em>, albo <em>Nic — zostaw pracę wtyczce AI On-Device</em>. Strona jest pogrupowana tak samo: najpierw ustawienia czatu, pod nimi to, co wolno obu połowom.</li>
+<li><strong>Punkt końcowy w chmurze, model i klucz API</strong> — aby użyć modelu zgodnego z OpenAI zamiast lokalnego. Klucz jest przechowywany w pęku kluczy macOS, nigdy w plikach konfiguracyjnych.</li>
+<li><strong>Samodzielność asystenta</strong> — tylko do odczytu, potwierdzaj zmiany (domyślnie) lub samodzielny.</li>
+<li><strong>Własny prompt systemowy</strong> — opcjonalne wskazówki kształtujące sposób, w jaki asystent odpowiada.</li>
+<li><strong>Serwer MCP</strong> — opcjonalny, wyłącznie lokalny serwer pozwalający zewnętrznemu agentowi sterować aplikacją; domyślnie wyłączony i możliwy do zabezpieczenia tokenem.</li>
 </ul>
-<p><img alt="Strona AI w Ustawieniach z opcjami autonomii i serwera MCP" src="images/settings-ai.png" />
-<em>(Rysunek: wszystkie opcje asystenta znajdują się na jednej stronie AI w Ustawieniach.)</em></p>
+<p><img alt="Strona AI w Ustawieniach z samodzielnością i opcjami serwera MCP" src="images/settings-ai.png" />
+<em>(Rysunek: wszystkie opcje asystenta są na jednej stronie AI w Ustawieniach.)</em></p>
 <h2 id="prywatnosc">Prywatność</h2>
 <ul>
 <li>Z Apple Intelligence asystent działa <strong>na Twoim Macu</strong>; nic nie opuszcza urządzenia.</li>
-<li>Model w chmurze jest używany <strong>tylko wtedy, gdy go skonfigurujesz</strong>, a jego klucz API jest przechowywany w pęku kluczy.</li>
-<li>Operacje zmieniające pliki są potwierdzane przed wykonaniem, chyba że celowo podniesiesz poziom autonomii.</li>
+<li>Model w chmurze jest używany <strong>tylko wtedy, gdy jakiś skonfigurujesz</strong>, a jego klucz API zostaje w pęku kluczy.</li>
+<li>Akcje zmieniające pliki są potwierdzane przed wykonaniem, chyba że świadomie podniesiesz poziom samodzielności.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="settings.html">Ustawienia</a></li><li><a href="privacy-and-security.html">Prywatność i bezpieczeństwo</a></li></ul></section>
 </main>

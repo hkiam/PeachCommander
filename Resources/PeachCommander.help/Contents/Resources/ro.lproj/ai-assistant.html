@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Asistent IA</h1>
-<p>Asistentul IA este un plugin opțional, care poate fi eliminat, ce vă ajută să lucrați cu fișierele în limbaj natural. Poate rezuma sau explica un document, sugera un nume de fișier mai bun, traduce sau corecta text, transforma date într-un tabel și chiar organiza un folder — și poate efectua acțiuni asupra fișierelor pentru dvs. după ce vă arată mai întâi un plan. Este alcătuit din două module: <strong>AI On-Device</strong> rulează pe Apple Intelligence și oferă acțiunile care arată o propunere și o aplică, în timp ce <strong>AI Assistant</strong> este conversația și necesită un model în cloud. Activați unul dintre ele sau pe amândouă. Deoarece este un plugin, îl puteți dezactiva sau elimina complet din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+<p>Asistentul IA este un plugin opțional, care poate fi eliminat și care vă ajută să lucrați cu fișierele în limbaj obișnuit. Poate rezuma sau explica un document, propune un nume de fișier mai bun, traduce sau corecta un text, transforma date într-un tabel și chiar ordona un dosar — și poate efectua în locul dumneavoastră operații cu fișiere după ce vă arată mai întâi un plan. Vine ca două pluginuri: <strong>AI On-Device</strong> rulează pe Apple Intelligence și oferă acțiunile care arată o propunere și o aplică, în timp ce <strong>AI Assistant</strong> este discuția și are nevoie de un model în cloud. Activați unul, sau pe amândouă. <strong>Sosesc dezactivate.</strong> Activați-le din <strong>Configurare ▸ Pluginuri…</strong> și reporniți, ori lăsați-le oprite și nu apare nimic — niciun meniu IA ▸, nicio discuție, nicio coloană. Este voit cât timp funcția e în beta: poate redenumi, muta și șterge fișiere și poate rula pentru dumneavoastră comenzi de shell, fiecare în spatele unui plan pe care îl aprobați, iar asta e multă putere pentru a i-o da implicit unei noutăți. Fără o cheie API totul se petrece pe Mac-ul dumneavoastră, deci e vorba de putere, nu de date care părăsesc mașina. Pluginul <strong>AI Column</strong> arată ce au aflat acele acțiuni — un rezumat, un tip, un subiect, o dată — drept coloane în panou; el nu pornește niciun model. Sosește oprit împreună cu ele și rămâne opțional, și nu arată nimic până nu îl activați și nu adăugați una dintre coloanele sale. Din aceeași pagină puteți elimina complet oricare dintre ele.</p>
+<p><strong>Pe dispozitiv sau în cloud.</strong> Modelul local este privat și gratuit, și e mic: primește câteva mii de cuvinte odată. A citi un fișier lung <em>în întregime</em> funcționează de aceea altfel — asistentul îl citește pe bucăți și îmbină rezultatele, ceea ce durează cu atât mai mult cu cât fișierul e mai lung. Pentru muncă grea peste multe fișiere, ori pentru conversații lungi, un model din cloud e mai rapid și ține mai mult deodată. Acțiunile din meniul contextual rulează întotdeauna pe Mac-ul dumneavoastră; discuția e jumătatea care vrea un punct terminal, iar <strong>Setări ▸ IA</strong> e locul unde îi dați unul.</p>
 <h2 id="deschiderea-asistentului">Deschiderea asistentului</h2>
-<p>Alegeți <strong>Comenzi ▸ Asistent IA</strong> pentru a afișa asistentul într-un panou ancorat în dreapta ferestrei. Tastați o solicitare și apăsați Enter; asistentul poate citi fișiere, căuta lucruri și — cu confirmarea dvs. — face modificări.</p>
-<p><img alt="Chatul asistentului IA ancorat lângă panourile de fișiere" src="images/ai-chat.png" />
-<em>(Figura: asistentul IA, ancorat în dreapta, lucrând la o solicitare.)</em></p>
-<h2 id="actiuni-cu-clic-dreapta-ia">Acțiuni cu clic dreapta (IA ▸)</h2>
-<p>Cel mai rapid mod de a folosi asistentul este submeniul <strong>IA ▸</strong> din meniul cu clic dreapta:</p>
+<p>Alegeți <strong>Comenzi ▸ Asistent IA</strong> pentru a arăta asistentul într-un panou ancorat în dreapta ferestrei. Scrieți o cerere și apăsați Enter; asistentul poate citi fișiere, căuta informații și — cu confirmarea dumneavoastră — face modificări.</p>
+<p><img alt="Discuția asistentului IA ancorată lângă panourile de fișiere" src="images/ai-chat.png" />
+<em>(Figura: asistentul IA, ancorat în dreapta, lucrând la o cerere.)</em></p>
+<h2 id="actiuni-din-meniul-contextual-ia">Acțiuni din meniul contextual (IA ▸)</h2>
+<p>Cea mai rapidă cale de a folosi asistentul e submeniul <strong>IA ▸</strong> din meniul contextual:</p>
 <ul>
-<li><strong>Pe un fișier</strong> — Rezumă, Explică, Sugerează un nume, Sugerează un comentariu, Traduce în engleză, Corectează, Detectează sarcini și Creează un tabel.</li>
-<li><strong>Pe fundalul panoului</strong> — Caută după sens, Organizează acest folder și Găsește duplicate probabile.</li>
+<li><strong>Pe un fișier</strong> — Rezumă, Explică, Clasifică, Propune un nume, Propune un comentariu, Tradu în engleză, Corectează, Detectează sarcini și Fă un tabel.</li>
+<li><strong>Pe fundalul panoului</strong> — Ordonează acest dosar, Caută după înțeles și Găsește duplicate probabile.</li>
 </ul>
-<p><strong>Rezumă</strong>, <strong>Explică</strong>, <strong>Sugerează un nume</strong>, <strong>Sugerează un comentariu</strong> și <strong>Organizează acest dosar</strong> provin din modulul <strong>AI On-Device</strong> și își fac treaba fără a deschide vreo conversație: arată propunerea într-o filă, dumneavoastră debifați ce doriți să rămână neschimbat, iar pe disc nu se schimbă nimic până nu aprobați. Celelalte acțiuni aparțin modulului <strong>AI Assistant</strong> și deschid propria conversație denumită, astfel încât sarcinile rămân separate. Când scrieți chiar dumneavoastră în câmpul de introducere, cererea continuă conversația curentă.</p>
-<h2 id="gestionarea-chaturilor">Gestionarea chaturilor</h2>
+<p><strong>Rezumă</strong>, <strong>Explică</strong>, <strong>Clasifică</strong>, <strong>Propune un nume</strong>, <strong>Propune un comentariu</strong>, <strong>Fă un tabel</strong> și <strong>Ordonează acest dosar</strong> vin din pluginul <strong>AI On-Device</strong> și își fac treaba fără a deschide vreo discuție — și pe o scanare sau o captură de ecran, fiindcă mai întâi se citesc cuvintele de pe imagine: își arată propunerea într-o foaie, dumneavoastră debifați ce vreți să rămână neatins, și nimic pe disc nu se schimbă până nu aprobați. Celelalte acțiuni aparțin pluginului <strong>AI Assistant</strong> și deschid o <strong>discuție proprie, cu titlu</strong> (de pildă <em>Tradu – raport.txt</em>), astfel încât sarcini diferite rămân separate în loc să se îngrămădească într-o singură conversație lungă. Când scrieți chiar dumneavoastră în câmpul de intrare, acea cerere continuă discuția curentă.</p>
+<p><strong>Mai multe fișiere odată.</strong> Marcați o selecție și acțiunea rulează peste fiecare fișier marcat, unul după altul. Acțiunile care folosesc o foaie arată în ea progresul, iar <strong>Anulează</strong> se oprește între fișiere; cele care deschid o discuție pun progresul în bara de stare, unde <strong>Oprește</strong> face același lucru. Oricum, puteți privi primele rezultate și opri totul.</p>
+<p><strong>Propune un nume</strong> se termină cu un buton, nu cu o frază: numele propus apare într-o bară sub conversație, cu un buton <strong>Redenumește</strong> alături. A-l apăsa este aprobarea — nu vi se cere de două ori.</p>
+<h3 id="formularile-dumneavoastra">Formulările dumneavoastră</h3>
+<p>Ceea ce fiecare acțiune cere modelului este un fișier text pe care îl puteți edita: <code>aichat/skills.json</code> pentru acțiunile pe fișiere și <code>aichat/folder-skills.json</code> pentru cele pe dosare, în dosarul dumneavoastră de configurare. Ambele se scriu cu formulările încorporate la prima rulare a asistentului, ca să vedeți formatul. <code>{name}</code> și <code>{path}</code> stau pentru fișier. Ștergeți un fișier ca să reveniți la formularea încorporată.</p>
+<p><strong>Acțiuni proprii.</strong> Adăugați o intrare cu un <code>id</code> la alegerea dumneavoastră și va putea fi rulată ca orice altă comandă, numind <code>plugin.ai.skill.&lt;id&gt;</code> — în meniul utilizatorului, pe bara de butoane sau pe o scurtătură de tastatură. (Pentru o acțiune pe dosar, <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Submeniul <strong>IA ▸</strong> listează doar acțiunile încorporate: e construit din manifestul pluginului fără a-l încărca, astfel încât un plugin dezactivat să nu contribuie cu nimic — de aceea acțiunile proprii le plasați dumneavoastră în loc să apară acolo. Numiți un id care nu există și asistentul o spune, în loc să nu facă nimic.</p>
+<h2 id="cereti-i-sa-gaseasca-un-fisier">Cereți-i să găsească un fișier</h2>
+<p>Nu trebuie să știți unde se află un fișier. Descrieți-l și asistentul îl caută în indexul pe care macOS îl ține deja pentru discul dumneavoastră — deci nu e nimic de construit și nici de așteptat să se pună la zi.</p>
 <ul>
-<li>Folosiți comutatorul de chaturi din partea de sus a panoului pentru a trece între conversații.</li>
-<li>Meniul <strong>Șterge ▾</strong> oferă <strong>Șterge acest chat</strong> și <strong>Șterge toate chaturile</strong>, astfel încât puteți curăța totul deodată când lista devine lungă. Chaturile goale sunt curățate automat când închideți panoul.</li>
+<li><em>„Găsește factura PDF de luna trecută"</em> — un tip, un cuvânt din nume și o fereastră de timp.</li>
+<li><em>„Unde sunt toate dosarele mele node_modules?"</em> — dosare, după nume, oriunde în dosarul personal.</li>
+<li><em>„Care fișier menționează contractul de la Aachen?"</em> — cuvinte <strong>din interiorul</strong> fișierelor, ceea ce căutarea obișnuită Găsește fișiere nu poate face dacă nu îi arătați mai întâi un dosar.</li>
 </ul>
-<h2 id="modificarile-sunt-confirmate-mai-intai">Modificările sunt confirmate mai întâi</h2>
-<p>Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — asistentul afișează un <strong>plan și așteaptă confirmarea dvs.</strong> înainte de a acționa. Puteți schimba acest lucru în Setări crescând autonomia asistentului, sau o coborâți la doar citire pentru ca să nu schimbe niciodată nimic.</p>
+<p>Puteți îndruma unde caută: implicit dosarul personal, întreg calculatorul, sau doar dosarul afișat într-un panou. Vă spune pe care dintre ele l-a folosit, astfel încât un răspuns gol să se poată citi, în loc să semene cu o ridicare din umeri.</p>
+<p>Două limite de știut. macOS ține unele locuri în afara indexului său — și în afara razei oricărei aplicații fără Acces complet la disc — deci „nu s-a găsit nimic" nu dovedește că un fișier nu există; vedeți <a href="troubleshooting">Depanare</a>. Iar un fișier tocmai creat poate să nu fie încă indexat, caz în care <strong>Găsește fișiere</strong> (Alt+F7), care parcurge singur dosarele, îl va găsi oricum.</p>
+<h2 id="gestionarea-discutiilor">Gestionarea discuțiilor</h2>
+<ul>
+<li>Folosiți selectorul de discuții din partea de sus a panoului pentru a trece de la o conversație la alta.</li>
+<li>Meniul <strong>Șterge ▾</strong> oferă <strong>Șterge această discuție</strong> și <strong>Șterge toate discuțiile</strong>, ca să curățați tot dintr-odată când lista se lungește. Discuțiile goale se curăță singure când închideți panoul.</li>
+</ul>
+<h2 id="modificarile-se-confirma-mai-intai">Modificările se confirmă mai întâi</h2>
+<p>Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — asistentul arată un <strong>plan și așteaptă confirmarea dumneavoastră</strong> înainte de a acționa. Puteți schimba asta în Setări ridicând autonomia asistentului, ori coborând-o la doar-citire, ca să nu modifice niciodată nimic. O copiere sau o mutare e raportată ca făcută când e făcută: asistentul așteaptă încheierea transferului, iar dumneavoastră îl puteți urmări în Managerul de transferuri ca pe orice altă operație.</p>
+<p><strong>Puteți fi de acord cu o parte dintr-un plan.</strong> Când un plan cuprinde mai multe fișiere — redenumirea unui dosar întreg, golirea Descărcărilor — fiecare apare ca o linie bifată deasupra butoanelor. Debifați-le pe cele pe care vreți să le lăsați în pace și apăsați <strong>Confirmă și execută</strong>: restul merge mai departe, iar ce ați debifat nu e atins. A debifa tot e totuna cu a anula, și asistentul o spune, în loc să raporteze că nu a făcut nimic. Un plan care e o singură acțiune nu are listă, fiindcă Confirmă și Anulează îi spun deja da și nu.</p>
+<h2 id="ce-a-facut-asistentul-si-cum-sa-luati-inapoi">Ce a făcut asistentul și cum să luați înapoi</h2>
+<p><strong>Acțiuni ▾</strong> din discuție are două intrări:</p>
+<ul>
+<li><strong>Arată ce a făcut asistentul…</strong> listează fiecare modificare, cea mai recentă întâi, cu ce i s-a cerut și cum a ieșit — inclusiv încercările pe care setarea de autonomie le-a refuzat. Un agent extern conectat prin MCP se află în aceeași listă.</li>
+<li><strong>Anulează ultima modificare</strong> ia înapoi cea mai recentă modificare care are un invers: o redenumire se redenumește înapoi, o mutare se mută înapoi. Acolo unde nimic nu poate fi luat înapoi, lista spune de ce — un fișier suprascris nu a fost păstrat nicăieri, iar elementele din Coș se restaurează din Finder.</li>
+</ul>
+<p>Puteți și doar să cereți: <em>„anulează asta"</em> și <em>„ce ai modificat?"</em> ajung la aceleași două funcții.</p>
+<h2 id="coloane-in-panou">Coloane în panou</h2>
+<p>Ce au aflat acțiunile e disponibil ca și coloane. Adăugați-le din editorul de seturi de coloane: <strong>Rezumat IA</strong> arată prima linie a unui rezumat, iar <strong>Tip IA</strong>, <strong>Subiect IA</strong> și <strong>Dată IA</strong> arată ce a făcut <strong>Clasifică</strong> dintr-un fișier — sub aceste nume în română, traduse în fiecare limbă. Fiecare rămâne goală până când o acțiune citește acel fișier — aceste coloane arată muncă deja făcută și nu pornesc niciodată singure modelul. <strong>Limbă</strong> din același plugin recunoaște în ce limbă e scris un fișier text, complet fără model.</p>
+<p>Aceleași trei sunt și substituenți la redenumire. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> în fereastra de redenumire multiplă (Ctrl+M) dă unui dosar plin de fișiere <code>dokument1.pdf</code> numele a ceea ce sunt: pentru asta nu s-a construit nimic, fiindcă masca de redenumire a rezolvat dintotdeauna <code>[=provider.field]</code> prin sistemul de coloane. Întâi clasificați, apoi redenumiți. Antetul urmează limba dumneavoastră; <code>ai_column.ai_topic</code> din interiorul măștii nu — deci o mască funcționează mai departe dacă schimbați limba.</p>
 <h2 id="setari">Setări</h2>
 <p>Deschideți <strong>Configurare ▸ Setări ▸ IA</strong> pentru a configura asistentul pe o singură pagină:</p>
 <ul>
-<li><strong>Model preferat</strong> — ce model folosește conversația <strong>AI Assistant</strong>. De când acțiunile de pe dispozitiv au devenit un modul separat, aceasta privește doar conversația: <em>Cloud</em> și <em>Automat</em> folosesc punctul final de mai jos, iar <em>Pe dispozitiv</em> îi spune conversației că nu este necesară.</li>
-<li><strong>Punct final cloud, model și cheie API</strong> — pentru a folosi un model compatibil OpenAI în locul celui de pe dispozitiv. Cheia este stocată în inelul de chei macOS, niciodată în fișierele dvs. de configurare.</li>
+<li><strong>Modelul discuției</strong> — pe ce rulează discuția <strong>AI Assistant</strong>. De când acțiunile locale au devenit propriul plugin există două răspunsuri, nu trei: <em>Punctul terminal din cloud de mai jos, dacă ați indicat unul</em>, sau <em>Nimic — lăsați treaba pluginului AI On-Device</em>. Pagina e grupată la fel: întâi setările discuției, sub ele ce au voie ambele jumătăți.</li>
+<li><strong>Punct terminal în cloud, model și cheie API</strong> — pentru a folosi un model compatibil OpenAI în locul celui local. Cheia se păstrează în brelocul macOS, niciodată în fișierele dumneavoastră de configurare.</li>
 <li><strong>Autonomia asistentului</strong> — doar citire, confirmă modificările (implicit) sau autonom.</li>
-<li><strong>Prompt de sistem personalizat</strong> — instrucțiuni opționale care modelează cum răspunde asistentul.</li>
-<li><strong>Server MCP</strong> — un server opțional, doar local, care permite unui agent extern să conducă aplicația; dezactivat implicit și protejabil cu un token.</li>
+<li><strong>Prompt de sistem propriu</strong> — instrucțiuni opționale care modelează felul în care asistentul răspunde.</li>
+<li><strong>Server MCP</strong> — un server opțional, strict local, care permite unui agent extern să conducă aplicația; oprit implicit și protejabil cu un token.</li>
 </ul>
-<p><img alt="Pagina IA din Setări cu opțiunile de autonomie și server MCP" src="images/settings-ai.png" />
-<em>(Figura: toate opțiunile asistentului se află pe o singură pagină IA în Setări.)</em></p>
+<p><img alt="Pagina IA din Setări cu autonomia și opțiunile serverului MCP" src="images/settings-ai.png" />
+<em>(Figura: toate opțiunile asistentului stau pe o singură pagină IA din Setări.)</em></p>
 <h2 id="confidentialitate">Confidențialitate</h2>
 <ul>
-<li>Cu Apple Intelligence asistentul rulează <strong>pe Mac-ul dvs.</strong>; nimic nu părăsește dispozitivul.</li>
-<li>Un model din cloud este folosit <strong>doar dacă îl configurați</strong>, iar cheia sa API este păstrată în inelul de chei.</li>
-<li>Acțiunile care modifică fișiere sunt confirmate înainte de a rula, cu excepția cazului în care creșteți în mod deliberat nivelul de autonomie.</li>
+<li>Cu Apple Intelligence asistentul rulează <strong>pe Mac-ul dumneavoastră</strong>; nimic nu părăsește dispozitivul.</li>
+<li>Un model din cloud e folosit <strong>doar dacă îl configurați</strong>, iar cheia sa API rămâne în breloc.</li>
+<li>Acțiunile care modifică fișiere se confirmă înainte de a rula, dacă nu ridicați deliberat nivelul de autonomie.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="settings.html">Setări</a></li><li><a href="privacy-and-security.html">Confidențialitate și securitate</a></li></ul></section>
 </main>

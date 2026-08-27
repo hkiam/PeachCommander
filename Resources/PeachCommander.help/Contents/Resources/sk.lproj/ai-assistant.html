@@ -10,41 +10,67 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Asistent AI</h1>
-<p>Asistent AI je voliteľný zásuvný modul, ktorý možno odstrániť a pomáha vám pracovať so súbormi v prirodzenom jazyku. Dokáže zhrnúť alebo vysvetliť dokument, navrhnúť lepší názov súboru, preložiť alebo skorigovať text, premeniť údaje na tabuľku a dokonca usporiadať priečinok — a môže za vás vykonať operácie so súbormi po tom, ako vám najprv ukáže plán. Tvoria ho dva moduly: <strong>AI On-Device</strong> beží na Apple Intelligence a ponúka akcie, ktoré ukážu návrh a vykonajú ho, zatiaľ čo <strong>AI Assistant</strong> je chat a potrebuje cloudový model. Zapnite jeden z nich alebo oba. Keďže ide o zásuvný modul, môžete ho zakázať alebo úplne odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
+<p>Asistent AI je voliteľný, odstrániteľný zásuvný modul, ktorý vám pomáha pracovať so súbormi bežným jazykom. Vie zhrnúť alebo vysvetliť dokument, navrhnúť lepší názov súboru, preložiť alebo skontrolovať text, previesť údaje do tabuľky a dokonca upratať priečinok — a vie za vás vykonať operácie so súbormi po tom, čo vám najprv ukáže plán. Prichádza ako dva moduly: <strong>AI On-Device</strong> beží na Apple Intelligence a prináša akcie, ktoré návrh ukážu a vykonajú, zatiaľ čo <strong>AI Assistant</strong> je chat a potrebuje model v cloude. Zapnite jeden, alebo oba. <strong>Prichádzajú vypnuté.</strong> Zapnite ich v <strong>Konfigurácia ▸ Zásuvné moduly…</strong> a reštartujte, alebo ich nechajte vypnuté a neobjaví sa nič — žiadna ponuka AI ▸, žiadny chat, žiadny stĺpec. Je to zámer, kým je funkcia v beta verzii: vie súbory premenovať, presúvať a mazať a spúšťať za vás príkazy shellu, každý za plánom, ktorý schválite, a to je veľa dosahu na to, dať ho novinke vo východiskovom stave. Bez kľúča API sa všetko odohráva na vašom Macu, takže ide o dosah, nie o údaje opúšťajúce stroj. Modul <strong>AI Column</strong> ukazuje, čo tie akcie zistili — zhrnutie, druh, tému, dátum — ako stĺpce panela; sám žiadny model nespúšťa. Prichádza vypnutý spolu s nimi a zostáva voliteľný a neukáže nič, kým ho nezapnete a nepridáte niektorý z jeho stĺpcov. Z tej istej stránky môžete ktorýkoľvek z nich aj úplne odstrániť.</p>
+<p><strong>V zariadení, alebo v cloude.</strong> Miestny model je súkromný a zadarmo a je malý: pojme niekoľko tisíc slov naraz. Prečítať <em>celý</em> dlhý súbor preto funguje inak — asistent ho číta po častiach a výsledky skladá dokopy, čo trvá tým dlhšie, čím je súbor dlhší. Na náročnú prácu s mnohými súbormi alebo na dlhé rozhovory je cloudový model rýchlejší a udrží viac naraz. Akcie v kontextovej ponuke bežia vždy na vašom Macu; chat je tá polovica, ktorá chce koncový bod, a <strong>Nastavenia ▸ AI</strong> je miesto, kde mu ho zadáte.</p>
 <h2 id="otvorenie-asistenta">Otvorenie asistenta</h2>
-<p>Vyberte <strong>Príkazy ▸ Asistent AI</strong> na zobrazenie asistenta v ukotvenom paneli vpravo v okne. Zadajte požiadavku a stlačte Enter; asistent dokáže čítať súbory, vyhľadávať veci a — s vaším potvrdením — vykonávať zmeny.</p>
-<p><img alt="Chat asistenta AI ukotvený vedľa panelov so súbormi" src="images/ai-chat.png" />
-<em>(Obrázok: asistent AI, ukotvený vpravo, pracuje na požiadavke.)</em></p>
-<h2 id="akcie-praveho-tlacidla-ai">Akcie pravého tlačidla (AI ▸)</h2>
-<p>Najrýchlejší spôsob použitia asistenta je podponuka <strong>AI ▸</strong> v kontextovej ponuke:</p>
+<p>Zvoľte <strong>Príkazy ▸ Asistent AI</strong> a zobrazte asistenta v paneli ukotvenom vpravo v okne. Napíšte požiadavku a stlačte Enter; asistent vie čítať súbory, vyhľadávať a — s vaším potvrdením — vykonávať zmeny.</p>
+<p><img alt="Chat asistenta AI ukotvený vedľa panelov súborov" src="images/ai-chat.png" />
+<em>(Obrázok: asistent AI ukotvený vpravo pracuje na požiadavke.)</em></p>
+<h2 id="akcie-v-kontextovej-ponuke-ai">Akcie v kontextovej ponuke (AI ▸)</h2>
+<p>Najrýchlejší spôsob, ako asistenta použiť, je podponuka <strong>AI ▸</strong> v kontextovej ponuke:</p>
 <ul>
-<li><strong>Na súbore</strong> — Zhrnúť, Vysvetliť, Navrhnúť názov, Navrhnúť komentár, Preložiť do angličtiny, Skorigovať, Zistiť úlohy a Vytvoriť tabuľku.</li>
-<li><strong>Na pozadí panela</strong> — Hľadať podľa významu, Usporiadať tento priečinok a Nájsť pravdepodobné duplikáty.</li>
+<li><strong>Na súbore</strong> — Zhrnúť, Vysvetliť, Zaradiť, Navrhnúť názov, Navrhnúť komentár, Preložiť do angličtiny, Skontrolovať text, Nájsť úlohy a Vytvoriť tabuľku.</li>
+<li><strong>Na pozadí panela</strong> — Upratať tento priečinok, Hľadať podľa významu a Nájsť pravdepodobné duplikáty.</li>
 </ul>
-<p><strong>Zhrnúť</strong>, <strong>Vysvetliť</strong>, <strong>Navrhnúť názov</strong>, <strong>Navrhnúť komentár</strong> a <strong>Usporiadať tento priečinok</strong> pochádzajú z modulu <strong>AI On-Device</strong> a svoju prácu urobia úplne bez chatu: ukážu návrh v samostatnom liste, vy odškrtnete všetko, čo má zostať nezmenené, a na disku sa nič nezmení, kým nesúhlasíte. Ostatné akcie patria modulu <strong>AI Assistant</strong> a otvoria vlastný pomenovaný chat, takže rôzne úlohy zostávajú oddelené. Keď do vstupného poľa napíšete niečo sami, táto požiadavka pokračuje v aktuálnom chate.</p>
+<p><strong>Zhrnúť</strong>, <strong>Vysvetliť</strong>, <strong>Zaradiť</strong>, <strong>Navrhnúť názov</strong>, <strong>Navrhnúť komentár</strong>, <strong>Vytvoriť tabuľku</strong> a <strong>Upratať tento priečinok</strong> pochádzajú z modulu <strong>AI On-Device</strong> a svoju prácu odvedú bez toho, aby vôbec otvorili chat — aj pri naskenovanom dokumente či snímke obrazovky, lebo slová sa najprv prečítajú z obrázka: návrh ukážu v hárku, vy odškrtnete, čo chcete nechať tak, a na disku sa nezmení nič, kým neschválite. Ostatné akcie patria modulu <strong>AI Assistant</strong> a otvárajú <strong>vlastný pomenovaný chat</strong> (napríklad <em>Preložiť – sprava.txt</em>), takže rôzne úlohy zostávajú oddelené namiesto toho, aby sa kopili v jednom dlhom rozhovore. Keď do vstupného poľa píšete sami, taká požiadavka pokračuje v aktuálnom chate.</p>
+<p><strong>Viac súborov naraz.</strong> Označte výber a akcia prebehne nad každým označeným súborom, jeden po druhom. Akcie, ktoré používajú hárok, v ňom ukazujú priebeh a <strong>Zrušiť</strong> sa zastaví medzi súbormi; tie, ktoré otvárajú chat, dávajú priebeh do stavového riadka, kde <strong>Zastaviť</strong> robí to isté. Tak či onak sa môžete pozrieť na prvé výsledky a prerušiť to.</p>
+<p><strong>Navrhnúť názov</strong> končí tlačidlom, nie vetou: navrhnutý názov sa objaví v pruhu pod rozhovorom a vedľa neho tlačidlo <strong>Premenovať</strong>. Stlačiť ho znamená schváliť — druhýkrát sa vás nepýtame.</p>
+<h3 id="vlastne-formulacie">Vlastné formulácie</h3>
+<p>To, o čo každá akcia model žiada, je textový súbor, ktorý môžete upraviť: <code>aichat/skills.json</code> pre akcie nad súbormi a <code>aichat/folder-skills.json</code> pre akcie nad priečinkami, vo vašom konfiguračnom priečinku. Oba sa pri prvom spustení asistenta zapíšu s vstavanými formuláciami, aby ste videli formát. <code>{name}</code> a <code>{path}</code> zastupujú súbor. Zmažte súbor a vrátite sa k vstavanej formulácii.</p>
+<p><strong>Vlastné akcie.</strong> Pridajte položku s <code>id</code> podľa vlastného výberu a bude sa dať spustiť ako každý iný príkaz uvedením <code>plugin.ai.skill.&lt;id&gt;</code> — v používateľskej ponuke, na lište tlačidiel alebo na klávesovej skratke. (Pre akciu nad priečinkom <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Podponuka <strong>AI ▸</strong> vypisuje len vstavané akcie: zostavuje sa z manifestu modulu bez toho, aby sa modul načítal, aby vypnutý modul neprispieval ničím — preto svoje vlastné akcie umiestňujete sami, namiesto toho, aby sa tam objavovali. Uveďte id, ktoré neexistuje, a asistent to povie, namiesto toho, aby neurobil nič.</p>
+<h2 id="poziadajte-ho-nech-najde-subor">Požiadajte ho, nech nájde súbor</h2>
+<p>Nemusíte vedieť, kde súbor je. Opíšte ho a asistent ho vyhľadá v registri, ktorý si macOS o vašom disku už vedie — nie je teda čo stavať ani na čo čakať, kým sa doplní.</p>
+<ul>
+<li><em>„Nájdi PDF faktúru z minulého mesiaca"</em> — druh, slovo v názve a časové okno.</li>
+<li><em>„Kde sú všetky moje priečinky node_modules?"</em> — priečinky podľa názvu, kdekoľvek vo vašom domovskom priečinku.</li>
+<li><em>„Ktorý súbor spomína zmluvu z Cách?"</em> — slová <strong>vnútri</strong> súborov, čo bežné hľadanie Nájsť súbory nevie, kým mu neukážete priečinok.</li>
+</ul>
+<p>Môžete určiť, kde má hľadať: vo východiskovom stave váš domovský priečinok, celý počítač, alebo len priečinok, ktorý panel ukazuje. Asistent povie, ktorý z nich použil, takže prázdna odpoveď sa dá prečítať namiesto toho, aby vyzerala ako mykutie plecami.</p>
+<p>Dve hranice, ktoré stojí za to poznať. macOS drží niektoré miesta mimo svojho registra — a mimo dosahu každej aplikácie bez Plného prístupu k disku — takže „nič sa nenašlo" nie je dôkaz, že súbor neexistuje; pozri <a href="troubleshooting">Riešenie problémov</a>. A práve vytvorený súbor ešte nemusí byť zaindexovaný, a vtedy ho <strong>Nájsť súbory</strong> (Alt+F7), ktoré priečinky prechádza samo, aj tak nájde.</p>
 <h2 id="sprava-chatov">Správa chatov</h2>
 <ul>
-<li>Použite prepínač chatov v hornej časti panela na prechádzanie medzi konverzáciami.</li>
-<li>Ponuka <strong>Odstrániť ▾</strong> ponúka <strong>Odstrániť tento chat</strong> a <strong>Odstrániť všetky chaty</strong>, takže môžete vyčistiť všetko naraz, keď sa zoznam predĺži. Prázdne chaty sa automaticky vyčistia po zatvorení panela.</li>
+<li>Prepínačom chatov hore v paneli sa pohybujete medzi rozhovormi.</li>
+<li>Ponuka <strong>Zmazať ▾</strong> ponúka <strong>Zmazať tento chat</strong> a <strong>Zmazať všetky chaty</strong>, takže keď sa zoznam predĺži, upracete všetko naraz. Prázdne chaty sa upracú samy, keď panel zavriete.</li>
 </ul>
-<h2 id="zmeny-sa-najprv-potvrdia">Zmeny sa najprv potvrdia</h2>
-<p>Pri všetkom, čo mení súbory — presúvanie, premenovanie, zápis, mazanie — asistent zobrazí <strong>plán a čaká na vaše potvrdenie</strong> pred konaním. Toto môžete zmeniť v Nastaveniach zvýšením autonómie asistenta, alebo ju znížiť na iba na čítanie, aby nikdy nič nemenil.</p>
-<h2 id="nastavenia">Nastavenia</h2>
-<p>Otvorte <strong>Konfigurácia ▸ Nastavenia ▸ AI</strong> na nastavenie asistenta na jednej stránke:</p>
+<h2 id="zmeny-sa-najprv-potvrdzuju">Zmeny sa najprv potvrdzujú</h2>
+<p>Pri všetkom, čo mení súbory — presun, premenovanie, zápis, zmazanie — asistent ukáže <strong>plán a počká na vaše potvrdenie</strong>, než začne konať. V Nastaveniach to môžete zmeniť zvýšením samostatnosti asistenta, alebo ju znížiť na len na čítanie, aby nemenil nikdy nič. Kopírovanie alebo presun sa ohlási ako hotové, až keď hotové je: asistent počká, kým prenos skončí, a môžete ho sledovať v Správcovi prenosov ako každú inú operáciu.</p>
+<p><strong>Môžete súhlasiť s časťou plánu.</strong> Keď plán zahŕňa viac súborov — premenovať celý priečinok, vypratať Stiahnuté — každý sa objaví ako zaškrtnutý riadok nad tlačidlami. Odškrtnite tie, ktoré chcete nechať tak, a stlačte <strong>Potvrdiť a spustiť</strong>: zvyšok prebehne a to, čo ste odškrtli, sa nedotkne. Odškrtnúť všetko je to isté ako zrušiť, a asistent to povie namiesto toho, aby hlásil, že nič neurobil. Plán, ktorý je jedinou akciou, zoznam nemá, lebo Potvrdiť a Zrušiť mu áno a nie hovoria už samy.</p>
+<h2 id="co-asistent-urobil-a-ako-to-vziat-spat">Čo asistent urobil a ako to vziať späť</h2>
+<p><strong>Akcie ▾</strong> v chate má dve položky:</p>
 <ul>
-<li><strong>Preferovaný model</strong> — aký model používa chat <strong>AI Assistant</strong>. Odkedy sa akcie v zariadení stali vlastným modulom, týka sa to len chatu: <em>Cloud</em> aj <em>Automaticky</em> používajú koncový bod nižšie a <em>V zariadení</em> hovorí chatu, že nie je potrebný.</li>
-<li><strong>Cloudový koncový bod, model a kľúč API</strong> — na použitie modelu kompatibilného s OpenAI namiesto toho na zariadení. Kľúč je uložený v zväzku kľúčov macOS, nikdy vo vašich konfiguračných súboroch.</li>
-<li><strong>Autonómia asistenta</strong> — iba na čítanie, potvrdzovať zmeny (predvolené) alebo autonómny.</li>
-<li><strong>Vlastná systémová výzva</strong> — voliteľné pokyny, ktoré tvarujú, ako asistent odpovedá.</li>
-<li><strong>Server MCP</strong> — voliteľný, iba lokálny server, ktorý umožňuje externému agentovi ovládať aplikáciu; predvolene vypnutý a chrániteľný tokenom.</li>
+<li><strong>Ukázať, čo asistent urobil…</strong> vypíše každú zmenu, najnovšiu prvú, s tým, o čo bol požiadaný a ako to dopadlo — vrátane pokusov, ktoré nastavenie samostatnosti odmietlo. Externý agent pripojený cez MCP je v tom istom zozname.</li>
+<li><strong>Vrátiť poslednú zmenu</strong> vezme späť najnovšiu zmenu, ktorá má opak: premenovanie sa premenuje späť, presun sa presunie späť. Kde vziať späť nemožno nič, zoznam povie prečo — prepísaný súbor sa nikde neuchoval a položky v Koši obnovíte z Findera.</li>
 </ul>
-<p><img alt="Stránka AI v Nastaveniach s možnosťami autonómie a servera MCP" src="images/settings-ai.png" />
-<em>(Obrázok: všetky možnosti asistenta sa nachádzajú na jednej stránke AI v Nastaveniach.)</em></p>
+<p>Môžete sa aj jednoducho spýtať: <em>„vráť to"</em> a <em>„čo si zmenil?"</em> dosiahnu na tie isté dve funkcie.</p>
+<h2 id="stlpce-panela">Stĺpce panela</h2>
+<p>To, čo akcie zistili, je k dispozícii ako stĺpce. Pridajte ich v editore sád stĺpcov: <strong>Zhrnutie AI</strong> ukazuje prvý riadok zhrnutia a <strong>Druh AI</strong>, <strong>Téma AI</strong> a <strong>Dátum AI</strong> ukazujú, čo zo súboru urobilo <strong>Zaradiť</strong> — pod týmito názvami v slovenčine, preloženými v každom jazyku. Každý zostane prázdny, kým niektorá akcia ten súbor neprečíta — tieto stĺpce ukazujú už odvedenú prácu a model samy nikdy nespustia. <strong>Jazyk</strong> v tom istom module rozpozná, v akom jazyku je textový súbor napísaný, celkom bez modelu.</p>
+<p>Tie isté tri sú aj zástupné znaky pre premenovanie. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> v dialógu hromadného premenovania (Ctrl+M) pomenuje priečinok plný súborov <code>dokument1.pdf</code> podľa toho, čo sú: nič sa na to nestavalo, lebo maska premenovania <code>[=provider.field]</code> odjakživa rieši cez systém stĺpcov. Najprv zaradiť, potom premenovať. Záhlavie sa riadi vaším jazykom; <code>ai_column.ai_topic</code> vnútri masky nie — maska teda funguje ďalej, aj keď jazyk zmeníte.</p>
+<h2 id="nastavenia">Nastavenia</h2>
+<p>Otvorte <strong>Konfigurácia ▸ Nastavenia ▸ AI</strong> a nastavte asistenta na jedinej stránke:</p>
+<ul>
+<li><strong>Model chatu</strong> — na čom chat <strong>AI Assistant</strong> beží. Odkedy sa miestne akcie stali vlastným modulom, sú odpovede dve, nie tri: <em>Cloudový koncový bod nižšie, ak ste nejaký zadali</em>, alebo <em>Nič — prácu nechať modulu AI On-Device</em>. Stránka je zoskupená rovnako: najprv nastavenia chatu, pod nimi to, čo smú obe polovice.</li>
+<li><strong>Cloudový koncový bod, model a kľúč API</strong> — na použitie modelu kompatibilného s OpenAI namiesto miestneho. Kľúč je uložený v kľúčenke macOS, nikdy vo vašich konfiguračných súboroch.</li>
+<li><strong>Samostatnosť asistenta</strong> — len na čítanie, potvrdzovať zmeny (východisková), alebo samostatný.</li>
+<li><strong>Vlastný systémový prompt</strong> — nepovinné pokyny, ktoré utvárajú, ako asistent odpovedá.</li>
+<li><strong>Server MCP</strong> — nepovinný, čisto miestny server, ktorý umožní externému agentovi riadiť aplikáciu; vo východiskovom stave vypnutý a chrániteľný tokenom.</li>
+</ul>
+<p><img alt="Stránka AI v Nastaveniach so samostatnosťou a voľbami servera MCP" src="images/settings-ai.png" />
+<em>(Obrázok: všetky voľby asistenta sú na jedinej stránke AI v Nastaveniach.)</em></p>
 <h2 id="sukromie">Súkromie</h2>
 <ul>
-<li>S Apple Intelligence asistent beží <strong>na vašom Macu</strong>; nič neopúšťa zariadenie.</li>
-<li>Cloudový model sa použije <strong>iba ak ho nakonfigurujete</strong>, a jeho kľúč API je uchovaný v zväzku kľúčov.</li>
-<li>Akcie meniace súbory sa potvrdzujú pred spustením, pokiaľ zámerne nezvýšite úroveň autonómie.</li>
+<li>S Apple Intelligence beží asistent <strong>na vašom Macu</strong>; zariadenie neopustí nič.</li>
+<li>Cloudový model sa použije <strong>len ak si nejaký nastavíte</strong> a jeho kľúč API zostáva v kľúčenke.</li>
+<li>Akcie meniace súbory sa potvrdzujú skôr, než prebehnú, ibaže by ste úroveň samostatnosti vedome zvýšili.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="settings.html">Nastavenia</a></li><li><a href="privacy-and-security.html">Súkromie a bezpečnosť</a></li></ul></section>
 </main>
