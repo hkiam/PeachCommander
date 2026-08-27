@@ -89,6 +89,79 @@ final class DirectActionPlanTests: XCTestCase {
         XCTAssertEqual(worth.map(\.subfolder), ["Invoices"])
     }
 
+    func testOneFolderHoldingEverythingIsNotAGrouping() {
+        // The mirror of the rule above, and the one that actually moves files when it is missing:
+        // the model proposed the single category "projekte" for two invoices and two sets of
+        // minutes, and all four would have been filed under it. Nothing is grouped by that — the
+        // folder is the one they were already in, one level down.
+        let groups = DirectActionPlan.group([
+            assignment("/f/a.pdf", "Projekte"),
+            assignment("/f/b.pdf", "Projekte"),
+            assignment("/f/c.pdf", "Projekte"),
+        ])
+        XCTAssertEqual(DirectActionPlan.groupsWorthMaking(groups, of: 3), [])
+    }
+
+    func testOneFolderTakingSomeOfTheFilesIsStillAGrouping() {
+        // The case the rule must not eat: a mixed folder where the invoices group and the rest
+        // stay put is exactly what a tidy-up is for, even though it makes only one folder.
+        let groups = DirectActionPlan.group([
+            assignment("/f/a.pdf", "Invoices"),
+            assignment("/f/b.pdf", "Invoices"),
+        ])
+        XCTAssertEqual(DirectActionPlan.groupsWorthMaking(groups, of: 5).map(\.subfolder),
+                       ["Invoices"])
+    }
+
+    func testTheRuleIsOffWhenTheCountIsNotGiven() {
+        // Callers that do not pass `of:` keep the old behaviour rather than silently losing groups.
+        let groups = DirectActionPlan.group([
+            assignment("/f/a.pdf", "Projekte"), assignment("/f/b.pdf", "Projekte"),
+        ])
+        XCTAssertEqual(DirectActionPlan.groupsWorthMaking(groups).map(\.subfolder), ["Projekte"])
+    }
+
+    // MARK: - Filing a file the model declined to file
+
+    func testANameThatMatchesExactlyOneCategoryIsFiledThere() {
+        // The measured miss: "rechnungen" was on the list and the model still answered nothing.
+        XCTAssertEqual(DirectActionPlan.lexicalFolder(forFileNamed: "rechnung-dach.txt",
+                                                      among: ["protokolle", "rechnungen"]),
+                       "rechnungen")
+        XCTAssertEqual(DirectActionPlan.lexicalFolder(forFileNamed: "protokoll-juni.txt",
+                                                      among: ["protokolle", "rechnungen"]),
+                       "protokolle")
+    }
+
+    func testANameMatchingTwoCategoriesIsLeftAlone() {
+        // Ambiguous means the names do not settle it. A file left where it is costs a second run;
+        // a file in the wrong folder costs a search.
+        XCTAssertNil(DirectActionPlan.lexicalFolder(forFileNamed: "rechnung-protokoll.txt",
+                                                    among: ["protokolle", "rechnungen"]))
+    }
+
+    func testANameMatchingNothingIsLeftAlone() {
+        XCTAssertNil(DirectActionPlan.lexicalFolder(forFileNamed: "IMG_4021.heic",
+                                                    among: ["protokolle", "rechnungen"]))
+    }
+
+    func testAShortWordCannotCarryTheMatch() {
+        // Without the four-character floor, "de" in a name would file it under "Design".
+        XCTAssertNil(DirectActionPlan.lexicalFolder(forFileNamed: "de-01.txt", among: ["Design"]))
+    }
+
+    func testTheFolderMayBeTheShorterOfTheTwo() {
+        // The other direction: a folder "scan" takes "scan001.png".
+        XCTAssertEqual(DirectActionPlan.lexicalFolder(forFileNamed: "scan001.png",
+                                                      among: ["scan", "briefe"]),
+                       "scan")
+    }
+
+    func testTheExtensionIsNotAWord() {
+        // Otherwise every .txt in a folder with a "Text" category would be filed by its extension.
+        XCTAssertNil(DirectActionPlan.lexicalFolder(forFileNamed: "a.text", among: ["Texte"]))
+    }
+
     // MARK: - Renaming a selection
 
     func testTheTwoListsLineUpOneToOne() {

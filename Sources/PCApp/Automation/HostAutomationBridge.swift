@@ -277,7 +277,6 @@ final class HostAutomationBridge: AutomationHostBridge {
             .map { $0.element.0 }
     }
 
-    /// The sentence embedding for the query's language, English as the fallback.
     /// The sentence embedding for the query's own language, or nil when there is none.
     ///
     /// Nil matters: the caller then scores by word overlap instead, which works in any language.

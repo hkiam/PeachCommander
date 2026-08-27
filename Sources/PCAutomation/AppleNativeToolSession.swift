@@ -614,6 +614,12 @@ public actor AppleNativeToolSession {
                 + names.joined(separator: "\n"),
             generating: GeneratedFolders.self).content
         let usable = DirectActionPlan.usableFolders(out.folders, fileNames: names)
+        // A single category over many files is a dead end — `groupsWorthMaking` refuses it, because
+        // a folder holding every file is the folder they were already in. Asking again for "at least
+        // two DIFFERENT kinds" was tried and reverted: over four files it removed the dead end in
+        // eight runs out of eight, and in three of them produced "Juni"/"September" — the file names'
+        // date words as categories, which is the failure `usableFolders` exists to prevent, arriving
+        // by another door. A shrug moves nothing; those folders move files somewhere meaningless.
         guard usable.isEmpty else { return usable }
 
         // Everything came back as a file name, so nothing survived the filter and the action would

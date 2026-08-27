@@ -315,18 +315,39 @@ final class DirectActionRunner {
                         comment: "AI: organise found no groups"))
             return
         }
+        // The two halves separately, for a probe run. From the sheet alone "only one category was
+        // proposed" and "two were proposed and every file chose the same one" look identical, and
+        // they have different fixes — measured before either was attempted.
+        AISheetProbe.record(["ORGANIZE-FOLDERS"] + folders)
         var assignments: [DirectActionPlan.Assignment] = []
+        var chosen: [String] = []
         for (i, name) in considered.enumerated() {
             if progress.isCancelled { break }
             progress.update(name, done: i, total: considered.count)
             let full = (folder as NSString).appendingPathComponent(name)
             guard let out = try? await session.assignFolder(forFile: full, among: folders),
-                  !out.subfolder.isEmpty else { continue }
+                  !out.subfolder.isEmpty else {
+                // The model declined. If the name itself settles it against exactly one of the
+                // categories, take that rather than leaving the tidy-up half done — recorded
+                // separately so a probe run can still tell the two apart.
+                guard let byName = DirectActionPlan.lexicalFolder(forFileNamed: name, among: folders) else {
+                    chosen.append("\(name)\t(none)\t")
+                    continue
+                }
+                chosen.append("\(name)\t\(byName)\tby name")
+                assignments.append(.init(path: full, subfolder: byName,
+                                         reason: String(localized: "Filed by its name.",
+                                                        comment: "AI: organise fell back to the file name")))
+                continue
+            }
+            chosen.append("\(name)\t\(out.subfolder)\t\(out.reason)")
             assignments.append(.init(path: full, subfolder: out.subfolder, reason: out.reason))
         }
+        AISheetProbe.record(["ORGANIZE-ASSIGNED"] + chosen)
         progress.end()
 
-        let groups = DirectActionPlan.groupsWorthMaking(DirectActionPlan.group(assignments))
+        let groups = DirectActionPlan.groupsWorthMaking(DirectActionPlan.group(assignments),
+                                                        of: considered.count)
         guard !groups.isEmpty else {
             note(String(localized: "Nothing here groups into folders.",
                         comment: "AI: organise found no groups"))

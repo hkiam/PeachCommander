@@ -61,8 +61,54 @@ public enum DirectActionPlan {
     /// Splitting forty files into forty folders is the failure mode of this feature, and it is
     /// what a model does when it names a folder after each file. Groups below `minimum` are
     /// dropped so those files simply stay where they are.
-    public static func groupsWorthMaking(_ groups: [Group], minimum: Int = 2) -> [Group] {
-        groups.filter { $0.sources.count >= minimum }
+    /// - Parameter of: how many files the run looked at, so the mirror-image failure can be caught
+    ///   too — see below. Left unset, only the per-group minimum applies.
+    public static func groupsWorthMaking(_ groups: [Group], minimum: Int = 2,
+                                         of considered: Int = 0) -> [Group] {
+        let worth = groups.filter { $0.sources.count >= minimum }
+        // The other half of the same idea. One folder holding *every* file has not organised them
+        // either — it has renamed the folder they were already in, one level deeper. Measured
+        // against the on-device model: over four files that split cleanly into invoices and
+        // minutes, three runs in four proposed both categories, and the fourth proposed the single
+        // category "projekte" and filed all four under it. That run is the harmful one, because
+        // unlike a shrug it moves files, and the folder it moves them to describes none of them.
+        //
+        // Deliberately arithmetic rather than a better prompt: the same wobble was chased through
+        // three prompt revisions elsewhere in this file before a counting rule settled it.
+        if considered > 1, worth.count == 1, worth[0].sources.count == considered { return [] }
+        return worth
+    }
+
+    /// The one folder a file name plainly belongs to, or nil when the names do not settle it.
+    ///
+    /// A rescue for a measured miss, not a second opinion. `assignFolder` answers with an empty
+    /// name about one time in five even when the right category is on the list it was handed:
+    /// over four files split into invoices and minutes, `rechnung-dach.txt` came back unfiled
+    /// while `rechnungen` was sitting in the list. The file then stays put and the tidy-up is
+    /// half done.
+    ///
+    /// Lexical on purpose, and only where the answer is unambiguous. The categories were derived
+    /// from these very names, so a name whose word is the stem of exactly one category belongs
+    /// there and no model is needed to see it — the same reasoning as `commonPrefixCategory`.
+    /// Two candidates mean the names do not settle it, and then nothing is chosen: a file left
+    /// where it is costs a second run, a file in the wrong folder costs a search.
+    public static func lexicalFolder(forFileNamed name: String, among folders: [String]) -> String? {
+        let stem = ((name as NSString).deletingPathExtension).lowercased()
+        let words = stem.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init)
+        guard !words.isEmpty else { return nil }
+        var hits: [String] = []
+        for folder in folders {
+            let key = folder.lowercased()
+            // Either direction: a folder "rechnungen" holds a file word "rechnung", and a folder
+            // "scan" holds "scan001". Four characters, so a stray "de" or "abc" cannot carry it.
+            if words.contains(where: { w in
+                let (short, long) = w.count <= key.count ? (w, key) : (key, w)
+                return short.count >= 4 && long.hasPrefix(short)
+            }) {
+                hits.append(folder)
+            }
+        }
+        return hits.count == 1 ? hits[0] : nil
     }
 
     // MARK: - Renaming a selection
