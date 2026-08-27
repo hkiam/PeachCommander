@@ -14,11 +14,20 @@ public actor DefaultAutomationCore: AutomationCore {
     /// the plugin can't handle it.
     public typealias ExternalToolRouter = @Sendable (_ name: String, _ arguments: Data?) async -> AutomationOutcome?
 
+    /// Looks a saved macro up by id (F-478). A closure rather than a `MacroStore`, so the Core never
+    /// touches the file system and a test can hand in three macros without one.
+    public typealias MacroLookup = @Sendable () -> [Macro]
+
     private let bridge: AutomationHostBridge
     private let bus: HostEventBus
     private let externalTools: [ToolDefinition]
     private let externalRouter: ExternalToolRouter?
-    private var pending: [String: (tool: String, args: Data?, isUndo: Bool)] = [:]
+    private let macroLookup: MacroLookup?
+    /// Plans awaiting confirmation. The policy is kept with the plan: a confirmation is an answer to
+    /// the question that was asked, and the permissions in force when it was asked are part of that
+    /// question. Reading the current policy at confirmation time would let a plan proposed under one
+    /// allow-list be carried out under another.
+    private var pending: [String: (tool: String, args: Data?, policy: PermissionPolicy, isUndo: Bool)] = [:]
     /// Where executed actions are recorded. Nil in tests that do not care; the host supplies one.
     private let audit: AuditLog?
     /// Timestamps already used, so two actions in the same millisecond stay distinguishable
@@ -32,11 +41,12 @@ public actor DefaultAutomationCore: AutomationCore {
     ///     owning plugin.
     public init(bridge: AutomationHostBridge, bus: HostEventBus = HostEventBus(),
                 externalTools: [ToolDefinition] = [], externalRouter: ExternalToolRouter? = nil,
-                audit: AuditLog? = nil) {
+                audit: AuditLog? = nil, macros: MacroLookup? = nil) {
         self.bridge = bridge
         self.bus = bus
         self.externalTools = externalTools
         self.externalRouter = externalRouter
+        self.macroLookup = macros
         self.audit = audit
     }
 
@@ -75,6 +85,13 @@ public actor DefaultAutomationCore: AutomationCore {
             capability = info.capability
             commandLabel = info.label
         }
+        // Same substitution for a macro, and the same reason: the gate has to be about what will
+        // happen, not about the name of the tool that starts it (F-478). A macro that cannot be found
+        // keeps the declared `.write` and then fails in `run` — it must not fall through as a read.
+        if name == "run_macro", let macro = macro(named: arguments) {
+            capability = MacroPlan.capability(of: macro, tools: tools)
+            commandLabel = MacroPlan.planText(of: macro)
+        }
         // A gated action that cannot work must not be *proposed*. Asking the user to approve a rename
         // that will then fail spends the one moment of their attention on a dead end — and for a batch
         // the plan is a table they would have read carefully first. Measured: a table naming one file
@@ -96,11 +113,11 @@ public actor DefaultAutomationCore: AutomationCore {
             return refusal
         case .confirm:
             let token = UUID().uuidString
-            pending[token] = (name, arguments, isUndo)
+            pending[token] = (name, arguments, policy, isUndo)
             return .needsConfirmation(plan: planText(tool: name, arguments: arguments,
                                                       commandLabel: commandLabel), token: token)
         case .allow:
-            return await execute(name, arguments, isUndo: isUndo)
+            return await execute(name, arguments, policy: policy, isUndo: isUndo)
         }
     }
 
@@ -110,6 +127,14 @@ public actor DefaultAutomationCore: AutomationCore {
     /// cannot be foreseen, so it is not checked here; a rename table that aims two files at one name
     /// can, so it is.
     private func refusalBeforeAsking(tool name: String, arguments: Data?) async -> String? {
+        // A macro that does not exist cannot work, and asking the user to approve running it spends
+        // their attention on a dead end — then fails at the confirmation, which is the worst place to
+        // learn the macro was deleted or renamed (F-478).
+        if name == "run_macro" {
+            let id = (try? Args(arguments).string("macro_id")) ?? ""
+            guard macro(named: arguments) == nil else { return nil }
+            return "There is no macro called “\(id)”."
+        }
         guard name == "rename_batch" else { return nil }
         let a = Args(arguments)
         let problems = await bridge.renameBatchProblems(
@@ -133,7 +158,27 @@ public actor DefaultAutomationCore: AutomationCore {
     /// every plan looked indivisible and nothing said why (F-450).
     public func planItems(token: String) async -> [PlanItem] {
         guard let p = pending[token] else { return [] }
+        // A macro's rows are its steps, which `PlanRows` cannot see: the arguments hold an id, and
+        // resolving it needs the macro lookup this actor holds (F-478).
+        if p.tool == "run_macro", let macro = macro(named: p.args) {
+            // Resolved against the live context, so the rows read as the actions they are rather than as
+            // the templates they were written as. Falls back to the templates if the context is
+            // unavailable — a plan with unreadable rows still beats no plan.
+            guard let snapshot = try? await bridge.context() else { return MacroPlan.rows(of: macro) }
+            return MacroPlan.rows(of: macro, resolvedWith: MacroContext(
+                activeDirectory: snapshot.activePanelPath,
+                inactiveDirectory: snapshot.inactivePanelPath,
+                cursorPath: snapshot.cursorPath,
+                selection: snapshot.selection,
+                startedAt: Date()))
+        }
         return PlanRows.of(tool: p.tool, arguments: p.args)
+    }
+
+    /// The macro a `run_macro` call names, or nil when there is no such macro.
+    private func macro(named arguments: Data?) -> Macro? {
+        guard let id = try? Args(arguments).string("macro_id"), let all = macroLookup?() else { return nil }
+        return all.first { $0.id == id }
     }
 
     public func confirm(token: String, rejecting rejected: Set<String>) async throws -> AutomationOutcome {
@@ -148,7 +193,7 @@ public actor DefaultAutomationCore: AutomationCore {
             // action that touched nothing.
             return .failed(error: "Nothing left to do — every item was left out.")
         }
-        return await execute(p.tool, filtered, isUndo: p.isUndo)
+        return await execute(p.tool, filtered, policy: p.policy, isUndo: p.isUndo)
     }
 
     /// Number of plans awaiting confirmation (tests/diagnostics).
@@ -156,8 +201,14 @@ public actor DefaultAutomationCore: AutomationCore {
 
     // MARK: - Dispatch
 
-    private func execute(_ name: String, _ arguments: Data?, isUndo: Bool) async -> AutomationOutcome {
-        let outcome = await run(name, arguments)
+    /// - Parameter policy: the session's policy, carried to `run` for the one tool that needs it —
+    ///   `run_macro`, whose steps go back through `invoke` and must be held to the same allow-list.
+    ///   Threaded as a parameter and not kept in a field, for the reason the `isUndo` comment gives:
+    ///   this actor suspends at every `await`, so a field would hand one session's permissions to
+    ///   whichever call arrived while another was in flight.
+    private func execute(_ name: String, _ arguments: Data?, policy: PermissionPolicy,
+                         isUndo: Bool) async -> AutomationOutcome {
+        let outcome = await run(name, arguments, policy: policy)
         record(name, arguments, outcome, isUndo: isUndo)
         return outcome
     }
@@ -180,6 +231,12 @@ public actor DefaultAutomationCore: AutomationCore {
         var entry = AuditEntry(at: stamp, tool: name, capability: capability.rawValue,
                                arguments: Self.readableArguments(dictionary),
                                outcome: "ok", detail: nil)
+        // The exact arguments too, when they fit — this is what lets a macro be built from what the
+        // user just did. Sorted keys so a log line is stable to diff.
+        if let data = try? JSONSerialization.data(withJSONObject: dictionary, options: [.sortedKeys]),
+           data.count <= argumentsJSONCap {
+            entry.argumentsJSON = String(data: data, encoding: .utf8)
+        }
         switch outcome {
         case .ok: break
         case .refused(let reason):            entry.outcome = "refused"; entry.detail = reason
@@ -238,9 +295,17 @@ public actor DefaultAutomationCore: AutomationCore {
     }
 
     /// The recorded actions, newest first.
-    public func auditTrail(limit: Int = 50) -> [AuditEntry] { audit?.recent(limit: limit) ?? [] }
+    ///
+    /// `async` to match the requirement exactly — the same trap as `planItems`, one method over, and it
+    /// had the same effect. Declared synchronously it still compiled (an async requirement accepts a
+    /// sync witness), but `list_recent_actions` writes `await auditTrail(…)`, and that `await` picked
+    /// the protocol extension's async default instead. Which returns `[]`. So the log was written
+    /// correctly and read back empty: measured against a real run that wrote three entries and listed
+    /// none, and against `AuditLog.recent`, which had them all along. Nothing caught it because the
+    /// tests exercised `AuditLog` directly and never the tool.
+    public func auditTrail(limit: Int = 50) async -> [AuditEntry] { audit?.recent(limit: limit) ?? [] }
 
-    private func run(_ name: String, _ arguments: Data?) async -> AutomationOutcome {
+    private func run(_ name: String, _ arguments: Data?, policy: PermissionPolicy) async -> AutomationOutcome {
         // Plugin-contributed tools route to their owning plugin (KI-06).
         if externalTools.contains(where: { $0.name == name }) {
             return await externalRouter?(name, arguments) ?? .failed(error: "No handler for '\(name)'.")
@@ -356,6 +421,8 @@ public actor DefaultAutomationCore: AutomationCore {
                     "characters": text.count,
                     "lines": text.isEmpty ? 0 : text.split(separator: "\n", omittingEmptySubsequences: false).count]))
             case "run_command":   try await bridge.runCommand(try a.string("command_id")); return .ok(payload: nil)
+            case "list_macros":   return .ok(payload: try encode(macroSummaries()))
+            case "run_macro":     return try await runMacro(a, policy: policy)
             case "run_shell":
                 let out = try await bridge.runShell(try a.string("command"))
                 return .ok(payload: try json(["output": out]))
@@ -410,6 +477,76 @@ public actor DefaultAutomationCore: AutomationCore {
         case .operationFailed(let detail):
             return detail
         }
+    }
+
+    // MARK: - Macros (F-478)
+
+    /// What `list_macros` returns: enough to choose one and to see what it would do, without the
+    /// argument templates — those are for the editor, and a model does not get to rewrite them.
+    private struct MacroSummary: Encodable {
+        let id: String
+        let title: String
+        let command: String
+        let capability: String
+        let steps: [String]
+    }
+
+    private func macroSummaries() -> [MacroSummary] {
+        (macroLookup?() ?? []).map { macro in
+            MacroSummary(id: macro.id, title: macro.title, command: macro.commandName,
+                         capability: MacroPlan.capability(of: macro, tools: tools).rawValue,
+                         steps: MacroPlan.rows(of: macro).map(\.text))
+        }
+    }
+
+    /// Run a macro's steps in order.
+    ///
+    /// The steps go through `invoke` on this same actor, so each one is gated, dispatched and
+    /// **logged** exactly as it would be if it had been called directly — one line per step, with its
+    /// inverse where one exists. Reentrancy is fine and intended: this actor suspends at every
+    /// `await` in `invoke` already.
+    private func runMacro(_ a: Args, policy: PermissionPolicy) async throws -> AutomationOutcome {
+        let id = try a.string("macro_id")
+        guard let macro = (macroLookup?() ?? []).first(where: { $0.id == id }) else {
+            return .failed(error: "There is no macro called “\(id)”.")
+        }
+        let skip = Set((try? a.strings("skip_steps")) ?? [])
+        // Every row struck out is a cancellation, and it is reported as one. Same wording as
+        // `confirm(token:rejecting:)`, because from the user's side it is the same act.
+        if !macro.steps.isEmpty, skip.count >= macro.steps.count {
+            return .failed(error: "Nothing left to do — every step was left out.")
+        }
+        // One start time for the whole run, so every `%{date:…}` in it agrees; the panel state is read
+        // again for each step, because a step changes what the next one is about.
+        let startedAt = Date()
+        let bridge = self.bridge
+        let context: MacroRunner.ContextProvider = {
+            guard let snapshot = try? await bridge.context() else {
+                return MacroContext(activeDirectory: "", startedAt: startedAt)
+            }
+            return MacroContext(activeDirectory: snapshot.activePanelPath,
+                                inactiveDirectory: snapshot.inactivePanelPath,
+                                cursorPath: snapshot.cursorPath,
+                                selection: snapshot.selection,
+                                startedAt: startedAt)
+        }
+        // `runMacro` is only reached after `invoke` decided `.allow` or the user confirmed, so
+        // autonomy is satisfied for the macro as a whole. The runner raises autonomy for the steps and
+        // leaves this allow-list alone — which is what keeps a `run_shell` step refused on a session
+        // that never got `.shell`.
+        // Straight back through the public `invoke`, so a step is gated, dispatched and logged exactly
+        // as a direct call would be. Reentering this actor is intended and safe: `invoke` already
+        // suspends at every `await`, and the runner holds no actor state of its own.
+        let runner = MacroRunner { tool, arguments, stepPolicy in
+            try await self.invoke(tool: tool, arguments: arguments, policy: stepPolicy)
+        }
+        let report = await runner.run(macro, context: context, policy: policy, skipping: skip)
+        if let stopped = report.stoppedAt {
+            // Reported as a failure even though earlier steps succeeded: a half-run macro is not a
+            // success, and the payload carries which steps did run so the user can see where it got to.
+            return .failed(error: "The macro stopped at \(stopped).")
+        }
+        return .ok(payload: try encode(report))
     }
 
     /// A human-readable description of what a gated action will do (best-effort).
@@ -467,8 +604,40 @@ public actor DefaultAutomationCore: AutomationCore {
             // approving that is not a decision anybody could make.
             guard let id = try? a.string("command_id") else { return "Run a command." }
             return commandLabel.map { "\($0) (\(id))." } ?? "Run the command \(id)."
-        default: return "Run \(tool)."
+        case "run_macro":
+            // `commandLabel` is the macro's own plan text, set in `invoke`. Falling back to the id
+            // rather than to "Run run_macro", for the same reason as above.
+            guard let id = try? a.string("macro_id") else { return "Run a macro." }
+            return commandLabel ?? "Run the macro “\(id)”."
+        default: return Self.planTextForOtherTool(tool, arguments)
         }
+    }
+
+    /// The plan text for a tool this switch has no phrasing for — in practice, one contributed by a
+    /// plugin.
+    ///
+    /// "Run run_applescript." was what the old default produced, and the `run_command` case above
+    /// already says why that is not a decision anybody can make. Two rules, both borrowed from cases
+    /// that earned them:
+    ///
+    ///   * A tool whose arguments are a single string is one where *that string is the decision* — a
+    ///     script, a command line, a query. It is quoted in full, like `run_shell`'s command, because a
+    ///     summary asks the user to approve something they cannot check.
+    ///   * Anything else gets its arguments named rather than dropped.
+    ///
+    /// Generic on purpose: the core does not know a plugin's tool names and should not learn them.
+    static func planTextForOtherTool(_ tool: String, _ arguments: Data?) -> String {
+        let dictionary = (arguments.flatMap {
+            try? JSONSerialization.jsonObject(with: $0) } as? [String: Any]) ?? [:]
+        guard !dictionary.isEmpty else { return "Run \(tool)." }
+        let strings = dictionary.compactMapValues { $0 as? String }
+        if strings.count == 1, dictionary.count == 1, let (key, value) = strings.first {
+            // Capped, but generously: a script long enough to hit this is one the reader was going to
+            // scroll anyway, and cutting it at sixty characters would hide what it does.
+            let body = value.count > 4000 ? String(value.prefix(4000)) + "\n…" : value
+            return "Run \(tool) with \(key):\n\n\(body)"
+        }
+        return "Run \(tool) — \(readableArguments(dictionary))."
     }
 
     private func encode<T: Encodable>(_ v: T) throws -> Data { try JSONEncoder().encode(v) }

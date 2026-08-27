@@ -388,6 +388,13 @@ enum AppMenu {
                                    key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(command(String(localized: "Command Browser…"), cmd: "cm_CommandBrowser",
                                    key: "", mask: [], target: target, action: commandAction))
+        // Macros (F-478): among the everyday customization tools, because that is what they are —
+        // a macro ends up on a button or a key like anything else here.
+        configMenu.addItem(command(String(localized: "Macro from Recent Actions…"),
+                                   cmd: "cm_MacroFromRecentActions",
+                                   key: "", mask: [], target: target, action: commandAction))
+        configMenu.addItem(command(String(localized: "Edit Macros…"), cmd: "cm_MacroEditor",
+                                   key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(.separator())
         // One-off actions, kept apart from the everyday tools above.
         configMenu.addItem(command(String(localized: "Import wincmd.ini…"), cmd: "cm_ImportWincmd",
@@ -425,6 +432,14 @@ enum AppMenu {
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Preview Panel"), cmd: "cm_PreviewPanel",
                                  key: "p", mask: [.command, .shift], target: target, action: commandAction))
+        // The side panel's own pages (F-476). No checkmarks, deliberately: none of the toggles around
+        // them carry one either, and there is no menu-state refresh in this bar to hang one on.
+        viewMenu.addItem(command(String(localized: "Side Panel: Info"), cmd: "cm_SidePanelInfo",
+                                 key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Side Panel: Activities"), cmd: "cm_SidePanelActivities",
+                                 key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Side Panel: Log"), cmd: "cm_SidePanelLog",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Horizontal Panels"), cmd: "cm_HorizontalPanels",
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Button Bar"), cmd: "cm_ButtonBar",

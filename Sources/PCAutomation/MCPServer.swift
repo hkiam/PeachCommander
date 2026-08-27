@@ -35,7 +35,11 @@ public struct MCPServer: Sendable {
     /// In the app, `run_shell` puts a dialog in front of a person with the command quoted in full.
     /// There is no equivalent over a socket, so the tool is simply not there. Refusing it at
     /// `tools/list` as well as at the call means a client never sees a capability it cannot have.
-    static let notOfferedRemotely: Set<Capability> = [.shell]
+    ///
+    /// `.script` is here for the same reason and one more: an AppleScript can send Apple events to
+    /// *other* applications, so a remote client running one reaches past this app entirely — past
+    /// the catalogue, past the audit log, past anything the policy could hold it to.
+    static let notOfferedRemotely: Set<Capability> = [.shell, .script]
 
     static func offered(_ tools: [ToolDefinition]) -> [ToolDefinition] {
         tools.filter { !notOfferedRemotely.contains($0.capability) }

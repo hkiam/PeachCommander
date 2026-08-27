@@ -37,6 +37,7 @@ SCRIPTS=(
   build-ai-plugin
   build-ailocal-plugin
   build-aicolumn-plugin
+  build-scripting-plugin
   build-pfx-plugins
   build-s3-plugin
 )

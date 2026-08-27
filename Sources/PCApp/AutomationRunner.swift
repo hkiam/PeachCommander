@@ -30,7 +30,9 @@
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
 //   renamemask <mask>|<out>    resolve a multi-rename mask over the active panel, write old -> new
-//                               (":confirm" agrees to a gated plan; ":confirm:<id>,<id>" strikes rows out)
+//                               (":confirm" agrees to a gated plan; ":confirm:<id>,<id>" strikes rows out;
+//                                ":session" uses the configured policy instead of `.standard`, which is
+//                                the only way to exercise a capability switched on in Settings)
 //   pathbardump <side>|<out>   the path bar's state: editing, its text, the breadcrumb, where it ends
 //   pathbarclick <side>|<region>|<clicks>|<out>   click a path bar region (first/last/gap/trailing/pencil)
 //   theme <id>            select a colour palette ("system", "norton", …)
@@ -661,6 +663,15 @@ extension MainWindowController {
                     var tool = at[0]
                     var wantsConfirm = false
                     var rejected: Set<String> = []
+                    // ":session" runs under the *configured* policy instead of `.standard`. Without it a
+                    // capability the user has switched on in Settings — the shell, scripting — cannot be
+                    // exercised from a script at all: `.standard` withholds both by construction, so a
+                    // run could only ever measure the refusal (F-477).
+                    var wantsSessionPolicy = false
+                    if let range = tool.range(of: ":session") {
+                        wantsSessionPolicy = true
+                        tool = tool.replacingCharacters(in: range, with: "")
+                    }
                     if let range = tool.range(of: ":confirm") {
                         wantsConfirm = true
                         let tail = String(tool[range.upperBound...])
@@ -669,8 +680,10 @@ extension MainWindowController {
                             rejected = Set(tail.dropFirst().split(separator: ",").map(String.init))
                         }
                     }
+                    let policy: PermissionPolicy = wantsSessionPolicy
+                        ? await currentAutonomyPolicy() : .standard
                     var outcome = try? await automationCore.invoke(tool: tool, arguments: args,
-                                                                   policy: .standard)
+                                                                   policy: policy)
                     var plan: String?
                     if wantsConfirm, case .needsConfirmation(let p, let token) = outcome {
                         // The rows are reported alongside the plan: a check that strikes one out has to
@@ -855,6 +868,13 @@ extension MainWindowController {
                 if let panel = previewPanelForAutomation() {
                     NSLog("[automation] previewtab \(arg): \(panel.automationSelectTab(titled: arg))")
                 }
+            case "previewtabsdump":                     // previewtabsdump <out> (F-476)
+                // Which tabs the side panel offers, whether it has a tab strip at all, and which tab is
+                // showing. `sidebardump` cannot answer any of that — it walks text fields, and the strip
+                // is a segmented control.
+                let report = previewPanelForAutomation()?.automationTabReport()
+                    ?? "ERROR: no preview panel view\n"
+                try? report.write(toFile: arg, atomically: true, encoding: .utf8)
             case "tccomment":                           // tccomment <dir>|<out> (F-374)
                 // Read a `descript.ion` that Total Commander would have written — UTF-16 with a BOM and a
                 // multi-line comment — then write one comment back and report what is on disk afterwards.

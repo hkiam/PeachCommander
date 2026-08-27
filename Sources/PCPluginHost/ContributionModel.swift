@@ -159,7 +159,10 @@ public struct ToolParamSpec: Sendable, Equatable {
 public struct ToolContribution: Sendable, Equatable {
     public let name: String
     public let description: String
-    public let capability: String   // read|navigate|write|delete|config|runCommand|network
+    /// One of `Capability`'s raw values: read|navigate|write|delete|config|runCommand|shell|script|network.
+    /// An unrecognised string is read as `read` by the host, so a typo here quietly *narrows* what the
+    /// tool may do rather than widening it.
+    public let capability: String
     public let params: [ToolParamSpec]
     /// Lowercased file extensions this tool formats, from the manifest's
     /// `formatsExtensions`. Non-empty means the host also offers it as a text formatter

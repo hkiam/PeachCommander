@@ -42,6 +42,12 @@ public enum PlanRows {
         case "move_to_trash", "delete_permanently":
             guard let paths = dict["paths"] as? [String], paths.count > 1 else { return [] }
             return paths.map { PlanItem(id: $0, text: ($0 as NSString).lastPathComponent) }
+        // A macro's rows are its steps, but they cannot be derived from the arguments — those hold
+        // only the macro's id. The Core answers for this one out of its macro lookup; see
+        // `DefaultAutomationCore.planItems`. Named here so a reader of this switch is not left to
+        // conclude that a macro is indivisible.
+        case "run_macro":
+            return []
         default:
             return []
         }
@@ -76,6 +82,11 @@ public enum PlanRows {
             let kept = paths.filter { !rejected.contains($0) }
             guard !kept.isEmpty else { return .none }
             dict["paths"] = kept
+        // The struck-out rows are step ids, so they can be written into the arguments here without
+        // knowing anything about the macro — which keeps this file pure. The runner skips exactly
+        // these, so what the user left out is left out by the thing doing the work.
+        case "run_macro":
+            dict["skip_steps"] = Array(rejected).sorted()
         default:
             return .some(arguments)
         }

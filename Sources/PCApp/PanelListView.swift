@@ -1552,18 +1552,39 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     /// Apply a wildcard mask to select or unselect entries (Num+/Num- dialog result).
     func applySelectionMask(_ mask: String, unselect: Bool, includeDirectories: Bool) {
-        Task {
-            guard let state = selectionState else { return }
-            await state.saveSelectionToHistory()
-            if unselect {
-                _ = await state.unselectByMask(mask, includeDirectories: includeDirectories)
-            } else {
-                _ = await state.selectByMask(mask, includeDirectories: includeDirectories)
-            }
-            await refreshSelectionMirror()
-            reloadData()
-            notifyChanged()
-        }
+        Task { _ = await applyingSelectionMask(mask, unselect: unselect, includeDirectories: includeDirectories) }
+    }
+
+    /// The same, awaited, returning how many entries it newly marked (or unmarked).
+    ///
+    /// The fire-and-forget version above is right for a keystroke: nothing is waiting on the answer. It
+    /// is wrong for a caller that has to *report* what happened — `set_selection` read the selection on
+    /// the line after calling it and got the state from before the Task ran, so a mask that had just
+    /// matched three files was reported as matching none (F-478). Same body, one `await` available.
+    ///
+    /// The count is of *newly* marked entries, so it is not a match count: a mask naming files that were
+    /// already selected returns zero. A caller that wants "is anything selected now" has to ask the
+    /// selection state, not this.
+    ///
+    /// - Parameter replacing: clear the selection first, so afterwards *only* the matches are marked.
+    ///   The keyboard's mask commands add to the selection, and so does AppleScript's `select` — that is
+    ///   what "select more" means at a keystroke and it is long-shipped behaviour. A macro needs the
+    ///   other reading: a macro that says "select every PDF" has to do the same thing whatever was
+    ///   marked when it started, or it is not reproducible, and its next step would move files nobody
+    ///   named (F-478).
+    @discardableResult
+    func applyingSelectionMask(_ mask: String, unselect: Bool, includeDirectories: Bool,
+                               replacing: Bool = false) async -> Int {
+        guard let state = selectionState else { return 0 }
+        await state.saveSelectionToHistory()
+        if replacing { _ = await state.clearSelection() }
+        let changed = unselect
+            ? await state.unselectByMask(mask, includeDirectories: includeDirectories)
+            : await state.selectByMask(mask, includeDirectories: includeDirectories)
+        await refreshSelectionMirror()
+        reloadData()
+        notifyChanged()
+        return changed
     }
 
     private func runSelectionOp(_ op: @escaping (SelectionState) async -> Bool) {

@@ -33,6 +33,11 @@ public struct SettingsSnapshot: Sendable {
     public var showStatusBar: Bool = true   // F-270
     public var showTabBar: Bool = true      // F-270
     public var showPathBar: Bool = true     // F-270
+    // The side panel's built-in pages (F-476). Info alone is what ships: the other two are transfer
+    // lists most people never open, and they were charging a permanently visible tab strip for it.
+    public var sidePanelInfoPage: Bool = true
+    public var sidePanelActivitiesPage: Bool = false
+    public var sidePanelLogPage: Bool = false
     public var showCommandLine: Bool
     public var showFunctionKeys: Bool
     // Copy/Delete page (F-271)
@@ -64,6 +69,11 @@ public struct SettingsSnapshot: Sendable {
     public var aiAutonomy: String = "confirm"      // AI.Autonomy: "readonly" | "confirm" | "autonomous"
     /// AI.AllowShell — may the assistant offer to run shell commands at all (F-381)?
     public var aiAllowShell: Bool = false
+    /// AI.AllowScript — may scripting be used at all (F-477)? Its own switch, not folded into the
+    /// shell's: an AppleScript can drive other applications through Apple events, which "run a program"
+    /// does not describe, and somebody who wants a file-filing script must be able to have it without
+    /// also granting an arbitrary shell.
+    public var aiAllowScript: Bool = false
     public var aiCloudBase: String = ""            // AI.CloudBaseURL ("" = on-device)
     public var aiCloudModel: String = "local"      // AI.CloudModel
     public var aiHasCloudKey: Bool = false         // whether a Cloud API key is stored (Keychain)
@@ -91,6 +101,8 @@ public struct SettingsSnapshot: Sendable {
                 showButtonBar: Bool = true,
                 showDriveBar: Bool = true, showStatusBar: Bool = true,
                 showTabBar: Bool = true, showPathBar: Bool = true,
+                sidePanelInfoPage: Bool = true, sidePanelActivitiesPage: Bool = false,
+                sidePanelLogPage: Bool = false,
                 verifyAfterCopy: Bool = false, quickSearchMode: String = "direct",
                 mouseMode: String = "left",
                 copyPreserveMetadata: Bool = true, copyCloneCopy: Bool = true,
@@ -105,6 +117,7 @@ public struct SettingsSnapshot: Sendable {
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
                 aiAutonomy: String = "confirm",
                 aiAllowShell: Bool = false,
+                aiAllowScript: Bool = false,
                 aiCloudBase: String = "", aiCloudModel: String = "local", aiHasCloudKey: Bool = false,
                 aiModelPreference: String = "auto", aiSystemPrompt: String = "",
                 historyEnabled: Bool = true, historyMaxEntries: Int = 500, historyKeepDays: Int = 90,
@@ -118,6 +131,7 @@ public struct SettingsSnapshot: Sendable {
         self.aiMCPToken = aiMCPToken
         self.aiAutonomy = aiAutonomy
         self.aiAllowShell = aiAllowShell
+        self.aiAllowScript = aiAllowScript
         self.aiCloudBase = aiCloudBase
         self.aiCloudModel = aiCloudModel
         self.aiHasCloudKey = aiHasCloudKey
@@ -149,6 +163,9 @@ public struct SettingsSnapshot: Sendable {
         self.showStatusBar = showStatusBar
         self.showTabBar = showTabBar
         self.showPathBar = showPathBar
+        self.sidePanelInfoPage = sidePanelInfoPage
+        self.sidePanelActivitiesPage = sidePanelActivitiesPage
+        self.sidePanelLogPage = sidePanelLogPage
         self.showCommandLine = showCommandLine
         self.showFunctionKeys = showFunctionKeys
         self.copyPreserveMetadata = copyPreserveMetadata
@@ -270,6 +287,9 @@ public final class SettingsWindowController: NSWindowController {
     private let statusBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
     private let tabBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
     private let pathBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
+    private let sidePanelInfoCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-476
+    private let sidePanelActivitiesCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-476
+    private let sidePanelLogCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-476
 
     // Display page controls
     private let showHiddenCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -351,6 +371,9 @@ public final class SettingsWindowController: NSWindowController {
     private let aiAutonomyPopup = NSPopUpButton()
     private let aiAllowShellCheck = NSButton(checkboxWithTitle:
         String(localized: "Let the assistant run shell commands (asks every time)"),
+        target: nil, action: nil)
+    private let aiAllowScriptCheck = NSButton(checkboxWithTitle:
+        String(localized: "Let scripts run (AppleScript and JavaScript, asks every time)"),
         target: nil, action: nil)
     private let aiCloudBaseField = NSTextField()
     private let aiCloudModelField = NSTextField()
@@ -1018,6 +1041,10 @@ public final class SettingsWindowController: NSWindowController {
         aiAllowShellCheck.target = self
         aiAllowShellCheck.action = #selector(aiChanged)
         aiAllowShellCheck.toolTip = String(localized: "Off by default. When on, the assistant may propose a command; it runs in a visible terminal tab and only after you approve the exact wording. Never offered to external agents over MCP.")
+        aiAllowScriptCheck.state = snapshot.aiAllowScript ? .on : .off
+        aiAllowScriptCheck.target = self
+        aiAllowScriptCheck.action = #selector(aiChanged)
+        aiAllowScriptCheck.toolTip = String(localized: "Off by default, and needs the Scripting plugin. When on, a script can be run from a menu, a button or the assistant — always after you approve the exact wording. Never offered to external agents over MCP.")
         aiCloudBaseField.stringValue = snapshot.aiCloudBase
         aiCloudBaseField.placeholderString = "https://api.openai.com/v1  ·  http://localhost:11434/v1"
         aiCloudBaseField.target = self; aiCloudBaseField.action = #selector(aiChanged)
@@ -1065,6 +1092,7 @@ public final class SettingsWindowController: NSWindowController {
             sectionLabel(String(localized: "What either assistant may do")),
             labeledRow(title: String(localized: "Assistant autonomy:"), control: aiAutonomyPopup),
             aiAllowShellCheck,
+            aiAllowScriptCheck,
             sectionLabel(String(localized: "External agents")),
             aiMCPCheckbox,
             labeledRow(title: String(localized: "MCP server port:"), control: aiPortField),
@@ -1082,6 +1110,7 @@ public final class SettingsWindowController: NSWindowController {
         let i = aiAutonomyPopup.indexOfSelectedItem
         onSetString("AI.Autonomy", aiAutonomies.indices.contains(i) ? aiAutonomies[i].raw : "confirm")
         onSetString("AI.AllowShell", aiAllowShellCheck.state == .on ? "1" : "0")
+        onSetString("AI.AllowScript", aiAllowScriptCheck.state == .on ? "1" : "0")
         let m = aiModelPrefPopup.indexOfSelectedItem
         onSetString("AIPlugin.ModelPreference", aiModelPrefs.indices.contains(m) ? aiModelPrefs[m].raw : "auto")
     }
@@ -1225,8 +1254,22 @@ public final class SettingsWindowController: NSWindowController {
                      isOn: snapshot.showTabBar, action: #selector(tabBarChanged))
         makeCheckbox(pathBarCheckbox, title: String(localized: "Show path bar"),
                      isOn: snapshot.showPathBar, action: #selector(pathBarChanged))
+        // The side panel's own pages (F-476). Its *visibility* is View ▸ Preview Panel; which pages it
+        // offers belongs here with the rest of the window's furniture.
+        makeCheckbox(sidePanelInfoCheckbox, title: String(localized: "Show the Info page"),
+                     isOn: snapshot.sidePanelInfoPage, action: #selector(sidePanelInfoChanged))
+        makeCheckbox(sidePanelActivitiesCheckbox, title: String(localized: "Show the Activities page"),
+                     isOn: snapshot.sidePanelActivitiesPage, action: #selector(sidePanelActivitiesChanged))
+        makeCheckbox(sidePanelLogCheckbox, title: String(localized: "Show the Log page"),
+                     isOn: snapshot.sidePanelLogPage, action: #selector(sidePanelLogChanged))
+        let sidePanelNote = NSTextField(wrappingLabelWithString: String(localized: "With one page left the panel drops its tab strip. Pages a plugin contributes are not affected — those come and go with the plugin."))
+        sidePanelNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        sidePanelNote.textColor = .secondaryLabelColor
         return makePageStack(rows: [commandLineCheckbox, functionKeysCheckbox, buttonBarCheckbox, driveBarCheckbox,
-                                    statusBarCheckbox, tabBarCheckbox, pathBarCheckbox])
+                                    statusBarCheckbox, tabBarCheckbox, pathBarCheckbox,
+                                    sectionLabel(String(localized: "Side panel pages:")),
+                                    sidePanelInfoCheckbox, sidePanelActivitiesCheckbox, sidePanelLogCheckbox,
+                                    sidePanelNote])
     }
 
     @objc private func commandLineChanged() {
@@ -1246,6 +1289,15 @@ public final class SettingsWindowController: NSWindowController {
     }
     @objc private func pathBarChanged() {
         onSetBool("Layout.PathBar", pathBarCheckbox.state == .on)
+    }
+    @objc private func sidePanelInfoChanged() {
+        onSetBool("Layout.PreviewTabInfo", sidePanelInfoCheckbox.state == .on)
+    }
+    @objc private func sidePanelActivitiesChanged() {
+        onSetBool("Layout.PreviewTabActivities", sidePanelActivitiesCheckbox.state == .on)
+    }
+    @objc private func sidePanelLogChanged() {
+        onSetBool("Layout.PreviewTabLog", sidePanelLogCheckbox.state == .on)
     }
     // MARK: - Plugins page (F-274)
 

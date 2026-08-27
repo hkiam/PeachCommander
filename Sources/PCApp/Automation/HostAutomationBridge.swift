@@ -397,7 +397,47 @@ final class HostAutomationBridge: AutomationHostBridge {
     func openInPanel(_ path: String, side: String) async throws {
         host?.contribOpenPathInPanel(side: side.lowercased() == "right" ? 1 : 0, path: path)
     }
-    func setSelection(mask: String) async throws { throw AutomationError.notImplemented("set_selection") }
+    /// Select entries in the active panel by a wildcard mask.
+    ///
+    /// This threw `notImplemented` while the very same operation had been available to AppleScript since
+    /// F-296 — `applySelectionMask` was one call away, and the tool was declared in the catalogue the
+    /// whole time. The cost was not the missing tool but what it made *macros*: a macro could only ever
+    /// act on what the user had already marked, so "select every PDF and file it away" was not
+    /// expressible (F-478).
+    ///
+    /// It **replaces** the selection, where AppleScript's `select` adds to it. One shared seam with one
+    /// honest parameter rather than two implementations: the difference is real and belongs to the
+    /// caller, not to the mask matching.
+    ///
+    /// The two paths still differ in one way this does not fix. `MainWindowController.scriptSelect` —
+    /// what AppleScript's `select` and the "Select Items by Mask" Shortcut return — reads the selection
+    /// on the line after applying the mask, so its *return value* is the selection from before. The
+    /// mask is applied correctly; only what it reports back is stale. Fixing it needs the AppleScript
+    /// command to suspend and resume (`NSScriptCommand.suspendExecution`), which is a change to a
+    /// shipped verb and not this.
+    func setSelection(mask: String) async throws {
+        guard let host, let panel = host.activePanel else {
+            throw AutomationError.notImplemented("host released")
+        }
+        // `replacing`, so afterwards exactly the matches are marked. Adding — which is what the
+        // keystroke and AppleScript's `select` do — would make a macro depend on what happened to be
+        // selected when it started, and would defeat the check below: a mask that matched nothing would
+        // still leave the previous selection standing and read as success.
+        await panel.tableView.applyingSelectionMask(mask, unselect: false, includeDirectories: true,
+                                                    replacing: true)
+        // What is marked *now*, from the selection state — not the mask's own count, which counts only
+        // newly marked entries and is therefore zero for a mask naming files that were already
+        // selected; and not `selectedOrCursorPaths`, which falls back to the cursor and so cannot tell
+        // "nothing is selected" from "one thing is under the cursor".
+        let marked = await panel.getSelectionState().getSelectedPathList()
+        // Refused rather than passed over in silence, and this is the point of implementing the tool at
+        // all: `%S` falls back to the file under the cursor when nothing is selected — deliberately, the
+        // way a button bar's `%S` does. So a macro whose mask matched nothing would go on to move
+        // whatever the cursor happened to be on. The user asked for the PDFs.
+        guard !marked.isEmpty else {
+            throw AutomationError.operationFailed("Nothing in this folder matches “\(mask)”.")
+        }
+    }
     func runCommand(_ id: String) async throws { host?.contribInvokeCommand(id) }
 
     /// `clearContents()` first, because setString alone leaves any other representation of the
@@ -452,12 +492,39 @@ final class HostAutomationBridge: AutomationHostBridge {
     // still a normal background job — visible, pausable, cancellable in the Transfer Manager —
     // the tool simply does not claim to be done until it is.
     func copy(sources: [String], destination: String) async throws {
+        try requireExistingDirectory(destination)
         try await runTransfer(.copy(items: sources, toDirectory: destination, options: CopyOptions()),
                               title: "Copy \(sources.count) item(s)")
     }
     func move(sources: [String], destination: String) async throws {
+        try requireExistingDirectory(destination)
         try await runTransfer(.move(items: sources, toDirectory: destination, options: CopyOptions()),
                               title: "Move \(sources.count) item(s)")
+    }
+
+    /// Refuse a transfer whose destination folder is not there.
+    ///
+    /// **Measured, and it destroyed files.** `move` with a destination that does not exist reported
+    /// `ok` — no payload, no error, the Transfer Manager finished successfully — and the sources were
+    /// gone from where they had been and were nowhere else. Two files, one call, no way back: the audit
+    /// entry even carried an inverse that could not restore them.
+    ///
+    /// The guard is here rather than in the operations engine because this is the layer where a
+    /// destination arrives as an arbitrary *string*: the assistant, an MCP client and a macro all name
+    /// a folder in text, and any of them can name one that is not there. A panel's own F5/F6 cannot —
+    /// its destination is a directory it is displaying. The engine's behaviour is a separate defect and
+    /// this does not fix it; it stops the automation surface from reaching it.
+    private func requireExistingDirectory(_ path: String) throws {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) else {
+            throw AutomationError.operationFailed(
+                "Nothing was moved or copied: the folder “\(path)” does not exist. "
+                + "Create it first (make_directory) and try again.")
+        }
+        guard isDirectory.boolValue else {
+            throw AutomationError.operationFailed(
+                "Nothing was moved or copied: “\(path)” is a file, not a folder.")
+        }
     }
 
     private func runTransfer(_ kind: OperationKind, title: String) async throws {

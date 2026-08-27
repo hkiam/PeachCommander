@@ -75,7 +75,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private(set) var leftPanelController: PanelController?
     private(set) var rightPanelController: PanelController?
 
-    private let commandRegistry = CommandRegistry()
+    /// Internal, not private: the macro extension in MainWindowController+Macros.swift registers a
+    /// command per saved macro through it (F-478).
+    let commandRegistry = CommandRegistry()
 
     private(set) var activePanel: PanelController? {
         didSet { updateActivePanelAppearance() }
@@ -105,6 +107,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// PermissionPolicy; writes/deletes/config are gated (plan-then-confirm).
     lazy var automationCore: DefaultAutomationCore = makeAutomationCore()
 
+    /// The macros as last registered, so a reload can tell a real change from a rewritten file (F-478).
+    var lastLoadedMacros: [Macro] = []
+
     /// Build the core, merging automation tools contributed by loaded plugins (KI-06).
     private func makeAutomationCore() -> DefaultAutomationCore {
         let externalTools = ContributionRegistry.shared.toolDefinitions()
@@ -119,9 +124,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Every executed action is recorded here — the assistant's, an external agent's over
         // MCP, and a plugin-contributed tool's — because they all come through this one core.
         let audit = AuditLog(url: configPaths.root.appendingPathComponent("aichat/actions.jsonl"))
+        // Read through the store on every call rather than captured once: macros are a file the user
+        // edits while the app runs, and a snapshot taken when the core was first touched would leave
+        // `run_macro` answering about a macros.json that is no longer there (F-478).
+        let macroStoreURL = configPaths.macros
+        let macros: DefaultAutomationCore.MacroLookup = { MacroStore(url: macroStoreURL).macros() }
         return DefaultAutomationCore(bridge: HostAutomationBridge(host: self), bus: hostEventBus,
                                      externalTools: externalTools, externalRouter: router,
-                                     audit: audit)
+                                     audit: audit, macros: macros)
     }
     /// The optional MCP server exposing the Automation Core to external agents
     /// (off by default; enabled via the Automation.MCPServerEnabled config key).
@@ -133,7 +143,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     let session: ConfigStore
     private let hotlistStore: ConfigStore
     private var hotlist = Hotlist()
-    private let configPaths: ConfigPaths
+    /// Internal for the same reason as `commandRegistry`: the macro extension resolves macros.json.
+    let configPaths: ConfigPaths
     /// Selected colour theme id ("system" = follow the appearance, the default and the
     /// behaviour that predates themes). Persisted as [Colors] Theme.
     private var themeId: String = "system"
@@ -385,7 +396,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // The resizer collapses with the panel: a drag handle for something that is not there
         // would be a dead strip down the middle of the window.
         previewResizerWidthConstraint = previewResizer.widthAnchor.constraint(equalToConstant: 0)
-        previewPanel.onModeChange = { [weak self] _ in
+        previewPanel.onPageChange = { [weak self] _ in
             self?.refreshPreview()
             self?.updateTerminalMenuState()   // the terminal may be one of the sidebar's tabs (F-388)
         }
@@ -505,6 +516,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task.detached(priority: .utility) { ArchiveTempSweeper.sweep() }
         Task { @MainActor in
             await self.commandRegistry.registerDefaultCommands()
+            // After the built-ins, not before: the macro ids are allocated around whatever is already
+            // taken, and `registeredCommandNames` below is what decides whether a menu item is enabled
+            // — a macro registered before this line would be missing from both (F-478).
+            self.loadMacros()
             // Cache the numeric-id → cm_ name map so a .mnu can reference TC ids (F-257),
             // then rebuild in case a user .mnu is present and needed id resolution.
             let all = await self.commandRegistry.getAllCommands()
@@ -690,6 +705,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         applyAppearance(config.string("Colors", "Appearance", default: "system"))
         let savedWidth = config.int("Layout", "PreviewWidth", default: Int(Self.previewWidth))
         preferredPreviewWidth = max(PreviewResizeHandle.minWidth, CGFloat(savedWidth))
+        // Before the panel is opened, not after: the tab strip is part of the first frame, and applying
+        // this afterwards would show the three-tab panel for one paint and then collapse it (F-476).
+        visibleSidePanelPages = Self.visibleSidePanelPages(config)
+        previewPanel.setVisibleBuiltins(visibleSidePanelPages)
         if config.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
         horizontalPanels = config.bool("Layout", "HorizontalPanels", default: false)
         if horizontalPanels { applyPanelArrangement() }
@@ -777,6 +796,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         buttonBar=\(!buttonBarView.isHidden && (buttonBarHeightConstraint?.constant ?? 0) > 0)
         buttonBarVertical=\(buttonBarVertical)
         previewPanel=\(previewIsVisible)
+        previewTabs=\(SidePanelPage.allCases.filter(visibleSidePanelPages.contains)
+                                            .map(\.rawValue).joined(separator: ","))
         panelsVertical=\(splitView.isVertical)
         leftViewMode=\(leftPanelController?.viewMode.rawValue ?? "-")
         rightViewMode=\(rightPanelController?.viewMode.rawValue ?? "-")
@@ -1405,11 +1426,27 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             for plugin in enabled {
                 // Contribution behavior (any type) if the manifest declares any.
                 if let dict = Self.infoPlist(atBundle: plugin.bundlePath) {
-                    let parsed = ContributionParser.parse(infoPlist: dict).contributions
-                    if !parsed.isEmpty, case .success(let lib) = PluginHost.openContribLibrary(plugin) {
-                        ContributionRegistry.shared.register(pluginId: plugin.bundlePath,
-                                                             contributions: parsed,
-                                                             plugin: ContribPlugin(library: lib))
+                    let result = ContributionParser.parse(infoPlist: dict)
+                    for warning in result.warnings {
+                        logger.error("\(plugin.manifest.name): manifest: \(warning)")
+                    }
+                    if !result.contributions.isEmpty {
+                        // The failure was dropped here, and a plugin that cannot be opened then
+                        // contributes nothing with nothing said about it — which is exactly how it
+                        // presents: enabled in the Plugins window, absent from every menu. Measured: a
+                        // plugin linking PCAutomation loaded a second copy of that framework from the
+                        // build directory and dlopen refused it, and finding that took a run and a
+                        // control experiment because there was no message anywhere.
+                        switch PluginHost.openContribLibrary(plugin) {
+                        case .success(let lib):
+                            ContributionRegistry.shared.register(pluginId: plugin.bundlePath,
+                                                                 contributions: result.contributions,
+                                                                 plugin: ContribPlugin(library: lib))
+                        case .failure(let error):
+                            logger.error("""
+                                \(plugin.manifest.name): declares contributions but could not be                                 loaded (\(String(describing: error))) — it will contribute nothing
+                                """)
+                        }
                     }
                 }
                 // File-system adapters (PFX). Keyed by bundlePath so a contributed
@@ -3001,7 +3038,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    private func openEditor(path: String, onSaved: (() -> Void)? = nil) {
+    /// Internal, not private: the macro extension opens macros.json with it, the way
+    /// `showEditMainMenu` opens default.mnu (F-478).
+    func openEditor(path: String, onSaved: (() -> Void)? = nil) {
         HistoryService.shared.recordFile(path)
         // Per-extension editor association (F-273): hand off to the configured
         // external editor instead of the built-in one. (Only for local files —
@@ -3843,7 +3882,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     private func updateQuickView() {
-        if previewIsVisible, previewPanel.mode == .info { refreshPreviewInfo() }
+        if previewIsVisible, previewPanel.page == .info { refreshPreviewInfo() }
         // Embedded Quick View follows the active panel's cursor (F-118). Ignore
         // cursor moves inside the host (inactive) panel itself.
         if quickViewPreview != nil, activePanel !== quickViewHostPanel {
@@ -3863,6 +3902,67 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     // MARK: - Preview panel (Info / Activities / Log sidebar)
 
     private var previewIsVisible: Bool { (previewWidthConstraint?.constant ?? 0) > 0 }
+
+    // MARK: Which of the panel's built-in pages are on (F-476)
+    //
+    // Info alone is what ships. Activities and Log are transfer lists most people never open, and they
+    // were charging a permanently visible tab strip above the Info page for the privilege.
+    //
+    // There is no config migration in this app — `[meta] version=1` is stamped and never read — so the
+    // default at the read site *is* the upgrade behaviour: an existing installation that never touched
+    // these keys gets the tidy panel too, and one that has switched Log on keeps it.
+
+    /// The pages that are switched on right now.
+    ///
+    /// Held in memory as well as in the file, because switching one page changes one key and the panel
+    /// has to be handed the whole set — reading the other two back out of the actor would make a click
+    /// wait on a file, and `applyBoolOption` is synchronous by design.
+    private(set) var visibleSidePanelPages: Set<SidePanelPage> = [.info]
+
+    /// The `[Layout]` key one page's visibility lives under.
+    static func sidePanelPageKey(_ page: SidePanelPage) -> String {
+        switch page {
+        case .info: return "PreviewTabInfo"
+        case .activities: return "PreviewTabActivities"
+        case .log: return "PreviewTabLog"
+        }
+    }
+
+    /// Named once rather than repeated at the three read sites — the first-paint pass, the settings
+    /// snapshot and `resetLayout` — because nothing in this app checks that they agree.
+    static func sidePanelPageDefault(_ page: SidePanelPage) -> Bool { page == .info }
+
+    static func visibleSidePanelPages(_ config: ConfigSnapshot) -> Set<SidePanelPage> {
+        Set(SidePanelPage.allCases.filter {
+            config.bool("Layout", sidePanelPageKey($0), default: sidePanelPageDefault($0))
+        })
+    }
+
+    /// Switch one page on or off and show the result. The write is `applyBoolOption`'s job; this is only
+    /// the live half, so the Settings checkbox, the switcher's context menu and the View menu all end up
+    /// here by way of the same single write path.
+    private func setSidePanelPage(_ page: SidePanelPage, visible: Bool) {
+        if visible { visibleSidePanelPages.insert(page) } else { visibleSidePanelPages.remove(page) }
+        previewPanel.setVisibleBuiltins(visibleSidePanelPages)
+        refreshPreview()
+        // The tab strip appearing or vanishing adds or removes a control, and every other Layout toggle
+        // rebuilds the loop for exactly that reason.
+        rebuildKeyLoopAfterLayoutChange()
+        updateTerminalMenuState()   // the terminal may be one of this panel's tabs (F-388)
+    }
+
+    /// Flip one page (cm_SidePanelInfo / cm_SidePanelActivities / cm_SidePanelLog, F-476).
+    ///
+    /// Goes through `applyBoolOption`, which writes the key and calls `setSidePanelPage`. The View menu
+    /// route matters more than it looks: with every page switched off there is no tab strip left to
+    /// right-click, so this is the only way back.
+    func toggleSidePanelPage(_ page: SidePanelPage) {
+        applyBoolOption("Layout." + Self.sidePanelPageKey(page), !visibleSidePanelPages.contains(page))
+    }
+
+    @objc func toggleSidePanelInfo() { toggleSidePanelPage(.info) }
+    @objc func toggleSidePanelActivities() { toggleSidePanelPage(.activities) }
+    @objc func toggleSidePanelLog() { toggleSidePanelPage(.log) }
 
     private static let previewDateFormatter: DateFormatter = {
         let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short; return f
@@ -3911,7 +4011,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             refreshPreview()
             // Live-update Activities/Log while visible (transfers change over time).
             previewTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                guard let self, self.previewPanel.mode != .info else { return }
+                // Only the two transfer lists change on their own. This used to say `mode != .info`,
+                // which since F-476 is also true for a plugin tab and for a panel with every page
+                // switched off — a refresh a second for nothing of ours to refresh.
+                guard let self, self.previewPanel.page == .activities || self.previewPanel.page == .log
+                else { return }
                 self.refreshPreview()
             }
         }
@@ -3919,7 +4023,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     func refreshPreview() {
         guard previewIsVisible else { return }
-        switch previewPanel.mode {
+        switch previewPanel.page {
+        case nil:
+            break   // a plugin view, or no page switched on at all (F-476): nothing of ours to fill
         case .info:
             refreshPreviewInfo()
         case .activities:
@@ -4182,6 +4288,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             showStatusBar: await mainConfig.bool("Layout", "StatusBar", default: true),
             showTabBar: await mainConfig.bool("Layout", "TabBar", default: true),
             showPathBar: await mainConfig.bool("Layout", "PathBar", default: true),
+            sidePanelInfoPage: visibleSidePanelPages.contains(.info),
+            sidePanelActivitiesPage: visibleSidePanelPages.contains(.activities),
+            sidePanelLogPage: visibleSidePanelPages.contains(.log),
             verifyAfterCopy: await mainConfig.bool("Operation", "VerifyAfterCopy", default: false),
             quickSearchMode: await mainConfig.string("Operation", "QuickSearchMode", default: "direct"),
             mouseMode: await mainConfig.string("Operation", "MouseMode", default: "left"),
@@ -4203,6 +4312,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             aiMCPToken: await mainConfig.string("Automation", "MCPAuthToken", default: ""),
             aiAutonomy: await mainConfig.string("AI", "Autonomy", default: "confirm"),
             aiAllowShell: await mainConfig.bool("AI", "AllowShell", default: false),
+            aiAllowScript: await mainConfig.bool("AI", "AllowScript", default: false),
             aiCloudBase: await mainConfig.string("AI", "CloudBaseURL", default: ""),
             aiCloudModel: await mainConfig.string("AI", "CloudModel", default: "local"),
             aiHasCloudKey: Self.cloudKeyExists(),
@@ -4291,6 +4401,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             setStatusBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.TabBar":
             setTabBarVisible(value); rebuildKeyLoopAfterLayoutChange()
+        case "Layout." + Self.sidePanelPageKey(.info):
+            setSidePanelPage(.info, visible: value)
+        case "Layout." + Self.sidePanelPageKey(.activities):
+            setSidePanelPage(.activities, visible: value)
+        case "Layout." + Self.sidePanelPageKey(.log):
+            setSidePanelPage(.log, visible: value)
         case "Layout.PathBar":
             setPathBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Copy.PreserveMetadata":
@@ -5134,6 +5250,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         preferredDockHeight = BottomDockView.defaultHeight
         if bottomDockVisible { setBottomDockVisible(true) }   // re-apply the restored height
         setPreviewWidth(Self.previewWidth)
+        // The side panel's pages are furniture too, and a panel with every page switched off is exactly
+        // the state somebody would come here to repair (F-476).
+        for page in SidePanelPage.allCases {
+            applyBoolOption("Layout." + Self.sidePanelPageKey(page), Self.sidePanelPageDefault(page))
+        }
         Task {
             await mainConfig.setInt(Int(BottomDockView.defaultHeight), "Layout", "DockHeight")
             await mainConfig.setInt(Int(Self.previewWidth), "Layout", "PreviewWidth")
@@ -5334,6 +5455,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         previewPanel.placementMenuProvider = placementMenu
         bottomDock.placementMenuProvider = placementMenu
+        // Ticking a page in the switcher's context menu takes the same route as the Settings checkbox
+        // and the View menu item — one write path, so the three cannot mean different things (F-476).
+        previewPanel.onTogglePage = { [weak self] page in self?.toggleSidePanelPage(page) }
         // Dropping a view onto a container moves it there — the same call the menu item makes, so the
         // two gestures cannot mean different things.
         previewPanel.onViewDropped = { [weak self] viewId in
@@ -5694,6 +5818,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
                 self?.reloadUserCommandsFromDisk()
                 self?.reloadMenuFileFromDisk()
+                // Macros are edited in the same way and reload on the same trigger, so a macros.json
+                // changed in another editor is picked up by clicking back into the app (F-478).
+                self?.reloadMacrosFromDisk()
             }
         }
     }
@@ -5766,6 +5893,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         if cmd.cmd.hasPrefix("cm_") { runCommandNamed(cmd.cmd); return }
         if cmd.cmd.hasPrefix("em_") { runUserCommand(cmd.cmd); return }
+        // Same as in `runBarButton`: a macro or a plugin command named in `usercmd.ini` is a command,
+        // not a program to launch (F-478).
+        if cmd.cmd.hasPrefix("mc_") || ContributionRegistry.shared.canHandle(cmd.cmd) {
+            runCommandNamed(cmd.cmd); return
+        }
         Task { @MainActor in
             let ctx = await buildParamContext()
             let program = ParamExpander.expand(cmd.cmd, context: ctx, quoting: false)
@@ -6509,7 +6641,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     // MARK: - Button bar (I13 §2)
 
-    private func loadButtonBar() {
+    /// Internal so the macro extension can reload the strip after adding a button (F-478).
+    func loadButtonBar() {
         let url = configPaths.buttonBar
         if !FileManager.default.fileExists(atPath: url.path) {
             try? Self.defaultButtonBar().serialize().write(to: url, atomically: true, encoding: .utf8)
@@ -6629,6 +6762,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let cmd = button.cmd
         if cmd.hasPrefix("cm_") { runCommandNamed(cmd); return }
         if cmd.hasPrefix("em_") { runUserCommand(cmd); return }
+        // A macro (`mc_*`) or a command contributed by a plugin. Both are ordinary commands to
+        // `runCommandNamed`, and neither used to be reachable from here: anything that was not `cm_`
+        // or `em_` fell through to the external-program path below, so a plugin's own command id put
+        // on a button was looked up as a file name and did nothing (F-478).
+        if cmd.hasPrefix("mc_") || ContributionRegistry.shared.canHandle(cmd) {
+            runCommandNamed(cmd); return
+        }
         if cmd.hasSuffix(".bar") {
             // Descend into the subbar (F-253). Resolve relative to the bar directory.
             let path = (cmd as NSString).isAbsolutePath
@@ -9400,6 +9540,13 @@ extension MainWindowController: ContributionHost {
         // plugin that produces files can put them in the *other* panel — beside the input rather than
         // on top of it, which is what F5 and the compare tools do.
         context.set("activeSide", activePanel === rightPanelController ? "1" : "0")
+        // The OTHER panel's folder. `dir` above answers for the active one, and there was no way to ask
+        // about the inactive one at all — a plugin that files something "into the other panel" could be
+        // told which side it was (`activeSide`) but not what was in it. The automation context carries
+        // it, but those services must be called off the main thread and a plugin's command and tool
+        // callbacks both run on it, so for them this key is the only way to the answer (F-477).
+        let inactive = (activePanel === leftPanelController) ? rightPanelController : leftPanelController
+        context.set("targetDir", inactive?.directoryPath)
         // Config root so a plugin (e.g. the AI assistant) can persist its own data
         // under the same (possibly -ConfigRoot-overridden) location as the host.
         context.set("configRoot", configPaths.mainConfig.deletingLastPathComponent().path)
@@ -9595,14 +9742,20 @@ extension MainWindowController: ContributionHost {
         //
         // Autonomous is deliberately not exempt. "Do not ask me about writes" is a statement about
         // file operations, made before this existed; reading it as "and you may run programs" would
-        // be putting words in the user's mouth.
-        let shell = await mainConfig.bool("AI", "AllowShell", default: false)
+        // be putting words in the user's mouth. The same goes for running a script (F-477).
+        //
+        // Built by subtracting `PermissionPolicy.optIn` and adding back what is switched on, rather
+        // than by naming the exclusions here. Naming them is how the autonomous branch used to work,
+        // and it is why adding a second opt-in capability had to touch this line at all: a branch
+        // that says "everything" grants the next capability somebody adds, retroactively, to a user
+        // who never asked for it.
+        var granted = Set(Capability.allCases).subtracting(PermissionPolicy.optIn)
+        if await mainConfig.bool("AI", "AllowShell", default: false) { granted.insert(.shell) }
+        if await mainConfig.bool("AI", "AllowScript", default: false) { granted.insert(.script) }
         switch await mainConfig.string("AI", "Autonomy", default: "confirm") {
         case "readonly":   return .readOnly
-        case "autonomous":
-            let allowed = shell ? Set(Capability.allCases) : Set(Capability.allCases).subtracting([.shell])
-            return PermissionPolicy(autonomy: .autonomous, allowed: allowed)
-        default:           return shell ? .standardWithShell : .standard
+        case "autonomous": return PermissionPolicy(autonomy: .autonomous, allowed: granted)
+        default:           return PermissionPolicy(autonomy: .confirmWrites, allowed: granted)
         }
     }
 

@@ -103,7 +103,7 @@ public enum AutomationCatalog {
         .init("open_in_panel", .navigate, "Open a path in a specific panel or a new tab.",
               [.init("path", .string, "Path to open."),
                .init("side", .string, "\"left\", \"right\", or \"new-tab\".")]),
-        .init("set_selection", .navigate, "Select entries in the active panel by a wildcard mask.",
+        .init("set_selection", .navigate, "Select entries in the active panel by a wildcard mask, replacing whatever was selected before. Fails when the mask matches nothing, rather than leaving the previous selection standing.",
               [.init("mask", .string, "Wildcard mask, e.g. \"*.txt\".")]),
         // Not a `.write`: nothing on disk changes, and what it replaces is a scratch buffer, not
         // data. Gating it like a rename would mean a confirmation sheet for the thing the user just
@@ -163,6 +163,15 @@ public enum AutomationCatalog {
         .init("run_shell", .shell,
               "Run a shell command in a visible terminal tab and return what it printed.",
               [.init("command", .string, "The command line, exactly as it should be run.")]),
+        // The declared capability is the floor, not the answer. What invoking a macro really needs is
+        // the most demanding of its steps, and the Core substitutes that at call time — the same
+        // arrangement `run_command` needs, and for the same reason: otherwise a macro whose last step
+        // is `delete_permanently` would be gated as a write.
+        .init("run_macro", .write,
+              "Run one of the user's saved macros — a named sequence of these same tools. Use list_macros to see what exists; the steps and their arguments are the user's, not yours to change.",
+              [.init("macro_id", .string, "The macro's id, as listed by list_macros."),
+               .init("skip_steps", .array, "Step ids to leave out. Filled in by the confirmation sheet when the user strikes rows out; you do not normally set this.", required: false)]),
+        .init("list_macros", .read, "List the user's saved macros (id, title, and what each step does)."),
     ]
 
     /// The whole catalogue as a JSON array of tool-schema objects (LLM/MCP shape).

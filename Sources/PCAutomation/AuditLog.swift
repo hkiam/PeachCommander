@@ -35,6 +35,20 @@ public struct AuditEntry: Codable, Sendable, Equatable {
     public var undoArguments: String?
     /// Why this action cannot be undone (shown instead of an offer to undo it).
     public var undoUnavailable: String?
+    /// The arguments verbatim, as JSON, when they were small enough to keep (F-478).
+    ///
+    /// `arguments` above is deliberately lossy — one short line, values clipped at 60 characters —
+    /// because it is read by a person. That makes it useless for *replaying* an action, which is what
+    /// building a macro out of what somebody just did amounts to: a path clipped mid-way is not a path.
+    /// So the exact arguments are kept alongside, up to `argumentsJSONCap`; above that this is nil and
+    /// the step is offered as un-replayable rather than as a guess. A `write_file` carrying a whole
+    /// document is the case the cap exists for.
+    ///
+    /// Optional and additive, so a log written before this field existed still decodes.
+    public var argumentsJSON: String?
+
+    /// Whether this entry holds enough to be replayed as a macro step.
+    public var isReplayable: Bool { argumentsJSON != nil && outcome == "ok" }
 
     public var isUndoable: Bool { undoTool != nil && undoArguments != nil && outcome == "ok" }
 
@@ -49,6 +63,10 @@ public struct AuditEntry: Codable, Sendable, Equatable {
 
 /// The log file. Reads and writes are whole-file operations: the log is capped, one line per
 /// action, and an assistant produces actions at human speed.
+/// How much verbatim argument JSON one entry may carry. Enough for any number of paths, not enough
+/// for a document — see `AuditEntry.argumentsJSON`.
+public let argumentsJSONCap = 4096
+
 public struct AuditLog: Sendable {
     public let url: URL
     public let cap: Int

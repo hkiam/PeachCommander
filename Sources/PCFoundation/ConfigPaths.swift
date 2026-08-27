@@ -131,6 +131,21 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("markcolors.ini")
     }
 
+    /// Saved macros — named sequences of automation steps, `macros.json` (F-478).
+    public var macros: URL {
+        root.appendingPathComponent("macros.json")
+    }
+
+    /// Directory holding the user's OSA scripts, one file per script (F-477).
+    ///
+    /// The scripts themselves are separate files rather than strings inside a JSON index, because a
+    /// script is something a person edits in Script Editor, and a `.applescript` on disk is what
+    /// Script Editor can open. `scripts.json` beside them holds only what the file cannot carry:
+    /// title, run mode and timeout.
+    public var scriptsDirectory: URL {
+        root.appendingPathComponent("scripts", isDirectory: true)
+    }
+
     /// Resolve the configuration root, in priority order:
     /// 1. `-ConfigRoot <path>` launch argument
     /// 2. `PEACHCMD_CONFIG_ROOT` environment variable

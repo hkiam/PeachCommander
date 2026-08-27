@@ -1,31 +1,75 @@
 // SPDX-License-Identifier: Apache-2.0
 // PreviewPanelView.swift - Collapsible right-hand info/preview sidebar (backlog).
 //
-// Three modes via a segmented control: Info (a Quick Look preview + metadata of
+// Three built-in pages via a segmented control: Info (a Quick Look preview + metadata of
 // the item under the cursor), Activities (running background transfers), and Log
-// (finished transfers). The owner drives content via the setters and reads
-// `mode`; visibility/width is managed by MainWindowController.
+// (finished transfers), plus one segment per plugin view mounted in the "sidebar"
+// container. The owner drives content via the setters and reads `page`;
+// visibility/width is managed by MainWindowController.
+//
+// **Each built-in page can be switched off, and Info alone is what ships (F-476).** Activities and Log
+// are transfer lists most people never open, and they were charging a permanently visible switcher
+// strip for the privilege. Which pages are on lives in `[Layout] PreviewTab*` and arrives here through
+// `setVisibleBuiltins`; the panel itself never reads config.
+//
+// That is why the tabs are a `SidePanelTabList` rather than arithmetic on a segment index. This class
+// used to make the index the identity — `enum Mode: Int { case info, activities, log }` read straight
+// out of `selectedSegment`, and three separate methods offsetting by a hard-coded 3 — which is right
+// exactly as long as all three built-ins are present. Switch Activities off and Log sits at index 1, so
+// the panel reports "activities" and shows the Log page's content under the Activities label. The
+// mapping is a tested value in PCFoundation now; nothing here counts segments.
+//
+// Two states follow from letting every page be switched off:
+//
+//   * **One tab needs no tab strip.** The switcher hides below two tabs, the same rule the bottom dock
+//     already applies, and its constraints collapse to zero — a hidden view still takes part in Auto
+//     Layout, so leaving them alone would leave a 30 pt band of dead panel above the Info page.
+//   * **No tab at all says so.** Every built-in off with no plugin mounted is reachable — somebody who
+//     keeps only the terminal here — and a blank strip reads as a broken panel.
 
 import AppKit
 import Quartz
 import PCFoundation
 
 final class PreviewPanelView: NSView {
-    enum Mode: Int { case info, activities, log }
 
-    /// Fired when the user switches mode (so the owner can refresh content).
-    var onModeChange: ((Mode) -> Void)?
+    /// Fired when the user switches to a built-in page (so the owner can refresh content).
+    var onPageChange: ((SidePanelPage) -> Void)?
 
-    private static let builtinTitles = [
-        String(localized: "Info"), String(localized: "Activities"), String(localized: "Log"),
-    ]
-    private let segmented = PlacementSegmentedControl(labels: builtinTitles,
-                                               trackingMode: .selectOne, target: nil, action: nil)
+    /// Fired when the user ticks a page in the switcher's context menu. The owner routes it through the
+    /// same write path the Settings checkbox uses, so a tick and a checkbox cannot mean two things.
+    var onTogglePage: ((SidePanelPage) -> Void)?
+
+    private static func title(for page: SidePanelPage) -> String {
+        switch page {
+        case .info: return String(localized: "Info")
+        case .activities: return String(localized: "Activities")
+        case .log: return String(localized: "Log")
+        }
+    }
+
+    /// Built empty and filled in by `rebuildTabs()`, which is the only thing that knows how many
+    /// segments there are — the count is no longer a constant.
+    private let segmented = PlacementSegmentedControl(frame: .zero)
+    /// Collapsed to zero while the switcher is hidden; see the note at the top of the file.
+    private var switcherTop: NSLayoutConstraint?
+    private var switcherHeight: NSLayoutConstraint?
+
+    /// The built-in pages that are switched on. Info alone until the owner says otherwise, which is
+    /// also what a panel built before the configuration is read should show.
+    private var visibleBuiltins: Set<SidePanelPage> = [.info]
+
+    /// The tabs on offer right now. Rebuilt by `rebuildTabs()`, never by hand.
+    private var tabs = SidePanelTabList(visibleBuiltins: [.info], pluginViewIds: [])
 
     // Plugin view contributions (appended as extra segments after the built-ins).
     private var providers: [PreviewViewProvider] = []
     private let pluginContainer = NSView()
     private var mountedViews: [String: NSView] = [:]
+
+    /// Shown when there is no tab at all. Copied from the bottom dock, for the same reason it exists
+    /// there: an empty frame reads as a broken panel, a sentence is a state the user can act on.
+    private let emptyLabel = NSTextField(labelWithString: "")
 
     // Info mode (F-343). Modelled on Finder's info sidebar: a large live preview on top, the
     // name and kind under it, then a key/value detail block.
@@ -52,13 +96,21 @@ final class PreviewPanelView: NSView {
     /// Pending debounced preview load; cancelled when the cursor moves on.
     private var previewWork: DispatchWorkItem?
 
-    // Activities / Log modes share a read-only text view each.
+    // The Activities and Log pages share a read-only text view each.
     private let activitiesText = NSTextView()
     private let activitiesScroll = NSScrollView()
     private let logText = NSTextView()
     private let logScroll = NSScrollView()
 
-    var mode: Mode { Mode(rawValue: segmented.selectedSegment) ?? .info }
+    /// The built-in page showing, or nil when a plugin view or the empty state is.
+    ///
+    /// Optional rather than falling back to `.info`, because "no built-in page is up" is now an ordinary
+    /// state and a caller that gets `.info` for it would refresh a page that is not on screen — or, with
+    /// every page switched off, one that does not exist.
+    var page: SidePanelPage? {
+        guard case .builtin(let page) = tabs.tab(at: segmented.selectedSegment) else { return nil }
+        return page
+    }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -72,12 +124,20 @@ final class PreviewPanelView: NSView {
 
     private func setup() {
         segmented.setAccessibilityLabel(String(localized: "Preview mode"))
-        segmented.selectedSegment = 0
+        segmented.segmentStyle = .automatic
+        segmented.trackingMode = .selectOne
         segmented.target = self
-        segmented.action = #selector(modeChanged)
+        segmented.action = #selector(tabChanged)
         segmented.translatesAutoresizingMaskIntoConstraints = false
         addSubview(segmented)
         registerForDraggedTypes([.pcPluginView])
+
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.alignment = .center
+        emptyLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        emptyLabel.stringValue = String(localized: "No page is switched on for this side panel.")
+        emptyLabel.isHidden = true
+        addSubview(emptyLabel)
 
         // Info: a large preview on top, then name/kind, then details (all scrollable).
         previewHost.translatesAutoresizingMaskIntoConstraints = false
@@ -143,8 +203,15 @@ final class PreviewPanelView: NSView {
         for side in switcherSides { side.priority = .init(999) }
         NSLayoutConstraint.activate(switcherSides)
         NSLayoutConstraint.activate(inset)
+        // Both are stored, because a hidden switcher has to stop taking up room: hidden views still take
+        // part in Auto Layout, and the content areas below are pinned to `segmented.bottomAnchor`. Left
+        // alone, an Info-only panel — the default — would open with a 30 pt band of nothing above the
+        // preview. `switcherHeight` is only activated while the switcher is hidden.
+        let top = segmented.topAnchor.constraint(equalTo: topAnchor, constant: 6)
+        switcherTop = top
+        switcherHeight = segmented.heightAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([
-            segmented.topAnchor.constraint(equalTo: topAnchor, constant: 6),
+            top,
 
 
             infoContent.leadingAnchor.constraint(equalTo: infoScroll.leadingAnchor),
@@ -204,6 +271,68 @@ final class PreviewPanelView: NSView {
                 area.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
         }
+        // Centred rather than pinned top-and-bottom in the loop above, which is where it first went.
+        // The four areas up there are scroll views and a plain container — none has an intrinsic content
+        // size, so pinning them to both edges says nothing about how tall the panel wants to be. An
+        // NSTextField does have one, so pinning it the same way puts its height and its vertical hugging
+        // into the chain that sizes the panel, for a label that is only ever shown on its own. Centring
+        // keeps it out of that chain and is what the bottom dock does with its own empty-state label.
+        NSLayoutConstraint.activate([
+            emptyLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+        // A long translation must not be able to widen the panel or resist being narrowed either; the
+        // panel's width is the user's to drag, and a collapsed panel is 0 pt wide.
+        emptyLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        emptyLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        emptyLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        emptyLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        rebuildTabs()
+    }
+
+    // MARK: - Which tabs are on offer (F-476)
+
+    /// Tell the panel which built-in pages are switched on.
+    ///
+    /// Called before the first paint and again whenever the setting changes. Idempotent: it costs a
+    /// rebuild, and a rebuild keeps the selected tab, so calling it with the set that is already in
+    /// force changes nothing on screen.
+    func setVisibleBuiltins(_ pages: Set<SidePanelPage>) {
+        guard pages != visibleBuiltins else { return }
+        visibleBuiltins = pages
+        rebuildTabs()
+    }
+
+    /// The single place the segmented control is filled in.
+    ///
+    /// Shared by `setVisibleBuiltins` and `setViewProviders` deliberately: they are the two things that
+    /// can change the tab list, and two copies of this would eventually disagree about which tab stays
+    /// selected — which is the whole class of bug this rewrite removes.
+    private func rebuildTabs() {
+        let previous = tabs.tab(at: segmented.selectedSegment)
+        tabs = SidePanelTabList(visibleBuiltins: visibleBuiltins, pluginViewIds: providers.map(\.id))
+
+        segmented.segmentCount = tabs.tabs.count
+        for (i, tab) in tabs.tabs.enumerated() {
+            switch tab {
+            case .builtin(let page):
+                segmented.setLabel(Self.title(for: page), forSegment: i)
+            case .plugin(let id):
+                segmented.setLabel(providers.first { $0.id == id }?.title ?? id, forSegment: i)
+            }
+        }
+
+        // One tab needs no tab strip — the bottom dock's rule, and the reason the Info-only default
+        // looks like a panel rather than a panel with a decoration on top.
+        let showSwitcher = tabs.tabs.count > 1
+        segmented.isHidden = !showSwitcher
+        switcherTop?.constant = showSwitcher ? 6 : 0
+        switcherHeight?.isActive = !showSwitcher
+
+        if let selection = tabs.selection(keeping: previous), let index = tabs.index(of: selection) {
+            segmented.selectedSegment = index
+        }
+        tabChanged()
     }
 
     /// Re-show the current file, for a setting that changes which renderer it gets (F-429).
@@ -230,8 +359,34 @@ final class PreviewPanelView: NSView {
         let titles = (0..<segmented.segmentCount).map { segmented.label(forSegment: $0) ?? "" }
         guard let index = titles.firstIndex(of: title) else { return "no such tab; have: " + titles.joined(separator: ", ") }
         segmented.selectedSegment = index
-        modeChanged()
+        tabChanged()
         return "ok"
+    }
+
+    /// Diagnostic: which tabs the panel offers and which is showing (F-476).
+    ///
+    /// `sidebardump` cannot answer this — it walks text fields, and the tab strip is a segmented control
+    /// — and whether the strip is there at all is half the feature.
+    ///
+    /// The two heights are here because one run of this panel photographed the whole window collapsed to
+    /// 98 pt — file lists at zero height, every bar intact — while **Auto Layout logged nothing**: the
+    /// layout was satisfiable and wrong, so the conflict count every other scenario leans on could not
+    /// have caught it, and a screenshot was the only evidence. It has not reproduced since, in this
+    /// panel's own configuration or in the reporter's, so what caused it is not yet known and these two
+    /// numbers exist so that the next sighting is a measurement rather than an impression.
+    /// `panelHeight` is this view's, `windowHeight` the window's content view's — a panel collapsed to
+    /// its own content reads as a small number beside a large one, and a window merely dragged shorter
+    /// moves both together.
+    func automationTabReport() -> String {
+        """
+        switcher=\(segmented.isHidden ? "hidden" : "shown")
+        tabs=\(automationTabTitles.joined(separator: ","))
+        pages=\(tabs.builtinPages.map(\.rawValue).joined(separator: ","))
+        selected=\(automationSelectedTab)
+        panelHeight=\(Int(bounds.height))
+        windowHeight=\(Int(window?.contentView?.bounds.height ?? 0))
+
+        """
     }
 
     /// Diagnostic: the zoom controls of the preview area (F-389).
@@ -240,17 +395,29 @@ final class PreviewPanelView: NSView {
     func automationZoomReport() -> String { previewArea.automationZoomReport() }
     #endif
 
-    @objc private func modeChanged() {
-        let sel = segmented.selectedSegment
-        let isPlugin = sel >= Self.builtinTitles.count
-        infoScroll.isHidden = isPlugin || sel != 0
-        activitiesScroll.isHidden = isPlugin || sel != 1
-        logScroll.isHidden = isPlugin || sel != 2
-        pluginContainer.isHidden = !isPlugin
-        if isPlugin {
-            showPluginView(index: sel - Self.builtinTitles.count)
-        } else {
-            onModeChange?(mode)
+    /// Show whatever the selected segment names.
+    ///
+    /// Asks the tab list what is at that index rather than comparing the index to 0, 1 and 2. That
+    /// arithmetic is what made switching a page off show the wrong content under the right label, and
+    /// there is no longer anywhere in this file that counts built-ins.
+    @objc private func tabChanged() {
+        let tab = tabs.tab(at: segmented.selectedSegment)
+        var page: SidePanelPage?
+        var pluginId: String?
+        switch tab {
+        case .builtin(let p): page = p
+        case .plugin(let id): pluginId = id
+        case nil: break             // no tab at all: every page off and no plugin mounted
+        }
+        infoScroll.isHidden = page != .info
+        activitiesScroll.isHidden = page != .activities
+        logScroll.isHidden = page != .log
+        pluginContainer.isHidden = pluginId == nil
+        emptyLabel.isHidden = tab != nil
+        if let pluginId {
+            showPluginView(id: pluginId)
+        } else if let page {
+            onPageChange?(page)
         }
     }
 
@@ -267,9 +434,9 @@ final class PreviewPanelView: NSView {
     ///
     /// Which segment is showing survives the rebuild too, by id — the segmented control is rebuilt
     /// from scratch, so a plugin appearing earlier in the list would otherwise silently switch the
-    /// panel to a different view.
+    /// panel to a different view. That is `rebuildTabs`'s job now, and it keeps a *built-in* page
+    /// selected across a plugin arriving or leaving for the same reason.
     func setViewProviders(_ providers: [PreviewViewProvider]) {
-        let previous = selectedPluginViewId
         let keep = Set(providers.map(\.id))
         for (id, view) in mountedViews where !keep.contains(id) {
             // Only if the view is still ours — see BottomDockView.setViewProviders. The container that
@@ -279,16 +446,7 @@ final class PreviewPanelView: NSView {
             mountedViews[id] = nil
         }
         self.providers = providers
-
-        let titles = Self.builtinTitles + providers.map(\.title)
-        segmented.segmentCount = titles.count
-        for (i, t) in titles.enumerated() { segmented.setLabel(t, forSegment: i) }
-        if let previous, let index = providers.firstIndex(where: { $0.id == previous }) {
-            segmented.selectedSegment = Self.builtinTitles.count + index
-        } else if segmented.selectedSegment < 0 || segmented.selectedSegment >= titles.count {
-            segmented.selectedSegment = 0
-        }
-        modeChanged()
+        rebuildTabs()
     }
 
     /// Right-clicking the mode switcher offers to move the plugin view that is showing (F-381).
@@ -343,12 +501,42 @@ final class PreviewPanelView: NSView {
                   let title = self.providers.first(where: { $0.id == id })?.title else { return nil }
             return Self.dragImage(for: title)
         }
+        // The right-click menu now always has something to say. It used to return nil on a built-in
+        // segment — there was nothing to move — but which pages the panel offers is decided here too
+        // (F-476), and that is the answer somebody right-clicking the tab strip is most likely after.
+        // Placement first when a plugin view is showing, because it concerns the tab under the pointer.
         segmented.contextMenuProvider = { [weak self] in
-            guard let self, let provider = self.placementMenuProvider,
-                  let id = self.selectedPluginViewId,
-                  let view = self.providers.first(where: { $0.id == id }) else { return nil }
-            return provider(id, view.title)
+            guard let self else { return nil }
+            // The placement menu when there is a plugin view to move, extended rather than copied:
+            // `ViewPlacementMenu.menu` builds a fresh one per click, and an NSMenuItem already owned by
+            // a menu cannot be added to a second one.
+            var placement: NSMenu?
+            if let provider = self.placementMenuProvider, let id = self.selectedPluginViewId,
+               let view = self.providers.first(where: { $0.id == id }) {
+                placement = provider(id, view.title)
+                placement?.addItem(.separator())
+            }
+            let menu = placement ?? NSMenu()
+            for page in SidePanelPage.allCases {
+                let item = NSMenuItem(title: Self.title(for: page),
+                                      action: #selector(self.togglePageFromMenu(_:)), keyEquivalent: "")
+                item.target = self
+                item.state = self.visibleBuiltins.contains(page) ? .on : .off
+                item.representedObject = page.rawValue
+                menu.addItem(item)
+            }
+            return menu
         }
+    }
+
+    /// Carry out a tick in the switcher's context menu (F-476).
+    ///
+    /// Reports the page rather than acting on it: the owner writes the setting and hands the new set
+    /// back through `setVisibleBuiltins`, so the menu and the Settings checkbox travel the same path.
+    @objc private func togglePageFromMenu(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String,
+              let page = SidePanelPage(rawValue: raw) else { return }
+        onTogglePage?(page)
     }
 
     /// A small label to carry under the pointer while dragging a view somewhere else.
@@ -375,23 +563,22 @@ final class PreviewPanelView: NSView {
         return image
     }
 
-    /// The plugin view currently selected, or nil when a built-in mode is showing.
+    /// The plugin view currently selected, or nil when a built-in page or the empty state is showing.
     var selectedPluginViewId: String? {
-        let index = segmented.selectedSegment - Self.builtinTitles.count
-        return providers.indices.contains(index) ? providers[index].id : nil
+        guard case .plugin(let id) = tabs.tab(at: segmented.selectedSegment) else { return nil }
+        return id
     }
 
     /// Select the plugin segment for `id` (no-op if it isn't currently provided).
     func selectPluginView(id: String) {
-        guard let idx = providers.firstIndex(where: { $0.id == id }) else { return }
-        segmented.selectedSegment = Self.builtinTitles.count + idx
-        modeChanged()
+        guard let index = tabs.index(of: .plugin(id)) else { return }
+        segmented.selectedSegment = index
+        tabChanged()
     }
 
-    private func showPluginView(index: Int) {
-        guard providers.indices.contains(index) else { return }
+    private func showPluginView(id: String) {
+        guard let provider = providers.first(where: { $0.id == id }) else { return }
         for v in mountedViews.values { v.isHidden = true }
-        let provider = providers[index]
         let view: NSView
         if let existing = mountedViews[provider.id] {
             view = existing
@@ -473,5 +660,6 @@ final class PreviewPanelView: NSView {
         titleLabel.textColor = Theme.current.listText
         activitiesText.textColor = Theme.current.listText
         logText.textColor = Theme.current.listText
+        emptyLabel.textColor = Theme.current.statusBarText
     }
 }

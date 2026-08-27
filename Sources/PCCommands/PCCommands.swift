@@ -334,6 +334,10 @@ public protocol WindowControllerProtocol: AnyObject {
     func showImportWincmd()
     /// Create/edit the user main-menu file (TC .mnu format) — cm_ConfigMainMenu (F-257).
     func showEditMainMenu()
+    /// Create/edit the macros file — cm_MacroEditor (F-478).
+    func showMacroEditor()
+    /// Offer recent automation actions as the steps of a new macro — cm_MacroFromRecentActions (F-478).
+    func showMacroFromRecentActions()
     /// Native Quick Look preview of the selection (Cmd+Y) — cm_QuickLook.
     func showQuickLook()
     /// Explain Full Disk Access and offer to open System Settings — cm_FullDiskAccess.
@@ -352,6 +356,12 @@ public protocol WindowControllerProtocol: AnyObject {
     func showSaveWorkspace()
     /// Toggle the right-hand preview/info sidebar (Info/Activities/Log) — cm_PreviewPanel.
     func togglePreviewPanel()
+    /// Switch the side panel's Info page on or off — cm_SidePanelInfo (F-476).
+    func toggleSidePanelInfo()
+    /// Switch the side panel's Activities page on or off — cm_SidePanelActivities (F-476).
+    func toggleSidePanelActivities()
+    /// Switch the side panel's Log page on or off — cm_SidePanelLog (F-476).
+    func toggleSidePanelLog()
     /// Toggle horizontal panel arrangement (panels stacked above/below vs side by
     /// side) — cm_HorizontalPanels (F-002).
     func toggleHorizontalPanels()
@@ -477,6 +487,57 @@ public actor CommandRegistry {
 
         logger.debug("Registered command: \(command.name) (id: \(command.id))")
     }
+
+    // MARK: - Macro commands (F-478)
+
+    /// Where macro command ids start: above every id the built-ins use (they run to 40011), so a
+    /// macro cannot take an id a `.bar` file or an imported Total Commander button refers to.
+    ///
+    /// The base alone is not relied on. It was 30_000 first, which is *inside* the built-in range, and
+    /// the app trapped on "Duplicate command ID: 30000" the first time a macro existed — a base is a
+    /// guess about a table this type can simply read, so `setMacroCommands` skips what is taken.
+    public static let macroIDBase = 50_000
+
+    /// The macro command names currently registered, so a reload can take them back out.
+    private var macroNames: Set<String> = []
+
+    /// Replace every macro command with the ones for `macros`.
+    ///
+    /// Macros are data the user edits while the app is running, so unlike the built-ins these come and
+    /// go — which `register` cannot express: it asserts on a duplicate name, and re-registering after an
+    /// edit is a duplicate. Hence a separate entry point that removes the previous set first.
+    ///
+    /// **A macro's numeric id is not stable** and is not meant to be referred to. It is allocated by
+    /// position here, purely so the registry's id-keyed dictionary has a key; a macro is addressed by
+    /// name (`mc_<id>`) everywhere — in `.bar` files, `.mnu` files and the keymap — precisely because
+    /// its name is what the user chose and its number is not.
+    public func setMacroCommands(_ macros: [(name: String, title: String, handler: CommandHandler)]) {
+        for name in macroNames {
+            if let existing = commandNames.removeValue(forKey: name) { commands[existing.id] = nil }
+        }
+        macroNames = []
+        var nextID = Self.macroIDBase
+        for macro in macros {
+            guard commandNames[macro.name] == nil else {
+                // A macro whose name collides with a built-in is dropped rather than allowed to shadow
+                // it. `MacroStore` cannot know the command table, so this is where it can be caught.
+                logger.error("Macro command \(macro.name) collides with an existing command; skipped")
+                continue
+            }
+            while commands[nextID] != nil { nextID += 1 }
+            let command = PCCommand(id: nextID, name: macro.name,
+                                    category: "Macros", help: macro.title, handler: macro.handler)
+            nextID += 1
+            commands[command.id] = command
+            commandNames[command.name] = command
+            macroNames.insert(command.name)
+        }
+        let count = macroNames.count
+        logger.debug("Registered \(count) macro command(s)")
+    }
+
+    /// Whether `name` is one of the currently registered macro commands.
+    public func isMacroCommand(_ name: String) -> Bool { macroNames.contains(name) }
 
     /// Execute a command by name
     public func execute(_ name: String, context: CommandContext) async throws {
@@ -817,6 +878,8 @@ public actor CommandRegistry {
         register(Self.cm_OpenSourceNotices)
         register(Self.cm_ImportWincmd)
         register(Self.cm_ConfigMainMenu)
+        register(Self.cm_MacroEditor)
+        register(Self.cm_MacroFromRecentActions)
         register(Self.cm_QuickLook)
         register(Self.cm_EjectVolume)
         register(Self.cm_FullDiskAccess)
@@ -825,6 +888,9 @@ public actor CommandRegistry {
         register(Self.cm_Workspaces)
         register(Self.cm_SaveWorkspace)
         register(Self.cm_PreviewPanel)
+        register(Self.cm_SidePanelInfo)
+        register(Self.cm_SidePanelActivities)
+        register(Self.cm_SidePanelLog)
         register(Self.cm_HorizontalPanels)
         register(Self.cm_ButtonBar)
         register(Self.cm_VerticalButtonBar)
@@ -984,6 +1050,15 @@ public actor CommandRegistry {
     static let cm_ConfigMainMenu = PCCommand(id: 30107, name: "cm_ConfigMainMenu", category: "Configuration",
         help: "Create or edit the user main-menu file (.mnu)",
         handler: { ctx in ctx.windowController?.showEditMainMenu() })
+    // The two macro commands (F-478). Ids continue the Configuration block rather than starting a new
+    // one; `Tools/check-command-ids.py` pins them from here on, so they must not move again.
+    static let cm_MacroEditor = PCCommand(id: 30129, name: "cm_MacroEditor", category: "Configuration",
+        help: "Create or edit your macros (macros.json)",
+        handler: { ctx in ctx.windowController?.showMacroEditor() })
+    static let cm_MacroFromRecentActions = PCCommand(
+        id: 30130, name: "cm_MacroFromRecentActions", category: "Configuration",
+        help: "Make a macro from what the assistant has just done",
+        handler: { ctx in ctx.windowController?.showMacroFromRecentActions() })
     static let cm_QuickLook = PCCommand(id: 30093, name: "cm_QuickLook", category: "View",
         help: "Quick Look preview of the selection",
         handler: { ctx in ctx.windowController?.showQuickLook() })
@@ -1008,6 +1083,18 @@ public actor CommandRegistry {
     static let cm_PreviewPanel = PCCommand(id: 30102, name: "cm_PreviewPanel", category: "View",
         help: "Toggle the preview/info sidebar (Info, Activities, Log)",
         handler: { ctx in ctx.windowController?.togglePreviewPanel() })
+    // The side panel's three built-in pages, each switchable on its own (F-476). Reachable from the
+    // View menu as well as from Settings and the tab strip's context menu, because with every page
+    // switched off there is no tab strip left to right-click.
+    static let cm_SidePanelInfo = PCCommand(id: 30126, name: "cm_SidePanelInfo", category: "View",
+        help: "Show or hide the side panel's Info page",
+        handler: { ctx in ctx.windowController?.toggleSidePanelInfo() })
+    static let cm_SidePanelActivities = PCCommand(id: 30127, name: "cm_SidePanelActivities", category: "View",
+        help: "Show or hide the side panel's Activities page (running transfers)",
+        handler: { ctx in ctx.windowController?.toggleSidePanelActivities() })
+    static let cm_SidePanelLog = PCCommand(id: 30128, name: "cm_SidePanelLog", category: "View",
+        help: "Show or hide the side panel's Log page (finished transfers)",
+        handler: { ctx in ctx.windowController?.toggleSidePanelLog() })
     static let cm_HorizontalPanels = PCCommand(id: 30104, name: "cm_HorizontalPanels", category: "View",
         help: "Arrange the two file panels above/below each other instead of side by side",
         handler: { ctx in ctx.windowController?.toggleHorizontalPanels() })

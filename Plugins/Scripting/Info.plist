@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>Scripting</string>
+	<key>CFBundleName</key>
+	<string>Scripting</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>acceptsSuffix</key>
+				<true/>
+				<key>category</key>
+				<string>Scripts</string>
+				<key>id</key>
+				<string>plugin.script.run.any</string>
+				<key>title</key>
+				<string>Run a script</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Scripts</string>
+				<key>id</key>
+				<string>plugin.script.manage</string>
+				<key>title</key>
+				<string>Open Scripts Folder</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key>
+				<string>plugin.script.manage</string>
+				<key>group</key>
+				<string>7_scripts</string>
+				<key>menu</key>
+				<string>Commands</string>
+				<key>order</key>
+				<integer>130</integer>
+			</dict>
+		</array>
+		<key>tools</key>
+		<array>
+			<dict>
+				<key>capability</key>
+				<string>script</string>
+				<key>description</key>
+				<string>Run an AppleScript and return what it produced. The panel state is in the environment: PC_ACTIVE_DIR, PC_TARGET_DIR, PC_CURSOR_NAME, PC_SELECTION_FILE (one selected path per line). Prefer the dedicated file tools for anything they cover; use this for what only AppleScript can reach, such as another application.</string>
+				<key>name</key>
+				<string>run_applescript</string>
+				<key>params</key>
+				<array>
+					<dict>
+						<key>description</key>
+						<string>The AppleScript source.</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<true/>
+						<key>type</key>
+						<string>string</string>
+					</dict>
+					<dict>
+						<key>description</key>
+						<string>Seconds before the script is stopped (default 30, maximum 300).</string>
+						<key>name</key>
+						<string>timeout_seconds</string>
+						<key>required</key>
+						<false/>
+						<key>type</key>
+						<string>integer</string>
+					</dict>
+				</array>
+			</dict>
+			<dict>
+				<key>capability</key>
+				<string>script</string>
+				<key>description</key>
+				<string>Run a JavaScript for Automation (JXA) script and return what it produced. Same environment as run_applescript.</string>
+				<key>name</key>
+				<string>run_jxa</string>
+				<key>params</key>
+				<array>
+					<dict>
+						<key>description</key>
+						<string>The JXA source.</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<true/>
+						<key>type</key>
+						<string>string</string>
+					</dict>
+					<dict>
+						<key>description</key>
+						<string>Seconds before the script is stopped (default 30, maximum 300).</string>
+						<key>name</key>
+						<string>timeout_seconds</string>
+						<key>required</key>
+						<false/>
+						<key>type</key>
+						<string>integer</string>
+					</dict>
+				</array>
+			</dict>
+			<dict>
+				<key>capability</key>
+				<string>read</string>
+				<key>description</key>
+				<string>Check whether a script compiles, without running it. Reports the syntax error and where it is. Use this before run_applescript when you wrote the script yourself.</string>
+				<key>name</key>
+				<string>check_script</string>
+				<key>params</key>
+				<array>
+					<dict>
+						<key>description</key>
+						<string>The script source.</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<true/>
+						<key>type</key>
+						<string>string</string>
+					</dict>
+					<dict>
+						<key>description</key>
+						<string>"AppleScript" (default) or "JavaScript".</string>
+						<key>name</key>
+						<string>language</string>
+						<key>required</key>
+						<false/>
+						<key>type</key>
+						<string>string</string>
+					</dict>
+				</array>
+			</dict>
+			<dict>
+				<key>capability</key>
+				<string>read</string>
+				<key>description</key>
+				<string>List the user's saved scripts (id, title, language, and the command that runs each).</string>
+				<key>name</key>
+				<string>list_scripts</string>
+			</dict>
+		</array>
+	</dict>
+	<key>PCPluginAPIVersion</key>
+	<integer>1</integer>
+	<key>PCPluginEnabledByDefault</key>
+	<false/>
+	<key>PCPluginMinHostVersion</key>
+	<integer>1</integer>
+	<key>PCPluginName</key>
+	<string>Scripting</string>
+	<key>PCPluginType</key>
+	<string>ptx</string>
+</dict>
+</plist>
