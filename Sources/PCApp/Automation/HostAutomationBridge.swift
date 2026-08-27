@@ -255,10 +255,14 @@ final class HostAutomationBridge: AutomationHostBridge {
             let nameScore = score(Self.readableName(entry.name))
             // Only text-shaped files are worth reading, and only their beginning.
             let sample = (try? await readFile(entry.path, maxBytes: 2048)) ?? ""
-            let contentScore = Self.looksLikeText(sample) ? score(Self.condensed(sample)) : 0
-            // The name is the stronger signal when it says anything at all; the content is what
-            // rescues a file called scan_0001.pdf.txt.
-            scored.append((entry, max(nameScore, contentScore * 0.9)))
+            let contentScore = Self.looksLikeText(sample) ? score(Self.keywords(sample)) : 0
+            // No thumb on the scale for the name any more. The 0.9 that used to sit on the content
+            // was meant to prefer a name that says something, but every score here lands between
+            // about 0.6 and 1.1, so a tenth is a third of the whole range that separates a match
+            // from anything else — and it reliably beat the only signal that was working. Measured:
+            // "rechnung" scored nginx.conf's *name* at 0.892, above the actual invoice's name, and
+            // the invoice's own words at 0.923. Whichever of the two says more, says more.
+            scored.append((entry, max(nameScore, contentScore)))
         }
         // Everything with a score above zero is not an answer: the model reads a list of the
         // whole folder as "these are all about it" and passes that on. Keep what is close to
@@ -286,15 +290,29 @@ final class HostAutomationBridge: AutomationHostBridge {
     /// macOS 26.4: sentence embeddings existed for German, English and Italian and for none of the
     /// other sixteen languages this app ships in.
     ///
-    /// A query too short to place is still tried against English, which is the right guess for a
-    /// bare word and costs nothing when it is wrong (the score simply loses to the lexical one).
+    /// When the recognizer's answer has no embedding, the READER's language is tried before giving
+    /// up. Two words are not enough to place a language: "Webserver Konfiguration" is read as
+    /// Danish, which has no embedding, so the whole search fell back to literal word overlap and
+    /// returned nothing at all for a query whose answer was sitting in the folder. Add two more
+    /// German words to the same query and it is German again.
+    ///
+    /// The reader's language is a real prior — they typed the query — where English was only ever
+    /// a guess, which is why that fallback was removed and this one is not the same mistake. A
+    /// query the recognizer places in a language that HAS an embedding is still scored in it, so
+    /// searching in English on a German Mac keeps working.
     nonisolated private static func embedding(for query: String) -> NLEmbedding? {
         let recognizer = NLLanguageRecognizer()
         recognizer.processString(query)
-        guard let language = recognizer.dominantLanguage else {
-            return NLEmbedding.sentenceEmbedding(for: .english)
+        if let language = recognizer.dominantLanguage,
+           let found = NLEmbedding.sentenceEmbedding(for: language) {
+            return found
         }
-        return NLEmbedding.sentenceEmbedding(for: language)
+        if let code = Bundle.main.preferredLocalizations.first,
+           let base = Locale(identifier: code).language.languageCode?.identifier,
+           let reader = NLEmbedding.sentenceEmbedding(for: NLLanguage(rawValue: base)) {
+            return reader
+        }
+        return NLEmbedding.sentenceEmbedding(for: .english)
     }
 
     nonisolated private static func tokens(of text: String) -> [String] {
@@ -317,10 +335,33 @@ final class HostAutomationBridge: AutomationHostBridge {
         return Double(printable) / Double(min(sample.unicodeScalars.count, 400)) > 0.9
     }
 
-    /// The first few hundred characters, whitespace collapsed: an embedding gains nothing from
-    /// a page of it, and the distance call is what costs the time.
-    nonisolated private static func condensed(_ text: String) -> String {
-        String(text.split(whereSeparator: \.isWhitespace).joined(separator: " ").prefix(400)).lowercased()
+    /// The file's content words, deduplicated, in the order they appear.
+    ///
+    /// This used to be the first 400 characters with the whitespace collapsed, and that measured
+    /// badly enough to invert the ranking. Over a folder of four, embedding distance to a German
+    /// query, best score per file:
+    ///
+    ///     "rechnung"            invoice   raw 0.828   keywords 0.923   (name 0.683)
+    ///     "temperaturmessungen" readings  raw 0.668   keywords 1.107   (name 0.798)
+    ///     "mietvertrag wohnung" contract  raw 0.948   keywords 1.132   (name 1.024)
+    ///
+    /// The raw prefix put the readings file *last* for a query about readings. A sentence
+    /// embedding is built for a sentence; a page of prose, a header row and a licence block
+    /// average into the middle, and the middle is where every file already sits.
+    ///
+    /// Words of four characters and up, twenty-five of them: short words carry the grammar rather
+    /// than the subject, and past a couple of dozen the average sets in again.
+    nonisolated private static func keywords(_ text: String) -> String {
+        var seen = Set<String>()
+        var out: [String] = []
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = text
+        tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
+            let word = text[range].lowercased()
+            if word.count >= 4, seen.insert(word).inserted { out.append(word) }
+            return out.count < 25
+        }
+        return out.joined(separator: " ")
     }
 
     /// Hashed in chunks rather than mapped whole: "find duplicates" over a folder of disk

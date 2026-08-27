@@ -106,6 +106,24 @@ which changed nothing. That was the default every new reader landed on.
 - **Unticking a line in the assistant's plan did nothing.** 0.7.3 said you could agree to part of a
   plan; the ticks were drawn and collected and then thrown away, so everything ran regardless. They
   are now passed on, which is what that release promised.
+- **Find by meaning ranked the wrong files first.** Asked for "die Rechnung über das Dach" in a
+  folder holding exactly that invoice, it put the invoice *last* and a web-server config first — and
+  the same for a bare "Rechnung". Two causes, both measured: the file's opening was compared as a
+  block of running text, which averages every document into the middle, and the file name was then
+  given a further advantage over it. Files are now compared by their content words, and the name
+  competes on equal terms. Over the same folder, four queries out of six now put the right file
+  first where one did before.
+- **A short search phrase could return nothing at all.** Two words are not enough to place a
+  language: "Webserver Konfiguration" was read as Danish, which has no on-device sentence model, so
+  the search quietly fell back to literal word matching and found nothing. It now falls back to the
+  language you are running the app in — which you chose, where the guess had not.
+- **Classify could give a file the wrong month.** An invoice reading "Rechnungsdatum: 12.03.2024"
+  was dated 2024-08-12. The check that is supposed to keep the model from inventing dates required
+  the year and the day to appear in the document but never looked at the month. It does now, and a
+  date written out in words — "1. April 2019" — is still recognised.
+- **Explain answered in the file's language, not yours.** On a German Mac it explained an
+  `nginx.conf` in English, because the file is English. Summarize hands back what the document says
+  and stays in its language; Explain answers a question you asked, and now answers it in yours.
 - **Organize put unrelated files into one folder.** Asked to tidy a folder of invoices and meeting
   minutes, the model sometimes answered with a single vague category — "Documents", "Projekte" — and
   everything was then filed under it. That is not a tidy-up: the new folder is the one the files were
