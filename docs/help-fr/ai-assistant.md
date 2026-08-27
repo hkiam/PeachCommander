@@ -28,7 +28,7 @@ Le moyen le plus rapide d'utiliser l'assistant est le sous-menu **IA ▸** du me
 
 **Plusieurs fichiers à la fois.** Marquez une sélection et l'action s'exécute sur chaque fichier marqué, l'un après l'autre. Les actions qui utilisent une feuille y affichent leur progression et **Annuler** s'arrête entre deux fichiers ; celles qui ouvrent un chat mettent la progression dans la barre d'état, où **Arrêter** fait la même chose. Dans les deux cas, vous pouvez regarder les premiers résultats et tout interrompre.
 
-**Suggérer un nom** se termine par un bouton plutôt que par une phrase : le nom proposé apparaît dans une barre sous la conversation, avec un bouton **Renommer** à côté. L'actionner vaut approbation — on ne vous demande pas deux fois.
+**Suggérer un nom** se termine par un bouton plutôt que par une phrase : le nom proposé apparaît dans une barre sous la conversation, avec un bouton **Renommer** à côté. L'actionner vaut approbation — on ne vous demande pas deux fois. **Classer** se termine par une proposition qui lui est propre : **Classer dans des dossiers…** suggère une destination pour chaque fichier qu'il vient de classer — un dossier portant le nom de son type, et une année en dessous lorsque le document indique une date — et ne déplace rien avant que vous n'ayez approuvé la liste. Chaque ligne indique le sujet trouvé, de sorte qu'un type trop large se voit avant que quoi que ce soit ne soit rangé. L'annulation reprend un dossier de destination à la fois.
 
 ### Vos propres formulations
 

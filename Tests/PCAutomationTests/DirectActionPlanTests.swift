@@ -162,6 +162,37 @@ final class DirectActionPlanTests: XCTestCase {
         XCTAssertNil(DirectActionPlan.lexicalFolder(forFileNamed: "a.text", among: ["Texte"]))
     }
 
+    // MARK: - Filing a classified file
+
+    func testAClassifiedFileIsFiledByKindAndYear() {
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Rechnungen", date: "2024-03-12"),
+                       "Rechnungen/2024")
+    }
+
+    func testWithoutADateItIsFiledByKindAlone() {
+        // Classify records a date only when the document states one, so this is the common case —
+        // and a guessed year would file a contract where nobody would look for it.
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Verträge", date: ""), "Verträge")
+    }
+
+    func testAnUnusableKindMeansTheFileIsNotFiled() {
+        XCTAssertNil(DirectActionPlan.filingPath(kind: "", date: "2024-03-12"))
+        XCTAssertNil(DirectActionPlan.filingPath(kind: "none", date: ""))
+    }
+
+    func testAKindCannotEscapeTheFolderItIsFiledIn() {
+        // The kind comes from a model. A "/" in it would file into another directory, and "../"
+        // above the one the reader is looking at.
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "../../etc", date: ""), "etc")
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Rechnungen/2023", date: ""), "2023")
+    }
+
+    func testANonsenseDateDoesNotBecomeAFolder() {
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Fotos", date: "0001-01-01"), "Fotos")
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Fotos", date: "abcd-01-01"), "Fotos")
+        XCTAssertEqual(DirectActionPlan.filingPath(kind: "Fotos", date: "24-03-12"), "Fotos")
+    }
+
     // MARK: - Renaming a selection
 
     func testTheTwoListsLineUpOneToOne() {

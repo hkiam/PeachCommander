@@ -28,7 +28,7 @@ Nejrychlejší způsob, jak asistenta použít, je podnabídka **AI ▸** v kont
 
 **Více souborů najednou.** Označte výběr a akce proběhne nad každým označeným souborem, jeden po druhém. Akce, které používají list, v něm ukazují průběh a **Zrušit** se zastaví mezi soubory; ty, které otevírají chat, dávají průběh do stavového řádku, kde **Zastavit** dělá totéž. Tak či tak se můžete podívat na první výsledky a přerušit to.
 
-**Navrhnout název** končí tlačítkem, ne větou: navržený název se objeví v pruhu pod hovorem a vedle něj tlačítko **Přejmenovat**. Stisknout je znamená schválit — ptát se podruhé nebudeme.
+**Navrhnout název** končí tlačítkem, ne větou: navržený název se objeví v pruhu pod hovorem a vedle něj tlačítko **Přejmenovat**. Stisknout je znamená schválit — ptát se podruhé nebudeme. **Zařadit** končí vlastní nabídkou: **Zařadit do složek…** navrhne cíl pro každý právě zařazený soubor — složku pojmenovanou podle jeho druhu a pod ní rok, pokud dokument uvádí datum — a nic nepřesune, dokud seznam neschválíte. Každý řádek uvádí nalezené téma, takže příliš široce vyšlý druh je vidět dřív, než se cokoli zařadí. Vrácení zpět bere zpět vždy jednu cílovou složku.
 
 ### Vlastní formulace
 

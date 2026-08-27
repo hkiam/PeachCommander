@@ -475,11 +475,15 @@ final class DirectActionRunner {
 
         var lines: [String] = []
         var written = 0
+        // Kept so the sheet can offer to file them: the kind is only complete after the lookup
+        // below, so `found` on its own is not what a filing plan needs.
+        var classified: [(path: String, facts: AIFileFacts)] = []
         for (path, base) in found {
             // The category came back with the topic it belongs to, so this is a lookup rather
             // than a second question for the model.
             var f = base
             f.kind = kinds[base.topic] ?? ""
+            classified.append((path, f))
             if let stamp = FileFactStore.fingerprint(forFileAt: path) {
                 facts.save(f, for: stamp, path: path)
                 written += 1
@@ -497,9 +501,83 @@ final class DirectActionRunner {
         // saying so here is the difference between a feature and a puzzle.
         let hint = String(localized: "Switch the AI Column plugin on, then add the AI Kind, AI Topic or AI Date column to see these in the panel — or use [=ai_column.ai_topic] in a multi-rename mask.",
                           comment: "AI: where the classified facts show up")
+        // Filing is offered from here rather than as a command of its own, because the classifying
+        // is the expensive half — one generation per file — and it has just been paid for. A
+        // separate command would run the model again to learn what is already on screen.
+        let filed = classified
         AITextSheet.show(title: String(localized: "Classified", comment: "AI: classify sheet title"),
                          body: lines.joined(separator: "\n\n") + "\n\n" + hint,
-                         parent: progress.parentWindow)
+                         parent: progress.parentWindow,
+                         extra: (title: String(localized: "File into folders…",
+                                               comment: "AI: offer to move classified files into folders"),
+                                 action: { [weak self] in
+                                     guard let self else { return }
+                                     Task { @MainActor in self.proposeFiling(filed) }
+                                 }))
+    }
+
+    // MARK: - Filing what Classify worked out
+
+    /// Propose a folder for every classified file, then move the ones the reader keeps ticked.
+    ///
+    /// No model runs here at all: the kind and the date are already known, and where a file belongs
+    /// follows from them by `DirectActionPlan.filingPath`. That is why this is a button on the
+    /// result rather than an action of its own.
+    ///
+    /// Deliberately *not* filtered through `groupsWorthMaking`, which organize uses. That rule
+    /// drops a folder holding a single file, because a model inventing one category per file is
+    /// how a tidy-up goes wrong. Here the categories were chosen once across the whole selection
+    /// and the reader asked for exactly this: one contract among nine invoices belongs in its own
+    /// folder, and silently leaving it behind would be the defect.
+    @MainActor
+    private func proposeFiling(_ classified: [(path: String, facts: AIFileFacts)]) {
+        guard let folder = AIHost.context(svc, "dir") else { return }
+        var assignments: [DirectActionPlan.Assignment] = []
+        var unfiled = 0
+        for item in classified {
+            guard let sub = DirectActionPlan.filingPath(kind: item.facts.kind, date: item.facts.date)
+            else { unfiled += 1; continue }
+            assignments.append(.init(path: item.path, subfolder: sub, reason: item.facts.topic))
+        }
+        let groups = DirectActionPlan.group(assignments)
+        guard !groups.isEmpty else {
+            note(String(localized: "Nothing here can be filed: no file came back with a kind.",
+                        comment: "AI: filing found no usable kind"))
+            return
+        }
+        // The topic on the second line, because it is what the reader needs to judge the row: the
+        // kind is chosen once across the whole selection and can collapse — measured, four files
+        // that were an invoice, a contract and two sets of minutes all came back as "Dokumente".
+        // The destination alone does not show that; "rechnung" and "wohnungsvertrag" sitting under
+        // the same folder does, before anything moves.
+        let topicByPath = Dictionary(classified.map { ($0.path, $0.facts.topic) },
+                                     uniquingKeysWith: { a, _ in a })
+        var rows: [AIProposalSheet.Row] = []
+        for g in groups {
+            for source in g.sources {
+                rows.append(.init(id: source,
+                                  text: "\((source as NSString).lastPathComponent)  →  \(g.subfolder)/",
+                                  detail: topicByPath[source] ?? ""))
+            }
+        }
+        // What was left out, said rather than quietly dropped: a reader who selected forty files
+        // and sees thirty-eight rows needs to know about the other two.
+        var message = String(localized: "Each file goes into a folder named after its kind, and into a year below that when the document states a date.",
+                             comment: "AI: how filing chooses a folder")
+        if unfiled > 0 {
+            message += "\n" + String(format: String(localized: "%lld file(s) stay where they are: nothing was worked out about their kind.",
+                                                    comment: "AI: files that cannot be filed"),
+                                     Int64(unfiled))
+        }
+        AIProposalSheet.ask(
+            title: String(localized: "File into folders", comment: "AI: filing sheet title"),
+            message: message, rows: rows,
+            applyTitle: String(localized: "Move", comment: "AI: apply organise"),
+            parent: progress.parentWindow) { [weak self] kept in
+                guard let self, !kept.isEmpty else { return }
+                Task { @MainActor in await self.applyOrganize(groups, folder: folder,
+                                                              keeping: Set(kept)) }
+            }
     }
 
     // MARK: - Find by meaning

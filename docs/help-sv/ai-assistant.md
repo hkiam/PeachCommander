@@ -28,7 +28,7 @@ Snabbaste sättet att använda assistenten är undermenyn **AI ▸** i högerkli
 
 **Flera filer på en gång.** Markera ett urval så körs åtgärden över varje markerad fil, en efter en. Åtgärderna som använder ett blad visar sitt förlopp i det och **Avbryt** stannar mellan filer; de som öppnar en chatt lägger förloppet i statusraden, där **Stoppa** gör detsamma. I båda fallen kan du titta på de första resultaten och avbryta.
 
-**Föreslå ett namn** slutar i en knapp i stället för i en mening: det föreslagna namnet visas i en rad under samtalet, med en knapp **Byt namn** bredvid. Att trycka på den är godkännandet — du tillfrågas inte två gånger.
+**Föreslå ett namn** slutar i en knapp i stället för i en mening: det föreslagna namnet visas i en rad under samtalet, med en knapp **Byt namn** bredvid. Att trycka på den är godkännandet — du tillfrågas inte två gånger. **Klassificera** slutar med ett eget erbjudande: **Lägg i mappar…** föreslår ett mål för varje fil den just klassificerat — en mapp uppkallad efter dess sort, och ett år under den när dokumentet anger ett datum — och flyttar ingenting förrän du godkänt listan. Varje rad anger ämnet som hittades, så en sort som blivit för bred syns innan något läggs undan. Ångra tar tillbaka en målmapp i taget.
 
 ### Dina egna formuleringar
 

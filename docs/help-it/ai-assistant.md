@@ -28,7 +28,7 @@ Il modo più rapido di usare l'assistente è il sottomenu **AI ▸** del menu co
 
 **Più file insieme.** Marcate una selezione e l'azione viene eseguita su ogni file marcato, uno dopo l'altro. Le azioni che usano un foglio vi mostrano dentro l'avanzamento e **Annulla** si ferma tra un file e l'altro; quelle che aprono una chat mettono l'avanzamento nella barra di stato, dove **Interrompi** fa lo stesso. In entrambi i casi potete guardare i primi risultati e interrompere.
 
-**Proponi un nome** finisce con un pulsante anziché con una frase: il nome proposto compare in una barra sotto la conversazione, con accanto un pulsante **Rinomina**. Premerlo è l'approvazione — non vi viene chiesto due volte.
+**Proponi un nome** finisce con un pulsante anziché con una frase: il nome proposto compare in una barra sotto la conversazione, con accanto un pulsante **Rinomina**. Premerlo è l'approvazione — non vi viene chiesto due volte. **Classifica** finisce con una proposta propria: **Archivia in cartelle…** suggerisce una destinazione per ogni file appena classificato — una cartella con il nome del suo tipo, e sotto un anno quando il documento indica una data — e non sposta nulla finché non approvate l'elenco. Ogni riga indica l'argomento trovato, così un tipo venuto troppo largo si vede prima che qualcosa venga archiviato. L'annullamento riprende una cartella di destinazione alla volta.
 
 ### Le vostre formulazioni
 

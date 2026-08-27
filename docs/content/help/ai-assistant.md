@@ -29,7 +29,7 @@ The quickest way to use the assistant is the **AI ▸** submenu in the right-cli
 
 **Several files at once.** Mark a selection and the action runs over every marked file, one after another. The actions that use a sheet show their progress in it and **Cancel** stops between files; the ones that open a chat put the progress in the status line, where **Stop** does the same. Either way you can look at the first few results and call it off.
 
-**Suggest a name** ends in a button rather than a sentence: the proposed name appears in a bar under the conversation with a **Rename** button beside it. Pressing it is the approval — you are not asked twice.
+**Suggest a name** ends in a button rather than a sentence: the proposed name appears in a bar under the conversation with a **Rename** button beside it. Pressing it is the approval — you are not asked twice. **Classify** ends with an offer of its own: **File into folders…** proposes a destination for every file it has just classified — a folder named after its kind, and a year below that when the document states a date — and moves nothing until you approve the list. Each row names the topic it found, so a kind that came out too broad is visible before anything is filed. Undo takes back one destination folder at a time.
 
 ### Your own wording
 

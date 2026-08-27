@@ -28,7 +28,7 @@ Najszybszy sposób użycia asystenta to podmenu **AI ▸** w menu kontekstowym:
 
 **Kilka plików naraz.** Zaznacz wybór, a akcja wykona się na każdym zaznaczonym pliku, jeden po drugim. Akcje korzystające z arkusza pokazują w nim postęp, a **Anuluj** zatrzymuje się między plikami; te, które otwierają czat, umieszczają postęp na pasku stanu, gdzie **Zatrzymaj** robi to samo. Tak czy inaczej możesz obejrzeć pierwsze wyniki i przerwać.
 
-**Zaproponuj nazwę** kończy się przyciskiem, a nie zdaniem: proponowana nazwa pojawia się w pasku pod rozmową, a obok niej przycisk **Zmień nazwę**. Naciśnięcie go jest zatwierdzeniem — nie pytamy dwa razy.
+**Zaproponuj nazwę** kończy się przyciskiem, a nie zdaniem: proponowana nazwa pojawia się w pasku pod rozmową, a obok niej przycisk **Zmień nazwę**. Naciśnięcie go jest zatwierdzeniem — nie pytamy dwa razy. **Zaklasyfikuj** kończy się własną propozycją: **Uporządkuj w folderach…** proponuje cel dla każdego właśnie zaklasyfikowanego pliku — folder nazwany według jego rodzaju, a pod nim rok, jeśli dokument podaje datę — i niczego nie przenosi, dopóki nie zatwierdzisz listy. Każdy wiersz podaje znaleziony temat, więc zbyt szeroki rodzaj widać, zanim cokolwiek zostanie uporządkowane. Cofnięcie odzyskuje po jednym folderze docelowym.
 
 ### Własne sformułowania
 

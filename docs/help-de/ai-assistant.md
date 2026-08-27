@@ -29,7 +29,7 @@ Am schnellsten nutzen Sie den Assistenten über das Untermenü **KI ▸** im Rec
 
 **Mehrere Dateien auf einmal.** Markieren Sie eine Auswahl, dann läuft die Aktion über jede markierte Datei, eine nach der anderen. Die Aktionen mit Blatt zeigen ihren Fortschritt dort, und **Abbrechen** hält zwischen zwei Dateien an; die Aktionen mit Chat zeigen ihn in der Statuszeile, wo **Stopp** dasselbe tut. So oder so können Sie die ersten Ergebnisse ansehen und abbrechen.
 
-**Namen vorschlagen** endet in einer Schaltfläche statt in einem Satz: der vorgeschlagene Name steht in einer Leiste unter dem Gespräch, mit **Umbenennen** daneben. Das Drücken ist die Zustimmung — Sie werden nicht zweimal gefragt.
+**Namen vorschlagen** endet in einer Schaltfläche statt in einem Satz: der vorgeschlagene Name steht in einer Leiste unter dem Gespräch, mit **Umbenennen** daneben. Das Drücken ist die Zustimmung — Sie werden nicht zweimal gefragt. **Einordnen** endet mit einem eigenen Angebot: **In Ordner einsortieren…** schlägt für jede eben eingeordnete Datei ein Ziel vor — einen Ordner mit dem Namen ihrer Art und darunter ein Jahr, sofern das Dokument ein Datum nennt — und verschiebt nichts, bevor Sie die Liste bestätigt haben. Jede Zeile nennt das gefundene Thema, sodass eine zu weit geratene Art sichtbar ist, ehe etwas einsortiert wird. Rückgängig holt jeweils einen Zielordner zurück.
 
 ### Eigene Formulierungen
 

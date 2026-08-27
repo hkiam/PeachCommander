@@ -90,6 +90,15 @@ which changed nothing. That was the default every new reader landed on.
   a path — ready to paste anywhere. To put the *files* on the clipboard instead, select them and use
   **Copy to clipboard** as before.
 
+- **Classify can file the files, not just label them.** It ends with **File into folders…**, which
+  proposes a destination for every file it has just read — a folder named after its kind, and a year
+  below that when the document itself states a date — and moves nothing until you approve the list.
+  Untick any row you want left alone, as with every other plan. It costs no further reading: the
+  kind and the date are already worked out, which is why this is a button on the result rather than
+  a second command that would run the model again. Each row also shows the topic it found, so a
+  kind that came out too broad — everything as "Documents" — is visible before anything moves. A
+  file whose kind came back empty stays where it is, and the sheet says how many did.
+
 - **Explain** stopped being a second name for **Summarize**. Summarize reads the whole file and
   folds it, which is right for prose; Explain reads the opening and answers "what is this and what
   would I use it for", which is the right question for a config file, a script or a data dump.

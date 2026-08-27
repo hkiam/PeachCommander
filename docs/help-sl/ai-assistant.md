@@ -28,7 +28,7 @@ Najhitreje pomočnika uporabite prek podmenija **UI ▸** v kontekstnem meniju:
 
 **Več datotek hkrati.** Označite izbor in dejanje se izvede nad vsako označeno datoteko, eno za drugo. Dejanja, ki uporabljajo list, v njem kažejo napredek in **Prekliči** se ustavi med datotekami; tista, ki odprejo klepet, dajo napredek v vrstico stanja, kjer **Ustavi** naredi isto. Tako ali tako si lahko ogledate prve izide in prekinete.
 
-**Predlagaj ime** se konča z gumbom in ne s stavkom: predlagano ime se pokaže v vrstici pod pogovorom, ob njem pa gumb **Preimenuj**. Pritisniti ga pomeni odobriti — drugič vas ne vprašamo.
+**Predlagaj ime** se konča z gumbom in ne s stavkom: predlagano ime se pokaže v vrstici pod pogovorom, ob njem pa gumb **Preimenuj**. Pritisniti ga pomeni odobriti — drugič vas ne vprašamo. **Uvrsti** se konča z lastno ponudbo: **Razvrsti v mape…** predlaga cilj za vsako pravkar uvrščeno datoteko — mapo, poimenovano po njeni vrsti, in pod njo leto, kadar dokument navaja datum — in ničesar ne premakne, dokler seznama ne odobrite. Vsaka vrstica navaja najdeno temo, tako da je preširoko izpadla vrsta vidna, preden se karkoli razvrsti. Razveljavitev vzame nazaj po eno ciljno mapo.
 
 ### Vaše lastne ubeseditve
 

@@ -28,7 +28,7 @@ Najrýchlejší spôsob, ako asistenta použiť, je podponuka **AI ▸** v konte
 
 **Viac súborov naraz.** Označte výber a akcia prebehne nad každým označeným súborom, jeden po druhom. Akcie, ktoré používajú hárok, v ňom ukazujú priebeh a **Zrušiť** sa zastaví medzi súbormi; tie, ktoré otvárajú chat, dávajú priebeh do stavového riadka, kde **Zastaviť** robí to isté. Tak či onak sa môžete pozrieť na prvé výsledky a prerušiť to.
 
-**Navrhnúť názov** končí tlačidlom, nie vetou: navrhnutý názov sa objaví v pruhu pod rozhovorom a vedľa neho tlačidlo **Premenovať**. Stlačiť ho znamená schváliť — druhýkrát sa vás nepýtame.
+**Navrhnúť názov** končí tlačidlom, nie vetou: navrhnutý názov sa objaví v pruhu pod rozhovorom a vedľa neho tlačidlo **Premenovať**. Stlačiť ho znamená schváliť — druhýkrát sa vás nepýtame. **Zaradiť** končí vlastnou ponukou: **Zaradiť do priečinkov…** navrhne cieľ pre každý práve zaradený súbor — priečinok pomenovaný podľa jeho druhu a pod ním rok, ak dokument uvádza dátum — a nič nepresunie, kým zoznam neschválite. Každý riadok uvádza nájdenú tému, takže priširoko vyšlý druh vidno skôr, než sa čokoľvek zaradí. Vrátenie späť berie späť vždy jeden cieľový priečinok.
 
 ### Vlastné formulácie
 

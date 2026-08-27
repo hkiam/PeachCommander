@@ -111,6 +111,27 @@ public enum DirectActionPlan {
         return hits.count == 1 ? hits[0] : nil
     }
 
+    /// Where a classified file belongs, relative to the folder it is in — or nil when its
+    /// classification says nothing to file it by.
+    ///
+    /// Built from what `Classify` has already worked out, so filing costs no further generation:
+    /// the kind is the folder, and the year below it when the document states a date. A file
+    /// without a date is filed by kind alone rather than under a guessed year — mixed depth in one
+    /// run is the honest outcome, and the preview shows every row, so nobody has to deduce it.
+    ///
+    /// The year is taken from the date rather than from the file system on purpose. `Classify`
+    /// only records a date the document itself states (see `dateSupported`), and "the year this
+    /// was last written to" is a different fact that would file a 2019 contract under 2026 because
+    /// someone opened it.
+    public static func filingPath(kind: String, date: String) -> String? {
+        let folder = sanitize(folder: kind, matching: [])
+        guard !folder.isEmpty, !isPlaceholder(folder) else { return nil }
+        let year = String(date.prefix(4))
+        guard year.count == 4, year.allSatisfy(\.isNumber), let value = Int(year),
+              value >= 1900, value <= 2200 else { return folder }
+        return folder + "/" + year
+    }
+
     // MARK: - Renaming a selection
 
     /// Why a proposed rename is not in the batch. Reported, never silently dropped: a reader

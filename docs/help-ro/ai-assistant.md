@@ -28,7 +28,7 @@ Cea mai rapidă cale de a folosi asistentul e submeniul **IA ▸** din meniul co
 
 **Mai multe fișiere odată.** Marcați o selecție și acțiunea rulează peste fiecare fișier marcat, unul după altul. Acțiunile care folosesc o foaie arată în ea progresul, iar **Anulează** se oprește între fișiere; cele care deschid o discuție pun progresul în bara de stare, unde **Oprește** face același lucru. Oricum, puteți privi primele rezultate și opri totul.
 
-**Propune un nume** se termină cu un buton, nu cu o frază: numele propus apare într-o bară sub conversație, cu un buton **Redenumește** alături. A-l apăsa este aprobarea — nu vi se cere de două ori.
+**Propune un nume** se termină cu un buton, nu cu o frază: numele propus apare într-o bară sub conversație, cu un buton **Redenumește** alături. A-l apăsa este aprobarea — nu vi se cere de două ori. **Clasifică** se încheie cu o propunere proprie: **Așază în dosare…** sugerează o destinație pentru fiecare fișier tocmai clasificat — un dosar numit după tipul său, iar sub el un an atunci când documentul indică o dată — și nu mută nimic până nu aprobați lista. Fiecare rând indică subiectul găsit, astfel încât un tip ieșit prea larg se vede înainte de a se așeza ceva. Anularea ia înapoi câte un dosar de destinație.
 
 ### Formulările dumneavoastră
 

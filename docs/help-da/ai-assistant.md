@@ -28,7 +28,7 @@ Den hurtigste måde at bruge assistenten på er undermenuen **AI ▸** i højrek
 
 **Flere filer ad gangen.** Markér et udvalg, så kører handlingen over hver markeret fil, én efter én. De handlinger, der bruger et ark, viser forløbet deri, og **Annullér** standser mellem filer; de, der åbner en chat, lægger forløbet i statuslinjen, hvor **Stop** gør det samme. Under alle omstændigheder kan du se på de første resultater og afbryde.
 
-**Foreslå et navn** ender i en knap i stedet for en sætning: det foreslåede navn vises i en linje under samtalen med en **Omdøb**-knap ved siden af. At trykke på den er godkendelsen — du bliver ikke spurgt to gange.
+**Foreslå et navn** ender i en knap i stedet for en sætning: det foreslåede navn vises i en linje under samtalen med en **Omdøb**-knap ved siden af. At trykke på den er godkendelsen — du bliver ikke spurgt to gange. **Klassificér** slutter med et tilbud af sin egen: **Placér i mapper…** foreslår et mål for hver fil, den lige har klassificeret — en mappe opkaldt efter dens slags, og et år derunder, når dokumentet angiver en dato — og flytter intet, før du har godkendt listen. Hver linje nævner det fundne emne, så en slags, der blev for bred, ses, før noget placeres. Fortryd tager én målmappe tilbage ad gangen.
 
 ### Dine egne formuleringer
 

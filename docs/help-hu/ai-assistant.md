@@ -28,7 +28,7 @@ Az **Összefoglalás**, **Magyarázat**, **Besorolás**, **Névjavaslat**, **Meg
 
 **Több fájl egyszerre.** Jelöljön ki több fájlt, és a művelet minden megjelölt fájlon lefut, egyik a másik után. A lapot használó műveletek abban mutatják a haladást, és a **Mégse** a fájlok között áll meg; a csevegést nyitók az állapotsorba teszik a haladást, ahol a **Leállítás** ugyanezt teszi. Így is, úgy is megnézheti az első eredményeket, és leállíthatja.
 
-A **Névjavaslat** gombbal ér véget, nem mondattal: a javasolt név a beszélgetés alatti sávban jelenik meg, mellette az **Átnevezés** gomb. Megnyomni annyi, mint jóváhagyni — másodszor nem kérdezzük.
+A **Névjavaslat** gombbal ér véget, nem mondattal: a javasolt név a beszélgetés alatti sávban jelenik meg, mellette az **Átnevezés** gomb. Megnyomni annyi, mint jóváhagyni — másodszor nem kérdezzük. A **Besorolás** saját ajánlattal zárul: a **Mappákba rendezés…** minden éppen besorolt fájlhoz célt javasol — a fajtájáról elnevezett mappát, alatta pedig évet, ha a dokumentum dátumot ad meg —, és semmit sem mozgat, amíg jóvá nem hagyja a listát. Minden sor megnevezi a megtalált témát, így a túl tágra sikerült fajta látszik, mielőtt bármi a helyére kerülne. A visszavonás egyszerre egy célmappát hoz vissza.
 
 ### Saját megfogalmazások
 

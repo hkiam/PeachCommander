@@ -28,7 +28,7 @@ Raskeste måten å bruke assistenten på er undermenyen **AI ▸** i høyreklikk
 
 **Flere filer samtidig.** Marker et utvalg, så kjører handlingen over hver markerte fil, én etter én. Handlingene som bruker et ark viser framdriften der, og **Avbryt** stanser mellom filer; de som åpner en prat legger framdriften i statuslinjen, der **Stopp** gjør det samme. Uansett kan du se på de første resultatene og avbryte.
 
-**Foreslå et navn** ender i en knapp i stedet for en setning: det foreslåtte navnet vises i en linje under samtalen, med en **Gi nytt navn**-knapp ved siden av. Å trykke den er godkjenningen — du blir ikke spurt to ganger.
+**Foreslå et navn** ender i en knapp i stedet for en setning: det foreslåtte navnet vises i en linje under samtalen, med en **Gi nytt navn**-knapp ved siden av. Å trykke den er godkjenningen — du blir ikke spurt to ganger. **Klassifiser** slutter med et eget tilbud: **Legg i mapper…** foreslår et mål for hver fil den nettopp klassifiserte — en mappe oppkalt etter typen, og et år under den når dokumentet oppgir en dato — og flytter ingenting før du har godkjent listen. Hver linje nevner emnet som ble funnet, slik at en type som ble for vid, synes før noe legges bort. Angre tar tilbake én målmappe om gangen.
 
 ### Dine egne formuleringer
 

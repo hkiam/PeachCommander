@@ -28,7 +28,7 @@ La forma más rápida de usar el asistente es el submenú **IA ▸** del menú c
 
 **Varios archivos a la vez.** Marque una selección y la acción se ejecuta sobre cada archivo marcado, uno tras otro. Las acciones que usan una hoja muestran allí su avance y **Cancelar** se detiene entre archivos; las que abren un chat ponen el avance en la barra de estado, donde **Detener** hace lo mismo. En ambos casos puede mirar los primeros resultados y detenerlo.
 
-**Proponer un nombre** termina en un botón y no en una frase: el nombre propuesto aparece en una barra bajo la conversación, con un botón **Renombrar** al lado. Pulsarlo es la aprobación — no se le pregunta dos veces.
+**Proponer un nombre** termina en un botón y no en una frase: el nombre propuesto aparece en una barra bajo la conversación, con un botón **Renombrar** al lado. Pulsarlo es la aprobación — no se le pregunta dos veces. **Clasificar** termina con una oferta propia: **Archivar en carpetas…** propone un destino para cada archivo que acaba de clasificar — una carpeta con el nombre de su tipo, y debajo un año cuando el documento indica una fecha — y no mueve nada hasta que apruebe la lista. Cada fila indica el tema encontrado, de modo que un tipo demasiado amplio se ve antes de que se archive nada. Deshacer recupera una carpeta de destino cada vez.
 
 ### Sus propias formulaciones
 

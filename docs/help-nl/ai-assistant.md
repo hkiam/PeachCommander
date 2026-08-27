@@ -28,7 +28,7 @@ De snelste manier om de assistent te gebruiken is het submenu **AI ▸** in het 
 
 **Meerdere bestanden tegelijk.** Markeer een selectie en de actie loopt over elk gemarkeerd bestand, het een na het ander. De acties die een blad gebruiken tonen daarin hun voortgang en **Annuleren** stopt tussen bestanden; die welke een chat openen zetten de voortgang in de statusbalk, waar **Stoppen** hetzelfde doet. In beide gevallen kunt u de eerste resultaten bekijken en het afbreken.
 
-**Naam voorstellen** eindigt in een knop in plaats van een zin: de voorgestelde naam verschijnt in een balk onder het gesprek, met een knop **Hernoemen** ernaast. Die indrukken is de goedkeuring — er wordt niet twee keer gevraagd.
+**Naam voorstellen** eindigt in een knop in plaats van een zin: de voorgestelde naam verschijnt in een balk onder het gesprek, met een knop **Hernoemen** ernaast. Die indrukken is de goedkeuring — er wordt niet twee keer gevraagd. **Indelen** eindigt met een eigen aanbod: **In mappen opbergen…** stelt voor elk zojuist ingedeeld bestand een bestemming voor — een map met de naam van zijn soort, en daaronder een jaar wanneer het document een datum noemt — en verplaatst niets tot u de lijst hebt goedgekeurd. Elke regel noemt het gevonden onderwerp, zodat een te ruim uitgevallen soort zichtbaar is voordat er iets wordt opgeborgen. Ongedaan maken haalt telkens één bestemmingsmap terug.
 
 ### Uw eigen formuleringen
 
