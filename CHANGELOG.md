@@ -80,6 +80,12 @@ which changed nothing. That was the default every new reader landed on.
   and **Make a table** reads a screenshot of a table back into columns. For a photograph with no
   words on it, what the picture appears to show is used instead.
 
+- **The chat can hand you its answer.** "Copy the folder names to the clipboard" was the second
+  half of the dialogue that started all of this, and it had no answer: there was no tool for the
+  clipboard at all, in either assistant. There is now, and it takes text — a list of names, a table,
+  a path — ready to paste anywhere. To put the *files* on the clipboard instead, select them and use
+  **Copy to clipboard** as before.
+
 - **Explain** stopped being a second name for **Summarize**. Summarize reads the whole file and
   folds it, which is right for prose; Explain reads the opening and answers "what is this and what
   would I use it for", which is the right question for a config file, a script or a data dump.
@@ -100,6 +106,20 @@ which changed nothing. That was the default every new reader landed on.
 - **Unticking a line in the assistant's plan did nothing.** 0.7.3 said you could agree to part of a
   plan; the ticks were drawn and collected and then thrown away, so everything ran regardless. They
   are now passed on, which is what that release promised.
+- **Organize put unrelated files into one folder.** Asked to tidy a folder of invoices and meeting
+  minutes, the model sometimes answered with a single vague category — "Documents", "Projekte" — and
+  everything was then filed under it. That is not a tidy-up: the new folder is the one the files were
+  already in, one level down, and its name describes none of them. A folder holding *every* file is
+  now refused the same way a folder holding one file always was, and the action says plainly that
+  nothing here groups. Measured over eight runs, this happened in two of them.
+- **Organize left files behind.** About one file in five came back unfiled even when the right folder
+  was among the ones it had just been offered — so the folder was half tidied and the rest stayed put.
+  When the name itself settles it against exactly one of the folders, the file goes there; when two
+  folders would fit, it is left alone, because a file where you put it costs a second run and a file
+  in the wrong folder costs a search.
+- **The tidy-up sheet said "this folder" when it was tidying a selection.** It has always tidied only
+  what you marked; only the title claimed otherwise, so approving four marked files out of two hundred
+  looked like approving all two hundred.
 - **The tests that use the real on-device model had never run.** The documented way to switch them on
   set a variable the test process could not see, so six checks reported as skipped in every run since
   they were written — including the one that would have caught the defect above.
