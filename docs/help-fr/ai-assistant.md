@@ -6,48 +6,89 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-L'assistant IA est une extension facultative et amovible qui vous aide à travailler avec vos fichiers en langage naturel. Il peut résumer ou expliquer un document, suggérer un meilleur nom de fichier, traduire ou relire du texte, transformer des données en tableau et même organiser un dossier — et il peut effectuer des actions sur les fichiers pour vous après vous avoir d'abord montré un plan. Il se compose de deux modules : **AI On-Device** fonctionne avec Apple Intelligence et fournit les actions qui montrent une proposition et l’appliquent, tandis que **AI Assistant** est le chat et nécessite un modèle cloud. Activez l’un, ou les deux. Comme il s'agit d'une extension, vous pouvez la désactiver ou la supprimer entièrement depuis **Configuration ▸ Extensions…**.
+L'assistant IA est une extension facultative et amovible qui vous aide à travailler avec vos fichiers en langage naturel. Il peut résumer ou expliquer un document, suggérer un meilleur nom de fichier, traduire ou relire du texte, transformer des données en tableau et même ranger un dossier — et il peut effectuer des actions sur vos fichiers après vous avoir montré un plan. Il se compose de deux extensions : **AI On-Device** fonctionne avec Apple Intelligence et fournit les actions qui proposent puis appliquent, tandis que **AI Assistant** est le chat et demande un modèle cloud. Activez l'une, ou les deux. **Elles arrivent désactivées.** Activez-les dans **Configuration ▸ Extensions…** puis redémarrez, ou laissez-les éteintes et rien n'apparaît — pas de menu IA ▸, pas de chat, pas de colonne. C'est délibéré tant que la fonction est en bêta : elle peut renommer, déplacer et supprimer des fichiers et exécuter des commandes shell pour vous, chacune derrière un plan que vous approuvez, et c'est beaucoup de portée à confier par défaut à une nouveauté. Sans clé d'API, tout se passe sur votre Mac : il s'agit donc de la portée, et non de données qui quitteraient la machine. L'extension **AI Column** affiche ce que ces actions ont trouvé — un résumé, un type, un sujet, une date — sous forme de colonnes ; elle ne démarre aucun modèle. Elle arrive éteinte avec les autres et reste facultative, et n'affiche rien tant que vous ne l'activez pas et n'ajoutez pas l'une de ses colonnes. Vous pouvez aussi supprimer entièrement l'une ou l'autre depuis la même page.
+
+**Sur l'appareil ou dans le cloud.** Le modèle local est privé et gratuit, et il est petit : il ingère quelques milliers de mots à la fois. Lire un fichier long *en entier* fonctionne donc autrement — l'assistant le lit par tranches et assemble les résultats, ce qui prend d'autant plus de temps que le fichier est long. Pour du travail lourd sur beaucoup de fichiers, ou pour de longues conversations, un modèle cloud est plus rapide et retient davantage à la fois. Les actions du menu contextuel s'exécutent toujours sur votre Mac ; c'est le chat qui veut un point de terminaison, et **Réglages ▸ IA** est l'endroit où vous lui en donnez un.
 
 ## Ouvrir l'assistant
 
-Choisissez **Commandes ▸ Assistant IA** pour afficher l'assistant dans un panneau ancré à droite de la fenêtre. Saisissez une requête et appuyez sur Retour ; l'assistant peut lire des fichiers, chercher des informations et — avec votre confirmation — effectuer des modifications.
+Choisissez **Commandes ▸ Assistant IA** pour afficher l'assistant dans un panneau ancré à droite de la fenêtre. Saisissez une demande et appuyez sur Entrée ; l'assistant peut lire des fichiers, chercher des informations et — avec votre confirmation — apporter des modifications.
 
 ![Le chat de l'assistant IA ancré à côté des panneaux de fichiers](screenshots/ai-chat.png)
-*(Figure : l'assistant IA, ancré à droite, travaillant sur une requête.)*
+*(Figure : l'assistant IA, ancré à droite, en train de traiter une demande.)*
 
-## Actions du clic droit (IA ▸)
+## Actions du menu contextuel (IA ▸)
 
 Le moyen le plus rapide d'utiliser l'assistant est le sous-menu **IA ▸** du menu contextuel :
 
-- **Sur un fichier** — Résumer, Expliquer, Suggérer un nom, Suggérer un commentaire, Traduire en anglais, Relire, Détecter les tâches et Créer un tableau.
-- **Sur l'arrière-plan du panneau** — Rechercher par sens, Organiser ce dossier et Trouver les doublons probables.
+- **Sur un fichier** — Résumer, Expliquer, Classer, Suggérer un nom, Suggérer un commentaire, Traduire en anglais, Relire, Détecter les tâches et Créer un tableau.
+- **Sur le fond du panneau** — Ranger ce dossier, Rechercher par le sens et Trouver les doublons probables.
 
-**Résumer**, **Expliquer**, **Proposer un nom**, **Proposer un commentaire** et **Organiser ce dossier** proviennent du module **AI On-Device** et font leur travail sans ouvrir de chat : ils montrent leur proposition dans une feuille, vous décochez ce que vous voulez laisser tel quel, et rien ne change sur le disque avant votre approbation. Les autres actions appartiennent au module **AI Assistant** et ouvrent leur propre chat nommé, si bien que les tâches restent séparées. Lorsque vous écrivez vous-même dans le champ de saisie, cette demande poursuit le chat en cours.
+**Résumer**, **Expliquer**, **Classer**, **Suggérer un nom**, **Suggérer un commentaire**, **Créer un tableau** et **Ranger ce dossier** viennent de l'extension **AI On-Device** et font leur travail sans ouvrir de chat — sur un scan ou une capture d'écran aussi, car les mots sont d'abord lus sur l'image : elles montrent leur proposition dans une feuille, vous décochez ce que vous voulez laisser tel quel, et rien ne change sur le disque avant votre approbation. Les autres actions appartiennent à l'extension **AI Assistant** et ouvrent leur **propre chat intitulé** (par exemple *Traduire – rapport.txt*), afin que des tâches différentes restent séparées au lieu de s'empiler dans une longue conversation. Lorsque vous écrivez vous-même dans le champ de saisie, votre demande poursuit le chat en cours.
+
+**Plusieurs fichiers à la fois.** Marquez une sélection et l'action s'exécute sur chaque fichier marqué, l'un après l'autre. Les actions qui utilisent une feuille y affichent leur progression et **Annuler** s'arrête entre deux fichiers ; celles qui ouvrent un chat mettent la progression dans la barre d'état, où **Arrêter** fait la même chose. Dans les deux cas, vous pouvez regarder les premiers résultats et tout interrompre.
+
+**Suggérer un nom** se termine par un bouton plutôt que par une phrase : le nom proposé apparaît dans une barre sous la conversation, avec un bouton **Renommer** à côté. L'actionner vaut approbation — on ne vous demande pas deux fois.
+
+### Vos propres formulations
+
+Ce que chaque action demande au modèle est un fichier texte que vous pouvez modifier : `aichat/skills.json` pour les actions sur les fichiers et `aichat/folder-skills.json` pour celles sur les dossiers, dans votre dossier de configuration. Les deux sont écrits avec les formulations intégrées au premier lancement de l'assistant, pour que vous en voyiez le format. `{name}` et `{path}` désignent le fichier. Supprimez un fichier pour revenir aux formulations d'origine.
+
+**Vos propres actions.** Ajoutez une entrée avec un `id` de votre choix, et elle s'exécute comme n'importe quelle commande en la nommant `plugin.ai.skill.<id>` — dans le menu utilisateur, sur la barre de boutons ou sur un raccourci clavier. (Pour une action de dossier, `plugin.ai.folderskill.<id>`.) Le sous-menu **IA ▸** ne liste que les actions intégrées : il est construit à partir du manifeste de l'extension sans la charger, afin qu'une extension désactivée n'y contribue rien — c'est pourquoi vos propres actions sont placées par vous plutôt que d'y apparaître. Nommez un id qui n'existe pas et l'assistant vous le dit au lieu de ne rien faire.
+
+## Lui demander de trouver un fichier
+
+Vous n'avez pas besoin de savoir où se trouve un fichier. Décrivez-le et l'assistant le cherche dans l'index que macOS tient déjà de votre disque — il n'y a donc rien à construire ni aucun rattrapage à attendre.
+
+- *« Trouve la facture PDF du mois dernier »* — un type, un mot dans le nom et une fenêtre de temps.
+- *« Où sont tous mes dossiers node_modules ? »* — des dossiers, par nom, n'importe où dans votre dossier personnel.
+- *« Quel fichier mentionne le contrat d'Aix-la-Chapelle ? »* — des mots **à l'intérieur** des fichiers, ce que la recherche Rechercher des fichiers ordinaire ne sait pas faire sans que vous lui indiquiez d'abord un dossier.
+
+Vous pouvez orienter la recherche : votre dossier personnel par défaut, l'ordinateur entier, ou seulement le dossier affiché dans un panneau. L'assistant vous dit lequel il a utilisé, de sorte qu'une réponse vide se lise au lieu de ressembler à un haussement d'épaules.
+
+Deux limites à connaître. macOS garde certains endroits hors de son index — et hors de portée de toute application sans Accès complet au disque — donc « rien trouvé » ne prouve pas qu'un fichier n'existe pas ; voir [Dépannage](troubleshooting). Et un fichier tout juste créé peut ne pas encore être indexé, auquel cas **Rechercher des fichiers** (Alt+F7), qui parcourt les dossiers lui-même, le trouvera quand même.
 
 ## Gérer vos chats
 
 - Utilisez le sélecteur de chat en haut du panneau pour passer d'une conversation à l'autre.
-- Le menu **Supprimer ▾** propose **Supprimer ce chat** et **Supprimer tous les chats**, pour tout effacer d'un coup quand la liste devient longue. Les chats vides sont nettoyés automatiquement à la fermeture du panneau.
+- Le menu **Supprimer ▾** propose **Supprimer ce chat** et **Supprimer tous les chats**, pour tout effacer d'un coup quand la liste s'allonge. Les chats vides sont nettoyés automatiquement à la fermeture du panneau.
 
-## Les modifications sont d'abord confirmées
+## Les modifications sont confirmées d'abord
 
-Pour tout ce qui modifie des fichiers — déplacer, renommer, écrire, supprimer — l'assistant affiche un **plan et attend votre confirmation** avant d'agir. Vous pouvez changer cela dans les Réglages en augmentant l'autonomie de l'assistant, ou l'abaisser en lecture seule pour qu'il ne modifie jamais rien.
+Pour tout ce qui modifie des fichiers — déplacer, renommer, écrire, supprimer — l'assistant affiche un **plan et attend votre confirmation** avant d'agir. Vous pouvez changer cela dans les Réglages en augmentant l'autonomie de l'assistant, ou l'abaisser en lecture seule pour qu'il ne modifie jamais rien. Une copie ou un déplacement est signalé comme terminé lorsqu'il l'est : l'assistant attend la fin du transfert, et vous pouvez le suivre dans le Gestionnaire de transferts comme n'importe quelle autre opération.
+
+**Vous pouvez n'approuver qu'une partie d'un plan.** Lorsqu'un plan couvre plusieurs fichiers — renommer un dossier entier, vider vos Téléchargements — chacun apparaît comme une ligne cochée au-dessus des boutons. Décochez ceux que vous voulez laisser tranquilles et appuyez sur **Confirmer et exécuter** : le reste se fait, et ce que vous avez décoché n'est pas touché. Tout décocher revient à annuler, et l'assistant le dit plutôt que de signaler qu'il n'a rien fait. Un plan qui tient en une seule action n'a pas de liste, car Confirmer et Annuler lui disent déjà oui et non.
+
+## Ce que l'assistant a fait, et comment le reprendre
+
+**Actions ▾** dans le chat comporte deux entrées :
+
+- **Montrer ce que l'assistant a fait…** liste chaque modification, la plus récente en premier, avec ce qui lui a été demandé et le résultat — y compris les tentatives que le réglage d'autonomie a refusées. Un agent externe connecté via MCP figure dans la même liste.
+- **Annuler la dernière modification** reprend la modification la plus récente qui possède un inverse : un renommage est renommé en sens inverse, un déplacement est redéplacé. Là où rien ne peut être repris, la liste dit pourquoi — un fichier écrasé n'a été conservé nulle part, et les éléments de la Corbeille se restaurent depuis le Finder.
+
+Vous pouvez aussi simplement demander : *« annule ça »* et *« qu'as-tu modifié ? »* atteignent les deux mêmes fonctions.
+
+## Colonnes du panneau
+
+Ce que les actions ont trouvé est disponible en colonnes. Ajoutez-les depuis l'éditeur de jeux de colonnes : **Résumé IA** affiche la première ligne d'un résumé, et **Type IA**, **Sujet IA** et **Date IA** montrent ce que **Classer** a fait d'un fichier — sous ces noms en français, traduits dans chaque langue. Chacune reste vide tant qu'une action n'a pas lu ce fichier — ces colonnes montrent un travail déjà fait et ne démarrent jamais le modèle elles-mêmes. **Langue** dans la même extension détecte la langue d'un fichier texte, sans aucun modèle.
+
+Ces trois-là sont aussi des jetons de renommage. `[=ai_column.ai_topic]-[Y]-[M].[E]` dans la boîte de dialogue de renommage multiple (Ctrl+M) nomme un dossier de fichiers `dokument1.pdf` d'après ce qu'ils sont : rien n'a été construit pour cela, car le masque de renommage a toujours résolu `[=provider.field]` via le système de colonnes. Classez d'abord, renommez ensuite. L'en-tête suit votre langue ; le `ai_column.ai_topic` à l'intérieur du masque, non — un masque continue donc de fonctionner si vous changez de langue.
 
 ## Réglages
 
 Ouvrez **Configuration ▸ Réglages ▸ IA** pour configurer l'assistant sur une seule page :
 
-- **Modèle préféré** — quel modèle le chat **AI Assistant** utilise. Depuis que les actions sur l’appareil forment un module distinct, cela ne concerne que le chat : *Cloud* et *Automatique* utilisent le point de terminaison ci-dessous, et *Sur l’appareil* indique au chat qu’il n’est pas requis.
-- **Point de terminaison cloud, modèle et clé API** — pour utiliser un modèle compatible OpenAI au lieu de celui sur l'appareil. La clé est stockée dans le trousseau macOS, jamais dans vos fichiers de configuration.
+- **Modèle du chat** — ce sur quoi tourne le chat **AI Assistant**. Depuis que les actions locales sont devenues leur propre extension, il y a deux réponses et non trois : *Le point de terminaison cloud ci-dessous, si vous en avez indiqué un*, ou *Rien — laisser le travail à l'extension AI On-Device*. La page est groupée de la même façon : d'abord les réglages du chat, puis ce que les deux moitiés ont le droit de faire.
+- **Point de terminaison cloud, modèle et clé d'API** — pour utiliser un modèle compatible OpenAI à la place du modèle local. La clé est conservée dans le trousseau macOS, jamais dans vos fichiers de configuration.
 - **Autonomie de l'assistant** — lecture seule, confirmer les modifications (par défaut) ou autonome.
-- **Invite système personnalisée** — instructions facultatives qui façonnent les réponses de l'assistant.
-- **Serveur MCP** — un serveur local facultatif qui permet à un agent externe de piloter l'application ; désactivé par défaut et protégeable par un jeton.
+- **Invite système personnalisée** — instructions facultatives qui influencent la façon dont l'assistant répond.
+- **Serveur MCP** — un serveur facultatif, purement local, qui permet à un agent externe de piloter l'application ; désactivé par défaut et protégeable par un jeton.
 
 ![La page IA des Réglages avec l'autonomie et les options du serveur MCP](screenshots/settings-ai.png)
-*(Figure : toutes les options de l'assistant se trouvent sur une seule page IA dans les Réglages.)*
+*(Figure : toutes les options de l'assistant vivent sur une seule page IA des Réglages.)*
 
 ## Confidentialité
 
 - Avec Apple Intelligence, l'assistant fonctionne **sur votre Mac** ; rien ne quitte l'appareil.
-- Un modèle cloud n'est utilisé **que si vous en configurez un**, et sa clé API est conservée dans le trousseau.
-- Les actions qui modifient des fichiers sont confirmées avant leur exécution, sauf si vous augmentez délibérément le niveau d'autonomie.
+- Un modèle cloud n'est utilisé **que si vous en configurez un**, et sa clé d'API reste dans le trousseau.
+- Les actions qui modifient des fichiers sont confirmées avant de s'exécuter, sauf si vous augmentez délibérément le niveau d'autonomie.
