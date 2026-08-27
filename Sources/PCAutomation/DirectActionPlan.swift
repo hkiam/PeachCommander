@@ -403,17 +403,52 @@ public enum DirectActionPlan {
     /// Kreta, Sommer 2023" — a plausible day and month, invented whole, on its way into a file
     /// name where nobody would ever catch it.
     ///
-    /// So the text decides: the year and the day must both appear in it. This can only ever
-    /// *remove* a date, which is the safe direction — a missing date leaves a gap in a rename
-    /// mask, an invented one leaves a lie in a file name.
+    /// So the text decides. Either route is enough, and each covers what the other cannot:
+    ///
+    /// 1. Every part appears as a number — year, month and day. The month was missing from this
+    ///    check, and that is not a hypothetical: a Classify run gave an invoice `2024-08-12` where
+    ///    the paper says `12.03.2024`. Both "2024" and "12" are in the text, so the date passed a
+    ///    check that never looked at the month, and a wrong date went on its way into a rename mask.
+    /// 2. `NSDataDetector` found exactly this date in the text. That is what keeps a date written
+    ///    in words — "1. April 2019" — which has no "04" anywhere for route 1 to find.
+    ///
+    /// Only detector matches whose own text carries a four-digit year count. The detector resolves
+    /// "due in 14 days" against today and returns a real date for it, which says nothing about the
+    /// document and would hand back the very answer the instructions forbid.
+    ///
+    /// This can only ever *remove* a date, which is the safe direction — a missing date leaves a
+    /// gap in a rename mask, an invented one leaves a lie in a file name.
     public static func dateSupported(_ date: String, by text: String) -> Bool {
         let parts = date.split(separator: "-").map(String.init)
-        guard parts.count == 3, let day = Int(parts[2]) else { return false }
+        guard parts.count == 3, let day = Int(parts[2]), let month = Int(parts[1]) else { return false }
         let digits = Set(text.split(whereSeparator: { !$0.isNumber }).map(String.init))
-        guard digits.contains(parts[0]) else { return false }          // the year, as written
-        // The day may be written with or without a leading zero, and in a date the text spells out
-        // in full ("2024-03-09") it appears padded.
-        return digits.contains(parts[2]) || digits.contains(String(day))
+        // The day and month may be written with or without a leading zero; in a date the text
+        // spells out in full ("2024-03-09") they appear padded.
+        func present(_ padded: String, _ bare: Int) -> Bool {
+            digits.contains(padded) || digits.contains(String(bare))
+        }
+        if digits.contains(parts[0]), present(parts[1], month), present(parts[2], day) { return true }
+        return detectedDates(in: text).contains(date)
+    }
+
+    /// The dates `NSDataDetector` reads out of `text`, as `yyyy-MM-dd`, skipping any match that
+    /// does not spell a year out itself. UTC, because the answer is a calendar date and not a moment.
+    static func detectedDates(in text: String) -> Set<String> {
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue)
+        else { return [] }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .gmt
+        var out: Set<String> = []
+        for match in detector.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+            guard let date = match.date, let range = Range(match.range, in: text) else { continue }
+            let run = text[range]
+            guard run.split(whereSeparator: { !$0.isNumber }).contains(where: { $0.count == 4 })
+            else { continue }
+            let c = calendar.dateComponents([.year, .month, .day], from: date)
+            out.insert(String(format: "%04lld-%02lld-%02lld",
+                              Int64(c.year ?? 0), Int64(c.month ?? 0), Int64(c.day ?? 0)))
+        }
+        return out
     }
 
     /// Match a model's answer to one of the folders it was given, or nil when none of them fits.

@@ -252,6 +252,19 @@ final class NativeToolContext: @unchecked Sendable {
         return Locale(identifier: "en").localizedString(forIdentifier: code.rawValue)
     }
 
+    /// The language the reader is running the app in, named in English.
+    ///
+    /// Not the same question as `languageName(of:)`, and the difference decides who an answer is
+    /// addressed to. Summarizing hands back the document's own content, so it belongs in the
+    /// document's language. Explaining answers a question the reader asked *about* the file, and
+    /// measured on a German Mac it came back in English for an nginx.conf — correct by the file,
+    /// useless to the person who asked.
+    static func readerLanguageName() -> String? {
+        guard let code = Bundle.main.preferredLocalizations.first else { return nil }
+        let base = Locale(identifier: code).language.languageCode?.identifier ?? code
+        return Locale(identifier: "en").localizedString(forIdentifier: base)
+    }
+
     /// " Write in German." — an instruction naming the language, or nothing when unknown.
     static func languageClause(_ language: String?) -> String {
         guard let language else { return "" }
@@ -554,7 +567,12 @@ public actor AppleNativeToolSession {
     public func explain(file path: String) async throws -> String {
         let content = await readable(path, maxBytes: NativeToolContext.readBudget)
         let current = (path as NSString).lastPathComponent
-        let language = NativeToolContext.languageName(of: content)
+        // The reader's language, not the file's — see `readerLanguageName`. A config file is
+        // English whatever Mac it sits on, and explaining it in English to someone running the app
+        // in German answers the wrong person. Falls back to the file's language when the app's
+        // cannot be named at all.
+        let language = NativeToolContext.readerLanguageName()
+            ?? NativeToolContext.languageName(of: content)
         let session = LanguageModelSession(
             instructions: "You say what a file is and what someone would use it for, in three "
                 + "sentences at most. Describe its kind and purpose, not its contents line by "

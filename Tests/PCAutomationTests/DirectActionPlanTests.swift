@@ -270,6 +270,32 @@ final class DirectActionPlanTests: XCTestCase {
         XCTAssertFalse(DirectActionPlan.dateSupported("", by: "12 March 2024"))
     }
 
+    func testTheMonthHasToBeSupportedToo() {
+        // Measured, not imagined: a Classify run answered 2024-08-12 for an invoice reading
+        // "Rechnungsdatum: 12.03.2024". Both 2024 and 12 are in the text, so a check that looked
+        // only at the year and the day let a wrong month straight through into a rename mask.
+        let invoice = "Rechnung Nr. 2024-0871\nRechnungsdatum: 12.03.2024\nGesamt 1450,00 EUR"
+        XCTAssertTrue(DirectActionPlan.dateSupported("2024-03-12", by: invoice))
+        XCTAssertFalse(DirectActionPlan.dateSupported("2024-08-12", by: invoice))
+    }
+
+    func testADateWrittenInWordsIsStillSupported() {
+        // Route 1 cannot see this one — there is no "04" anywhere in "1. April 2019" — so the
+        // month check must not cost the case the check was not aimed at.
+        XCTAssertTrue(DirectActionPlan.dateSupported(
+            "2019-04-01", by: "Das Mietverhältnis beginnt am 1. April 2019 und läuft weiter."))
+        XCTAssertFalse(DirectActionPlan.dateSupported(
+            "2019-05-01", by: "Das Mietverhältnis beginnt am 1. April 2019 und läuft weiter."))
+    }
+
+    func testARelativeDeadlineIsNotTheDocumentsDate() {
+        // The detector resolves "in 14 days" against today and hands back a real date for it. That
+        // says nothing about the paper, and it is precisely today's date, which the model is told
+        // never to answer with.
+        let today = DirectActionPlan.detectedDates(in: "Payment due in 14 days.")
+        XCTAssertTrue(today.isEmpty, "a relative deadline spells no year and must not count")
+    }
+
     func testADateIsEitherReadableOrAbsent() {
         XCTAssertEqual(DirectActionPlan.sanitize(date: "2024-03-12"), "2024-03-12")
         XCTAssertEqual(DirectActionPlan.sanitize(date: "2024/3/9"), "2024-03-09")
