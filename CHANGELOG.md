@@ -44,6 +44,10 @@ which changed nothing. That was the default every new reader landed on.
   to that. No model is involved: it compares meaning with on-device sentence embeddings, so it
   answers instantly and cannot invent a file that is not there. Pick a match to jump to it.
 
+  It ranks, and it does not judge: ask a folder of invoices about football and you still get the
+  folder back, closest first. That is why the list is headed **Closest matches** — the top of it is
+  the answer when there is one, and it is not a claim that there is.
+
 - **Organize** works on what you marked. Mark a few files and it tidies up those; mark nothing and
   it takes the folder, as before.
 

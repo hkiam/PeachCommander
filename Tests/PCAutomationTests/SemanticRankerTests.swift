@@ -91,9 +91,23 @@ final class SemanticRankerTests: XCTestCase {
     }
 
     func testNothingScoringIsAnEmptyAnswer() {
-        // A folder with nothing to do with the query comes back empty rather than complete.
+        // Only when the scorer itself says nothing at all — no embedding fits the query and no word
+        // of it appears anywhere. This is NOT "the folder is unrelated": measured, a query about
+        // nothing in the folder scores higher and stands out more than a real match, so nothing
+        // here can decide that. See the note in `rank`.
         XCTAssertEqual(SemanticRanker.rank([candidate("a.txt"), candidate("b.txt")],
                                            limit: 5) { _ in 0 }, [])
+    }
+
+    func testAnUnrelatedQueryStillGetsTheWholeRanking() {
+        // Written down so the promise is not quietly reintroduced: with everything scoring in one
+        // narrow band, which is what the embedding does, the cutoff keeps them all. The caller's
+        // sheet is titled "Closest matches" for exactly this reason.
+        let files = [candidate("a.txt"), candidate("b.txt"), candidate("c.txt")]
+        let order = SemanticRanker.rank(files, limit: 5) { text in
+            text.hasPrefix("a") ? 0.99 : (text.hasPrefix("b") ? 0.94 : 0.86)
+        }
+        XCTAssertEqual(order, ["a.txt", "b.txt", "c.txt"])
     }
 
     func testTheBestMatchIsAlwaysReturned() {

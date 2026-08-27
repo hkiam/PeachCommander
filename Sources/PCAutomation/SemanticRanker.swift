@@ -111,13 +111,25 @@ public enum SemanticRanker {
             // above the real invoice's name, against the invoice's own words at 0.923.
             scored.append((candidate.name, max(byName, byContent)))
         }
-        // Everything above zero is not an answer: a caller reads a list of the whole folder as
-        // "these are all about it" and passes that on.
         let ranked = scored.filter { $0.1 > 0 }.sorted { $0.1 > $1.1 }
         guard let best = ranked.first?.1 else { return [] }
         // Relative to the best match, never absolute: an absolute floor threw away the best match
-        // too whenever the whole folder scored low, and "no file matches" is a worse answer than a
-        // weak one. The best match is always returned; the cutoff only decides its company.
+        // too whenever the whole folder scored low. The best match is always returned; the cutoff
+        // only decides its company.
+        //
+        // What this CANNOT do is tell that a folder has nothing to do with the query. The comment
+        // that used to stand here said it could, and measuring says no threshold of any shape
+        // would. Over five files, best score and the winner's lead over the rest:
+        //
+        //     "die Rechnung über das Dach"  best 0.889  lead 0.090   → the invoice   (a match)
+        //     "Kochrezepte"                 best 0.988  lead 0.126   → an nginx.conf (nothing)
+        //     "Bundesliga Spielplan"        best 1.134  lead 0.176   → an nginx.conf (nothing)
+        //
+        // A query about nothing in the folder scores HIGHER and stands out MORE than a real match,
+        // so an absolute floor and a spread test fail the same way. Word overlap does not separate
+        // them either: "Temperaturmessungen" shares no token with the readings file it correctly
+        // finds. Ranking is the promise this can keep; deciding that nothing fits is not, and the
+        // caller's sheet is titled "Closest matches" rather than "matches" for that reason.
         let cutoff = best * 0.7
         return ranked.enumerated()
             .filter { $0.offset == 0 || $0.element.1 >= cutoff }
