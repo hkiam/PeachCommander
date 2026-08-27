@@ -110,9 +110,10 @@ which changed nothing. That was the default every new reader landed on.
   folder holding exactly that invoice, it put the invoice *last* and a web-server config first — and
   the same for a bare "Rechnung". Two causes, both measured: the file's opening was compared as a
   block of running text, which averages every document into the middle, and the file name was then
-  given a further advantage over it. Files are now compared by their content words, and the name
-  competes on equal terms. Over the same folder, four queries out of six now put the right file
-  first where one did before.
+  given a further advantage over it. Both sides of the comparison are now reduced to their content
+  words — "die Rechnung über das Dach" is three filler words and two real ones — and the name
+  competes with the content on equal terms. Over the same folder, six queries out of seven put the
+  right file first where one did before.
 - **A short search phrase could return nothing at all.** Two words are not enough to place a
   language: "Webserver Konfiguration" was read as Danish, which has no on-device sentence model, so
   the search quietly fell back to literal word matching and found nothing. It now falls back to the

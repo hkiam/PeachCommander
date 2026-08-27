@@ -232,8 +232,19 @@ final class HostAutomationBridge: AutomationHostBridge {
         guard !folder.isEmpty else { return [] }
         let entries = (try? await listDirectory(folder))?.filter { !$0.isDirectory } ?? []
         let embedding = Self.embedding(for: query)
-        let q = query.lowercased()
-        let queryTokens = Set(Self.tokens(of: q))
+        // The same condensing on this side of the comparison. "die Rechnung über das Dach" is three
+        // filler words and two real ones, and measured against the folder it names, the raw phrase
+        // ranked the lease first and the invoice second; on "rechnung dach" the invoice comes first.
+        // The three queries that were already right are unchanged by it.
+        // Falling back to the whole phrase when it condenses to nothing: "log" and "S3" are shorter
+        // than the floor, and an empty left-hand side makes every distance meaningless rather than
+        // merely unhelpful.
+        let condensedQuery = Self.keywords(query)
+        let q = condensedQuery.isEmpty ? query.lowercased() : condensedQuery
+        // Literal matching keeps every word as typed. It is reached when no embedding fits the
+        // query at all, and there the four-character floor would throw away exactly the terms
+        // someone searches literally for — "log", "S3", "PDF".
+        let queryTokens = Set(Self.tokens(of: query))
 
         func semantic(_ text: String) -> Double? {
             guard let embedding, !text.isEmpty else { return nil }
