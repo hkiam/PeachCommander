@@ -225,154 +225,32 @@ final class HostAutomationBridge: AutomationHostBridge {
         return (entries, resolved.described)
     }
 
+    /// Rank this folder's files against `query`. The reading is here; the ranking is
+    /// `SemanticRanker`, in PCAutomation, where a test can reach it.
     nonisolated func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] {
         let folder: String
         if let path, !path.isEmpty { folder = path }
         else { folder = await MainActor.run { self.host?.activePanel?.directoryPath ?? "" } }
         guard !folder.isEmpty else { return [] }
         let entries = (try? await listDirectory(folder))?.filter { !$0.isDirectory } ?? []
-        let embedding = Self.embedding(for: query)
-        // The same condensing on this side of the comparison. "die Rechnung über das Dach" is three
-        // filler words and two real ones, and measured against the folder it names, the raw phrase
-        // ranked the lease first and the invoice second; on "rechnung dach" the invoice comes first.
-        // The three queries that were already right are unchanged by it.
-        // Falling back to the whole phrase when it condenses to nothing: "log" and "S3" are shorter
-        // than the floor, and an empty left-hand side makes every distance meaningless rather than
-        // merely unhelpful.
-        let condensedQuery = Self.keywords(query)
-        let q = condensedQuery.isEmpty ? query.lowercased() : condensedQuery
-        // Literal matching keeps every word as typed. It is reached when no embedding fits the
-        // query at all, and there the four-character floor would throw away exactly the terms
-        // someone searches literally for — "log", "S3", "PDF".
-        let queryTokens = Set(Self.tokens(of: query))
-
-        func semantic(_ text: String) -> Double? {
-            guard let embedding, !text.isEmpty else { return nil }
-            let d = embedding.distance(between: q, and: text)   // smaller = closer
-            guard d.isFinite, d > 0, d < 2 else { return nil }
-            return 2 - d                                        // higher = better
+        let embedding = SemanticRanker.embedding(for: query,
+                                                 reader: Bundle.main.preferredLocalizations.first)
+        let phrase = SemanticRanker.comparablePhrase(query)
+        func score(_ text: String) -> Double {
+            SemanticRanker.semantic(embedding, phrase: phrase, text: text)
+                ?? SemanticRanker.lexical(query: query, text: text)
         }
-        func lexical(_ text: String) -> Double {
-            guard !queryTokens.isEmpty else { return 0 }
-            return Double(queryTokens.intersection(Set(Self.tokens(of: text))).count)
-                / Double(queryTokens.count)
-        }
-        func score(_ text: String) -> Double { semantic(text) ?? lexical(text) }
-
-        var scored: [(AutomationEntry, Double)] = []
         // A folder can hold thousands of files and each one costs a read; the cap keeps a
         // "find X here" from turning into a scan of everything.
+        var candidates: [SemanticRanker.Candidate] = []
+        var byName: [String: AutomationEntry] = [:]
         for entry in entries.prefix(300) {
-            let nameScore = score(Self.readableName(entry.name))
-            // Only text-shaped files are worth reading, and only their beginning.
+            // Only the beginning of the file: the ranker decides what of it is worth comparing.
             let sample = (try? await readFile(entry.path, maxBytes: 2048)) ?? ""
-            let contentScore = Self.looksLikeText(sample) ? score(Self.keywords(sample)) : 0
-            // No thumb on the scale for the name any more. The 0.9 that used to sit on the content
-            // was meant to prefer a name that says something, but every score here lands between
-            // about 0.6 and 1.1, so a tenth is a third of the whole range that separates a match
-            // from anything else — and it reliably beat the only signal that was working. Measured:
-            // "rechnung" scored nginx.conf's *name* at 0.892, above the actual invoice's name, and
-            // the invoice's own words at 0.923. Whichever of the two says more, says more.
-            scored.append((entry, max(nameScore, contentScore)))
+            candidates.append(.init(name: entry.name, sample: sample))
+            byName[entry.name] = entry
         }
-        // Everything with a score above zero is not an answer: the model reads a list of the
-        // whole folder as "these are all about it" and passes that on. Keep what is close to
-        // the best match, so a clear winner arrives as one, and a folder with nothing to do
-        // with the query comes back empty rather than complete.
-        let ranked = scored.filter { $0.1 > 0 }.sorted { $0.1 > $1.1 }
-        guard let best = ranked.first?.1 else { return [] }
-        // Relative to the best match, never absolute: an absolute floor threw away the best
-        // match too whenever the whole folder scored low, and "no file matches" is a worse
-        // answer than a weak one. The best match is always returned; the cutoff only decides
-        // how much company it keeps.
-        let cutoff = best * 0.7
-        return ranked.enumerated()
-            .filter { $0.offset == 0 || $0.element.1 >= cutoff }
-            .prefix(max(1, limit))
-            .map { $0.element.0 }
-    }
-
-    /// The sentence embedding for the query's own language, or nil when there is none.
-    ///
-    /// Nil matters: the caller then scores by word overlap instead, which works in any language.
-    /// This used to fall back to the ENGLISH embedding for a language Apple has no model for,
-    /// which is worse than having none — it returns finite distances, so the lexical fallback was
-    /// never reached and a French or Russian query was ranked against English vectors. Measured on
-    /// macOS 26.4: sentence embeddings existed for German, English and Italian and for none of the
-    /// other sixteen languages this app ships in.
-    ///
-    /// When the recognizer's answer has no embedding, the READER's language is tried before giving
-    /// up. Two words are not enough to place a language: "Webserver Konfiguration" is read as
-    /// Danish, which has no embedding, so the whole search fell back to literal word overlap and
-    /// returned nothing at all for a query whose answer was sitting in the folder. Add two more
-    /// German words to the same query and it is German again.
-    ///
-    /// The reader's language is a real prior — they typed the query — where English was only ever
-    /// a guess, which is why that fallback was removed and this one is not the same mistake. A
-    /// query the recognizer places in a language that HAS an embedding is still scored in it, so
-    /// searching in English on a German Mac keeps working.
-    nonisolated private static func embedding(for query: String) -> NLEmbedding? {
-        let recognizer = NLLanguageRecognizer()
-        recognizer.processString(query)
-        if let language = recognizer.dominantLanguage,
-           let found = NLEmbedding.sentenceEmbedding(for: language) {
-            return found
-        }
-        if let code = Bundle.main.preferredLocalizations.first,
-           let base = Locale(identifier: code).language.languageCode?.identifier,
-           let reader = NLEmbedding.sentenceEmbedding(for: NLLanguage(rawValue: base)) {
-            return reader
-        }
-        return NLEmbedding.sentenceEmbedding(for: .english)
-    }
-
-    nonisolated private static func tokens(of text: String) -> [String] {
-        text.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init)
-    }
-
-    /// "quartals_bericht-q3.txt" → "quartals bericht q3": separators carry no meaning here.
-    nonisolated private static func readableName(_ name: String) -> String {
-        (name as NSString).deletingPathExtension
-            .replacingOccurrences(of: "[_.\\-]", with: " ", options: .regularExpression)
-            .lowercased()
-    }
-
-    /// Whether a sample is text at all — a binary read as a string is noise to an embedding.
-    nonisolated private static func looksLikeText(_ sample: String) -> Bool {
-        guard !sample.isEmpty else { return false }
-        let printable = sample.unicodeScalars.prefix(400).filter {
-            $0 == "\n" || $0 == "\t" || $0 == "\r" || ($0.value >= 32 && $0.value != 0xFFFD)
-        }.count
-        return Double(printable) / Double(min(sample.unicodeScalars.count, 400)) > 0.9
-    }
-
-    /// The file's content words, deduplicated, in the order they appear.
-    ///
-    /// This used to be the first 400 characters with the whitespace collapsed, and that measured
-    /// badly enough to invert the ranking. Over a folder of four, embedding distance to a German
-    /// query, best score per file:
-    ///
-    ///     "rechnung"            invoice   raw 0.828   keywords 0.923   (name 0.683)
-    ///     "temperaturmessungen" readings  raw 0.668   keywords 1.107   (name 0.798)
-    ///     "mietvertrag wohnung" contract  raw 0.948   keywords 1.132   (name 1.024)
-    ///
-    /// The raw prefix put the readings file *last* for a query about readings. A sentence
-    /// embedding is built for a sentence; a page of prose, a header row and a licence block
-    /// average into the middle, and the middle is where every file already sits.
-    ///
-    /// Words of four characters and up, twenty-five of them: short words carry the grammar rather
-    /// than the subject, and past a couple of dozen the average sets in again.
-    nonisolated private static func keywords(_ text: String) -> String {
-        var seen = Set<String>()
-        var out: [String] = []
-        let tokenizer = NLTokenizer(unit: .word)
-        tokenizer.string = text
-        tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
-            let word = text[range].lowercased()
-            if word.count >= 4, seen.insert(word).inserted { out.append(word) }
-            return out.count < 25
-        }
-        return out.joined(separator: " ")
+        return SemanticRanker.rank(candidates, limit: limit, score: score).compactMap { byName[$0] }
     }
 
     /// Hashed in chunks rather than mapped whole: "find duplicates" over a folder of disk
