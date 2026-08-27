@@ -73,6 +73,18 @@ Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comp
 
 Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.
 
+## Les pages proposées par le panneau latéral
+
+Le panneau latéral n'affiche d'abord que **Infos**. **Activités** (transferts en cours) et **Journal** (transferts terminés) sont désactivées, car la plupart du travail ne les réclame jamais et une barre de trois onglets resterait sinon au-dessus de l'aperçu toute la journée.
+
+- Activez-les dans **Réglages > Disposition**, sous *Pages du panneau latéral* ; par un clic droit sur la barre d'onglets ; ou depuis **Affichage > Panneau latéral : Infos / Activités / Journal**.
+- S'il ne reste qu'une page, le panneau se passe entièrement de sa barre d'onglets : un panneau réduit à Infos, c'est l'aperçu et les détails, sans rien au-dessus.
+- Chaque page peut être désactivée, Infos comprise — utile quand vous y gardez plutôt le terminal ou la vue d'un plugin. Un panneau où il ne reste rien le dit, au lieu de s'ouvrir vide.
+- Les pages fournies par un plugin ne sont pas concernées : elles apparaissent et disparaissent avec le plugin, et c'est la page **Plugins** qui sert à les désactiver.
+- **Affichage > Réinitialiser la disposition** remet les pages sur Infos seule, en même temps que le reste du mobilier de la fenêtre.
+
+Les entrées du menu Affichage comptent plus qu'il n'y paraît. Une fois toutes les pages désactivées, il n'y a plus de barre d'onglets à cliquer droit : elles sont le chemin du retour.
+
 ## Décompiler des fichiers .class Java
 
 Avec le module **Java Decompiler** activé, F3 sur un fichier `.class` affiche du code lisible au lieu de données binaires — y compris pour les classes situées dans un JAR ou un ZIP, dans lequel vous pouvez entrer et lire sans le décompresser.

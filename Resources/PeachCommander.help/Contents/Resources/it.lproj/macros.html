@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macro</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Macro</h1>
+<p>Una macro è una sequenza con un nome di azioni sui file — creare una cartella, spostarci la selezione, etichettare ciò che resta — che puoi rieseguire con un clic. Non è un linguaggio di script: non ci sono condizioni né cicli, ed è voluto. Una macro è un elenco che puoi leggere, e saperlo leggere è ciò che serve prima di approvarlo.</p>
+<p>Tutto ciò che fa una macro passa per gli stessi meccanismi dell’assistente: una macro non può quindi fare nulla che non abbia il tuo permesso, ogni suo passo compare nel registro delle azioni, e un passo che si può annullare resta annullabile.</p>
+<h2 id="la-via-piu-rapida-da-cio-che-hai-appena-fatto">La via più rapida: da ciò che hai appena fatto</h2>
+<p>Non devi scrivere una macro da zero.</p>
+<ol>
+<li>Fai la cosa una volta — con l’assistente, o eseguendo una macro esistente.</li>
+<li>Scegli <strong>Configurazione ▸ Macro dalle azioni recenti…</strong>.</li>
+<li>Seleziona i passi che la macro deve ripetere, dalle un nome e lascia attivo <strong>Aggiungi anche un pulsante</strong>.</li>
+</ol>
+<p><strong>Salva macro</strong>, e il pulsante è nella barra. È tutto il ciclo.</p>
+<blockquote>
+<p><strong>Cosa non viene registrato.</strong> L’elenco è costruito dalle azioni passate attraverso l’assistente o un’altra macro. Copiare, spostare o rinominare <em>a mano</em> nei pannelli — F5, F6, F7 — non viene registrato e non può quindi diventare una macro per questa via. Per quelle usa l’editor più sotto.</p>
+</blockquote>
+<h2 id="modificare-le-macro-a-mano">Modificare le macro a mano</h2>
+<p><strong>Configurazione ▸ Modifica macro…</strong> apre <code>macros.json</code> nella cartella di configurazione, lasciandoci un esempio commentato la prima volta. Una macro è un elenco di passi, e ogni passo indica uno strumento e i suoi argomenti:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Il salvataggio ricarica subito le macro. Per vedere quali strumenti esistono e cosa prendono, chiedi <code>list_macros</code> all’assistente, o leggi l’esempio con cui il file è stato creato.</p>
+<h3 id="segnaposto">Segnaposto</h3>
+<p>Le lettere singole sono le stesse che usano la barra dei pulsanti e il menu Start: se hai già fatto un pulsante, qui non c’è nulla di nuovo da imparare.</p>
+<table>
+<thead>
+<tr>
+<th>Segnaposto</th>
+<th>Significa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>La cartella del pannello attivo</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>La cartella dell’altro pannello</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Il file sotto il cursore</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>I file selezionati — un <strong>elenco</strong>, che è ciò che prendono <code>copy</code>, <code>move</code> e <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>La data di avvio della macro, in quel formato</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Il risultato del passo 1, quando quel passo ha prodotto un percorso o un elenco di percorsi</td>
+</tr>
+</tbody>
+</table>
+<p>Le graffe servono per le aggiunte perché le lettere sono già occupate: <code>%M</code> significa «il nome sotto il cursore nell’altro pannello» in tutto il resto del programma, quindi un mese non poteva scriversi così.</p>
+<p><code>%S</code> è il solo punto in cui una macro si discosta da un pulsante: su un pulsante la selezione diventa un elenco di parole per una riga di comando, qui diventa l’elenco dei percorsi completi che prendono gli strumenti sui file.</p>
+<p>Un passo il cui <code>%S</code> o <code>%{1}</code> risulta <strong>vuoto ferma la macro</strong> invece di eseguirsi senza nulla. Un <code>move</code> senza file non è un <code>move</code> più piccolo: è una richiesta che non dice più niente, e segnalarne il successo sarebbe una bugia.</p>
+<h2 id="eseguire-una-macro">Eseguire una macro</h2>
+<p>Ogni macro diventa un comando chiamato <code>mc_&lt;id&gt;</code>, e compare quindi da sola in:</p>
+<ul>
+<li><strong>Configurazione ▸ Elenco comandi…</strong></li>
+<li><strong>Configurazione ▸ Modifica scorciatoie… — assegnala a un tasto</strong></li>
+<li>Il selettore di comandi dell’editor della barra dei pulsanti</li>
+<li>Il tuo file di menu <code>.mnu</code> e <code>usercmd.ini</code>, se li usi</li>
+<li>L’assistente, che può eseguirla per nome</li>
+</ul>
+<p>Prima che una macro che modifica qualcosa venga eseguita, ti mostra i suoi passi come elenco e attende. Puoi escludere un passo che non vuoi; ciò che resta è ciò che viene eseguito. Una macro che solo legge parte senza chiedere.</p>
+<p>Se un passo fallisce, la macro <strong>si ferma lì</strong> invece di continuare: il passo due presuppone di norma che il passo uno sia avvenuto, e spostare file in una cartella che non è stata creata non è un successo parziale. Il resoconto indica il passo e dice cosa è andato storto; i passi eseguiti sono nel registro delle azioni.</p>
+<h2 id="cosa-puo-fare-una-macro">Cosa può fare una macro</h2>
+<p>Una macro è valutata sulla cosa più impegnativa che contiene. Una macro i cui passi solo leggono è trattata come una lettura; una che termina con un’eliminazione definitiva è protetta come un’eliminazione definitiva — prima che parta qualunque cosa, non quattro passi dopo.</p>
+<p>Non concedere nulla in più è il comportamento predefinito. Se una macro contiene un passo che i tuoi permessi non ammettono — un comando shell, uno script — l’intera macro viene rifiutata con la sua motivazione, e non accade nulla.</p>
+<h2 id="annullare">Annullare</h2>
+<p>Ogni passo è registrato separatamente, quindi <strong>annulla</strong> dopo una macro riprende il suo <em>ultimo</em> passo, non l’intera macro. Non esiste un annulla per l’intera macro, perché diversi strumenti non hanno alcun inverso e un pulsante che lo offrisse mentirebbe su quelli.</p>
+<h2 id="dove-viene-salvato-tutto">Dove viene salvato tutto</h2>
+<ul>
+<li>Le tue macro sono in <code>macros.json</code> nella cartella di configurazione — un file semplice, che puoi confrontare e tenere con i tuoi dotfile.</li>
+<li>I pulsanti aggiunti da una macro sono normali voci della barra dei pulsanti in <code>default.bar</code>, quindi rimuoverne uno è come rimuovere qualsiasi pulsante.</li>
+</ul>
+<h2 id="prossimi-passi">Prossimi passi</h2>
+<ul>
+<li><a href="automation.html">Automazione (AppleScript e Comandi rapidi)</a> — Pilotare Peach Commander da uno script, ed eseguire i tuoi script come passo di una macro.</li>
+<li><a href="toolbar.html">La barra dei pulsanti</a> — Dove finisce il pulsante aggiunto da una macro.</li>
+<li><a href="keyboard-shortcuts.html">Tastiera e scorciatoie</a> — Assegnare una macro a un tasto.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automazione (AppleScript e Comandi rapidi)</a></li><li><a href="toolbar.html">La barra dei pulsanti</a></li><li><a href="start-menu.html">Il menu Avvio e i comandi personalizzati</a></li><li><a href="keyboard-shortcuts.html">Tastiera e scorciatoie</a></li></ul></section>
+</main>
+</body>
+</html>

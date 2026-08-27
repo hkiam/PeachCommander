@@ -23,7 +23,7 @@ Im Einstellungsfenster passen Sie Peach Commander an Ihre Arbeitsweise an: welch
 
 Das Fenster enthält diese Seiten, in dieser Reihenfolge:
 
-- **Layout** — Laufwerksleiste, Tab-Leiste, Pfadleiste und Statusleiste ein- oder ausblenden.
+- **Layout** — Laufwerksleiste, Tab-Leiste, Pfadleiste und Statusleiste ein- oder ausblenden und festlegen, welche Seiten das Seitenfenster anbietet.
 - **Anzeige** — wie Dateien und Ordner aufgelistet werden, einschließlich des Datumsformats.
 - **Symbole** — Erscheinungsbild der Symbole in den Dateilisten.
 - **Bedienung** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).

@@ -23,7 +23,7 @@ La ventana de Ajustes es donde adaptas Peach Commander a tu forma de trabajar: q
 
 La ventana tiene estas páginas, en orden:
 
-- **Disposición** — muestra u oculta la barra de unidades, la barra de pestañas, la barra de ruta y la barra de estado.
+- **Disposición** — muestra u oculta la barra de unidades, la barra de pestañas, la barra de ruta y la barra de estado, y elige qué páginas ofrece el panel lateral.
 - **Visualización** — cómo se listan los archivos y carpetas, incluido el formato de fecha.
 - **Iconos** — el aspecto de los iconos en las listas de archivos.
 - **Operación** — comportamiento general, como qué ocurre al escribir en un panel (búsqueda rápida frente a la línea de comandos).

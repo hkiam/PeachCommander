@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>매크로</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>매크로</h1>
+<p>매크로는 이름이 붙은 파일 작업의 연속입니다 — 폴더를 만들고, 선택 항목을 그 안으로 옮기고, 남은 것에 태그를 붙이는 식으로 — 한 번의 클릭으로 다시 실행할 수 있습니다. 스크립트 언어가 아닙니다. 조건도 반복도 없으며, 그것은 의도한 것입니다. 매크로는 읽을 수 있는 목록이고, 승인하기 전에 읽을 수 있어야 하는 것이 바로 그것입니다.</p>
+<p>매크로가 하는 모든 일은 어시스턴트가 쓰는 것과 같은 장치를 거칩니다. 따라서 매크로는 여러분이 허용하지 않은 일을 할 수 없고, 각 단계는 작업 기록에 남으며, 되돌릴 수 있는 단계는 여전히 되돌릴 수 있습니다.</p>
+<h2 id="_1">가장 빠른 길: 방금 한 일에서</h2>
+<p>매크로를 처음부터 작성할 필요는 없습니다.</p>
+<ol>
+<li>한 번 해 보십시오 — 어시스턴트를 통해서든, 기존 매크로를 실행해서든.</li>
+<li><strong>환경 설정 ▸ 최근 작업으로 매크로 만들기…</strong>를 선택합니다.</li>
+<li>매크로가 반복해야 할 단계를 체크하고 이름을 지어 준 다음, <strong>이 매크로용 버튼도 추가</strong>를 켠 상태로 둡니다.</li>
+</ol>
+<p><strong>매크로 저장</strong>을 누르면 버튼이 막대에 생깁니다. 이것이 전부입니다.</p>
+<blockquote>
+<p><strong>기록되지 않는 것.</strong> 목록은 어시스턴트나 다른 매크로를 통해 실행된 작업으로 만들어집니다. 패널에서 <em>직접</em> 복사·이동·이름 변경한 것 — F5, F6, F7 — 은 기록되지 않으므로 이 방법으로는 매크로가 되지 않습니다. 그런 경우에는 아래의 편집기를 사용하십시오.</p>
+</blockquote>
+<h2 id="_2">매크로를 직접 편집하기</h2>
+<p><strong>환경 설정 ▸ 매크로 편집…</strong>은 설정 폴더의 <code>macros.json</code>을 열고, 처음에는 주석이 달린 예제를 남겨 둡니다. 매크로는 단계의 목록이고, 각 단계는 도구와 그 인자를 지정합니다:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>저장하면 매크로가 즉시 다시 읽힙니다. 어떤 도구가 있고 무엇을 받는지는 어시스턴트에게 <code>list_macros</code>로 물어보거나, 파일이 생성될 때 들어간 예제를 읽으면 됩니다.</p>
+<h3 id="_3">자리 표시자</h3>
+<p>낱글자는 버튼 막대와 시작 메뉴가 쓰는 것과 같습니다. 버튼을 만들어 본 적이 있다면 새로 배울 것이 없습니다.</p>
+<table>
+<thead>
+<tr>
+<th>자리 표시자</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>활성 패널의 폴더</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>다른 패널의 폴더</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>커서 아래의 파일</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>선택된 파일 — <strong>목록</strong>이며, <code>copy</code>, <code>move</code>, <code>move_to_trash</code>가 받는 것이 바로 이것입니다</td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>매크로가 시작된 날짜를 해당 형식으로</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>1단계의 결과 — 그 단계가 경로나 경로 목록을 만들어 낸 경우</td>
+</tr>
+</tbody>
+</table>
+<p>중괄호는 추가 항목을 위한 것입니다. 낱글자는 이미 쓰이고 있기 때문입니다. <code>%M</code>은 프로그램의 다른 모든 곳에서 “다른 패널의 커서 아래 이름”을 뜻하므로, 월을 그렇게 쓸 수는 없었습니다.</p>
+<p><code>%S</code>는 매크로가 버튼과 다른 유일한 지점입니다. 버튼에서는 선택 항목이 명령줄용 단어 목록이 되지만, 여기서는 파일 도구가 받는 전체 경로의 목록이 됩니다.</p>
+<p><code>%S</code>나 <code>%{1}</code>이 <strong>비어 나오는 단계는 매크로를 멈춥니다</strong> — 아무것도 없이 실행하는 대신에. 파일이 없는 <code>move</code>는 더 작은 <code>move</code>가 아니라 이미 아무 말도 하지 않는 요청이며, 성공했다고 알리는 것은 거짓말이 됩니다.</p>
+<h2 id="_4">매크로 실행하기</h2>
+<p>각 매크로는 <code>mc_&lt;id&gt;</code>라는 이름의 명령이 되므로, 다음 곳에 저절로 나타납니다:</p>
+<ul>
+<li><strong>환경 설정 ▸ 명령 브라우저…</strong></li>
+<li><strong>환경 설정 ▸ 단축키 편집… — 키에 지정하십시오</strong></li>
+<li>버튼 막대 편집기의 명령 선택기</li>
+<li>사용하고 있다면 <code>.mnu</code> 메뉴 파일과 <code>usercmd.ini</code></li>
+<li>이름으로 실행할 수 있는 어시스턴트</li>
+</ul>
+<p>무언가를 바꾸는 매크로가 실행되기 전에, 매크로는 단계를 목록으로 보여 주고 기다립니다. 원하지 않는 단계는 지울 수 있고, 남은 것이 실행됩니다. 읽기만 하는 매크로는 묻지 않고 실행됩니다.</p>
+<p>단계가 실패하면 매크로는 계속 진행하지 않고 <strong>그 자리에서 멈춥니다</strong>. 두 번째 단계는 보통 첫 번째 단계가 일어났다고 전제하며, 만들어지지 않은 폴더로 파일을 옮기는 것은 부분적인 성공이 아닙니다. 보고서는 단계를 지목하고 무엇이 잘못됐는지 알려 주며, 실행된 단계는 작업 기록에 남습니다.</p>
+<h2 id="_5">매크로에 허용되는 것</h2>
+<p>매크로는 그 안에서 가장 까다로운 것을 기준으로 판단됩니다. 단계가 읽기만 하는 매크로는 읽기로 취급되고, 영구 삭제로 끝나는 매크로는 영구 삭제로 통제됩니다 — 무엇이든 실행되기 전에, 네 단계 뒤가 아니라.</p>
+<p>추가로 아무것도 허용하지 않는 것이 기본입니다. 매크로에 여러분의 권한이 허용하지 않는 단계 — 셸 명령, 스크립트 — 가 들어 있으면, 매크로 전체가 이유와 함께 거부되고 아무 일도 일어나지 않습니다.</p>
+<h2 id="_6">실행 취소</h2>
+<p>각 단계가 따로 기록되므로, 매크로 뒤의 <strong>실행 취소</strong>는 매크로 전체가 아니라 그 <em>마지막</em> 단계를 되돌립니다. 매크로 전체를 되돌리는 기능은 없습니다. 여러 도구에는 역동작이 아예 없고, 그것을 제공하는 버튼은 그런 도구에 대해 거짓을 말하게 되기 때문입니다.</p>
+<h2 id="_7">저장 위치</h2>
+<ul>
+<li>매크로는 설정 폴더의 <code>macros.json</code>에 있습니다 — diff를 볼 수 있고 dotfiles와 함께 보관할 수 있는 평범한 파일입니다.</li>
+<li>매크로가 추가한 버튼은 <code>default.bar</code>의 일반적인 버튼 막대 항목이므로, 하나를 없애는 일은 다른 버튼과 다르지 않습니다.</li>
+</ul>
+<h2 id="_8">다음 단계</h2>
+<ul>
+<li><a href="automation.html">자동화(AppleScript 및 단축어)</a> — 스크립트에서 Peach Commander를 제어하고, 자신의 스크립트를 매크로 단계로 실행하기.</li>
+<li><a href="toolbar.html">버튼 막대</a> — 매크로가 추가한 버튼이 놓이는 곳.</li>
+<li><a href="keyboard-shortcuts.html">키보드 및 단축키</a> — 매크로를 키에 지정하기.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">자동화(AppleScript 및 단축어)</a></li><li><a href="toolbar.html">버튼 막대</a></li><li><a href="start-menu.html">시작 메뉴 및 사용자 지정 명령</a></li><li><a href="keyboard-shortcuts.html">키보드 및 단축키</a></li></ul></section>
+</main>
+</body>
+</html>

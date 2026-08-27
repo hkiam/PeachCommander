@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatyzacja (AppleScript i Skróty)</h1>
-<p>Peach Commander można skryptować, więc możesz sterować nim z AppleScript i z aplikacji Skróty. Garść podstawowych czasowników pozwala skryptowi nawigować po panelach, wybierać pliki według maski, kopiować lub przenosić bieżący wybór oraz uruchamiać dowolne polecenie Peach Commandera po jego identyfikatorze — ponownie używając dokładnie tych samych akcji, których używają menu, dzięki czemu krok skryptowy zachowuje się jak ręczny. Jest to przydatne przy powtarzalnych zadaniach: porządkowaniu pobranych plików, przygotowywaniu wyniku kompilacji lub włączeniu kroku plikowego do większego Skrótu.</p>
+<p>Automatyzacja działa tu w obie strony.</p>
+<p><strong>Na zewnątrz:</strong> Peach Commander da się skryptować, więc możesz nim sterować z AppleScript i z aplikacji Skróty. Kilka podstawowych czasowników pozwala skryptowi nawigować po panelach, zaznaczać pliki maską, kopiować lub przenosić bieżące zaznaczenie oraz uruchamiać dowolne polecenie Peach Commandera po jego id — wykorzystując dokładnie te same działania co menu, więc krok ze skryptu zachowuje się jak ręczny. O tym jest reszta tej strony.</p>
+<p><strong>Do wewnątrz:</strong> Peach Commander może też <em>uruchomić</em> Twój skrypt — AppleScript albo JavaScript — i umieścić go w menu, na przycisku lub na klawiszu. Potrzebna jest do tego wtyczka <strong>Scripting</strong>, dostarczana wyłączona; zobacz <a href="#uruchamianie-wlasnych-skryptow">Uruchamianie własnych skryptów</a> poniżej.</p>
+<p>Aby powtarzać <em>sekwencję</em> działań na plikach, a nie jedno, zobacz <a href="macros.html">Makra</a>.</p>
 <h2 id="zobacz-sownik">Zobacz słownik</h2>
 <ol>
 <li>Otwórz <strong>Edytor skryptów</strong> (w <code>/Applications/Utilities</code> — w Finderze „Narzędzia”).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="uzywanie-z-aplikacji-skroty">Używanie z aplikacji Skróty</h2>
 <p>W aplikacji <strong>Skróty</strong> dodaj akcję <strong>Uruchom AppleScript</strong> i wklej skrypt taki jak powyżej. Pozwala to włączyć krok Peach Commandera do większego Skrótu — na przykład wyzwalanego zmianą folderu lub klawiszem skrótu.</p>
+<h2 id="uruchamianie-wasnych-skryptow">Uruchamianie własnych skryptów</h2>
+<p>Druga strona: Twój skrypt, uruchamiany przez Peach Commandera.</p>
+<p>To wtyczka, i jest dostarczana <strong>wyłączona</strong>, bo uruchomienie wybranego programu potrafi wszystko, co potrafi reszta aplikacji, oraz kilka rzeczy, których nie obejmuje nic z niej. Dwa przełączniki, oba wyłączone, dopóki ich nie ustawisz:</p>
+<ol>
+<li><strong>Konfiguracja ▸ Wtyczki…</strong> — włącz <strong>Scripting</strong>.</li>
+<li><strong>Ustawienia ▸ AI</strong> — włącz <strong>Zezwalaj na uruchamianie skryptów</strong>. Jest na tej stronie, bo to ten sam rodzaj uprawnienia co powłoka asystenta, a te dwa idą w parze.</li>
+</ol>
+<p>Następnie umieść skrypt w <code>scripts/</code> w folderze konfiguracji — <strong>Polecenia ▸ Otwórz folder skryptów</strong> zaprowadzi Cię tam i za pierwszym razem zostawi przykład. Plik <code>.applescript</code>, <code>.scpt</code> lub <code>.jxa</code> w tym folderze <em>jest</em> skryptem; nie ma czego rejestrować.</p>
+<h3 id="co-dostaje-skrypt">Co dostaje skrypt</h3>
+<p>Stan paneli przychodzi w środowisku, więc zwykły przypadek nie wymaga zdarzeń Apple ani żadnego pytania o uprawnienia:</p>
+<table>
+<thead>
+<tr>
+<th>Zmienna</th>
+<th>Znaczy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Folder aktywnego panelu</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Folder drugiego panelu</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Plik pod kursorem</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Ile elementów jest zaznaczonych</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Plik tekstowy z jedną zaznaczoną ścieżką na wiersz (brak go, gdy nic nie jest zaznaczone)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Wszystko poza tym idzie przez samą aplikację, z użyciem czasowników powyżej — obie połowy się więc składają.</p>
+<h3 id="umieszczanie-skryptu-na-przycisku-lub-klawiszu">Umieszczanie skryptu na przycisku lub klawiszu</h3>
+<p>Każdy skrypt staje się poleceniem o nazwie <code>plugin.script.run.&lt;nazwa&gt;</code>, gdzie <code>&lt;nazwa&gt;</code> to nazwa pliku bez rozszerzenia (spacje i kropki zamieniają się w łączniki). To id działa wszędzie, gdzie działa id <code>cm_*</code>: na pasku przycisków, w <code>usercmd.ini</code>, w pliku <code>.mnu</code> i w <strong>Konfiguracja ▸ Edytuj skróty…</strong>.</p>
+<h3 id="jak-uruchamiany-jest-skrypt-i-limit-czasu">Jak uruchamiany jest skrypt i limit czasu</h3>
+<p>Domyślnie skrypt działa jako osobny proces, co pozwala nadać mu limit czasu i zatrzymać go po jego przekroczeniu — trzydzieści sekund, o ile nie ustalisz inaczej. Skrypt może wybrać działanie <em>wewnątrz</em> aplikacji, co pozwala mu zwrócić wartość strukturalną i zachowuje go skompilowanym między uruchomieniami, ale wtedy nie ma limitu czasu: skrypt w pętli zatrzymuje aplikację. Wybór zapisz w <code>scripts.json</code> obok swoich skryptów:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Wpisu wymaga tylko to, co odbiega od wartości domyślnych; plik bez wpisu otrzymuje własną nazwę jako tytuł, działa jako osobny proces i zostaje zatrzymany po trzydziestu sekundach.</p>
+<h3 id="dla-asystenta">Dla asystenta</h3>
+<p>Przy włączonej wtyczce i ustawieniu asystent zyskuje <code>run_applescript</code>, <code>run_jxa</code> i <code>check_script</code>. Każde z nich pokazuje Ci dokładny skrypt i czeka na Twoją zgodę, zanim cokolwiek się uruchomi, i żadne nigdy nie jest oferowane zewnętrznemu agentowi przez MCP.</p>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
 <li>Identyfikator polecenia przekazywany do <code>run command</code> jest tym samym identyfikatorem <code>cm_*</code>, który pokazuje się w przeglądarce poleceń (zobacz <a href="start-menu.html">Menu Start i polecenia niestandardowe</a>).</li>
 <li>Skryptowanie zawsze działa na <strong>aktywnym</strong> panelu; użyj najpierw <code>go to … in left</code> / <code>in right</code>, jeśli potrzebujesz konkretnej strony.</li>
 <li>Peach Commander to aplikacja z jednym oknem, więc skrypty kierują się na oba panele tego okna.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Menu Start i polecenia niestandardowe</a></li><li><a href="settings.html">Ustawienia</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Menu Start i polecenia niestandardowe</a></li><li><a href="settings.html">Ustawienia</a></li><li><a href="macros.html">Makra</a></li></ul></section>
 </main>
 </body>
 </html>

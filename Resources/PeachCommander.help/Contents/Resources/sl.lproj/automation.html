@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Avtomatizacija (AppleScript in Bližnjice)</h1>
-<p>Peach Commander je mogoče skriptirati, tako da ga lahko upravljate iz AppleScript in iz aplikacije Bližnjice. Peščica osnovnih glagolov skriptu omogoča krmarjenje po podoknih, izbiranje datotek po maski, kopiranje ali premikanje trenutnega izbora ter zagon katerega koli ukaza Peach Commander po njegovem identifikatorju — s ponovno uporabo natanko istih dejanj, ki jih uporabljajo meniji, tako da se skriptiran korak obnaša kot ročni. Priročno je za ponavljajoča se opravila: razvrščanje prenosov, pripravo izhoda gradnje ali vključitev koraka z datoteko v večjo Bližnjico.</p>
+<p>Avtomatizacija tu deluje v obe smeri.</p>
+<p><strong>Navzven:</strong> Peach Commander je skriptljiv, zato ga lahko vodite iz AppleScripta in iz aplikacije Bližnjice. Nekaj osnovnih glagolov omogoča skriptu, da se giblje po pultih, izbira datoteke po maski, kopira ali premika trenutni izbor in zaganja katerikoli ukaz Peach Commanderja po njegovem id-ju — z natanko istimi dejanji, kot jih uporabljajo meniji, tako da se skriptni korak obnaša kot ročni. O tem govori preostanek te strani.</p>
+<p><strong>Navznoter:</strong> Peach Commander lahko tudi <em>zažene</em> vaš skript — AppleScript ali JavaScript — in ga postavi v meni, na gumb ali na tipko. Za to je potreben vstavek <strong>Scripting</strong>, ki je dobavljen izklopljen; glejte <a href="#zaganjanje-lastnih-skriptov">Zaganjanje lastnih skriptov</a> spodaj.</p>
+<p>Za ponavljanje <em>zaporedja</em> dejanj z datotekami namesto enega glejte <a href="macros.html">Makri</a>.</p>
 <h2 id="ogled-slovarja">Ogled slovarja</h2>
 <ol>
 <li>Odprite <strong>Urejevalnik skriptov</strong> (v <code>/Applications/Utilities</code> — »Pripomočki« v Finderju).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="uporaba-iz-bliznjic">Uporaba iz Bližnjic</h2>
 <p>V aplikaciji <strong>Bližnjice</strong> dodajte dejanje <strong>Zaženi AppleScript</strong> in prilepite skript, kot je zgornji. To vam omogoča vključitev koraka Peach Commander v večjo Bližnjico — na primer sproženo s spremembo mape ali tipko za bližnjico.</p>
+<h2 id="zaganjanje-lastnih-skriptov">Zaganjanje lastnih skriptov</h2>
+<p>Druga smer: vaš skript, ki ga zaganja Peach Commander.</p>
+<p>To je vstavek in je dobavljen <strong>izklopljen</strong>, ker zagon programa po vaši izbiri zmore vse, kar zmore preostanek aplikacije, in več stvari, ki jih nič od tega ne pokriva. Dva stikala, obe izklopljeni, dokler jih ne nastavite:</p>
+<ol>
+<li><strong>Nastavitve ▸ Vstavki…</strong> — vklopite <strong>Scripting</strong>.</li>
+<li><strong>Možnosti ▸ UI</strong> — vklopite <strong>Dovoli izvajanje skriptov</strong>. Na tej strani je zato, ker gre za enako vrsto dovoljenja kot pri lupini pomočnika, in oboje sodi skupaj.</li>
+</ol>
+<p>Nato postavite skript v <code>scripts/</code> znotraj svoje nastavitvene mape — <strong>Ukazi ▸ Odpri mapo skriptov</strong> vas pripelje tja in prvič tam pusti primer. Datoteka <code>.applescript</code>, <code>.scpt</code> ali <code>.jxa</code> v tej mapi <em>je</em> skript; ni ničesar za prijaviti.</p>
+<h3 id="kaj-skript-dobi">Kaj skript dobi</h3>
+<p>Stanje pultov pride v okolju, tako da običajni primer ne potrebuje dogodkov Apple in nobenega vprašanja o dovoljenju:</p>
+<table>
+<thead>
+<tr>
+<th>Spremenljivka</th>
+<th>Pomeni</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Mapa aktivnega pulta</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Mapa drugega pulta</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Datoteka pod kazalcem</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Koliko elementov je izbranih</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Besedilna datoteka z eno izbrano potjo na vrstico (manjka, ko ni izbrano nič)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Vse čez to gre skozi aplikacijo samo, z glagoli zgoraj — polovici se torej dopolnjujeta.</p>
+<h3 id="postavitev-skripta-na-gumb-ali-tipko">Postavitev skripta na gumb ali tipko</h3>
+<p>Vsak skript postane ukaz z imenom <code>plugin.script.run.&lt;ime&gt;</code>, kjer je <code>&lt;ime&gt;</code> ime datoteke brez končnice (presledki in pike se spremenijo v vezaje). Ta id deluje vsepovsod, kjer deluje id <code>cm_*</code>: v vrstici z gumbi, v <code>usercmd.ini</code>, v datoteki <code>.mnu</code> in v <strong>Nastavitve ▸ Uredi bližnjice…</strong>.</p>
+<h3 id="kako-se-skript-zaganja-in-casovna-omejitev">Kako se skript zaganja in časovna omejitev</h3>
+<p>Privzeto se skript zaganja kot ločen proces, kar pomeni, da mu je mogoče dati časovno omejitev in ga ustaviti, če jo preseže — trideset sekund, če ne rečete drugače. Skript se lahko odloči, da teče <em>znotraj</em> aplikacije, kar mu omogoči vrnitev strukturirane vrednosti in ga med zagoni ohrani prevedenega, a takrat ni časovne omejitve: skript, ki se zacikla, zadrži aplikacijo. Izbiro navedite v <code>scripts.json</code> ob svojih skriptih:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Vnos potrebuje le tisto, kar se razlikuje od privzetih vrednosti; datoteka brez vnosa dobi svoje ime kot naslov, teče kot ločen proces in se po tridesetih sekundah ustavi.</p>
+<h3 id="za-pomocnika">Za pomočnika</h3>
+<p>Z vklopljenim vstavkom in omogočeno nastavitvijo pomočnik dobi <code>run_applescript</code>, <code>run_jxa</code> in <code>check_script</code>. Vsak vam pokaže natančen skript in počaka na vašo odobritev, preden se kar koli zažene, in nobeden ni nikoli na voljo zunanjemu agentu prek MCP.</p>
 <h2 id="opombe">Opombe</h2>
 <ul>
 <li>Identifikator ukaza, ki ga posredujete v <code>run command</code>, je isti identifikator <code>cm_*</code>, prikazan v brskalniku ukazov (glejte <a href="start-menu.html">Meni Start in poljubni ukazi</a>).</li>
 <li>Skriptiranje vedno deluje na <strong>dejavnem</strong> podoknu; najprej uporabite <code>go to … in left</code> / <code>in right</code>, če potrebujete določeno stran.</li>
 <li>Peach Commander je aplikacija z enim oknom, tako da skripti ciljajo na obe podokni tega okna.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meni Start in poljubni ukazi</a></li><li><a href="settings.html">Nastavitve</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meni Start in poljubni ukazi</a></li><li><a href="settings.html">Nastavitve</a></li><li><a href="macros.html">Makri</a></li></ul></section>
 </main>
 </body>
 </html>

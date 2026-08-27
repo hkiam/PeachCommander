@@ -24,7 +24,7 @@ The Settings window is where you tailor Peach Commander to the way you work: whi
 
 The window has these pages, in order:
 
-- **Layout** — show or hide the drive bar, tab bar, path bar, and status bar.
+- **Layout** — show or hide the drive bar, tab bar, path bar, and status bar, and choose which pages the side panel offers.
 - **Display** — how files and folders are listed, including the date format.
 - **Icons** — icon appearance in the file lists.
 - **Operation** — general behavior, such as what happens when you type in a panel (quick search versus the command line).

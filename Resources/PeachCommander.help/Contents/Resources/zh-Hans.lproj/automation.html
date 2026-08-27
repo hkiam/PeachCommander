@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>自动化（AppleScript 与快捷指令）</h1>
-<p>Peach Commander 支持脚本编写，因此你可以通过 AppleScript 和“快捷指令”应用来驱动它。少量核心动词让脚本能够导航面板、按掩码选择文件、复制或移动当前选中内容，并按 id 运行任意 Peach Commander 命令——它复用的正是菜单所使用的相同操作，因此脚本化的步骤与手动操作行为一致。它非常适合重复性琐事：整理下载内容、暂存构建输出，或将某个文件步骤接入一个更大的快捷指令中。</p>
+<p>这里的自动化在两个方向上都成立。</p>
+<p><strong>向外：</strong> Peach Commander 可被脚本驱动，所以你可以从 AppleScript 和“快捷指令”应用来操控它。少数几个核心动词让脚本在面板间导航、按掩码选择文件、复制或移动当前选中项，并通过 id 运行 Peach Commander 的任意命令——复用的正是菜单所用的同一批动作，因此脚本里的一步与手动的一步表现一致。本页余下部分讲的就是这个。</p>
+<p><strong>向内：</strong> Peach Commander 也可以<em>运行</em>你自己的脚本——AppleScript 或 JavaScript——并把它放到菜单、按钮或按键上。这需要 <strong>Scripting</strong> 插件，该插件出厂即为关闭状态；见下文的<a href="#运行你自己的脚本">运行你自己的脚本</a>。</p>
+<p>若要重复一<em>串</em>文件操作而不是一个，见<a href="macros.html">宏</a>。</p>
 <h2 id="_1">查看词典</h2>
 <ol>
 <li>打开 <strong>脚本编辑器</strong>（位于 <code>/Applications/Utilities</code> 中）。</li>
@@ -84,13 +87,71 @@
 
 <h2 id="_5">从快捷指令中使用</h2>
 <p>在 <strong>快捷指令</strong> 应用中，添加 <strong>运行 AppleScript</strong> 操作，并粘贴一段如上所示的脚本。这样你就可以将一个 Peach Commander 步骤融入更大的快捷指令中——例如，由文件夹更改或某个热键触发。</p>
-<h2 id="_6">说明</h2>
+<h2 id="_6">运行你自己的脚本</h2>
+<p>另一个方向：你的脚本，由 Peach Commander 运行。</p>
+<p>这是一个插件，而且出厂即<strong>关闭</strong>，因为运行一个由你挑选的程序，能做本应用其余部分能做的一切，还能做其中任何部分都覆盖不到的若干事情。两个开关，在你打开之前都是关的：</p>
+<ol>
+<li><strong>配置 ▸ 插件…</strong> —— 启用 <strong>Scripting</strong>。</li>
+<li><strong>设置 ▸ AI</strong> —— 打开 <strong>允许运行脚本</strong>。它放在那一页，是因为这与助手的 shell 属于同一类许可，两者理应放在一起。</li>
+</ol>
+<p>然后把脚本放进配置文件夹里的 <code>scripts/</code> —— <strong>命令 ▸ 打开脚本文件夹</strong> 会带你过去，并在第一次留下一个示例。该文件夹里的 <code>.applescript</code>、<code>.scpt</code> 或 <code>.jxa</code> 文件本身<em>就是</em>脚本，无需注册。</p>
+<h3 id="_7">脚本能拿到什么</h3>
+<p>面板状态通过环境传入，所以通常情形既不需要 Apple 事件，也不会弹出权限请求：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>活动面板的文件夹</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>另一个面板的文件夹</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>光标下的文件</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>已选中多少项</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>一个文本文件，每行一个选中的路径（没有选中任何东西时不存在）</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>超出这些的部分则通过应用本身，用上面那些动词——两半因此彼此衔接。</p>
+<h3 id="_8">把脚本放到按钮或按键上</h3>
+<p>每个脚本都会成为名为 <code>plugin.script.run.&lt;名称&gt;</code> 的命令，其中 <code>&lt;名称&gt;</code> 是去掉扩展名的文件名（空格和点会变成连字符）。这个 id 在任何 <code>cm_*</code> id 可用之处都可用：按钮条、<code>usercmd.ini</code>、<code>.mnu</code> 文件，以及 <strong>配置 ▸ 编辑快捷键…</strong>。</p>
+<h3 id="_9">脚本如何运行，以及超时</h3>
+<p>默认情况下脚本作为独立进程运行，这意味着可以给它一个时限，超时就把它停掉——除非你另行指定，否则是三十秒。脚本也可以选择在应用<em>内部</em>运行，这样它能返回结构化的值，并在多次运行之间保持已编译状态，但那样就没有时限了：陷入循环的脚本会把应用卡住。把这个选择写在脚本旁边的 <code>scripts.json</code> 里：</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>只有与默认值不同的部分才需要条目；没有条目的文件以自身文件名为标题，作为独立进程运行，并在三十秒后停止。</p>
+<h3 id="_10">给助手用</h3>
+<p>插件开启且设置已启用后，助手会获得 <code>run_applescript</code>、<code>run_jxa</code> 和 <code>check_script</code>。每一个都会把确切的脚本内容展示给你，并在任何东西运行之前等待你的批准；它们都不会通过 MCP 提供给外部代理。</p>
+<h2 id="_11">说明</h2>
 <ul>
 <li>你传给 <code>run command</code> 的命令 id 与命令浏览器中显示的 <code>cm_*</code> id 相同（参见<a href="start-menu.html">启动菜单与自定义命令</a>）。</li>
 <li>脚本始终作用于<strong>活动</strong>面板；如果你需要指定某一侧，请先使用 <code>go to … in left</code> / <code>in right</code>。</li>
 <li>Peach Commander 是单窗口应用，因此脚本针对的是该窗口的两个面板。</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">开始菜单与自定义命令</a></li><li><a href="settings.html">设置</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">开始菜单与自定义命令</a></li><li><a href="settings.html">设置</a></li><li><a href="macros.html">宏</a></li></ul></section>
 </main>
 </body>
 </html>

@@ -73,6 +73,18 @@ Sidepanelet (**Vis > Eksempelpanel**, eller Cmd+Skift+P) har en side **Info**, d
 
 Når markøren flyttes, opdateres navn og oplysninger straks; eksemplet følger et øjeblik efter, så en holdt piletast gennem en lang mappe ikke starter et eksempel for hver række.
 
+## Hvilke sider sidepanelet tilbyder
+
+Sidepanelet viser til at begynde med kun **Info**. **Aktiviteter** (overførsler der stadig kører) og **Log** (afsluttede overførsler) er slået fra, for det meste arbejde beder aldrig om dem, og ellers ligger en stribe med tre faner over eksemplet hele dagen.
+
+- Slå dem til i **Indstillinger > Layout** under *Sidepanelets sider*, ved højreklik på fanestriben, eller fra **Vis > Sidepanel: Info / Aktiviteter / Log**.
+- Er der kun én side tilbage, dropper panelet fanestriben helt: et panel med kun Info er eksempel og detaljer, uden noget ovenover.
+- Hver side kan slås fra, også Info — nyttigt når du i stedet har terminalen eller en plugin-visning her. Et panel, hvor der ikke er noget tilbage, siger det frem for at åbne blankt.
+- Sider, som et plugin bidrager med, er ikke berørt: de kommer og går med pluginet, og til at slå dem fra er siden **Plugins**.
+- **Vis > Nulstil layout** sætter siderne tilbage til Info alene, sammen med resten af vinduets inventar.
+
+Punkterne i menuen Vis betyder mere, end de ser ud til. Er hver side slået fra, er der ingen fanestribe tilbage at højreklikke på — de er vejen tilbage.
+
 ## Dekompilér Java-classfiler
 
 Med pluginet **Java Decompiler** slået til viser F3 på en `.class`-fil læsbar kode i stedet for binære data — også for classfiler inde i en JAR eller ZIP, som du kan gå ind i og læse uden at pakke ud.

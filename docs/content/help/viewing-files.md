@@ -74,6 +74,18 @@ The side panel (**View > Preview Panel**, or Cmd+Shift+P) has an **Info** page t
 
 Moving the cursor updates the name and details immediately; the preview itself follows a moment later, so holding an arrow key through a long folder does not start a preview for every row it passes.
 
+## Which pages the side panel offers
+
+The side panel arrives showing **Info** and nothing else. **Activities** (transfers still running) and **Log** (transfers that have finished) are switched off, because most work never asks for them and a strip of three tabs otherwise sits above the preview all day.
+
+- Switch them on in **Settings > Layout**, under *Side panel pages*; by right-clicking the tab strip; or from **View > Side Panel: Info / Activities / Log**.
+- With one page left the panel drops its tab strip altogether, so an Info-only panel is preview and details with nothing above them.
+- Every page can be switched off, Info included — worth having when you keep the terminal or a plugin view here instead. A panel with nothing left says so rather than opening blank.
+- Pages a plugin contributes are not affected: those come and go with the plugin, and switching one off is what the **Plugins** page is for.
+- **View > Reset Layout** puts the pages back to Info alone, along with the rest of the window's furniture.
+
+The View menu entries matter more than they look. Once every page is switched off there is no tab strip left to right-click, so they are the way back.
+
 ## Decompile Java class files
 
 With the **Java Decompiler** plugin switched on, F3 on a `.class` file shows readable code instead of binary — including class files inside a JAR or ZIP, which you can step into and view without unpacking.

@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automation (AppleScript &amp; Shortcuts)</h1>
-<p>Peach Commander is scriptable, so you can drive it from AppleScript and from the Shortcuts app. A handful of core verbs let a script navigate the panels, select files by a mask, copy or move the current selection, and run any Peach Commander command by its id — reusing exactly the same actions the menus use, so a scripted step behaves like a manual one. It's handy for repetitive chores: filing downloads, staging a build's output, or wiring a file step into a larger Shortcut.</p>
+<p>Automation here works in both directions.</p>
+<p><strong>Out:</strong> Peach Commander is scriptable, so you can drive it from AppleScript and from the Shortcuts app. A handful of core verbs let a script navigate the panels, select files by a mask, copy or move the current selection, and run any Peach Commander command by its id — reusing exactly the same actions the menus use, so a scripted step behaves like a manual one. That is the rest of this page.</p>
+<p><strong>In:</strong> Peach Commander can also <em>run</em> a script of yours — AppleScript or JavaScript — and put it on a menu, a button or a key. That needs the <strong>Scripting</strong> plugin, which ships switched off; see <a href="#running-your-own-scripts">Running your own scripts</a> below.</p>
+<p>For repeating a <em>sequence</em> of file actions rather than one, see <a href="macros.html">Macros</a>.</p>
 <h2 id="see-the-dictionary">See the dictionary</h2>
 <ol>
 <li>Open <strong>Script Editor</strong> (in <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="using-it-from-shortcuts">Using it from Shortcuts</h2>
 <p>In the <strong>Shortcuts</strong> app, add the <strong>Run AppleScript</strong> action and paste a script like the one above. That lets you fold a Peach Commander step into a larger Shortcut — for example, triggered by a folder change or a hotkey.</p>
+<h2 id="running-your-own-scripts">Running your own scripts</h2>
+<p>The other direction: a script of yours, run by Peach Commander.</p>
+<p>This is a plugin, and it ships <strong>switched off</strong>, because running a program of your choosing can do everything the rest of the app can and several things none of it covers. Two switches, both off until you set them:</p>
+<ol>
+<li><strong>Configuration ▸ Plugins…</strong> — enable <strong>Scripting</strong>.</li>
+<li><strong>Settings ▸ AI</strong> — turn on <strong>Let scripts run</strong>. It is on that page because it is the same kind of permission as the assistant's shell, and both live together.</li>
+</ol>
+<p>Then put a script in <code>scripts/</code> inside your configuration folder — <strong>Commands ▸ Open Scripts Folder</strong> takes you there and leaves an example behind the first time. A <code>.applescript</code>, <code>.scpt</code> or <code>.jxa</code> file in that folder <em>is</em> a script; there is nothing to register.</p>
+<h3 id="what-a-script-is-given">What a script is given</h3>
+<p>The panel state arrives in the environment, so the ordinary case needs no Apple events and no permission prompt:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>The active panel's folder</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>The other panel's folder</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>The file under the cursor</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>How many items are selected</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>A text file with one selected path per line (absent when nothing is selected)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Anything beyond that goes through the application itself, using the verbs above — so the two halves compose.</p>
+<h3 id="putting-a-script-on-a-button-or-a-key">Putting a script on a button or a key</h3>
+<p>Each script becomes a command named <code>plugin.script.run.&lt;name&gt;</code>, where <code>&lt;name&gt;</code> is the file's name without its extension (spaces and dots become hyphens). That id works anywhere a <code>cm_*</code> id does: in the button bar, in <code>usercmd.ini</code>, in a <code>.mnu</code> file, and in <strong>Configuration ▸ Edit Shortcuts…</strong>.</p>
+<h3 id="how-a-script-is-run-and-the-timeout">How a script is run, and the timeout</h3>
+<p>By default a script runs as a separate process, which means it can be given a time limit and stopped if it overruns — thirty seconds unless you say otherwise. A script can opt into running <em>inside</em> the application instead, which lets it return a structured value and keeps it compiled between runs, but then there is no time limit: a script that loops holds the application. Put the choice in <code>scripts.json</code> beside your scripts:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Only what differs from the defaults needs an entry; a file with no entry gets its own name as its title, runs as a subprocess, and stops after thirty seconds.</p>
+<h3 id="for-the-assistant">For the assistant</h3>
+<p>With the plugin on and the setting enabled, the assistant gains <code>run_applescript</code>, <code>run_jxa</code> and <code>check_script</code>. Each one shows you the exact script and waits for your approval before anything runs, and none of them is ever offered to an external agent over MCP.</p>
 <h2 id="notes">Notes</h2>
 <ul>
 <li>The command id you pass to <code>run command</code> is the same <code>cm_*</code> id shown in the command browser (see <a href="start-menu.html">The Start menu &amp; custom commands</a>).</li>
 <li>Scripting always acts on the <strong>active</strong> panel; use <code>go to … in left</code> / <code>in right</code> first if you need a specific side.</li>
 <li>Peach Commander is a single-window app, so scripts target that window's two panels.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">The Start menu &amp; custom commands</a></li><li><a href="settings.html">Settings</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">The Start menu &amp; custom commands</a></li><li><a href="settings.html">Settings</a></li><li><a href="macros.html">Macros</a></li></ul></section>
 </main>
 </body>
 </html>

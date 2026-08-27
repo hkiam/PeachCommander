@@ -23,7 +23,7 @@ La fenêtre Réglages est l'endroit où vous adaptez Peach Commander à votre fa
 
 La fenêtre comporte ces pages, dans l'ordre :
 
-- **Disposition** — afficher ou masquer la barre de lecteurs, la barre d'onglets, la barre de chemin et la barre d'état.
+- **Disposition** — afficher ou masquer la barre de lecteurs, la barre d'onglets, la barre de chemin et la barre d'état, et choisir les pages proposées par le panneau latéral.
 - **Affichage** — comment les fichiers et dossiers sont listés, y compris le format de date.
 - **Icônes** — l'apparence des icônes dans les listes de fichiers.
 - **Fonctionnement** — comportement général, comme ce qui se passe quand vous saisissez dans un panneau (recherche rapide ou ligne de commande).

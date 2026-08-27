@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatisering (AppleScript en Shortcuts)</h1>
-<p>Peach Commander is scriptbaar, dus je kunt het aansturen vanuit AppleScript en vanuit de app Shortcuts. Een handvol kernwerkwoorden laat een script door de panelen navigeren, bestanden op een masker selecteren, de huidige selectie kopiëren of verplaatsen, en elke Peach Commander-opdracht via zijn id uitvoeren — waarbij precies dezelfde acties als de menu's worden hergebruikt, zodat een scriptstap zich als een handmatige gedraagt. Handig voor terugkerende klusjes: downloads opbergen, de uitvoer van een build klaarzetten, of een bestandsstap in een grotere Shortcut inbouwen.</p>
+<p>Automatisering werkt hier in beide richtingen.</p>
+<p><strong>Naar buiten:</strong> Peach Commander is scriptbaar, dus u kunt hem besturen vanuit AppleScript en vanuit de app Snelle taken. Een handvol kernwerkwoorden laat een script door de vensters navigeren, bestanden op masker selecteren, de huidige selectie kopiëren of verplaatsen en elke opdracht van Peach Commander via zijn id uitvoeren — met precies dezelfde acties als de menu’s, zodat een gescripte stap zich gedraagt als een handmatige. Daarover gaat de rest van deze pagina.</p>
+<p><strong>Naar binnen:</strong> Peach Commander kan ook een script <em>van u</em> uitvoeren — AppleScript of JavaScript — en het op een menu, een knop of een toets zetten. Daarvoor is de plug-in <strong>Scripting</strong> nodig, die uitgeschakeld wordt geleverd; zie <a href="#uw-eigen-scripts-uitvoeren">Uw eigen scripts uitvoeren</a> hieronder.</p>
+<p>Wilt u een <em>reeks</em> bestandsacties herhalen in plaats van één, zie <a href="macros.html">Macro’s</a>.</p>
 <h2 id="het-woordenboek-bekijken">Het woordenboek bekijken</h2>
 <ol>
 <li>Open <strong>Scripteditor</strong> (in <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="gebruik-vanuit-shortcuts">Gebruik vanuit Shortcuts</h2>
 <p>Voeg in de app <strong>Shortcuts</strong> de actie <strong>Voer AppleScript uit</strong> toe en plak een script zoals hierboven. Zo vouw je een Peach Commander-stap in een grotere Shortcut — bijvoorbeeld geactiveerd door een mapwijziging of een sneltoets.</p>
+<h2 id="uw-eigen-scripts-uitvoeren">Uw eigen scripts uitvoeren</h2>
+<p>De andere richting: een script van u, uitgevoerd door Peach Commander.</p>
+<p>Dit is een plug-in, en hij wordt <strong>uitgeschakeld</strong> geleverd, omdat het uitvoeren van een programma naar keuze alles kan wat de rest van het programma kan en verschillende dingen die niets daarvan dekt. Twee schakelaars, beide uit totdat u ze omzet:</p>
+<ol>
+<li><strong>Configuratie ▸ Plug-ins…</strong> — zet <strong>Scripting</strong> aan.</li>
+<li><strong>Instellingen ▸ AI</strong> — zet <strong>Scripts laten uitvoeren</strong> aan. Het staat op die pagina omdat het dezelfde soort toestemming is als de shell van de assistent, en die twee horen bij elkaar.</li>
+</ol>
+<p>Zet daarna een script in <code>scripts/</code> in uw configuratiemap — <strong>Opdrachten ▸ Scriptmap openen</strong> brengt u daar en laat de eerste keer een voorbeeld achter. Een bestand <code>.applescript</code>, <code>.scpt</code> of <code>.jxa</code> in die map <em>is</em> een script; er valt niets te registreren.</p>
+<h3 id="wat-een-script-krijgt">Wat een script krijgt</h3>
+<p>De vensterstatus komt via de omgeving binnen, zodat het gewone geval geen Apple events en geen toestemmingsvraag nodig heeft:</p>
+<table>
+<thead>
+<tr>
+<th>Variabele</th>
+<th>Betekent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>De map van het actieve venster</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>De map van het andere venster</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Het bestand onder de cursor</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Hoeveel items zijn geselecteerd</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Een tekstbestand met één geselecteerd pad per regel (ontbreekt als er niets is geselecteerd)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Alles daarbuiten gaat via het programma zelf, met de werkwoorden hierboven — de twee helften vullen elkaar dus aan.</p>
+<h3 id="een-script-op-een-knop-of-een-toets-zetten">Een script op een knop of een toets zetten</h3>
+<p>Elk script wordt een opdracht met de naam <code>plugin.script.run.&lt;naam&gt;</code>, waarbij <code>&lt;naam&gt;</code> de bestandsnaam zonder extensie is (spaties en punten worden streepjes). Die id werkt overal waar een <code>cm_*</code>-id werkt: in de knoppenbalk, in <code>usercmd.ini</code>, in een <code>.mnu</code>-bestand en in <strong>Configuratie ▸ Sneltoetsen bewerken…</strong>.</p>
+<h3 id="hoe-een-script-loopt-en-de-tijdslimiet">Hoe een script loopt, en de tijdslimiet</h3>
+<p>Standaard loopt een script als een apart proces, wat betekent dat het een tijdslimiet kan krijgen en gestopt kan worden als het die overschrijdt — dertig seconden tenzij u iets anders zegt. Een script kan ervoor kiezen <em>binnen</em> het programma te lopen, waardoor het een gestructureerde waarde kan teruggeven en tussen runs gecompileerd blijft, maar dan is er geen tijdslimiet: een script dat in een lus zit, houdt het programma vast. Zet de keuze in <code>scripts.json</code> naast uw scripts:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Alleen wat afwijkt van de standaardwaarden heeft een vermelding nodig; een bestand zonder vermelding krijgt zijn eigen naam als titel, loopt als apart proces en stopt na dertig seconden.</p>
+<h3 id="voor-de-assistent">Voor de assistent</h3>
+<p>Met de plug-in aan en de instelling ingeschakeld krijgt de assistent <code>run_applescript</code>, <code>run_jxa</code> en <code>check_script</code>. Elk daarvan toont u het exacte script en wacht op uw goedkeuring voordat er iets loopt, en geen enkele wordt ooit aangeboden aan een externe agent via MCP.</p>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
 <li>De opdracht-id die je aan <code>run command</code> geeft, is dezelfde <code>cm_*</code>-id die in de opdrachtbrowser wordt getoond (zie <a href="start-menu.html">Het Start-menu en aangepaste opdrachten</a>).</li>
 <li>Scripting werkt altijd op het <strong>actieve</strong> paneel; gebruik eerst <code>go to … in left</code> / <code>in right</code> als je een specifieke kant nodig hebt.</li>
 <li>Peach Commander is een app met één venster, dus scripts richten zich op de twee panelen van dat venster.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Het Start-menu &amp; aangepaste opdrachten</a></li><li><a href="settings.html">Instellingen</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Het Start-menu &amp; aangepaste opdrachten</a></li><li><a href="settings.html">Instellingen</a></li><li><a href="macros.html">Macro’s</a></li></ul></section>
 </main>
 </body>
 </html>

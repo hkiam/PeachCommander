@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macros</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Macros</h1>
+<p>Une macro est une suite nommée d’actions sur les fichiers — créer un dossier, y déplacer la sélection, étiqueter ce qui reste — que vous pouvez relancer d’un clic. Ce n’est pas un langage de script : il n’y a ni conditions ni boucles, et c’est délibéré. Une macro est une liste que vous pouvez lire, et savoir la lire est ce qu’il faut avant de l’approuver.</p>
+<p>Tout ce que fait une macro passe par les mêmes mécanismes que l’assistant : une macro ne peut donc rien faire que vous n’ayez autorisé, chacune de ses étapes figure dans le journal des actions, et une étape qui peut être annulée l’est toujours.</p>
+<h2 id="le-plus-rapide-a-partir-de-ce-que-vous-venez-de-faire">Le plus rapide : à partir de ce que vous venez de faire</h2>
+<p>Vous n’avez pas à écrire une macro de zéro.</p>
+<ol>
+<li>Faites la chose une fois — via l’assistant, ou en exécutant une macro existante.</li>
+<li>Choisissez <strong>Configuration ▸ Macro depuis les actions récentes…</strong>.</li>
+<li>Cochez les étapes que la macro doit répéter, donnez-lui un nom et laissez <strong>Ajouter aussi un bouton correspondant</strong> activé.</li>
+</ol>
+<p><strong>Enregistrer la macro</strong>, et le bouton est dans la barre. C’est toute la boucle.</p>
+<blockquote>
+<p><strong>Ce qui n’est pas enregistré.</strong> La liste est construite à partir des actions passées par l’assistant ou par une autre macro. Copier, déplacer ou renommer <em>à la main</em> dans les panneaux — F5, F6, F7 — n’est pas enregistré et ne peut donc pas devenir une macro par ce chemin. Utilisez l’éditeur ci-dessous pour cela.</p>
+</blockquote>
+<h2 id="modifier-les-macros-a-la-main">Modifier les macros à la main</h2>
+<p><strong>Configuration ▸ Modifier les macros…</strong> ouvre <code>macros.json</code> dans votre dossier de configuration, en y plaçant un exemple commenté la première fois. Une macro est une liste d’étapes, et chaque étape nomme un outil et ses arguments :</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>L’enregistrement recharge les macros immédiatement. Pour savoir quels outils existent et ce qu’ils prennent, demandez <code>list_macros</code> à l’assistant, ou lisez l’exemple placé dans le fichier.</p>
+<h3 id="parametres-substituables">Paramètres substituables</h3>
+<p>Les lettres seules sont celles que la barre de boutons et le menu Démarrer utilisent déjà : si vous avez fait un bouton, il n’y a rien de nouveau à apprendre.</p>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Signifie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Le dossier du panneau actif</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Le dossier de l’autre panneau</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Le fichier sous le curseur</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Les fichiers sélectionnés — une <strong>liste</strong>, ce que prennent précisément <code>copy</code>, <code>move</code> et <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>La date de démarrage de la macro, dans ce format</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Le résultat de l’étape 1, lorsque celle-ci a produit un chemin ou une liste de chemins</td>
+</tr>
+</tbody>
+</table>
+<p>Les accolades servent aux ajouts parce que les lettres sont déjà prises : <code>%M</code> signifie « le nom sous le curseur dans l’autre panneau » partout ailleurs dans le programme, un mois ne pouvait donc pas s’écrire ainsi.</p>
+<p><code>%S</code> est le seul point où une macro diffère d’un bouton : sur un bouton la sélection devient une liste de mots pour une ligne de commande, ici elle devient la liste des chemins complets que prennent les outils de fichiers.</p>
+<p>Une étape dont le <code>%S</code> ou le <code>%{1}</code> ressort <strong>vide arrête la macro</strong> au lieu de s’exécuter sans rien. Un <code>move</code> sans fichiers n’est pas un <code>move</code> plus petit — c’est une demande qui ne dit plus rien, et signaler une réussite serait un mensonge.</p>
+<h2 id="executer-une-macro">Exécuter une macro</h2>
+<p>Chaque macro devient une commande nommée <code>mc_&lt;id&gt;</code>, et apparaît donc d’elle-même dans :</p>
+<ul>
+<li><strong>Configuration ▸ Explorateur de commandes…</strong></li>
+<li><strong>Configuration ▸ Modifier les raccourcis… — placez-la sur une touche</strong></li>
+<li>Le sélecteur de commandes de l’éditeur de la barre de boutons</li>
+<li>Votre fichier de menu <code>.mnu</code> et <code>usercmd.ini</code>, si vous les utilisez</li>
+<li>L’assistant, qui peut l’exécuter par son nom</li>
+</ul>
+<p>Avant qu’une macro qui modifie quelque chose ne s’exécute, elle vous montre ses étapes sous forme de liste et attend. Vous pouvez rayer une étape dont vous ne voulez pas ; ce qui reste est ce qui s’exécute. Une macro qui ne fait que lire s’exécute sans demander.</p>
+<p>Si une étape échoue, la macro <strong>s’arrête là</strong> au lieu de continuer — l’étape deux suppose en général que l’étape un a eu lieu, et déplacer des fichiers dans un dossier qui n’a pas été créé n’est pas une réussite partielle. Le rapport nomme l’étape et dit ce qui n’a pas marché ; les étapes qui se sont exécutées sont dans le journal des actions.</p>
+<h2 id="ce-quune-macro-est-autorisee-a-faire">Ce qu’une macro est autorisée à faire</h2>
+<p>Une macro est jugée à ce qu’elle contient de plus exigeant. Une macro dont les étapes ne font que lire est traitée comme une lecture ; une qui se termine par une suppression définitive est encadrée comme une suppression définitive — avant que quoi que ce soit ne s’exécute, pas quatre étapes plus tard.</p>
+<p>Ne rien accorder de plus est la règle par défaut. Si une macro contient une étape que vos autorisations n’admettent pas — une commande shell, un script — la macro entière est refusée avec sa raison, et rien ne se produit.</p>
+<h2 id="annuler">Annuler</h2>
+<p>Chaque étape est journalisée séparément : <strong>annuler</strong> après une macro reprend donc sa <em>dernière</em> étape, et non la macro entière. Il n’y a pas d’annulation de macro complète, car plusieurs outils n’ont aucun inverse et un bouton qui la proposerait mentirait à leur sujet.</p>
+<h2 id="ou-tout-est-enregistre">Où tout est enregistré</h2>
+<ul>
+<li>Vos macros sont dans <code>macros.json</code> du dossier de configuration — un fichier simple, que vous pouvez comparer et garder avec vos dotfiles.</li>
+<li>Les boutons ajoutés par une macro sont des entrées ordinaires de la barre de boutons dans <code>default.bar</code> : en supprimer un revient à supprimer n’importe quel bouton.</li>
+</ul>
+<h2 id="pour-aller-plus-loin">Pour aller plus loin</h2>
+<ul>
+<li><a href="automation.html">Automatisation (AppleScript et Raccourcis)</a> — Piloter Peach Commander depuis un script, et exécuter vos propres scripts comme étape de macro.</li>
+<li><a href="toolbar.html">La barre de boutons</a> — Où aboutit le bouton ajouté par une macro.</li>
+<li><a href="keyboard-shortcuts.html">Clavier et raccourcis</a> — Placer une macro sur une touche.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automatisation (AppleScript et Raccourcis)</a></li><li><a href="toolbar.html">La barre de boutons</a></li><li><a href="start-menu.html">Le menu Démarrer et les commandes personnalisées</a></li><li><a href="keyboard-shortcuts.html">Clavier et raccourcis</a></li></ul></section>
+</main>
+</body>
+</html>

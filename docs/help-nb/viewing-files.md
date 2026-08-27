@@ -73,6 +73,18 @@ Sidepanelet (**Vis > Forhåndsvisningspanel**, eller Cmd+Skift+P) har en side **
 
 Når markøren flyttes, oppdateres navn og opplysninger straks; forhåndsvisningen følger et øyeblikk etter, slik at en holdt piltast gjennom en lang mappe ikke starter en forhåndsvisning for hver rad.
 
+## Hvilke sider sidepanelet tilbyr
+
+Sidepanelet viser til å begynne med bare **Info**. **Aktiviteter** (overføringer som fortsatt går) og **Logg** (fullførte overføringer) er slått av, for det meste arbeidet spør aldri etter dem, og ellers ligger en stripe med tre faner over forhåndsvisningen hele dagen.
+
+- Slå dem på i **Innstillinger > Layout** under *Sidepanelets sider*, ved høyreklikk på fanestripen, eller fra **Vis > Sidepanel: Info / Aktiviteter / Logg**.
+- Er det bare én side igjen, dropper panelet fanestripen helt: et panel med bare Info er forhåndsvisning og detaljer, uten noe over.
+- Hver side kan slås av, også Info — nyttig når du i stedet har terminalen eller en programtilleggsvisning her. Et panel der det ikke er noe igjen, sier det i stedet for å åpne blankt.
+- Sider et programtillegg bidrar med, påvirkes ikke: de kommer og går med programtillegget, og til å slå dem av er siden **Programtillegg**.
+- **Vis > Tilbakestill layout** setter sidene tilbake til Info alene, sammen med resten av vinduets inventar.
+
+Punktene i Vis-menyen betyr mer enn de ser ut til. Er hver side slått av, finnes ingen fanestripe å høyreklikke på — de er veien tilbake.
+
 ## Dekompiler Java-classfiler
 
 Med programtillegget **Java Decompiler** slått på viser F3 på en `.class`-fil lesbar kode i stedet for binærdata — også for classfiler inne i en JAR eller ZIP, som du kan gå inn i og lese uten å pakke ut.

@@ -23,7 +23,7 @@ Okno Nastavení je místo, kde přizpůsobíte Peach Commander způsobu, jakým 
 
 Okno má tyto stránky, v pořadí:
 
-- **Rozvržení** — zobrazit nebo skrýt lištu disků, lištu karet, lištu cesty a stavovou lištu.
+- **Rozvržení** — zobrazit nebo skrýt lištu disků, lištu karet, lištu cesty a stavovou lištu a vybrat, které stránky boční panel nabízí.
 - **Zobrazení** — jak se vypisují soubory a složky, včetně formátu data.
 - **Ikony** — vzhled ikon v seznamech souborů.
 - **Ovládání** — obecné chování, jako co se stane, když píšete v panelu (rychlé hledání versus příkazový řádek).

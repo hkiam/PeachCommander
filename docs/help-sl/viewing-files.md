@@ -73,6 +73,18 @@ Stranski pladenj (**Pogled > Panel predogleda** ali Cmd+Shift+P) ima stran **Inf
 
 Ob premikanju kazalke se ime in podatki osvežijo takoj; predogled sledi trenutek pozneje, tako da zadržana puščična tipka skozi dolgo mapo ne zažene predogleda za vsako prehojeno vrstico.
 
+## Katere strani ponuja stranski pladenj
+
+Stranski pladenj najprej kaže samo stran **Informacije**. **Dejavnosti** (prenosi, ki še potekajo) in **Dnevnik** (končani prenosi) sta izklopljena, saj večina dela nikoli ne vpraša po njiju, sicer pa bi vrstica s tremi zavihki ves dan sedela nad predogledom.
+
+- Vklopite ju v **Nastavitve > Postavitev** pod *Strani stranske plošče*, z desnim klikom na vrstico zavihkov ali iz **Pogled > Stranska plošča: Informacije / Dejavnosti / Dnevnik**.
+- Če ostane ena sama stran, pladenj vrstico zavihkov povsem opusti: pladenj samo z Informacijami sta predogled in podatki, brez česar koli nad njima.
+- Izklopiti je mogoče vsako stran, tudi Informacije — koristno, kadar tu namesto tega držite terminal ali pogled vtičnika. Pladenj, v katerem ni ostalo nič, to pove, namesto da bi se odprl prazen.
+- Strani, ki jih prispeva vtičnik, to ne zadeva: te pridejo in odidejo z vtičnikom, za izklop pa je tu stran **Vtičniki**.
+- **Pogled > Ponastavi postavitev** vrne strani na same Informacije, skupaj s preostalim pohištvom okna.
+
+Vnosi v meniju Pogled pomenijo več, kot je videti. Ko je vsaka stran izklopljena, ni več vrstice zavihkov, na katero bi lahko desno kliknili — oni so pot nazaj.
+
 ## Dekompiliranje datotek .class jezika Java
 
 Z vklopljenim vtičnikom **Java Decompiler** F3 na datoteki `.class` pokaže berljivo kodo namesto dvojiških podatkov — tudi za razrede znotraj arhiva JAR ali ZIP, v katerega lahko vstopite in ga berete brez razpakiranja.

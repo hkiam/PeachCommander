@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**90 features** across 13 categories. AI ships as two optional, removable plugins: AI On-Device (Apple Intelligence, actions only, no chat) and AI Assistant (the chat, needs an OpenAI-compatible endpoint). Auto-update (Sparkle) is planned but not yet integrated.
+**92 features** across 13 categories. AI ships as two optional, removable plugins: AI On-Device (Apple Intelligence, actions only, no chat) and AI Assistant (the chat, needs an OpenAI-compatible endpoint). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -103,6 +103,8 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Command system & browser | expert | — | ✅ |
 | Full keyboard operation | user, expert | — | ✅ |
 | Keyboard shortcuts & schemes | user, expert | — | ✅ |
+| Macros | user | — | 🅱️ |
+| Scripting engine | user, expert | — | 🅱️ |
 | Shortcut audit | expert | — | ✅ |
 | Start menu & user commands | expert | — | ✅ |
 | The app's own windows follow the colour theme | user | — | ✅ |

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>宏</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>宏</h1>
+<p>宏是一串带名字的文件操作——新建文件夹、把选中项移进去、给剩下的加标记——你可以一键再跑一次。它不是脚本语言：没有条件，也没有循环，这是有意为之。宏是一份你能读懂的清单，而在你同意之前，能读懂正是必须做到的事。</p>
+<p>宏所做的一切都走助手所用的同一套机制，所以宏做不了任何你没有许可的事，它的每一步都会进入操作记录，能撤销的一步依然能撤销。</p>
+<h2 id="_1">最快的路：从你刚做过的事开始</h2>
+<p>你不必从零写一个宏。</p>
+<ol>
+<li>先做一次——通过助手，或者运行一个已有的宏。</li>
+<li>选择 <strong>配置 ▸ 从最近的操作创建宏…</strong>。</li>
+<li>勾选宏应当重复的步骤，给它取个名字，并保持 <strong>同时为它添加一个按钮</strong> 处于开启状态。</li>
+</ol>
+<p><strong>保存宏</strong>，按钮就在工具条上了。这就是全部流程。</p>
+<blockquote>
+<p><strong>哪些不会被记录。</strong> 清单由经过助手或其他宏执行的操作构成。在面板中<em>手动</em>复制、移动或重命名——F5、F6、F7——不会被记录，因此无法用这种方式变成宏。那些请用下面的编辑器。</p>
+</blockquote>
+<h2 id="_2">手动编辑宏</h2>
+<p><strong>配置 ▸ 编辑宏…</strong> 会打开配置文件夹中的 <code>macros.json</code>，第一次还会在其中留下一个带注释的示例。宏是一串步骤，每一步指明一个工具及其参数：</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>保存后宏会立即重新载入。有哪些工具、它们接受什么，可以让助手用 <code>list_macros</code> 告诉你——或者读一读文件创建时附带的示例。</p>
+<h3 id="_3">占位符</h3>
+<p>单个字母与按钮条和“开始”菜单使用的完全一致：做过按钮的人在这里没有新东西要学。</p>
+<table>
+<thead>
+<tr>
+<th>占位符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>活动面板的文件夹</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>另一个面板的文件夹</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>光标下的文件</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>选中的文件——一个<strong>列表</strong>，而 <code>copy</code>、<code>move</code> 和 <code>move_to_trash</code> 接受的正是列表</td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>宏启动的日期，按该格式</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>第 1 步的结果，前提是那一步产生了一个路径或一组路径</td>
+</tr>
+</tbody>
+</table>
+<p>花括号留给这些扩展，因为字母已经被占用了：<code>%M</code> 在程序其余各处都表示“另一个面板中光标下的名称”，所以月份不能那样写。</p>
+<p><code>%S</code> 是宏与按钮唯一不同的地方：在按钮上，选中项会变成命令行用的一串词；在这里，它变成文件工具所接受的完整路径列表。</p>
+<p>某一步的 <code>%S</code> 或 <code>%{1}</code> <strong>为空时会让宏停下</strong>，而不是对着空无一物运行。没有文件的 <code>move</code> 不是更小的 <code>move</code>，而是一条不再表达任何意思的请求，为它报告成功就是撒谎。</p>
+<h2 id="_4">运行一个宏</h2>
+<p>每个宏都会成为名为 <code>mc_&lt;id&gt;</code> 的命令，因此会自动出现在：</p>
+<ul>
+<li><strong>配置 ▸ 命令浏览器…</strong></li>
+<li><strong>配置 ▸ 编辑快捷键…——把它放到某个按键上</strong></li>
+<li>按钮条编辑器的命令选择器</li>
+<li>你的 <code>.mnu</code> 菜单文件和 <code>usercmd.ini</code>（如果你在用）</li>
+<li>助手，它可以按名字运行这个宏</li>
+</ul>
+<p>在一个会作出改动的宏运行之前，它会把自己的步骤列成清单并等待。你可以划掉不想要的步骤；剩下的就是会执行的。只读取的宏不询问就直接运行。</p>
+<p>如果某一步失败，宏会<strong>停在那里</strong>而不是继续——第二步通常假定第一步已经发生，把文件移进一个没有建好的文件夹并不是部分成功。报告会指出是哪一步、出了什么问题，已经跑过的步骤都在操作记录里。</p>
+<h2 id="_5">宏被允许做什么</h2>
+<p>宏按其中最苛刻的那件事来衡量。步骤只做读取的宏视为读取；以永久删除结尾的宏按永久删除来把关——在其中任何一步运行之前，而不是走到第四步才发现。</p>
+<p>默认不额外授予任何权限。如果宏中含有你的权限不允许的步骤——一条 shell 命令、一个脚本——整个宏会连同原因一并被拒绝，什么都不会发生。</p>
+<h2 id="_6">撤销</h2>
+<p>每一步都单独记录，所以宏之后的<strong>撤销</strong>收回的是它的<em>最后</em>一步，而不是整个宏。没有整宏撤销，因为有几个工具根本没有逆操作，提供这样一个按钮就是在这些工具上撒谎。</p>
+<h2 id="_7">保存在哪里</h2>
+<ul>
+<li>你的宏在配置文件夹的 <code>macros.json</code> 里——一个普通文件，可以 diff，也可以和你的 dotfiles 放在一起。</li>
+<li>宏添加的按钮就是 <code>default.bar</code> 中普通的按钮条条目，所以删掉一个和删掉任何别的按钮一样。</li>
+</ul>
+<h2 id="_8">接下来</h2>
+<ul>
+<li><a href="automation.html">自动化（AppleScript 与“快捷指令”）</a> — 从脚本驱动 Peach Commander，以及把自己的脚本作为宏的一步来运行。</li>
+<li><a href="toolbar.html">按钮条</a> — 宏添加的按钮最终去哪里。</li>
+<li><a href="keyboard-shortcuts.html">键盘与快捷键</a> — 把宏放到某个按键上。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">自动化（AppleScript 与快捷指令）</a></li><li><a href="toolbar.html">按钮栏</a></li><li><a href="start-menu.html">开始菜单与自定义命令</a></li><li><a href="keyboard-shortcuts.html">键盘与快捷键</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automation (AppleScript och Shortcuts)</h1>
-<p>Peach Commander är skriptbart, så du kan styra det från AppleScript och från appen Shortcuts. En handfull grundläggande verb låter ett skript navigera i panelerna, markera filer via en mask, kopiera eller flytta det aktuella urvalet, och köra vilket Peach Commander-kommando som helst via dess id – och återanvänder exakt samma åtgärder som menyerna använder, så ett skriptat steg beter sig som ett manuellt. Det är praktiskt för repetitiva sysslor: att sortera nedladdningar, förbereda en bygges utdata, eller koppla in ett filsteg i en större Shortcut.</p>
+<p>Automatisering fungerar här i båda riktningarna.</p>
+<p><strong>Utåt:</strong> Peach Commander är skriptbar, så du kan styra den från AppleScript och från appen Genvägar. En handfull kärnverb låter ett skript navigera i panelerna, markera filer med en mask, kopiera eller flytta den aktuella markeringen och köra vilket kommando i Peach Commander som helst via dess id — med exakt samma åtgärder som menyerna använder, så ett skriptat steg beter sig som ett manuellt. Om det handlar resten av den här sidan.</p>
+<p><strong>Inåt:</strong> Peach Commander kan också <em>köra</em> ett skript av dig — AppleScript eller JavaScript — och lägga det på en meny, en knapp eller en tangent. Det kräver tillägget <strong>Scripting</strong>, som levereras avstängt; se <a href="#kora-dina-egna-skript">Köra dina egna skript</a> längre ned.</p>
+<p>För att upprepa en <em>följd</em> av filåtgärder i stället för en enda, se <a href="macros.html">Makron</a>.</p>
 <h2 id="se-ordlistan">Se ordlistan</h2>
 <ol>
 <li>Öppna <strong>Script Editor</strong> (i <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="anvanda-det-fran-shortcuts">Använda det från Shortcuts</h2>
 <p>I appen <strong>Shortcuts</strong>, lägg till åtgärden <strong>Run AppleScript</strong> och klistra in ett skript som det ovan. Det låter dig vika in ett Peach Commander-steg i en större Shortcut – till exempel utlöst av en mappändring eller ett kortkommando.</p>
+<h2 id="kora-dina-egna-skript">Köra dina egna skript</h2>
+<p>Den andra riktningen: ett skript av dig, kört av Peach Commander.</p>
+<p>Detta är ett tillägg, och det levereras <strong>avstängt</strong>, eftersom att köra ett program du väljer kan göra allt som resten av programmet kan och flera saker som inget av det täcker. Två reglar, båda av tills du slår på dem:</p>
+<ol>
+<li><strong>Konfiguration ▸ Tillägg…</strong> — slå på <strong>Scripting</strong>.</li>
+<li><strong>Inställningar ▸ AI</strong> — slå på <strong>Tillåt att skript körs</strong>. Det ligger på den sidan därför att det är samma slags tillstånd som assistentens skal, och de två hör ihop.</li>
+</ol>
+<p>Lägg sedan ett skript i <code>scripts/</code> inuti din konfigurationsmapp — <strong>Kommandon ▸ Öppna skriptmappen</strong> tar dig dit och lämnar ett exempel första gången. En fil <code>.applescript</code>, <code>.scpt</code> eller <code>.jxa</code> i den mappen <em>är</em> ett skript; det finns inget att registrera.</p>
+<h3 id="vad-ett-skript-far">Vad ett skript får</h3>
+<p>Panelernas tillstånd kommer i miljön, så det vanliga fallet behöver inga Apple events och ingen tillståndsfråga:</p>
+<table>
+<thead>
+<tr>
+<th>Variabel</th>
+<th>Betyder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Den aktiva panelens mapp</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Den andra panelens mapp</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Filen under markören</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Hur många objekt som är markerade</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>En textfil med en markerad sökväg per rad (saknas när inget är markerat)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Allt utöver det går genom programmet självt, med verben ovan — de två halvorna kompletterar alltså varandra.</p>
+<h3 id="lagga-ett-skript-pa-en-knapp-eller-en-tangent">Lägga ett skript på en knapp eller en tangent</h3>
+<p>Varje skript blir ett kommando som heter <code>plugin.script.run.&lt;namn&gt;</code>, där <code>&lt;namn&gt;</code> är filens namn utan filändelse (blanksteg och punkter blir bindestreck). Det id:t fungerar överallt där ett <code>cm_*</code>-id fungerar: i knappraden, i <code>usercmd.ini</code>, i en <code>.mnu</code>-fil och i <strong>Konfiguration ▸ Redigera kortkommandon…</strong>.</p>
+<h3 id="hur-ett-skript-kors-och-tidsgransen">Hur ett skript körs, och tidsgränsen</h3>
+<p>Som standard körs ett skript som en separat process, vilket gör att det kan få en tidsgräns och stoppas om det överskrider den — trettio sekunder om du inte säger annat. Ett skript kan välja att köra <em>inuti</em> programmet, vilket låter det returnera ett strukturerat värde och håller det kompilerat mellan körningar, men då finns ingen tidsgräns: ett skript som loopar håller programmet. Ange valet i <code>scripts.json</code> intill dina skript:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Bara det som skiljer sig från standardvärdena behöver en post; en fil utan post får sitt eget namn som titel, körs som separat process och stoppas efter trettio sekunder.</p>
+<h3 id="for-assistenten">För assistenten</h3>
+<p>Med tillägget på och inställningen aktiv får assistenten <code>run_applescript</code>, <code>run_jxa</code> och <code>check_script</code>. Var och en visar dig det exakta skriptet och väntar på ditt godkännande innan något körs, och ingen av dem erbjuds någonsin till en extern agent via MCP.</p>
 <h2 id="anteckningar">Anteckningar</h2>
 <ul>
 <li>Kommando-id:t du skickar till <code>run command</code> är samma <code>cm_*</code>-id som visas i kommandowebbläsaren (se <a href="start-menu.html">Start-menyn och egna kommandon</a>).</li>
 <li>Skriptning agerar alltid på den <strong>aktiva</strong> panelen; använd <code>go to … in left</code> / <code>in right</code> först om du behöver en specifik sida.</li>
 <li>Peach Commander är en app med ett enda fönster, så skript riktar sig mot det fönstrets två paneler.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Start-menyn och egna kommandon</a></li><li><a href="settings.html">Inställningar</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Start-menyn och egna kommandon</a></li><li><a href="settings.html">Inställningar</a></li><li><a href="macros.html">Makron</a></li></ul></section>
 </main>
 </body>
 </html>

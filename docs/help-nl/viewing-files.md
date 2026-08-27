@@ -73,6 +73,18 @@ Het zijpaneel (**Weergave > Voorvertoningspaneel**, of Cmd+Shift+P) heeft een pa
 
 Bij het verplaatsen van de cursor worden naam en gegevens meteen bijgewerkt; de voorvertoning volgt even later, zodat een ingedrukte pijltoets door een lange map niet voor elke regel een voorvertoning start.
 
+## Welke pagina's het zijpaneel aanbiedt
+
+Het zijpaneel toont in eerste instantie alleen **Info**. **Activiteiten** (overdrachten die nog lopen) en **Logboek** (afgeronde overdrachten) staan uit, omdat het meeste werk er nooit om vraagt en er anders de hele dag een strook van drie tabs boven de voorvertoning staat.
+
+- Zet ze aan in **Instellingen > Indeling**, onder *Pagina's van het zijpaneel*; met een rechtsklik op de tabstrook; of via **Weergave > Zijpaneel: Info / Activiteiten / Logboek**.
+- Blijft er één pagina over, dan laat het paneel de tabstrook helemaal weg: een paneel met alleen Info is voorvertoning en details, zonder iets erboven.
+- Elke pagina kan uit, ook Info — handig wanneer u hier in plaats daarvan de terminal of de weergave van een plug-in houdt. Een paneel waarin niets over is, zegt dat, in plaats van leeg te openen.
+- Pagina's die een plug-in aanlevert, blijven buiten beschouwing: die komen en gaan met de plug-in, en voor het uitzetten is de pagina **Plug-ins** er.
+- **Weergave > Indeling herstellen** zet de pagina's terug op Info alleen, samen met de rest van het meubilair van het venster.
+
+De items in het menu Weergave zijn belangrijker dan ze lijken. Staat elke pagina uit, dan is er geen tabstrook meer om rechts op te klikken: zij zijn de weg terug.
+
 ## Java-classbestanden decompileren
 
 Met de plug-in **Java Decompiler** aan toont F3 op een `.class`-bestand leesbare code in plaats van binaire gegevens — ook voor classbestanden in een JAR of ZIP, waar u in kunt gaan en die u zonder uitpakken kunt lezen.

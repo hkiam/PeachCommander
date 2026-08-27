@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makroer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Makroer</h1>
+<p>En makro er en navngitt rekke filhandlinger — opprett en mappe, flytt utvalget dit, merk det som blir igjen — som du kan kjøre på nytt med ett klikk. Det er ikke et skriptspråk: det finnes ingen betingelser og ingen løkker, og det er tilsiktet. En makro er en liste du kan lese, og å kunne lese den er det som kreves før du godkjenner den.</p>
+<p>Alt en makro gjør går gjennom samme maskineri som assistenten bruker, så en makro kan ikke gjøre noe du ikke har tillatt, hvert av trinnene havner i handlingsloggen, og et trinn som kan angres kan det fortsatt.</p>
+<h2 id="raskeste-vei-ut-fra-det-du-nettopp-gjorde">Raskeste vei: ut fra det du nettopp gjorde</h2>
+<p>Du trenger ikke skrive en makro fra bunnen av.</p>
+<ol>
+<li>Gjør tingen én gang — via assistenten, eller ved å kjøre en eksisterende makro.</li>
+<li>Velg <strong>Konfigurasjon ▸ Makro fra nylige handlinger…</strong>.</li>
+<li>Kryss av trinnene makroen skal gjenta, gi den et navn, og la <strong>Legg også til en knapp for den</strong> stå på.</li>
+</ol>
+<p><strong>Lagre makro</strong>, og knappen er i raden. Det er hele runden.</p>
+<blockquote>
+<p><strong>Hva som ikke registreres.</strong> Listen bygges av handlinger som har gått gjennom assistenten eller en annen makro. Å kopiere, flytte eller gi nytt navn <em>manuelt</em> i panelene — F5, F6, F7 — registreres ikke og kan derfor ikke bli en makro på denne måten. Bruk redigereren nedenfor til de.</p>
+</blockquote>
+<h2 id="redigere-makroer-manuelt">Redigere makroer manuelt</h2>
+<p><strong>Konfigurasjon ▸ Rediger makroer…</strong> åpner <code>macros.json</code> i konfigurasjonsmappen din og legger et kommentert eksempel der den første gangen. En makro er en liste med trinn, og hvert trinn navngir et verktøy og argumentene dets:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Lagring laster makroene på nytt umiddelbart. Hvilke verktøy som finnes og hva de tar, forteller assistenten via <code>list_macros</code> — eller eksempelet filen ble opprettet med.</p>
+<h3 id="plassholdere">Plassholdere</h3>
+<p>De enkelte bokstavene er de samme som knapperaden og Start-menyen bruker, så har du laget en knapp, er det ingenting nytt å lære her.</p>
+<table>
+<thead>
+<tr>
+<th>Plassholder</th>
+<th>Betyr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Mappen til det aktive panelet</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Mappen til det andre panelet</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Filen under markøren</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>De valgte filene — en <strong>liste</strong>, som er nøyaktig det <code>copy</code>, <code>move</code> og <code>move_to_trash</code> tar</td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Datoen makroen startet, i det formatet</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Resultatet av trinn 1, når det trinnet ga en sti eller en liste med stier</td>
+</tr>
+</tbody>
+</table>
+<p>Krøllparentesene er for tilleggene, fordi bokstavene allerede er tatt: <code>%M</code> betyr «navnet under markøren i det andre panelet» i hele resten av programmet, så en måned kunne ikke skrives slik.</p>
+<p><code>%S</code> er det ene stedet der en makro skiller seg fra en knapp: på en knapp blir utvalget en liste med ord for en kommandolinje, her blir det listen med fulle stier som filverktøyene tar.</p>
+<p>Et trinn hvis <code>%S</code> eller <code>%{1}</code> kommer ut <strong>tomt, stopper makroen</strong> i stedet for å kjøre uten noe. Et <code>move</code> uten filer er ikke et mindre <code>move</code> — det er en forespørsel som ikke lenger sier noe, og å melde suksess ville vært en løgn.</p>
+<h2 id="kjre-en-makro">Kjøre en makro</h2>
+<p>Hver makro blir en kommando med navnet <code>mc_&lt;id&gt;</code> og dukker derfor opp av seg selv i:</p>
+<ul>
+<li><strong>Konfigurasjon ▸ Kommandooversikt…</strong></li>
+<li><strong>Konfigurasjon ▸ Rediger snarveier… — legg den på en tast</strong></li>
+<li>Kommandovelgeren i knapperadens redigerer</li>
+<li><code>.mnu</code>-menyfilen din og <code>usercmd.ini</code>, hvis du bruker dem</li>
+<li>Assistenten, som kan kjøre den på navn</li>
+</ul>
+<p>Før en makro som endrer noe kjører, viser den trinnene sine som en liste og venter. Du kan stryke et trinn du ikke vil ha; det som blir igjen er det som kjøres. En makro som bare leser, kjøres uten å spørre.</p>
+<p>Hvis et trinn feiler, <strong>stopper makroen der</strong> i stedet for å fortsette — trinn to forutsetter vanligvis at trinn én skjedde, og å flytte filer til en mappe som ikke ble opprettet er ikke en delvis suksess. Rapporten navngir trinnet og sier hva som gikk galt, og trinnene som kjørte står i handlingsloggen.</p>
+<h2 id="hva-en-makro-har-lov-til">Hva en makro har lov til</h2>
+<p>En makro måles etter det mest krevende i den. En makro der trinnene bare leser, behandles som en lesing; en som ender med en permanent sletting, håndteres som en permanent sletting — før noe av den kjører, ikke fire trinn inn.</p>
+<p>Å ikke gi noe ekstra er standarden. Inneholder en makro et trinn tillatelsene dine ikke godtar — en skallkommando, et skript — avvises hele makroen med årsaken, og ingenting skjer.</p>
+<h2 id="angre">Angre</h2>
+<p>Hvert trinn logges for seg, så <strong>angre</strong> etter en makro tar tilbake dens <em>siste</em> trinn, ikke hele makroen. Det finnes ingen angre for hele makroen, fordi flere verktøy ikke har noen invers i det hele tatt, og en knapp som tilbød den, ville løyet om dem.</p>
+<h2 id="hvor-alt-lagres">Hvor alt lagres</h2>
+<ul>
+<li>Makroene dine ligger i <code>macros.json</code> i konfigurasjonsmappen — en vanlig fil du kan diffe og holde sammen med dotfilene dine.</li>
+<li>Knapper en makro la til, er vanlige knapperadsposter i <code>default.bar</code>, så å fjerne en er det samme som for enhver annen knapp.</li>
+</ul>
+<h2 id="neste-steg">Neste steg</h2>
+<ul>
+<li><a href="automation.html">Automatisering (AppleScript og Snarveier)</a> — Å styre Peach Commander fra et skript, og kjøre egne skript som makrotrinn.</li>
+<li><a href="toolbar.html">Knapperaden</a> — Hvor knappen en makro la til havner.</li>
+<li><a href="keyboard-shortcuts.html">Tastatur og snarveier</a> — Å legge en makro på en tast.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automatisering (AppleScript og Snarveier)</a></li><li><a href="toolbar.html">Knappelinjen</a></li><li><a href="start-menu.html">Startmenyen og egendefinerte kommandoer</a></li><li><a href="keyboard-shortcuts.html">Tastatur og snarveier</a></li></ul></section>
+</main>
+</body>
+</html>

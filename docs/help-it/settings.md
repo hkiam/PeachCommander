@@ -23,7 +23,7 @@ La finestra Impostazioni è dove adatti Peach Commander al tuo modo di lavorare:
 
 La finestra ha queste pagine, in ordine:
 
-- **Layout** — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato.
+- **Layout** — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato, e scegli quali pagine offre il pannello laterale.
 - **Visualizzazione** — come vengono elencati file e cartelle, incluso il formato della data.
 - **Icone** — l'aspetto delle icone negli elenchi dei file.
 - **Funzionamento** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).

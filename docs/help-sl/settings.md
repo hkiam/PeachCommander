@@ -23,7 +23,7 @@ Okno Nastavitve je mesto, kjer prilagodite Peach Commander načinu, kako delate:
 
 Okno ima te strani, po vrsti:
 
-- **Postavitev** — prikaži ali skrij vrstico diskov, vrstico zavihkov, vrstico poti in vrstico stanja.
+- **Postavitev** — prikaži ali skrij vrstico diskov, vrstico zavihkov, vrstico poti in vrstico stanja ter izberi, katere strani ponuja stranski pladenj.
 - **Prikaz** — kako so našteti datoteke in mape, vključno z obliko datuma.
 - **Ikone** — videz ikon v seznamih datotek.
 - **Delovanje** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).

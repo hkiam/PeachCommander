@@ -23,7 +23,7 @@ Het instellingenvenster is waar je Peach Commander afstemt op jouw werkwijze: we
 
 Het venster heeft deze pagina's, op volgorde:
 
-- **Lay-out** — toon of verberg de schijvenbalk, tabbalk, padbalk en statusbalk.
+- **Lay-out** — toon of verberg de schijvenbalk, tabbalk, padbalk en statusbalk, en kies welke pagina's het zijpaneel aanbiedt.
 - **Weergave** — hoe bestanden en mappen worden weergegeven, inclusief de datumnotatie.
 - **Symbolen** — het uiterlijk van symbolen in de bestandslijsten.
 - **Bediening** — algemeen gedrag, zoals wat er gebeurt als je in een paneel typt (snelzoeken versus de opdrachtregel).

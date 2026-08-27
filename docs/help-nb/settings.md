@@ -23,7 +23,7 @@ Innstillinger-vinduet er der du skreddersyr Peach Commander til måten du arbeid
 
 Vinduet har disse sidene, i rekkefølge:
 
-- **Oppsett** – vis eller skjul stasjonslinjen, fanelinjen, banelinjen og statuslinjen.
+- **Oppsett** – vis eller skjul stasjonslinjen, fanelinjen, banelinjen og statuslinjen, og velg hvilke sider sidepanelet tilbyr.
 - **Visning** – hvordan filer og mapper listes, inkludert datoformatet.
 - **Ikoner** – ikonutseende i fillistene.
 - **Betjening** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen).

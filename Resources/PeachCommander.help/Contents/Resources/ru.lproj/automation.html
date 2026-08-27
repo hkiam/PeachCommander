@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Автоматизация (AppleScript и Быстрые команды)</h1>
-<p>Peach Commander поддерживает сценарии, поэтому вы можете управлять им из AppleScript и из приложения «Быстрые команды». Несколько основных команд позволяют сценарию перемещаться по панелям, выбирать файлы по маске, копировать или перемещать текущую выборку и запускать любую команду Peach Commander по её идентификатору — используя те же самые действия, что и меню, поэтому шаг сценария ведёт себя как ручной. Это удобно для повторяющихся рутинных задач: раскладки загрузок, подготовки результатов сборки или встраивания файлового шага в более крупную быструю команду.</p>
+<p>Автоматизация здесь работает в обе стороны.</p>
+<p><strong>Наружу:</strong> Peach Commander поддаётся сценариям, так что им можно управлять из AppleScript и из приложения «Быстрые команды». Несколько основных глаголов позволяют сценарию перемещаться по панелям, выделять файлы по маске, копировать или перемещать текущее выделение и выполнять любую команду Peach Commander по её id — теми же действиями, что используют меню, так что шаг из сценария ведёт себя как ручной. Об этом остальная часть страницы.</p>
+<p><strong>Внутрь:</strong> Peach Commander также может <em>выполнить</em> ваш сценарий — AppleScript или JavaScript — и поместить его в меню, на кнопку или на клавишу. Для этого нужен подключаемый модуль <strong>Scripting</strong>, который поставляется отключённым; см. <a href="#выполнение-своих-сценариев">Выполнение своих сценариев</a> ниже.</p>
+<p>Чтобы повторять <em>последовательность</em> действий с файлами, а не одно, см. <a href="macros.html">Макросы</a>.</p>
 <h2 id="_1">Просмотр словаря</h2>
 <ol>
 <li>Откройте <strong>Редактор скриптов</strong> (в <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="_5">Использование из «Быстрых команд»</h2>
 <p>В приложении <strong>Быстрые команды</strong> добавьте действие <strong>Запустить AppleScript</strong> и вставьте сценарий, подобный приведённому выше. Это позволяет встроить шаг Peach Commander в более крупную быструю команду — например, запускаемую по изменению папки или горячей клавише.</p>
-<h2 id="_6">Примечания</h2>
+<h2 id="_6">Выполнение своих сценариев</h2>
+<p>Другая сторона: ваш сценарий, выполняемый Peach Commander.</p>
+<p>Это подключаемый модуль, и он поставляется <strong>отключённым</strong>, потому что запуск программы по вашему выбору умеет всё, что умеет остальная часть приложения, и ещё несколько вещей, которых не покрывает ничто из неё. Два переключателя, оба выключены, пока вы их не поставите:</p>
+<ol>
+<li><strong>Конфигурация ▸ Модули…</strong> — включите <strong>Scripting</strong>.</li>
+<li><strong>Настройки ▸ ИИ</strong> — включите <strong>Разрешить выполнение сценариев</strong>. Это на той странице потому, что разрешение того же рода, что и оболочка ассистента, и эти два идут вместе.</li>
+</ol>
+<p>Затем положите сценарий в <code>scripts/</code> внутри папки конфигурации — <strong>Команды ▸ Открыть папку сценариев</strong> приведёт вас туда и в первый раз оставит там пример. Файл <code>.applescript</code>, <code>.scpt</code> или <code>.jxa</code> в этой папке <em>и есть</em> сценарий; регистрировать ничего не нужно.</p>
+<h3 id="_7">Что получает сценарий</h3>
+<p>Состояние панелей приходит через окружение, поэтому обычный случай не требует Apple events и никакого запроса разрешений:</p>
+<table>
+<thead>
+<tr>
+<th>Переменная</th>
+<th>Значит</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Папка активной панели</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Папка другой панели</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Файл под курсором</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Сколько объектов выделено</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Текстовый файл с одним выделенным путём в строке (отсутствует, если ничего не выделено)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Всё, что выходит за эти рамки, идёт через само приложение, с глаголами выше — так что две половины дополняют друг друга.</p>
+<h3 id="_8">Поместить сценарий на кнопку или клавишу</h3>
+<p>Каждый сценарий становится командой с именем <code>plugin.script.run.&lt;имя&gt;</code>, где <code>&lt;имя&gt;</code> — имя файла без расширения (пробелы и точки становятся дефисами). Этот id работает везде, где работает id <code>cm_*</code>: в панели кнопок, в <code>usercmd.ini</code>, в файле <code>.mnu</code> и в <strong>Конфигурация ▸ Редактировать сочетания клавиш…</strong>.</p>
+<h3 id="_9">Как выполняется сценарий и ограничение времени</h3>
+<p>По умолчанию сценарий выполняется как отдельный процесс, а значит ему можно задать ограничение времени и остановить его при превышении — тридцать секунд, если не указано иное. Сценарий может выбрать выполнение <em>внутри</em> приложения, что позволяет ему вернуть структурированное значение и оставляет его скомпилированным между запусками, но тогда ограничения времени нет: сценарий, попавший в цикл, держит приложение. Укажите выбор в <code>scripts.json</code> рядом со своими сценариями:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Запись нужна только тому, что отличается от значений по умолчанию; файл без записи получает собственное имя как заголовок, выполняется как отдельный процесс и останавливается через тридцать секунд.</p>
+<h3 id="_10">Для ассистента</h3>
+<p>При включённом модуле и заданной настройке ассистент получает <code>run_applescript</code>, <code>run_jxa</code> и <code>check_script</code>. Каждый из них показывает вам точный текст сценария и ждёт вашего одобрения, прежде чем что-либо выполнится, и ни один из них никогда не предлагается внешнему агенту через MCP.</p>
+<h2 id="_11">Примечания</h2>
 <ul>
 <li>Идентификатор команды, передаваемый в <code>run command</code>, — это тот же идентификатор <code>cm_*</code>, что показан в обозревателе команд (см. <a href="start-menu.html">Меню «Запуск» и пользовательские команды</a>).</li>
 <li>Сценарии всегда действуют на <strong>активной</strong> панели; сначала используйте <code>go to … in left</code> / <code>in right</code>, если вам нужна конкретная сторона.</li>
 <li>Peach Commander — однооконное приложение, поэтому сценарии нацелены на две панели этого окна.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Меню «Пуск» и пользовательские команды</a></li><li><a href="settings.html">Настройки</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Меню «Пуск» и пользовательские команды</a></li><li><a href="settings.html">Настройки</a></li><li><a href="macros.html">Макросы</a></li></ul></section>
 </main>
 </body>
 </html>

@@ -73,6 +73,18 @@ El panel lateral (**Visualización > Panel de previsualización**, o Cmd+Mayús+
 
 Al mover el cursor, el nombre y los datos se actualizan de inmediato; la previsualización llega un momento después, de modo que mantener pulsada una flecha a lo largo de una carpeta larga no inicia una previsualización por cada fila.
 
+## Qué páginas ofrece el panel lateral
+
+El panel lateral aparece mostrando solo **Información**. **Actividades** (transferencias en curso) y **Registro** (transferencias terminadas) están desactivadas, porque la mayor parte del trabajo nunca las pide y, de lo contrario, una franja de tres pestañas se queda todo el día sobre la previsualización.
+
+- Actívelas en **Ajustes > Disposición**, en *Páginas del panel lateral*; con clic derecho sobre la franja de pestañas; o desde **Ver > Panel lateral: Información / Actividades / Registro**.
+- Si solo queda una página, el panel prescinde por completo de la franja de pestañas: un panel reducido a Información es previsualización y detalles, sin nada encima.
+- Toda página puede desactivarse, incluida Información — algo útil cuando aquí guarda en su lugar el terminal o la vista de un plugin. Un panel en el que no queda nada lo dice, en vez de abrirse en blanco.
+- Las páginas que aporta un plugin no se ven afectadas: esas van y vienen con el plugin, y para desactivarlas está la página **Plugins**.
+- **Ver > Restablecer disposición** devuelve las páginas a Información sola, junto con el resto del mobiliario de la ventana.
+
+Las entradas del menú Ver importan más de lo que parece. Una vez desactivadas todas las páginas ya no queda franja de pestañas donde hacer clic derecho: son el camino de vuelta.
+
 ## Descompilar archivos .class de Java
 
 Con el módulo **Java Decompiler** activado, F3 sobre un archivo `.class` muestra código legible en lugar de datos binarios — también para clases dentro de un JAR o un ZIP, en el que puede entrar y leer sin descomprimirlo.

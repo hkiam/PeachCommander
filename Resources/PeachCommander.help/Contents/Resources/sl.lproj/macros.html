@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makri</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Makri</h1>
+<p>Makro je poimenovano zaporedje dejanj z datotekami — ustvari mapo, vanjo premakni izbor, kar ostane pa označi — ki ga lahko z enim klikom znova zaženete. Ni skriptni jezik: ni pogojev in ni zank, in to je namerno. Makro je seznam, ki ga lahko preberete, in prebrati ga morate znati, preden ga odobrite.</p>
+<p>Vse, kar makro počne, gre skozi isto napravo kot pomočnik. Makro torej ne more storiti ničesar, česar niste dovolili, vsak njegov korak se pojavi v dnevniku dejanj, korak, ki ga je mogoče razveljaviti, pa to ostane.</p>
+<h2 id="najhitrejsa-pot-iz-tega-kar-ste-pravkar-naredili">Najhitrejša pot: iz tega, kar ste pravkar naredili</h2>
+<p>Makra ni treba napisati iz nič.</p>
+<ol>
+<li>Naredite stvar enkrat — prek pomočnika ali z zagonom obstoječega makra.</li>
+<li>Izberite <strong>Nastavitve ▸ Makro iz nedavnih dejanj…</strong>.</li>
+<li>Označite korake, ki naj jih makro ponovi, poimenujte ga in pustite vklopljeno <strong>Zanj dodaj tudi gumb</strong>.</li>
+</ol>
+<p><strong>Shrani makro</strong> — in gumb je v vrstici. To je ves postopek.</p>
+<blockquote>
+<p><strong>Kaj se ne zapisuje.</strong> Seznam se sestavi iz dejanj, ki so šla skozi pomočnika ali drug makro. Ročno kopiranje, premikanje in preimenovanje v pultih — F5, F6, F7 — se ne zapisuje, zato po tej poti iz njih ni mogoče narediti makra. Za to uporabite urejevalnik spodaj.</p>
+</blockquote>
+<h2 id="rocno-urejanje-makrov">Ročno urejanje makrov</h2>
+<p><strong>Nastavitve ▸ Uredi makre…</strong> odpre <code>macros.json</code> v vaši nastavitveni mapi in prvič vanjo vstavi komentiran primer. Makro je seznam korakov, vsak korak pa navaja orodje in njegove argumente:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Shranjevanje makre takoj znova naloži. Katera orodja obstajajo in kaj sprejmejo, vam pove pomočnik prek <code>list_macros</code> — ali primer, s katerim je bila datoteka ustvarjena.</p>
+<h3 id="nadomestni-znaki">Nadomestni znaki</h3>
+<p>Posamezne črke so iste, kot jih uporabljata vrstica z gumbi in meni Start: kdor je že naredil gumb, se tu ne rabi učiti nič novega.</p>
+<table>
+<thead>
+<tr>
+<th>Nadomestek</th>
+<th>Pomeni</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Mapa aktivnega pulta</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Mapa drugega pulta</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Datoteka pod kazalcem</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Izbrane datoteke — <strong>seznam</strong>, kar je natanko to, kar sprejmejo <code>copy</code>, <code>move</code> in <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Datum zagona makra v tej obliki</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Rezultat koraka 1, če je ta korak vrnil pot ali seznam poti</td>
+</tr>
+</tbody>
+</table>
+<p>Zaviti oklepaji so za dodatke, ker so črke že zasedene: <code>%M</code> v vsem preostalem programu pomeni »ime pod kazalcem v drugem pultu«, zato meseca ni bilo mogoče zapisati tako.</p>
+<p><code>%S</code> je edino mesto, kjer se makro razlikuje od gumba: na gumbu izbor postane seznam besed za ukazno vrstico, tu pa seznam polnih poti, ki jih sprejmejo datotečna orodja.</p>
+<p>Korak, katerega <code>%S</code> ali <code>%{1}</code> pride <strong>prazen, ustavi makro</strong>, namesto da bi tekel brez česa. <code>move</code> brez datotek ni manjši <code>move</code> — je zahteva, ki ne pove več nič, in poročati o uspehu bi bila laž.</p>
+<h2 id="zagon-makra">Zagon makra</h2>
+<p>Vsak makro postane ukaz z imenom <code>mc_&lt;id&gt;</code> in se zato sam pojavi v:</p>
+<ul>
+<li><strong>Nastavitve ▸ Brskalnik ukazov…</strong></li>
+<li><strong>Nastavitve ▸ Uredi bližnjice… — dodelite ga tipki</strong></li>
+<li>Izbirniku ukazov v urejevalniku vrstice z gumbi</li>
+<li>Vaši datoteki menija <code>.mnu</code> in <code>usercmd.ini</code>, če ju uporabljate</li>
+<li>Pomočniku, ki ga lahko zažene po imenu</li>
+</ul>
+<p>Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja.</p>
+<p>Če korak spodleti, se makro <strong>tam ustavi</strong> namesto da bi nadaljeval — drugi korak običajno predpostavlja, da se je prvi zgodil, in premikanje datotek v mapo, ki ni bila ustvarjena, ni delni uspeh. Poročilo navede korak in pove, kaj je šlo narobe; koraki, ki so se izvedli, so v dnevniku dejanj.</p>
+<h2 id="kaj-makro-sme">Kaj makro sme</h2>
+<p>Makro se presoja po najzahtevnejšem, kar je v njem. Makro, katerega koraki samo berejo, velja za branje; tisti, ki se konča s trajnim brisanjem, je varovan kot trajno brisanje — preden se karkoli zažene, ne štiri korake pozneje.</p>
+<p>Ne dodeliti nič dodatnega je privzeto. Če makro vsebuje korak, ki ga vaša dovoljenja ne dopuščajo — ukaz lupine, skript — je celoten makro zavrnjen z navedbo razloga in nič se ne zgodi.</p>
+<h2 id="razveljavitev">Razveljavitev</h2>
+<p>Vsak korak se zapiše zase, zato <strong>razveljavi</strong> po makru vzame nazaj njegov <em>zadnji</em> korak, ne celega makra. Razveljavitve celega makra ni, ker več orodij nima nobenega obratnega dejanja in gumb, ki bi jo ponujal, bi o njih lagal.</p>
+<h2 id="kje-se-vse-shrani">Kje se vse shrani</h2>
+<ul>
+<li>Vaši makri so v <code>macros.json</code> v nastavitveni mapi — navadna datoteka, ki jo lahko primerjate in hranite skupaj z dotfiles.</li>
+<li>Gumbi, ki jih je dodal makro, so navadni vnosi vrstice z gumbi v <code>default.bar</code>, zato je odstraniti enega enako kot pri katerem koli drugem gumbu.</li>
+</ul>
+<h2 id="naslednji-koraki">Naslednji koraki</h2>
+<ul>
+<li><a href="automation.html">Avtomatizacija (AppleScript in Bližnjice)</a> — Vodenje Peach Commanderja iz skripta in zaganjanje lastnih skriptov kot koraka makra.</li>
+<li><a href="toolbar.html">Vrstica z gumbi</a> — Kje pristane gumb, ki ga je dodal makro.</li>
+<li><a href="keyboard-shortcuts.html">Tipkovnica in bližnjice</a> — Dodelitev makra tipki.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Avtomatizacija (AppleScript in Bližnjice)</a></li><li><a href="toolbar.html">Vrstica z gumbi</a></li><li><a href="start-menu.html">Meni Start in poljubni ukazi</a></li><li><a href="keyboard-shortcuts.html">Tipkovnica in bližnjice</a></li></ul></section>
+</main>
+</body>
+</html>

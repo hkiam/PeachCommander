@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatizálás (AppleScript és Parancsok)</h1>
-<p>A Peach Commander szkriptelhető, így vezérelheti az AppleScriptből és a Parancsok alkalmazásból. Néhány alapvető ige lehetővé teszi, hogy egy szkript navigáljon a panelek között, maszk alapján jelöljön ki fájlokat, másolja vagy áthelyezze az aktuális kijelölést, és lefuttasson bármely Peach Commander-parancsot az azonosítója alapján – pontosan ugyanazokat a műveleteket használva újra, amelyeket a menük is, így egy szkriptelt lépés úgy viselkedik, mint egy kézi. Hasznos az ismétlődő teendőkhöz: letöltések rendszerezéséhez, egy build kimenetének előkészítéséhez vagy egy fájllépés beépítéséhez egy nagyobb Parancsba.</p>
+<p>Az automatizálás itt mindkét irányba működik.</p>
+<p><strong>Kifelé:</strong> A Peach Commander szkriptelhető, így vezérelheti AppleScriptből és a Parancsok appból is. Néhány alapvető ige lehetővé teszi, hogy egy szkript a panelek között navigáljon, maszk alapján fájlokat jelöljön ki, a jelenlegi kijelölést másolja vagy áthelyezze, és a Peach Commander bármely parancsát lefuttassa az azonosítója alapján — ugyanazokat a műveleteket használva, mint a menük, így a szkriptelt lépés úgy viselkedik, mint egy kézi. Erről szól a lap többi része.</p>
+<p><strong>Befelé:</strong> A Peach Commander egy <em>saját</em> szkriptjét is le tudja futtatni — AppleScriptet vagy JavaScriptet — és menüre, gombra vagy billentyűre teheti. Ehhez kell a <strong>Scripting</strong> bővítmény, amely kikapcsolva érkezik; lásd <a href="#sajat-szkriptek-futtatasa">Saját szkriptek futtatása</a> lentebb.</p>
+<p>Ha fájlműveletek <em>sorozatát</em> szeretné megismételni, nem csak egyet, lásd <a href="macros.html">Makrók</a>.</p>
 <h2 id="a-szotar-megtekintese">A szótár megtekintése</h2>
 <ol>
 <li>Nyissa meg a <strong>Script Editort</strong> (a <code>/Applications/Utilities</code> mappában).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="hasznalat-a-parancsok-alkalmazasbol">Használat a Parancsok alkalmazásból</h2>
 <p>A <strong>Parancsok</strong> alkalmazásban adja hozzá a <strong>Run AppleScript</strong> műveletet, és illessze be egy fenti szkripthez hasonlót. Ezzel egy Peach Commander-lépést egy nagyobb Parancsba hajthat – amelyet például egy mappaváltozás vagy egy gyorsbillentyű indít el.</p>
+<h2 id="sajat-szkriptek-futtatasa">Saját szkriptek futtatása</h2>
+<p>A másik irány: egy saját szkript, amelyet a Peach Commander futtat.</p>
+<p>Ez egy bővítmény, és <strong>kikapcsolva</strong> érkezik, mert egy Ön által választott program futtatása mindent tud, amit a program többi része, és több olyat is, amit abból semmi. Két kapcsoló, mindkettő kikapcsolva, míg Ön be nem állítja:</p>
+<ol>
+<li><strong>Beállítás ▸ Bővítmények…</strong> — kapcsolja be a <strong>Scripting</strong> bővítményt.</li>
+<li><strong>Beállítások ▸ MI</strong> — kapcsolja be a <strong>Szkriptek futtatásának engedélyezése</strong> lehetőséget. Azon a lapon van, mert ugyanolyan típusú engedély, mint az asszisztens shellje, és a kettő együvé tartozik.</li>
+</ol>
+<p>Ezután helyezzen egy szkriptet a konfigurációs mappán belüli <code>scripts/</code> mappába — a <strong>Parancsok ▸ Szkriptmappa megnyitása</strong> odavezet, és első alkalommal egy példát hagy ott. Egy <code>.applescript</code>, <code>.scpt</code> vagy <code>.jxa</code> fájl abban a mappában <em>már</em> szkript; nincs mit regisztrálni.</p>
+<h3 id="mit-kap-egy-szkript">Mit kap egy szkript</h3>
+<p>A panelek állapota a környezeten keresztül érkezik, így a szokásos esethez nincs szükség Apple-eseményekre és engedélykérésre sem:</p>
+<table>
+<thead>
+<tr>
+<th>Változó</th>
+<th>Jelentése</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Az aktív panel mappája</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>A másik panel mappája</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>A kurzor alatti fájl</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Hány elem van kijelölve</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Szövegfájl, soronként egy kijelölt útvonallal (nincs, ha semmi sincs kijelölve)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Minden ezen túli magán a programon keresztül megy, a fenti igékkel — a két fél tehát összeáll.</p>
+<h3 id="szkript-gombra-vagy-billentyure-helyezese">Szkript gombra vagy billentyűre helyezése</h3>
+<p>Minden szkript <code>plugin.script.run.&lt;név&gt;</code> nevű paranccsá válik, ahol a <code>&lt;név&gt;</code> a fájl kiterjesztés nélküli neve (a szóközök és pontok kötőjelre változnak). Ez az azonosító mindenhol működik, ahol egy <code>cm_*</code> azonosító működik: a gombsávon, a <code>usercmd.ini</code> fájlban, egy <code>.mnu</code> fájlban és a <strong>Beállítás ▸ Gyorsbillentyűk szerkesztése…</strong> részben.</p>
+<h3 id="hogyan-fut-egy-szkript-es-az-idokorlat">Hogyan fut egy szkript, és az időkorlát</h3>
+<p>Alapértelmezés szerint a szkript külön folyamatként fut, ami azt jelenti, hogy időkorlátot lehet adni neki, és megállítható, ha túllépi — harminc másodperc, ha nem mond mást. A szkript választhatja azt is, hogy a programon <em>belül</em> fusson, így strukturált értéket adhat vissza és a futások között lefordítva marad, de akkor nincs időkorlát: egy ciklusba került szkript megfogja a programot. A választást a szkriptjei mellett, a <code>scripts.json</code> fájlban adja meg:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Csak az igényel bejegyzést, ami eltér az alapértékektől; a bejegyzés nélküli fájl a saját nevét kapja címnek, külön folyamatként fut, és harminc másodperc után megáll.</p>
+<h3 id="az-asszisztens-szamara">Az asszisztens számára</h3>
+<p>Bekapcsolt bővítménnyel és engedélyezett beállítással az asszisztens megkapja a <code>run_applescript</code>, <code>run_jxa</code> és <code>check_script</code> eszközöket. Mindegyik megmutatja Önnek a pontos szkriptet, és megvárja a jóváhagyását, mielőtt bármi lefutna, és egyiket sem ajánlja fel soha külső ügynöknek MCP-n keresztül.</p>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
 <li>A <code>run command</code> parancsnak átadott parancsazonosító ugyanaz a <code>cm_*</code> azonosító, amely a parancsböngészőben látható (lásd <a href="start-menu.html">A Start menü és az egyéni parancsok</a>).</li>
 <li>A szkriptelés mindig az <strong>aktív</strong> panelen hat; használja először a <code>go to … in left</code> / <code>in right</code> parancsot, ha egy adott oldalra van szüksége.</li>
 <li>A Peach Commander egyablakos alkalmazás, így a szkriptek ennek az ablaknak a két paneljét célozzák.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">A Start menü és egyéni parancsok</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">A Start menü és egyéni parancsok</a></li><li><a href="settings.html">Beállítások</a></li><li><a href="macros.html">Makrók</a></li></ul></section>
 </main>
 </body>
 </html>

@@ -23,7 +23,7 @@ Fereastra Setări este locul unde adaptați Peach Commander la modul în care lu
 
 Fereastra are aceste pagini, în ordine:
 
-- **Aspect** — afișează sau ascunde bara de unități, bara de file, bara de cale și bara de stare.
+- **Aspect** — afișează sau ascunde bara de unități, bara de file, bara de cale și bara de stare și alege ce pagini oferă panoul lateral.
 - **Afișare** — cum sunt listate fișierele și folderele, inclusiv formatul datei.
 - **Pictograme** — aspectul pictogramelor în listele de fișiere.
 - **Operare** — comportament general, cum ar fi ce se întâmplă când tastați într-un panou (căutare rapidă vs. linia de comandă).

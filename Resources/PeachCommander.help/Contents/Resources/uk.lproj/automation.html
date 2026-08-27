@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Автоматизація (AppleScript і Швидкі команди)</h1>
-<p>Peach Commander підтримує сценарії, тож ви можете керувати ним з AppleScript і з застосунку Швидкі команди. Жменька основних дієслів дозволяє сценарію переміщатися панелями, вибирати файли за маскою, копіювати чи переміщати поточний вибір і запускати будь-яку команду Peach Commander за її ідентифікатором — повторно використовуючи саме ті дії, які використовують меню, тож крок сценарію поводиться як ручний. Це зручно для повторюваних справ: упорядкування завантажень, підготовки виводу збірки чи вбудовування кроку з файлом у більшу Швидку команду.</p>
+<p>Автоматизація тут працює в обидві сторони.</p>
+<p><strong>Назовні:</strong> Peach Commander піддається сценаріям, тож ним можна керувати з AppleScript і з програми «Швидкі команди». Кілька основних дієслів дозволяють сценарію переміщатися по панелях, виділяти файли за маскою, копіювати або переміщувати поточне виділення та виконувати будь-яку команду Peach Commander за її id — тими самими діями, які використовують меню, тож крок зі сценарію поводиться як ручний. Про це решта цієї сторінки.</p>
+<p><strong>Усередину:</strong> Peach Commander також може <em>виконати</em> ваш сценарій — AppleScript або JavaScript — і помістити його в меню, на кнопку або на клавішу. Для цього потрібен додаток <strong>Scripting</strong>, який постачається вимкненим; див. <a href="#виконання-власних-сценаріїв">Виконання власних сценаріїв</a> нижче.</p>
+<p>Щоб повторювати <em>послідовність</em> дій із файлами, а не одну, див. <a href="macros.html">Макроси</a>.</p>
 <h2 id="_1">Перегляд словника</h2>
 <ol>
 <li>Відкрийте <strong>Редактор сценаріїв</strong> (у <code>/Applications/Utilities</code> — «Утиліти» у Finder).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="_5">Використання зі Швидких команд</h2>
 <p>У застосунку <strong>Швидкі команди</strong> додайте дію <strong>Запустити AppleScript</strong> і вставте сценарій, як наведений вище. Це дозволяє вбудувати крок Peach Commander у більшу Швидку команду — наприклад, запущену зміною теки чи гарячою клавішею.</p>
-<h2 id="_6">Примітки</h2>
+<h2 id="_6">Виконання власних сценаріїв</h2>
+<p>Інша сторона: ваш сценарій, який виконує Peach Commander.</p>
+<p>Це додаток, і він постачається <strong>вимкненим</strong>, бо запуск програми за вашим вибором умієте все, що вміє решта застосунку, і ще кілька речей, яких не покриває ніщо з нього. Два перемикачі, обидва вимкнені, доки ви їх не поставите:</p>
+<ol>
+<li><strong>Конфігурація ▸ Додатки…</strong> — увімкніть <strong>Scripting</strong>.</li>
+<li><strong>Налаштування ▸ ШІ</strong> — увімкніть <strong>Дозволити виконання сценаріїв</strong>. Це на тій сторінці тому, що дозвіл того самого роду, що й оболонка асистента, і ці два йдуть разом.</li>
+</ol>
+<p>Потім покладіть сценарій у <code>scripts/</code> у теці конфігурації — <strong>Команди ▸ Відкрити теку сценаріїв</strong> приведе вас туди й першого разу залишить там приклад. Файл <code>.applescript</code>, <code>.scpt</code> або <code>.jxa</code> у цій теці <em>і є</em> сценарієм; реєструвати нічого не потрібно.</p>
+<h3 id="_7">Що отримує сценарій</h3>
+<p>Стан панелей приходить через середовище, тому звичайний випадок не потребує Apple events і жодного запиту дозволів:</p>
+<table>
+<thead>
+<tr>
+<th>Змінна</th>
+<th>Означає</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Тека активної панелі</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Тека іншої панелі</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Файл під курсором</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Скільки об’єктів виділено</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Текстовий файл з одним виділеним шляхом на рядок (відсутній, якщо нічого не виділено)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Усе, що виходить за ці межі, іде через сам застосунок, із дієсловами вище — тож дві половини доповнюють одна одну.</p>
+<h3 id="_8">Помістити сценарій на кнопку або клавішу</h3>
+<p>Кожен сценарій стає командою з назвою <code>plugin.script.run.&lt;ім’я&gt;</code>, де <code>&lt;ім’я&gt;</code> — ім’я файлу без розширення (пробіли та точки стають дефісами). Цей id працює всюди, де працює id <code>cm_*</code>: у панелі кнопок, у <code>usercmd.ini</code>, у файлі <code>.mnu</code> та в <strong>Конфігурація ▸ Редагувати скорочення…</strong>.</p>
+<h3 id="_9">Як виконується сценарій і обмеження часу</h3>
+<p>Типово сценарій виконується як окремий процес, а отже йому можна задати обмеження часу й зупинити його при перевищенні — тридцять секунд, якщо не вказано інакше. Сценарій може вибрати виконання <em>всередині</em> застосунку, що дозволяє йому повернути структуроване значення й залишає його скомпілованим між запусками, але тоді обмеження часу немає: сценарій, що потрапив у цикл, тримає застосунок. Вкажіть вибір у <code>scripts.json</code> поряд зі своїми сценаріями:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Запис потрібен лише тому, що відрізняється від типових значень; файл без запису отримує власне ім’я як заголовок, виконується як окремий процес і зупиняється через тридцять секунд.</p>
+<h3 id="_10">Для асистента</h3>
+<p>З увімкненим додатком і заданим налаштуванням асистент отримує <code>run_applescript</code>, <code>run_jxa</code> та <code>check_script</code>. Кожен із них показує вам точний текст сценарію й чекає на ваше схвалення, перше ніж щось виконається, і жоден із них ніколи не пропонується зовнішньому агентові через MCP.</p>
+<h2 id="_11">Примітки</h2>
 <ul>
 <li>Ідентифікатор команди, який ви передаєте до <code>run command</code>, — це той самий ідентифікатор <code>cm_*</code>, що показаний у переглядачі команд (див. <a href="start-menu.html">Меню Пуск і власні команди</a>).</li>
 <li>Сценарій завжди діє на <strong>активну</strong> панель; використайте спершу <code>go to … in left</code> / <code>in right</code>, якщо вам потрібна конкретна сторона.</li>
 <li>Peach Commander — застосунок з одним вікном, тож сценарії націлюються на дві панелі цього вікна.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Меню Пуск і власні команди</a></li><li><a href="settings.html">Налаштування</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Меню Пуск і власні команди</a></li><li><a href="settings.html">Налаштування</a></li><li><a href="macros.html">Макроси</a></li></ul></section>
 </main>
 </body>
 </html>

@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatisierung (AppleScript &amp; Kurzbefehle)</h1>
-<p>Peach Commander ist skriptfähig und lässt sich per AppleScript sowie aus der App „Kurzbefehle" steuern. Einige Kern-Verben erlauben es einem Skript, die Panels zu navigieren, Dateien per Maske auszuwählen, die aktuelle Auswahl zu kopieren oder zu verschieben und jeden Peach-Commander-Befehl über seine ID auszuführen — und zwar über dieselben Aktionen wie die Menüs, sodass sich ein skriptierter Schritt genau wie ein manueller verhält. Praktisch für wiederkehrende Aufgaben: Downloads einsortieren, Build-Ausgaben bereitstellen oder einen Datei-Schritt in einen größeren Kurzbefehl einbauen.</p>
+<p>Automatisierung wirkt hier in beide Richtungen.</p>
+<p><strong>Hinaus:</strong> Peach Commander ist skriptfähig und lässt sich per AppleScript sowie aus der App „Kurzbefehle“ steuern. Einige Kern-Verben erlauben es einem Skript, die Panels zu navigieren, Dateien per Maske auszuwählen, die aktuelle Auswahl zu kopieren oder zu verschieben und jeden Peach-Commander-Befehl über seine ID auszuführen — und zwar über dieselben Aktionen wie die Menüs, sodass sich ein skriptierter Schritt genau wie ein manueller verhält. Darum geht es im übrigen Teil dieser Seite.</p>
+<p><strong>Herein:</strong> Peach Commander kann auch ein Skript <em>von Ihnen</em> ausführen — AppleScript oder JavaScript — und es auf ein Menü, eine Schaltfläche oder eine Taste legen. Dafür ist das Plugin <strong>Scripting</strong> nötig, das abgeschaltet ausgeliefert wird; siehe <a href="#eigene-skripte-ausfuhren">Eigene Skripte ausführen</a> weiter unten.</p>
+<p>Um eine <em>Folge</em> von Dateiaktionen zu wiederholen statt einer einzelnen, siehe <a href="macros.html">Makros</a>.</p>
 <h2 id="das-dictionary-ansehen">Das Dictionary ansehen</h2>
 <ol>
 <li>Öffnen Sie den <strong>Skripteditor</strong> (in <code>/Applications/Utilities</code> — im Finder „Dienstprogramme“).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="nutzung-aus-kurzbefehle">Nutzung aus Kurzbefehle</h2>
 <p>Fügen Sie in der App <strong>Kurzbefehle</strong> die Aktion <strong>AppleScript ausführen</strong> hinzu und setzen Sie ein Skript wie oben ein. So bauen Sie einen Peach-Commander-Schritt in einen größeren Kurzbefehl ein — etwa ausgelöst durch eine Ordneränderung oder einen Tastaturkurzbefehl.</p>
+<h2 id="eigene-skripte-ausfuhren">Eigene Skripte ausführen</h2>
+<p>Die andere Richtung: ein Skript von Ihnen, ausgeführt von Peach Commander.</p>
+<p>Das ist ein Plugin, und es wird <strong>abgeschaltet</strong> ausgeliefert, weil ein Programm Ihrer Wahl alles kann, was der Rest der Anwendung kann, und einiges, was nichts davon abdeckt. Zwei Schalter, beide aus, bis Sie sie setzen:</p>
+<ol>
+<li><strong>Konfiguration ▸ Plugins…</strong> — <strong>Scripting</strong> aktivieren.</li>
+<li><strong>Einstellungen ▸ KI</strong> — <strong>Skripte ausführen lassen</strong> einschalten. Es steht auf dieser Seite, weil es dieselbe Art von Berechtigung ist wie die Shell des Assistenten, und beide gehören zusammen.</li>
+</ol>
+<p>Legen Sie dann ein Skript in <code>scripts/</code> in Ihrem Konfigurationsordner ab — <strong>Befehle ▸ Skriptordner öffnen</strong> bringt Sie dorthin und legt beim ersten Mal ein Beispiel an. Eine Datei <code>.applescript</code>, <code>.scpt</code> oder <code>.jxa</code> in diesem Ordner <em>ist</em> ein Skript; es gibt nichts anzumelden.</p>
+<h3 id="was-ein-skript-bekommt">Was ein Skript bekommt</h3>
+<p>Der Panel-Zustand kommt über die Umgebung an, sodass der gewöhnliche Fall keine Apple Events und keine Berechtigungsabfrage braucht:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Bedeutet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Der Ordner des aktiven Panels</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Der Ordner des anderen Panels</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Die Datei unter dem Cursor</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Wie viele Objekte ausgewählt sind</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Eine Textdatei mit einem ausgewählten Pfad pro Zeile (fehlt, wenn nichts ausgewählt ist)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Alles darüber hinaus geht über die Anwendung selbst, mit den Verben oben — die beiden Hälften ergänzen sich also.</p>
+<h3 id="ein-skript-auf-eine-schaltflache-oder-eine-taste-legen">Ein Skript auf eine Schaltfläche oder eine Taste legen</h3>
+<p>Jedes Skript wird ein Befehl mit dem Namen <code>plugin.script.run.&lt;name&gt;</code>, wobei <code>&lt;name&gt;</code> der Dateiname ohne Endung ist (Leerzeichen und Punkte werden zu Bindestrichen). Diese ID funktioniert überall dort, wo eine <code>cm_*</code>-ID funktioniert: in der Schaltflächenleiste, in <code>usercmd.ini</code>, in einer <code>.mnu</code>-Datei und in <strong>Konfiguration ▸ Tastenkürzel bearbeiten…</strong>.</p>
+<h3 id="wie-ein-skript-lauft-und-die-zeitgrenze">Wie ein Skript läuft, und die Zeitgrenze</h3>
+<p>Standardmäßig läuft ein Skript als eigener Prozess, was bedeutet, dass es eine Zeitgrenze bekommen und bei Überschreitung gestoppt werden kann — dreißig Sekunden, wenn Sie nichts anderes sagen. Ein Skript kann sich dafür entscheiden, <em>innerhalb</em> der Anwendung zu laufen; dann kann es einen strukturierten Wert zurückgeben und bleibt zwischen Läufen kompiliert, aber es gibt keine Zeitgrenze: ein Skript in einer Schleife hält die Anwendung an. Die Wahl steht in <code>scripts.json</code> neben Ihren Skripten:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Nur was von den Vorgaben abweicht, braucht einen Eintrag; eine Datei ohne Eintrag bekommt ihren eigenen Namen als Titel, läuft als eigener Prozess und wird nach dreißig Sekunden gestoppt.</p>
+<h3 id="fur-den-assistenten">Für den Assistenten</h3>
+<p>Mit eingeschaltetem Plugin und aktivierter Einstellung erhält der Assistent <code>run_applescript</code>, <code>run_jxa</code> und <code>check_script</code>. Jedes zeigt Ihnen das genaue Skript und wartet auf Ihre Zustimmung, bevor irgendetwas läuft, und keines davon wird je einem externen Agenten über MCP angeboten.</p>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
 <li>Die ID, die Sie an <code>run command</code> übergeben, ist dieselbe <code>cm_*</code>-ID, die auch im Befehlsbrowser angezeigt wird (siehe <a href="start-menu.html">Das Start-Menü &amp; eigene Befehle</a>).</li>
 <li>Skripte wirken immer auf das <strong>aktive</strong> Panel; navigieren Sie bei Bedarf zuerst mit <code>go to … in left</code> / <code>in right</code> auf die gewünschte Seite.</li>
 <li>Peach Commander ist eine App mit einem Fenster, daher sprechen Skripte die zwei Panels dieses Fensters an.</li>
 </ul>
-<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="start-menu.html">Das Start-Menü &amp; eigene Befehle</a></li><li><a href="settings.html">Einstellungen</a></li></ul></section>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="start-menu.html">Das Start-Menü &amp; eigene Befehle</a></li><li><a href="settings.html">Einstellungen</a></li><li><a href="macros.html">Makros</a></li></ul></section>
 </main>
 </body>
 </html>

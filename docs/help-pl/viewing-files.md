@@ -73,6 +73,18 @@ Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informac
 
 Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.
 
+## Które strony oferuje panel boczny
+
+Panel boczny pokazuje początkowo tylko stronę **Informacje**. **Aktywności** (trwające transfery) i **Dziennik** (zakończone transfery) są wyłączone, bo większość pracy nigdy o nie nie prosi, a w przeciwnym razie pasek z trzema kartami leży nad podglądem przez cały dzień.
+
+- Włączcie je w **Ustawienia > Układ** w sekcji *Strony panelu bocznego*, prawym przyciskiem na pasku kart albo z **Widok > Panel boczny: Informacje / Aktywności / Dziennik**.
+- Gdy zostanie jedna strona, panel całkowicie rezygnuje z paska kart: panel z samymi Informacjami to podgląd i szczegóły, bez niczego nad nimi.
+- Wyłączyć można każdą stronę, także Informacje — przydatne, gdy trzymacie tu zamiast tego terminal albo widok wtyczki. Panel, w którym nic nie zostało, mówi o tym, zamiast otwierać się pusty.
+- Strony dodawane przez wtyczkę nie są tym objęte: pojawiają się i znikają razem z wtyczką, a do ich wyłączania służy strona **Wtyczki**.
+- **Widok > Przywróć układ** przywraca strony do samych Informacji, razem z resztą wyposażenia okna.
+
+Pozycje w menu Widok znaczą więcej, niż wyglądają. Gdy każda strona jest wyłączona, nie ma już paska kart, na którym można kliknąć prawym przyciskiem — to one są drogą powrotną.
+
 ## Dekompilacja plików .class języka Java
 
 Przy włączonej wtyczce **Java Decompiler** klawisz F3 na pliku `.class` pokazuje czytelny kod zamiast danych binarnych — również dla klas wewnątrz archiwum JAR lub ZIP, do którego można wejść i czytać bez rozpakowywania.

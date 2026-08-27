@@ -552,7 +552,10 @@ features:
     category: viewer
     audiences: [user]
     status: stable
-    source: { modules: [PCApp], types: [PreviewPanelView, MainWindowController] }
+    ui:
+      menus: [View]
+      commands: [cm_PreviewPanel, cm_SidePanelInfo, cm_SidePanelActivities, cm_SidePanelLog]
+    source: { modules: [PCApp, PCFoundation], types: [PreviewPanelView, SidePanelTabList, MainWindowController] }
     documentation: { integrated_help: true, website: false }
     notes: >-
       Reworked along Finder's info sidebar (F-343): a live QLPreviewView that fills the panel width
@@ -563,6 +566,16 @@ features:
       folders and anything Quick Look has no generator for. The preview starts at the top of the
       page and grows into whatever height the details leave, and the panel's width is draggable
       from its left edge (F-344), persisted as [Layout] PreviewWidth.
+      Each of the three built-in pages can be switched off and Info alone is what ships (F-476,
+      [Layout] PreviewTabInfo/PreviewTabActivities/PreviewTabLog): Activities and Log are transfer
+      lists most people never open, and they were charging a permanently visible tab strip above the
+      preview for it. One tab left drops the strip; every page off says so rather than opening blank.
+      Reachable from Settings > Layout, the strip's context menu and the View menu — the last of
+      which is the only route left once there is no strip to right-click. Pages a plugin contributes
+      are deliberately not governed here; their visibility is the plugin's enablement, and a second
+      invisible off-switch is how a view goes missing for a reason nobody can find. Which tab is
+      showing is kept by identity rather than by segment index (SidePanelTabList), because the index
+      is what made switching a page off show one page's content under another page's label.
 
   - id: editor
     name: Text-/Code-Editor (F4) & Hex-Editor
@@ -1151,7 +1164,70 @@ features:
     status: stable
     source: { modules: [PCApp], types: [Scripting, PeachCommander.sdef] }
     documentation: { integrated_help: true, website: true }
-    notes: "F-296. sdef dictionary (go to/select/copy items/move items/run command + active folder/inactive folder/selection paths + panel-side enum) via NSAppleScriptEnabled + OSAScriptingDefinition; NSScriptCommand adapters over the host entry points. Also usable from the Shortcuts app via Run AppleScript."
+    notes: "F-296. sdef dictionary (go to/select/copy items/move items/run command + active folder/inactive folder/selection paths + panel-side enum) via NSAppleScriptEnabled + OSAScriptingDefinition; NSScriptCommand adapters over the host entry points. Also usable from the Shortcuts app via Run AppleScript. This is the OUTBOUND half — the app being driven by a script; running a script is `scripting-engine` below."
+
+  - id: scripting-engine
+    name: Skripte ausführen (AppleScript/JXA)
+    name_en: Scripting engine
+    category: customization
+    audiences: [user, expert]
+    status: beta
+    ui: { menus: [Commands] }
+    source: { modules: [Scripting, PCAutomation], types: [ScriptRunner, ScriptStore, ScriptDefinition] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      F-477, the INBOUND half of scripting: the app runs a script of the user's, where `applescript`
+      above is the app being driven by one. An optional `.ptxplugin` shipping SWITCHED OFF, and its run
+      tools carry a new `script` capability that `PermissionPolicy.standard` withholds — the same
+      argument the shell already gets, and a separate switch from it, because an AppleScript can drive
+      *other* applications through Apple events. Scripts are files in `<configRoot>/scripts/`; dropping
+      one in is enough. Default execution is a SUBPROCESS (`osascript`), which is the only path that can
+      carry a hard timeout — measured: a `delay 30` script with a 3-second limit was killed and reported
+      rather than hanging the app. `mode: "in-process"` opts into OSAKit for a structured return value
+      and a cached compiled script, at the price of no timeout. **Measured for the hardened runtime:** an
+      ad-hoc binary signed `--options runtime` with this app's exact entitlements compiled and ran both
+      AppleScript and JXA through OSAKit; `disable-library-validation`, already present for third-party
+      plugin dylibs, is what admits `/System/Library/Components/JavaScript.component`, so no `allow-jit`
+      is needed. The panel state reaches a script as environment variables (`PC_ACTIVE_DIR`,
+      `PC_TARGET_DIR`, `PC_CURSOR_NAME`, `PC_SELECTION_FILE`), so the ordinary case needs no Apple events
+      and no TCC prompt. `check_script` is a read: OSAKit reports a syntax error with its position
+      without running anything. Never offered over MCP (`MCPServer.notOfferedRemotely`). First real
+      consumer of the `PCContributions.tools` + `PcInvokeTool` ABI, which was built and unused.
+
+  - id: macros
+    name: Makros
+    name_en: Macros
+    category: customization
+    audiences: [user]
+    status: beta
+    ui: { menus: [Configuration] }
+    source: { modules: [PCAutomation, PCApp, PCCommands], types: [Macro, MacroRunner, MacroStore, MacroRecorder, MacroPlan, MacroEditor] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      F-478. A named sequence of automation-catalogue steps in `<configRoot>/macros.json`, run through
+      the same `AutomationCore` the assistant and the MCP server use — so a macro is gated, audited and
+      per-step undoable by construction. Deliberately NOT a scripting language: no conditions, no loops,
+      because the plan a user approves has to be a list they can read. Each macro becomes a `mc_<id>`
+      command via `CommandRegistry.setMacroCommands`, so it appears by itself in the Command Browser, the
+      shortcut editor, the button-bar picker, `.mnu`/`usercmd.ini` and `run_command`. A macro's
+      capability is the MOST DEMANDING of its steps, fail-closed (an unknown tool counts as a write), so
+      a macro ending in a permanent delete is gated before its first step rather than four steps in; the
+      runner still hands each step the session's own allow-list, which is what stops a
+      `run_command("cm_DeleteReal")` step that the macro-level gate reads only as `.runCommand`.
+      Confirmation is once, for the whole macro, with the steps as strikeable rows resolved against the
+      live context ("Move one.pdf, two.pdf into “2026-08”"). A step whose `%S`/`%{1}` expands to nothing
+      FAILS rather than running on an empty list — measured: it created the folder, reported both steps
+      ok, and moved nothing. `MacroRecorder` builds a macro out of the audit log, which needed the log to
+      start carrying each action's verbatim arguments (`AuditEntry.argumentsJSON`, capped) because the
+      readable form clips every value at 60 characters. Honest limit, stated in the help page: manual
+      F5/F6 panel work does not reach the log and so cannot be recorded.
+      Two more things the feature forced: `set_selection` had been declared in the catalogue and never
+      implemented (it threw `notImplemented` while `applySelectionMask` sat one call away), so a macro
+      could only act on an existing selection — it now REPLACES the selection and fails on a mask that
+      matches nothing, because adding would make a macro depend on the state it started in and a
+      no-match would leave the old selection for the next step to move. And the panel state is re-read
+      before every step rather than snapshotted once: with one snapshot a macro that selected its own
+      files at step one still saw the old selection at step three.
 
   # ───────────────────────── Plugins (user + developer) ─────────────────────────
   - id: plugins-user

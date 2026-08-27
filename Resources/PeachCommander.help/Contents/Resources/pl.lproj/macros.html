@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makra</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Makra</h1>
+<p>Makro to nazwana sekwencja działań na plikach — utwórz folder, przenieś do niego zaznaczenie, oznacz to, co zostało — którą można uruchomić ponownie jednym kliknięciem. To nie jest język skryptowy: nie ma warunków ani pętli, i tak jest zamierzone. Makro jest listą, którą można przeczytać, a przeczytać trzeba móc, zanim się je zatwierdzi.</p>
+<p>Wszystko, co robi makro, przechodzi przez tę samą maszynerię, z której korzysta asystent. Makro nie może więc zrobić nic, na co nie ma Twojej zgody, każdy jego krok pojawia się w dzienniku działań, a krok, który da się cofnąć, wciąż się da.</p>
+<h2 id="najszybsza-droga-z-tego-co-wasnie-zrobies">Najszybsza droga: z tego, co właśnie zrobiłeś</h2>
+<p>Nie musisz pisać makra od zera.</p>
+<ol>
+<li>Zrób to raz — przez asystenta albo uruchamiając istniejące makro.</li>
+<li>Wybierz <strong>Konfiguracja ▸ Makro z ostatnich działań…</strong>.</li>
+<li>Zaznacz kroki, które makro ma powtarzać, nadaj mu nazwę i zostaw włączone <strong>Dodaj też przycisk dla niego</strong>.</li>
+</ol>
+<p><strong>Zapisz makro</strong> — i przycisk jest na pasku. To cały cykl.</p>
+<blockquote>
+<p><strong>Czego się nie zapisuje.</strong> Lista powstaje z działań, które przeszły przez asystenta lub inne makro. Ręczne kopiowanie, przenoszenie i zmiana nazw w panelach — F5, F6, F7 — nie są zapisywane, więc tą drogą nie da się z nich zrobić makra. Do tego użyj edytora poniżej.</p>
+</blockquote>
+<h2 id="reczna-edycja-makr">Ręczna edycja makr</h2>
+<p><strong>Konfiguracja ▸ Edytuj makra…</strong> otwiera <code>macros.json</code> w folderze konfiguracji i przy pierwszym razie zostawia w nim skomentowany przykład. Makro to lista kroków, a każdy krok wskazuje narzędzie i jego argumenty:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Zapis natychmiast przeładowuje makra. Jakie narzędzia istnieją i co przyjmują, powie asystent przez <code>list_macros</code> — albo przykład, z którym plik został utworzony.</p>
+<h3 id="symbole-zastepcze">Symbole zastępcze</h3>
+<p>Pojedyncze litery są te same, których używa pasek przycisków i menu Start: kto zrobił już przycisk, nie musi się tu uczyć niczego nowego.</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Znaczy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Folder aktywnego panelu</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Folder drugiego panelu</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Plik pod kursorem</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Zaznaczone pliki — <strong>lista</strong>, czyli dokładnie to, co przyjmują <code>copy</code>, <code>move</code> i <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Data uruchomienia makra, w tym formacie</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Wynik kroku 1, o ile ten krok zwrócił ścieżkę lub listę ścieżek</td>
+</tr>
+</tbody>
+</table>
+<p>Nawiasy klamrowe służą dodatkom, bo litery są już zajęte: <code>%M</code> w całym pozostałym programie oznacza „nazwę pod kursorem w drugim panelu”, więc miesiąca nie można było tak zapisać.</p>
+<p><code>%S</code> to jedyne miejsce, w którym makro różni się od przycisku: na przycisku zaznaczenie staje się listą słów dla wiersza poleceń, tutaj staje się listą pełnych ścieżek, których oczekują narzędzia plikowe.</p>
+<p>Krok, którego <code>%S</code> lub <code>%{1}</code> wychodzi <strong>pusty, zatrzymuje makro</strong>, zamiast działać na niczym. <code>move</code> bez plików nie jest mniejszym <code>move</code> — to żądanie, które już nic nie mówi, a zgłoszenie sukcesu byłoby kłamstwem.</p>
+<h2 id="uruchamianie-makra">Uruchamianie makra</h2>
+<p>Każde makro staje się poleceniem o nazwie <code>mc_&lt;id&gt;</code> i dzięki temu samo pojawia się w:</p>
+<ul>
+<li><strong>Konfiguracja ▸ Przeglądarka poleceń…</strong></li>
+<li><strong>Konfiguracja ▸ Edytuj skróty… — przypisz je do klawisza</strong></li>
+<li>Wyborze poleceń w edytorze paska przycisków</li>
+<li>Twoim pliku menu <code>.mnu</code> i <code>usercmd.ini</code>, jeśli ich używasz</li>
+<li>Asystencie, który może je uruchomić po nazwie</li>
+</ul>
+<p>Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania.</p>
+<p>Jeśli krok zawiedzie, makro <strong>zatrzymuje się w tym miejscu</strong>, zamiast iść dalej — krok drugi zwykle zakłada, że krok pierwszy się wykonał, a przenoszenie plików do nieutworzonego folderu nie jest częściowym sukcesem. Raport wskazuje krok i mówi, co poszło źle; kroki, które się wykonały, są w dzienniku działań.</p>
+<h2 id="co-makru-wolno">Co makru wolno</h2>
+<p>Makro ocenia się po tym, co najbardziej wymagające w nim jest. Makro, którego kroki tylko czytają, jest traktowane jak czytanie; takie, które kończy się trwałym usunięciem, jest zabezpieczone jak trwałe usunięcie — przed uruchomieniem czegokolwiek, nie cztery kroki później.</p>
+<p>Nieprzyznawanie niczego ponad to jest domyślne. Jeśli makro zawiera krok, na który Twoje uprawnienia nie pozwalają — polecenie powłoki, skrypt — całe makro jest odrzucane z podaniem przyczyny i nic się nie dzieje.</p>
+<h2 id="cofanie">Cofanie</h2>
+<p>Każdy krok jest zapisywany osobno, więc <strong>cofnij</strong> po makrze wycofuje jego <em>ostatni</em> krok, a nie całe makro. Cofania całego makra nie ma, bo kilka narzędzi nie ma żadnej odwrotności, a przycisk, który by je oferował, kłamałby w ich sprawie.</p>
+<h2 id="gdzie-sie-to-zapisuje">Gdzie się to zapisuje</h2>
+<ul>
+<li>Twoje makra są w <code>macros.json</code> w folderze konfiguracji — to zwykły plik, który można porównywać i trzymać razem z dotfiles.</li>
+<li>Przyciski dodane przez makro to normalne wpisy paska przycisków w <code>default.bar</code>, więc usunięcie jednego wygląda tak samo jak przy każdym innym przycisku.</li>
+</ul>
+<h2 id="dalsze-kroki">Dalsze kroki</h2>
+<ul>
+<li><a href="automation.html">Automatyzacja (AppleScript i Skróty)</a> — Sterowanie Peach Commanderem ze skryptu i uruchamianie własnych skryptów jako kroku makra.</li>
+<li><a href="toolbar.html">Pasek przycisków</a> — Gdzie trafia przycisk dodany przez makro.</li>
+<li><a href="keyboard-shortcuts.html">Klawiatura i skróty</a> — Przypisanie makra do klawisza.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automatyzacja (AppleScript i Skróty)</a></li><li><a href="toolbar.html">Pasek przycisków</a></li><li><a href="start-menu.html">Menu Start i polecenia niestandardowe</a></li><li><a href="keyboard-shortcuts.html">Klawiatura i skróty</a></li></ul></section>
+</main>
+</body>
+</html>

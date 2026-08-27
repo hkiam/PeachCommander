@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macro’s</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Macro’s</h1>
+<p>Een macro is een reeks bestandsacties met een naam — een map maken, de selectie erin verplaatsen, de rest van een label voorzien — die u met één klik opnieuw kunt uitvoeren. Het is geen scripttaal: er zijn geen voorwaarden en geen lussen, en dat is opzet. Een macro is een lijst die u kunt lezen, en lezen is wat u moet kunnen voordat u ermee instemt.</p>
+<p>Alles wat een macro doet, gaat door dezelfde machinerie als de assistent. Een macro kan dus niets doen wat u niet hebt toegestaan, elke stap komt in het actielogboek, en een stap die kan worden teruggedraaid kan dat nog steeds.</p>
+<h2 id="de-snelste-weg-uit-wat-u-net-hebt-gedaan">De snelste weg: uit wat u net hebt gedaan</h2>
+<p>U hoeft een macro niet vanaf niets te schrijven.</p>
+<ol>
+<li>Doe het één keer — via de assistent, of door een bestaande macro uit te voeren.</li>
+<li>Kies <strong>Configuratie ▸ Macro van recente acties…</strong>.</li>
+<li>Vink de stappen aan die de macro moet herhalen, geef hem een naam en laat <strong>Ook een knop ervoor toevoegen</strong> aan staan.</li>
+</ol>
+<p><strong>Macro opslaan</strong>, en de knop staat in de balk. Dat is de hele cyclus.</p>
+<blockquote>
+<p><strong>Wat niet wordt vastgelegd.</strong> De lijst wordt opgebouwd uit acties die via de assistent of een andere macro zijn gelopen. Handmatig kopiëren, verplaatsen of hernoemen in de vensters — F5, F6, F7 — wordt niet vastgelegd en kan zo dus geen macro worden. Gebruik daarvoor de editor hieronder.</p>
+</blockquote>
+<h2 id="macros-met-de-hand-bewerken">Macro’s met de hand bewerken</h2>
+<p><strong>Configuratie ▸ Macro’s bewerken…</strong> opent <code>macros.json</code> in uw configuratiemap en zet er de eerste keer een voorbeeld met commentaar in. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Opslaan laadt de macro’s meteen opnieuw. Welke gereedschappen er zijn en wat ze aannemen, vertelt de assistent via <code>list_macros</code> — of het voorbeeld waarmee het bestand is aangemaakt.</p>
+<h3 id="aanduidingen">Aanduidingen</h3>
+<p>De losse letters zijn dezelfde die de knoppenbalk en het Start-menu gebruiken: wie al een knop heeft gemaakt, hoeft hier niets nieuws te leren.</p>
+<table>
+<thead>
+<tr>
+<th>Aanduiding</th>
+<th>Betekent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>De map van het actieve venster</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>De map van het andere venster</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Het bestand onder de cursor</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>De geselecteerde bestanden — een <strong>lijst</strong>, en dat is precies wat <code>copy</code>, <code>move</code> en <code>move_to_trash</code> aannemen</td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>De datum waarop de macro startte, in die opmaak</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Het resultaat van stap 1, mits die stap een pad of een lijst paden opleverde</td>
+</tr>
+</tbody>
+</table>
+<p>De accolades zijn voor de extra’s, omdat de letters al bezet zijn: <code>%M</code> betekent in de rest van het programma ‘de naam onder de cursor in het andere venster’, dus een maand kon zo niet worden geschreven.</p>
+<p><code>%S</code> is de enige plek waar een macro van een knop afwijkt: op een knop wordt de selectie een lijst woorden voor een opdrachtregel, hier wordt het de lijst volledige paden die de bestandsgereedschappen aannemen.</p>
+<p>Een stap waarvan <code>%S</code> of <code>%{1}</code> <strong>leeg uitkomt, stopt de macro</strong> in plaats van met niets te lopen. Een <code>move</code> zonder bestanden is geen kleinere <code>move</code> — het is een verzoek dat niets meer zegt, en succes melden zou een leugen zijn.</p>
+<h2 id="een-macro-uitvoeren">Een macro uitvoeren</h2>
+<p>Elke macro wordt een opdracht met de naam <code>mc_&lt;id&gt;</code> en verschijnt daardoor van zichzelf in:</p>
+<ul>
+<li><strong>Configuratie ▸ Opdrachtenoverzicht…</strong></li>
+<li><strong>Configuratie ▸ Sneltoetsen bewerken… — zet hem op een toets</strong></li>
+<li>De opdrachtkiezer in de editor van de knoppenbalk</li>
+<li>Uw <code>.mnu</code>-menubestand en <code>usercmd.ini</code>, als u die gebruikt</li>
+<li>De assistent, die hem op naam kan uitvoeren</li>
+</ul>
+<p>Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen.</p>
+<p>Mislukt een stap, dan <strong>stopt de macro daar</strong> in plaats van door te gaan — stap twee gaat er meestal van uit dat stap één is gebeurd, en bestanden verplaatsen naar een map die niet is aangemaakt is geen gedeeltelijk succes. Het verslag noemt de stap en zegt wat er misging; de stappen die wel liepen staan in het actielogboek.</p>
+<h2 id="wat-een-macro-mag">Wat een macro mag</h2>
+<p>Een macro wordt afgemeten aan het zwaarste wat erin staat. Een macro waarvan de stappen alleen lezen, geldt als lezen; een die eindigt met definitief verwijderen wordt behandeld als definitief verwijderen — voordat er iets loopt, niet vier stappen later.</p>
+<p>Niets extra toestaan is de standaard. Bevat een macro een stap die uw rechten niet toestaan — een shell-opdracht, een script — dan wordt de hele macro geweigerd met opgave van reden, en gebeurt er niets.</p>
+<h2 id="ongedaan-maken">Ongedaan maken</h2>
+<p>Elke stap wordt afzonderlijk gelogd, dus <strong>ongedaan maken</strong> na een macro haalt de <em>laatste</em> stap terug, niet de hele macro. Er is geen ongedaan maken voor een hele macro, omdat verschillende gereedschappen helemaal geen omgekeerde hebben en een knop die het aanbood daarover zou liegen.</p>
+<h2 id="waar-alles-wordt-opgeslagen">Waar alles wordt opgeslagen</h2>
+<ul>
+<li>Uw macro’s staan in <code>macros.json</code> in de configuratiemap — een gewoon bestand dat u kunt diffen en bij uw dotfiles kunt bewaren.</li>
+<li>Knoppen die een macro heeft toegevoegd zijn normale knoppenbalk-items in <code>default.bar</code>, dus er een weghalen gaat net als bij elke andere knop.</li>
+</ul>
+<h2 id="volgende-stappen">Volgende stappen</h2>
+<ul>
+<li><a href="automation.html">Automatisering (AppleScript en Snelle taken)</a> — Peach Commander vanuit een script besturen, en uw eigen scripts als macrostap uitvoeren.</li>
+<li><a href="toolbar.html">De knoppenbalk</a> — Waar de knop die een macro toevoegde terechtkomt.</li>
+<li><a href="keyboard-shortcuts.html">Toetsenbord en sneltoetsen</a> — Een macro op een toets zetten.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automatisering (AppleScript en Shortcuts)</a></li><li><a href="toolbar.html">De knoppenbalk</a></li><li><a href="start-menu.html">Het Start-menu &amp; aangepaste opdrachten</a></li><li><a href="keyboard-shortcuts.html">Toetsenbord en sneltoetsen</a></li></ul></section>
+</main>
+</body>
+</html>

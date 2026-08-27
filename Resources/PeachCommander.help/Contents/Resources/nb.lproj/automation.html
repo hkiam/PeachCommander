@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatisering (AppleScript og Snarveier)</h1>
-<p>Peach Commander kan skriptes, så du kan styre den fra AppleScript og fra Snarveier-appen. En håndfull kjerneverb lar et skript navigere i panelene, velge filer etter en maske, kopiere eller flytte det gjeldende utvalget og kjøre hvilken som helst Peach Commander-kommando etter id-en dens – ved å gjenbruke nøyaktig de samme handlingene som menyene bruker, slik at et skriptet trinn oppfører seg som et manuelt. Det er praktisk for repetitive gjøremål: å arkivere nedlastinger, klargjøre utdataene fra en bygging, eller å koble et fil-trinn inn i en større Snarvei.</p>
+<p>Automatisering virker her i begge retninger.</p>
+<p><strong>Utover:</strong> Peach Commander kan styres med skript, så du kan drive den fra AppleScript og fra Snarveier-appen. En håndfull kjerneverb lar et skript navigere i panelene, merke filer med en maske, kopiere eller flytte gjeldende utvalg og kjøre hvilken som helst Peach Commander-kommando via id-en dens — med nøyaktig de samme handlingene som menyene bruker, slik at et skriptet trinn oppfører seg som et manuelt. Det handler resten av denne siden om.</p>
+<p><strong>Innover:</strong> Peach Commander kan også <em>kjøre</em> et skript fra deg — AppleScript eller JavaScript — og legge det i en meny, på en knapp eller på en tast. Det krever tillegget <strong>Scripting</strong>, som leveres avslått; se <a href="#kjor-dine-egne-skript">Kjør dine egne skript</a> nedenfor.</p>
+<p>Vil du gjenta en <em>rekke</em> filhandlinger i stedet for én, se <a href="macros.html">Makroer</a>.</p>
 <h2 id="se-ordlisten">Se ordlisten</h2>
 <ol>
 <li>Åpne <strong>Script Editor</strong> (i <code>/Applications/Utilities</code> — «Verktøy» i Finder).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="bruke-det-fra-snarveier">Bruke det fra Snarveier</h2>
 <p>I <strong>Snarveier</strong>-appen, legg til handlingen <strong>Kjør AppleScript</strong> og lim inn et skript som det over. Det lar deg folde et Peach Commander-trinn inn i en større Snarvei – for eksempel utløst av en mappeendring eller en hurtigtast.</p>
+<h2 id="kjr-dine-egne-skript">Kjør dine egne skript</h2>
+<p>Den andre retningen: et skript fra deg, kjørt av Peach Commander.</p>
+<p>Dette er et tillegg, og det leveres <strong>avslått</strong>, fordi det å kjøre et program du velger kan gjøre alt resten av programmet kan, og flere ting som ingenting av det dekker. To brytere, begge av til du setter dem:</p>
+<ol>
+<li><strong>Konfigurasjon ▸ Tillegg…</strong> — slå på <strong>Scripting</strong>.</li>
+<li><strong>Innstillinger ▸ KI</strong> — slå på <strong>Tillat at skript kjører</strong>. Det står på den siden fordi det er samme slags tillatelse som assistentens skall, og de to hører sammen.</li>
+</ol>
+<p>Legg deretter et skript i <code>scripts/</code> inne i konfigurasjonsmappen din — <strong>Kommandoer ▸ Åpne skriptmappen</strong> tar deg dit og legger igjen et eksempel den første gangen. En fil <code>.applescript</code>, <code>.scpt</code> eller <code>.jxa</code> i den mappen <em>er</em> et skript; det er ingenting å registrere.</p>
+<h3 id="hva-et-skript-far">Hva et skript får</h3>
+<p>Panelenes tilstand kommer i miljøet, så det vanlige tilfellet trenger ingen Apple-hendelser og ingen tillatelsesforespørsel:</p>
+<table>
+<thead>
+<tr>
+<th>Variabel</th>
+<th>Betyr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Mappen til det aktive panelet</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Mappen til det andre panelet</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Filen under markøren</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Hvor mange elementer som er valgt</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>En tekstfil med én valgt sti per linje (mangler når ingenting er valgt)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Alt utover det går gjennom programmet selv, med verbene ovenfor — de to halvdelene utfyller altså hverandre.</p>
+<h3 id="legge-et-skript-pa-en-knapp-eller-en-tast">Legge et skript på en knapp eller en tast</h3>
+<p>Hvert skript blir en kommando med navnet <code>plugin.script.run.&lt;navn&gt;</code>, der <code>&lt;navn&gt;</code> er filnavnet uten filendelse (mellomrom og punktum blir bindestrek). Den id-en virker overalt der en <code>cm_*</code>-id virker: i knapperaden, i <code>usercmd.ini</code>, i en <code>.mnu</code>-fil og i <strong>Konfigurasjon ▸ Rediger snarveier…</strong>.</p>
+<h3 id="hvordan-et-skript-kjres-og-tidsgrensen">Hvordan et skript kjøres, og tidsgrensen</h3>
+<p>Som standard kjøres et skript som en egen prosess, som betyr at det kan få en tidsgrense og stoppes hvis det overskrider den — tretti sekunder med mindre du sier noe annet. Et skript kan velge å kjøre <em>inne i</em> programmet, som lar det returnere en strukturert verdi og holder det kompilert mellom kjøringer, men da finnes ingen tidsgrense: et skript som går i løkke holder programmet. Angi valget i <code>scripts.json</code> ved siden av skriptene dine:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Bare det som avviker fra standardverdiene krever en oppføring; en fil uten oppføring får sitt eget navn som tittel, kjøres som egen prosess og stoppes etter tretti sekunder.</p>
+<h3 id="til-assistenten">Til assistenten</h3>
+<p>Med tillegget på og innstillingen aktivert får assistenten <code>run_applescript</code>, <code>run_jxa</code> og <code>check_script</code>. Hver av dem viser deg det nøyaktige skriptet og venter på din godkjenning før noe kjøres, og ingen av dem tilbys noen gang til en ekstern agent over MCP.</p>
 <h2 id="merknader">Merknader</h2>
 <ul>
 <li>Kommando-id-en du sender til <code>run command</code> er den samme <code>cm_*</code>-id-en som vises i kommandoutforskeren (se <a href="start-menu.html">Startmenyen og egendefinerte kommandoer</a>).</li>
 <li>Skripting handler alltid på det <strong>aktive</strong> panelet; bruk <code>go to … in left</code> / <code>in right</code> først hvis du trenger en bestemt side.</li>
 <li>Peach Commander er en app med ett enkelt vindu, så skript retter seg mot dette vinduets to paneler.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Startmenyen og egendefinerte kommandoer</a></li><li><a href="settings.html">Innstillinger</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Startmenyen og egendefinerte kommandoer</a></li><li><a href="settings.html">Innstillinger</a></li><li><a href="macros.html">Makroer</a></li></ul></section>
 </main>
 </body>
 </html>

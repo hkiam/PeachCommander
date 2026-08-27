@@ -73,6 +73,18 @@ Sidopanelen (**Visa > Förhandsvisningspanel**, eller Cmd+Skift+P) har en sida *
 
 När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.
 
+## Vilka sidor sidopanelen erbjuder
+
+Sidopanelen visar först bara **Info**. **Aktiviteter** (överföringar som fortfarande pågår) och **Logg** (avslutade överföringar) är avstängda, för det mesta arbetet frågar aldrig efter dem, och annars ligger en rad med tre flikar över förhandsvisningen hela dagen.
+
+- Slå på dem i **Inställningar > Layout** under *Sidopanelens sidor*, med högerklick på flikraden, eller från **Visa > Sidopanel: Info / Aktiviteter / Logg**.
+- Om bara en sida återstår slopar panelen flikraden helt: en panel med bara Info är förhandsvisning och detaljer, utan något ovanför.
+- Varje sida kan stängas av, även Info — bra när du i stället har terminalen eller ett insticksprograms vy här. En panel där inget återstår säger det i stället för att öppnas tom.
+- Sidor som ett insticksprogram bidrar med påverkas inte: de kommer och går med insticksprogrammet, och för att stänga av dem finns sidan **Insticksprogram**.
+- **Visa > Återställ layout** sätter sidorna tillbaka till Info enbart, tillsammans med fönstrets övriga inredning.
+
+Posterna i Visa-menyn betyder mer än de ser ut att göra. Är varje sida avstängd finns ingen flikrad kvar att högerklicka på — de är vägen tillbaka.
+
 ## Dekompilera Java-classfiler
 
 Med insticksmodulen **Java Decompiler** påslagen visar F3 på en `.class`-fil läsbar kod i stället för binärdata — även för classfiler inuti en JAR eller ZIP, som du kan gå in i och läsa utan att packa upp.

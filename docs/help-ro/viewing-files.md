@@ -73,6 +73,18 @@ Panoul lateral (**Vizualizare > Panoul de previzualizare**, sau Cmd+Shift+P) are
 
 La mutarea cursorului, numele și detaliile se actualizează imediat; previzualizarea urmează o clipă mai târziu, astfel încât o săgeată ținută apăsată printr-un dosar lung să nu pornească o previzualizare pentru fiecare rând parcurs.
 
+## Ce pagini oferă panoul lateral
+
+Panoul lateral apare la început doar cu pagina **Informații**. **Activități** (transferuri încă în curs) și **Jurnal** (transferuri încheiate) sunt dezactivate, pentru că cea mai mare parte a lucrului nu le cere niciodată, iar altfel o bandă de trei file stă toată ziua deasupra previzualizării.
+
+- Activați-le în **Setări > Aspect**, la *Paginile panoului lateral*, prin clic dreapta pe banda de file, sau din **Vizualizare > Panou lateral: Informații / Activități / Jurnal**.
+- Dacă rămâne o singură pagină, panoul renunță de tot la banda de file: un panou cu doar Informații este previzualizarea și detaliile, fără nimic deasupra.
+- Orice pagină poate fi dezactivată, inclusiv Informații — util când țineți aici mai degrabă terminalul sau vizualizarea unui plugin. Un panou în care nu a rămas nimic o spune, în loc să se deschidă gol.
+- Paginile oferite de un plugin nu sunt afectate: acelea apar și dispar împreună cu pluginul, iar pentru dezactivarea lor există pagina **Pluginuri**.
+- **Vizualizare > Resetează aspectul** readuce paginile la Informații singură, împreună cu restul mobilierului ferestrei.
+
+Intrările din meniul Vizualizare contează mai mult decât par. Odată dezactivate toate paginile nu mai există bandă de file pe care să dați clic dreapta — ele sunt drumul de întoarcere.
+
 ## Decompilarea fișierelor .class Java
 
 Cu modulul **Java Decompiler** activat, F3 pe un fișier `.class` afișează cod lizibil în loc de date binare — inclusiv pentru clasele din interiorul unei arhive JAR sau ZIP, în care puteți intra și pe care o puteți citi fără dezarhivare.

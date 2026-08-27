@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makron</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Makron</h1>
+<p>Ett makro är en namngiven följd av filåtgärder — skapa en mapp, flytta markeringen dit, tagga det som blir kvar — som du kan köra igen med ett klick. Det är inte ett skriptspråk: det finns inga villkor och inga loopar, och det är avsiktligt. Ett makro är en lista du kan läsa, och läsa är vad du måste kunna göra innan du godkänner den.</p>
+<p>Allt ett makro gör går genom samma maskineri som assistenten använder, så ett makro kan inte göra något du inte har tillåtit, varje steg syns i åtgärdsloggen, och ett steg som kan ångras kan det fortfarande.</p>
+<h2 id="snabbaste-vagen-fran-det-du-just-gjorde">Snabbaste vägen: från det du just gjorde</h2>
+<p>Du behöver inte skriva ett makro från början.</p>
+<ol>
+<li>Gör saken en gång — via assistenten, eller genom att köra ett befintligt makro.</li>
+<li>Välj <strong>Konfiguration ▸ Makro från senaste åtgärder…</strong>.</li>
+<li>Markera de steg makrot ska upprepa, ge det ett namn och låt <strong>Lägg även till en knapp för det</strong> vara på.</li>
+</ol>
+<p><strong>Spara makro</strong>, och knappen finns i raden. Det är hela varvet.</p>
+<blockquote>
+<p><strong>Vad som inte registreras.</strong> Listan byggs av åtgärder som gått genom assistenten eller ett annat makro. Att kopiera, flytta eller byta namn <em>för hand</em> i panelerna — F5, F6, F7 — registreras inte och kan därför inte bli ett makro den här vägen. Använd redigeraren nedan för dem.</p>
+</blockquote>
+<h2 id="redigera-makron-for-hand">Redigera makron för hand</h2>
+<p><strong>Konfiguration ▸ Redigera makron…</strong> öppnar <code>macros.json</code> i din konfigurationsmapp och lämnar ett kommenterat exempel där första gången. Ett makro är en lista med steg, och varje steg namnger ett verktyg och dess argument:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Att spara läser in makrona på nytt direkt. Vilka verktyg som finns och vad de tar emot berättar assistenten via <code>list_macros</code> — eller exemplet som filen skapades med.</p>
+<h3 id="platshallare">Platshållare</h3>
+<p>De enskilda bokstäverna är samma som knappraden och Start-menyn använder, så har du gjort en knapp finns inget nytt att lära här.</p>
+<table>
+<thead>
+<tr>
+<th>Platshållare</th>
+<th>Betyder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Den aktiva panelens mapp</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Den andra panelens mapp</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Filen under markören</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>De markerade filerna — en <strong>lista</strong>, vilket är precis vad <code>copy</code>, <code>move</code> och <code>move_to_trash</code> tar emot</td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Datumet då makrot startade, i det formatet</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Resultatet av steg 1, när det steget gav en sökväg eller en lista sökvägar</td>
+</tr>
+</tbody>
+</table>
+<p>Klammerparenteserna är till för tilläggen eftersom bokstäverna redan är tagna: <code>%M</code> betyder ”namnet under markören i den andra panelen” i hela resten av programmet, så en månad kunde inte skrivas så.</p>
+<p><code>%S</code> är det enda stället där ett makro skiljer sig från en knapp: på en knapp blir markeringen en lista ord för en kommandorad, här blir den listan av fullständiga sökvägar som filverktygen tar emot.</p>
+<p>Ett steg vars <code>%S</code> eller <code>%{1}</code> blir <strong>tomt stoppar makrot</strong> i stället för att köra utan något. Ett <code>move</code> utan filer är inte ett mindre <code>move</code> — det är en begäran som inte längre säger något, och att rapportera lyckat vore en lögn.</p>
+<h2 id="kora-ett-makro">Köra ett makro</h2>
+<p>Varje makro blir ett kommando som heter <code>mc_&lt;id&gt;</code> och dyker därför upp av sig själv i:</p>
+<ul>
+<li><strong>Konfiguration ▸ Kommandoläsare…</strong></li>
+<li><strong>Konfiguration ▸ Redigera kortkommandon… — lägg det på en tangent</strong></li>
+<li>Kommandoväljaren i knappradens redigerare</li>
+<li>Din <code>.mnu</code>-menyfil och <code>usercmd.ini</code>, om du använder dem</li>
+<li>Assistenten, som kan köra det på namn</li>
+</ul>
+<p>Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga.</p>
+<p>Om ett steg misslyckas <strong>stannar makrot där</strong> i stället för att fortsätta — steg två utgår oftast från att steg ett hände, och att flytta filer till en mapp som inte skapades är inte en delvis framgång. Rapporten namnger steget och säger vad som gick fel, och de steg som kördes finns i åtgärdsloggen.</p>
+<h2 id="vad-ett-makro-far-gora">Vad ett makro får göra</h2>
+<p>Ett makro bedöms efter det mest krävande i det. Ett makro vars steg bara läser behandlas som en läsning; ett som slutar med en permanent radering hanteras som en permanent radering — innan något av det körs, inte fyra steg in.</p>
+<p>Att inte ge något extra är standard. Innehåller ett makro ett steg som dina behörigheter inte tillåter — ett skalkommando, ett skript — nekas hela makrot med sin orsak, och inget händer.</p>
+<h2 id="angra">Ångra</h2>
+<p>Varje steg loggas för sig, så <strong>ångra</strong> efter ett makro tar tillbaka dess <em>sista</em> steg, inte hela makrot. Det finns ingen ångra för hela makrot, eftersom flera verktyg inte har någon invers alls och en knapp som erbjöd den skulle ljuga om dem.</p>
+<h2 id="var-allt-sparas">Var allt sparas</h2>
+<ul>
+<li>Dina makron ligger i <code>macros.json</code> i konfigurationsmappen — en vanlig fil du kan diffa och hålla med dina dotfiles.</li>
+<li>Knappar ett makro lade till är vanliga knappradsposter i <code>default.bar</code>, så att ta bort en är detsamma som för vilken knapp som helst.</li>
+</ul>
+<h2 id="nasta-steg">Nästa steg</h2>
+<ul>
+<li><a href="automation.html">Automatisering (AppleScript och Genvägar)</a> — Styra Peach Commander från ett skript, och köra dina egna skript som makrosteg.</li>
+<li><a href="toolbar.html">Knappraden</a> — Var knappen ett makro lade till hamnar.</li>
+<li><a href="keyboard-shortcuts.html">Tangentbord och kortkommandon</a> — Lägga ett makro på en tangent.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automation (AppleScript och Shortcuts)</a></li><li><a href="toolbar.html">Knappraden</a></li><li><a href="start-menu.html">Start-menyn och egna kommandon</a></li><li><a href="keyboard-shortcuts.html">Tangentbord och kortkommandon</a></li></ul></section>
+</main>
+</body>
+</html>

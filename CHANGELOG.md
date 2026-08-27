@@ -22,6 +22,81 @@ which changed nothing. That was the default every new reader landed on.
 
 ### Added
 
+- **Macros: a named sequence of file actions, and the quickest way to one is to do it once.** A macro
+  creates a folder, moves your selection into it, tags what is left — and then repeats that from a
+  button. It is not a scripting language and does not try to be: there are no conditions and no loops,
+  because the plan you are asked to approve has to be a list you can *read*. **Configuration ▸ Macro
+  from Recent Actions…** builds one out of what the assistant just did: tick the steps, name it, leave
+  "Also add a button for it" on, and the button is in the bar. **Configuration ▸ Edit Macros…** opens
+  `macros.json` for the rest, seeded with a working example — the same answer the Start menu gets,
+  because a macro is a list of tool calls and that is what JSON is.
+
+  Every macro becomes a command called `mc_<id>`, so it turns up by itself in the Command Browser, the
+  shortcut editor, the button bar's command picker, your `.mnu` file and the assistant. Nothing had to
+  be taught about macros for any of that; they all read the same command table. Two of those routes did
+  not work for *plugin* commands either, and now do: a button or a `usercmd.ini` entry naming an id that
+  was not `cm_` or `em_` used to be looked up as a file name and silently do nothing.
+
+  What a macro is allowed to do is decided by the most demanding thing in it, and decided *before* the
+  first step rather than four steps in — a macro ending in a permanent delete is gated like a permanent
+  delete, and one holding a shell step is refused whole on a machine where you have not turned the shell
+  on. Confirmation happens once, for the whole macro, and the rows are resolved against your panels, so
+  you read "Move one.pdf, two.pdf into “2026-08”" rather than `move destination=%T/%{date:yyyy-MM}`.
+  Strike out a row and that step is skipped. Each step is logged and undoable on its own, which also
+  means **undo** after a macro takes back its last step and not the whole thing — several tools have no
+  inverse at all, and a button offering a macro-wide undo would be lying about those.
+
+  Three things had to change underneath. The panel state is read again before *every* step, not once at
+  the start: with one snapshot, a macro that selected its own files as step one still saw the old
+  selection at step three and reported "nothing is selected" about files it had just marked. A step whose
+  `%S` came out empty used to *succeed*: measured, a
+  macro run with nothing selected created the destination folder, reported both steps ok, and moved
+  nothing. An empty expansion is a step that lost its subject, and it now stops the macro. And the
+  action log had to start keeping each action's arguments verbatim, because the line it kept for a human
+  reader clips every value at sixty characters — half a path is not a path, and the recorder was reading
+  it.
+
+- **AppleScript and JavaScript can now be run *by* Peach Commander, not just used to drive it.** The app
+  has been scriptable for a while; this is the other direction. Put a `.applescript` or `.jxa` file in
+  `scripts/` inside your configuration folder and it becomes a command you can put on a menu, a button
+  or a key. The panel state arrives in the environment — `PC_ACTIVE_DIR`, `PC_TARGET_DIR`,
+  `PC_CURSOR_NAME`, and a file listing the selection — so the ordinary script needs no Apple events and
+  never triggers the automation permission prompt. Anything beyond that talks to the application itself,
+  through the dictionary that was already there.
+
+  It is a separate plugin and it ships **switched off**, with its own permission switch in **Settings ▸
+  AI** next to the shell's. Running a program of your choosing can do everything the rest of the app can
+  and several things none of it covers, and that is not a capability to meet for the first time in a
+  dialog. Scripting and the shell are two switches, not one: an AppleScript reaches *other applications*
+  through Apple events, which "run a program" does not describe, and wanting a file-filing script is not
+  wanting an arbitrary shell.
+
+  A script runs as a separate process by default, which is the only arrangement that can carry a real
+  time limit — thirty seconds unless you say otherwise, and a script that overruns is stopped and says
+  so instead of freezing the window. A script can opt into running inside the app for a structured
+  return value and a compiled script kept between runs, and then there is no time limit; the choice is
+  yours to make per script, and the trade is stated where you make it. The assistant gains
+  `run_applescript`, `run_jxa` and `check_script` when the setting is on — each showing you the exact
+  script and waiting — and none of the three is ever offered to an external agent over MCP.
+
+- **The side panel's pages can be switched off, and it now ships showing Info alone.** *Activities* and
+  *Log* — the two transfer lists — were on for everyone, so a strip of three tabs sat above the preview
+  all day for pages most work never asks about. Each of the three is a switch now, in **Settings ▸
+  Layout**, by right-clicking the tab strip, or as **View ▸ Side Panel: Info / Activities / Log**. With
+  one page left the panel drops the tab strip altogether, which is what an Info-only panel should have
+  looked like from the start. Every page can go, Info included — worth having if you keep the terminal
+  or a plugin view there instead — and a panel with nothing left says so rather than opening blank.
+  Pages a plugin contributes are untouched by this: those come and go with the plugin, and switching one
+  off is what the Plugins page is for. The View menu entries are not a third route for the sake of it:
+  once every page is off there is no tab strip left to right-click, and they are the way back.
+  *View ▸ Reset Layout* puts the pages back with the rest of the window's furniture.
+
+  The setting was the easy half. The panel decided which page it was showing from the *segment index* —
+  three cases numbered 0, 1, 2, read straight out of the switcher — so removing a page in front of the
+  selected one handed you a different page under the right label: with Log showing, switching Info off
+  used to show you Activities. Which tab is selected is now kept by identity, nothing in that file
+  counts tabs any more, and the case is asserted rather than described.
+
 - **AI On-Device — five actions that do the work instead of talking about it.** Right-click a file and
   **Summarize**, **Explain**, **Suggest a name** or **Suggest a comment**; right-click the panel
   background and **Organize this folder**. Each one reads what it needs, shows you exactly what it
@@ -112,6 +187,34 @@ which changed nothing. That was the default every new reader landed on.
 
 ### Fixed
 
+- **"Select these files" was in the assistant's tool list and did nothing but throw.** `set_selection`
+  had been declared in the catalogue all along and was never implemented, while the identical operation
+  had been available to AppleScript since 0.6 — one call away in the same file. The cost was not the
+  missing tool: it was what it made macros. A macro could only ever act on files you had already
+  marked, so "select every PDF and file it away" was not expressible at all. It works now, and it
+  **replaces** the selection rather than adding to it, because a macro that starts by selecting has to
+  do the same thing whatever was marked when it began. A mask that matches nothing fails and clears the
+  selection instead of leaving the old one standing — otherwise the next step would have moved whatever
+  the cursor happened to be on, which is not what you asked for.
+- **Moving files into a folder that does not exist destroyed them and reported success.** Found while
+  testing macros, but nothing to do with macros: the assistant, an external agent over MCP, or anything
+  else naming a destination as text could ask for a move into a path that was not there, and get `ok`
+  back with the files gone from where they had been and nowhere else. Two files, one call, no way back —
+  the log even recorded an undo that could not have restored them. Copy and move now refuse a
+  destination that is missing, or that is a file rather than a folder, and say which folder to create
+  first. The guard sits where an arbitrary destination *string* arrives, because the panels' own F5 and
+  F6 cannot produce one: their destination is a folder they are displaying.
+- **The assistant's own action list was always empty.** `list_recent_actions` returned nothing however
+  much had been done, while the log on disk was complete and correct — so the one tool for "what did you
+  just do to my files" answered as if the answer were none. The cause is the same trap a comment two
+  methods away already warns about: the method was written without `async` while the protocol requires
+  it, which compiles, and then the `await` at the call site picks the protocol's default implementation
+  instead. Which returns an empty list. Nothing caught it because the tests exercised the log directly
+  and never the tool; there is now one that goes through the tool.
+- **A plugin that could not be loaded contributed nothing and said nothing about it.** It appeared
+  enabled in the Plugins window and was absent from every menu, with no message anywhere — which is a
+  long way to look for a plugin whose real problem was one line of build configuration. The failure is
+  now logged with its reason.
 - **The AI Summary column never showed anything, for anyone.** The column and the assistant each
   worked out their own key for a file and disagreed on both halves of it — one counted seconds from
   2001 and the other from 1970, and they rounded the number differently — so no file ever matched.

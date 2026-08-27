@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automazione (AppleScript e Comandi rapidi)</h1>
-<p>Peach Commander è programmabile, quindi potete pilotarlo da AppleScript e dall'app Comandi rapidi. Un piccolo insieme di verbi principali consente a uno script di navigare nei pannelli, selezionare i file tramite una maschera, copiare o spostare la selezione corrente ed eseguire qualsiasi comando di Peach Commander tramite il suo id — riutilizzando esattamente le stesse azioni usate dai menu, così un passaggio da script si comporta come uno manuale. È comodo per le operazioni ripetitive: archiviare i download, preparare l'output di una build o inserire un passaggio sui file in un Comando rapido più ampio.</p>
+<p>Qui l’automazione funziona nei due sensi.</p>
+<p><strong>Verso l’esterno:</strong> Peach Commander è pilotabile da script, quindi puoi guidarlo da AppleScript e dall’app Comandi rapidi. Alcuni verbi di base permettono a uno script di navigare nei pannelli, selezionare file con una maschera, copiare o spostare la selezione corrente ed eseguire qualsiasi comando di Peach Commander tramite il suo id — riutilizzando esattamente le stesse azioni dei menu, così che un passo eseguito da script si comporti come uno manuale. Di questo tratta il resto della pagina.</p>
+<p><strong>Verso l’interno:</strong> Peach Commander può anche <em>eseguire</em> uno script tuo — AppleScript o JavaScript — e metterlo su un menu, un pulsante o un tasto. Serve il plugin <strong>Scripting</strong>, distribuito disattivato; vedi <a href="#eseguire-i-tuoi-script">Eseguire i tuoi script</a> più sotto.</p>
+<p>Per ripetere una <em>sequenza</em> di azioni sui file invece di una sola, vedi <a href="macros.html">Macro</a>.</p>
 <h2 id="consultare-il-dizionario">Consultare il dizionario</h2>
 <ol>
 <li>Aprite <strong>Editor di script</strong> (in <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="usarlo-da-comandi-rapidi">Usarlo da Comandi rapidi</h2>
 <p>Nell'app <strong>Comandi rapidi</strong>, aggiungete l'azione <strong>Esegui AppleScript</strong> e incollate uno script come quello sopra. Questo vi permette di inserire un passaggio di Peach Commander in un Comando rapido più ampio — ad esempio, attivato da una modifica di una cartella o da un tasto di scelta rapida.</p>
+<h2 id="eseguire-i-tuoi-script">Eseguire i tuoi script</h2>
+<p>L’altro senso: uno script tuo, eseguito da Peach Commander.</p>
+<p>Questo è un plugin, e viene distribuito <strong>disattivato</strong>, perché eseguire un programma di tua scelta può fare tutto ciò che fa il resto dell’applicazione e diverse cose che nessuna sua parte copre. Due interruttori, entrambi spenti finché non li accendi:</p>
+<ol>
+<li><strong>Configurazione ▸ Plugin…</strong> — attiva <strong>Scripting</strong>.</li>
+<li><strong>Impostazioni ▸ IA</strong> — attiva <strong>Consenti l’esecuzione di script</strong>. Sta in quella pagina perché è lo stesso tipo di permesso della shell dell’assistente, e i due stanno insieme.</li>
+</ol>
+<p>Metti poi uno script in <code>scripts/</code> dentro la cartella di configurazione — <strong>Comandi ▸ Apri la cartella degli script</strong> ti porta lì e la prima volta lascia un esempio. Un file <code>.applescript</code>, <code>.scpt</code> o <code>.jxa</code> in quella cartella <em>è</em> uno script; non c’è nulla da registrare.</p>
+<h3 id="cosa-riceve-uno-script">Cosa riceve uno script</h3>
+<p>Lo stato dei pannelli arriva nell’ambiente, così il caso ordinario non richiede Apple event né alcuna richiesta di permesso:</p>
+<table>
+<thead>
+<tr>
+<th>Variabile</th>
+<th>Significa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>La cartella del pannello attivo</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>La cartella dell’altro pannello</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Il file sotto il cursore</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Quanti elementi sono selezionati</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Un file di testo con un percorso selezionato per riga (assente quando non è selezionato nulla)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Tutto ciò che va oltre passa dall’applicazione stessa, con i verbi visti sopra — le due metà quindi si compongono.</p>
+<h3 id="mettere-uno-script-su-un-pulsante-o-un-tasto">Mettere uno script su un pulsante o un tasto</h3>
+<p>Ogni script diventa un comando chiamato <code>plugin.script.run.&lt;nome&gt;</code>, dove <code>&lt;nome&gt;</code> è il nome del file senza estensione (spazi e punti diventano trattini). Quell’id funziona in ogni posto in cui funziona un id <code>cm_*</code>: nella barra dei pulsanti, in <code>usercmd.ini</code>, in un file <code>.mnu</code> e in <strong>Configurazione ▸ Modifica scorciatoie…</strong>.</p>
+<h3 id="come-viene-eseguito-uno-script-e-il-limite-di-tempo">Come viene eseguito uno script, e il limite di tempo</h3>
+<p>Per impostazione predefinita uno script viene eseguito come processo separato, il che consente di dargli un limite di tempo e di fermarlo se lo supera — trenta secondi salvo diversa indicazione. Uno script può scegliere di essere eseguito <em>dentro</em> l’applicazione, cosa che gli permette di restituire un valore strutturato e lo mantiene compilato tra le esecuzioni, ma allora non c’è limite di tempo: uno script che entra in ciclo blocca l’applicazione. Indica la scelta in <code>scripts.json</code>, accanto ai tuoi script:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Solo ciò che si discosta dai valori predefiniti richiede una voce; un file senza voce prende il proprio nome come titolo, viene eseguito come processo separato e si ferma dopo trenta secondi.</p>
+<h3 id="per-lassistente">Per l’assistente</h3>
+<p>Con il plugin attivo e l’impostazione abilitata, l’assistente ottiene <code>run_applescript</code>, <code>run_jxa</code> e <code>check_script</code>. Ognuno ti mostra lo script esatto e attende la tua approvazione prima che qualcosa venga eseguito, e nessuno viene mai offerto a un agente esterno tramite MCP.</p>
 <h2 id="note">Note</h2>
 <ul>
 <li>L'id del comando che passate a <code>run command</code> è lo stesso id <code>cm_*</code> mostrato nel browser dei comandi (vedi <a href="start-menu.html">Il menu Avvio e i comandi personalizzati</a>).</li>
 <li>Lo scripting agisce sempre sul pannello <strong>attivo</strong>; usate prima <code>go to … in left</code> / <code>in right</code> se avete bisogno di un lato specifico.</li>
 <li>Peach Commander è un'app a finestra singola, quindi gli script agiscono sui due pannelli di quella finestra.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Il menu Avvio e i comandi personalizzati</a></li><li><a href="settings.html">Impostazioni</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Il menu Avvio e i comandi personalizzati</a></li><li><a href="settings.html">Impostazioni</a></li><li><a href="macros.html">Macro</a></li></ul></section>
 </main>
 </body>
 </html>

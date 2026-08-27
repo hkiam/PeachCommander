@@ -73,6 +73,18 @@ Bočný panel (**Zobraziť > Panel náhľadu** alebo Cmd+Shift+P) má stránku *
 
 Pri pohybe kurzora sa názov a údaje aktualizujú okamžite; náhľad nasleduje o okamih neskôr, aby podržaná šípka prechádzajúca dlhým priečinkom nespúšťala náhľad pre každý míňaný riadok.
 
+## Ktoré stránky bočný panel nabízí
+
+Bočný panel sa najprv ukazuje len so stránkou **Informácie**. **Aktivity** (prebiehajúce prenosy) a **Záznam** (dokončené prenosy) sú vypnuté, pretože väčšina práce si o ne nikdy nepovie a inak by nad náhľadom celý deň ležal panel s tromi kartami.
+
+- Zapnite ich v **Nastavenia > Rozloženie** v časti *Stránky bočného panela*, pravým klikom na panel kariet alebo z **Zobraziť > Bočný panel: Informácie / Aktivity / Záznam**.
+- Ak zostane jediná stránka, panel panel kariet úplne vynechá: panel len s Informáciami je náhľad a údaje, bez čohokoľvek nad nimi.
+- Vypnúť sa dá každá stránka, aj Informácie — hodí sa, keď tu namiesto toho držíte terminál alebo zobrazenie pluginu. Panel, v ktorom nič nezostalo, to povie, namiesto aby sa otvoril prázdny.
+- Stránky, ktoré pridáva plugin, to neovplyvní: tie prichádzajú a odchádzajú s pluginom a na ich vypnutie je tu stránka **Pluginy**.
+- **Zobraziť > Obnoviť rozloženie** vráti stránky na samotné Informácie, spolu so zvyškom vybavenia okna.
+
+Položky v ponuke Zobraziť znamenajú viac, než vyzerajú. Keď je každá stránka vypnutá, nie je už žiadny panel kariet, na ktorý by sa dalo kliknúť pravým tlačidlom — ony sú cesta späť.
+
 ## Dekompilácia súborov .class jazyka Java
 
 So zapnutým zásuvným modulom **Java Decompiler** ukáže F3 na súbore `.class` čitateľný kód namiesto binárnych údajov — aj pri triedach vnútri archívu JAR alebo ZIP, do ktorého možno vstúpiť a čítať ho bez rozbaľovania.

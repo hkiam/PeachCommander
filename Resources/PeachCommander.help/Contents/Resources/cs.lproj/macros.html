@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makra</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Makra</h1>
+<p>Makro je pojmenovaná posloupnost akcí se soubory — vytvořit adresář, přesunout do něj výběr, označit zbytek — kterou lze jedním kliknutím spustit znovu. Není to skriptovací jazyk: nejsou v něm podmínky ani cykly, a to záměrně. Makro je seznam, který si můžete přečíst, a přečíst si ho musíte umět, než ho schválíte.</p>
+<p>Vše, co makro dělá, prochází stejným strojem jako asistent. Makro tedy nemůže udělat nic, co jste nepovolili, každý jeho krok se objeví v protokolu akcí a krok, který lze vzít zpět, se vzít zpět dá i nadále.</p>
+<h2 id="nejrychlejsi-cesta-z-toho-co-jste-prave-udelali">Nejrychlejší cesta: z toho, co jste právě udělali</h2>
+<p>Makro nemusíte psát od začátku.</p>
+<ol>
+<li>Udělejte to jednou — přes asistenta nebo spuštěním existujícího makra.</li>
+<li>Zvolte <strong>Konfigurace ▸ Makro z nedávných akcí…</strong>.</li>
+<li>Zaškrtněte kroky, které má makro opakovat, pojmenujte ho a nechte zapnuté <strong>Přidat pro něj také tlačítko</strong>.</li>
+</ol>
+<p><strong>Uložit makro</strong> — a tlačítko je v liště. To je celý postup.</p>
+<blockquote>
+<p><strong>Co se nezaznamenává.</strong> Seznam se skládá z akcí, které prošly asistentem nebo jiným makrem. Ruční kopírování, přesouvání a přejmenování v panelech — F5, F6, F7 — se nezaznamenává, takže se z nich touto cestou makro udělat nedá. Na to použijte editor níže.</p>
+</blockquote>
+<h2 id="rucni-upravy-maker">Ruční úpravy maker</h2>
+<p><strong>Konfigurace ▸ Upravit makra…</strong> otevře <code>macros.json</code> ve vašem konfiguračním adresáři a poprvé do něj vloží komentovaný příklad. Makro je seznam kroků a každý krok uvádí nástroj a jeho argumenty:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Uložení makra okamžitě znovu načte. Které nástroje existují a co přijímají, řekne asistent přes <code>list_macros</code> — nebo příklad, se kterým byl soubor vytvořen.</p>
+<h3 id="zastupne-symboly">Zástupné symboly</h3>
+<p>Samotná písmena jsou stejná, jaká používá lišta tlačítek a nabídka Start: kdo už jedno tlačítko vytvořil, se tu nemusí učit nic nového.</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Znamená</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Adresář aktivního panelu</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Adresář druhého panelu</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Soubor pod kurzorem</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Vybrané soubory — <strong>seznam</strong>, což je přesně to, co přijímají <code>copy</code>, <code>move</code> a <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Datum spuštění makra v tomto formátu</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Výsledek kroku 1, pokud tento krok vrátil cestu nebo seznam cest</td>
+</tr>
+</tbody>
+</table>
+<p>Složené závorky jsou pro doplňky, protože písmena jsou už obsazená: <code>%M</code> znamená ve zbytku programu „jméno pod kurzorem v druhém panelu“, měsíc se tedy takto zapsat nedal.</p>
+<p><code>%S</code> je jediné místo, kde se makro liší od tlačítka: na tlačítku se výběr stane seznamem slov pro příkazovou řádku, tady se stane seznamem plných cest, které přijímají nástroje pro soubory.</p>
+<p>Krok, jehož <code>%S</code> nebo <code>%{1}</code> vyjde <strong>prázdný, makro zastaví</strong>, místo aby běžel s ničím. <code>move</code> bez souborů není menší <code>move</code> — je to požadavek, který už nic neříká, a hlásit u něj úspěch by byla lež.</p>
+<h2 id="spusteni-makra">Spuštění makra</h2>
+<p>Každé makro se stane příkazem s názvem <code>mc_&lt;id&gt;</code>, a proto se samo objeví v:</p>
+<ul>
+<li><strong>Konfigurace ▸ Prohlížeč příkazů…</strong></li>
+<li><strong>Konfigurace ▸ Upravit zkratky… — přiřaďte ho klávese</strong></li>
+<li>Výběru příkazů v editoru lišty tlačítek</li>
+<li>Vašem souboru nabídky <code>.mnu</code> a <code>usercmd.ini</code>, pokud je používáte</li>
+<li>Asistentovi, který ho může spustit podle názvu</li>
+</ul>
+<p>Než se spustí makro, které něco mění, ukáže vám své kroky jako seznam a počká. Krok, který nechcete, můžete vyškrtnout; co zůstane, se provede. Makro, které jen čte, běží bez dotazu.</p>
+<p>Pokud krok selže, makro se <strong>v tom místě zastaví</strong>, místo aby pokračovalo — krok dvě obvykle předpokládá, že krok jedna proběhl, a přesouvat soubory do nevytvořeného adresáře není částečný úspěch. Zpráva uvede krok a řekne, co se pokazilo; kroky, které proběhly, jsou v protokolu akcí.</p>
+<h2 id="co-makro-smi">Co makro smí</h2>
+<p>Makro se posuzuje podle toho nejnáročnějšího, co obsahuje. Makro, jehož kroky jen čtou, se považuje za čtení; to, které končí trvalým smazáním, je hlídáno jako trvalé smazání — dřív než se cokoli spustí, ne o čtyři kroky později.</p>
+<p>Nepovolit nic navíc je výchozí stav. Obsahuje-li makro krok, který vaše oprávnění nedovolují — příkaz shellu, skript —, je celé makro odmítnuto s uvedením důvodu a nic se nestane.</p>
+<h2 id="vzit-zpet">Vzít zpět</h2>
+<p>Každý krok je zaznamenán samostatně, takže <strong>vzít zpět</strong> po makru vrátí jeho <em>poslední</em> krok, ne celé makro. Vzít zpět celé makro nelze, protože několik nástrojů nemá žádnou inverzi a tlačítko, které by to nabízelo, by o nich lhalo.</p>
+<h2 id="kde-se-to-uklada">Kde se to ukládá</h2>
+<ul>
+<li>Vaše makra jsou v <code>macros.json</code> v konfiguračním adresáři — obyčejný soubor, který lze porovnávat a držet spolu s dotfiles.</li>
+<li>Tlačítka přidaná makrem jsou běžné položky lišty tlačítek v <code>default.bar</code>, takže odebrat jedno je stejné jako u kteréhokoli jiného tlačítka.</li>
+</ul>
+<h2 id="dalsi-kroky">Další kroky</h2>
+<ul>
+<li><a href="automation.html">Automatizace (AppleScript a Zkratky)</a> — Řízení Peach Commanderu ze skriptu a spouštění vlastních skriptů jako kroku makra.</li>
+<li><a href="toolbar.html">Lišta tlačítek</a> — Kde skončí tlačítko, které makro přidalo.</li>
+<li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a> — Přiřazení makra klávese.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Automatizace (AppleScript a Zkratky)</a></li><li><a href="toolbar.html">Lišta tlačítek</a></li><li><a href="start-menu.html">Nabídka Start a vlastní příkazy</a></li><li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a></li></ul></section>
+</main>
+</body>
+</html>

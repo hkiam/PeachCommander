@@ -73,6 +73,18 @@ Az oldalsó panelen (**Nézet > Előnézeti panel**, vagy Cmd+Shift+P) van egy *
 
 A kurzor mozgatásakor a név és az adatok azonnal frissülnek; az előnézet egy pillanattal később követi, így egy lenyomva tartott nyílbillentyű egy hosszú mappán át nem indít előnézetet minden érintett sorhoz.
 
+## Milyen oldalakat kínál az oldalsó panel
+
+Az oldalsó panel először csak az **Információ** oldalt mutatja. A **Tevékenységek** (még futó átvitelek) és a **Napló** (befejezett átvitelek) ki van kapcsolva, mert a munka java soha nem kéri őket, különben pedig egy háromlapos sor ül egész nap az előnézet fölött.
+
+- Kapcsolja be őket a **Beállítások > Elrendezés** lapon, az *Az oldalpanel oldalai* alatt, a lapsorra jobb gombbal kattintva, vagy a **Nézet > Oldalpanel: Információ / Tevékenységek / Napló** menüből.
+- Ha csak egy oldal marad, a panel egészen elhagyja a lapsort: a csak Információt mutató panel az előnézet és az adatok, semmivel fölöttük.
+- Minden oldal kikapcsolható, az Információ is — jól jön, ha inkább a terminált vagy egy bővítmény nézetét tartja itt. Az a panel, amelyben semmi sem maradt, ezt kimondja, ahelyett hogy üresen nyílna meg.
+- A bővítmények által hozzáadott oldalakat ez nem érinti: azok a bővítménnyel együtt jelennek meg és tűnnek el, kikapcsolásukra pedig a **Bővítmények** lap szolgál.
+- A **Nézet > Elrendezés visszaállítása** az oldalakat visszaállítja a magára hagyott Információra, az ablak többi berendezésével együtt.
+
+A Nézet menü pontjai többet jelentenek, mint amilyennek látszanak. Ha minden oldal ki van kapcsolva, nem marad lapsor, amire jobb gombbal kattinthatna — ők a visszaút.
+
 ## Java .class fájlok visszafejtése
 
 A **Java Decompiler** bővítmény bekapcsolva az F3 egy `.class` fájlon olvasható kódot mutat bináris adat helyett — a JAR vagy ZIP archívumban lévő osztályfájlokra is, amelyekbe be lehet lépni és kicsomagolás nélkül olvashatók.

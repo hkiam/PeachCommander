@@ -73,6 +73,18 @@ Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite
 
 Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.
 
+## Welche Seiten das Seitenfenster anbietet
+
+Das Seitenfenster zeigt zunächst nur **Info**. **Aktivitäten** (noch laufende Übertragungen) und **Protokoll** (abgeschlossene Übertragungen) sind ausgeschaltet, denn die meiste Arbeit fragt nie danach — und andernfalls sitzt eine Leiste mit drei Tabs den ganzen Tag über der Vorschau.
+
+- Einschalten in **Einstellungen > Layout** unter *Seiten der Seitenleiste*, per Rechtsklick auf die Tab-Leiste oder über **Ansicht > Seitenleiste: Info / Aktivitäten / Protokoll**.
+- Bleibt nur eine Seite übrig, entfällt die Tab-Leiste ganz — ein reines Info-Fenster ist Vorschau und Angaben, ohne etwas darüber.
+- Jede Seite lässt sich ausschalten, auch Info — nützlich, wenn hier stattdessen das Terminal oder eine Plugin-Ansicht wohnt. Ein Fenster, in dem nichts übrig ist, sagt das, anstatt leer aufzugehen.
+- Seiten, die ein Plugin beisteuert, sind nicht betroffen: die kommen und gehen mit dem Plugin, und zum Abschalten ist die Seite **Plugins** da.
+- **Ansicht > Layout zurücksetzen** stellt die Seiten wieder auf Info allein, zusammen mit dem übrigen Fensterinventar.
+
+Die Einträge im Menü Ansicht sind wichtiger, als sie aussehen. Ist jede Seite ausgeschaltet, gibt es keine Tab-Leiste mehr zum Rechtsklicken — sie sind der Weg zurück.
+
 ## Java-Klassendateien dekompilieren
 
 Ist das Plugin **Java Decompiler** eingeschaltet, zeigt F3 auf einer `.class`-Datei lesbaren Code statt Binärdaten — auch für Klassendateien in einem JAR oder ZIP, in das Sie hineingehen und das Sie ohne Auspacken ansehen können.

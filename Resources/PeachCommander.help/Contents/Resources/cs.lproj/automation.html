@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatizace (AppleScript a Zkratky)</h1>
-<p>Peach Commander je skriptovatelný, takže jej můžete řídit z AppleScriptu a z aplikace Zkratky. Hrstka základních sloves umožňuje skriptu procházet panely, vybírat soubory podle masky, kopírovat nebo přesouvat aktuální výběr a spustit jakýkoli příkaz Peach Commanderu podle jeho id — přičemž znovu využívají přesně stejné akce, jaké používají nabídky, takže se skriptovaný krok chová jako ruční. Hodí se to na opakující se úkony: zakládání stažených souborů, přípravu výstupu sestavení nebo zapojení souborového kroku do většího průběhu Zkratek.</p>
+<p>Automatizace tu funguje v obou směrech.</p>
+<p><strong>Ven:</strong> Peach Commander lze skriptovat, takže jej můžete řídit z AppleScriptu i z aplikace Zkratky. Několik základních slovesných příkazů umožňuje skriptu procházet panely, vybírat soubory maskou, kopírovat nebo přesouvat aktuální výběr a spouštět jakýkoli příkaz Peach Commanderu podle jeho id — a to přes tytéž akce, jaké používají nabídky, takže se skriptovaný krok chová jako ruční. O tom je zbytek této stránky.</p>
+<p><strong>Dovnitř:</strong> Peach Commander umí také <em>spustit</em> váš skript — AppleScript nebo JavaScript — a umístit jej do nabídky, na tlačítko nebo na klávesu. K tomu je potřeba plugin <strong>Scripting</strong>, který se dodává vypnutý; viz <a href="#spousteni-vlastnich-skriptu">Spouštění vlastních skriptů</a> níže.</p>
+<p>Pro opakování <em>posloupnosti</em> akcí se soubory místo jedné viz <a href="macros.html">Makra</a>.</p>
 <h2 id="zobrazeni-slovniku">Zobrazení slovníku</h2>
 <ol>
 <li>Otevřete <strong>Editor skriptů</strong> (v <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="pouziti-z-aplikace-zkratky">Použití z aplikace Zkratky</h2>
 <p>V aplikaci <strong>Zkratky</strong> přidejte akci <strong>Spustit AppleScript</strong> a vložte skript jako ten výše. To vám umožní zapojit krok Peach Commanderu do větší Zkratky — například spouštěné změnou složky nebo klávesovou zkratkou.</p>
+<h2 id="spousteni-vlastnich-skriptu">Spouštění vlastních skriptů</h2>
+<p>Druhý směr: váš skript, spuštěný Peach Commanderem.</p>
+<p>Je to plugin a dodává se <strong>vypnutý</strong>, protože spuštění programu podle vaší volby umí vše, co umí zbytek aplikace, a několik věcí, které nepokrývá nic z ní. Dva přepínače, oba vypnuté, dokud je nenastavíte:</p>
+<ol>
+<li><strong>Konfigurace ▸ Pluginy…</strong> — zapněte <strong>Scripting</strong>.</li>
+<li><strong>Nastavení ▸ AI</strong> — zapněte <strong>Povolit spouštění skriptů</strong>. Je na této stránce, protože jde o stejný druh oprávnění jako shell asistenta a obojí patří k sobě.</li>
+</ol>
+<p>Poté umístěte skript do <code>scripts/</code> ve vašem konfiguračním adresáři — <strong>Příkazy ▸ Otevřít adresář skriptů</strong> vás tam zavede a poprvé tam nechá příklad. Soubor <code>.applescript</code>, <code>.scpt</code> nebo <code>.jxa</code> v tomto adresáři <em>je</em> skript; není co registrovat.</p>
+<h3 id="co-skript-dostane">Co skript dostane</h3>
+<p>Stav panelů přichází v prostředí, takže běžný případ nepotřebuje Apple events ani žádný dotaz na oprávnění:</p>
+<table>
+<thead>
+<tr>
+<th>Proměnná</th>
+<th>Znamená</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Adresář aktivního panelu</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Adresář druhého panelu</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Soubor pod kurzorem</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Kolik položek je vybráno</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Textový soubor s jednou vybranou cestou na řádek (chybí, když není vybráno nic)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Vše nad to jde přes aplikaci samotnou, se slovesnými příkazy výše — obě poloviny se tedy doplňují.</p>
+<h3 id="umisteni-skriptu-na-tlacitko-nebo-klavesu">Umístění skriptu na tlačítko nebo klávesu</h3>
+<p>Každý skript se stane příkazem s názvem <code>plugin.script.run.&lt;název&gt;</code>, kde <code>&lt;název&gt;</code> je jméno souboru bez přípony (mezery a tečky se mění na spojovníky). Toto id funguje všude, kde funguje id <code>cm_*</code>: v liště tlačítek, v <code>usercmd.ini</code>, v souboru <code>.mnu</code> a v <strong>Konfigurace ▸ Upravit zkratky…</strong>.</p>
+<h3 id="jak-skript-bezi-a-casovy-limit">Jak skript běží a časový limit</h3>
+<p>Standardně skript běží jako samostatný proces, což znamená, že mu lze dát časový limit a zastavit jej, pokud jej překročí — třicet sekund, pokud neřeknete jinak. Skript se může rozhodnout běžet <em>uvnitř</em> aplikace, což mu dovolí vrátit strukturovanou hodnotu a nechá jej mezi spuštěními zkompilovaný, ale pak není žádný časový limit: skript, který se zacyklí, drží aplikaci. Volbu uveďte v <code>scripts.json</code> vedle svých skriptů:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Záznam potřebuje jen to, co se odchyluje od výchozích hodnot; soubor bez záznamu dostane jako název své vlastní jméno, běží jako samostatný proces a po třiceti sekundách se zastaví.</p>
+<h3 id="pro-asistenta">Pro asistenta</h3>
+<p>Se zapnutým pluginem a povoleným nastavením získá asistent <code>run_applescript</code>, <code>run_jxa</code> a <code>check_script</code>. Každý z nich vám ukáže přesný skript a čeká na vaše schválení, než se cokoli spustí, a žádný z nich není nikdy nabízen externímu agentovi přes MCP.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
 <li>Id příkazu, které předáváte do <code>run command</code>, je stejné <code>cm_*</code> id zobrazené v prohlížeči příkazů (viz <a href="start-menu.html">Nabídka Start a vlastní příkazy</a>).</li>
 <li>Skriptování vždy působí na <strong>aktivní</strong> panel; pokud potřebujete konkrétní stranu, použijte nejprve <code>go to … in left</code> / <code>in right</code>.</li>
 <li>Peach Commander je aplikace s jedním oknem, takže skripty cílí na dva panely tohoto okna.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Nabídka Start a vlastní příkazy</a></li><li><a href="settings.html">Nastavení</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Nabídka Start a vlastní příkazy</a></li><li><a href="settings.html">Nastavení</a></li><li><a href="macros.html">Makra</a></li></ul></section>
 </main>
 </body>
 </html>

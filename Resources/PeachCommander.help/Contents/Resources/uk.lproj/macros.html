@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Макроси</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Макроси</h1>
+<p>Макрос — це названа послідовність дій із файлами: створити теку, перемістити до неї виділене, позначити те, що залишилося, — яку можна запустити знову одним клацанням. Це не мова сценаріїв: у ній немає умов і немає циклів, і так задумано. Макрос — це список, який можна прочитати, а прочитати його треба вміти, перш ніж ви його схвалите.</p>
+<p>Усе, що робить макрос, іде через той самий механізм, яким користується асистент, тож макрос не може зробити нічого, чого ви не дозволили, кожен його крок потрапляє до журналу дій, а крок, який можна скасувати, скасовним і залишається.</p>
+<h2 id="_1">Найшвидший шлях: із того, що ви щойно зробили</h2>
+<p>Макрос не потрібно писати з нуля.</p>
+<ol>
+<li>Зробіть це один раз — через асистента або запустивши наявний макрос.</li>
+<li>Виберіть <strong>Конфігурація ▸ Макрос з останніх дій…</strong>.</li>
+<li>Позначте кроки, які макрос має повторювати, дайте йому назву й залиште увімкненим <strong>Також додати кнопку для нього</strong>.</li>
+</ol>
+<p><strong>Зберегти макрос</strong> — і кнопка вже на панелі. Це весь цикл.</p>
+<blockquote>
+<p><strong>Що не записується.</strong> Список будується з дій, які пройшли через асистента або інший макрос. Копіювання, переміщення та перейменування <em>вручну</em> в панелях — F5, F6, F7 — не записується, тому цим шляхом на макрос не перетворюється. Для них скористайтеся редактором нижче.</p>
+</blockquote>
+<h2 id="_2">Ручне редагування макросів</h2>
+<p><strong>Конфігурація ▸ Редагувати макроси…</strong> відкриває <code>macros.json</code> у вашій теці конфігурації й першого разу залишає там приклад із поясненнями. Макрос — це список кроків, і кожен крок називає інструмент та його аргументи:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Збереження одразу перезавантажує макроси. Які інструменти є та що вони приймають, скаже асистент через <code>list_macros</code> — або приклад, з яким файл було створено.</p>
+<h3 id="_3">Підстановки</h3>
+<p>Одиничні літери — ті самі, які використовує панель кнопок і меню «Пуск»: якщо ви вже робили кнопку, тут немає чого вчити наново.</p>
+<table>
+<thead>
+<tr>
+<th>Підстановка</th>
+<th>Означає</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%P</code></td>
+<td>Тека активної панелі</td>
+</tr>
+<tr>
+<td><code>%T</code></td>
+<td>Тека іншої панелі</td>
+</tr>
+<tr>
+<td><code>%N</code></td>
+<td>Файл під курсором</td>
+</tr>
+<tr>
+<td><code>%S</code></td>
+<td>Виділені файли — <strong>список</strong>, а саме його й приймають <code>copy</code>, <code>move</code> та <code>move_to_trash</code></td>
+</tr>
+<tr>
+<td><code>%{date:yyyy-MM}</code></td>
+<td>Дата запуску макроса в цьому форматі</td>
+</tr>
+<tr>
+<td><code>%{1}</code></td>
+<td>Результат кроку 1, якщо цей крок дав шлях або список шляхів</td>
+</tr>
+</tbody>
+</table>
+<p>Фігурні дужки потрібні для доповнень, бо літери вже зайняті: <code>%M</code> в усій решті програми означає «ім’я під курсором в іншій панелі», тож місяць так записати було не можна.</p>
+<p><code>%S</code> — єдине місце, де макрос відрізняється від кнопки: на кнопці виділене стає списком слів для командного рядка, тут — списком повних шляхів, який приймають файлові інструменти.</p>
+<p>Крок, у якого <code>%S</code> або <code>%{1}</code> вийшов <strong>порожнім, зупиняє макрос</strong>, а не виконується ні над чим. <code>move</code> без файлів — не менший <code>move</code>, а запит, який уже нічого не каже, і повідомити про успіх було б брехнею.</p>
+<h2 id="_4">Запуск макроса</h2>
+<p>Кожен макрос стає командою з назвою <code>mc_&lt;id&gt;</code> і тому сам з’являється в:</p>
+<ul>
+<li><strong>Конфігурація ▸ Огляд команд…</strong></li>
+<li><strong>Конфігурація ▸ Редагувати скорочення… — призначте його на клавішу</strong></li>
+<li>Виборі команд у редакторі панелі кнопок</li>
+<li>Вашому файлі меню <code>.mnu</code> та <code>usercmd.ini</code>, якщо ви ними користуєтесь</li>
+<li>Асистенті, який може запустити його за назвою</li>
+</ul>
+<p>Перед тим як макрос, що щось змінює, буде виконано, він покаже свої кроки списком і зачекає. Непотрібний крок можна викреслити; що залишиться — те й виконається. Макрос, який лише читає, виконується без запитань.</p>
+<p>Якщо крок не вдався, макрос <strong>зупиняється на ньому</strong>, а не продовжує: крок другий зазвичай припускає, що крок перший відбувся, а переміщувати файли до нестворенної теки — не частковий успіх. У звіті названо крок і сказано, що пішло не так; кроки, які виконалися, є в журналі дій.</p>
+<h2 id="_5">Що макросу дозволено</h2>
+<p>Макрос оцінюється за найвимогливішим, що в ньому є. Макрос, кроки якого лише читають, вважається читанням; той, що завершується безповоротним видаленням, охороняється як безповоротне видалення — перше ніж будь-що запуститься, а не через чотири кроки.</p>
+<p>Нічого зайвого не надавати — типова поведінка. Якщо в макросі є крок, якого ваші дозволи не допускають — команда оболонки, сценарій, — увесь макрос відхиляється із зазначенням причини, і нічого не відбувається.</p>
+<h2 id="_6">Скасування</h2>
+<p>Кожен крок записується окремо, тому <strong>скасування</strong> після макроса повертає його <em>останній</em> крок, а не весь макрос. Скасування всього макроса немає, бо в кількох інструментів взагалі немає зворотної дії, і кнопка, що пропонувала б його, про них брехала б.</p>
+<h2 id="_7">Де все зберігається</h2>
+<ul>
+<li>Ваші макроси — у <code>macros.json</code> у теці конфігурації: звичайний файл, який можна порівнювати й тримати разом із dotfiles.</li>
+<li>Кнопки, додані макросом, — звичайні записи панелі кнопок у <code>default.bar</code>, тому вилучити одну — те саме, що вилучити будь-яку іншу кнопку.</li>
+</ul>
+<h2 id="_8">Наступні кроки</h2>
+<ul>
+<li><a href="automation.html">Автоматизація (AppleScript і «Швидкі команди»)</a> — Керування Peach Commander зі сценарію та запуск власних сценаріїв як кроку макроса.</li>
+<li><a href="toolbar.html">Панель кнопок</a> — Куди потрапляє кнопка, додана макросом.</li>
+<li><a href="keyboard-shortcuts.html">Клавіатура та скорочення</a> — Призначення макроса на клавішу.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="automation.html">Автоматизація (AppleScript і Швидкі команди)</a></li><li><a href="toolbar.html">Смуга кнопок</a></li><li><a href="start-menu.html">Меню Пуск і власні команди</a></li><li><a href="keyboard-shortcuts.html">Клавіатура та комбінації клавіш</a></li></ul></section>
+</main>
+</body>
+</html>

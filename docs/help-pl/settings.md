@@ -23,7 +23,7 @@ Okno Ustawienia to miejsce, w którym dopasowujesz Peach Commander do sposobu, w
 
 Okno ma następujące strony, w kolejności:
 
-- **Układ** — pokaż lub ukryj pasek dysków, pasek kart, pasek ścieżki i pasek stanu.
+- **Układ** — pokaż lub ukryj pasek dysków, pasek kart, pasek ścieżki i pasek stanu oraz wybierz, które strony oferuje panel boczny.
 - **Widok** — jak wymieniane są pliki i foldery, w tym format daty.
 - **Ikony** — wygląd ikon na listach plików.
 - **Obsługa** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).

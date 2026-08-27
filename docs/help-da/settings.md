@@ -23,7 +23,7 @@ Indstillinger-vinduet er, hvor du skræddersyr Peach Commander til den måde, du
 
 Vinduet har disse sider, i rækkefølge:
 
-- **Layout** — vis eller skjul drevlinjen, fanelinjen, stilinjen og statuslinjen.
+- **Layout** — vis eller skjul drevlinjen, fanelinjen, stilinjen og statuslinjen, og vælg hvilke sider sidepanelet tilbyder.
 - **Visning** — hvordan filer og mapper vises, inklusive datoformatet.
 - **Ikoner** — ikonudseende i fillisterne.
 - **Betjening** — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen).

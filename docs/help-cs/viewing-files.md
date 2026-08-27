@@ -73,6 +73,18 @@ Boční panel (**Zobrazení > Panel náhledu** nebo Cmd+Shift+P) má stránku **
 
 Při pohybu kurzoru se název a údaje aktualizují okamžitě; náhled následuje o okamžik později, aby podržená šipka procházející dlouhou složkou nespouštěla náhled pro každý míjený řádek.
 
+## Které stránky boční panel nabízí
+
+Boční panel se nejprve ukazuje jen se stránkou **Informace**. **Aktivity** (probíhající přenosy) a **Protokol** (dokončené přenosy) jsou vypnuté, protože většina práce si o ně nikdy neřekne a jinak by nad náhledem celý den ležela lišta se třemi záložkami.
+
+- Zapněte je v **Nastavení > Rozvržení** v části *Stránky bočního panelu*, pravým klikem na lištu záložek nebo z **Zobrazit > Boční panel: Informace / Aktivity / Protokol**.
+- Zůstane-li jediná stránka, panel lištu záložek úplně vynechá: panel jen s Informacemi je náhled a údaje, bez čehokoli nad nimi.
+- Vypnout lze každou stránku, i Informace — hodí se, když tu místo toho držíte terminál nebo zobrazení pluginu. Panel, v němž nic nezbylo, to řekne, místo aby se otevřel prázdný.
+- Stránky, které přidává plugin, to neovlivní: ty přicházejí a odcházejí s pluginem a k jejich vypnutí je tu stránka **Pluginy**.
+- **Zobrazit > Obnovit rozvržení** vrátí stránky na samotné Informace, spolu se zbytkem vybavení okna.
+
+Položky v nabídce Zobrazit znamenají víc, než vypadají. Když je každá stránka vypnutá, není už žádná lišta záložek, na kterou by šlo kliknout pravým tlačítkem — ony jsou cesta zpět.
+
 ## Dekompilace souborů .class jazyka Java
 
 Se zapnutým zásuvným modulem **Java Decompiler** ukáže F3 na souboru `.class` čitelný kód místo binárních dat — i u tříd uvnitř archivu JAR nebo ZIP, do kterého lze vstoupit a číst jej bez rozbalování.

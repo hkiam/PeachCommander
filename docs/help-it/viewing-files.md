@@ -73,6 +73,18 @@ Il pannello laterale (**Vista > Pannello anteprima**, oppure Cmd+Maiusc+P) ha un
 
 Spostando il cursore, nome e dati si aggiornano subito; l’anteprima segue un istante dopo, così tenere premuta una freccia lungo una cartella lunga non avvia un’anteprima per ogni riga attraversata.
 
+## Quali pagine offre il pannello laterale
+
+Il pannello laterale si presenta mostrando solo **Informazioni**. **Attività** (trasferimenti in corso) e **Registro** (trasferimenti conclusi) sono disattivate, perché la maggior parte del lavoro non le chiede mai e altrimenti una striscia di tre schede resterebbe tutto il giorno sopra l'anteprima.
+
+- Attivatele in **Impostazioni > Disposizione**, sotto *Pagine del pannello laterale*; con un clic destro sulla striscia delle schede; oppure da **Vista > Pannello laterale: Informazioni / Attività / Registro**.
+- Se resta una sola pagina, il pannello rinuncia del tutto alla striscia delle schede: un pannello ridotto a Informazioni è anteprima e dettagli, senza nulla sopra.
+- Ogni pagina può essere disattivata, Informazioni compresa — utile quando qui tenete invece il terminale o la vista di un plugin. Un pannello in cui non resta nulla lo dice, anziché aprirsi vuoto.
+- Le pagine fornite da un plugin non sono interessate: quelle vanno e vengono con il plugin, e per disattivarle c'è la pagina **Plugin**.
+- **Vista > Ripristina disposizione** riporta le pagine a Informazioni da sola, insieme al resto dell'arredo della finestra.
+
+Le voci del menu Vista contano più di quanto sembri. Disattivate tutte le pagine non resta alcuna striscia di schede su cui fare clic destro: sono la via del ritorno.
+
 ## Decompilare file .class Java
 
 Con il modulo **Java Decompiler** attivo, F3 su un file `.class` mostra codice leggibile invece di dati binari — anche per le classi dentro un JAR o uno ZIP, in cui potete entrare e che potete leggere senza scompattarlo.

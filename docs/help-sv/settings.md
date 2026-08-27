@@ -23,7 +23,7 @@ Inställningsfönstret är där du skräddarsyr Peach Commander efter hur du arb
 
 Fönstret har dessa sidor, i ordning:
 
-- **Layout** — visa eller dölj enhetsraden, flikraden, sökvägsraden och statusraden.
+- **Layout** — visa eller dölj enhetsraden, flikraden, sökvägsraden och statusraden, och välj vilka sidor sidopanelen erbjuder.
 - **Visning** — hur filer och mappar listas, inklusive datumformatet.
 - **Symboler** — symbolernas utseende i fillistorna.
 - **Åtgärder** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).

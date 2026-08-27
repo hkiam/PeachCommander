@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatisering (AppleScript og Genveje)</h1>
-<p>Peach Commander kan scriptes, så du kan styre den fra AppleScript og fra Genveje-appen. En håndfuld kerneverber lader et script navigere i panelerne, markere filer efter en maske, kopiere eller flytte den aktuelle markering og køre enhver Peach Commander-kommando via dens id — og genbruger præcis de samme handlinger, som menuerne bruger, så et scriptet trin opfører sig som et manuelt. Det er praktisk til gentagne opgaver: at arkivere overførsler, klargøre outputtet fra et build eller koble et filtrin ind i en større Genvej.</p>
+<p>Automatisering virker her i begge retninger.</p>
+<p><strong>Udad:</strong> Peach Commander kan styres med script, så du kan drive den fra AppleScript og fra appen Genveje. En håndfuld kerneverber lader et script navigere i panelerne, markere filer med en maske, kopiere eller flytte den aktuelle markering og køre enhver Peach Commander-kommando via dens id — med præcis de samme handlinger som menuerne bruger, så et scriptet trin opfører sig som et manuelt. Det handler resten af denne side om.</p>
+<p><strong>Indad:</strong> Peach Commander kan også <em>køre</em> et script fra dig — AppleScript eller JavaScript — og lægge det i en menu, på en knap eller på en tast. Det kræver pluginet <strong>Scripting</strong>, som leveres slået fra; se <a href="#kor-dine-egne-scripts">Kør dine egne scripts</a> nedenfor.</p>
+<p>Vil du gentage en <em>række</em> filhandlinger i stedet for én, se <a href="macros.html">Makroer</a>.</p>
 <h2 id="se-ordbogen">Se ordbogen</h2>
 <ol>
 <li>Åbn <strong>Script Editor</strong> (i <code>/Applications/Utilities</code>).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="brug-af-det-fra-genveje">Brug af det fra Genveje</h2>
 <p>I <strong>Genveje</strong>-appen skal du tilføje handlingen <strong>Kør AppleScript</strong> og indsætte et script som det ovenfor. Det lader dig folde et Peach Commander-trin ind i en større Genvej — for eksempel udløst af en mappeændring eller en genvejstast.</p>
+<h2 id="kr-dine-egne-scripts">Kør dine egne scripts</h2>
+<p>Den anden retning: et script fra dig, kørt af Peach Commander.</p>
+<p>Dette er et plugin, og det leveres <strong>slået fra</strong>, fordi det at køre et program efter dit valg kan gøre alt, hvad resten af programmet kan, og flere ting, som intet af det dækker. To kontakter, begge slået fra, indtil du sætter dem:</p>
+<ol>
+<li><strong>Konfiguration ▸ Plugins…</strong> — slå <strong>Scripting</strong> til.</li>
+<li><strong>Indstillinger ▸ AI</strong> — slå <strong>Tillad, at scripts kører</strong> til. Det står på den side, fordi det er samme slags tilladelse som assistentens skal, og de to hører sammen.</li>
+</ol>
+<p>Læg derefter et script i <code>scripts/</code> inde i din konfigurationsmappe — <strong>Kommandoer ▸ Åbn scriptmappen</strong> fører dig dertil og efterlader et eksempel den første gang. En fil <code>.applescript</code>, <code>.scpt</code> eller <code>.jxa</code> i den mappe <em>er</em> et script; der er intet at registrere.</p>
+<h3 id="hvad-et-script-far">Hvad et script får</h3>
+<p>Panelernes tilstand ankommer i miljøet, så det almindelige tilfælde kræver ingen Apple events og ingen tilladelsesforespørgsel:</p>
+<table>
+<thead>
+<tr>
+<th>Variabel</th>
+<th>Betyder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Det aktive panels mappe</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Det andet panels mappe</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Filen under markøren</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Hvor mange emner der er markeret</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>En tekstfil med én markeret sti pr. linje (mangler, når intet er markeret)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Alt ud over det går gennem programmet selv, med verberne ovenfor — de to halvdele supplerer altså hinanden.</p>
+<h3 id="lg-et-script-pa-en-knap-eller-en-tast">Læg et script på en knap eller en tast</h3>
+<p>Hvert script bliver en kommando med navnet <code>plugin.script.run.&lt;navn&gt;</code>, hvor <code>&lt;navn&gt;</code> er filens navn uden endelse (mellemrum og punktummer bliver bindestreger). Det id virker overalt, hvor et <code>cm_*</code>-id virker: i knaplinjen, i <code>usercmd.ini</code>, i en <code>.mnu</code>-fil og i <strong>Konfiguration ▸ Redigér tastaturgenveje…</strong>.</p>
+<h3 id="hvordan-et-script-krer-og-tidsgrnsen">Hvordan et script kører, og tidsgrænsen</h3>
+<p>Som standard kører et script som en separat proces, hvilket betyder, at det kan få en tidsgrænse og stoppes, hvis det overskrider den — tredive sekunder, medmindre du siger andet. Et script kan vælge at køre <em>inde i</em> programmet, hvilket lader det returnere en struktureret værdi og holder det oversat mellem kørsler, men så er der ingen tidsgrænse: et script, der looper, holder programmet. Angiv valget i <code>scripts.json</code> ved siden af dine scripts:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Kun det, der afviger fra standardværdierne, kræver en post; en fil uden post får sit eget navn som titel, kører som separat proces og stoppes efter tredive sekunder.</p>
+<h3 id="til-assistenten">Til assistenten</h3>
+<p>Med pluginet slået til og indstillingen aktiveret får assistenten <code>run_applescript</code>, <code>run_jxa</code> og <code>check_script</code>. Hver af dem viser dig det præcise script og venter på din godkendelse, før noget kører, og ingen af dem tilbydes nogensinde til en ekstern agent via MCP.</p>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
 <li>Det kommando-id, du sender til <code>run command</code>, er det samme <code>cm_*</code>-id, der vises i kommandobrowseren (se <a href="start-menu.html">Start-menuen og brugerdefinerede kommandoer</a>).</li>
 <li>Scripting handler altid på det <strong>aktive</strong> panel; brug <code>go to … in left</code> / <code>in right</code> først, hvis du har brug for en bestemt side.</li>
 <li>Peach Commander er en app med ét vindue, så scripts retter sig mod dette vindues to paneler.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Start-menuen og tilpassede kommandoer</a></li><li><a href="settings.html">Indstillinger</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Start-menuen og tilpassede kommandoer</a></li><li><a href="settings.html">Indstillinger</a></li><li><a href="macros.html">Makroer</a></li></ul></section>
 </main>
 </body>
 </html>

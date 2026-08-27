@@ -23,7 +23,7 @@ A Beállítások ablak az a hely, ahol a Peach Commandert a munkamódjához igaz
 
 Az ablaknak ezek az oldalai vannak, sorrendben:
 
-- **Elrendezés** — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése.
+- **Elrendezés** — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése, valamint annak megválasztása, milyen oldalakat kínál az oldalsó panel.
 - **Megjelenítés** — hogyan listázódnak a fájlok és mappák, beleértve a dátumformátumot.
 - **Ikonok** — az ikonok megjelenése a fájllistákban.
 - **Működés** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).

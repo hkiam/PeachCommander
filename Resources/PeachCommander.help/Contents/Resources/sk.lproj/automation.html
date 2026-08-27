@@ -10,7 +10,10 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Automatizácia (AppleScript a Skratky)</h1>
-<p>Peach Commander možno skriptovať, takže ho môžete ovládať z AppleScript a z aplikácie Skratky. Hŕstka základných slovies umožňuje skriptu navigovať v paneloch, vybrať súbory podľa masky, kopírovať alebo presúvať aktuálny výber a spustiť ľubovoľný príkaz Peach Commander podľa jeho identifikátora — opätovným použitím presne tých istých akcií, ktoré používajú ponuky, takže skriptovaný krok sa správa ako manuálny. Je to praktické pri opakujúcich sa úlohách: triedenie stiahnutých súborov, príprava výstupu zostavenia alebo zapojenie kroku so súborom do väčšej Skratky.</p>
+<p>Automatizácia tu funguje v oboch smeroch.</p>
+<p><strong>Von:</strong> Peach Commander sa dá skriptovať, takže ho môžete riadiť z AppleScriptu aj z aplikácie Skratky. Niekoľko základných slovesných príkazov umožňuje skriptu prechádzať panely, vyberať súbory maskou, kopírovať alebo presúvať aktuálny výber a spúšťať akýkoľvek príkaz Peach Commanderu podľa jeho id — a to cez tie isté akcie, aké používajú ponuky, takže sa skriptovaný krok chová ako ručný. O tom je zvyšok tejto stránky.</p>
+<p><strong>Dovnútra:</strong> Peach Commander vie aj <em>spustiť</em> váš skript — AppleScript alebo JavaScript — a umiestniť ho do ponuky, na tlačidlo alebo na klávesu. Potrebný je na to plugin <strong>Scripting</strong>, ktorý sa dodáva vypnutý; pozri <a href="#spustanie-vlastnych-skriptov">Spúšťanie vlastných skriptov</a> nižšie.</p>
+<p>Na opakovanie <em>sekvencie</em> akcií so súbormi namiesto jednej pozri <a href="macros.html">Makrá</a>.</p>
 <h2 id="zobrazenie-slovnika">Zobrazenie slovníka</h2>
 <ol>
 <li>Otvorte <strong>Editor skriptov</strong> (v <code>/Applications/Utilities</code> — „Nástroje“ vo Finderi).</li>
@@ -84,13 +87,71 @@
 
 <h2 id="pouzitie-zo-skratiek">Použitie zo Skratiek</h2>
 <p>V aplikácii <strong>Skratky</strong> pridajte akciu <strong>Spustiť AppleScript</strong> a vložte skript ako ten vyššie. To vám umožní zapojiť krok Peach Commander do väčšej Skratky — napríklad spustenej zmenou priečinka alebo klávesovou skratkou.</p>
+<h2 id="spustanie-vlastnych-skriptov">Spúšťanie vlastných skriptov</h2>
+<p>Druhý smer: váš skript, spustený Peach Commanderom.</p>
+<p>Je to plugin a dodáva sa <strong>vypnutý</strong>, pretože spustenie programu podľa vašej voľby zvládne všetko, čo zvládne zvyšok aplikácie, a niekoľko vecí, ktoré nepokrýva nič z nej. Dva prepínače, oba vypnuté, kým ich nenastavíte:</p>
+<ol>
+<li><strong>Konfigurácia ▸ Pluginy…</strong> — zapnite <strong>Scripting</strong>.</li>
+<li><strong>Nastavenia ▸ AI</strong> — zapnite <strong>Povoliť spúšťanie skriptov</strong>. Je na tejto stránke, pretože ide o rovnaký druh oprávnenia ako shell asistenta a obidve patria k sebe.</li>
+</ol>
+<p>Potom umiestnite skript do <code>scripts/</code> vo vašom konfiguračnom adresári — <strong>Príkazy ▸ Otvoriť adresár skriptov</strong> vás tam zavedie a prvýkrát tam nechá príklad. Súbor <code>.applescript</code>, <code>.scpt</code> alebo <code>.jxa</code> v tomto adresári <em>je</em> skript; nie je čo registrovať.</p>
+<h3 id="co-skript-dostane">Čo skript dostane</h3>
+<p>Stav panelov prichádza v prostredí, takže bežný prípad nepotrebuje Apple events ani žiadnu otázku na oprávnenie:</p>
+<table>
+<thead>
+<tr>
+<th>Premenná</th>
+<th>Znamená</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PC_ACTIVE_DIR</code></td>
+<td>Adresár aktívneho panela</td>
+</tr>
+<tr>
+<td><code>PC_TARGET_DIR</code></td>
+<td>Adresár druhého panela</td>
+</tr>
+<tr>
+<td><code>PC_CURSOR_NAME</code></td>
+<td>Súbor pod kurzorom</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_COUNT</code></td>
+<td>Koľko položiek je vybraných</td>
+</tr>
+<tr>
+<td><code>PC_SELECTION_FILE</code></td>
+<td>Textový súbor s jednou vybranou cestou na riadok (chýba, keď nie je vybrané nič)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">set</span> <span class="nv">here</span> <span class="k">to</span> <span class="nb">system attribute</span> <span class="s2">"PC_ACTIVE_DIR"</span>
+<span class="no">return</span> <span class="s2">"The active panel is showing "</span> <span class="o">&amp;</span> <span class="nv">here</span>
+</code></pre></div>
+
+<p>Všetko nad to ide cez aplikáciu samotnú, so slovesnými príkazmi vyššie — obidve polovice sa teda dopĺňajú.</p>
+<h3 id="umiestnenie-skriptu-na-tlacidlo-alebo-klavesu">Umiestnenie skriptu na tlačidlo alebo klávesu</h3>
+<p>Každý skript sa stane príkazom s názvom <code>plugin.script.run.&lt;názov&gt;</code>, kde <code>&lt;názov&gt;</code> je meno súboru bez prípony (medzery a bodky sa menia na spojovníky). Toto id funguje všade, kde funguje id <code>cm_*</code>: v lište tlačidiel, v <code>usercmd.ini</code>, v súbore <code>.mnu</code> a v <strong>Konfigurácia ▸ Upraviť skratky…</strong>.</p>
+<h3 id="ako-skript-bezi-a-casovy-limit">Ako skript beží a časový limit</h3>
+<p>Štandardne skript beží ako samostatný proces, čo znamená, že mu možno dať časový limit a zastaviť ho, ak ho prekročí — tridsať sekúnd, ak nepoviete inak. Skript sa môže rozhodnúť bežať <em>vnútri</em> aplikácie, čo mu dovolí vrátiť štruktúrovanú hodnotu a ponechá ho medzi spusteniami skompilovaný, ale potom nie je žiadny časový limit: skript, ktorý sa zacyklí, drží aplikáciu. Voľbu uveďte v <code>scripts.json</code> vedľa svojich skriptov:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy"</span><span class="p">,</span><span class="w"> </span><span class="nt">"fileName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy.applescript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tidy Downloads"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AppleScript"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subprocess"</span><span class="p">,</span><span class="w"> </span><span class="nt">"timeoutSeconds"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>Záznam potrebuje len to, čo sa odchyľuje od predvolených hodnôt; súbor bez záznamu dostane ako názov svoje vlastné meno, beží ako samostatný proces a po tridsiatich sekundách sa zastaví.</p>
+<h3 id="pre-asistenta">Pre asistenta</h3>
+<p>So zapnutým pluginom a povoleným nastavením získa asistent <code>run_applescript</code>, <code>run_jxa</code> a <code>check_script</code>. Každý z nich vám ukáže presný skript a čaká na vaše schválenie, než sa čokoľvek spustí, a žiadny z nich nie je nikdy ponúkaný externému agentovi cez MCP.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
 <li>Identifikátor príkazu, ktorý odovzdáte do <code>run command</code>, je ten istý identifikátor <code>cm_*</code> zobrazený v prehliadači príkazov (pozri <a href="start-menu.html">Ponuka Štart a vlastné príkazy</a>).</li>
 <li>Skriptovanie vždy pôsobí na <strong>aktívny</strong> panel; najprv použite <code>go to … in left</code> / <code>in right</code>, ak potrebujete konkrétnu stranu.</li>
 <li>Peach Commander je aplikácia s jedným oknom, takže skripty cielia na dva panely toho okna.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Ponuka Štart a vlastné príkazy</a></li><li><a href="settings.html">Nastavenia</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Ponuka Štart a vlastné príkazy</a></li><li><a href="settings.html">Nastavenia</a></li><li><a href="macros.html">Makrá</a></li></ul></section>
 </main>
 </body>
 </html>
