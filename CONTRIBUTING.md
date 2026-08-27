@@ -52,6 +52,15 @@ The full run stays the default and stays the thing you do before committing.
 `bootstrap.sh` installs `libssh2` via Homebrew. That is not optional: `CSSH2`
 resolves `<libssh2.h>` from the keg and no header is vendored.
 
+**A Release build needs a libssh2 for both architectures, and Homebrew gives you one.**
+`project.yml` asks for `ARCHS: arm64 x86_64`, so `xcodebuild -configuration Release` links
+PCNet twice — and a Homebrew keg is built for the machine it is on. On Apple Silicon the
+x86_64 half fails with `ld: symbol(s) not found for architecture x86_64` listing
+`_libssh2_session_init_ex` and friends, which reads like a code fault and is not one.
+Debug builds are unaffected: they build the active architecture only. To check that your
+change compiles under optimisation, add `ARCHS=arm64 ONLY_ACTIVE_ARCH=YES`. Producing an
+actual universal release needs a libssh2 built for both, which Homebrew does not ship.
+
 **Never edit `PeachCommander.xcodeproj`.** It is generated from `project.yml` by
 XcodeGen, is not tracked in git, and `build.sh`/`test.sh` regenerate it whenever
 `project.yml` is newer than the generated file (`PC_FORCE_GEN=1` regenerates regardless).
