@@ -56,6 +56,19 @@ actor FakeBridge: AutomationHostBridge {
                                                                 label: "Delete selection permanently") }
         return .unknown
     }
+    /// What to answer a macro's questions with; nil means "nobody to ask", which is what a socket
+    /// bridge does. Counted, because asking twice for one run is the defect the plan-time asking
+    /// exists to prevent.
+    var askAnswers: [String: String]?
+    private(set) var askCount = 0
+    private(set) var askedQuestions: [MacroQuestion] = []
+    func setAskAnswers(_ answers: [String: String]?) { askAnswers = answers }
+    func askForValues(_ questions: [MacroQuestion], forMacro title: String) async -> [String: String]? {
+        askCount += 1
+        askedQuestions = questions
+        return askAnswers
+    }
+
     func copy(sources: [String], destination: String) { copied = (sources, destination) }
     func move(sources: [String], destination: String) { moved = (sources, destination) }
     func rename(path: String, newName: String) { renamed = (path, newName) }

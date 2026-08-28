@@ -78,12 +78,7 @@ public struct MacroRunner: Sendable {
                 reports.append(.init(step: id, tool: step.tool, outcome: "skipped", detail: nil))
                 continue
             }
-            // A macro calling a macro is refused, not executed. There is no depth limit that would
-            // make it safe — a macro naming itself is one step long — and nesting was never asked
-            // for. Refused per step rather than rejected when the macro is saved, so a macros.json
-            // written by hand cannot get a run into an unbounded recursion either.
-            if step.tool == "run_macro" {
-                let detail = "a macro cannot run another macro"
+            if let detail = Self.nestingRefusal(step) {
                 reports.append(.init(step: id, tool: step.tool, outcome: "refused", detail: detail))
                 stoppedAt = "step \(id) (\(step.tool)): \(detail)"
                 break
@@ -132,10 +127,33 @@ public struct MacroRunner: Sendable {
         return MacroRunReport(macro: macro.id, steps: reports, stoppedAt: stoppedAt)
     }
 
+    /// Why this step may not run another macro, or nil when it does not try to.
+    ///
+    /// A macro calling a macro is refused, not executed. There is no depth limit that would make it
+    /// safe — a macro naming itself is one step long — and nesting was never asked for. Refused per
+    /// step rather than rejected when the macro is saved, so a `macros.json` written by hand cannot
+    /// get a run into an unbounded recursion either.
+    ///
+    /// **Both spellings.** `run_macro` is the obvious one. `run_command("mc_…")` is the same act
+    /// through the command registry, and it was open: the registry runs the macro, the macro runs the
+    /// step, and `runCommandNamed` dispatches each round into its own main-actor task, so nothing ever
+    /// returns to be stopped. `MacroPlan.problems` rejects it before the plan is proposed; this is the
+    /// backstop for a macro that reached the runner anyway.
+    static func nestingRefusal(_ step: MacroStep) -> String? {
+        if step.tool == "run_macro" { return "a macro cannot run another macro" }
+        guard step.tool == "run_command", case .text(let id)? = step.arguments["command_id"],
+              id.hasPrefix(MacroPlan.macroCommandPrefix) else { return nil }
+        return "“\(id)” is a macro, and a macro cannot run another macro"
+    }
+
     static func describe(_ error: Error) -> String {
         switch error {
         case MacroPlaceholderError.unknownStepReference(let step):
             return "it refers to the result of step \(step), which has no usable value"
+        case MacroPlaceholderError.unknownStepField(let step, let field):
+            return "step \(step)'s result has no path called “\(field)”"
+        case MacroPlaceholderError.unanswered(let prompt):
+            return "nobody was asked for “\(prompt)”"
         case MacroPlaceholderError.expandedToNothing(let token):
             return token == MacroPlaceholders.selectionToken
                 ? "nothing is selected, so there is nothing for this step to act on"

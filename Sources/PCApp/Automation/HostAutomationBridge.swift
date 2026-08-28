@@ -483,6 +483,17 @@ final class HostAutomationBridge: AutomationHostBridge {
         return AutomationCommandInfo(capability: capability, label: command.help)
     }
 
+    /// Put the macro's questions to the user (F-478).
+    ///
+    /// On the main actor, because it is a modal; awaited by the Core, which is an actor and suspends
+    /// here like anywhere else. The macro's title is passed so the dialog can say which macro is
+    /// asking — with a button on the bar and a key on the keyboard, "these values are needed" without
+    /// a name is a question about nothing in particular.
+    func askForValues(_ questions: [MacroQuestion], forMacro title: String) async -> [String: String]? {
+        guard let host else { return nil }
+        return MacroAskSheet.present(questions, macroTitle: title, in: host.window)
+    }
+
     // MARK: Write / delete / config (reached only after the policy allows/confirms)
 
     // Both of these WAIT for the transfer to finish. They used to enqueue and return, so the

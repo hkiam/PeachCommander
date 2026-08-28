@@ -652,8 +652,14 @@ extension PanelController {
         if !log.isEmpty {
             (view.window?.windowController as? MainWindowController)?
                 .pushUndo(String(localized: "Rename")) { [weak self] in self?.performUndo(log) }
-            // No payload: a rename cannot be repeated once the name has changed (F-402).
-            recordInHistory(label: String(localized: "Rename \(log.count) item(s)"), directory: dir)
+            // Not repeatable from the palette — a rename has no meaning once the name has changed
+            // (F-402) — but recorded in full, so it can become a macro step (F-478). The pairs are
+            // leaf names; the directory is the entry's own.
+            recordInHistory(label: String(localized: "Rename \(log.count) item(s)"), directory: dir,
+                            payload: HistoryOperation.encodeRenames(log.map {
+                                (old: ($0.from as NSString).lastPathComponent,
+                                 new: ($0.to as NSString).lastPathComponent)
+                            }))
         }
         if !outcome.failed.isEmpty {
             let list = outcome.failed.prefix(10).map { "\($0.name): \($0.reason)" }.joined(separator: "\n")
@@ -692,7 +698,9 @@ extension PanelController {
                          detail: String(localized: "\(failed.count) file(s) were not renamed:\n\(list)\(more)"))
         }
         if renamed > 0 {
-            recordInHistory(label: String(localized: "Rename \(renamed) item(s)"), directory: dir)
+            recordInHistory(label: String(localized: "Rename \(renamed) item(s)"), directory: dir,
+                            payload: HistoryOperation.encodeRenames(
+                                pairs.filter { !failed.contains($0.old) }))
         }
         await reload()
     }
@@ -735,8 +743,12 @@ extension PanelController {
                         }
                     }
                 // The operation, not the folders: a folder that was created but never opened has not
-                // been visited, and a history of places the user has not been is noise.
-                recordInHistory(label: String(localized: "New Folder"), directory: parent)
+                // been visited, and a history of places the user has not been is noise. The payload
+                // carries the paths anyway, for the macro recorder (F-478).
+                recordInHistory(label: String(localized: "New Folder"), directory: parent,
+                                payload: HistoryOperation.encode(
+                                    kind: HistoryOperation.kindMakeDirectory,
+                                    items: created, mask: nil))
             }
         } catch {
             presentError(String(localized: "Could not create directory."), detail: "\(error)")
@@ -772,7 +784,12 @@ extension PanelController {
         }
         if failed.count < names.count {
             // The operation, not the folders — same reason as the local path.
-            recordInHistory(label: String(localized: "New Folder"), directory: parent)
+            recordInHistory(label: String(localized: "New Folder"), directory: parent,
+                            payload: HistoryOperation.encode(
+                                kind: HistoryOperation.kindMakeDirectory,
+                                items: names.filter { !failed.contains($0) }
+                                    .map { (parent as NSString).appendingPathComponent($0) },
+                                mask: nil))
         }
         await reload()
     }
@@ -1092,8 +1109,10 @@ extension PanelController {
 
     /// The same, for a queued operation described by its `OperationKind`.
     ///
-    /// A delete carries no payload: repeating it from a list the user is browsing would be a destructive
-    /// action one keystroke away from a search result, which is not what "Enter opens" should ever mean.
+    /// A delete carries a payload but is still not repeatable *from the palette*: `HistoryOperation`
+    /// keeps that rule in `decode`, which answers only for copy and move, so a destructive action stays
+    /// out of reach of one keystroke on a row somebody is browsing. What the payload buys is the macro
+    /// recorder, where the same operation is ticked deliberately and then confirmed before every run.
     private func recordInHistory(finished kind: OperationKind) {
         switch kind {
         case .copy(let items, let dest, _):
@@ -1106,10 +1125,14 @@ extension PanelController {
                                                              items: items, mask: nil))
         case .trash(let items):
             recordInHistory(label: String(localized: "Move \(items.count) item(s) to Trash"),
-                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "")
+                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "",
+                            payload: HistoryOperation.encode(kind: HistoryOperation.kindTrash,
+                                                             items: items, mask: nil))
         case .delete(let items):
             recordInHistory(label: String(localized: "Delete \(items.count) item(s)"),
-                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "")
+                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "",
+                            payload: HistoryOperation.encode(kind: HistoryOperation.kindDelete,
+                                                             items: items, mask: nil))
         case .custom:
             break   // pack/unpack and friends: no shape the history could describe or repeat
         }

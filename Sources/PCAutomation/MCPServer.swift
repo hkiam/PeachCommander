@@ -22,7 +22,17 @@ public struct MCPServer: Sendable {
 
     public init(core: AutomationCore, policy: PermissionPolicy = .standard) {
         self.core = core
-        self.policy = policy
+        // The withheld capabilities are taken out of the *allow-list*, not only out of the listing.
+        //
+        // Hiding the tool and refusing it by name is a check on the name, and a name is not the only
+        // way to reach a capability: a macro is one tool call (`run_macro`, declared `.write`, so
+        // offered) whose steps go straight back through the Core. A macro holding a `run_shell` step
+        // was therefore reachable from a socket on any installation that had switched the shell on —
+        // past a rule whose whole point is that a remote client cannot get there. Withholding the
+        // capability closes the class rather than the spelling: whatever route reaches the step, the
+        // step is refused.
+        self.policy = PermissionPolicy(autonomy: policy.autonomy,
+                                       allowed: policy.allowed.subtracting(Self.notOfferedRemotely))
     }
 
     /// Capabilities that are not offered over MCP at all, whatever the policy says.

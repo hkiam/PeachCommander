@@ -98,6 +98,48 @@ final class MCPServerTests: XCTestCase {
         XCTAssertEqual(copied?.dest, "/b")
     }
 
+    /// Hiding a tool and refusing it by name is a check on the *name*, and a macro is a different
+    /// name for the same capability: `run_macro` is declared `.write`, so it is offered, and its steps
+    /// go straight back through the Core. A macro holding a `run_shell` step was therefore reachable
+    /// from a socket on any installation that had switched the shell on — past the one rule that says
+    /// a remote client cannot get there. The capability is now withheld from the session, so the route
+    /// does not matter.
+    func test_aMacroCannotCarryAWithheldCapabilityOverMCP() async throws {
+        let bridge = FakeBridge()
+        let shellMacro = Macro(id: "sh", title: "Shell", steps: [
+            MacroStep(tool: "run_shell", arguments: ["command": .text("echo hi")])])
+        let core = DefaultAutomationCore(bridge: bridge, macros: { [shellMacro] })
+        // A session whose policy grants everything, the way the host builds it when the user has
+        // switched the shell on in Settings.
+        let server = MCPServer(core: core, policy: PermissionPolicy(autonomy: .autonomous))
+        let resp = decode(await server.handle(req([
+            "jsonrpc": "2.0", "id": 9, "method": "tools/call",
+            "params": ["name": "run_macro", "arguments": ["macro_id": "sh"]]])))
+        let result = resp["result"] as? [String: Any]
+        XCTAssertEqual(result?["isError"] as? Bool, true, "\(resp)")
+        let ranShell = await bridge.ranShell
+        XCTAssertNil(ranShell, "the shell must not have run")
+    }
+
+    /// A macro that asks a human cannot be run from a socket, and the refusal says so rather than the
+    /// run quietly taking every default. The bridge's own answer decides this — `askForValues` returns
+    /// nil where there is nobody — so it holds for any transport without a person attached.
+    func test_aMacroThatAsksIsRefusedOverMCP() async throws {
+        let bridge = FakeBridge()
+        await bridge.setAskAnswers(nil)
+        let asking = Macro(id: "ask", title: "Ask", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/%{ask:Folder=Archive}")])])
+        let core = DefaultAutomationCore(bridge: bridge, macros: { [asking] })
+        let server = MCPServer(core: core, policy: PermissionPolicy(autonomy: .autonomous))
+        let resp = decode(await server.handle(req([
+            "jsonrpc": "2.0", "id": 11, "method": "tools/call",
+            "params": ["name": "run_macro", "arguments": ["macro_id": "ask"]]])))
+        let result = resp["result"] as? [String: Any]
+        XCTAssertEqual(result?["isError"] as? Bool, true, "\(resp)")
+        let madeDir = await bridge.madeDir
+        XCTAssertNil(madeDir, "and the default was not silently taken")
+    }
+
     func test_unknownMethod_returnsMethodNotFound() async {
         let resp = decode(await makeServer().handle(req(["jsonrpc": "2.0", "id": 7, "method": "no/such"])))
         let error = resp["error"] as? [String: Any]

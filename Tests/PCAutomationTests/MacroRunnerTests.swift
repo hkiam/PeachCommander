@@ -136,6 +136,20 @@ final class MacroRunnerTests: XCTestCase {
         XCTAssertTrue(report.stoppedAt?.contains("cannot run another macro") == true)
     }
 
+    /// The backstop for the same rule the pre-flight applies: a `macros.json` written by hand reaches
+    /// the runner without the Core's check, and a self-calling macro must not get past it there either.
+    func test_aRunCommandStepNamingAMacroIsRefusedByTheRunnerToo() async throws {
+        let recorder = Recorder()
+        let m = Macro(id: "loop", title: "Loop", steps: [
+            MacroStep(tool: "run_command", arguments: ["command_id": .text("mc_loop")])])
+        let report = await runner(recorder).run(m, context: { context }, policy: .standard)
+        XCTAssertEqual(report.steps.map(\.outcome), ["refused"])
+        let tools = await recorder.tools
+        XCTAssertEqual(tools, [], "nothing may reach the invoker")
+        XCTAssertTrue(report.stoppedAt?.contains("cannot run another macro") == true,
+                      report.stoppedAt ?? "")
+    }
+
     func test_anUnresolvableArgumentFailsTheStepWithAReadableReason() async throws {
         let r = Recorder()
         let m = Macro(id: "m", title: "M", steps: [
@@ -284,25 +298,184 @@ final class MacroThroughCoreTests: XCTestCase {
         XCTAssertNil(madeDir, "and neither must the step before it")
     }
 
-    /// `MacroPlan.capability` reads each step's *declared* capability, which for `run_command` is
-    /// `.runCommand` — not what the command does. So the macro-level gate lets this through, and the
-    /// step-level gate is what stops it. That is why the runner keeps the session's allow-list instead
-    /// of trusting the macro-level decision, and this is the case that would slip through if it did.
+    /// A macro whose steps are all `run_command` must still be *shown* before it runs.
+    ///
+    /// It was not. `run_command` is declared `.runCommand`, which is not a mutating capability, so the
+    /// macro-level decision came out `.allow` — no plan, no confirmation — and the step then re-entered
+    /// `invoke` under the raised autonomy that approval was supposed to buy. Measured before the fix:
+    /// this exact macro returned `.ok` under `PermissionPolicy.standard` and `cm_DeleteReal` ran, with
+    /// nothing put in front of the user at any point.
+    func test_aMacroOfCommandsIsStillPutInFrontOfTheUser() async throws {
+        let bridge = FakeBridge()
+        let m = Macro(id: "del", title: "Delete", steps: [
+            MacroStep(tool: "run_command", arguments: ["command_id": .text("cm_DeleteReal")])])
+        // Without a host to ask, the floor: a `run_command` step is assumed to change something.
+        XCTAssertEqual(MacroPlan.capability(of: m), .write)
+        let outcome = try await core([m], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "del"]), policy: .standard)
+        guard case .needsConfirmation = outcome else {
+            return XCTFail("expected a plan, got \(outcome)")
+        }
+        let ran = await bridge.ranCommand
+        XCTAssertNil(ran, "nothing may run before the plan is confirmed")
+    }
+
+    /// The floor is a floor, not a verdict: asked, the host says a refresh changes nothing, and a macro
+    /// that only refreshes is not gated like a delete.
+    func test_aMacroOfHarmlessCommandsIsNotGatedLikeAWrite() async throws {
+        let bridge = FakeBridge()
+        let m = Macro(id: "refresh", title: "Refresh", steps: [
+            MacroStep(tool: "run_command", arguments: ["command_id": .text("cm_RereadSource")])])
+        let outcome = try await core([m], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "refresh"]), policy: .standard)
+        guard case .ok = outcome else { return XCTFail("expected ok, got \(outcome)") }
+        let ran = await bridge.ranCommand
+        XCTAssertEqual(ran, "cm_RereadSource")
+    }
+
+    /// The step-level gate is still there, and still keeps the session's allow-list: a macro approved
+    /// as a whole does not get to do what the session may not do.
     func test_aStepIsStillGatedByWhatItsCommandActuallyDoes() async throws {
         let bridge = FakeBridge()
         let m = Macro(id: "del", title: "Delete", steps: [
             MacroStep(tool: "run_command", arguments: ["command_id": .text("cm_DeleteReal")])])
-        XCTAssertEqual(MacroPlan.capability(of: m), .runCommand, "the macro-level gate sees only this")
         let policy = PermissionPolicy(autonomy: .autonomous,
                                       allowed: Set(Capability.allCases).subtracting([.write]))
         let outcome = try await core([m], bridge: bridge)
             .invoke(tool: "run_macro", arguments: args(["macro_id": "del"]), policy: policy)
+        guard case .refused(let reason) = outcome else {
+            return XCTFail("expected a refusal, got \(outcome)")
+        }
+        let ran = await bridge.ranCommand
+        XCTAssertTrue(reason.contains("write"), reason)
+        XCTAssertNil(ran, "the command must not have run")
+    }
+
+    /// `run_command("mc_…")` is a macro calling a macro through the command registry, and it recurses
+    /// without bound: the registry runs the macro, the macro runs the step, and the host dispatches
+    /// each round into its own detached task, so nothing ever returns to be stopped. Refused before
+    /// the plan is proposed.
+    func test_aMacroCannotRunAnotherMacroThroughTheCommandRegistry() async throws {
+        let bridge = FakeBridge()
+        let m = Macro(id: "loop", title: "Loop", steps: [
+            MacroStep(tool: "run_command", arguments: ["command_id": .text("mc_loop")])])
+        let outcome = try await core([m], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "loop"]), policy: .standard)
+        guard case .failed(let error) = outcome else {
+            return XCTFail("expected a refusal, got \(outcome)")
+        }
+        XCTAssertTrue(error.contains("cannot run another macro"), error)
+        let ran = await bridge.ranCommand
+        XCTAssertNil(ran)
+    }
+
+    /// A step that cannot work is found before the plan is proposed, not four steps in — the rule
+    /// `rename_batch` already followed. Nothing has run by the time the user is told.
+    func test_aMacroWithAnUnrunnableStepIsRefusedBeforeAnyOfItRuns() async throws {
+        let bridge = FakeBridge()
+        let m = Macro(id: "typo", title: "Typo", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/out")]),
+            MacroStep(tool: "reticulate_splines"),
+            MacroStep(tool: "move", arguments: ["destination": .text("%T/out")]),
+        ])
+        let outcome = try await core([m], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "typo"]), policy: .standard)
+        guard case .failed(let error) = outcome else {
+            return XCTFail("expected a refusal, got \(outcome)")
+        }
+        XCTAssertTrue(error.contains("reticulate_splines"), error)
+        // And the missing `sources` of the third step, in the same message: a macro is fixed in an
+        // editor, and one problem per run is one round trip per typo.
+        XCTAssertTrue(error.contains("sources"), error)
+        let madeDir = await bridge.madeDir
+        XCTAssertNil(madeDir, "step 1 must not have run")
+    }
+
+    /// A macro that stops halfway says how far it got. `.failed` carries nothing but its string, so
+    /// without this the next question — what has already happened to my files? — was answerable only
+    /// by opening the action log.
+    func test_aStoppedMacroSaysHowManyStepsHadAlreadyRun() async throws {
+        let bridge = FakeBridge()
+        // Step 2 refers to a step that has not run: past the pre-flight, which cannot know what a
+        // placeholder will resolve to, and into the runner, which stops there.
+        let m = Macro(id: "half", title: "Half", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/out")]),
+            MacroStep(tool: "move", arguments: ["sources": .text("%{9}"),
+                                                "destination": .text("%T/out")]),
+        ])
+        let outcome = try await core([m], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "half"]),
+                    policy: PermissionPolicy(autonomy: .autonomous))
         guard case .failed(let error) = outcome else {
             return XCTFail("expected failure, got \(outcome)")
         }
-        let ran = await bridge.ranCommand
-        XCTAssertTrue(error.contains("write"), error)
-        XCTAssertNil(ran, "the command must not have run")
+        XCTAssertTrue(error.contains("1 of 2 steps had already been carried out"), error)
+    }
+
+    private func askingMacro() -> Macro {
+        Macro(id: "ask", title: "Ask", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/%{ask:Folder=Archive}")]),
+            MacroStep(tool: "move", arguments: ["sources": .text("%S"),
+                                                "destination": .text("%T/%{ask:Folder=Archive}")]),
+        ])
+    }
+
+    /// The answer has to be *in the plan*. A macro that asked when it reached the step would have been
+    /// approved on a guess about what the user was going to type.
+    func test_theAnswerIsInTheRowsBeforeTheyAreApproved() async throws {
+        let bridge = FakeBridge()
+        await bridge.setAskAnswers(["Folder": "Rechnungen"])
+        let core = self.core([askingMacro()], bridge: bridge)
+        let outcome = try await core.invoke(tool: "run_macro", arguments: args(["macro_id": "ask"]),
+                                            policy: .standard)
+        guard case .needsConfirmation(_, let token) = outcome else {
+            return XCTFail("expected a plan, got \(outcome)")
+        }
+        let rows = await core.planItems(token: token)
+        XCTAssertTrue(rows[0].text.contains("Rechnungen"), rows[0].text)
+        let asked = await bridge.askCount
+        XCTAssertEqual(asked, 1, "one question, asked once, however many steps use it")
+    }
+
+    /// And carried from the plan to the run: asking again on confirmation could come back different,
+    /// and then the approved rows were about something else.
+    func test_theAnswerIsNotAskedForASecondTimeWhenTheRunStarts() async throws {
+        let bridge = FakeBridge()
+        await bridge.setAskAnswers(["Folder": "Rechnungen"])
+        let core = self.core([askingMacro()], bridge: bridge)
+        guard case .needsConfirmation(_, let token) = try await core.invoke(
+            tool: "run_macro", arguments: args(["macro_id": "ask"]), policy: .standard) else {
+            return XCTFail("expected a plan")
+        }
+        _ = try await core.confirm(token: token, rejecting: [])
+        let asked = await bridge.askCount
+        let madeDir = await bridge.madeDir
+        XCTAssertEqual(asked, 1)
+        XCTAssertEqual(madeDir, "/b/Rechnungen")
+    }
+
+    /// Cancelling the question cancels the macro, before anything is proposed and long before anything
+    /// runs.
+    func test_cancellingTheQuestionRunsNothing() async throws {
+        let bridge = FakeBridge()
+        await bridge.setAskAnswers(nil)
+        let outcome = try await core([askingMacro()], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "ask"]), policy: .standard)
+        guard case .failed(let error) = outcome else {
+            return XCTFail("expected failure, got \(outcome)")
+        }
+        XCTAssertTrue(error.contains("nobody to ask"), error)
+        let madeDir = await bridge.madeDir
+        XCTAssertNil(madeDir)
+    }
+
+    /// A macro with no questions must not put a dialog in front of anybody.
+    func test_aMacroWithNoQuestionsAsksNothing() async throws {
+        let bridge = FakeBridge()
+        _ = try await core([tidyMacro()], bridge: bridge)
+            .invoke(tool: "run_macro", arguments: args(["macro_id": "tidy"]), policy: .standard)
+        let asked = await bridge.askCount
+        XCTAssertEqual(asked, 0)
     }
 
     func test_anUnknownMacroFails() async throws {

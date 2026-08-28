@@ -67,6 +67,38 @@ SCENARIOS = [
                        "previewpanel on", "wait 1200",
                        "previewpanel off", "wait 800",
                        "previewpanel on", "wait 1500"], 9),
+    # Switching the side panel's built-in pages on and off (F-476). Four claims, and the second is the
+    # one the feature exists for: with Log showing, switching *Info* off must leave Log showing. The
+    # panel used to read its page straight out of `selectedSegment`, so removing a page in front of the
+    # selected one silently handed the user a different page under the right label.
+    #
+    # **Activities is switched on for that step on purpose, and it is the difference between a test and
+    # a coincidence.** With only Info and Log on, removing Info makes Log the *first* tab — so a build
+    # that had lost the selection entirely and fell back to "the first tab" would answer "Log" too and
+    # the assertion could not fail. Three pages on puts Log at index 2 with Activities in front of it,
+    # so falling back answers Activities and keeping the identity answers Log. (Found by running the
+    # weaker version locally and noticing that `previewtab` had not even matched.)
+    #
+    # The middle of the script toggles with the panel *closed*, because a collapsed panel is `width == 0`
+    # and that is the state this file has produced seven Auto Layout conflicts in before. Plugin tabs are
+    # asserted only through `pages=`, which lists built-ins: the VM's plugin set is not this scenario's
+    # subject, and every built-in being off with the plugin tabs still there is the point of `-empty`.
+    ("side-panel-tabs", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "previewpanel on", "wait 1200",
+                         "previewtabsdump /Users/admin/side-tabs-default.txt", "wait 300",
+                         "setbool Layout.PreviewTabActivities|1", "wait 700",
+                         "setbool Layout.PreviewTabLog|1", "wait 700",
+                         "previewtab Log", "wait 700",
+                         "setbool Layout.PreviewTabInfo|0", "wait 800",
+                         "previewtabsdump /Users/admin/side-tabs-selection.txt", "wait 300",
+                         "previewpanel off", "wait 600",
+                         "setbool Layout.PreviewTabActivities|0", "wait 700",
+                         "setbool Layout.PreviewTabLog|0", "wait 700",
+                         "previewpanel on", "wait 800",
+                         "previewtabsdump /Users/admin/side-tabs-empty.txt", "wait 300",
+                         "cmd cm_SidePanelInfo", "wait 800",
+                         "previewtab Info", "wait 600",
+                         "previewtabsdump /Users/admin/side-tabs.txt", "wait 400"], 22),
     ("find-files", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                     "findtab 0", "wait 2000"], 10),
     ("settings", ["active left", "left /Users/admin", "wait 1000",
@@ -1662,6 +1694,22 @@ REPORTS = {
     "view-placement-dock": ("/Users/admin/placed-dock.txt", ["plugin.notes.sidebar", "visible=true"]),
     "view-placement": ("/Users/admin/placed-back.txt",
                             ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
+    # F-476. `pages=` lists only the built-ins, so these say nothing about which plugins the VM has.
+    # The default is Info alone — the negative matters as much, because "pages contains info" would
+    # pass for the three-page panel this replaces.
+    "side-panel-tabs-default": ("/Users/admin/side-tabs-default.txt",
+                                ["pages=info\n", "selected=Info"]),
+    # The whole reason for the rewrite: Log was showing at index 2, Info was switched off in front of it,
+    # and Log is still what is showing. Reading the page out of the segment index answers "Activities"
+    # here, and so does falling back to the first tab — which is why Activities is on for this step.
+    "side-panel-tabs-selection": ("/Users/admin/side-tabs-selection.txt",
+                                  ["pages=activities,log\n", "selected=Log"]),
+    # Every built-in off is a legal state, and the toggles that got here ran while the panel was
+    # collapsed. A plugin tab may well be selected — that is rule 2, not a failure — so nothing is
+    # claimed about `selected`.
+    "side-panel-tabs-empty": ("/Users/admin/side-tabs-empty.txt", ["pages=\n"]),
+    # Back from nothing through the View menu, which is the only route left once the tab strip is gone.
+    "side-panel-tabs": ("/Users/admin/side-tabs.txt", ["pages=info\n", "selected=Info"]),
     # Ctrl+B (the branch view) rather than Cmd+C, and that took a failed run to work out: the shipped
     # default scheme is tc-classic, which does not bind Cmd+C at all — the panel copies files through
     # the Edit *menu* and the responder chain there, a path this probe deliberately does not use. So

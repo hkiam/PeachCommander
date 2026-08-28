@@ -20,28 +20,57 @@ extension MainWindowController {
 
     var macroStore: MacroStore { MacroStore(url: configPaths.macros) }
 
-    /// Read the macros and register one command per macro. Called at startup and after every edit.
-    func loadMacros() {
-        let (macros, problems) = macroStore.load()
-        for problem in problems { logger.error("macros.json: \(problem)") }
-        let entries = macros.map { macro -> (name: String, title: String, handler: CommandHandler) in
-            let id = macro.id
-            return (name: macro.commandName, title: macro.title,
-                    handler: { [weak self] _ in await self?.runMacro(id: id) })
-        }
-        Task { await commandRegistry.setMacroCommands(entries) }
-    }
+    /// Read the macros and register one command per macro. Called at startup.
+    ///
+    /// Silent about problems on purpose: this runs during launch, and an alert there is the thing
+    /// F-436 was about — a modal nobody is present to click turns a start into a hang. They are
+    /// logged here and shown by `reloadMacrosFromDisk`, which is the path an *edit* takes.
+    func loadMacros() { applyMacros(readMacros(), announcingProblems: false) }
 
     /// Re-read `macros.json` and re-register, if anything changed.
     ///
     /// Compared on the decoded macros rather than the file's bytes: the editor rewrites the whole file
     /// with sorted keys, so a save that changed nothing still changes the text, and re-registering the
-    /// command table on every activation would be work for nothing.
+    /// command table on every activation would be work for nothing. The *problems* are part of that
+    /// comparison, so saving a file that is still broken says so again rather than once.
     func reloadMacrosFromDisk() {
-        let macros = macroStore.macros()
-        guard macros != lastLoadedMacros else { return }
-        lastLoadedMacros = macros
-        loadMacros()
+        let loaded = readMacros()
+        guard loaded.macros != lastLoadedMacros || loaded.problems != lastMacroProblems else { return }
+        applyMacros(loaded, announcingProblems: true)
+    }
+
+    /// The macros on disk, with everything wrong with them that can be seen without running one.
+    ///
+    /// Two kinds of problem, deliberately merged into one list: `MacroStore` reports the entries it
+    /// had to *drop* (an unusable id, a duplicate, a file that is not a list at all), and
+    /// `MacroPlan.problems` reports the steps of the ones it kept — a misspelled tool, a missing
+    /// required argument. From the reader's side both are "this macro will not do what you wrote",
+    /// and both are found at the moment they can still be fixed cheaply: the editor is open.
+    private func readMacros() -> (macros: [Macro], problems: [String]) {
+        var (macros, problems) = macroStore.load()
+        let tools = automationCore.tools
+        for macro in macros {
+            problems += MacroPlan.problems(of: macro, tools: tools).map { "\(macro.id): \($0)" }
+        }
+        return (macros, problems)
+    }
+
+    private func applyMacros(_ loaded: (macros: [Macro], problems: [String]),
+                             announcingProblems: Bool) {
+        lastLoadedMacros = loaded.macros
+        lastMacroProblems = loaded.problems
+        for problem in loaded.problems { logger.error("macros.json: \(problem)") }
+        let entries = loaded.macros.map { macro -> (name: String, title: String, handler: CommandHandler) in
+            let id = macro.id
+            return (name: macro.commandName, title: macro.title,
+                    handler: { [weak self] _ in await self?.runMacro(id: id) })
+        }
+        Task { await commandRegistry.setMacroCommands(entries) }
+        guard announcingProblems, !loaded.problems.isEmpty else { return }
+        // Said out loud, because the alternative is what this used to do: drop the entry, write one
+        // line to a log nobody has open, and leave the user looking at a button that does nothing.
+        presentMacroNotice(String(localized: "Some macros could not be used."),
+                           detail: loaded.problems.joined(separator: "\n"))
     }
 
     /// Run one macro through the Automation Core.
@@ -67,9 +96,17 @@ extension MainWindowController {
         case .ok:
             break                                   // the steps' own progress and panels are the result
         case .refused(let reason):
-            // A refusal is about permissions, not about the macro being wrong, so it points at where
-            // the setting is instead of only reporting the wall.
-            presentMacroProblem(String(localized: "This macro is not allowed to run."), detail: reason)
+            // A refusal is about permissions, not about the macro being wrong, so it names where the
+            // setting is instead of only reporting the wall. That the setting sits on the AI page is
+            // worth saying out loud: macros and the assistant share one permission model, and somebody
+            // who set that page to read-only to keep the assistant quiet has switched their own macros
+            // off without being told so anywhere.
+            presentMacroProblem(
+                String(localized: "This macro is not allowed to run."),
+                detail: reason + "\n\n" + String(localized: """
+                    Macros are held to the same permissions as the assistant. \
+                    Settings ▸ AI ▸ “What either assistant may do” is where they are set.
+                    """))
         case .failed(let error):
             presentMacroProblem(String(localized: "The macro did not finish."), detail: error)
         case .needsConfirmation(let plan, let token):
@@ -104,16 +141,26 @@ extension MainWindowController {
 
 extension MainWindowController {
 
-    /// cm_MacroEditor: edit `macros.json` in the built-in editor, seeding a commented example first.
+    /// cm_MacroEditor: edit `macros.json` in the built-in editor, seeding the shipped examples first.
     ///
     /// A file, not a form — the same answer the Start menu gets (`showEditMainMenu`). A macro is a list
     /// of tool names and arguments, which is what JSON is; a form over it would be a worse editor than
-    /// the one the app already has, and it would need a control per tool in the catalogue. The recorder
-    /// below is the on-ramp, so nobody has to start from an empty file.
+    /// the one the app already has, and it would need a control per tool in the catalogue. The examples
+    /// in `MacroSeed` and the recorder below are the two on-ramps, so nobody has to start from an empty
+    /// file — and a broken edit is reported when it is saved, by `reloadMacrosFromDisk`.
     func showMacroEditor() {
         let url = configPaths.macros
         if !FileManager.default.fileExists(atPath: url.path) {
-            try? Self.macroTemplate().write(to: url, atomically: true, encoding: .utf8)
+            // The shipped examples (`MacroSeed`), written once and the user's afterwards. Only when
+            // there is no file at all: a user who has one macro of their own must not have seven
+            // appear under it because they opened the editor.
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
+                                                     withIntermediateDirectories: true)
+            try? MacroSeed.json.write(to: url, atomically: true, encoding: .utf8)
+            // Registered right away, so the examples are in the Command Browser and the button-bar
+            // picker while the editor is still open — which is where somebody reads them and then
+            // goes looking for them.
+            reloadMacrosFromDisk()
         }
         openEditor(path: url.path, onSaved: { [weak self] in self?.reloadMacrosFromDisk() })
     }
@@ -122,25 +169,28 @@ extension MainWindowController {
     /// steps of a new macro.
     func showMacroFromRecentActions() {
         Task { @MainActor in
-            let entries = await automationCore.auditTrail(limit: 30)
-            let candidates = MacroRecorder.candidates(from: entries)
+            let candidates = MacroRecorder.candidates(from: await recentActionsForMacro())
             guard candidates.contains(where: \.isReplayable) else {
-                // Said plainly, including *why* there might be nothing: manual panel work is not in the
-                // log, and a user who just copied a folder with F5 would otherwise read this as a bug.
                 presentMacroNotice(
                     String(localized: "There is nothing to make a macro from yet."),
                     detail: String(localized: """
-                        A macro is built from actions that went through the assistant or another macro. \
-                        Copying, moving or renaming in the panels by hand is not recorded, so it cannot \
-                        be turned into a macro.
+                        A macro is built from what has already happened — files you have copied, moved, \
+                        renamed or deleted, and anything the assistant did. Do one of those first, then \
+                        come back.
                         """))
                 return
             }
+            // The panels as they are *now*, which is what "follow the panels" has to mean: the folder
+            // an entry was recorded in may be nowhere in sight, and a macro written against a folder
+            // the user is not looking at is the guess this feature must not make.
+            let context = await macroContextForRecording()
             guard let result = MacroRecorderSheet.present(candidates: candidates,
                                                           existingIDs: macroStore.macros().map(\.id),
+                                                          context: context,
                                                           in: window) else { return }
             let macro = MacroRecorder.macro(id: result.id, title: result.title,
-                                            from: candidates, keeping: result.kept)
+                                            from: candidates, keeping: result.kept,
+                                            following: result.followsPanels ? context : nil)
             guard !macro.steps.isEmpty else { return }
             do {
                 try macroStore.upsert(macro)
@@ -151,6 +201,51 @@ extension MainWindowController {
                                     detail: String(describing: error))
             }
         }
+    }
+
+    /// cm_MacroManager: the macros as a list — rename, duplicate, reorder, delete (F-478).
+    ///
+    /// One window, kept alive while it is open, because it is a list the user works down rather than a
+    /// question with an answer. It writes through the same `MacroStore` the editor's save path reads,
+    /// so the two cannot get out of step.
+    func showMacroManager() {
+        if let existing = macroManagerWindow {
+            existing.reload()
+            existing.showWindow(nil)
+            existing.window?.makeKeyAndOrderFront(nil)
+            return
+        }
+        let manager = MacroManagerWindowController(store: macroStore)
+        manager.onChanged = { [weak self] in self?.reloadMacrosFromDisk() }
+        manager.onAddButton = { [weak self] macro in self?.addButtonForMacro(macro) }
+        manager.onEditFile = { [weak self] in self?.showMacroEditor() }
+        manager.onRemoveButtons = { [weak self] names in
+            self?.removeButtonsRunning(names) ?? 0
+        }
+        macroManagerWindow = manager
+        manager.showWindow(nil)
+        manager.window?.makeKeyAndOrderFront(nil)
+    }
+
+    /// Take every button whose command is one of `names` out of the button bar. Returns how many went.
+    ///
+    /// Through the same `.bar` serialiser the adding side uses, so a user's own bar keeps its format
+    /// rather than being rewritten into something else.
+    func removeButtonsRunning(_ names: [String]) -> Int {
+        let url = configPaths.buttonBar
+        var bar = ButtonBar(parsing: WindowsTextFile.read(url) ?? "")
+        let before = bar.buttons.count
+        bar.buttons.removeAll { names.contains($0.cmd) }
+        let removed = before - bar.buttons.count
+        guard removed > 0 else { return 0 }
+        do {
+            try bar.serialize().write(to: url, atomically: true, encoding: .utf8)
+            loadButtonBar()
+        } catch {
+            logger.error("macro: could not rewrite the button bar — \(String(describing: error))")
+            return 0
+        }
+        return removed
     }
 
     /// Append a button running `macro` to the default button bar and reload the strip.
@@ -181,43 +276,4 @@ extension MainWindowController {
         if let window { alert.beginSheetModal(for: window) } else { alert.runModal() }
     }
 
-    /// The seed file: a comment explaining the shape, and one macro that does something useful.
-    ///
-    /// JSON has no comments, so the explanation lives in a `_comment` key the decoder ignores — the
-    /// same trick the `.mnu` and `usercmd.ini` seeds use with `;`, in the one form this format allows.
-    private static func macroTemplate() -> String {
-        """
-        [
-          {
-            "id": "_readme",
-            "title": "How this file works (delete this entry)",
-            "steps": [],
-            "_comment": [
-              "A macro is a list of steps. Each step names a tool and its arguments.",
-              "Run 'Configuration > Command Browser' to see the tools; 'list_macros' lists these.",
-              "Placeholders in an argument:",
-              "  %P  the active panel's folder        %T  the other panel's folder",
-              "  %N  the file under the cursor        %S  the selected files (a list)",
-              "A macro can select its own files: a set_selection step replaces the selection with",
-              "everything matching a mask, and stops the macro if nothing matches.",
-              "  %{date:yyyy-MM}  today, formatted    %{1}  the result of step 1",
-              "A step whose list placeholder comes out empty stops the macro instead of doing nothing.",
-              "Each macro becomes a command called mc_<id>, so it can go on a button, in the Start",
-              "menu, or on a key — see 'Configuration > Edit Shortcuts'."
-            ]
-          },
-          {
-            "id": "stage-by-month",
-            "title": "File the selection into a dated folder",
-            "icon": "calendar",
-            "steps": [
-              { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-              { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-              { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-            ]
-          }
-        ]
-
-        """
-    }
 }

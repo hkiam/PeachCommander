@@ -338,6 +338,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func showMacroEditor()
     /// Offer recent automation actions as the steps of a new macro — cm_MacroFromRecentActions (F-478).
     func showMacroFromRecentActions()
+    /// The macros as a list: rename, duplicate, reorder, delete — cm_MacroManager (F-478).
+    func showMacroManager()
     /// Native Quick Look preview of the selection (Cmd+Y) — cm_QuickLook.
     func showQuickLook()
     /// Explain Full Disk Access and offer to open System Settings — cm_FullDiskAccess.
@@ -535,9 +537,6 @@ public actor CommandRegistry {
         let count = macroNames.count
         logger.debug("Registered \(count) macro command(s)")
     }
-
-    /// Whether `name` is one of the currently registered macro commands.
-    public func isMacroCommand(_ name: String) -> Bool { macroNames.contains(name) }
 
     /// Execute a command by name
     public func execute(_ name: String, context: CommandContext) async throws {
@@ -880,6 +879,7 @@ public actor CommandRegistry {
         register(Self.cm_ConfigMainMenu)
         register(Self.cm_MacroEditor)
         register(Self.cm_MacroFromRecentActions)
+        register(Self.cm_MacroManager)
         register(Self.cm_QuickLook)
         register(Self.cm_EjectVolume)
         register(Self.cm_FullDiskAccess)
@@ -1059,6 +1059,9 @@ public actor CommandRegistry {
         id: 30130, name: "cm_MacroFromRecentActions", category: "Configuration",
         help: "Make a macro from what the assistant has just done",
         handler: { ctx in ctx.windowController?.showMacroFromRecentActions() })
+    static let cm_MacroManager = PCCommand(id: 30131, name: "cm_MacroManager", category: "Configuration",
+        help: "Manage your macros: rename, duplicate, reorder, delete",
+        handler: { ctx in ctx.windowController?.showMacroManager() })
     static let cm_QuickLook = PCCommand(id: 30093, name: "cm_QuickLook", category: "View",
         help: "Quick Look preview of the selection",
         handler: { ctx in ctx.windowController?.showQuickLook() })

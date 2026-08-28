@@ -34,14 +34,22 @@ public struct MacroContext: Sendable, Equatable {
     /// The moment the macro started, for `%{date:…}`. Passed in rather than read from the clock, so
     /// a macro's steps all agree about "now" and so a test can pin it.
     public var startedAt: Date
+    /// What the user answered for each `%{ask:…}` in this run, keyed by the question.
+    ///
+    /// Collected once, *before* the plan is built, and carried unchanged from there — which is the
+    /// only arrangement under which the rows a person approved are the rows that run. Asking when the
+    /// step is reached would put the value after the approval, and the approved row would have been a
+    /// guess about it.
+    public var answers: [String: String]
 
     public init(activeDirectory: String, inactiveDirectory: String = "", cursorPath: String? = nil,
-                selection: [String] = [], startedAt: Date) {
+                selection: [String] = [], startedAt: Date, answers: [String: String] = [:]) {
         self.activeDirectory = activeDirectory
         self.inactiveDirectory = inactiveDirectory
         self.cursorPath = cursorPath
         self.selection = selection
         self.startedAt = startedAt
+        self.answers = answers
     }
 
     /// The same state in the button bar's vocabulary, so text templates go through the one expander.
@@ -51,6 +59,61 @@ public struct MacroContext: Sendable, Equatable {
                      targetDir: inactiveDirectory,
                      targetName: "",
                      selectedNames: selection.map { ($0 as NSString).lastPathComponent })
+    }
+}
+
+/// A value a macro asks for when it runs — `%{ask:Which folder?}`, or with a default after the first
+/// `=`: `%{ask:Which folder?=Archive}`.
+///
+/// The one thing a macro has that a list of fixed steps does not, and the reason it is a *token*
+/// rather than a step type: "move the selection into a folder you name" is the commonest macro there
+/// is, and expressing it otherwise would need either a variable or a fixed destination. This needs
+/// neither, and keeps the promise the whole design rests on — the macro is still a list of rows a
+/// person reads, and by the time they read it the answers are already in them.
+public struct MacroQuestion: Sendable, Equatable, Hashable {
+    /// What the user is asked. Written by whoever wrote the macro, so it is their words in their
+    /// language and is never translated.
+    public let prompt: String
+    /// What the field starts out holding.
+    public let defaultValue: String
+    /// Whether the macro supplied one. A question without a default may still be answered with an
+    /// empty string; the difference is what happens when nobody is there to ask.
+    public let hasDefault: Bool
+
+    static let tokenPrefix = "ask:"
+
+    /// Parses the inside of a `%{…}`, or nil when it is not an `ask:` token.
+    public init?(_ token: String) {
+        guard token.hasPrefix(Self.tokenPrefix) else { return nil }
+        let body = String(token.dropFirst(Self.tokenPrefix.count))
+        // Split at the *first* `=`. A prompt containing one is rare and can be written after the
+        // default; a rule that hunted for the last would make "Name = ?" mean something surprising.
+        if let separator = body.firstIndex(of: "=") {
+            prompt = String(body[body.startIndex..<separator]).trimmingCharacters(in: .whitespaces)
+            defaultValue = String(body[body.index(after: separator)...])
+            hasDefault = true
+        } else {
+            prompt = body.trimmingCharacters(in: .whitespaces)
+            defaultValue = ""
+            hasDefault = false
+        }
+        guard !prompt.isEmpty else { return nil }
+    }
+}
+
+/// What a macro run has to fix *before* its plan is built, and then hold unchanged.
+///
+/// Both halves are here for the same reason: the rows a person approves have to be the rows that run.
+/// A clock read again at execution time can cross a month boundary between the two; an answer asked
+/// for again can come back different. Neither is likely and both are silent, which is what makes them
+/// worth ruling out rather than watching for.
+public struct MacroInputs: Sendable, Equatable {
+    public var startedAt: Date
+    public var answers: [String: String]
+
+    public init(startedAt: Date = Date(), answers: [String: String] = [:]) {
+        self.startedAt = startedAt
+        self.answers = answers
     }
 }
 
@@ -74,6 +137,13 @@ enum ResolvedArgument: Equatable {
 enum MacroPlaceholderError: Error, Equatable {
     /// A `%{N}` naming a step that has not run (or does not exist).
     case unknownStepReference(String)
+    /// A `%{N.field}` whose step ran, but whose result has no such value — or has one that is neither
+    /// a path nor a list of paths. Distinct from `unknownStepReference` because the advice differs:
+    /// there the step is wrong, here the field is, and the step's result says which fields exist.
+    case unknownStepField(step: String, field: String)
+    /// A `%{ask:…}` whose question was never put to anybody. Not a user error: it means the run
+    /// reached the resolver without going through the asking, which is a wiring mistake.
+    case unanswered(String)
     /// A token that stands for a list expanded to an empty one — `%S` with nothing selected, or a
     /// `%{N}` whose step produced no paths.
     ///
@@ -92,6 +162,49 @@ public enum MacroPlaceholders {
     /// The selection token, and the only bare letter whose macro meaning differs from the button
     /// bar's. Handled before `ParamExpander` ever sees the template.
     static let selectionToken = "%S"
+
+    /// Every question `macro` asks, in the order they are first written, without repeats.
+    ///
+    /// Once per *question*, not once per occurrence: a macro that names the same folder in step two and
+    /// step four is asking one question, and putting it twice would be asking the user to keep two
+    /// answers in agreement by hand. Two `ask:` tokens with the same prompt and different defaults are
+    /// still one question — the first default wins, because that is the one the reader met first.
+    public static func questions(in macro: Macro) -> [MacroQuestion] {
+        var seen = Set<String>()
+        var out: [MacroQuestion] = []
+        for step in macro.steps {
+            // Sorted, so a macro's questions come out in the same order every time. A dictionary's
+            // iteration order is not stable across runs, and a dialog whose fields move between two
+            // openings of the same macro is one nobody can fill in from memory.
+            for key in step.arguments.keys.sorted() {
+                let templates: [String]
+                switch step.arguments[key] {
+                case .text(let t):  templates = [t]
+                case .list(let l):  templates = l
+                default:            templates = []
+                }
+                for template in templates {
+                    for question in questions(in: template) where seen.insert(question.prompt).inserted {
+                        out.append(question)
+                    }
+                }
+            }
+        }
+        return out
+    }
+
+    /// The `ask:` tokens in one template.
+    static func questions(in template: String) -> [MacroQuestion] {
+        guard template.contains("%{") else { return [] }
+        var out: [MacroQuestion] = []
+        var rest = Substring(template)
+        while let open = rest.range(of: "%{") {
+            guard let close = rest[open.upperBound...].firstIndex(of: "}") else { break }
+            if let question = MacroQuestion(String(rest[open.upperBound..<close])) { out.append(question) }
+            rest = rest[rest.index(after: close)...]
+        }
+        return out
+    }
 
     /// Resolve one step's arguments against `context` and the results of the steps already run.
     ///
@@ -145,79 +258,93 @@ public enum MacroPlaceholders {
             }
             return .list(context.selection)
         }
-        if let step = stepReference(trimmed) {
-            let value = try stepValue(step, results: results)
+        if let reference = StepReference(trimmed.hasPrefix("%{") && trimmed.hasSuffix("}")
+                                            ? String(trimmed.dropFirst(2).dropLast()) : "") {
+            let value = try stepValue(reference, results: results)
             if case .list(let l) = value, l.isEmpty {
-                throw MacroPlaceholderError.expandedToNothing("%{\(step)}")
+                throw MacroPlaceholderError.expandedToNothing(trimmed)
             }
             return value
         }
 
-        // Brace tokens first: ParamExpander passes an unknown `%x` through verbatim, so `%{…}` would
-        // survive it untouched — but only by luck, and relying on that would make this depend on the
-        // expander's handling of a token it has never heard of.
-        var text = try expandBraces(in: template, context: context, results: results)
-
+        // ONE pass, through the one expander. Both token families are substituted by
+        // `ParamExpander.expand` as it walks the template, so nothing a step result or a file name
+        // contains is ever read as a template in turn — see the `brace` parameter's documentation for
+        // the defect that arrangement fixes.
+        //
         // `%S` inside a longer string has no list to become, so it falls back to the button bar's
         // reading: the leaf names, space-separated. Unquoted, because a macro argument is a value and
         // not a shell word — quoting it would put literal apostrophes into a file name.
-        text = ParamExpander.expand(text, context: context.paramContext, quoting: false)
+        let text = try ParamExpander.expand(template, context: context.paramContext, quoting: false,
+                                            brace: { token in
+            try braceValue(token, context: context, results: results)
+        })
         return .text(text)
     }
 
-    /// `%{1}` → `"1"`, or nil when `trimmed` is not a bare step reference.
-    private static func stepReference(_ trimmed: String) -> String? {
-        guard trimmed.hasPrefix("%{"), trimmed.hasSuffix("}") else { return nil }
-        let inner = String(trimmed.dropFirst(2).dropLast())
-        guard !inner.isEmpty, inner.allSatisfy(\.isNumber) else { return nil }
-        return inner
+    /// A `%{…}` token that names an earlier step's result: `1`, or `2.destination`.
+    ///
+    /// The field selector exists because almost nothing returns a bare value. `%{2}` was written for
+    /// "a tool returning `/tmp/merged.csv`", and no tool in the catalogue does: every payload that is
+    /// not `nil` is a JSON *object*, so the documented way to use one step's output in the next could
+    /// never resolve. `%{2.destination}` reaches the one value out of it that the next step wants.
+    struct StepReference: Equatable {
+        let step: String
+        let field: String?
+
+        /// Parses the inside of the braces, or nil when it is not a step reference at all.
+        init?(_ inner: String) {
+            let parts = inner.split(separator: ".", maxSplits: 1, omittingEmptySubsequences: false)
+            guard let head = parts.first, !head.isEmpty, head.allSatisfy(\.isNumber) else { return nil }
+            step = String(head)
+            guard parts.count == 2 else { field = nil; return }
+            let name = String(parts[1])
+            // A trailing dot names no field; treating it as "no field" would silently answer with the
+            // whole payload instead of saying the token is wrong.
+            guard !name.isEmpty else { return nil }
+            field = name
+        }
+
+        var text: String { field.map { "%{\(step).\($0)}" } ?? "%{\(step)}" }
     }
 
-    /// An earlier step's payload as an argument.
-    ///
-    /// Only the two shapes that need no interpretation: a JSON string becomes text, a JSON array of
-    /// strings becomes a list. Anything else — an object, a number, a payload that is not JSON — is
-    /// refused rather than guessed at, because guessing here means passing the wrong paths to a
-    /// `move`. No result schema is invented for tools that do not have one.
-    private static func stepValue(_ step: String, results: [String: Data?]) throws -> ResolvedArgument {
-        guard let entry = results[step] else { throw MacroPlaceholderError.unknownStepReference(step) }
-        // `.fragmentsAllowed`, because the two shapes accepted here are both fragments at the top
-        // level. A tool returning a bare `"/tmp/merged.csv"` is the most useful case there is for
-        // chaining, and without this flag it was the one case that could never be read.
+    /// An earlier step's payload — or one named value out of it — as an argument.
+    private static func stepValue(_ reference: StepReference,
+                                  results: [String: Data?]) throws -> ResolvedArgument {
+        guard let entry = results[reference.step] else {
+            throw MacroPlaceholderError.unknownStepReference(reference.step)
+        }
+        // `.fragmentsAllowed`, because a bare string or array is a fragment at the top level. No tool
+        // in this build returns one, but a plugin-contributed tool may, and the flag costs nothing.
         guard let data = entry,
               let json = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
-        else { throw MacroPlaceholderError.unknownStepReference(step) }
-        if let s = json as? String { return .text(s) }
-        if let l = json as? [String] { return .list(l) }
-        throw MacroPlaceholderError.unknownStepReference(step)
+        else { throw MacroPlaceholderError.unknownStepReference(reference.step) }
+        guard let field = reference.field else { return try value(of: json, reference: reference) }
+        guard let object = json as? [String: Any], let selected = object[field] else {
+            throw MacroPlaceholderError.unknownStepField(step: reference.step, field: field)
+        }
+        return try value(of: selected, reference: reference)
     }
 
-    /// Substitute every `%{…}` in `template`.
-    private static func expandBraces(in template: String, context: MacroContext,
-                                     results: [String: Data?]) throws -> String {
-        guard template.contains("%{") else { return template }
-        var out = ""
-        var rest = Substring(template)
-        while let open = rest.range(of: "%{") {
-            out += rest[rest.startIndex..<open.lowerBound]
-            guard let close = rest[open.upperBound...].firstIndex(of: "}") else {
-                // Unterminated: emit the rest verbatim. A template a person is still typing must not
-                // become an error somewhere else.
-                out += rest[open.lowerBound...]
-                return out
-            }
-            let token = String(rest[open.upperBound..<close])
-            out += try braceValue(token, context: context, results: results)
-            rest = rest[rest.index(after: close)...]
+    /// A decoded payload — or one field out of it — as an argument.
+    ///
+    /// Only the two shapes that need no interpretation: a JSON string becomes text, a JSON array of
+    /// strings becomes a list. Anything else — an object, a number, a mixed array — is refused rather
+    /// than guessed at, because guessing here means passing the wrong paths to a `move`. No result
+    /// schema is invented for tools that do not have one.
+    private static func value(of json: Any, reference: StepReference) throws -> ResolvedArgument {
+        if let s = json as? String { return .text(s) }
+        if let l = json as? [String] { return .list(l) }
+        if let field = reference.field {
+            throw MacroPlaceholderError.unknownStepField(step: reference.step, field: field)
         }
-        out += rest
-        return out
+        throw MacroPlaceholderError.unknownStepReference(reference.step)
     }
 
     private static func braceValue(_ token: String, context: MacroContext,
                                    results: [String: Data?]) throws -> String {
-        if token.allSatisfy(\.isNumber), !token.isEmpty {
-            switch try stepValue(token, results: results) {
+        if let reference = StepReference(token) {
+            switch try stepValue(reference, results: results) {
             case .text(let s):   return s
             // A list inside a longer string has to become *something*; a comma is the one separator
             // that is not also a legal path character on this platform.
@@ -225,6 +352,16 @@ public enum MacroPlaceholders {
             case .number(let d): return String(describing: d)
             case .flag(let b):   return String(b)
             }
+        }
+        if let question = MacroQuestion(token) {
+            // The answer, or the default when the user left it as it was. An answer that is present
+            // and empty is still an answer — clearing a field is how `set_comment` removes a comment,
+            // and second-guessing that would take the choice away.
+            if let answer = context.answers[question.prompt] { return answer }
+            guard question.hasDefault else {
+                throw MacroPlaceholderError.unanswered(question.prompt)
+            }
+            return question.defaultValue
         }
         if token.hasPrefix("date:") {
             let format = String(token.dropFirst("date:".count))

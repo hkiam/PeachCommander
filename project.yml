@@ -360,6 +360,10 @@ targets:
       - path: Plugins/SDK/PluginCSV.swift
       # The Git plugin's status parsing and its git-resolution policy, same arrangement (F-415).
       - path: Plugins/SDK/PluginGit.swift
+      # The history's operation payload (F-402/F-478). Pure Foundation, and it carries a rule worth
+      # asserting directly: a trash or a rename may be recorded in full and must still not be
+      # repeatable from the palette. Compiled in for the reason the entries above are.
+      - path: Sources/PCApp/HistoryOperation.swift
     settings:
       PRODUCT_NAME: PCFoundationTests
       CODE_SIGNING_ALLOWED: NO

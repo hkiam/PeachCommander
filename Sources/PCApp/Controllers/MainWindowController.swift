@@ -109,6 +109,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// The macros as last registered, so a reload can tell a real change from a rewritten file (F-478).
     var lastLoadedMacros: [Macro] = []
+    /// What was wrong with them, for the same comparison: a file saved still broken has not changed,
+    /// and would otherwise be reported once and then silently on every save after that.
+    var lastMacroProblems: [String] = []
+    /// The macro manager, kept while it is open — it is a list the user works down, not a question.
+    var macroManagerWindow: MacroManagerWindowController?
 
     /// Build the core, merging automation tools contributed by loaded plugins (KI-06).
     private func makeAutomationCore() -> DefaultAutomationCore {
@@ -5801,7 +5806,40 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 selection: activePanel?.getSelectionState()
             )
             do { try await commandRegistry.execute(name, context: context) }
-            catch { logger.error("Command \(name) failed: \(error)") }
+            catch {
+                logger.error("Command \(name) failed: \(error)")
+                // A macro that has been deleted leaves its button and its key behind, and pressing
+                // either did *nothing at all* — no sound, no message, one line in a log nobody has
+                // open. That reads as the app being broken rather than as the macro being gone, so
+                // this one case says so. Only for `mc_*`: a missing built-in is a bug in the app and
+                // an alert would blame the user for it (F-478).
+                if name.hasPrefix(MacroPlan.macroCommandPrefix) {
+                    presentMissingMacro(named: name)
+                }
+            }
+        }
+    }
+
+    /// Say that the macro a button or a key still points at is not there any more, and offer the two
+    /// places it can be put right.
+    private func presentMissingMacro(named name: String) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: String(localized: "There is no macro called “%@”."),
+                                   String(name.dropFirst(MacroPlan.macroCommandPrefix.count)))
+        alert.informativeText = String(localized: """
+            A button, a key or a menu entry still points at it. Remove it there, or write the macro \
+            again under the same name in Configuration ▸ Manage Macros…
+            """)
+        alert.addButton(withTitle: String(localized: "OK"))
+        alert.addButton(withTitle: String(localized: "Manage Macros…"))
+        let handle: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+            if response == .alertSecondButtonReturn { self?.showMacroManager() }
+        }
+        if let window {
+            alert.beginSheetModal(for: window, completionHandler: handle)
+        } else {
+            handle(alert.runModal())
         }
     }
 

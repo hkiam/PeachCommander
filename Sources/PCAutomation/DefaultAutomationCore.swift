@@ -27,7 +27,13 @@ public actor DefaultAutomationCore: AutomationCore {
     /// the question that was asked, and the permissions in force when it was asked are part of that
     /// question. Reading the current policy at confirmation time would let a plan proposed under one
     /// allow-list be carried out under another.
-    private var pending: [String: (tool: String, args: Data?, policy: PermissionPolicy, isUndo: Bool)] = [:]
+    ///
+    /// `inputs` is kept for the same reason one step further: for a macro, what the rows *said*
+    /// includes whatever its `%{date:…}` steps resolved to and whatever the user typed into its
+    /// `%{ask:…}` fields. Taking the clock again at execution time let the approved row and the folder
+    /// actually created disagree at a month boundary; asking again would be worse still.
+    private var pending: [String: (tool: String, args: Data?, policy: PermissionPolicy,
+                                   inputs: MacroInputs, isUndo: Bool)] = [:]
     /// Where executed actions are recorded. Nil in tests that do not care; the host supplies one.
     private let audit: AuditLog?
     /// Timestamps already used, so two actions in the same millisecond stay distinguishable
@@ -89,8 +95,31 @@ public actor DefaultAutomationCore: AutomationCore {
         // happen, not about the name of the tool that starts it (F-478). A macro that cannot be found
         // keeps the declared `.write` and then fails in `run` — it must not fall through as a read.
         if name == "run_macro", let macro = macro(named: arguments) {
-            capability = MacroPlan.capability(of: macro, tools: tools)
+            // Its `run_command` steps resolved through the same host classification a direct
+            // `run_command` gets, so the two are judged alike — and so a macro that only sorts a panel
+            // is not held to the `.write` floor those steps otherwise carry.
+            capability = await MacroPlan.capability(of: macro, tools: tools) { [bridge] id in
+                await bridge.commandInfo(id).capability
+            }
             commandLabel = MacroPlan.planText(of: macro)
+        }
+        // Whatever the macro asks for, asked once and before anything is proposed — so the rows the
+        // user reads already hold their answers, and a cancelled question cancels the macro rather
+        // than half of it. A bridge with nobody to ask (a socket) answers nil, and the macro is
+        // refused with that as its reason instead of running with a value nobody chose.
+        var inputs = MacroInputs()
+        if name == "run_macro", let macro = macro(named: arguments) {
+            let questions = MacroPlaceholders.questions(in: macro)
+            if !questions.isEmpty {
+                guard let answers = await bridge.askForValues(questions, forMacro: macro.title) else {
+                    let outcome = AutomationOutcome.failed(
+                        error: "The macro “\(macro.title)” asks for \(questions.count) value(s), "
+                             + "and this run had nobody to ask.")
+                    record(name, arguments, outcome, capability: capability, isUndo: isUndo)
+                    return outcome
+                }
+                inputs.answers = answers
+            }
         }
         // A gated action that cannot work must not be *proposed*. Asking the user to approve a rename
         // that will then fail spends the one moment of their attention on a dead end — and for a batch
@@ -113,11 +142,11 @@ public actor DefaultAutomationCore: AutomationCore {
             return refusal
         case .confirm:
             let token = UUID().uuidString
-            pending[token] = (name, arguments, policy, isUndo)
+            pending[token] = (name, arguments, policy, inputs, isUndo)
             return .needsConfirmation(plan: planText(tool: name, arguments: arguments,
                                                       commandLabel: commandLabel), token: token)
         case .allow:
-            return await execute(name, arguments, policy: policy, isUndo: isUndo)
+            return await execute(name, arguments, policy: policy, inputs: inputs, isUndo: isUndo)
         }
     }
 
@@ -132,8 +161,15 @@ public actor DefaultAutomationCore: AutomationCore {
         // learn the macro was deleted or renamed (F-478).
         if name == "run_macro" {
             let id = (try? Args(arguments).string("macro_id")) ?? ""
-            guard macro(named: arguments) == nil else { return nil }
-            return "There is no macro called “\(id)”."
+            guard let macro = macro(named: arguments) else { return "There is no macro called “\(id)”." }
+            // Every step checked against the catalogue before any of them runs. A misspelled tool or a
+            // missing required argument in step four is otherwise found after steps one to three have
+            // changed the disk — and for a macro that is not a wasted decision, it is a half-done job.
+            let problems = MacroPlan.problems(of: macro, tools: tools)
+            guard problems.isEmpty else {
+                return "The macro “\(macro.title)” cannot run: \(problems.joined(separator: "; "))."
+            }
+            return nil
         }
         guard name == "rename_batch" else { return nil }
         let a = Args(arguments)
@@ -170,7 +206,8 @@ public actor DefaultAutomationCore: AutomationCore {
                 inactiveDirectory: snapshot.inactivePanelPath,
                 cursorPath: snapshot.cursorPath,
                 selection: snapshot.selection,
-                startedAt: Date()))
+                startedAt: p.inputs.startedAt,
+                answers: p.inputs.answers))
         }
         return PlanRows.of(tool: p.tool, arguments: p.args)
     }
@@ -193,7 +230,7 @@ public actor DefaultAutomationCore: AutomationCore {
             // action that touched nothing.
             return .failed(error: "Nothing left to do — every item was left out.")
         }
-        return await execute(p.tool, filtered, policy: p.policy, isUndo: p.isUndo)
+        return await execute(p.tool, filtered, policy: p.policy, inputs: p.inputs, isUndo: p.isUndo)
     }
 
     /// Number of plans awaiting confirmation (tests/diagnostics).
@@ -206,9 +243,11 @@ public actor DefaultAutomationCore: AutomationCore {
     ///   Threaded as a parameter and not kept in a field, for the reason the `isUndo` comment gives:
     ///   this actor suspends at every `await`, so a field would hand one session's permissions to
     ///   whichever call arrived while another was in flight.
+    /// - Parameter inputs: what was fixed when this action was decided — the instant, and the answers
+    ///   to any questions it asked. Only `run_macro` reads them.
     private func execute(_ name: String, _ arguments: Data?, policy: PermissionPolicy,
-                         isUndo: Bool) async -> AutomationOutcome {
-        let outcome = await run(name, arguments, policy: policy)
+                         inputs: MacroInputs, isUndo: Bool) async -> AutomationOutcome {
+        let outcome = await run(name, arguments, policy: policy, inputs: inputs)
         record(name, arguments, outcome, isUndo: isUndo)
         return outcome
     }
@@ -305,7 +344,8 @@ public actor DefaultAutomationCore: AutomationCore {
     /// tests exercised `AuditLog` directly and never the tool.
     public func auditTrail(limit: Int = 50) async -> [AuditEntry] { audit?.recent(limit: limit) ?? [] }
 
-    private func run(_ name: String, _ arguments: Data?, policy: PermissionPolicy) async -> AutomationOutcome {
+    private func run(_ name: String, _ arguments: Data?, policy: PermissionPolicy,
+                     inputs: MacroInputs) async -> AutomationOutcome {
         // Plugin-contributed tools route to their owning plugin (KI-06).
         if externalTools.contains(where: { $0.name == name }) {
             return await externalRouter?(name, arguments) ?? .failed(error: "No handler for '\(name)'.")
@@ -421,8 +461,8 @@ public actor DefaultAutomationCore: AutomationCore {
                     "characters": text.count,
                     "lines": text.isEmpty ? 0 : text.split(separator: "\n", omittingEmptySubsequences: false).count]))
             case "run_command":   try await bridge.runCommand(try a.string("command_id")); return .ok(payload: nil)
-            case "list_macros":   return .ok(payload: try encode(macroSummaries()))
-            case "run_macro":     return try await runMacro(a, policy: policy)
+            case "list_macros":   return .ok(payload: try encode(await macroSummaries()))
+            case "run_macro":     return try await runMacro(a, policy: policy, inputs: inputs)
             case "run_shell":
                 let out = try await bridge.runShell(try a.string("command"))
                 return .ok(payload: try json(["output": out]))
@@ -491,12 +531,20 @@ public actor DefaultAutomationCore: AutomationCore {
         let steps: [String]
     }
 
-    private func macroSummaries() -> [MacroSummary] {
-        (macroLookup?() ?? []).map { macro in
-            MacroSummary(id: macro.id, title: macro.title, command: macro.commandName,
-                         capability: MacroPlan.capability(of: macro, tools: tools).rawValue,
-                         steps: MacroPlan.rows(of: macro).map(\.text))
+    private func macroSummaries() async -> [MacroSummary] {
+        var out: [MacroSummary] = []
+        for macro in macroLookup?() ?? [] {
+            // The capability the gate will really apply, resolved the same way `invoke` resolves it —
+            // otherwise the answer here and the decision there disagree about any macro holding a
+            // `run_command` step, and this listing is what a caller uses to decide whether to ask.
+            let capability = await MacroPlan.capability(of: macro, tools: tools) { [bridge] id in
+                await bridge.commandInfo(id).capability
+            }
+            out.append(MacroSummary(id: macro.id, title: macro.title, command: macro.commandName,
+                                    capability: capability.rawValue,
+                                    steps: MacroPlan.rows(of: macro).map(\.text)))
         }
+        return out
     }
 
     /// Run a macro's steps in order.
@@ -505,7 +553,8 @@ public actor DefaultAutomationCore: AutomationCore {
     /// **logged** exactly as it would be if it had been called directly — one line per step, with its
     /// inverse where one exists. Reentrancy is fine and intended: this actor suspends at every
     /// `await` in `invoke` already.
-    private func runMacro(_ a: Args, policy: PermissionPolicy) async throws -> AutomationOutcome {
+    private func runMacro(_ a: Args, policy: PermissionPolicy,
+                          inputs: MacroInputs) async throws -> AutomationOutcome {
         let id = try a.string("macro_id")
         guard let macro = (macroLookup?() ?? []).first(where: { $0.id == id }) else {
             return .failed(error: "There is no macro called “\(id)”.")
@@ -516,19 +565,21 @@ public actor DefaultAutomationCore: AutomationCore {
         if !macro.steps.isEmpty, skip.count >= macro.steps.count {
             return .failed(error: "Nothing left to do — every step was left out.")
         }
-        // One start time for the whole run, so every `%{date:…}` in it agrees; the panel state is read
-        // again for each step, because a step changes what the next one is about.
-        let startedAt = Date()
+        // One start time for the whole run, so every `%{date:…}` in it agrees — and it is the instant
+        // the plan was built, not this one, so the rows the user approved and the folders the run
+        // creates cannot disagree. The panel state is read again for each step, because a step changes
+        // what the next one is about.
         let bridge = self.bridge
         let context: MacroRunner.ContextProvider = {
             guard let snapshot = try? await bridge.context() else {
-                return MacroContext(activeDirectory: "", startedAt: startedAt)
+                return MacroContext(activeDirectory: "", startedAt: inputs.startedAt,
+                                    answers: inputs.answers)
             }
             return MacroContext(activeDirectory: snapshot.activePanelPath,
                                 inactiveDirectory: snapshot.inactivePanelPath,
                                 cursorPath: snapshot.cursorPath,
                                 selection: snapshot.selection,
-                                startedAt: startedAt)
+                                startedAt: inputs.startedAt, answers: inputs.answers)
         }
         // `runMacro` is only reached after `invoke` decided `.allow` or the user confirmed, so
         // autonomy is satisfied for the macro as a whole. The runner raises autonomy for the steps and
@@ -543,8 +594,14 @@ public actor DefaultAutomationCore: AutomationCore {
         let report = await runner.run(macro, context: context, policy: policy, skipping: skip)
         if let stopped = report.stoppedAt {
             // Reported as a failure even though earlier steps succeeded: a half-run macro is not a
-            // success, and the payload carries which steps did run so the user can see where it got to.
-            return .failed(error: "The macro stopped at \(stopped).")
+            // success. How far it got is part of the message, not only of the payload — a `.failed`
+            // carries nothing but its string to the caller, so "the macro stopped at step 3" used to
+            // leave the one question a person has next ("then what has already happened to my files?")
+            // answerable only by opening the action log.
+            let done = report.ranCount
+            let progress = done == 0 ? "Nothing had run yet."
+                : "\(done) of \(macro.steps.count) steps had already been carried out."
+            return .failed(error: "The macro stopped at \(stopped). \(progress)")
         }
         return .ok(payload: try encode(report))
     }

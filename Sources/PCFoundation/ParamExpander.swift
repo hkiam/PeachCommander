@@ -79,9 +79,24 @@ public enum ParamExpander {
     ///   working directory — where a value wrapped in quotes names a directory that does not exist.
     ///   Adding the quoting without this distinction broke both, which is what a `%P` working directory
     ///   turning into `'/Users/me/docs'` looks like.
+    /// - Parameter brace: handles a `%{…}` token, receiving what stands between the braces and
+    ///   returning the text to put in its place.
+    ///
+    ///   Without it — the default, and what every button-bar caller does — `%{` is an unrecognised
+    ///   token and passes through verbatim, exactly as before. With it, the brace family is expanded
+    ///   **in this same single pass**, and that is the whole reason it lives here rather than in a
+    ///   second pass at the caller: a value substituted by either family is appended to the result and
+    ///   never looked at again. Macros expanded braces first and then called this method on the
+    ///   outcome, so a step result containing a `%` was read as a template — `/tmp/50%Netto.pdf` came
+    ///   out as `/tmp/50report final.pdfetto.pdf`, with `%N` substituted out of the *data*.
+    ///
+    ///   The handler owns whatever quoting its own values need; the result is inserted as it is.
+    ///   Declared *before* `listFile` on purpose: several callers pass the list-file generator as a
+    ///   trailing closure, and a new last parameter would silently rebind those to this one.
     public static func expand(_ template: String, context: ParamContext,
                               quoting: Bool = true,
-                              listFile: ((ListFileKind) -> String)? = nil) -> String {
+                              brace: ((String) throws -> String)? = nil,
+                              listFile: ((ListFileKind) -> String)? = nil) rethrows -> String {
         var result = ""
         result.reserveCapacity(template.count)
 
@@ -118,6 +133,22 @@ public enum ParamExpander {
             }
 
             let token = template[next]
+            // Before the letter table, because `{` would otherwise fall to the default branch and be
+            // emitted verbatim — which is precisely the behaviour kept when no handler is given.
+            if token == "{", brace != nil {
+                guard let close = template[next...].firstIndex(of: "}") else {
+                    // Unterminated. Emitted verbatim: a template somebody is still typing must not
+                    // become an error somewhere else.
+                    result.append(contentsOf: template[index...])
+                    return result
+                }
+                let inner = String(template[template.index(after: next)..<close])
+                // Called through the optional rather than through a bound local: `rethrows` only
+                // tracks calls to the parameter itself, and `if let brace` breaks that thread.
+                result += try brace?(inner) ?? ""
+                index = template.index(after: close)
+                continue
+            }
             switch token {
             case "P", "p":
                 result += value(context.sourceDir)

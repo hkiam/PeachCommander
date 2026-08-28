@@ -99,8 +99,10 @@ final class HistoryService {
         record(HistoryEntry(kind: .file, path: path, panel: panel))
     }
 
-    /// A completed file operation. `payload` is `HistoryOperation`'s encoding when the operation can be
-    /// repeated and empty when it cannot — a delete is never offered again.
+    /// A completed file operation. `payload` is `HistoryOperation`'s encoding of what it did, and empty
+    /// only when the operation has no shape this can describe (packing, and anything `.custom`).
+    /// Carrying a payload is not the same as being repeatable from the palette — `HistoryOperation.decode`
+    /// decides that, and still answers only for copy and move.
     func recordOperation(label: String, directory: String, payload: String,
                          panel: HistoryPanelSide? = nil) {
         guard shouldRecord, !label.isEmpty else { return }
@@ -168,33 +170,4 @@ final class HistoryService {
         persist()
     }
     #endif
-}
-
-// MARK: - What it takes to run an operation again
-
-/// The payload of a repeatable operation, encoded into one string.
-///
-/// Only copy and move are repeatable, and that is a decision rather than an omission: repeating a
-/// *delete* would be a destructive action offered from a list of things the user is browsing, and
-/// repeating a rename has no meaning once the name has changed. Both still appear in the history — Enter
-/// on one shows it in the panel instead of doing anything to it.
-enum HistoryOperation {
-    static let kindCopy = "copy"
-    static let kindMove = "move"
-
-    private static let separator = "\u{3}"
-
-    static func encode(kind: String, items: [String], mask: String?) -> String {
-        ([kind, mask ?? ""] + items).joined(separator: separator)
-    }
-
-    /// Returns nil when the payload is empty or not one of the repeatable kinds.
-    static func decode(_ payload: String) -> (kind: String, items: [String], mask: String?)? {
-        guard !payload.isEmpty else { return nil }
-        let fields = payload.components(separatedBy: separator)
-        guard fields.count >= 3, fields[0] == kindCopy || fields[0] == kindMove else { return nil }
-        let items = Array(fields.dropFirst(2)).filter { !$0.isEmpty }
-        guard !items.isEmpty else { return nil }
-        return (fields[0], items, fields[1].isEmpty ? nil : fields[1])
-    }
 }

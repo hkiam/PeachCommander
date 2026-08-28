@@ -80,6 +80,17 @@ public protocol AutomationHostBridge: Sendable {
     /// does the same thing directly. See `AutomationCommandInfo`.
     func commandInfo(_ id: String) async -> AutomationCommandInfo
 
+    /// Put a macro's `%{ask:…}` questions to the user and return the answers, keyed by question, or
+    /// nil if they cancelled (F-478).
+    ///
+    /// Asked *before* the plan is built, so the rows a person approves already hold their answers —
+    /// the alternative puts the value after the approval and makes the approved row a guess.
+    ///
+    /// Defaulted to nil below, which is the right answer for every bridge that has nobody to ask: a
+    /// macro with a question is then refused with that as its reason rather than running with a
+    /// value nobody chose. That is what happens over MCP, and it is deliberate.
+    func askForValues(_ questions: [MacroQuestion], forMacro title: String) async -> [String: String]?
+
     // Write / delete / config (only reached after the policy allows/confirms)
     func copy(sources: [String], destination: String) async throws
     func move(sources: [String], destination: String) async throws
@@ -195,4 +206,6 @@ public extension AutomationHostBridge {
 public extension AutomationHostBridge {
     /// Hosts that do not classify their commands get the safe answer for all of them.
     func commandInfo(_ id: String) async -> AutomationCommandInfo { .unknown }
+    /// A bridge with nobody to ask answers nothing, and the macro is refused rather than run.
+    func askForValues(_ questions: [MacroQuestion], forMacro title: String) async -> [String: String]? { nil }
 }

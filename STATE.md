@@ -11,11 +11,11 @@
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **0.7.3 — released 2026-08-25** — formats leave the core. Markdown *and* HTML are now drawn by a plugin (F-464…F-470) on all four surfaces that show a file — F3, the preview panel, Quick View and the gallery — which needed the lister ABI to grow first: it could describe one surface and the host has four, so PLX gained `ListLoadEx` with the host's services table, `ListGetOutline`, `ListGotoAnchor` and `ListGetText`, all optional and append-only, tested on the sample lister before any real plugin used them. Inside the plugin the constraints that had kept diagrams and mathematics out of the core no longer bind: Mermaid and KaTeX ship *inside* the bundle and are injected as user scripts only when the document needs them, so nothing is ever fetched and an ordinary README loads no JavaScript at all, and `swift-markdown` replaced five hand-written renderers. The security posture is the part that had to survive the move and did: two WebView configurations, never one with a switch — scripting is on only for the page the plugin generated itself and stays off for a foreign `.html` — raw HTML inside a Markdown file is escaped rather than emitted, and the no-network rule list is installed inside the compile completion because a rule list that fails to compile fails *open*. Alongside it: searching inside archives now means every archive the app can open rather than the zip family only, says which ones it could not read instead of passing over them, leaves no extracted copies behind, and no longer reads a tar quadratically (F-463); Amazon S3 as a drive, signed against AWS's own test vectors (F-453…F-459); the assistant ships switched off, summarises a whole file however long, searches the whole disk for one, takes back what it did, and can have a plan agreed to a line at a time (F-446…F-451); and the documentation site stopped asking Google and GitHub who was reading it (F-471). Previously **0.7.2 — released 2026-08-19** — the Git plugin, assessed and then built out in six stages (F-415…F-423): the four defects the assessment found first (a subdirectory's file reported the parent repository's status, a rename shifted every status after it, a non-ASCII path came back blank, `push` could wait forever on a terminal this process does not have), then the panel with the host's compare window as its diff, the history with a lane graph and blame, branches/stashes/sync with a way out, `.gitignore` management, revert and cherry-pick, a column that follows a linked worktree and a submodule, a conflict resolver on the file's own markers, credential *diagnosis* that stores nothing, "open on the web" without an API, and a rebase bounded to the commits ahead of the upstream. Four things were argued down rather than built: a merge editor with base and result panes, credential storage of any kind, the GitHub/GitLab API, and status *icons* (a glyph instead, since the content ABI returns strings). The host gained asynchronous plugin commands with progress and cancel (F-422), where two traps sat one level apart: every host service asserted it was on the main actor — off-main `assumeIsolated` traps — and awaiting the command merely moved the block from the main thread to its caller. Previously **0.7.1 — released 2026-08-18** — a round of reported defects, four of them losing something rather than looking wrong: a Total Commander `.mnu` that could not be read at all (encoding + CRLF, the same fix for `.bar`/`usercmd.ini`/`wincmd.ini`), a CSV whose first record vanished into the column headers, every valid JSON Lines file reported as broken, and hardlinked files in a cpio/initramfs image listed as 0 bytes while opening with their full contents. Plus the freeze a reader hit while the work was in progress: formatting a 2 MB log with very long lines took 193,934 ms to draw thirty lines, now 126 ms. Previously **0.7.0 — released 2026-08-16** — a read-only plugin that opens filesystem images the way archives open (F-403): SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32, exFAT, NTFS, plus MBR and GPT partition tables. Router firmware with no partition table is carved — the filesystems are found by searching for them and confirmed by opening each one — and the bootloader, kernel and vendor header around them are listed and extractable. Every reader is written here from its published layout rather than vendored, for licence reasons; only zstd's own single-file decoder (BSD-3) is taken in. Reviewing it turned up three integer-overflow crashes reachable from a crafted image, one of them older than the plugin, and a mutation corpus that structurally could not reach the code it was meant to guard. That in turn exposed F-230: the crash guard caught the four faults C code raises and none of the ways Swift fails, so a trapping plugin took the whole app down. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
-| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **105 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
+| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **112 scenarios with reports** (`side-panel-tabs` is new with F-476) (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-25 |
+| Last updated | 2026-08-28 |
 | Released | **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
-| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1383 keys × 19) + all shipping plugins + the **full in-app Help Book (51 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=51 · ui_strings=1383 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
+| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1534 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1534 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
 **Harness: two failures that were mine.** A flaky test — `DirectoryWatcher` expectations were fulfilled
@@ -25,6 +25,253 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-28 (F-478 review) — Seven worked examples, and six ways the gate did not hold
+
+A review of the macro feature as shipped, then the findings worked through. The examples came first
+because they are the part a user meets: `MacroSeed` holds seven of them — today's folder, filing the
+selection by month, a dated backup, pictures into a subfolder, merging CSVs and opening the result,
+marking the file under the cursor as reviewed, and temporary files to the Trash. They live in
+PCAutomation as data rather than as a string literal in the window controller, which is what lets a test
+hold every one of them to the catalogue: a shipped example naming a tool that has since been renamed is
+not a typo, it is a button in the Command Browser that fails the first time somebody trusts it.
+
+**The gate did not hold in two places, and both were about a name rather than an act.**
+
+`MacroPlan.capability` read each step's *declared* capability. For `run_command` that is `.runCommand`,
+which is not a mutating capability — so a macro whose steps were all commands was decided `.allow`, with
+no plan and no confirmation, and the step then re-entered `invoke` under the raised autonomy that
+approval was supposed to buy. Measured before the fix: a one-step macro calling `cm_DeleteReal` returned
+`.ok` under `PermissionPolicy.standard` and deleted, with nothing shown at any point. The floor is now
+`.write` for any `run_command` step, and `capability(of:tools:resolvingCommands:)` asks the host what the
+command really does, so a macro that only refreshes a panel is still not gated like a delete.
+
+The nesting guard had the same shape. `run_macro` as a step was refused; `run_command("mc_…")` was the
+same act through the command registry and was not. It recurses without bound and without a stack to
+unwind — `runCommandNamed` dispatches each round into its own main-actor task — so a self-calling macro
+does not fail, it accumulates until the window stops answering. Refused now in `MacroPlan.problems`
+before the plan is proposed, and again in the runner for a `macros.json` written by hand.
+
+**Data became template.** `MacroPlaceholders` expanded `%{…}` and handed the *result* to
+`ParamExpander`, so a step result containing a `%` was read as a template in turn: step 1 producing
+`/tmp/50%Netto.pdf` with a template of `%{1}.bak` came out as `/tmp/50report final.pdfetto.pdf.bak`, with
+`%N` substituted out of the data. `ParamExpander.expand` gained an optional `brace:` handler and both
+families are now substituted in its one pass, so nothing substituted is ever looked at again. The
+parameter sits *before* `listFile` because several callers pass that one as a trailing closure.
+
+**`%{n}` had no producer at all.** It was documented in the help book and in the seed, and every tool in
+this build returns either nothing or a JSON *object* — so the documented way to use one step's output in
+the next could never resolve. `%{2.destination}` names one value out of a result; the merging example is
+built on it, and a test pins the field to what `merge_files` actually returns.
+
+**MCP's withheld capabilities were withheld by name.** `notOfferedRemotely` filtered `tools/list` and the
+call by tool name, and a macro is a different name for the same capability: `run_macro` is declared
+`.write`, so it was offered, and its steps went straight back through the Core. On an installation with
+the shell switched on, a macro holding a `run_shell` step was reachable from the socket. `MCPServer` now
+subtracts those capabilities from the session's allow-list, which closes the class rather than the
+spelling.
+
+Four smaller ones, all found in the same read: a broken `macros.json` was reported to a log and to
+nobody else, so a typo silently unregistered every macro and left the buttons dead — the editor's save
+path now says which macro and what is wrong with it, and `MacroPlan.problems` adds the steps to that
+(a misspelled tool or a missing required argument is found before the first step, the rule
+`rename_batch` already followed). A stopped macro says how many steps had already run, because `.failed`
+carries nothing but its string and the next question is always "then what has already happened to my
+files?". The plan and the run took the clock separately, so `%{date:…}` could resolve to one month on the
+rows and another in the folder actually created; the instant the plan was built is kept with it. And the
+confirmation sheet knows the macro's own step dependencies: striking out the step that creates the
+folder now strikes out the step that fills it, instead of letting the run reach it and stop there having
+already done everything in between.
+
+**The recorder was reading the wrong half of the app.** It read the audit log, which holds what went
+through the Automation Core — so for anybody who had not switched the assistant on, "Macro from Recent
+Actions…" was empty, and the feature's own headline did not hold. What it needed was already there:
+the operation history (F-402) records every completed copy, move, trash, delete, rename and folder
+creation at the same choke points that register an undo. It now reads both, merged by time, with each
+row saying which of the two it came from.
+
+Copy and move already carried a payload; trash, delete, rename and mkdir carried only a label, each for
+a reason about the *history palette* — repeating a delete from a list somebody is browsing is one
+keystroke from a disaster, and a rename has no meaning once the name has changed. Those reasons do not
+transfer to a macro, which is written deliberately and shown as a plan before every run. So they carry
+payloads now, and the palette's rule stays exactly where it was: in `HistoryOperation.decode`, which
+still answers only for copy and move. `decodeAny` is what the recorder uses, and a test asserts the
+difference, because the day the two are merged is the day Return on a history row deletes files.
+
+The translation is split along the dependency direction: `HistoryOperation` knows how the app encoded an
+operation, `RecordedAction.PanelOperation` knows what it is called in the catalogue. The second half is
+in PCAutomation and therefore testable without a window — and every case is checked against
+`MacroPlan.problems`, so a recorder that produced `trash` instead of `move_to_trash` would fail here
+rather than in front of a user.
+
+**And a recorded macro was a replay rather than a macro.** Absolute paths, so a recorded "move these
+four invoices" moved those four invoices and nothing else — and the second run failed, because they were
+no longer there. The substitution into `%S`, `%P` and `%T` is now *offered*: files that all came from
+one folder become the selection, a folder that is one of the two panels becomes that panel, a folder
+inside one keeps its tail. Off by default, because a guessed generalisation is the worse failure — a
+macro that quietly means "the folder I happened to be in that day" — and the sheet relabels every row as
+the box is ticked, so the option is shown rather than promised. Where it would change nothing the
+checkbox does not appear.
+
+What it deliberately does not fold is as much of the design as what it does: files spread over two
+folders are not a selection; a path under neither panel has nothing to fold into; and `rename_batch`'s
+`old_names` is a list of strings that must never become `%S`, or the macro renames whatever happens to
+be selected to a fixed list of names. All three are tests.
+
+**And a macro could not take a value.** "Move the selection into a folder I name" is the commonest
+macro there is and could not be written: the folder had to be wired in. `%{ask:Folder name=Archive}`
+takes it — a token rather than a step type or a variable, so a macro is still a list of rows a person
+reads.
+
+*When* it asks is the design. Before the plan is built, not when the step is reached: the answers are
+already in the rows, so what is approved is "Move the selection into “Rechnungen”" rather than a guess
+about what the user is about to type. That meant carrying the answers with the pending plan the way the
+policy and the clock are already carried — one `MacroInputs` value now holds both — and cancelling the
+question cancels the macro before anything is proposed. The same question written twice is asked once
+and used in both places, so two steps naming one folder cannot disagree; the field order is the
+arguments' sorted order, because a dictionary's is not stable and a dialog whose fields move between two
+openings cannot be filled in from memory. An answer is data and is never re-read as a template: typing
+`50%Netto` gives a folder called `50%Netto`.
+
+Over MCP a macro that asks is refused, and the refusal comes from the bridge's own answer —
+`askForValues` returns nil where there is nobody to ask — so it holds for any transport with no person
+attached. Taking the defaults silently would be answering on the user's behalf.
+
+**Deleting a macro left a button that did nothing.** Not metaphorically: `runCommandNamed` logged
+`unknownCommand` and returned, so pressing the button produced no sound, no message and no trace
+outside a log nobody has open — which reads as the app being broken rather than as the macro being
+gone. That case now says so, and only that case: a missing `cm_*` is a bug in the app, and an alert
+there would blame the user for it.
+
+Around it, `cm_MacroManager` — the macros as a list, with what each one is called, its command name,
+its step count and *what the gate will ask for*, so "this one deletes" is visible before it goes on a
+key. Rename, duplicate, reorder, delete; deleting offers to take the buttons with it, and says how many
+went. Not editing the steps: that stays in the editor, for the reason the feature never had a form —
+a step is a tool name and its arguments, which is what JSON is, and a control per catalogue tool would
+be a worse editor than the one the app already has. **Edit File…** hands over.
+
+Two things the window does *not* do, both deliberate. It renames the title and never the id, because
+the id is the command name and changing it would leave every button, key and `.mnu` entry pointing at
+a name that no longer exists — the failure it is here to clean up, not to cause. And every action is a
+read-modify-write against the file rather than against the list it is showing, because the editor can
+be open on the same file and a window saving a stale copy would undo whatever was typed there.
+
+**The rows themselves were English.** Translated chrome around untranslated sentences, in the one
+window where somebody agrees to a permanent delete — "Permanently delete a.pdf, b.pdf" under a German
+"Dieses Makro ausführen?".
+
+The fix is not a second string catalogue in PCAutomation. That module has a *second reader whose
+language is English by construction*: the model, the MCP client and the audit log all take
+`PlanItem.text`, and translating that would be a regression. So a row now carries both — a `PlanPhrase`
+(a key and its values) and the English rendering of it. `PlanPhrase.english` stays where it is; the
+host renders the same key into the user's language. One table of shapes, two renderers, and they
+cannot drift: both are a `switch` over the same enum and Swift makes both exhaustive, so a case added
+in PCAutomation fails to compile in PCApp until it has words.
+
+Two details earned their complexity. Values are carried apart from the sentence and counts as numbers,
+so a positional `%1$@`/`%2$@` lets a language put them in its own order. And a stand-in is a phrase
+*nested* where the value goes, because "Move the result of step 2 into “out”" is one sentence and has
+to be translated as one — it travels there inside the argument as a U+0001-delimited marker, strictly
+internal, with a test asserting no rendered row ever contains one.
+
+### Still open on F-478
+
+Two, and both are features rather than corrections — neither is a defect in what is there, and neither
+should be added as a side effect of something else:
+
+* **No per-macro "do not ask again".** A macro on a button that runs twenty times a day asks twenty
+  times, and the only way out is raising autonomy for *everything*, which is far broader than "I trust
+  this one list of steps". Doing it properly means a trust mark per macro, which is a new state in the
+  permission model — `PermissionPolicy` currently answers about a session, not about a named thing —
+  and it has to survive the macro being edited afterwards, or approving a macro once approves whatever
+  it becomes. That last part is the hard half.
+* **No progress and no cancel for a long macro.** The infrastructure exists (F-422: asynchronous
+  plugin commands with progress and cancel) and the runner does not use it. Connecting them means the
+  step loop has to become interruptible, and a macro stopped halfway needs the same care in reporting
+  that a *failed* one now gets — `MacroRunReport` already carries which steps ran, so the reporting
+  half is mostly there; the interruption is not.
+
+Not on the list, and deliberately so: a macro-wide undo (several tools have no inverse, and a button
+offering one would be lying about those), conditions and loops (the plan a user approves has to be a
+list they can read), and a form over the steps (a step is a tool name and its arguments, which is what
+JSON is).
+
+## 2026-08-27 (F-476) — The side panel's pages, and the index that pretended to be an identity
+
+Reported plainly: "I always have Info, Activities, Log in the side panel and in practice only ever need
+Info; I want the rest only when I switch them on or a plugin brings one." Two of the three are transfer
+lists, and they were on for everybody — which is a permanently visible strip of three tabs sitting above
+the preview to offer pages most work never asks about.
+
+Three booleans in `[Layout]` (`PreviewTabInfo`, `PreviewTabActivities`, `PreviewTabLog`), defaulting to
+Info alone. There is deliberately **no migration**, and that is not laziness: `[meta] version=1` is
+stamped by `ConfigStore` and read by nothing in this app, so the default at the read site *is* the
+upgrade behaviour. An installation that never touched these keys gets the tidy panel; one that switched
+Log on keeps it. Three plain bools rather than the `[ViewPlacement]`-style section, because the set is
+closed — and that buys the whole `Layout.<Key>` mechanism for free: `applyBoolOption`, `SettingsSnapshot`,
+the `setbool` automation verb and `hostEventBus.emit(.configChanged(key:))` all work with nothing new
+underneath them.
+
+**The setting was the easy half.** `PreviewPanelView` made the segment index the mode's identity —
+`enum Mode: Int { case info, activities, log }` read straight out of `selectedSegment`, and three
+separate methods offsetting the plugin segments by a hard-coded 3. That is correct exactly as long as all
+three built-ins are present. Switch Activities off and Log sits at index 1, so the panel reports
+"activities" and renders the Log page's content under the Activities label. Nothing about that failure is
+visible in the code that reads `mode`; it is visible only in what the panel draws. So the mapping is a
+value with tests now — `SidePanelTabList` in PCFoundation, beside `ViewPlacement` and for the same reason
+— the selection is kept by *identity* across every rebuild, and no line in the view counts built-ins any
+more.
+
+Two states follow from letting every page go, and both had to be built rather than assumed away:
+
+- **One tab needs no tab strip.** The switcher hides below two tabs, the rule `BottomDockView` already
+  applies, and its top and height constraints collapse to zero. Without that second half a hidden view
+  still takes part in Auto Layout and an Info-only panel — the default — would open with 30 pt of dead
+  band above the preview.
+- **No tab at all says so**, with the sentence the empty bottom dock uses. Reachable: somebody who keeps
+  only the terminal in the side panel.
+
+Plugin-contributed pages are **not** governed by this setting. Their visibility is the plugin's
+enablement, and a second invisible off-switch for the same thing is how a view goes missing for a reason
+its owner cannot find — so "every built-in off and the plugin tabs still there" is an asserted state
+rather than a bug. Three ways in, one write path: Settings ▸ Layout, the tab strip's context menu (which
+*extends* the existing placement menu rather than replacing it — `ViewPlacementMenu.menu` builds a fresh
+NSMenu per click, so appending is right and copying items would not be), and three View-menu commands.
+The View menu is not a third route for symmetry: once every page is off there is no tab strip left to
+right-click, and it is the only way back.
+
+Verified in the running app rather than argued: with Log showing, switching *Info* off leaves
+`selected=Log` (`previewtabsdump`, a new verb — `sidebardump` walks text fields and cannot see a
+segmented control); every built-in off leaves the Git and Notes tabs standing; `cm_SidePanelInfo` brings
+Info back with no strip to click; `cm_ResetLayout` restores the default; and a relaunch reports
+`previewTabs=activities` in the **startup probe**, which is the difference between "restored" and
+"restored before the first paint". Toggling with the panel collapsed produced zero Auto Layout conflicts,
+which is the state this file has produced seven of before.
+
+The first identity check was worth less than it looked, and finding that out is the reason it is written
+down. The script had Info and Log on, selected Log, then switched Info off — after which Log is the
+*first* tab, so a build that had lost the selection entirely and fallen back to "the first tab" would
+answer "Log" as well and the assertion could not fail. It had in fact never selected anything: the run
+was in German, `previewtab Log` found no tab called "Log", and the log said so. Activities is switched on
+for that step now, which puts Log at index 2 with something in front of it, and the VM scenario asserts
+`pages=activities,log selected=Log` — a claim that discriminates.
+
+**One sighting, unexplained, and left instrumented rather than explained away.** A reader reported "the
+layout is broken, the window is not tall enough", and one of my own `mainshot` runs had already
+photographed it: the main window collapsed to **1280x98**, both file lists at zero height, every bar
+intact. It has not come back — five consecutive fresh-config runs, the same script again, and the
+reporter's own configuration copied into an isolated root (frame 2560x1320, `PreviewWidth=522`, their
+Git/Notes/Terminal tabs) all report a healthy window and zero conflicts; the reporter says it is fine
+again too. **My first diagnosis was wrong and is recorded as wrong**: I blamed the empty-state label,
+which had been pinned top-and-bottom in the loop that positions the four content areas — plausible,
+because an `NSTextField` has an intrinsic height and the other four have none — changed it, measured
+800, and called it fixed. Putting the original line back measures 800 as well, in the Info-only default
+and with two pages on, so that was not the cause. The label stays centred anyway, because that is the
+better construction and what the bottom dock already does. What the episode actually bought is the
+instrumentation: **Auto Layout logged nothing at all** while the window was wrong — the layout was
+satisfiable and merely wrong — so the conflict count every scenario here leans on could never have
+caught it, and a screenshot was the only evidence there was. `previewtabsdump` now reports `panelHeight`
+and `windowHeight`, so a second sighting is a measurement.
 
 ## 2026-08-22 (F-435) — "it just crashed": a handler on the wrong thread
 

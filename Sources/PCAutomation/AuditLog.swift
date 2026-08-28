@@ -47,9 +47,6 @@ public struct AuditEntry: Codable, Sendable, Equatable {
     /// Optional and additive, so a log written before this field existed still decodes.
     public var argumentsJSON: String?
 
-    /// Whether this entry holds enough to be replayed as a macro step.
-    public var isReplayable: Bool { argumentsJSON != nil && outcome == "ok" }
-
     public var isUndoable: Bool { undoTool != nil && undoArguments != nil && outcome == "ok" }
 
     /// A one-line description for a log view.
@@ -61,12 +58,12 @@ public struct AuditEntry: Codable, Sendable, Equatable {
     }
 }
 
-/// The log file. Reads and writes are whole-file operations: the log is capped, one line per
-/// action, and an assistant produces actions at human speed.
 /// How much verbatim argument JSON one entry may carry. Enough for any number of paths, not enough
 /// for a document — see `AuditEntry.argumentsJSON`.
 public let argumentsJSONCap = 4096
 
+/// The log file. Reads and writes are whole-file operations: the log is capped, one line per
+/// action, and an assistant produces actions at human speed.
 public struct AuditLog: Sendable {
     public let url: URL
     public let cap: Int

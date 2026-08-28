@@ -20,7 +20,25 @@ public struct PlanItem: Sendable, Equatable, Codable {
     public let id: String
     /// What the user reads.
     public let text: String
-    public init(id: String, text: String) { self.id = id; self.text = text }
+    /// Rows this one cannot do without — for a macro, the earlier steps it takes a value from.
+    ///
+    /// Empty for every plan but a macro's, and that is the point of the distinction: the rows of a
+    /// `move` are independent by construction (striking one out moves one file fewer), while the rows
+    /// of a macro are a sequence, and striking out the step that creates the folder leaves the step
+    /// that fills it aimed at nothing. A dialog that offers both as the same kind of checkbox is
+    /// telling the reader the second case is as safe as the first.
+    public let dependsOn: [String]
+    /// The same row as a key and its values, so the host can say it in the user's language.
+    ///
+    /// `text` stays English and stays authoritative for everyone else — the model, an MCP client and
+    /// the audit log all read it, and a translated sentence there would be a regression. Nil for the
+    /// rows that are already a bare file name (a `move`'s item list) and for a macro step that carries
+    /// its own `note`, where the words are the user's own and nothing may touch them.
+    public let phrase: PlanPhrase?
+
+    public init(id: String, text: String, dependsOn: [String] = [], phrase: PlanPhrase? = nil) {
+        self.id = id; self.text = text; self.dependsOn = dependsOn; self.phrase = phrase
+    }
 }
 
 public enum PlanRows {

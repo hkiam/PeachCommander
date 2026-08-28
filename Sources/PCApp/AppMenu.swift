@@ -393,6 +393,8 @@ enum AppMenu {
         configMenu.addItem(command(String(localized: "Macro from Recent Actions…"),
                                    cmd: "cm_MacroFromRecentActions",
                                    key: "", mask: [], target: target, action: commandAction))
+        configMenu.addItem(command(String(localized: "Manage Macros…"), cmd: "cm_MacroManager",
+                                   key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(command(String(localized: "Edit Macros…"), cmd: "cm_MacroEditor",
                                    key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(.separator())

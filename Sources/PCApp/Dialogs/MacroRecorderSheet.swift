@@ -19,29 +19,40 @@ enum MacroRecorderSheet {
         let title: String
         let kept: Set<String>
         let addsButton: Bool
+        /// Whether the steps should be written in terms of the panels rather than the recorded paths.
+        let followsPanels: Bool
     }
 
+    /// - Parameter context: the panel state the rows can be rewritten against. Without one the
+    ///   "follow the panels" option is not offered at all — there would be nothing to fold the paths
+    ///   into, and a checkbox that silently does nothing is worse than an absent one.
     @MainActor
     static func present(candidates: [MacroRecorder.Candidate], existingIDs: [String],
-                        in window: NSWindow?) -> Result? {
+                        context: MacroContext?, in window: NSWindow?) -> Result? {
         let nameField = NSTextField(string: String(localized: "My macro"))
         nameField.placeholderString = String(localized: "Macro name")
         let buttonBox = NSButton(checkboxWithTitle: String(localized: "Also add a button for it"),
                                  target: nil, action: nil)
         buttonBox.state = .on
+        let followBox = NSButton(
+            checkboxWithTitle: String(localized: "Follow the panels instead of these exact files"),
+            target: nil, action: nil)
+        followBox.state = .off
+        followBox.toolTip = String(localized: "The files become “the selection”, and a folder that is one of the two panels becomes that panel. Without this the macro repeats exactly the files and folders listed above.")
         var checkboxes: [(id: String, button: NSButton)] = []
 
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = String(localized: "Make a macro from recent actions")
         alert.informativeText = String(localized: """
-            These are the actions that went through the assistant or another macro, newest first. \
-            Keep the ones the macro should repeat.
+            These are the things that have happened, newest first — what you did in the panels and \
+            what the assistant did. Keep the ones the macro should repeat.
             """)
         alert.addButton(withTitle: String(localized: "Save Macro"))
         alert.addButton(withTitle: String(localized: "Cancel"))
         alert.accessoryView = accessory(candidates: candidates, nameField: nameField,
-                                        buttonBox: buttonBox, into: &checkboxes)
+                                        buttonBox: buttonBox, followBox: followBox,
+                                        context: context, into: &checkboxes)
 
         if let shot = MacroRecorderProbe.shotPath {
             MacroRecorderProbe.record(["shot: " + DialogShot.capture(alert, to: shot)])
@@ -51,7 +62,8 @@ enum MacroRecorderSheet {
                 + candidates.map { "row \($0.id): \($0.text)"
                     + ($0.isReplayable ? "" : " [unavailable: \($0.unavailable ?? "")]") })
             return Result(id: MacroStore.proposedID(for: probe.title, existing: existingIDs),
-                          title: probe.title, kept: probe.kept, addsButton: probe.addsButton)
+                          title: probe.title, kept: probe.kept, addsButton: probe.addsButton,
+                          followsPanels: probe.followsPanels)
         }
 
         guard alert.runModal() == .alertFirstButtonReturn else { return nil }
@@ -59,17 +71,27 @@ enum MacroRecorderSheet {
         let kept = Set(checkboxes.filter { $0.button.state == .on }.map(\.id))
         return Result(id: MacroStore.proposedID(for: title, existing: existingIDs),
                       title: title.isEmpty ? String(localized: "My macro") : title,
-                      kept: kept, addsButton: buttonBox.state == .on)
+                      kept: kept, addsButton: buttonBox.state == .on,
+                      followsPanels: followBox.state == .on)
     }
 
+    @MainActor
     private static func accessory(candidates: [MacroRecorder.Candidate], nameField: NSTextField,
-                                  buttonBox: NSButton,
+                                  buttonBox: NSButton, followBox: NSButton, context: MacroContext?,
                                   into checkboxes: inout [(id: String, button: NSButton)]) -> NSView {
         var boxes: [NSView] = []
+        var titles: [(button: NSButton, recorded: String, following: String)] = []
         for candidate in candidates {
+            // The source is named on the row, because a list that mixes "you moved these" with "the
+            // assistant moved these" is one a reader has to be able to tell apart at a glance — and
+            // after a session with both, the same two files can appear in each.
+            // Whole phrases rather than the bare words: "you" and "assistant" alone are two of the
+            // least translatable strings there are, and a translator sees them without this row.
+            let origin = candidate.source == .panel
+                ? String(localized: "by you") : String(localized: "by the assistant")
             let title = candidate.isReplayable
-                ? candidate.text
-                : "\(candidate.text)  —  \(candidate.unavailable ?? "")"
+                ? "\(candidate.text)  (\(origin))"
+                : "\(candidate.text)  (\(origin))  —  \(candidate.unavailable ?? "")"
             let box = NSButton(checkboxWithTitle: title, target: nil, action: nil)
             box.lineBreakMode = .byTruncatingMiddle
             box.toolTip = title
@@ -79,7 +101,26 @@ enum MacroRecorderSheet {
             box.state = .off
             boxes.append(box)
             if candidate.isReplayable { checkboxes.append((candidate.id, box)) }
+            // What the same row would say with the panels followed, worked out now so that ticking the
+            // box is instant and — more to the point — so that the option can be *shown* rather than
+            // promised. A row that would not change keeps its text, which is itself the answer to
+            // "would this help here?".
+            if let context, let step = candidate.step {
+                let following = MacroRecorder.generalised(step, context: context)
+                let described = MacroPlan.describe(tool: following.tool,
+                                                   arguments: following.arguments.mapValues(\.jsonValue))
+                    ?? MacroPlan.describe(following)
+                titles.append((box, title,
+                               "\(MacroRecorder.spelledOut(described))  (\(origin))"))
+            }
         }
+        // Only offered when it would change something. On a list where every path is already outside
+        // both panels the checkbox could only mislead.
+        followBox.isHidden = titles.allSatisfy { $0.recorded == $0.following }
+        let rewriter = RowTitles(titles)
+        followBox.target = rewriter
+        followBox.action = #selector(RowTitles.followChanged(_:))
+        objc_setAssociatedObject(followBox, &RowTitles.key, rewriter, .OBJC_ASSOCIATION_RETAIN)
 
         let scroll = AccessoryLayout.scrollingList(boxes, width: Self.accessoryWidth, maxHeight: 240)
 
@@ -93,7 +134,8 @@ enum MacroRecorderSheet {
         nameField.setContentHuggingPriority(.init(1), for: .horizontal)
         nameRow.widthAnchor.constraint(equalToConstant: Self.accessoryWidth).isActive = true
 
-        return AccessoryLayout.stack([scroll, nameRow, buttonBox], width: Self.accessoryWidth)
+        return AccessoryLayout.stack([scroll, nameRow, followBox, buttonBox],
+                                     width: Self.accessoryWidth)
     }
 
     /// One width for every row in the accessory, so the list, the name field and the checkbox line up.
@@ -106,12 +148,14 @@ enum MacroRecorderSheet {
 ///   PC_MACRO_RECORD=<title>          answer the sheet with this name
 ///   PC_MACRO_RECORD_KEEP=1,2         which rows to keep (default: none, i.e. nothing is saved)
 ///   PC_MACRO_RECORD_BUTTON=0         do not add a button (default: add one)
+///   PC_MACRO_RECORD_FOLLOW=1         write the steps in terms of the panels (default: as recorded)
 ///   PC_MACRO_RECORD_DUMP=<path>      write what the sheet would have shown
 enum MacroRecorderProbe {
     struct Answer {
         let title: String
         let kept: Set<String>
         let addsButton: Bool
+        let followsPanels: Bool
     }
 
     static var answer: Answer? {
@@ -119,7 +163,8 @@ enum MacroRecorderProbe {
         guard let title = env["PC_MACRO_RECORD"], !title.isEmpty else { return nil }
         let kept = Set((env["PC_MACRO_RECORD_KEEP"] ?? "").split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty })
-        return Answer(title: title, kept: kept, addsButton: env["PC_MACRO_RECORD_BUTTON"] != "0")
+        return Answer(title: title, kept: kept, addsButton: env["PC_MACRO_RECORD_BUTTON"] != "0",
+                      followsPanels: env["PC_MACRO_RECORD_FOLLOW"] == "1")
     }
 
     /// Where to write a picture of the sheet instead of showing it: `PC_MACRO_RECORD_SHOT=<path>`.
@@ -130,5 +175,29 @@ enum MacroRecorderProbe {
         let block = lines.joined(separator: "\n") + "\n---\n"
         let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
         try? (existing + block).write(toFile: path, atomically: true, encoding: .utf8)
+    }
+}
+
+/// Swaps each row's label between what was recorded and what it would say following the panels.
+///
+/// Both texts are worked out before the sheet opens, so the checkbox is a relabelling and not a
+/// recomputation — and so "would this help?" is answered by looking rather than by trying it.
+@MainActor
+private final class RowTitles: NSObject {
+    nonisolated(unsafe) static var key: UInt8 = 0
+
+    private let rows: [(button: NSButton, recorded: String, following: String)]
+
+    init(_ rows: [(button: NSButton, recorded: String, following: String)]) {
+        self.rows = rows
+        super.init()
+    }
+
+    @objc func followChanged(_ sender: NSButton) {
+        for row in rows {
+            let title = sender.state == .on ? row.following : row.recorded
+            row.button.title = title
+            row.button.toolTip = title
+        }
     }
 }

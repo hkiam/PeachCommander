@@ -123,6 +123,42 @@ final class MacroPlanTests: XCTestCase {
         XCTAssertEqual(MacroPlan.rows(of: m, resolvedWith: context)[0].text, "Tidy them away")
     }
 
+    /// A macro's rows are a sequence, and the dialog has to know which of them hold the others up.
+    /// Striking out the folder-making step and running the move anyway is the half-run this prevents.
+    func test_aStepThatTakesAValueFromAnotherDependsOnIt() {
+        let m = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "set_selection", arguments: ["mask": .text("*.csv")]),
+            MacroStep(tool: "merge_files", arguments: ["sources": .text("%S"),
+                                                       "destination": .text("%P/all.csv")]),
+            MacroStep(tool: "open_path", arguments: ["path": .text("%{2.destination}")]),
+        ])
+        let rows = MacroPlan.rows(of: m)
+        XCTAssertEqual(rows[0].dependsOn, [])
+        XCTAssertEqual(rows[1].dependsOn, ["1"], "%S after a set_selection depends on it")
+        XCTAssertEqual(rows[2].dependsOn, ["2"], "%{2.destination} depends on step 2")
+    }
+
+    /// A macro written to work on the user's own selection has no such dependency, and reporting one
+    /// would grey out a row for no reason.
+    func test_aSelectionTokenWithNoSetSelectionBeforeItDependsOnNothing() {
+        let m = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/out")]),
+            MacroStep(tool: "copy", arguments: ["sources": .text("%S"),
+                                                "destination": .text("%T/out")]),
+        ])
+        XCTAssertEqual(MacroPlan.rows(of: m).map(\.dependsOn), [[], []])
+    }
+
+    /// Forward and self references are not dependencies — they cannot be satisfied at all, and the
+    /// runner reports them for what they are.
+    func test_aForwardReferenceIsNotADependency() {
+        let m = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "open_path", arguments: ["path": .text("%{2}")]),
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%P/x")]),
+        ])
+        XCTAssertEqual(MacroPlan.rows(of: m).map(\.dependsOn), [[], []])
+    }
+
     func test_commandName_isTheIdPrefixed() {
         XCTAssertEqual(Macro(id: "file-by-date", title: "x").commandName, "mc_file-by-date")
     }
@@ -252,6 +288,65 @@ final class MacroPlaceholderTests: XCTestCase {
         XCTAssertNil(try MacroPlaceholders.json([:]))
     }
 
+    /// The other half of the same rule, and the one that was broken: a value substituted *into* the
+    /// template must not then be read as a template.
+    ///
+    /// Braces used to be expanded first and the outcome handed to `ParamExpander`, so a step result
+    /// containing a `%` was interpreted. Measured: step 1 producing `/tmp/50%Netto.pdf` and a template
+    /// of `%{1}.bak` came out as `/tmp/50report final.pdfetto.pdf.bak` — with `%N` substituted out of
+    /// the data. Both families now go through one pass of the one expander.
+    func test_aPercentInAStepResultIsNotExpandedAgain() throws {
+        let payload = Data(#""/tmp/50%Netto.pdf""#.utf8)
+        let out = try resolve(["path": .text("%{1}.bak")], results: ["1": payload])
+        XCTAssertEqual(out["path"], .text("/tmp/50%Netto.pdf.bak"))
+    }
+
+    /// The same for a date: a format that produced a `%` would otherwise be re-read too. `%%` is the
+    /// expander's own escape, and it must survive as one character rather than become a token.
+    func test_aLiteralPercentSurvivesAsOne() throws {
+        XCTAssertEqual(try resolve(["p": .text("100%% done")])["p"], .text("100% done"))
+    }
+
+    /// `%{2}` was written for a tool returning a bare path, and no tool in the catalogue returns one:
+    /// every payload that is not nil is an object. The field selector is what makes the documented
+    /// chaining work at all.
+    func test_aStepResultFieldCanBeNamed() throws {
+        let payload = try JSONSerialization.data(
+            withJSONObject: ["destination": "/a/merged.csv", "files_merged": 3])
+        XCTAssertEqual(try resolve(["p": .text("%{1.destination}")], results: ["1": payload]),
+                       ["p": .text("/a/merged.csv")])
+        // In the middle of a longer template too.
+        XCTAssertEqual(try resolve(["p": .text("open %{1.destination} now")], results: ["1": payload]),
+                       ["p": .text("open /a/merged.csv now")])
+    }
+
+    /// A list-valued field becomes a list, so `sources: "%{1.paths}"` is a usable step.
+    func test_aListValuedStepResultFieldBecomesAList() throws {
+        let payload = try JSONSerialization.data(withJSONObject: ["paths": ["/a/one", "/a/two"]])
+        XCTAssertEqual(try resolve(["s": .text("%{1.paths}")], results: ["1": payload]),
+                       ["s": .list(["/a/one", "/a/two"])])
+    }
+
+    /// A field that is not there, or is not a path, is refused rather than guessed at — passing the
+    /// wrong path to a `move` is the failure this prevents.
+    func test_aFieldThatIsNotAPathIsRefused() throws {
+        let payload = try JSONSerialization.data(
+            withJSONObject: ["destination": "/a/merged.csv", "files_merged": 3])
+        XCTAssertThrowsError(try resolve(["p": .text("%{1.rows}")], results: ["1": payload])) {
+            XCTAssertEqual($0 as? MacroPlaceholderError,
+                           .unknownStepField(step: "1", field: "rows"))
+        }
+        XCTAssertThrowsError(try resolve(["p": .text("%{1.files_merged}")], results: ["1": payload])) {
+            XCTAssertEqual($0 as? MacroPlaceholderError,
+                           .unknownStepField(step: "1", field: "files_merged"))
+        }
+    }
+
+    /// A trailing dot names no field, and answering with the whole payload would be a silent guess.
+    func test_aTokenThatIsNotAStepReferenceIsLeftVerbatim() throws {
+        XCTAssertEqual(try resolve(["p": .text("%{1.}")], results: [:])["p"], .text("%{1.}"))
+    }
+
     /// A selection whose file name contains a `%` must not be able to change how the template is read.
     func test_aPercentInTheDataCannotTurnAStringIntoAList() throws {
         var odd = context
@@ -374,5 +469,222 @@ final class MacroStoreTests: XCTestCase {
         XCTAssertEqual(s.macros().map(\.title), ["A2", "B"], "order is kept, the entry is replaced")
         try s.remove(id: "a")
         XCTAssertEqual(s.macros().map(\.id), ["b"])
+    }
+}
+
+
+/// The one value a macro does not know until it runs (F-478).
+final class MacroQuestionTests: XCTestCase {
+
+    func test_aBareQuestionHasNoDefault() throws {
+        let q = try XCTUnwrap(MacroQuestion("ask:Folder name"))
+        XCTAssertEqual(q.prompt, "Folder name")
+        XCTAssertEqual(q.defaultValue, "")
+        XCTAssertFalse(q.hasDefault)
+    }
+
+    func test_aDefaultFollowsTheFirstEquals() throws {
+        let q = try XCTUnwrap(MacroQuestion("ask:Rename to=a=b"))
+        XCTAssertEqual(q.prompt, "Rename to")
+        XCTAssertEqual(q.defaultValue, "a=b", "only the first = splits; the rest is the value")
+        XCTAssertTrue(q.hasDefault)
+    }
+
+    func test_anEmptyDefaultIsStillADefault() throws {
+        let q = try XCTUnwrap(MacroQuestion("ask:Comment="))
+        XCTAssertEqual(q.defaultValue, "")
+        XCTAssertTrue(q.hasDefault, "the difference decides what happens with nobody to ask")
+    }
+
+    func test_whatIsNotAQuestion() {
+        XCTAssertNil(MacroQuestion("date:yyyy-MM"))
+        XCTAssertNil(MacroQuestion("1.destination"))
+        XCTAssertNil(MacroQuestion("ask:"), "a question with no words is not one")
+        XCTAssertNil(MacroQuestion("ask:   =x"), "nor is one that is only whitespace")
+    }
+
+    /// Once per question, not once per occurrence: a macro naming the same folder twice is asking one
+    /// thing, and two fields would ask the user to keep two answers in agreement by hand.
+    func test_theSameQuestionIsAskedOnce() {
+        let macro = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/%{ask:Folder=Archive}")]),
+            MacroStep(tool: "move", arguments: ["sources": .text("%S"),
+                                                "destination": .text("%T/%{ask:Folder=Other}")]),
+        ])
+        let questions = MacroPlaceholders.questions(in: macro)
+        XCTAssertEqual(questions.map(\.prompt), ["Folder"])
+        XCTAssertEqual(questions.first?.defaultValue, "Archive", "the first one met wins")
+    }
+
+    /// A dictionary's iteration order is not stable across runs, and a dialog whose fields move between
+    /// two openings of the same macro is one nobody can fill in from memory.
+    func test_theOrderIsStable() {
+        let macro = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "rename", arguments: ["path": .text("%P/%{ask:Which file}"),
+                                                  "new_name": .text("%{ask:New name}")]),
+        ])
+        let once = MacroPlaceholders.questions(in: macro).map(\.prompt)
+        for _ in 0..<20 {
+            XCTAssertEqual(MacroPlaceholders.questions(in: macro).map(\.prompt), once)
+        }
+        // Sorted by argument name: new_name before path.
+        XCTAssertEqual(once, ["New name", "Which file"])
+    }
+
+    func test_anAnswerIsSubstitutedAndADefaultStandsInForOne() throws {
+        let template: [String: MacroArgument] = ["path": .text("%T/%{ask:Folder=Archive}")]
+        let answered = MacroContext(activeDirectory: "/a", inactiveDirectory: "/b",
+                                    startedAt: Date(), answers: ["Folder": "Rechnungen"])
+        XCTAssertEqual(try MacroPlaceholders.resolve(template, context: answered, results: [:])["path"],
+                       .text("/b/Rechnungen"))
+        let unanswered = MacroContext(activeDirectory: "/a", inactiveDirectory: "/b", startedAt: Date())
+        XCTAssertEqual(try MacroPlaceholders.resolve(template, context: unanswered, results: [:])["path"],
+                       .text("/b/Archive"))
+    }
+
+    /// An answer that is present and empty is an answer. Clearing a field is how `set_comment` removes
+    /// a comment, and second-guessing it would take the choice away.
+    func test_anEmptyAnswerBeatsTheDefault() throws {
+        let out = try MacroPlaceholders.resolve(["comment": .text("%{ask:Comment=old}")],
+                                                context: MacroContext(activeDirectory: "/a",
+                                                                      startedAt: Date(),
+                                                                      answers: ["Comment": ""]),
+                                                results: [:])
+        XCTAssertEqual(out["comment"], .text(""))
+    }
+
+    /// A question with no default and no answer is a wiring mistake, not a value to guess at.
+    func test_anUnansweredQuestionWithoutADefaultThrows() {
+        XCTAssertThrowsError(try MacroPlaceholders.resolve(["p": .text("%{ask:Folder}")],
+                                                           context: MacroContext(activeDirectory: "/a",
+                                                                                 startedAt: Date()),
+                                                           results: [:])) {
+            XCTAssertEqual($0 as? MacroPlaceholderError, .unanswered("Folder"))
+        }
+    }
+
+    /// An answer is data, and data is never read as a template — the same rule that keeps a `%` in a
+    /// file name from becoming a token.
+    func test_aPercentInAnAnswerIsNotExpanded() throws {
+        let out = try MacroPlaceholders.resolve(["p": .text("%T/%{ask:Folder}")],
+                                                context: MacroContext(activeDirectory: "/a",
+                                                                      inactiveDirectory: "/b",
+                                                                      cursorPath: "/a/cursor.txt",
+                                                                      startedAt: Date(),
+                                                                      answers: ["Folder": "50%Netto"]),
+                                                results: [:])
+        XCTAssertEqual(out["p"], .text("/b/50%Netto"))
+    }
+}
+
+
+/// A plan row as a *shape* rather than as a sentence (F-478), so the host can say it in the user's
+/// language while the model, the MCP client and the audit log keep the English one.
+final class PlanPhraseTests: XCTestCase {
+
+    private func phrase(_ tool: String, _ json: String) -> PlanPhrase? {
+        MacroPlan.phrase(tool: tool, argumentsJSON: json)
+    }
+
+    /// The English side must still read exactly as it did — it is what `PlanItem.text` carries, and
+    /// two other readers depend on that text not changing under them.
+    func test_theEnglishRenderingIsUnchanged() {
+        XCTAssertEqual(phrase("make_directory", #"{"path":"/a/2026-08"}"#)?.english,
+                       "Create the folder “2026-08”")
+        XCTAssertEqual(phrase("move", #"{"destination":"/b/out","sources":["/a/one.pdf","/a/two.pdf"]}"#)?.english,
+                       "Move one.pdf, two.pdf into “out”")
+        XCTAssertEqual(phrase("move_to_trash", #"{"paths":["/a/w","/a/x","/a/y","/a/z"]}"#)?.english,
+                       "Move w, x, y +1 more to the Trash")
+        XCTAssertEqual(phrase("rename", #"{"path":"/a/old.txt","new_name":"new.txt"}"#)?.english,
+                       "Rename “old.txt” to “new.txt”")
+        XCTAssertEqual(phrase("set_comment", #"{"path":"/a/f.txt","comment":"kept"}"#)?.english,
+                       "Comment “f.txt”: kept")
+        XCTAssertEqual(phrase("run_shell", #"{"command":"ls -l"}"#)?.english,
+                       "Run “ls -l” in a terminal")
+    }
+
+    /// The values a translator has to place are separated out, not baked into a sentence. This is the
+    /// property that makes the host's renderer possible at all.
+    func test_aPhraseCarriesItsValuesApartFromItsWords() throws {
+        let p = try XCTUnwrap(phrase("move", #"{"destination":"/b/out","sources":["/a/one.pdf"]}"#))
+        XCTAssertEqual(p.key, .moveInto)
+        XCTAssertEqual(p.values, [.literal("one.pdf"), .literal("out")])
+        XCTAssertNil(p.count)
+    }
+
+    /// A count is a number, not a rendered word, so a language that inflects can.
+    func test_aCountedPhraseCarriesTheNumber() throws {
+        let p = try XCTUnwrap(phrase("rename_batch", #"{"old_names":["a","b","c"],"new_names":["d","e","f"]}"#))
+        XCTAssertEqual(p.key, .renameBatch)
+        XCTAssertEqual(p.count, 3)
+    }
+
+    /// "+2 more" is words too, so the overflow is a phrase inside the phrase rather than text.
+    func test_theOverflowIsItsOwnPhrase() throws {
+        let p = try XCTUnwrap(phrase("move_to_trash", #"{"paths":["/a/w","/a/x","/a/y","/a/z"]}"#))
+        guard case .phrase(let more)? = p.values.first else {
+            return XCTFail("the item list should nest a phrase")
+        }
+        XCTAssertEqual(more.key, .andMore)
+        XCTAssertEqual(more.count, 1)
+    }
+
+    /// A stand-in is a phrase too, nested where the value would be, so the whole sentence can be
+    /// translated as one — "Move *the result of step 2* into “out”" is not two strings.
+    func test_aStandInIsANestedPhrase() throws {
+        let macro = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "merge_files", arguments: ["sources": .text("%S"),
+                                                       "destination": .text("%P/all.csv")]),
+            MacroStep(tool: "move", arguments: ["sources": .text("%{1.destination}"),
+                                                "destination": .text("%P/done")]),
+        ])
+        let context = MacroContext(activeDirectory: "/a", selection: ["/a/x.csv"], startedAt: Date())
+        let rows = MacroPlan.rows(of: macro, resolvedWith: context)
+        let second = try XCTUnwrap(rows.last?.phrase)
+        XCTAssertEqual(second.key, .moveInto)
+        guard case .phrase(let standIn)? = second.values.first else {
+            return XCTFail("the unresolved source should nest a phrase, got \(second.values)")
+        }
+        XCTAssertEqual(standIn.key, .resultOfStep)
+        XCTAssertEqual(rows.last?.text, "Move the result of step 1 into “done”")
+    }
+
+    /// The marker a stand-in travels in is an implementation detail and must never be seen. If one
+    /// reaches a row, the dialog shows a control character.
+    func test_noRenderedRowEverContainsTheMarker() {
+        let macro = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "move", arguments: ["sources": .text("%S"), "destination": .text("%T/x")]),
+            MacroStep(tool: "open_path", arguments: ["path": .text("%{9}")]),
+            MacroStep(tool: "make_directory", arguments: ["path": .text("%T/%{ask:Where}")]),
+        ])
+        // Nothing selected, no step 9, nobody asked: every stand-in at once.
+        let context = MacroContext(activeDirectory: "/a", inactiveDirectory: "/b", startedAt: Date())
+        for row in MacroPlan.rows(of: macro, resolvedWith: context) {
+            XCTAssertFalse(row.text.contains("\u{1}"), row.text)
+            XCTAssertFalse(row.text.contains("\u{1F}"), row.text)
+            XCTAssertFalse(row.text.isEmpty)
+        }
+    }
+
+    /// A step's own `note` is the user's wording and carries no phrase — nothing may translate it.
+    func test_aNoteCarriesNoPhrase() {
+        let macro = Macro(id: "m", title: "M", steps: [
+            MacroStep(tool: "move", arguments: ["sources": .text("%S")], note: "Meine eigene Zeile"),
+        ])
+        let rows = MacroPlan.rows(of: macro, resolvedWith: MacroContext(activeDirectory: "/a",
+                                                                        selection: ["/a/x"],
+                                                                        startedAt: Date()))
+        XCTAssertNil(rows[0].phrase)
+        XCTAssertEqual(rows[0].text, "Meine eigene Zeile")
+    }
+
+    /// Every key must render to something. The host's switch is kept exhaustive by the compiler; this
+    /// is the same guarantee for the English side, which has no such check.
+    func test_everyKeyRendersToSomething() {
+        for key in PlanPhrase.Key.allCases {
+            let rendered = PlanPhrase(key, literals: ["one", "two"], count: 2).english
+            XCTAssertFalse(rendered.isEmpty, "\(key) renders to nothing")
+            XCTAssertFalse(rendered.contains("\u{1}"), "\(key)")
+        }
     }
 }

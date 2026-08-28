@@ -306,3 +306,47 @@ final class ButtonBarDropTests: XCTestCase {
         XCTAssertEqual(buttons.last?.cmd, "/bin/ls")
     }
 }
+
+/// Taking a macro's buttons back out of the bar (F-478).
+///
+/// A macro deleted by hand used to leave its button behind, and pressing it did nothing at all. The
+/// removal is a filter on `cmd` — kept here rather than in the window, because what has to hold is
+/// that the *rest of the bar survives it*: the other buttons, their order, and the file's format.
+final class ButtonBarMacroRemovalTests: XCTestCase {
+
+    private func bar() -> ButtonBar {
+        ButtonBar(buttons: [
+            BarButton(icon: "a", cmd: "cm_Copy", param: "", path: "", menu: "Copy", iconic: false),
+            BarButton(icon: "b", cmd: "mc_tidy", param: "", path: "", menu: "Tidy", iconic: false),
+            BarButton(icon: "c", cmd: "cm_PackFiles", param: "", path: "", menu: "Pack", iconic: false),
+            BarButton(icon: "d", cmd: "mc_tidy", param: "", path: "", menu: "Tidy again", iconic: false),
+        ])
+    }
+
+    func test_everyButtonForThatMacroGoesAndTheOthersStay() {
+        var b = bar()
+        b.buttons.removeAll { ["mc_tidy"].contains($0.cmd) }
+        XCTAssertEqual(b.buttons.map(\.cmd), ["cm_Copy", "cm_PackFiles"],
+                       "both copies of the macro's button go, in one pass, and order is kept")
+    }
+
+    /// A macro whose name resembles another's must not be caught: the match is the whole command name.
+    func test_aSimilarlyNamedMacroIsNotTouched() {
+        var b = ButtonBar(buttons: [
+            BarButton(icon: "a", cmd: "mc_tidy", param: "", path: "", menu: "", iconic: false),
+            BarButton(icon: "b", cmd: "mc_tidy-2", param: "", path: "", menu: "", iconic: false),
+        ])
+        b.buttons.removeAll { ["mc_tidy"].contains($0.cmd) }
+        XCTAssertEqual(b.buttons.map(\.cmd), ["mc_tidy-2"])
+    }
+
+    /// And the bar still round-trips through the Total Commander format afterwards, so a user's own
+    /// bar is not rewritten into something else by a macro being deleted.
+    func test_theBarStillRoundTripsAfterTheRemoval() {
+        var b = bar()
+        b.buttons.removeAll { ["mc_tidy"].contains($0.cmd) }
+        let reparsed = ButtonBar(parsing: b.serialize())
+        XCTAssertEqual(reparsed.buttons.map(\.cmd), ["cm_Copy", "cm_PackFiles"])
+        XCTAssertEqual(reparsed.buttons.map(\.menu), ["Copy", "Pack"])
+    }
+}
