@@ -37,11 +37,31 @@ if [ -f "$HOME/pc-cfg/peachcmd.ini" ]; then
             "$HOME/pc-cfg/peachcmd.ini"
 fi
 
+# Probe settings for the app, when the scenario asked for any (~/pc-env.txt, KEY=VALUE per line).
+#
+# Passed as *arguments*, not as environment. `open` hands the app arguments and never the caller's
+# environment, and `launchctl setenv` from here does not help either: an ssh session has its own
+# launchd domain, so the variable was set in a session the app is not in — `launchctl getenv` came
+# back empty in the guest while the same value worked when the binary was run directly. Measured,
+# after a full run reported four empty reports and the app had plainly done everything else.
+#
+# `-KEY value` lands in the argument domain, which `AutomationProbe` reads after the environment. The
+# same channel `-ConfigRoot` already uses.
+# `${PCARGS[@]+…}` below, not a bare `"${PCARGS[@]}"`: this is bash 3.2 with `set -u`, where an empty
+# array expands to an unbound variable and would take down every scenario that asks for nothing.
+PCARGS=()
+if [ -s "$HOME/pc-env.txt" ]; then
+  while IFS='=' read -r key value; do
+    [ -z "$key" ] && continue
+    PCARGS+=("-$key" "$value")
+  done < "$HOME/pc-env.txt"
+fi
+
 START=$(date "+%Y-%m-%d %H:%M:%S")
 # open, not the binary: LaunchServices puts the app in the auto-logged-in Aqua session. The log comes
 # from the unified log afterwards, so nothing needs redirecting.
 open "$APP" --args -ConfigRoot "$HOME/pc-cfg" -AppleLanguages '(en)' \
-     -AutomationScript "$HOME/auto.txt"
+     -AutomationScript "$HOME/auto.txt" ${PCARGS[@]+"${PCARGS[@]}"}
 sleep "$SETTLE"
 # …and then wait for the report, if this scenario writes one. Up to 40 s more, checked twice a second:
 # a scenario that is simply slow gets to finish, and one that is broken still fails within a minute.

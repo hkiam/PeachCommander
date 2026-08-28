@@ -33,6 +33,10 @@ keyboard_only = (set(re.findall(r'^    "([a-z0-9-]+)":', SRC[SRC.index("KEYBOARD
 # and should be held to the rule like everything else.
 keyboard_only -= set(re.findall(r'^    "([a-z0-9-]+)": \("/Users/admin/', reports, re.M))
 
+# Scenarios whose report is written by a probe the environment switches on, keyed by scenario name.
+env_block = SRC[SRC.index("SCENARIO_ENV = {"):] if "SCENARIO_ENV = {" in SRC else ""
+env_reports = set(re.findall(r'^    "([a-z0-9-]+)": \{', env_block.split("\n}")[0], re.M))
+
 problems = 0
 checked = 0
 for m in re.finditer(r'\("([a-z0-9-]+)",\s*\[(.*?)\],\s*(\d+)\)', scenarios, re.S):
@@ -52,6 +56,12 @@ for m in re.finditer(r'\("([a-z0-9-]+)",\s*\[(.*?)\],\s*(\d+)\)', scenarios, re.
         problems += 1
         continue
     checked += 1
+    # A report the *environment* produces is not written by the script at all — the probe inside a
+    # modal dialog writes it when the dialog would have appeared (SCENARIO_ENV, F-478). The rule below
+    # is about a script that goes on writing after the guest has stopped waiting, and a scenario whose
+    # report never appears in its script has no such tail to lose.
+    if name in env_reports:
+        continue
     if primary.group(1) != written[-1]:
         print(f"  ⚠️  {name}: the guest waits for {primary.group(1)}, but the script goes on to write "
               f"{written[-1]} — everything after the wait is a race the app loses on a slow launch")

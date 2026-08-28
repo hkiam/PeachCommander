@@ -3,9 +3,10 @@ fullKeyboardAccess: true
 focused: Optional<NSResponder>
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSButton
-focusRefused: 2
+focusRefused: 3
   REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
+  REFUSES: NSTextField | With one page left the panel drops its tab strip. Pages a plugin contributes are not affected — those come and go with the plugin. accepts=false hidden=false enabled=true refuses=false
   tab[1]: NSButton | Show command line / Show command line
   tab[2]: NSButton | Show function key bar / Show function key bar
   tab[3]: NSButton | Show button bar / Show button bar
@@ -13,12 +14,15 @@ focusRefused: 2
   tab[5]: NSButton | Show status bar / Show status bar
   tab[6]: NSButton | Show tab bar / Show tab bar
   tab[7]: NSButton | Show path bar / Show path bar
-  tab[8]: NSButton | Close / Close
-  tab[9]: NSSearchField | Search settings / Search settings
-  tab[10]: NSScrollView
-  tab[11]: NSClipView
-  tab[12]: NSTableView | Settings pages
-  tab[13]: NSScroller
+  tab[8]: NSButton | Show the Info page / Show the Info page
+  tab[9]: NSButton | Show the Activities page / Show the Activities page
+  tab[10]: NSButton | Show the Log page / Show the Log page
+  tab[11]: NSButton | Close / Close
+  tab[12]: NSSearchField | Search settings / Search settings
+  tab[13]: NSScrollView
+  tab[14]: NSClipView
+  tab[15]: NSTableView | Settings pages
+  tab[16]: NSScroller
 loopClosed: true
 unreachable: 0
 unlabelled: 0

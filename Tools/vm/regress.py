@@ -83,6 +83,50 @@ SCENARIOS = [
     # and that is the state this file has produced seven Auto Layout conflicts in before. Plugin tabs are
     # asserted only through `pages=`, which lists built-ins: the VM's plugin set is not this scenario's
     # subject, and every built-in being off with the plugin tabs still there is the point of `-empty`.
+    # Macros (F-478). Four dialogs and a window that unit tests cannot see, all of them modal or
+    # near enough — see SCENARIO_ENV for why each one must carry its environment or hang the run.
+    #
+    # Every scenario seeds `macros.json` the way a user does, through `cm_MacroEditor`, so the eight
+    # shipped examples are what is being exercised rather than a fixture that could drift from them.
+    # The editor window it opens is closed again before anything is measured.
+
+    # The gate, and the rows a person actually reads. `clean-temp` is the deleting example, so this
+    # also asserts that a macro is held to the most demanding thing in it: it is *proposed*, not run.
+    # Nothing is selected, so the second row stands in for what the first step will select — the one
+    # phrase in the set that is built out of another phrase.
+    ("macro-confirm", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "cmd cm_MacroEditor", "wait 1500", "closeeditor", "wait 800",
+                       "cmd mc_clean-temp", "wait 2500"], 10),
+    # Asking happens before the plan is built, and the answer is in the plan. Two reports, because
+    # those are two claims: that the question was put, and that what was typed reached the rows.
+    ("macro-ask", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   "cmd cm_MacroEditor", "wait 1500", "closeeditor", "wait 800",
+                   "cmd mc_file-into-named-folder", "wait 2500"], 10),
+    # Both records the recorder reads. The copy goes through the Automation Core, so it lands in the
+    # audit log; the panel half is covered by unit tests, since no verb drives an F5.
+    ("macro-record",
+     ["probe /Users/admin/macro-made.txt|mkdir -p /Users/admin/macro-src /Users/admin/macro-dst "
+      "&& echo payload > /Users/admin/macro-src/data.txt && echo made", "wait 600",
+      "active left", "left /Users/admin/macro-src", "wait 1200",
+      # Through the Core, so it lands in the audit log — which is the source this scenario is about.
+      # The destination has to exist: a `move`/`copy` to a folder that is not there is refused now,
+      # and the refusal would be recorded as a failed action the recorder then greys out.
+      "aitool copy:confirm|{\"sources\":[\"/Users/admin/macro-src/data.txt\"],"
+      "\"destination\":\"/Users/admin/macro-dst\"}|/Users/admin/macro-copy.json", "wait 1500",
+      "cmd cm_MacroFromRecentActions", "wait 2500"], 10),
+    # The manager: a list with buttons, and the one window here whose layout was wrong while AppKit
+    # reported nothing — a stack view lays its buttons out past its own trailing edge without ever
+    # producing a conflict, so the count this suite leans on could not see it.
+    #
+    # Its own dump rather than `a11ydump`, for two reasons found by trying that first: the tree came
+    # back holding the table and nothing else (the stack views contribute no accessible children until
+    # a client attaches), and a tree cannot report a *measurement*. `toolbar-fits` is the measurement,
+    # and it was verified by putting the defect back: 620 wide against a 683-wide toolbar, `NO`, and
+    # zero conflicts.
+    ("macro-manager", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "cmd cm_MacroEditor", "wait 1500", "closeeditor", "wait 800",
+                       "cmd cm_MacroManager", "wait 2000",
+                       "macromanagerdump /Users/admin/macro-manager.txt", "wait 800"], 10),
     ("side-panel-tabs", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                          "previewpanel on", "wait 1200",
                          "previewtabsdump /Users/admin/side-tabs-default.txt", "wait 300",
@@ -1583,6 +1627,7 @@ KEYBOARD_GATES = {
 }
 
 KEYBOARD_REPORTS = {
+
     "keys-main": ["menu.txt", "keyloop-main.txt", "a11y-main.txt"],
     "keys-find": ["keyloop-find.txt", "a11y-find.txt"],
     "keys-settings": ["keyloop-settings.txt", "a11y-settings.txt"],
@@ -1603,6 +1648,36 @@ KEYBOARD_REPORTS = {
 # report is checked before it has run: name new scenarios so they are not a prefix-extension of an
 # existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
+    # F-478. The confirmation is the promise the whole feature rests on, so it is asserted as three
+    # separate claims: the macro was *proposed* rather than run, its steps are the rows, and the row
+    # that cannot be resolved yet says what it is waiting for instead of guessing. `answer: cancelled`
+    # is the probe's own record that nothing was carried out — without it "the Trash is empty" would
+    # pass for a build that never got as far as asking.
+    "macro-confirm": ("/Users/admin/macro-confirm.txt",
+                      ["Put the temporary files in the Trash", "row 1: Select *.tmp",
+                       "row 2: Move what an earlier step selects to the Trash",
+                       "answer: cancelled"]),
+    # The question was put, with the macro's own wording and its default.
+    "macro-ask": ("/Users/admin/macro-ask.txt", ["ask: Folder name = Archive"]),
+    # And the answer reached the rows *before* they were approved, which is the design and not a
+    # detail: a macro that asked when it reached the step would have been approved on a guess.
+    "macro-ask-plan": ("/Users/admin/macro-ask-plan.txt",
+                       ["row 1: Create the folder “Rechnungen”", "!Archive"]),
+    # Both halves of the recorder: the action is offered as a readable row, and keeping it writes a
+    # macro. The row naming the file is what distinguishes this from a list of "copy" entries.
+    "macro-record": ("/Users/admin/macro-record.txt",
+                     ["title: Recorded", "row 1: Copy data.txt into “macro-dst”"]),
+    # The manager's buttons, by name. A stack view lays its buttons out past its own trailing edge
+    # without producing a single Auto Layout conflict, so the count this suite leans on cannot see a
+    # clipped toolbar; the accessibility tree can, because a button that is not there is not named.
+    # The measurement first: the toolbar fits inside the window it opens at. Then that the list is
+    # the shipped examples, and that the deleting one is shown as deleting — which is the difference
+    # between choosing a macro for a key and finding out afterwards.
+    "macro-manager": ("/Users/admin/macro-manager.txt",
+                      ["toolbar-fits=yes", "!toolbar-fits=NO",
+                       "buttons=Rename…|Duplicate|Delete|Move Up|Move Down|Add Button",
+                       "row=mc_clean-temp|2|deletes", "row=mc_stage-by-month|3|changes files",
+                       "row=mc_file-into-named-folder|2|changes files"]),
     # F-435: survival is half of it — a crash means this file never appears and the scenario fails on
     # its absence. The other half is the panel still showing what it was on, because wrong panel
     # content was the symptom that came *before* the crash. After an even number of toggles hidden
@@ -2726,6 +2801,33 @@ PLUGINS_ON = {
 }
 
 
+# Environment a scenario needs the app launched with.
+#
+# Every headless dialog in this app is answered through one of these — the AI plugins' sheets and all
+# four of the macro ones — and until now the harness had no way to set one, because `open` hands the
+# app arguments and not the caller's environment. `regress-guest.sh` passes them as `-KEY value`
+# arguments, which is the one channel that arrives — `launchctl setenv` from an ssh session lands in a
+# different launchd domain than the auto-logged-in one the app runs in, measured after a full run
+# reported four empty reports. `AutomationProbe` reads the environment first and then the arguments,
+# so a local run keeps its natural spelling.
+#
+# A macro dialog is a *modal*: without its variable the script runs on inside the modal's nested
+# runloop and `quit` never lands, so the scenario does not fail — it hangs. Which is why every macro
+# scenario below sets one, and why a new one must.
+SCENARIO_ENV = {
+    "macro-confirm": {"PC_MACRO_CONFIRM_DUMP": "/Users/admin/macro-confirm.txt"},
+    # The answer, and then the plan it has to appear in — the whole point of asking before the plan
+    # is built rather than when the step is reached.
+    "macro-ask": {"PC_MACRO_ASK": "Folder name=Rechnungen",
+                  "PC_MACRO_ASK_DUMP": "/Users/admin/macro-ask.txt",
+                  "PC_MACRO_CONFIRM_DUMP": "/Users/admin/macro-ask-plan.txt"},
+    "macro-record": {"PC_MACRO_RECORD": "Recorded",
+                     "PC_MACRO_RECORD_KEEP": "1",
+                     "PC_MACRO_RECORD_BUTTON": "0",
+                     "PC_MACRO_RECORD_DUMP": "/Users/admin/macro-record.txt"},
+}
+
+
 def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     body = "\n".join(script)
     ssh_guest(ip, f"cat > ~/auto.txt <<'PCEOF'\n{body}\nPCEOF")
@@ -2736,6 +2838,14 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
                   % ";".join(wanted))
     else:
         ssh_guest(ip, "rm -f ~/pc-cfg/plugins.ini; true")
+    # …and the environment its dialogs are answered through. Written and removed in the same breath,
+    # for the same reason: one left behind answers the next scenario's dialogs.
+    environment = SCENARIO_ENV.get(name)
+    if environment:
+        lines = "\n".join(f"{k}={v}" for k, v in environment.items())
+        ssh_guest(ip, f"cat > ~/pc-env.txt <<'PCENV'\n{lines}\nPCENV")
+    else:
+        ssh_guest(ip, "rm -f ~/pc-env.txt; true")
     # Fresh session state per scenario: a persisted panel directory or view mode from the previous one
     # would make this scenario show something else entirely. (Learned the hard way — twice.)
     # The guest-side half is a script, not an ssh one-liner: the log predicate carries quotes at three
