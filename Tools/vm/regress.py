@@ -2797,7 +2797,21 @@ def boot(app: str, run: str):
 # `enabledByDefault || enabled.contains`), so naming one plugin here leaves every default-on plugin
 # exactly as it was.
 PLUGINS_ON = {
-    "plugin-context-menu": ["AI Assistant"],
+    # **Both**, and the second one is the whole scenario. The three items it asserts — "Summarize",
+    # "Suggest a name", "Suggest a comment" — are contributed by the *AI On-Device* bundle
+    # (Plugins/AILocal/Info.plist), not by the chat. Naming only the chat here left the plugin that
+    # owns them switched off.
+    #
+    # It passed anyway, which is the part worth writing down. `adoptOnDeviceAssistantIfNeeded()`
+    # switches the on-device plugin on **once** for anyone who had the assistant enabled and no cloud
+    # model, and records `AI.OnDeviceAdopted` in `peachcmd.ini` — a file that survives between
+    # scenarios, because the guest strips only its view-mode lines. So the migration fired on the
+    # first app launch in a fresh clone and the items appeared; every later scenario found the flag
+    # already set, skipped it, and got the plugins.ini the harness had just written, which named the
+    # wrong plugin. The scenario therefore passed as the first thing in a run and failed as anything
+    # else — measured: `--only plugin-context-menu` green, `--only main-window,plugin-context-menu`
+    # red, with no other change.
+    "plugin-context-menu": ["AI Assistant", "AI On-Device"],
 }
 
 

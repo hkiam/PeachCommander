@@ -1,250 +1,251 @@
 Timestamp               Ty Process[PID:TID]
-2026-08-28 13:27:16.070 A  PeachCommander[20413:1452d] (libsystem_info.dylib) Retrieve User by ID
-2026-08-28 13:27:16.070 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x105b628e0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
-2026-08-28 13:27:16.070 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x105b62fa0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
-2026-08-28 13:27:16.072 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x105b68820] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
-2026-08-28 13:27:16.073 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
-2026-08-28 13:27:16.073 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
-2026-08-28 13:27:16.073 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
-2026-08-28 13:27:16.075 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
-2026-08-28 13:27:16.075 A  PeachCommander[20413:1452d] (TCC) TCCAccessRequest() IPC
-2026-08-28 13:27:16.075 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
-2026-08-28 13:27:16.075 I  PeachCommander[20413:1452d] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=20413.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
-2026-08-28 13:27:16.077 I  PeachCommander[20413:1452d] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0x955030000> { count = 5, transaction: 0, voucher = 0x0, contents =
-	"prompt_type" => <uint64: 0x8b508ae48f39f7f7>: 1
-	"auth_value" => <uint64: 0x8b508ae48f39f7f7>: 1
-	"preflight_unknown" => <bool: 0x1ee341190>: true
-	"auth_version" => <uint64: 0x8b508ae48f39f7f7>: 1
-	"auth_reason" => <uint64: 0x8b508ae48f39f7d7>: 5
+2026-08-28 19:35:24.643 A  PeachCommander[20539:14770] (libsystem_info.dylib) Retrieve User by ID
+2026-08-28 19:35:24.644 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0x10422a980] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-08-28 19:35:24.644 Df PeachCommander[20539:14777] [com.apple.xpc:connection] [0x10422e0c0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
+2026-08-28 19:35:24.645 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0x10422f200] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
+2026-08-28 19:35:24.646 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
+2026-08-28 19:35:24.646 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
+2026-08-28 19:35:24.646 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
+2026-08-28 19:35:24.647 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-28 19:35:24.647 A  PeachCommander[20539:14770] (TCC) TCCAccessRequest() IPC
+2026-08-28 19:35:24.648 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
+2026-08-28 19:35:24.648 I  PeachCommander[20539:14770] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=20539.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
+2026-08-28 19:35:24.649 I  PeachCommander[20539:14770] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0xa52c3c000> { count = 5, transaction: 0, voucher = 0x0, contents =
+	"prompt_type" => <uint64: 0x8bf6d65361898b57>: 1
+	"auth_value" => <uint64: 0x8bf6d65361898b57>: 1
+	"preflight_unknown" => <bool: 0x1f3f85190>: true
+	"auth_version" => <uint64: 0x8bf6d65361898b57>: 1
+	"auth_reason" => <uint64: 0x8bf6d65361898b77>: 5
 }
-2026-08-28 13:27:16.077 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] invalidated after the last release of the connection object
-2026-08-28 13:27:16.077 Df PeachCommander[20413:1452d] [com.apple.SkyLight:default] server port 0x0000300f, session port 0x0000300f
-2026-08-28 13:27:16.080 I  PeachCommander[20413:14534] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 227231 mapped to ctx = 0x954c94680
-2026-08-28 13:27:16.080 Df PeachCommander[20413:1452d] [com.apple.SkyLight:default] New connection 0x3779f main
-2026-08-28 13:27:16.081 I  PeachCommander[20413:1452d] [com.apple.hiservices:processmgr] Checking in with CAS, pid=20413
-2026-08-28 13:27:16.081 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
-2026-08-28 13:27:16.081 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachC<…>
-2026-08-28 13:27:16.081 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] CHECKIN: pid=20413
-2026-08-28 13:27:16.083 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=20413 asn=0x0-0xff0ff foreground=1
-2026-08-28 13:27:16.083 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
-2026-08-28 13:27:16.083 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-28 13:27:16.083 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] Connection returned listener port: 0x5403
-2026-08-28 13:27:16.083 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x955080300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x95506c280.peer[131].0x955080300
-2026-08-28 13:27:16.084 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
-2026-08-28 13:27:16.084 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] Registered, pid=20413 ASN=0x0,0xff0ff
-2026-08-28 13:27:16.084 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c3c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
-2026-08-28 13:27:16.084 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
-2026-08-28 13:27:16.084 I  PeachCommander[20413:14533] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x105b70050 option=65538) created, forUID=501 mach_port_t=0x5003.
-2026-08-28 13:27:16.084 I  PeachCommander[20413:14533] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x105b704b0 option=65538) created, forUID=501 mach_port_t=0x4303.
-2026-08-28 13:27:16.084 I  PeachCommander[20413:14533] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x5003 serverOptions=0x10002.
-2026-08-28 13:27:16.085 I  PeachCommander[20413:1452d] [com.apple.hiservices:processmgr] _RegisterApplication( pid 20413 => 0x0,0xff0ff) type=foreground
-2026-08-28 13:27:16.085 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] Connection returned listener port: 0x5403
-2026-08-28 13:27:16.085 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x95506c500] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
-2026-08-28 13:27:16.085 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
-2026-08-28 13:27:16.085 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] BringForward: pid=20413 asn=0x0-0xff0ff bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=1
-2026-08-28 13:27:16.085 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=20413 asn=0x0-0xff0ff Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
-2026-08-28 13:27:16.085 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] BringForward: pid=20413 asn=0x0-0xff0ff
-2026-08-28 13:27:16.085 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0xff0ff options=0
-2026-08-28 13:27:16.085 I  PeachCommander[20413:1452d] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0xff0ff window=0 options=0x0
-2026-08-28 13:27:16.085 Df PeachCommander[20413:14534] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
-2026-08-28 13:27:16.087 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
-2026-08-28 13:27:16.088 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) No persisted cache on this platform.
-2026-08-28 13:27:16.088 I  PeachCommander[20413:14534] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.089 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
-2026-08-28 13:27:16.089 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
-2026-08-28 13:27:16.089 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
-2026-08-28 13:27:16.089 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
-2026-08-28 13:27:16.089 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
-2026-08-28 13:27:16.090 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) Failed to find key <private>
-2026-08-28 13:27:16.091 I  PeachCommander[20413:14533] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
-2026-08-28 13:27:16.091 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
-2026-08-28 13:27:16.092 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
-2026-08-28 13:27:16.093 I  PeachCommander[20413:14533] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
-2026-08-28 13:27:16.093 I  PeachCommander[20413:14533] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
-2026-08-28 13:27:16.093 I  PeachCommander[20413:14533] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
-2026-08-28 13:27:16.093 I  PeachCommander[20413:14533] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
-2026-08-28 13:27:16.094 Df PeachCommander[20413:1452d] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
-2026-08-28 13:27:16.094 Df PeachCommander[20413:1452d] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
-2026-08-28 13:27:16.094 Df PeachCommander[20413:1452d] [com.apple.runningboard:connection] Initializing connection
-2026-08-28 13:27:16.094 Df PeachCommander[20413:1452d] [com.apple.runningboard:process] Removing all cached process handles
-2026-08-28 13:27:16.094 Df PeachCommander[20413:14534] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
-2026-08-28 13:27:16.094 Df PeachCommander[20413:14534] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
-2026-08-28 13:27:16.094 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506c640] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
-2026-08-28 13:27:16.095 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] Connection returned listener port: 0x5403
-2026-08-28 13:27:16.095 A  PeachCommander[20413:14535] (RunningBoardServices) didChangeInheritances
-2026-08-28 13:27:16.095 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.095 Df PeachCommander[20413:14534] [com.apple.runningboard:connection] Handshake succeeded
-2026-08-28 13:27:16.095 Df PeachCommander[20413:14534] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.486972.488108(501)>
-2026-08-28 13:27:16.097 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] Connection returned listener port: 0x5403
-2026-08-28 13:27:16.098 A  PeachCommander[20413:14535] (AppIntents) appintents:register process
-2026-08-28 13:27:16.098 Df PeachCommander[20413:14535] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.098 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x95506c780] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-28 13:27:16.098 Df PeachCommander[20413:14535] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-28 13:27:16.098 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x95506ca00] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-28 13:27:16.098 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.098 I  PeachCommander[20413:1452d] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
-2026-08-28 13:27:16.098 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.099 I  PeachCommander[20413:14535] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
-2026-08-28 13:27:16.099 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x95506ca00] Connection returned listener port: 0x6403
-2026-08-28 13:27:16.099 Df PeachCommander[20413:1452d] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
-2026-08-28 13:27:16.099 Df PeachCommander[20413:1452d] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-28 13:27:16.099 Df PeachCommander[20413:1452d] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-28 13:27:16.099 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506c780] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-28 13:27:16.099 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-28 13:27:16.099 Df PeachCommander[20413:1452d] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-28 13:27:16.099 E  PeachCommander[20413:14535] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.099 E  PeachCommander[20413:14535] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 A  PeachCommander[20413:14534] (AppIntents) appintents:register process
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506cc80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506ca00] Connection returned listener port: 0x6403
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x95506cc80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14535] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-28 13:27:16.100 E  PeachCommander[20413:14534] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.100 E  PeachCommander[20413:14534] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14533] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 A  PeachCommander[20413:14533] (AppIntents) appintents:register process
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14533] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x95506d2c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14533] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x95506ca00] Connection returned listener port: 0x6403
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506d2c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-28 13:27:16.100 E  PeachCommander[20413:14533] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.100 E  PeachCommander[20413:14533] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 A  PeachCommander[20413:14534] (AppIntents) appintents:register process
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506d540] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-28 13:27:16.100 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95506ca00] Connection returned listener port: 0x6403
-2026-08-28 13:27:16.101 Df PeachCommander[20413:14533] [com.apple.xpc:connection] [0x95506d540] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-28 13:27:16.101 Df PeachCommander[20413:14533] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-28 13:27:16.101 E  PeachCommander[20413:14533] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
-2026-08-28 13:27:16.101 E  PeachCommander[20413:14534] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.101 E  PeachCommander[20413:14534] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-28 13:27:16.106 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From System CFPrefsD
-2026-08-28 13:27:16.107 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) couldn't load support library
-2026-08-28 13:27:16.107 Df PeachCommander[20413:1452d] (libMobileGestalt.dylib) called dummy function!
-2026-08-28 13:27:16.107 I  PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
-2026-08-28 13:27:16.107 Df PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
-2026-08-28 13:27:16.107 Df PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
-2026-08-28 13:27:16.107 Df PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
-2026-08-28 13:27:16.108 Df PeachCommander[20413:1452d] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
-2026-08-28 13:27:16.111 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.115 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] NSApp cache appearance:
+2026-08-28 19:35:24.649 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] invalidated after the last release of the connection object
+2026-08-28 19:35:24.649 Df PeachCommander[20539:14770] [com.apple.SkyLight:default] server port 0x00003807, session port 0x00003807
+2026-08-28 19:35:24.652 Df PeachCommander[20539:14770] [com.apple.SkyLight:default] New connection 0x4febf main
+2026-08-28 19:35:24.652 I  PeachCommander[20539:14777] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 327359 mapped to ctx = 0xa53040300
+2026-08-28 19:35:24.652 I  PeachCommander[20539:14770] [com.apple.hiservices:processmgr] Checking in with CAS, pid=20539
+2026-08-28 19:35:24.652 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
+2026-08-28 19:35:24.652 I  PeachCommander[20539:14770] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachC<…>
+2026-08-28 19:35:24.653 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] CHECKIN: pid=20539
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=20539 asn=0x0-0xfe0fe foreground=1
+2026-08-28 19:35:24.654 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] Connection returned listener port: 0x5303
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa530a4300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0xa52c78280.peer[131].0xa530a4300
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] Registered, pid=20539 ASN=0x0,0xfe0fe
+2026-08-28 19:35:24.654 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c783c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14778] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x104230fb0 option=65538) created, forUID=501 mach_port_t=0x4e03.
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14778] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x104230710 option=65538) created, forUID=501 mach_port_t=0x4203.
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14778] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x4e03 serverOptions=0x10002.
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14770] [com.apple.hiservices:processmgr] _RegisterApplication( pid 20539 => 0x0,0xfe0fe) type=foreground
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] Connection returned listener port: 0x5303
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] BringForward: pid=20539 asn=0x0-0xfe0fe bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=1
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=20539 asn=0x0-0xfe0fe Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] BringForward: pid=20539 asn=0x0-0xfe0fe
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0xfe0fe options=0
+2026-08-28 19:35:24.655 I  PeachCommander[20539:14770] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0xfe0fe window=0 options=0x0
+2026-08-28 19:35:24.655 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c78500] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-08-28 19:35:24.657 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-28 19:35:24.658 I  PeachCommander[20539:1477a] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.658 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-08-28 19:35:24.658 I  PeachCommander[20539:14778] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) Failed to find key <private>
+2026-08-28 19:35:24.659 Df PeachCommander[20539:1477a] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
+2026-08-28 19:35:24.659 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-28 19:35:24.660 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
+2026-08-28 19:35:24.660 I  PeachCommander[20539:14778] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
+2026-08-28 19:35:24.660 I  PeachCommander[20539:14778] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
+2026-08-28 19:35:24.660 I  PeachCommander[20539:14778] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
+2026-08-28 19:35:24.660 I  PeachCommander[20539:14778] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14770] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14770] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14770] [com.apple.runningboard:connection] Initializing connection
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14770] [com.apple.runningboard:process] Removing all cached process handles
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14778] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14778] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-08-28 19:35:24.661 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c78640] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-08-28 19:35:24.661 A  PeachCommander[20539:14779] (RunningBoardServices) didChangeInheritances
+2026-08-28 19:35:24.662 Df PeachCommander[20539:14778] [com.apple.runningboard:connection] Handshake succeeded
+2026-08-28 19:35:24.662 Df PeachCommander[20539:14778] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.487122.487876(501)>
+2026-08-28 19:35:24.662 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] Connection returned listener port: 0x5303
+2026-08-28 19:35:24.662 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.664 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] Connection returned listener port: 0x5303
+2026-08-28 19:35:24.664 A  PeachCommander[20539:1477a] (AppIntents) appintents:register process
+2026-08-28 19:35:24.664 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.664 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c788c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-28 19:35:24.665 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-28 19:35:24.665 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c78a00] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-28 19:35:24.665 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.665 I  PeachCommander[20539:14770] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
+2026-08-28 19:35:24.665 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.665 I  PeachCommander[20539:1477a] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
+2026-08-28 19:35:24.665 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c78a00] Connection returned listener port: 0x6703
+2026-08-28 19:35:24.665 Df PeachCommander[20539:14770] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-08-28 19:35:24.665 Df PeachCommander[20539:14779] [com.apple.xpc:connection] [0xa52c788c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-28 19:35:24.665 Df PeachCommander[20539:14779] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-28 19:35:24.665 Df PeachCommander[20539:14770] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14770] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.666 A  PeachCommander[20539:14778] (AppIntents) appintents:register process
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14770] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c78c80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-28 19:35:24.666 E  PeachCommander[20539:1477a] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.666 E  PeachCommander[20539:1477a] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-28 19:35:24.666 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c78a00] Connection returned listener port: 0x6703
+2026-08-28 19:35:24.666 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c78c80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-28 19:35:24.666 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.667 A  PeachCommander[20539:1477a] (AppIntents) appintents:register process
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c792c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-28 19:35:24.667 E  PeachCommander[20539:14778] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.667 E  PeachCommander[20539:14778] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c78a00] Connection returned listener port: 0x6703
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c792c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.667 A  PeachCommander[20539:14778] (AppIntents) appintents:register process
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c79540] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-28 19:35:24.667 E  PeachCommander[20539:1477a] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.667 E  PeachCommander[20539:1477a] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-28 19:35:24.667 Df PeachCommander[20539:14778] [com.apple.xpc:connection] [0xa52c78a00] Connection returned listener port: 0x6703
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c79540] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-28 19:35:24.667 Df PeachCommander[20539:1477a] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-28 19:35:24.667 E  PeachCommander[20539:1477a] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
+2026-08-28 19:35:24.667 E  PeachCommander[20539:14778] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.667 E  PeachCommander[20539:14778] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-28 19:35:24.669 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-28 19:35:24.669 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) couldn't load support library
+2026-08-28 19:35:24.669 Df PeachCommander[20539:14770] (libMobileGestalt.dylib) called dummy function!
+2026-08-28 19:35:24.670 I  PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
+2026-08-28 19:35:24.670 Df PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
+2026-08-28 19:35:24.670 Df PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
+2026-08-28 19:35:24.670 Df PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
+2026-08-28 19:35:24.670 Df PeachCommander[20539:14770] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
+2026-08-28 19:35:24.672 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.675 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] NSApp cache appearance:
 -NSRequiresAquaSystemAppearance: 0
 -appearance: (null)
--effectiveAppearance: <NSCompositeAppearance: 0x9550346e0
+-effectiveAppearance: <NSCompositeAppearance: 0xa53088460
  (
-    "<NSAquaAppearance: 0x955034500>",
-    "<NSSystemAppearance: 0x955034820>"
+    "<NSAquaAppearance: 0xa53088640>",
+    "<NSSystemAppearance: 0xa53088780>"
 )>
-2026-08-28 13:27:16.118 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-28 13:27:16.118 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-28 13:27:16.123 A  PeachCommander[20413:14533] (libsystem_info.dylib) Membership API: translate identifier
-2026-08-28 13:27:16.126 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.126 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.129 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x95506da40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
-2026-08-28 13:27:16.132 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506db80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
-2026-08-28 13:27:16.135 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.136 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.136 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
-2026-08-28 13:27:16.136 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506cf00] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.137 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506d040] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:45059/0xb003 rcv:1 send:1 limit:5) and registered it with server
-2026-08-28 13:27:16.137 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506c280] Connection returned listener port: 0x5403
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.137 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] SignalReady: pid=20413 asn=0x0-0xff0ff
-2026-08-28 13:27:16.137 Df PeachCommander[20413:1452d] [com.apple.processmanager:front-35286506] SIGNAL: pid=20413 asn=0x0x-0xff0ff
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
-2026-08-28 13:27:16.137 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0xff0ff]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
-2026-08-28 13:27:16.138 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x954c4cce0> 1EC7B536-FDC8-4972-B4A8-9B4715217229) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
-2026-08-28 13:27:16.138 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x954c4cce0> 1EC7B536-FDC8-4972-B4A8-9B4715217229)
-2026-08-28 13:27:16.138 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
-2026-08-28 13:27:16.138 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-28 13:27:16.138 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From System CFPrefsD
-2026-08-28 13:27:16.139 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32766 1768845414')
-2026-08-28 13:27:16.139 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06)
-2026-08-28 13:27:16.139 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (310 bytes) flags: 0
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32765 1802264953')
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (306 bytes) flags: 0
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32764 1802264953')
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (281 bytes) flags: 0
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32763 1802264953')
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (318 bytes) flags: 0
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32765 1768845414')
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (303 bytes) flags: 0
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x954c4f020> E44B1FA3-A481-4A08-BED9-F1CBF1C67C06) gen: -1 item: 1 flavor: '-32763 1768845414')
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.140 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (315 bytes) flags: 0
-2026-08-28 13:27:16.142 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.142 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506de00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
-2026-08-28 13:27:16.148 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506dcc0] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:16.148 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506df40] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-28 13:27:16.148 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506df40] Connection returned listener port: 0xf403
-2026-08-28 13:27:16.148 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506de00] invalidated after the last release of the connection object
-2026-08-28 13:27:16.149 I  PeachCommander[20413:1452d] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=364 0x0-0xFF0FF, err=0 eventTime=3798143097791 windowID=0
-2026-08-28 13:27:16.149 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
-2026-08-28 13:27:16.149 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0x955275840 (should be non-NULL)
-2026-08-28 13:27:16.149 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
-2026-08-28 13:27:16.149 Df PeachCommander[20413:1452d] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
-2026-08-28 13:27:16.149 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506de00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
-2026-08-28 13:27:16.150 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506de00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
-2026-08-28 13:27:16.150 I  PeachCommander[20413:1452d] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
-2026-08-28 13:27:16.151 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.151 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
-2026-08-28 13:27:16.155 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.156 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.161 A  PeachCommander[20413:14535] (RunningBoardServices) didChangeInheritances
-2026-08-28 13:27:16.172 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-28 13:27:16.180 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-28 13:27:16.203 Df PeachCommander[20413:1452d] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
-2026-08-28 13:27:16.203 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95539d180] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:16.205 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> 71c40cf4) for window 367
-2026-08-28 13:27:16.206 Df PeachCommander[20413:14534] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
-2026-08-28 13:27:16.206 A  PeachCommander[20413:14534] (CoreSpotlight) delete-domains
-2026-08-28 13:27:16.206 Df PeachCommander[20413:14534] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-28 13:27:16.206 Df PeachCommander[20413:14534] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
-2026-08-28 13:27:16.206 Df PeachCommander[20413:14534] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
-2026-08-28 13:27:16.206 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x95539d400] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
-2026-08-28 13:27:16.206 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
-2026-08-28 13:27:16.207 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] SelectionState initialized
-2026-08-28 13:27:16.207 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] DirectoryModel initialized
-2026-08-28 13:27:16.207 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-28 13:27:16.207 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
-2026-08-28 13:27:16.207 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] SelectionState initialized
-2026-08-28 13:27:16.208 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] DirectoryModel initialized
-2026-08-28 13:27:16.208 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-28 13:27:16.208 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
-2026-08-28 13:27:16.211 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.211 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.211 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.211 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.212 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.216 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.216 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.216 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.216 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.216 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.224 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.226 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.233 I  PeachCommander[20413:1452d] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0x95591a620> { isDir = ?, path = <private> } bundleID: (null) itemID: 0
-2026-08-28 13:27:16.235 I  PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.Settings.AppleIntelligence,com.apple.Siri.NLRouter, language: en, api: <private>
-2026-08-28 13:27:16.235 Df PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] isOkayToHaveAsset: False
-2026-08-28 13:27:16.235 E  PeachCommander[20413:1452d] [com.apple.siri:Utility] AFIsDeviceGreymatterEligible Missing entitlements for os_eligibility lookup
-2026-08-28 13:27:16.235 I  PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.Settings.AppleIntelligence, language: en, api: <private>
-2026-08-28 13:27:16.235 Df PeachCommander[20413:1452d] [com.apple.GenerativeModels:availability] isOkayToHaveAsset: False
-2026-08-28 13:27:16.235 Df PeachCommander[20413:1452d] [com.apple.siri:Utility] -[AFSystemAssistantExperienceStatusManager fetchGenerativeModelsAvailability] #SAEStatus #cacheUpdate Updating cache:
+2026-08-28 19:35:24.677 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-28 19:35:24.677 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-28 19:35:24.680 A  PeachCommander[20539:14779] (libsystem_info.dylib) Membership API: translate identifier
+2026-08-28 19:35:24.682 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.682 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.684 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52c79a40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
+2026-08-28 19:35:24.686 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79b80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
+2026-08-28 19:35:24.688 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.688 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.688 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
+2026-08-28 19:35:24.688 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78dc0] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.689 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78f00] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:44803/0xaf03 rcv:1 send:1 limit:5) and registered it with server
+2026-08-28 19:35:24.689 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c78280] Connection returned listener port: 0x5303
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.689 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] SignalReady: pid=20539 asn=0x0-0xfe0fe
+2026-08-28 19:35:24.689 Df PeachCommander[20539:14770] [com.apple.processmanager:front-35286506] SIGNAL: pid=20539 asn=0x0x-0xfe0fe
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
+2026-08-28 19:35:24.689 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0xfe0fe]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
+2026-08-28 19:35:24.690 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xa53046f40> 9E254D04-0E1C-437A-BC27-24D1D46CC5BE) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-28 19:35:24.690 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xa53046f40> 9E254D04-0E1C-437A-BC27-24D1D46CC5BE)
+2026-08-28 19:35:24.690 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-28 19:35:24.690 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-28 19:35:24.690 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32766 1768845414')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92)
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (310 bytes) flags: 0
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32765 1802264953')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (306 bytes) flags: 0
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32764 1802264953')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (281 bytes) flags: 0
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32763 1802264953')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (318 bytes) flags: 0
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32765 1768845414')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (303 bytes) flags: 0
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xa53047140> C8FD85B5-4B30-44A7-8EF7-FD2BAA8C1F92) gen: -1 item: 1 flavor: '-32763 1768845414')
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:35:24.691 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (315 bytes) flags: 0
+2026-08-28 19:35:24.693 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.693 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79e00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-28 19:35:24.699 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79cc0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:35:24.699 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79f40] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-28 19:35:24.699 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79f40] Connection returned listener port: 0xb903
+2026-08-28 19:35:24.699 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79e00] invalidated after the last release of the connection object
+2026-08-28 19:35:24.699 I  PeachCommander[20539:14770] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:20539>
+2026-08-28 19:35:24.702 I  PeachCommander[20539:14770] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=364 0x0-0xFE0FE, err=0 eventTime=3785056892916 windowID=0
+2026-08-28 19:35:24.702 I  PeachCommander[20539:14770] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
+2026-08-28 19:35:24.702 I  PeachCommander[20539:14770] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0xa52d93000 (should be non-NULL)
+2026-08-28 19:35:24.702 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-28 19:35:24.702 Df PeachCommander[20539:14770] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
+2026-08-28 19:35:24.702 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79e00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
+2026-08-28 19:35:24.702 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52c79e00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-08-28 19:35:24.702 I  PeachCommander[20539:14770] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-28 19:35:24.703 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.703 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-28 19:35:24.705 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.706 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.716 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-28 19:35:24.721 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-28 19:35:24.737 A  PeachCommander[20539:14779] (RunningBoardServices) didChangeInheritances
+2026-08-28 19:35:24.737 Df PeachCommander[20539:14770] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
+2026-08-28 19:35:24.737 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ff9180] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:35:24.739 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> 3af0c789) for window 364
+2026-08-28 19:35:24.739 Df PeachCommander[20539:14779] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
+2026-08-28 19:35:24.739 A  PeachCommander[20539:14779] (CoreSpotlight) delete-domains
+2026-08-28 19:35:24.740 Df PeachCommander[20539:14779] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-28 19:35:24.740 Df PeachCommander[20539:14779] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
+2026-08-28 19:35:24.740 Df PeachCommander[20539:14779] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
+2026-08-28 19:35:24.740 Df PeachCommander[20539:14779] [com.apple.xpc:connection] [0xa52ff9400] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-28 19:35:24.740 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-28 19:35:24.743 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.743 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.743 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.744 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.744 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.745 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.745 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.745 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.745 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.745 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.750 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.753 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.757 I  PeachCommander[20539:14770] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0xa52a52760> { isDir = ?, path = <private> } bundleID: (null) itemID: 0
+2026-08-28 19:35:24.758 I  PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.Settings.AppleIntelligence,com.apple.Siri.NLRouter, language: en, api: <private>
+2026-08-28 19:35:24.758 Df PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] isOkayToHaveAsset: False
+2026-08-28 19:35:24.758 E  PeachCommander[20539:14770] [com.apple.siri:Utility] AFIsDeviceGreymatterEligible Missing entitlements for os_eligibility lookup
+2026-08-28 19:35:24.758 I  PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.Settings.AppleIntelligence, language: en, api: <private>
+2026-08-28 19:35:24.758 Df PeachCommander[20539:14770] [com.apple.GenerativeModels:availability] isOkayToHaveAsset: False
+2026-08-28 19:35:24.758 Df PeachCommander[20539:14770] [com.apple.siri:Utility] -[AFSystemAssistantExperienceStatusManager fetchGenerativeModelsAvailability] #SAEStatus #cacheUpdate Updating cache:
 deviceSupportsSAE: 0 (0)
        saeEnabled: 0 (0)
      saeAvailable: 0 (0)
@@ -253,175 +254,174 @@ deviceSupportsSAE: 0 (0)
         siriAvailability:
         <private>
         ((null))
-2026-08-28 13:27:16.235 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955934140] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
-2026-08-28 13:27:16.236 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955934280] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
-2026-08-28 13:27:16.243 I  PeachCommander[20413:1452d] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
-2026-08-28 13:27:16.243 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
-2026-08-28 13:27:16.243 Df PeachCommander[20413:1452d] [com.apple.AppKit:Appearance] NSApp cache appearance:
+2026-08-28 19:35:24.758 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab0140] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
+2026-08-28 19:35:24.759 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab0280] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
+2026-08-28 19:35:24.763 I  PeachCommander[20539:14770] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
+2026-08-28 19:35:24.763 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
+2026-08-28 19:35:24.763 Df PeachCommander[20539:14770] [com.apple.AppKit:Appearance] NSApp cache appearance:
 -NSRequiresAquaSystemAppearance: 0
--appearance: <NSCompositeAppearance: 0x9550359a0
+-appearance: <NSCompositeAppearance: 0xa530899a0
  (
-    "<NSDarkAquaAppearance: 0x955035a40>",
-    "<NSSystemAppearance: 0x955034820>"
+    "<NSDarkAquaAppearance: 0xa53089a40>",
+    "<NSSystemAppearance: 0xa53088780>"
 )>
--effectiveAppearance: <NSCompositeAppearance: 0x9550359a0
+-effectiveAppearance: <NSCompositeAppearance: 0xa530899a0
  (
-    "<NSDarkAquaAppearance: 0x955035a40>",
-    "<NSSystemAppearance: 0x955034820>"
+    "<NSDarkAquaAppearance: 0xa53089a40>",
+    "<NSSystemAppearance: 0xa53088780>"
 )>
-2026-08-28 13:27:16.244 A  PeachCommander[20413:14533] (libsystem_info.dylib) Retrieve Group by ID
-2026-08-28 13:27:16.246 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] Theme applied: id=norton, appearance=dark, dark=true, background=#0000AA
-2026-08-28 13:27:16.291 I  PeachCommander[20413:1452d] [com.apple.iconservices:foundation] layer data size zero
-2026-08-28 13:27:16.291 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.296 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 82 effective bindings
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.299 I  PeachCommander[20413:1452d] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-28 13:27:16.303 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.304 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.304 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:16.305 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] MainWindowController window loaded
-2026-08-28 13:27:16.305 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.306 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.321 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] order window front conditionally: 367 related: 0
-2026-08-28 13:27:16.321 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
-2026-08-28 13:27:16.322 I  PeachCommander[20413:1452d] [com.apple.AppKit:Intelligence] starting collection observation
-2026-08-28 13:27:16.322 Df PeachCommander[20413:14535] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
-2026-08-28 13:27:16.322 Df PeachCommander[20413:14535] [com.apple.xpc:session] [0x955b492c0] Session created.
-2026-08-28 13:27:16.322 Df PeachCommander[20413:14535] [com.apple.xpc:session] [0x955b492c0] Session created from connection [0x955936440]
-2026-08-28 13:27:16.322 Df PeachCommander[20413:14535] [com.apple.xpc:connection] [0x955936440] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
-2026-08-28 13:27:16.322 Df PeachCommander[20413:14535] [com.apple.xpc:session] [0x955b492c0] Session activated
-2026-08-28 13:27:16.322 I  PeachCommander[20413:1452d] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
-2026-08-28 13:27:16.323 Df PeachCommander[20413:14533] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 1137
-2026-08-28 13:27:16.323 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.323 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955936580] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
-2026-08-28 13:27:16.323 Df PeachCommander[20413:14533] [com.apple.foundation.filecoordination:presenter] Adding presenter 34877B0D-C9AB-4DF9-B453-0A1E412DBF4A for URL: <private>
-2026-08-28 13:27:16.324 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.328 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] order all windows front 3798143097791
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] information in shared memory for 0x0-0xff0ff with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777226, "CFBundleExecutablePathINode"=488108, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=364, err=0
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> 8626d74c) for window 366
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> 76cc8015) for window 365
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> c6c33bee) for window 364
-2026-08-28 13:27:16.329 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> 8058fad2) for window 363
-2026-08-28 13:27:16.352 I  PeachCommander[20413:1452d] [com.apple.iconservices:foundation] layer data size zero
-2026-08-28 13:27:16.363 Df PeachCommander[20413:1452d] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
-2026-08-28 13:27:16.364 I  PeachCommander[20413:1452d] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:20413>
-2026-08-28 13:27:16.398 A  PeachCommander[20413:14533] (RunningBoardServices) didChangeInheritances
-2026-08-28 13:27:16.444 Df PeachCommander[20413:1452d] [com.apple.libsystem.libdispatch:] DEPRECATED USE in libdispatch client: dispatch source activated with no event handler set; set a breakpoint on _dispatch_bug_deprecated to debug
-2026-08-28 13:27:16.587 I  PeachCommander[20413:1452d] [com.apple.coreanimation:Utilities] IOSurface Compression Enabled: NO
-2026-08-28 13:27:16.588 Df PeachCommander[20413:14533] [com.apple.coreanimation:Metal] Precompiled pipelines disabled on unsupported hardware.
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValuesBulk SetGestaltValuesBulk( count=22 tuples=0x184c32650
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(alis 1C9) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(os   FE) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(addr 7) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fs   3D332) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fold 11) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(lram 7FFFF000) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(mmap 1) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cfrg 1) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(thds 7) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(tmgr E) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vers 7) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cbon 160) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cltn 1108000) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cpnt 8) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rsrc 3) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rmbg 11F) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vm   11) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(srad 4170706C) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(sysa 14) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(copl 9) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(xlat 0) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(stdf 0) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ram  0x184bab644) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ramm 0x184bab644) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cput 0x184bab734) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpuf 0x184bab764) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclk 0x184bab794) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclm 0x184bab794) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pclk 0x184bab834) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(mclk 0x184bab834) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(a/ux 0x184bab94c) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pgsz 0x184bab954) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(csiz 0x184bab994) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sysv 0x184b56dfc) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys1 0x184b56dfc) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys2 0x184b56dfc) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys3 0x184b56dfc) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdfl 0x184bab9d4) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdrm 0x184babc30) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpus 0x184babc78) => 0
-2026-08-28 13:27:16.594 I  PeachCommander[20413:1452d] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(swex 1) => 0
-2026-08-28 13:27:16.594 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x95506fc00] activating connection: mach=false listener=false peer=false name=com.apple.hiservices-xpcservice
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('ApplePerContextInputPasteboard' (<CFUUID 0x9547ca120> C8617249-D7E7-4DD9-923E-7522CBFD354A) gen: -1 item: 1264739405 flavor: 'ApplePerContextInputFlavor')
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:cache] Rebuilding cache for 'ApplePerContextInputPasteboard' (<CFUUID 0x9547ca120> C8617249-D7E7-4DD9-923E-7522CBFD354A)
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (182 bytes) flags: 0
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x954c4cce0> 1EC7B536-FDC8-4972-B4A8-9B4715217229) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
-2026-08-28 13:27:16.595 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
-2026-08-28 13:27:27.110 Df PeachCommander[20413:145d7] [com.apple.launchservices:default] LSExceptions shared instance invalidated for timeout.
-2026-08-28 13:27:51.659 I  PeachCommander[20413:1452d] [com.apple.HIToolbox:MBDisplays] <private>
-2026-08-28 13:27:51.659 I  PeachCommander[20413:1452d] [com.apple.HIToolbox:MBDisplays] <private>
-2026-08-28 13:27:51.663 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] context (0 -> c455b53d) for window 368
-2026-08-28 13:27:51.664 Df PeachCommander[20413:1452d] [com.apple.inputmethodkitClient:Client] +[IMKClient subclass]: chose IMKClient_Modern
-2026-08-28 13:27:51.664 Df PeachCommander[20413:1452d] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
-2026-08-28 13:27:51.664 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955937ac0] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:51.665 E  PeachCommander[20413:145d6] [com.apple.BaseBoard:Common] Unable to obtain a task name port right for pid 167: (os/kern) failure (0x5)
-2026-08-28 13:27:51.665 Df PeachCommander[20413:145d6] [com.apple.xpc:connection] [0x955937c00] activating connection: mach=false listener=false peer=false name=com.apple.TextInputUI.xpc.CursorUIViewService
-2026-08-28 13:27:51.665 Df PeachCommander[20413:145d6] [com.apple.xpc:connection] [0x955937c00] invalidated after the last release of the connection object
-2026-08-28 13:27:51.666 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x954c4cce0> 1EC7B536-FDC8-4972-B4A8-9B4715217229) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
-2026-08-28 13:27:51.666 I  PeachCommander[20413:1452d] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
-2026-08-28 13:27:51.668 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955936800] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:51.668 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955937c00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
-2026-08-28 13:27:51.670 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x9559366c0] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:51.671 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955937c00] invalidated after the last release of the connection object
-2026-08-28 13:27:51.707 I  PeachCommander[20413:145d6] [com.apple.AppKit:WindowTab] Indexing 1 items
-2026-08-28 13:27:51.707 A  PeachCommander[20413:145d6] (CoreSpotlight) end-index-batch
-2026-08-28 13:27:51.707 Df PeachCommander[20413:145d6] [com.apple.corespotlight:index] *warn* MailCS ======%%% _setMailMessageAttributes skip:1
-2026-08-28 13:27:51.708 A  PeachCommander[20413:145d6] (CoreSpotlight) index-items
-2026-08-28 13:27:51.709 Df PeachCommander[20413:14534] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-28 13:27:51.711 Df PeachCommander[20413:145d6] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-28 13:27:51.752 Df PeachCommander[20413:1452d] [com.apple.TextInputUI:CursorUI] -[TUINSCursorUIController activate:]_block_invoke: Create CursorUIViewService: TUINSRemoteViewController
-2026-08-28 13:27:51.755 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] window <TUINSWindow: 0x95452db80> windowNumber=368 finishing close
-2026-08-28 13:27:51.756 I  PeachCommander[20413:1452d] [com.apple.AppKit:Window] order window: 368 op: 0 relative: 0 related: 0
-2026-08-28 13:27:51.773 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:51.774 Df PeachCommander[20413:14534] [com.apple.xpc:connection] [0x955936300] activating connection: mach=false listener=false peer=false name=com.apple.SafariPlatformSupport.Helper
-2026-08-28 13:27:51.774 I  PeachCommander[20413:1452d] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport credentialSelected:] with nil credential
-2026-08-28 13:27:51.774 I  PeachCommander[20413:1452d] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport oneTimeCodeSelected:] with nil code
-2026-08-28 13:27:51.775 A  PeachCommander[20413:145d6] (CoreFoundation) Loading Preferences From System CFPrefsD
-2026-08-28 13:27:51.779 I  PeachCommander[20413:1452d] [com.apple.iconservices:foundation] layer data size zero
-2026-08-28 13:27:51.783 A  PeachCommander[20413:1452d] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-28 13:27:51.784 I  PeachCommander[20413:1452d] [com.apple.CoreAnalytics:client] Dropping "com.apple.ImageIO.readerSelection" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-28 13:27:52.249 Df PeachCommander[20413:145d5] [com.apple.xpc:connection] [0x955936300] invalidated after the last release of the connection object
-2026-08-28 13:27:52.514 I  PeachCommander[20413:1452d] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0xff0ff]  "PeachCommander", as its seed is different from that in shared memory ( 535 vs 538)
-2026-08-28 13:27:52.516 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955937c00] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:52.516 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955936300] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:54.083 I  PeachCommander[20413:145d6] [com.apple.AppKit:WindowTab] Indexing 1 items
-2026-08-28 13:27:54.083 A  PeachCommander[20413:145d6] (CoreSpotlight) end-index-batch
-2026-08-28 13:27:54.083 A  PeachCommander[20413:145d6] (CoreSpotlight) index-items
-2026-08-28 13:27:54.083 Df PeachCommander[20413:145d6] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-28 13:27:54.086 Df PeachCommander[20413:14534] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-28 13:27:54.722 I  PeachCommander[20413:1452d] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SPSafariPlatformSupport completionListPreferredContentSizeDidUpdate] with size {0, 0}, in window that is visible
-2026-08-28 13:27:54.767 Df PeachCommander[20413:1452d] [com.apple.BoardServices:XPCErrors] [C:3] Alloc com.apple.backboard.hid-services.xpc
-2026-08-28 13:27:54.767 Df PeachCommander[20413:1452d] [com.apple.xpc:connection] [0x955935e00] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-28 13:27:54.768 Df PeachCommander[20413:14534] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
-2026-08-28 13:27:54.773 I  PeachCommander[20413:1452d] [com.peachcommander:PCFoundation] Session restored
-2026-08-28 13:27:54.774 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:54.774 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:54.776 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:54.963 I  PeachCommander[20413:1452d] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0x956ad8020> { isDir = y, path = <private> } bundleID: (null) itemID: 0
-2026-08-28 13:27:54.963 I  PeachCommander[20413:1452d] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0x956ad8020> { isDir = y, path = <private> } bundleID: (null) itemID: 0
-2026-08-28 13:27:54.964 I  PeachCommander[20413:1452d] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport credentialSelected:] with nil credential
-2026-08-28 13:27:54.964 I  PeachCommander[20413:1452d] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport oneTimeCodeSelected:] with nil code
-2026-08-28 13:27:55.932 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:57.978 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:58.553 Df PeachCommander[20413:1452d] (Foundation) <private>
-2026-08-28 13:27:58.563 Df PeachCommander[20413:1452d] (Foundation) <private>
+2026-08-28 19:35:24.763 A  PeachCommander[20539:1477a] (libsystem_info.dylib) Retrieve Group by ID
+2026-08-28 19:35:24.765 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] Theme applied: id=norton, appearance=dark, dark=true, background=#0000AA
+2026-08-28 19:35:24.789 I  PeachCommander[20539:14770] [com.apple.iconservices:foundation] layer data size zero
+2026-08-28 19:35:24.789 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.792 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 82 effective bindings
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.793 I  PeachCommander[20539:14770] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-28 19:35:24.796 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.796 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.796 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:35:24.797 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] MainWindowController window loaded
+2026-08-28 19:35:24.797 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.797 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.806 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] order window front conditionally: 364 related: 0
+2026-08-28 19:35:24.806 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-28 19:35:24.806 I  PeachCommander[20539:14770] [com.apple.AppKit:Intelligence] starting collection observation
+2026-08-28 19:35:24.806 Df PeachCommander[20539:1477a] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+2026-08-28 19:35:24.806 Df PeachCommander[20539:1477a] [com.apple.xpc:session] [0xa53b75310] Session created.
+2026-08-28 19:35:24.806 Df PeachCommander[20539:1477a] [com.apple.xpc:session] [0xa53b75310] Session created from connection [0xa52ab2440]
+2026-08-28 19:35:24.806 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52ab2440] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+2026-08-28 19:35:24.806 Df PeachCommander[20539:1477a] [com.apple.xpc:session] [0xa53b75310] Session activated
+2026-08-28 19:35:24.806 I  PeachCommander[20539:14770] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-28 19:35:24.807 Df PeachCommander[20539:14779] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 1137
+2026-08-28 19:35:24.807 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.807 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2580] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
+2026-08-28 19:35:24.808 Df PeachCommander[20539:14779] [com.apple.foundation.filecoordination:presenter] Adding presenter 11F2A858-0EBA-47A9-83E1-61584C559DD9 for URL: <private>
+2026-08-28 19:35:24.808 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] order all windows front 3785056892916
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] information in shared memory for 0x0-0xfe0fe with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=487876, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=335577088, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.7.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="14", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBu<…>
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=364, err=0
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> 5baf16c4) for window 363
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> 1d5cb46e) for window 362
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> 2006585f) for window 361
+2026-08-28 19:35:24.810 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> cd7c0301) for window 360
+2026-08-28 19:35:24.828 I  PeachCommander[20539:14770] [com.apple.iconservices:foundation] layer data size zero
+2026-08-28 19:35:24.835 Df PeachCommander[20539:14770] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
+2026-08-28 19:35:24.871 A  PeachCommander[20539:14777] (RunningBoardServices) didChangeInheritances
+2026-08-28 19:35:24.897 Df PeachCommander[20539:14770] [com.apple.libsystem.libdispatch:] DEPRECATED USE in libdispatch client: dispatch source activated with no event handler set; set a breakpoint on _dispatch_bug_deprecated to debug
+2026-08-28 19:35:24.996 I  PeachCommander[20539:14770] [com.apple.coreanimation:Utilities] IOSurface Compression Enabled: NO
+2026-08-28 19:35:24.997 Df PeachCommander[20539:14777] [com.apple.coreanimation:Metal] Precompiled pipelines disabled on unsupported hardware.
+2026-08-28 19:35:35.616 Df PeachCommander[20539:14818] [com.apple.launchservices:default] LSExceptions shared instance invalidated for timeout.
+2026-08-28 19:36:00.038 I  PeachCommander[20539:14770] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-28 19:36:00.038 I  PeachCommander[20539:14770] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValuesBulk SetGestaltValuesBulk( count=22 tuples=0x18a876650
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(alis 1C9) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(os   FE) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(addr 7) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fs   3D332) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fold 11) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(lram 7FFFF000) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(mmap 1) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cfrg 1) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(thds 7) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(tmgr E) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vers 7) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cbon 160) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cltn 1108000) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cpnt 8) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rsrc 3) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rmbg 11F) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vm   11) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(srad 4170706C) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(sysa 14) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(copl 9) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(xlat 0) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(stdf 0) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ram  0x18a7ef644) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ramm 0x18a7ef644) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cput 0x18a7ef734) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpuf 0x18a7ef764) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclk 0x18a7ef794) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclm 0x18a7ef794) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pclk 0x18a7ef834) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(mclk 0x18a7ef834) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(a/ux 0x18a7ef94c) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pgsz 0x18a7ef954) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(csiz 0x18a7ef994) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sysv 0x18a79adfc) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys1 0x18a79adfc) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys2 0x18a79adfc) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys3 0x18a79adfc) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdfl 0x18a7ef9d4) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdrm 0x18a7efc30) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpus 0x18a7efc78) => 0
+2026-08-28 19:36:00.039 I  PeachCommander[20539:14770] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(swex 1) => 0
+2026-08-28 19:36:00.039 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab3980] activating connection: mach=false listener=false peer=false name=com.apple.hiservices-xpcservice
+2026-08-28 19:36:00.040 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('ApplePerContextInputPasteboard' (<CFUUID 0xa542e15c0> E84D5415-8FD2-463E-B152-DFEF301AD6AA) gen: -1 item: 1264739405 flavor: 'ApplePerContextInputFlavor')
+2026-08-28 19:36:00.040 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:cache] Rebuilding cache for 'ApplePerContextInputPasteboard' (<CFUUID 0xa542e15c0> E84D5415-8FD2-463E-B152-DFEF301AD6AA)
+2026-08-28 19:36:00.040 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-28 19:36:00.041 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (182 bytes) flags: 0
+2026-08-28 19:36:00.041 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xa53046f40> 9E254D04-0E1C-437A-BC27-24D1D46CC5BE) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-28 19:36:00.041 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-28 19:36:00.043 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] context (0 -> 199a1bb8) for window 365
+2026-08-28 19:36:00.044 Df PeachCommander[20539:14770] [com.apple.inputmethodkitClient:Client] +[IMKClient subclass]: chose IMKClient_Modern
+2026-08-28 19:36:00.044 Df PeachCommander[20539:14770] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+2026-08-28 19:36:00.044 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab3ac0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.045 E  PeachCommander[20539:1477a] [com.apple.BaseBoard:Common] Unable to obtain a task name port right for pid 175: (os/kern) failure (0x5)
+2026-08-28 19:36:00.045 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52ab2940] activating connection: mach=false listener=false peer=false name=com.apple.TextInputUI.xpc.CursorUIViewService
+2026-08-28 19:36:00.045 Df PeachCommander[20539:1477a] [com.apple.xpc:connection] [0xa52ab2940] invalidated after the last release of the connection object
+2026-08-28 19:36:00.045 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xa53046f40> 9E254D04-0E1C-437A-BC27-24D1D46CC5BE) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-28 19:36:00.045 I  PeachCommander[20539:14770] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-28 19:36:00.046 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2800] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.046 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2940] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-28 19:36:00.046 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab21c0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.046 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2940] invalidated after the last release of the connection object
+2026-08-28 19:36:00.054 I  PeachCommander[20539:14817] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-28 19:36:00.054 A  PeachCommander[20539:14817] (CoreSpotlight) end-index-batch
+2026-08-28 19:36:00.054 Df PeachCommander[20539:14817] [com.apple.corespotlight:index] *warn* MailCS ======%%% _setMailMessageAttributes skip:1
+2026-08-28 19:36:00.055 A  PeachCommander[20539:14817] (CoreSpotlight) index-items
+2026-08-28 19:36:00.055 Df PeachCommander[20539:14817] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-28 19:36:00.055 Df PeachCommander[20539:14816] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-28 19:36:00.121 Df PeachCommander[20539:14770] [com.apple.TextInputUI:CursorUI] -[TUINSCursorUIController activate:]_block_invoke: Create CursorUIViewService: TUINSRemoteViewController
+2026-08-28 19:36:00.122 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] window <TUINSWindow: 0xa53b59e00> windowNumber=365 finishing close
+2026-08-28 19:36:00.122 I  PeachCommander[20539:14770] [com.apple.AppKit:Window] order window: 365 op: 0 relative: 0 related: 0
+2026-08-28 19:36:00.148 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:36:00.148 I  PeachCommander[20539:14770] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport credentialSelected:] with nil credential
+2026-08-28 19:36:00.148 I  PeachCommander[20539:14770] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport oneTimeCodeSelected:] with nil code
+2026-08-28 19:36:00.319 I  PeachCommander[20539:14815] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-28 19:36:00.319 A  PeachCommander[20539:14815] (CoreSpotlight) end-index-batch
+2026-08-28 19:36:00.320 A  PeachCommander[20539:14815] (CoreSpotlight) index-items
+2026-08-28 19:36:00.320 Df PeachCommander[20539:14815] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-28 19:36:00.320 Df PeachCommander[20539:14815] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-28 19:36:00.483 Df PeachCommander[20539:14814] [com.apple.xpc:connection] [0xa52ab2300] activating connection: mach=false listener=false peer=false name=com.apple.SafariPlatformSupport.Helper
+2026-08-28 19:36:00.572 Df PeachCommander[20539:14814] [com.apple.xpc:connection] [0xa52ab2300] invalidated after the last release of the connection object
+2026-08-28 19:36:00.587 I  PeachCommander[20539:14770] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0xfe0fe]  "PeachCommander", as its seed is different from that in shared memory ( 535 vs 538)
+2026-08-28 19:36:00.587 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2940] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.587 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab2300] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.590 A  PeachCommander[20539:14816] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-28 19:36:00.643 Df PeachCommander[20539:14770] [com.apple.BoardServices:XPCErrors] [C:3] Alloc com.apple.backboard.hid-services.xpc
+2026-08-28 19:36:00.643 Df PeachCommander[20539:14770] [com.apple.xpc:connection] [0xa52ab1cc0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-28 19:36:00.644 Df PeachCommander[20539:14814] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+2026-08-28 19:36:00.651 I  PeachCommander[20539:14770] [com.apple.iconservices:foundation] layer data size zero
+2026-08-28 19:36:00.652 A  PeachCommander[20539:14770] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-28 19:36:00.652 I  PeachCommander[20539:14770] [com.apple.CoreAnalytics:client] Dropping "com.apple.ImageIO.readerSelection" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-28 19:36:00.663 I  PeachCommander[20539:14770] [com.peachcommander:PCFoundation] Session restored
+2026-08-28 19:36:00.664 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:00.664 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:00.664 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:00.731 I  PeachCommander[20539:14770] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SPSafariPlatformSupport completionListPreferredContentSizeDidUpdate] with size {0, 0}, in window that is visible
+2026-08-28 19:36:00.749 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:00.760 I  PeachCommander[20539:14770] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0xa5259f820> { isDir = y, path = <private> } bundleID: (null) itemID: 0
+2026-08-28 19:36:00.760 I  PeachCommander[20539:14770] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0xa5259f820> { isDir = y, path = <private> } bundleID: (null) itemID: 0
+2026-08-28 19:36:00.760 I  PeachCommander[20539:14770] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport credentialSelected:] with nil credential
+2026-08-28 19:36:00.760 I  PeachCommander[20539:14770] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport oneTimeCodeSelected:] with nil code
+2026-08-28 19:36:01.802 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:01.904 Df PeachCommander[20539:14770] (Foundation) <private>
+2026-08-28 19:36:01.905 Df PeachCommander[20539:14770] (Foundation) <private>
