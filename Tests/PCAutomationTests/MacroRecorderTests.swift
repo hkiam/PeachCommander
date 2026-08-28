@@ -39,7 +39,7 @@ final class MacroRecorderTests: XCTestCase {
     func test_anEntryWithoutVerbatimArgumentsIsOfferedAsUnavailable() {
         let c = MacroRecorder.candidates(from: [entry("move", nil)])
         XCTAssertFalse(c[0].isReplayable)
-        XCTAssertEqual(c[0].unavailable, "its arguments were too large to record in full")
+        XCTAssertEqual(c[0].unavailable, .argumentsTooLarge)
     }
 
     /// The row is read to tell two similar actions apart, and what distinguishes them is the file name
@@ -83,13 +83,13 @@ final class MacroRecorderTests: XCTestCase {
         let c = MacroRecorder.candidates(from: [
             entry("move", #"{"sources":["/a"]}"#, outcome: "failed")])
         XCTAssertFalse(c[0].isReplayable)
-        XCTAssertEqual(c[0].unavailable, "this action did not succeed")
+        XCTAssertEqual(c[0].unavailable, .didNotSucceed)
     }
 
     func test_aRecordedMacroRunIsNotOfferedBecauseNestingIsRefused() {
         let c = MacroRecorder.candidates(from: [entry("run_macro", #"{"macro_id":"x"}"#)])
         XCTAssertFalse(c[0].isReplayable)
-        XCTAssertEqual(c[0].unavailable, "a macro cannot run another macro")
+        XCTAssertEqual(c[0].unavailable, .nesting)
     }
 
     /// The list is newest-first, because that is how somebody looks for what they just did. The macro
@@ -124,7 +124,7 @@ final class MacroRecorderTests: XCTestCase {
     func test_anArgumentShapeAMacroCannotHoldIsRefused() {
         let c = MacroRecorder.candidates(from: [entry("search", #"{"query":{"masks":["*.txt"]}}"#)])
         XCTAssertFalse(c[0].isReplayable)
-        XCTAssertEqual(c[0].unavailable, "its arguments could not be read back")
+        XCTAssertEqual(c[0].unavailable, .unreadableArguments)
     }
 
     /// End to end against the log the Core actually writes, rather than against a hand-built entry.
@@ -176,7 +176,8 @@ final class RecordedPanelActionTests: XCTestCase {
         let action = try XCTUnwrap(RecordedAction.panel(operation, summary: "x", at: Date()))
         XCTAssertEqual(action.source, .panel)
         let candidates = MacroRecorder.candidates(from: [action])
-        return try XCTUnwrap(candidates.first?.step, candidates.first?.unavailable ?? "no candidate")
+        return try XCTUnwrap(candidates.first?.step,
+                             candidates.first?.unavailable?.english ?? "no candidate")
     }
 
     func test_everyPanelOperationBecomesAStepTheCatalogueKnows() throws {

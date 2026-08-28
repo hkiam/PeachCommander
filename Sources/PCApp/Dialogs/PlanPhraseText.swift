@@ -90,6 +90,41 @@ enum PlanPhraseText {
         }
     }
 
+    /// Why a recorded action cannot become a step, in the user's language. The twin of
+    /// `MacroRecorder.Unavailable.english`, and exhaustive for the same reason.
+    static func localized(_ reason: MacroRecorder.Unavailable) -> String {
+        switch reason {
+        case .nesting:
+            return String(localized: "a macro cannot run another macro")
+        case .didNotSucceed:
+            return String(localized: "this action did not succeed")
+        case .argumentsTooLarge:
+            return String(localized: "its arguments were too large to record in full")
+        case .notEnoughRecorded:
+            return String(localized: "not enough of it was recorded to repeat it")
+        case .unreadableArguments:
+            return String(localized: "its arguments could not be read back")
+        }
+    }
+
+    /// What a macro needs permission for, as a word rather than as the identifier the policy uses.
+    ///
+    /// The manager's list showed `write` and `delete` raw, which is the vocabulary of
+    /// `PermissionPolicy` and not of a person deciding whether to put this macro on a key.
+    static func localized(_ capability: Capability) -> String {
+        switch capability {
+        case .read:       return String(localized: "reads")
+        case .navigate:   return String(localized: "navigates")
+        case .network:    return String(localized: "network")
+        case .runCommand: return String(localized: "runs a command")
+        case .config:     return String(localized: "settings")
+        case .write:      return String(localized: "changes files")
+        case .delete:     return String(localized: "deletes")
+        case .script:     return String(localized: "runs a script")
+        case .shell:      return String(localized: "runs a shell command")
+        }
+    }
+
     /// One value of a phrase, itself localized when it is a nested phrase — "Move *the result of step
     /// 2* into “out”" is one sentence and has to be translated as one.
     private static func value(_ phrase: PlanPhrase, _ index: Int) -> String {

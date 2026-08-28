@@ -111,7 +111,15 @@ extension MainWindowController {
             presentMacroProblem(String(localized: "The macro did not finish."), detail: error)
         case .needsConfirmation(let plan, let token):
             let rows = await automationCore.planItems(token: token)
-            guard let decision = MacroConfirmSheet.present(plan: plan, rows: rows,
+            // The Core's `plan` is English and stays so — an MCP client reads that same string. The
+            // sentence above the rows is for a person, so the host writes it, out of the macro it
+            // already knows it is running. Falls back to the Core's when the macro cannot be found,
+            // which is a state `refusalBeforeAsking` should already have caught.
+            let heading = macroStore.macro(id: id).map {
+                String(format: String(localized: "Run the macro “%1$@” — %2$lld step(s)."),
+                       $0.title, $0.steps.count)
+            } ?? plan
+            guard let decision = MacroConfirmSheet.present(plan: heading, rows: rows,
                                                            in: window) else {
                 // Cancelled. The token is left unconfirmed and expires with the session; nothing ran.
                 return

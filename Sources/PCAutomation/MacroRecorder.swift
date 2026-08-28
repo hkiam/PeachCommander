@@ -119,18 +119,44 @@ public struct RecordedAction: Sendable, Equatable {
 
 public enum MacroRecorder {
 
+    /// Why a recorded action cannot be turned into a step.
+    ///
+    /// A case rather than a sentence, for the reason `PlanPhrase` exists: the sheet shows these to a
+    /// person and had been showing them in English under translated chrome, while `Candidate.text`
+    /// keeps the English for anything that logs it.
+    public enum Unavailable: String, Sendable, Equatable, Codable, CaseIterable {
+        case nesting            // a macro cannot run another macro
+        case didNotSucceed      // the action failed or was refused
+        case argumentsTooLarge  // over `argumentsJSONCap` — a `write_file` carrying a document
+        case notEnoughRecorded  // a panel operation the history keeps only by name
+        case unreadableArguments
+
+        /// The English sentence, for a log or a harness report.
+        public var english: String {
+            switch self {
+            case .nesting:            return "a macro cannot run another macro"
+            case .didNotSucceed:      return "this action did not succeed"
+            case .argumentsTooLarge:  return "its arguments were too large to record in full"
+            case .notEnoughRecorded:  return "not enough of it was recorded to repeat it"
+            case .unreadableArguments: return "its arguments could not be read back"
+            }
+        }
+    }
+
     /// One candidate step, and whether it can be replayed at all.
     public struct Candidate: Sendable, Equatable {
         public let id: String
         public let tool: String
-        /// What the row reads.
+        /// What the row reads, in English. The host renders `phrase` instead where there is one.
         public let text: String
+        /// The same row as a key and its values, so the sheet can say it in the user's language.
+        public let phrase: PlanPhrase?
         /// Which record it came from.
         public let source: RecordedAction.Source
         /// The step, when there is one. Nil when the entry cannot be replayed.
         public let step: MacroStep?
         /// Why it cannot, when it cannot.
-        public let unavailable: String?
+        public let unavailable: Unavailable?
 
         public var isReplayable: Bool { step != nil }
     }
@@ -149,36 +175,29 @@ public enum MacroRecorder {
             // "move destination=/private/tmp/claude-501/-Users-maik1-Sources-github-PeachCom…" tells
             // nobody which move it was. What distinguishes two moves is the file name, which is at the
             // end of a path — exactly the part clipping removes.
-            let text = MacroPlan.describe(tool: action.tool, argumentsJSON: action.argumentsJSON)
-                ?? action.summary
+            let phrase = MacroPlan.phrase(tool: action.tool, argumentsJSON: action.argumentsJSON)
+            let text = phrase?.english ?? action.summary
             // `run_macro` is skipped as a candidate: recording it would build a macro that runs a
             // macro, which the runner refuses anyway. Better to say so here than to offer a row that
             // cannot work.
-            if action.tool == "run_macro" {
-                return Candidate(id: id, tool: action.tool, text: text, source: action.source,
-                                 step: nil, unavailable: "a macro cannot run another macro")
+            func candidate(_ step: MacroStep?, _ unavailable: Unavailable?) -> Candidate {
+                Candidate(id: id, tool: action.tool, text: text, phrase: phrase,
+                          source: action.source, step: step, unavailable: unavailable)
             }
-            guard action.succeeded else {
-                return Candidate(id: id, tool: action.tool, text: text, source: action.source,
-                                 step: nil, unavailable: "this action did not succeed")
-            }
+            if action.tool == "run_macro" { return candidate(nil, .nesting) }
+            guard action.succeeded else { return candidate(nil, .didNotSucceed) }
             guard let json = action.argumentsJSON else {
                 // Named precisely for the audit log, where this has one cause and a fix: the arguments
                 // were over `argumentsJSONCap`, which in practice means a `write_file` carrying a whole
                 // document. A panel action never reaches here — `RecordedAction.panel` returns nil
                 // rather than a candidate it cannot build — so the general wording is the fallback.
-                let reason = action.source == .automation
-                    ? "its arguments were too large to record in full"
-                    : "not enough of it was recorded to repeat it"
-                return Candidate(id: id, tool: action.tool, text: text, source: action.source,
-                                 step: nil, unavailable: reason)
+                return candidate(nil, action.source == .automation
+                                 ? .argumentsTooLarge : .notEnoughRecorded)
             }
             guard let step = step(tool: action.tool, argumentsJSON: json) else {
-                return Candidate(id: id, tool: action.tool, text: text, source: action.source,
-                                 step: nil, unavailable: "its arguments could not be read back")
+                return candidate(nil, .unreadableArguments)
             }
-            return Candidate(id: id, tool: action.tool, text: text, source: action.source,
-                             step: step, unavailable: nil)
+            return candidate(step, nil)
         }
     }
 

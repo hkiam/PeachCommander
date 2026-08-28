@@ -250,6 +250,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var diffWindows: [DiffWindowController] = []
     private var binaryCompareWindows: [BinaryCompareWindowController] = []
     private var editorWindows: [EditorWindowController] = []
+
+    /// Shut every open text editor window — the `closelister` of the editor (automation only).
+    ///
+    /// Same gap and same reason as that one: a scenario that opens a config file to prove it was
+    /// seeded then has the editor as its key window, so the screenshot and `a11ydump` are about the
+    /// editor rather than about whatever the scenario went on to open.
+    func closeEditorWindows() {
+        for editor in editorWindows { editor.close() }
+        editorWindows.removeAll()
+    }
     private var hexEditorWindows: [HexEditorWindowController] = []
     private var pathDialog: InputDialog?
     private var attributesDialog: AttributesDialog?

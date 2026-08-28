@@ -121,7 +121,73 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
             bottom.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
             bottom.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
             bottom.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -12),
+            // The toolbar may not run off the right edge. Six buttons at English lengths fit the 620
+            // this window opens at; at German ones the last one was cut in half — and with **zero**
+            // `Unable to simultaneously satisfy constraints`, because a stack view happily lays its
+            // arranged views out past its own trailing edge. The layout was satisfiable and wrong,
+            // which is the class no conflict count can catch, so it is stated as a constraint here
+            // and the window is widened to whatever satisfying it costs.
+            toolbar.trailingAnchor.constraint(lessThanOrEqualTo: content.trailingAnchor, constant: -12),
         ])
+        sizeToFitContents()
+    }
+
+    /// Open at least as wide as the toolbar needs, and refuse to be dragged narrower.
+    ///
+    /// Measured rather than guessed at: the width a row of buttons wants is the sum of nine localized
+    /// strings, and no number written here would survive the next translation. `contentMinSize` is
+    /// what makes it stick — without it the user can drag the window back to the broken state.
+    private func sizeToFitContents() {
+        guard let window, let content = window.contentView else { return }
+        content.layoutSubtreeIfNeeded()
+        let needed = content.fittingSize.width
+        guard needed > 0 else { return }
+        window.contentMinSize = NSSize(width: needed, height: 320)
+        if window.frame.width < needed {
+            window.setContentSize(NSSize(width: needed, height: window.frame.height))
+        }
+    }
+
+    /// What this window is showing, as text an automation run can read back (F-478).
+    ///
+    /// A dump rather than the accessibility tree, for the reason the drawn bars have one: the tree
+    /// came back holding the table and nothing else — the stack views are laid out and rendered but
+    /// contribute no accessible children until a client attaches — so a scenario could not see the
+    /// buttons at all. And a dump can report the *measurement*, which the tree could never do: the
+    /// toolbar's fitting width against the window's, which is the difference between the clipped
+    /// toolbar this window shipped with and the one it has now. Zero Auto Layout conflicts either way.
+    func automationReport() -> String {
+        window?.contentView?.layoutSubtreeIfNeeded()
+        let width = window?.frame.width ?? 0
+        let needed = toolbarWidth()
+        var lines = ["window-width=\(Int(width))",
+                     "toolbar-width=\(Int(needed))",
+                     "toolbar-fits=\(needed <= width ? "yes" : "NO")",
+                     "buttons=" + toolbarTitles().joined(separator: "|")]
+        for macro in macros {
+            lines.append("row=\(macro.commandName)|\(macro.steps.count)|"
+                         + PlanPhraseText.localized(MacroPlan.capability(of: macro)))
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// The toolbar row's own views, found back out of the content view rather than held in a field:
+    /// what has to be measured is what is *on screen*, and a field could go stale against it.
+    private func toolbarRow() -> NSStackView? {
+        (window?.contentView?.subviews.compactMap { $0 as? NSStackView } ?? [])
+            .first { $0.arrangedSubviews.count > 3 }
+    }
+
+    private func toolbarWidth() -> CGFloat {
+        guard let row = toolbarRow() else { return 0 }
+        // The buttons' own widths plus the gaps and the two margins — not `row.frame.width`, which is
+        // whatever the constraint gave it and is exactly the number that lied before.
+        let buttons = row.arrangedSubviews.reduce(0) { $0 + $1.fittingSize.width }
+        return buttons + row.spacing * CGFloat(max(0, row.arrangedSubviews.count - 1)) + 24
+    }
+
+    private func toolbarTitles() -> [String] {
+        (toolbarRow()?.arrangedSubviews.compactMap { ($0 as? NSButton)?.title } ?? [])
     }
 
     /// Re-read the file. Always from disk rather than from a copy held here: the editor can be open on
@@ -146,7 +212,7 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
         // What the permission gate will ask for. Shown because it is the difference between a macro
         // that runs and one that is refused, and because "this one deletes" is worth seeing in a list
         // before choosing which to put on a key.
-        default:        text = MacroPlan.capability(of: macro).rawValue
+        default:        text = PlanPhraseText.localized(MacroPlan.capability(of: macro))
         }
         let field = NSTextField(labelWithString: text)
         field.lineBreakMode = .byTruncatingTail
@@ -200,7 +266,10 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
             String(localized: "Also remove its buttons"), target: nil, action: nil)
         removeButtons.state = .on
         alert.accessoryView = removeButtons
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        // Answered from the environment in an automation run. A bare `runModal()` here would hang the
+        // run in its nested runloop — the script carries on and `quit` never lands, which looks
+        // exactly like a launch that died. The same arrangement the three macro sheets already use.
+        guard MacroManagerPrompt.confirm(alert) else { return }
         let removed = removeButtons.state == .on ? onRemoveButtons?([macro.commandName]) ?? 0 : 0
         save { all in all.filter { $0.id != macro.id } }
         if removed > 0 {
@@ -262,10 +331,26 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
 /// The two one-off dialogs this window needs, kept out of it so the window is a list and its actions.
 enum MacroManagerPrompt {
 
+    /// Whether an automation run is answering this window's dialogs instead of a person.
+    static var isScripted: Bool { AutomationProbe.value("PC_MACRO_MANAGER_INPUT") != nil }
+
+    /// Put `alert` up and say whether its first button was chosen — or answer it from the environment.
+    ///
+    /// `PC_MACRO_MANAGER_CONFIRM=0` says no; anything else, including the variable being absent while
+    /// `PC_MACRO_MANAGER_INPUT` is set, says yes. A destructive question defaults to *yes* only
+    /// because a scripted run has already declared itself scripted by setting the other variable.
+    @MainActor
+    static func confirm(_ alert: NSAlert) -> Bool {
+        guard !isScripted else {
+            return AutomationProbe.value("PC_MACRO_MANAGER_CONFIRM") != "0"
+        }
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
     /// A single-field prompt. Returns nil on cancel.
     @MainActor
     static func ask(_ message: String, value: String, in window: NSWindow?) -> String? {
-        if let scripted = ProcessInfo.processInfo.environment["PC_MACRO_MANAGER_INPUT"] {
+        if let scripted = AutomationProbe.value("PC_MACRO_MANAGER_INPUT") {
             return scripted    // headless: a modal here hangs an automation run (F-436)
         }
         let alert = NSAlert()
@@ -283,7 +368,7 @@ enum MacroManagerPrompt {
 
     @MainActor
     static func note(_ message: String, in window: NSWindow?) {
-        guard ProcessInfo.processInfo.environment["PC_MACRO_MANAGER_INPUT"] == nil else { return }
+        guard !isScripted else { return }
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = message

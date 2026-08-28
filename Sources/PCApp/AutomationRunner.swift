@@ -404,6 +404,12 @@ extension MainWindowController {
                     let out = openHexEditorForAutomation(path: h[0]).automationDialogClipboard(h[1])
                     try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
                 }
+            case "macromanagerdump":                    // macromanagerdump <out> (F-478)
+                let report = macroManagerWindow?.automationReport()
+                    ?? "ERROR: the macro manager is not open\n"
+                try? report.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "closeeditor":                         // closeeditor: shut the text editor windows
+                closeEditorWindows()
             case "closelister":                         // closelister: shut the viewer window
                 // `closeviews` sounds like it would do this and does not — it tears down plugin view
                 // *containers* (F-381). A scenario or a screenshot that opens the viewer and then wants
@@ -649,7 +655,12 @@ extension MainWindowController {
                 // this a tool can only be exercised by talking to a model, which makes the *tool* and
                 // the model's willingness to call it one untestable lump — and a read tool that
                 // returns the wrong thing looks exactly like a model that phrased the question badly.
-                let at = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                // `omittingEmptySubsequences: false`, or a tool that takes no arguments cannot be
+                // called at all: `aitool list_macros||<out>` loses its empty middle field, comes back
+                // as two components, and the verb silently does nothing. `get_context` and
+                // `list_macros` are exactly that shape.
+                let at = arg.split(separator: "|", maxSplits: 2,
+                                   omittingEmptySubsequences: false).map(String.init)
                 if at.count == 3 {
                     let args = at[1].data(using: .utf8)
                     // `.standard` is the policy the assistant itself runs under, so a read answers and

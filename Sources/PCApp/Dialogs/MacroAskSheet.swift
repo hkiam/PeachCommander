@@ -42,6 +42,14 @@ enum MacroAskSheet {
                 ($0.prompt, probe[$0.prompt] ?? $0.defaultValue)
             })
         }
+        if let shot = MacroAskProbe.shotPath {
+            MacroAskProbe.record(questions.map { "ask: \($0.prompt) = \($0.defaultValue)" }
+                                 + ["shot: " + DialogShot.capture(alert, to: shot),
+                                    "answer: cancelled"])
+            // Asking for a picture is a declaration that nobody is here to click; showing the modal
+            // afterwards would hang the run in its nested runloop.
+            return nil
+        }
         if MacroAskProbe.cancels {
             MacroAskProbe.record(questions.map { "ask: \($0.prompt) = \($0.defaultValue)" }
                                  + ["answer: cancelled"])
@@ -93,6 +101,7 @@ enum MacroAskSheet {
 ///
 ///   PC_MACRO_ASK=Question=value;Other=value   answer the fields (missing ones keep their default)
 ///   PC_MACRO_ASK_CANCEL=1                     cancel instead, so "it asked and nothing ran" is checkable
+///   PC_MACRO_ASK_SHOT=<path>                  write a picture of the sheet and cancel
 ///   PC_MACRO_ASK_DUMP=<path>                  write what the sheet would have shown
 enum MacroAskProbe {
     /// Parsed from `PC_MACRO_ASK`, or nil when this run does not answer the sheet.
@@ -100,9 +109,7 @@ enum MacroAskProbe {
     /// `;` between pairs and `=` inside one. A question containing either cannot be answered from the
     /// environment, which is a limit of the harness and not of the feature.
     static var answers: [String: String]? {
-        guard let raw = ProcessInfo.processInfo.environment["PC_MACRO_ASK"], !raw.isEmpty else {
-            return nil
-        }
+        guard let raw = AutomationProbe.value("PC_MACRO_ASK") else { return nil }
         var out: [String: String] = [:]
         for pair in raw.split(separator: ";") {
             guard let separator = pair.firstIndex(of: "=") else { continue }
@@ -111,10 +118,13 @@ enum MacroAskProbe {
         return out
     }
 
-    static var cancels: Bool { ProcessInfo.processInfo.environment["PC_MACRO_ASK_CANCEL"] == "1" }
+    static var cancels: Bool { AutomationProbe.isOn("PC_MACRO_ASK_CANCEL") }
+
+    /// Where to write a picture of the sheet instead of showing it: `PC_MACRO_ASK_SHOT=<path>`.
+    static var shotPath: String? { AutomationProbe.value("PC_MACRO_ASK_SHOT") }
 
     static func record(_ lines: [String]) {
-        guard let path = ProcessInfo.processInfo.environment["PC_MACRO_ASK_DUMP"] else { return }
+        guard let path = AutomationProbe.value("PC_MACRO_ASK_DUMP") else { return }
         let block = lines.joined(separator: "\n") + "\n---\n"
         let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
         try? (existing + block).write(toFile: path, atomically: true, encoding: .utf8)

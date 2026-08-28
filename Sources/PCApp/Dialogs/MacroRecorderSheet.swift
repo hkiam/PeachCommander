@@ -60,10 +60,17 @@ enum MacroRecorderSheet {
         if let probe = MacroRecorderProbe.answer {
             MacroRecorderProbe.record(["title: \(probe.title)"]
                 + candidates.map { "row \($0.id): \($0.text)"
-                    + ($0.isReplayable ? "" : " [unavailable: \($0.unavailable ?? "")]") })
+                    + ($0.isReplayable ? "" : " [unavailable: \($0.unavailable?.english ?? "")]") })
             return Result(id: MacroStore.proposedID(for: probe.title, existing: existingIDs),
                           title: probe.title, kept: probe.kept, addsButton: probe.addsButton,
                           followsPanels: probe.followsPanels)
+        }
+        // A shot with no answer used to fall through to `runModal()`, so a run that only wanted the
+        // picture hung in the modal's nested runloop and `quit` never landed. Asking for a picture is
+        // itself a declaration that nobody is there to click, so it cancels.
+        if MacroRecorderProbe.shotPath != nil {
+            MacroRecorderProbe.record(["answer: cancelled"])
+            return nil
         }
 
         guard alert.runModal() == .alertFirstButtonReturn else { return nil }
@@ -89,9 +96,12 @@ enum MacroRecorderSheet {
             // least translatable strings there are, and a translator sees them without this row.
             let origin = candidate.source == .panel
                 ? String(localized: "by you") : String(localized: "by the assistant")
+            // The row in the reader's language, like the confirmation's. `candidate.text` stays
+            // English and stays what the harness report records.
+            let row = candidate.phrase.map(PlanPhraseText.localized) ?? candidate.text
             let title = candidate.isReplayable
-                ? "\(candidate.text)  (\(origin))"
-                : "\(candidate.text)  (\(origin))  —  \(candidate.unavailable ?? "")"
+                ? "\(row)  (\(origin))"
+                : "\(row)  (\(origin))  —  \(candidate.unavailable.map(PlanPhraseText.localized) ?? "")"
             let box = NSButton(checkboxWithTitle: title, target: nil, action: nil)
             box.lineBreakMode = .byTruncatingMiddle
             box.toolTip = title
@@ -159,19 +169,20 @@ enum MacroRecorderProbe {
     }
 
     static var answer: Answer? {
-        let env = ProcessInfo.processInfo.environment
-        guard let title = env["PC_MACRO_RECORD"], !title.isEmpty else { return nil }
-        let kept = Set((env["PC_MACRO_RECORD_KEEP"] ?? "").split(separator: ",")
+        guard let title = AutomationProbe.value("PC_MACRO_RECORD") else { return nil }
+        let kept = Set((AutomationProbe.value("PC_MACRO_RECORD_KEEP") ?? "").split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty })
-        return Answer(title: title, kept: kept, addsButton: env["PC_MACRO_RECORD_BUTTON"] != "0",
-                      followsPanels: env["PC_MACRO_RECORD_FOLLOW"] == "1")
+        // `BUTTON` defaults to on, so its absence is not `isOn`.
+        return Answer(title: title, kept: kept,
+                      addsButton: AutomationProbe.value("PC_MACRO_RECORD_BUTTON") != "0",
+                      followsPanels: AutomationProbe.isOn("PC_MACRO_RECORD_FOLLOW"))
     }
 
     /// Where to write a picture of the sheet instead of showing it: `PC_MACRO_RECORD_SHOT=<path>`.
-    static var shotPath: String? { ProcessInfo.processInfo.environment["PC_MACRO_RECORD_SHOT"] }
+    static var shotPath: String? { AutomationProbe.value("PC_MACRO_RECORD_SHOT") }
 
     static func record(_ lines: [String]) {
-        guard let path = ProcessInfo.processInfo.environment["PC_MACRO_RECORD_DUMP"] else { return }
+        guard let path = AutomationProbe.value("PC_MACRO_RECORD_DUMP") else { return }
         let block = lines.joined(separator: "\n") + "\n---\n"
         let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
         try? (existing + block).write(toFile: path, atomically: true, encoding: .utf8)

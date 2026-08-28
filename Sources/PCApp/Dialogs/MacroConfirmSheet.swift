@@ -22,18 +22,16 @@ import PCAutomation
 /// appear; `PC_MACRO_CONFIRM_APPLY=1` then answers it as though every row had been approved, so the
 /// steps underneath are exercised too, and `PC_MACRO_CONFIRM_REJECT=1,3` strikes those rows out.
 enum MacroConfirmProbe {
-    static var dumpPath: String? { ProcessInfo.processInfo.environment["PC_MACRO_CONFIRM_DUMP"] }
-    static var appliesEverything: Bool {
-        ProcessInfo.processInfo.environment["PC_MACRO_CONFIRM_APPLY"] == "1"
-    }
+    static var dumpPath: String? { AutomationProbe.value("PC_MACRO_CONFIRM_DUMP") }
+    static var appliesEverything: Bool { AutomationProbe.isOn("PC_MACRO_CONFIRM_APPLY") }
     /// Row ids to strike out during a probe run, as `PC_MACRO_CONFIRM_REJECT=1,3`.
     static var rejected: Set<String> {
-        let raw = ProcessInfo.processInfo.environment["PC_MACRO_CONFIRM_REJECT"] ?? ""
+        let raw = AutomationProbe.value("PC_MACRO_CONFIRM_REJECT") ?? ""
         return Set(raw.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
                       .filter { !$0.isEmpty })
     }
     /// Where to write a picture of the sheet instead of showing it: `PC_MACRO_CONFIRM_SHOT=<path>`.
-    static var shotPath: String? { ProcessInfo.processInfo.environment["PC_MACRO_CONFIRM_SHOT"] }
+    static var shotPath: String? { AutomationProbe.value("PC_MACRO_CONFIRM_SHOT") }
 
     /// Whether this run answers the sheet at all. Without `APPLY` a probe run *cancels*, which is what
     /// makes "the dialog appeared and nothing ran" a checkable outcome rather than an absence.
