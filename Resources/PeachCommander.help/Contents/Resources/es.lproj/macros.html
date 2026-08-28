@@ -15,16 +15,69 @@
 <h2 id="la-via-mas-rapida-a-partir-de-lo-que-acabas-de-hacer">La vía más rápida: a partir de lo que acabas de hacer</h2>
 <p>No hace falta escribir una macro desde cero.</p>
 <ol>
-<li>Haz la tarea una vez — con el asistente, o ejecutando una macro existente.</li>
+<li>Haga la cosa una vez: copie, mueva, renombre o borre en los paneles, o deje que lo haga el asistente.</li>
 <li>Elige <strong>Configuración ▸ Macro a partir de acciones recientes…</strong>.</li>
 <li>Marca los pasos que la macro debe repetir, dale un nombre y deja activado <strong>Añadir también un botón para ella</strong>.</li>
+<li>Marque <strong>Seguir a los paneles en vez de a estos archivos concretos</strong> si la macro debe trabajar la próxima vez con lo que esté seleccionado. Las filas cambian al marcarla, así que ve lo que va a guardar.</li>
 </ol>
 <p><strong>Guardar macro</strong>, y el botón ya está en la barra. Ese es todo el ciclo.</p>
+<p>La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 y un renombrado) y lo que hizo el asistente u otra macro. Cada fila dice cuál de las dos, porque tras una sesión con ambas los mismos dos archivos pueden aparecer en cada una.</p>
 <blockquote>
-<p><strong>Lo que no se registra.</strong> La lista se construye a partir de acciones que pasaron por el asistente o por otra macro. Copiar, mover o renombrar <em>a mano</em> en los paneles — F5, F6, F7 — no se registra, así que no puede convertirse en macro por esta vía. Para eso usa el editor de abajo.</p>
+<p><strong>Lo que no se ofrece.</strong> Empaquetar un archivo comprimido, y todo lo demás que la aplicación solo guarda por su nombre, no puede convertirse en un paso: no hay forma que darle. Esas filas se muestran atenuadas con su motivo en vez de omitirse, para que una lista de cinco que ofrece tres no parezca haberse dejado dos. Y salvo que pida otra cosa, las rutas son las que se usaron de verdad: una macro grabada repite <em>esa</em> copia, no «una copia parecida». Ábrala en el editor y ponga <code>%S</code> o <code>%T</code> donde quiera que siga a los paneles.</p>
 </blockquote>
+<p><strong>Seguir a los paneles</strong> es cómo se pide otra cosa. Los archivos que venían todos de una carpeta pasan a ser la selección; una carpeta que es uno de los dos paneles pasa a ser ese panel, y una carpeta dentro de ella conserva su cola: un «mover estas cuatro facturas a Documentos/2026-08» grabado se convierte en «mover lo seleccionado a <em>2026-08</em> del otro lado», y mañana funciona en dos carpetas distintas. Lo que no esté bajo ninguno de los dos paneles se queda como la ruta que es, porque no hay nada en lo que plegarlo. La opción solo se ofrece cuando cambiaría algo.</p>
+<h2 id="los-ejemplos-que-vienen-incluidos">Los ejemplos que vienen incluidos</h2>
+<p>La primera vez que abre <strong>Configuración ▸ Editar macros…</strong>, el archivo se crea con siete ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:</p>
+<table>
+<thead>
+<tr>
+<th>Macro</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Crea la carpeta de hoy en el panel activo y entra en ella. Mañana vuelve a servir.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Selecciona todos los PDF, crea una carpeta año-mes enfrente y los mueve allí.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Copia lo que <em>usted</em> ha seleccionado a una carpeta fechada del otro lado.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Una máscara, una subcarpeta, en la carpeta en la que ya está.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Muestra cómo un paso usa lo que produjo un paso anterior.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Le pregunta la carpeta al ejecutarse.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>La etiqueta y fecha su comentario — un archivo, no la selección.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Una macro que borra, y la indicada para ver una vez la pregunta de permisos.</td>
+</tr>
+</tbody>
+</table>
+<p>Cada una se convierte en un comando, así que puede poner cualquiera en un botón o en una tecla sin escribir nada.</p>
+<h2 id="gestionarlas">Gestionarlas</h2>
+<p><strong>Configuración ▸ Gestionar macros…</strong> es la lista: cómo se llama cada macro, cómo se llama su comando, cuántos pasos tiene y qué pedirá la comprobación de permisos, de modo que «esta borra» se ve antes de ponerla en una tecla. Desde ahí puede renombrar, duplicar, reordenar y borrar. Al pasar por encima de una fila se ven sus pasos.</p>
+<p>Reordenar no es adorno: el orden del archivo es el orden en que las listan el Explorador de comandos y el selector de la barra de botones.</p>
+<p><strong>Al borrar se ofrece llevarse los botones</strong>, y conviene saberlo aunque nunca use esta ventana: una macro quitada a mano deja atrás su botón y su tecla, y ninguno hace ya nada — ahora la aplicación dice que la macro no está, en vez de callar, pero el botón sigue siendo cosa suya. Una tecla o una entrada de menú hay que quitarla donde se puso.</p>
+<p>Los <em>pasos</em> no se editan aquí. <strong>Editar archivo…</strong> cede el paso al editor para eso, por la misma razón por la que no hay formulario: un paso es un nombre de herramienta con sus argumentos, que es justo lo que es JSON.</p>
 <h2 id="editar-macros-a-mano">Editar macros a mano</h2>
-<p><strong>Configuración ▸ Editar macros…</strong> abre <code>macros.json</code> en tu carpeta de configuración, dejando un ejemplo comentado la primera vez. Una macro es una lista de pasos, y cada paso nombra una herramienta y sus argumentos:</p>
+<p><strong>Configuración ▸ Editar macros…</strong> abre <code>macros.json</code> en su carpeta de configuración, creado la primera vez con los ejemplos de arriba. Una macro es una lista de pasos, y cada paso nombra una herramienta y sus argumentos:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Al guardar, las macros se recargan de inmediato. Para ver qué herramientas existen y qué toman, pide <code>list_macros</code> al asistente, o lee el ejemplo con el que se creó el archivo.</p>
+<p>Guardar recarga las macros de inmediato — y avisa si algo no está bien: un nombre de herramienta mal escrito, un argumento obligatorio que falta, dos macros con el mismo id. Una macro con un error no se ejecuta ni llega a un botón; se le dice cuál es y qué le pasa, con el editor todavía abierto.</p>
+<p>Para ver qué herramientas existen y qué aceptan, use <strong>Configuración ▸ Explorador de comandos…</strong>, o pida <code>list_macros</code> al asistente.</p>
 <h3 id="marcadores">Marcadores</h3>
 <p>Las letras sueltas son las mismas que usan la barra de botones y el menú Inicio, así que si ya has hecho un botón no hay nada nuevo que aprender:</p>
 <table>
@@ -71,12 +125,28 @@
 <td>La fecha en que arrancó la macro, con ese formato</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Un valor con nombre del resultado del paso 1 — aquí, el archivo que escribió <code>merge_files</code></td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>El resultado del paso 1, cuando ese paso produjo una ruta o una lista de rutas</td>
+<td>El resultado completo del paso 1, cuando ese paso produjo directamente una ruta o una lista de rutas</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Le pregunta cuando la macro se ejecuta. <code>%{ask:Folder name=Archive}</code> deja el campo con <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>Las llaves son para los añadidos porque las letras ya están ocupadas: <code>%M</code> significa «el nombre bajo el cursor en el otro panel» en todo el resto del programa, así que un mes no podía escribirse así.</p>
+<p>Para los resultados de un paso use la forma <strong>con nombre</strong>. La mayoría de las herramientas informan de varios valores en vez de uno solo — <code>merge_files</code> informa de dónde escribió, cuántos archivos unió y cuántas filas resultaron —, por eso <code>%{2.destination}</code> es la escritura habitual y un <code>%{2}</code> a secas solo funciona con una herramienta que devuelva una única ruta. Un nombre que no existe, o que no es una ruta, detiene la macro en lugar de adivinarse.</p>
+<p>Un <code>%</code> en un nombre de archivo es un <code>%</code>. Nada de lo que produce un paso, ni ningún nombre venido de un panel, se vuelve a leer como marcador — un archivo llamado <code>50%Netto.pdf</code> atraviesa las macros sin cambiar. Para un <code>%</code> literal en una plantilla que escribe <em>usted</em>, dóblelo: <code>%%</code>.</p>
+<h3 id="preguntar-por-un-valor">Preguntar por un valor</h3>
+<p><code>%{ask:…}</code> es como una macro recibe algo que no puede saber de antemano: la macro más común de todas es «mover la selección a una carpeta que yo nombre», y sin esto la carpeta tendría que estar fijada en el archivo.</p>
+<p>Se le pregunta <strong>antes</strong> de que aparezca el plan, y las respuestas ya están en él: las filas dicen «Mover la selección a “Facturas”», no «a lo que esté a punto de escribir». Cancelar la pregunta cancela la macro; no se ha propuesto nada, y mucho menos ejecutado.</p>
+<p>La misma pregunta escrita dos veces se hace una sola vez y sirve en los dos sitios, así que dos pasos que nombran la misma carpeta no pueden discrepar. Lo que sigue al primer <code>=</code> es lo que el campo trae de partida. La redacción es suya: se muestra tal como la escribió, en el idioma en que la escribió.</p>
+<p>Una respuesta es un valor, nunca una plantilla: escribir <code>50%Netto</code> da una carpeta llamada <code>50%Netto</code>.</p>
+<p>Una macro que pregunta no puede ser ejecutada por un agente externo a través de MCP: allí no hay nadie a quien preguntar, y tomar los valores por defecto en silencio sería responder en su nombre. Se rechaza, y lo dice.</p>
 <p><code>%S</code> es el único punto en el que una macro se aparta de un botón: en un botón la selección se convierte en una lista de palabras para una línea de órdenes; aquí se convierte en la lista de rutas completas que toman las herramientas de archivos.</p>
 <p>Un paso cuyo <code>%S</code> o <code>%{1}</code> sale <strong>vacío detiene la macro</strong> en lugar de ejecutarse sin nada. Un <code>move</code> sin archivos no es un <code>move</code> más pequeño: es una petición que ya no dice nada, e informar de éxito sería mentir.</p>
 <h2 id="ejecutar-una-macro">Ejecutar una macro</h2>
@@ -89,9 +159,10 @@
 <li>El asistente, que puede ejecutarla por su nombre</li>
 </ul>
 <p>Antes de que se ejecute una macro que cambia algo, te muestra sus pasos como una lista y espera. Puedes tachar un paso que no quieras; lo que quede es lo que se ejecuta. Una macro que solo lee se ejecuta sin preguntar.</p>
-<p>Si un paso falla, la macro <strong>se detiene ahí</strong> en lugar de continuar: el paso dos suele dar por hecho que el paso uno ocurrió, y mover archivos a una carpeta que no se creó no es un éxito parcial. El informe nombra el paso y dice qué salió mal, y los pasos que sí se ejecutaron están en el registro de acciones.</p>
+<p>Todo lo que puede verse mal antes de empezar — una herramienta que no existe, un argumento que falta, un paso que ejecutaría otra macro — la detiene antes del primer paso, no después del tercero. Si un paso falla ya en marcha, la macro <strong>se detiene ahí</strong> en vez de seguir: el paso dos suele suponer que el paso uno ocurrió, y mover archivos a una carpeta que no se creó no es un éxito parcial. El informe nombra el paso, dice qué salió mal y cuántos pasos se habían llevado a cabo ya; cada uno está en el registro de acciones, con su vuelta atrás donde la tiene.</p>
 <h2 id="que-se-le-permite-hacer-a-una-macro">Qué se le permite hacer a una macro</h2>
 <p>Una macro se mide por lo más exigente que contiene. Una macro cuyos pasos solo leen se trata como una lectura; una que acaba en un borrado permanente se controla como un borrado permanente — antes de que se ejecute nada, no cuatro pasos después.</p>
+<p>Un paso que ejecuta un <em>comando</em> se juzga por lo que hace ese comando, no por el hecho de ser un comando — así que una macro que ejecuta <code>cm_DeleteReal</code> es una macro que borra, y se le muestra como tal. Una macro no puede ejecutar otra macro, en ninguna de las dos escrituras.</p>
 <p>No conceder nada extra es lo predeterminado. Si una macro contiene un paso que tus permisos no admiten — una orden de shell, un script — se rechaza la macro completa indicando el motivo, y no ocurre nada.</p>
 <h2 id="deshacer">Deshacer</h2>
 <p>Cada paso se registra por separado, así que <strong>deshacer</strong> después de una macro recupera su <em>último</em> paso, no la macro entera. No hay un deshacer de toda la macro, porque varias herramientas no tienen inverso alguno y un botón que lo ofreciera estaría mintiendo sobre ellas.</p>

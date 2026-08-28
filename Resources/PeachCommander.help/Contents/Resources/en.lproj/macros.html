@@ -15,16 +15,69 @@
 <h2 id="the-quickest-way-in-from-what-you-just-did">The quickest way in: from what you just did</h2>
 <p>You do not have to write a macro from scratch.</p>
 <ol>
-<li>Do the thing once — through the assistant, or by running an existing macro.</li>
+<li>Do the thing once — copy, move, rename or delete in the panels, or have the assistant do it.</li>
 <li>Choose <strong>Configuration ▸ Macro from Recent Actions…</strong>.</li>
 <li>Tick the steps the macro should repeat, give it a name, and leave <strong>Also add a button for it</strong> on.</li>
+<li>Tick <strong>Follow the panels instead of these exact files</strong> if the macro should work on whatever is selected next time. The rows change as you tick it, so you can see what you are about to save.</li>
 </ol>
 <p><strong>Save Macro</strong>, and the button is in the bar. That is the whole loop.</p>
+<p>The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) and what the assistant or another macro did. Each row says which, because after a session with both, the same two files can appear in each.</p>
 <blockquote>
-<p><strong>What is not recorded.</strong> The list is built from actions that went through the assistant or another macro. Copying, moving or renaming in the panels <em>by hand</em> — F5, F6, F7 — is not recorded, so it cannot be turned into a macro this way. Use the editor below for those.</p>
+<p><strong>What is not offered.</strong> Packing an archive, and anything else the app records only by name, cannot be turned into a step — there is no shape for it to take. Those rows are shown greyed out with the reason rather than left out, so a list of five that offers three does not read as having missed two. And unless you ask otherwise, the paths are the ones that actually ran: a recorded macro repeats <em>that</em> copy, not "a copy like it".</p>
 </blockquote>
+<p><strong>Follow the panels</strong> is how you ask otherwise. Files that all came from one folder become the selection; a folder that is one of the two panels becomes that panel, and a folder inside one keeps its tail — so a recorded "move these four invoices to Documents/2026-08" becomes "move what is selected to <em>2026-08</em> on the other side", and works tomorrow in two different folders. Anything under neither panel is left as the path it is, because there is nothing to fold it into. The option is only offered when it would change something.</p>
+<h2 id="the-examples-that-come-with-it">The examples that come with it</h2>
+<p>The first time you open <strong>Configuration ▸ Edit Macros…</strong>, the file is seeded with seven worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:</p>
+<table>
+<thead>
+<tr>
+<th>Macro</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Creates today's date folder in the active panel and goes into it. Run it again tomorrow.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Selects every PDF, makes a year-month folder on the other side, moves them in.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Copies what <em>you</em> have selected into a dated folder on the other side.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>One mask, one subfolder, in the folder you are already in.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Shows how a step uses what an earlier step produced.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Asks you for the folder when it runs.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Tags it and date-stamps its comment — one file, not the selection.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>A deleting macro, and the one to try the permission gate on.</td>
+</tr>
+</tbody>
+</table>
+<p>Each of them becomes a command, so you can put any of them on a button or a key without writing anything.</p>
+<h2 id="managing-them">Managing them</h2>
+<p><strong>Configuration ▸ Manage Macros…</strong> is the list: what each macro is called, its command name, how many steps it has, and what the permission gate will ask for — so "this one deletes" is visible before you put it on a key. From there you can rename, duplicate, reorder and delete. Hovering a row shows its steps.</p>
+<p>Reordering is not decoration: the file's order is the order the Command Browser and the button-bar picker list them in.</p>
+<p><strong>Deleting offers to take the buttons with it</strong>, and that is worth knowing even if you never use this window: a macro removed by hand leaves its button and its key behind, and pressing either then does nothing — the app now says the macro is gone rather than staying silent, but the button is still yours to remove. A key or a menu entry has to be taken out where it was set.</p>
+<p>The <em>steps</em> are not edited here. <strong>Edit File…</strong> hands over to the editor for that, for the same reason the feature has no form: a step is a tool name and its arguments, which is what JSON is.</p>
 <h2 id="editing-macros-by-hand">Editing macros by hand</h2>
-<p><strong>Configuration ▸ Edit Macros…</strong> opens <code>macros.json</code> in your configuration folder, seeding it with a commented example the first time. A macro is a list of steps, and each step names a tool and its arguments:</p>
+<p><strong>Configuration ▸ Edit Macros…</strong> opens <code>macros.json</code> in your configuration folder, seeded with the examples above the first time. A macro is a list of steps, and each step names a tool and its arguments:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Saving reloads the macros immediately. To see which tools exist and what they take, ask the assistant for <code>list_macros</code>, or read the example the file was seeded with.</p>
+<p>Saving reloads the macros immediately, and says so if something is wrong: a misspelled tool name, a required argument left out, two macros sharing an id. A macro with a mistake in it is not run and not put on a button — you are told which macro and what is wrong with it, while the editor is still open.</p>
+<p>To see which tools exist and what they take, use <strong>Configuration ▸ Command Browser…</strong>, or ask the assistant for <code>list_macros</code>.</p>
 <h3 id="placeholders">Placeholders</h3>
 <p>The bare letters are the same ones the button bar and the Start menu use, so there is nothing new to learn if you have made a button:</p>
 <table>
@@ -71,12 +125,28 @@
 <td>The date the macro started, in that format</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>One named value out of step 1's result — here, the file <code>merge_files</code> wrote</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>The result of step 1, where the step produced a path or a list of paths</td>
+<td>The whole result of step 1, when that step produced a path or a list of paths outright</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Asks you when the macro runs. <code>%{ask:Folder name=Archive}</code> starts the field with <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>The braces are for the extras because the letters are already taken: <code>%M</code> means "the name under the cursor in the other panel" everywhere else in the program, so a month could not be spelled that way.</p>
+<p>Use the <strong>named</strong> form for step results. Most tools report what they did as several values rather than as one — <code>merge_files</code> reports where it wrote the file, how many it merged and how many rows resulted — so <code>%{2.destination}</code> is the usual spelling and a bare <code>%{2}</code> only works for a tool that returns a single path. A name that is not there, or that is not a path, stops the macro rather than being guessed at.</p>
+<p>A <code>%</code> in a file name is a <code>%</code>. Nothing a step produces, and no name out of a panel, is read as a placeholder in turn — so a file called <code>50%Netto.pdf</code> passes through macros unchanged. To put a literal <code>%</code> in a template <em>you</em> wrote, double it: <code>%%</code>.</p>
+<h3 id="asking-for-a-value">Asking for a value</h3>
+<p><code>%{ask:…}</code> is how a macro takes something it cannot know in advance — the commonest macro of all is "move the selection into a folder I name", and without it the folder would have to be wired in.</p>
+<p>You are asked <strong>before</strong> the plan appears, and the answers are already in it: the rows say "Move the selection into “Rechnungen”", not "into whatever you are about to type". Cancelling the question cancels the macro; nothing has been proposed, let alone run.</p>
+<p>The same question written twice is asked once and used in both places, so two steps that name the same folder cannot disagree. Text after the first <code>=</code> is what the field starts out holding. The wording is yours — it is shown exactly as you wrote it, in whatever language you wrote it in.</p>
+<p>An answer is a value, never a template: typing <code>50%Netto</code> gives you a folder called <code>50%Netto</code>.</p>
+<p>A macro that asks cannot be run by an external agent over MCP — there is nobody there to ask, and taking the defaults silently would be answering on your behalf. It is refused, and says so.</p>
 <p><code>%S</code> is the one place a macro differs from a button: on a button the selection becomes a list of words for a command line, here it becomes the list of full paths the file tools take.</p>
 <p>A step whose <code>%S</code> or <code>%{1}</code> comes out <strong>empty stops the macro</strong> rather than running with nothing to act on. A <code>move</code> with no files is not a smaller move — it is a request that no longer says anything, and reporting success for it would be a lie.</p>
 <h2 id="running-a-macro">Running a macro</h2>
@@ -89,9 +159,10 @@
 <li>The assistant, which can run it by name</li>
 </ul>
 <p>Before a macro that changes anything runs, it shows you its steps as a list and waits. You can strike out a step you do not want; what is left is what runs. A macro that only reads runs without asking.</p>
-<p>If a step fails, the macro <strong>stops there</strong> rather than carrying on — step two of a macro usually assumes step one happened, and moving files into a folder that was not created is not a partial success. The report names the step and says what went wrong, and the steps that did run are in the action log.</p>
+<p>Anything that can be seen to be wrong before the macro starts — a tool that does not exist, a missing argument, a step that would run another macro — stops it before the first step, not after the third. If a step fails once it is running, the macro <strong>stops there</strong> rather than carrying on — step two of a macro usually assumes step one happened, and moving files into a folder that was not created is not a partial success. The report names the step, says what went wrong and says how many steps had already been carried out; each of them is in the action log with its own way back, where it has one.</p>
 <h2 id="what-a-macro-is-allowed-to-do">What a macro is allowed to do</h2>
 <p>A macro is held to the most demanding thing in it. A macro whose steps only read is treated as a read; one that ends in a permanent delete is gated like a permanent delete — before any of it runs, not four steps in.</p>
+<p>A step that runs a <em>command</em> is judged by what that command does, not by the fact that it is a command — so a macro that runs <code>cm_DeleteReal</code> is a deleting macro and is shown to you as one. A macro cannot run another macro, by either spelling.</p>
 <p>Granting nothing extra is the default. If a macro contains a step your permissions do not allow — a shell command, a script — the whole macro is refused and told you why, and nothing happens.</p>
 <h2 id="undo">Undo</h2>
 <p>Each step is logged on its own, so <strong>undo</strong> after a macro takes back its <em>last</em> step, not the whole macro. There is no macro-wide undo, because several tools have no inverse at all and a button offering one would be lying about those.</p>

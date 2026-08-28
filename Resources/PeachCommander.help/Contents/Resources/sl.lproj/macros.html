@@ -15,16 +15,69 @@
 <h2 id="najhitrejsa-pot-iz-tega-kar-ste-pravkar-naredili">Najhitrejša pot: iz tega, kar ste pravkar naredili</h2>
 <p>Makra ni treba napisati iz nič.</p>
 <ol>
-<li>Naredite stvar enkrat — prek pomočnika ali z zagonom obstoječega makra.</li>
+<li>Naredite tisto stvar enkrat — kopirajte, premaknite, preimenujte ali izbrišite v oknih, ali pa naj to naredi pomočnik.</li>
 <li>Izberite <strong>Nastavitve ▸ Makro iz nedavnih dejanj…</strong>.</li>
 <li>Označite korake, ki naj jih makro ponovi, poimenujte ga in pustite vklopljeno <strong>Zanj dodaj tudi gumb</strong>.</li>
+<li>Označite <strong>Sledi oknom namesto točno tem datotekam</strong>, če naj makro naslednjič dela s tem, kar bo takrat izbrano. Vrstice se ob označitvi spremenijo, tako da vidite, kaj shranjujete.</li>
 </ol>
 <p><strong>Shrani makro</strong> — in gumb je v vrstici. To je ves postopek.</p>
+<p>Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje) in kaj je naredil pomočnik ali drug makro. Vsaka vrstica pove, katero od obojega — po seji z obojim se namreč isti dve datoteki lahko pojavita v vsaki.</p>
 <blockquote>
-<p><strong>Kaj se ne zapisuje.</strong> Seznam se sestavi iz dejanj, ki so šla skozi pomočnika ali drug makro. Ročno kopiranje, premikanje in preimenovanje v pultih — F5, F6, F7 — se ne zapisuje, zato po tej poti iz njih ni mogoče narediti makra. Za to uporabite urejevalnik spodaj.</p>
+<p><strong>Kaj ni ponujeno.</strong> Pakiranje arhiva in vse drugo, kar si program zapomni le po imenu, ne more postati korak — zanj ni oblike. Take vrstice so vidne sivo skupaj z razlogom, namesto da bi manjkale, da seznam petih, ki ponudi tri, ne izgleda, kot da je dve spregledal. In če ne zahtevate drugače, so poti tiste, ki so res tekle: posneti makro ponovi <em>tisto</em> kopijo, ne »kopije te vrste«. Odprite ga v urejevalniku in postavite <code>%S</code> ali <code>%T</code> tja, kjer naj sledi oknom.</p>
 </blockquote>
+<p><strong>Sledi oknom</strong> je način, kako zahtevate drugače. Datoteke, ki so vse prišle iz ene mape, postanejo izbor; mapa, ki je eno od obeh oken, postane to okno, mapa znotraj nje pa obdrži svoj rep — iz posnetega »premakni te štiri račune v Dokumenti/2026-08« nastane »premakni izbrano v <em>2026-08</em> na drugi strani«, in jutri to deluje v dveh drugih mapah. Kar ne leži pod nobenim od obeh oken, ostane pot, kar je — ni ničesar, v kar bi jo zložili. Možnost je ponujena le, kadar bi kaj spremenila.</p>
+<h2 id="prilozeni-primeri">Priloženi primeri</h2>
+<p>Ko prvič odprete <strong>Konfiguracija ▸ Uredi makre…</strong>, se datoteka ustvari s sedmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:</p>
+<table>
+<thead>
+<tr>
+<th>Makro</th>
+<th>Kaj počne</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>V aktivnem oknu ustvari današnjo mapo z datumom in vstopi vanjo. Jutri spet služi.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Izbere vse PDF-je, na drugi strani ustvari mapo leto-mesec in jih premakne vanjo.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Kopira to, kar ste izbrali <em>vi</em>, v datirano mapo na drugi strani.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Ena maska, ena podmapa, v mapi, v kateri že ste.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Pokaže, kako korak uporabi to, kar je ustvaril prejšnji korak.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Ob zagonu vas vpraša za mapo.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Doda ji oznako in datira njen komentar — ena datoteka, ne izbor.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Brisalni makro, in pravi za to, da enkrat vidite vprašanje o dovoljenjih.</td>
+</tr>
+</tbody>
+</table>
+<p>Vsak od njih postane ukaz, tako da lahko kateregakoli postavite na gumb ali na tipko, ne da bi karkoli napisali.</p>
+<h2 id="upravljanje">Upravljanje</h2>
+<p><strong>Konfiguracija ▸ Upravljanje makrov…</strong> je ta seznam: kako se vsak makro imenuje, kako se imenuje njegov ukaz, koliko korakov ima in kaj bo zahtevalo preverjanje dovoljenj — »ta briše« je torej vidno, preden ga postavite na tipko. Od tam lahko preimenujete, podvojite, prerazvrstite in izbrišete. Če se ustavite nad vrstico, vidite njene korake.</p>
+<p>Vrstni red ni okras: vrstni red v datoteki je tisti, v katerem jih naštevata Brskalnik ukazov in izbirnik za orodno vrstico.</p>
+<p><strong>Pri brisanju je ponujeno, da gumbi odidejo z njim</strong>, in to je vredno vedeti, tudi če tega okna nikoli ne odprete: makro, odstranjen na roko, pusti za sabo svoj gumb in svojo tipko, in nobeno od obojega potem ne naredi ničesar — program zdaj pove, da makra ni, namesto da bi molčal, gumb pa ostane vaša stvar. Tipko ali vnos v meniju je treba odstraniti tam, kjer je bil nastavljen.</p>
+<p><em>Korakov</em> tu ne urejate. <strong>Uredi datoteko…</strong> to preda urejevalniku, iz istega razloga, iz katerega tu ni obrazca: korak je ime orodja z njegovimi argumenti, in prav to je JSON.</p>
 <h2 id="rocno-urejanje-makrov">Ročno urejanje makrov</h2>
-<p><strong>Nastavitve ▸ Uredi makre…</strong> odpre <code>macros.json</code> v vaši nastavitveni mapi in prvič vanjo vstavi komentiran primer. Makro je seznam korakov, vsak korak pa navaja orodje in njegove argumente:</p>
+<p><strong>Konfiguracija ▸ Uredi makre…</strong> odpre <code>macros.json</code> v vaši konfiguracijski mapi, prvič ustvarjen s primeri zgoraj. Makro je seznam korakov, in vsak korak imenuje orodje in njegove argumente:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Shranjevanje makre takoj znova naloži. Katera orodja obstajajo in kaj sprejmejo, vam pove pomočnik prek <code>list_macros</code> — ali primer, s katerim je bila datoteka ustvarjena.</p>
+<p>Shranjevanje makre takoj znova naloži — in pove, če kaj ni v redu: napačno zapisano ime orodja, manjkajoč obvezen argument, dva makra z istim id. Makro z napako se ne izvede in ne pride na noben gumb; izveste, kateri je in kaj je z njim narobe, dokler je urejevalnik še odprt.</p>
+<p>Katera orodja obstajajo in kaj sprejmejo, pokaže <strong>Konfiguracija ▸ Brskalnik ukazov…</strong>, ali pa pomočnika vprašajte za <code>list_macros</code>.</p>
 <h3 id="nadomestni-znaki">Nadomestni znaki</h3>
 <p>Posamezne črke so iste, kot jih uporabljata vrstica z gumbi in meni Start: kdor je že naredil gumb, se tu ne rabi učiti nič novega.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>Datum zagona makra v tej obliki</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Ena poimenovana vrednost iz rezultata koraka 1 — tu datoteka, ki jo je zapisal <code>merge_files</code></td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Rezultat koraka 1, če je ta korak vrnil pot ali seznam poti</td>
+<td>Celoten rezultat koraka 1, kadar je ta korak neposredno ustvaril pot ali seznam poti</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Vpraša vas, ko se makro zažene. <code>%{ask:Folder name=Archive}</code> polje vnaprej napolni z <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>Zaviti oklepaji so za dodatke, ker so črke že zasedene: <code>%M</code> v vsem preostalem programu pomeni »ime pod kazalcem v drugem pultu«, zato meseca ni bilo mogoče zapisati tako.</p>
+<p>Za rezultate korakov uporabite <strong>poimenovano</strong> obliko. Večina orodij sporoči več vrednosti namesto ene — <code>merge_files</code> sporoči, kam je zapisalo, koliko datotek je združilo in koliko vrstic je nastalo —, zato je <code>%{2.destination}</code> običajen zapis, gol <code>%{2}</code> pa deluje le pri orodju, ki vrne eno samo pot. Ime, ki ga ni ali ki ni pot, makro ustavi, namesto da bi se ugibalo.</p>
+<p><code>%</code> v imenu datoteke je <code>%</code>. Nič od tega, kar korak ustvari, in nobeno ime iz okna se ne bere znova kot ograda — datoteka z imenom <code>50%Netto.pdf</code> gre torej skozi makre nespremenjena. Dobesedni <code>%</code> v predlogi, ki jo pišete <em>vi</em>, podvojite: <code>%%</code>.</p>
+<h3 id="vprasati-za-vrednost">Vprašati za vrednost</h3>
+<p><code>%{ask:…}</code> je način, kako makro sprejme nekaj, česar vnaprej ne more vedeti — daleč najpogostejši makro je »premakni izbor v mapo, ki jo poimenujem«, in brez tega bi morala biti mapa trdno zapisana v datoteki.</p>
+<p>Vprašani ste <strong>preden</strong> se pojavi načrt, in odgovori so že v njem: vrstice pravijo »Premakni izbor v »Računi««, ne »v to, kar boste pravkar natipkali«. Preklic vprašanja prekliče makro; nič ni bilo predlagano, kaj šele izvedeno.</p>
+<p>Isto vprašanje, zapisano dvakrat, je zastavljeno enkrat in uporabljeno na obeh mestih, tako da dva koraka, ki imenujeta isto mapo, ne moreta razhajati. Kar sledi prvemu <code>=</code>, je tisto, s čimer polje začne. Besedilo je vaše: prikaže se točno tako, kot ste ga zapisali, v jeziku, v katerem ste ga zapisali.</p>
+<p>Odgovor je vrednost, nikoli predloga: če natipkate <code>50%Netto</code>, dobite mapo z imenom <code>50%Netto</code>.</p>
+<p>Makra, ki sprašuje, zunanji agent prek MCP ne more zagnati — tam ni nikogar, ki bi ga vprašal, in tiho vzeti privzete vrednosti bi pomenilo odgovoriti namesto vas. Zavrne se in to tudi pove.</p>
 <p><code>%S</code> je edino mesto, kjer se makro razlikuje od gumba: na gumbu izbor postane seznam besed za ukazno vrstico, tu pa seznam polnih poti, ki jih sprejmejo datotečna orodja.</p>
 <p>Korak, katerega <code>%S</code> ali <code>%{1}</code> pride <strong>prazen, ustavi makro</strong>, namesto da bi tekel brez česa. <code>move</code> brez datotek ni manjši <code>move</code> — je zahteva, ki ne pove več nič, in poročati o uspehu bi bila laž.</p>
 <h2 id="zagon-makra">Zagon makra</h2>
@@ -89,9 +159,10 @@
 <li>Pomočniku, ki ga lahko zažene po imenu</li>
 </ul>
 <p>Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja.</p>
-<p>Če korak spodleti, se makro <strong>tam ustavi</strong> namesto da bi nadaljeval — drugi korak običajno predpostavlja, da se je prvi zgodil, in premikanje datotek v mapo, ki ni bila ustvarjena, ni delni uspeh. Poročilo navede korak in pove, kaj je šlo narobe; koraki, ki so se izvedli, so v dnevniku dejanj.</p>
+<p>Vse, kar je mogoče prepoznati kot napačno pred začetkom — orodje, ki ne obstaja, manjkajoč argument, korak, ki bi izvedel drug makro —, makro ustavi pred prvim korakom, ne po tretjem. Če korak spodleti že med tekom, se makro <strong>ustavi tam</strong> namesto da bi nadaljeval: korak dve običajno predpostavlja, da se je korak ena zgodil, in premikanje datotek v mapo, ki ni bila ustvarjena, ni delni uspeh. Poročilo imenuje korak, pove, kaj je šlo narobe, in koliko korakov je bilo že izvedenih; vsak od njih je v dnevniku dejanj, s svojo potjo nazaj, kjer ta obstaja.</p>
 <h2 id="kaj-makro-sme">Kaj makro sme</h2>
 <p>Makro se presoja po najzahtevnejšem, kar je v njem. Makro, katerega koraki samo berejo, velja za branje; tisti, ki se konča s trajnim brisanjem, je varovan kot trajno brisanje — preden se karkoli zažene, ne štiri korake pozneje.</p>
+<p>Korak, ki izvede <em>ukaz</em>, se presoja po tem, kaj ta ukaz počne, in ne po tem, da je ukaz — makro, ki izvede <code>cm_DeleteReal</code>, je torej brisalni makro in vam je tako tudi prikazan. Makro ne more izvesti drugega makra, v nobenem od obeh zapisov.</p>
 <p>Ne dodeliti nič dodatnega je privzeto. Če makro vsebuje korak, ki ga vaša dovoljenja ne dopuščajo — ukaz lupine, skript — je celoten makro zavrnjen z navedbo razloga in nič se ne zgodi.</p>
 <h2 id="razveljavitev">Razveljavitev</h2>
 <p>Vsak korak se zapiše zase, zato <strong>razveljavi</strong> po makru vzame nazaj njegov <em>zadnji</em> korak, ne celega makra. Razveljavitve celega makra ni, ker več orodij nima nobenega obratnega dejanja in gumb, ki bi jo ponujal, bi o njih lagal.</p>

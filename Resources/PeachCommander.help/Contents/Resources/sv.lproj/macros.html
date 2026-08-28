@@ -15,16 +15,69 @@
 <h2 id="snabbaste-vagen-fran-det-du-just-gjorde">Snabbaste vägen: från det du just gjorde</h2>
 <p>Du behöver inte skriva ett makro från början.</p>
 <ol>
-<li>Gör saken en gång — via assistenten, eller genom att köra ett befintligt makro.</li>
+<li>Gör saken en gång — kopiera, flytta, döp om eller radera i panelerna, eller låt assistenten göra det.</li>
 <li>Välj <strong>Konfiguration ▸ Makro från senaste åtgärder…</strong>.</li>
 <li>Markera de steg makrot ska upprepa, ge det ett namn och låt <strong>Lägg även till en knapp för det</strong> vara på.</li>
+<li>Kryssa i <strong>Följ panelerna i stället för just dessa filer</strong> om makrot nästa gång ska arbeta med det som då är markerat. Raderna ändras medan du kryssar, så du ser vad du sparar.</li>
 </ol>
 <p><strong>Spara makro</strong>, och knappen finns i raden. Det är hela varvet.</p>
+<p>Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en omdöpning) och vad assistenten eller ett annat makro har gjort. Varje rad säger vilket av de två — efter en session med båda kan samma två filer dyka upp i var och en.</p>
 <blockquote>
-<p><strong>Vad som inte registreras.</strong> Listan byggs av åtgärder som gått genom assistenten eller ett annat makro. Att kopiera, flytta eller byta namn <em>för hand</em> i panelerna — F5, F6, F7 — registreras inte och kan därför inte bli ett makro den här vägen. Använd redigeraren nedan för dem.</p>
+<p><strong>Vad som inte erbjuds.</strong> Att packa ett arkiv, och allt annat appen bara håller reda på vid namn, kan inte bli ett steg — det finns ingen form att ge det. Sådana rader står gråa med sitt skäl i stället för att saknas, så att en lista på fem som erbjuder tre inte läses som om den missat två. Och om du inte ber om annat är sökvägarna de som faktiskt användes: ett inspelat makro upprepar <em>den</em> kopian, inte ”en kopia av det slaget”. Öppna det i redigeraren och sätt <code>%S</code> eller <code>%T</code> där det ska följa panelerna.</p>
 </blockquote>
+<p><strong>Följ panelerna</strong> är hur man ber om annat. Filer som alla kom från en mapp blir markeringen; en mapp som är en av de två panelerna blir den panelen, och en mapp inuti den behåller sin svans — ett inspelat ”flytta dessa fyra fakturor till Dokument/2026-08” blir ”flytta det som är markerat till <em>2026-08</em> på andra sidan”, och det fungerar i morgon i två andra mappar. Det som inte ligger under någon av panelerna förblir den sökväg det är, för det finns inget att vika in det i. Alternativet erbjuds bara när det skulle ändra något.</p>
+<h2 id="exemplen-som-foljer-med">Exemplen som följer med</h2>
+<p>Första gången du öppnar <strong>Konfiguration ▸ Redigera makron…</strong> skapas filen med sju genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:</p>
+<table>
+<thead>
+<tr>
+<th>Makro</th>
+<th>Vad det gör</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Skapar dagens datummapp i den aktiva panelen och går in i den. Går att köra igen i morgon.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Väljer alla PDF:er, skapar en år-månadsmapp på andra sidan och flyttar dit dem.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Kopierar det <em>du</em> har markerat till en daterad mapp på andra sidan.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>En mask, en undermapp, i mappen du redan står i.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Visar hur ett steg använder det ett tidigare steg gav.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Frågar dig efter mappen när det körs.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Etiketterar den och datumstämplar dess kommentar — en fil, inte markeringen.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Ett raderande makro, och det rätta att pröva rättighetsfrågan på.</td>
+</tr>
+</tbody>
+</table>
+<p>Vart och ett av dem blir ett kommando, så du kan lägga vilket som helst på en knapp eller en tangent utan att skriva något.</p>
+<h2 id="att-hantera-dem">Att hantera dem</h2>
+<p><strong>Konfiguration ▸ Hantera makron…</strong> är listan: vad varje makro heter, vad dess kommando heter, hur många steg det har och vad rättighetsfrågan kommer att kräva — så att ”det här raderar” syns innan du lägger det på en tangent. Därifrån kan du byta namn, duplicera, ordna om och radera. För du muspekaren över en rad ser du dess steg.</p>
+<p>Ordningen är ingen utsmyckning: filens ordning är den som Kommandoöversikten och knappradens väljare listar dem i.</p>
+<p><strong>Vid radering erbjuds du att ta knapparna med</strong>, och det är värt att veta även om du aldrig öppnar det här fönstret: ett makro som tas bort för hand lämnar kvar sin knapp och sin tangent, och ingendera gör då något — appen säger nu att makrot är borta i stället för att tiga, men knappen är fortfarande din sak. En tangent eller ett menyval måste tas bort där det sattes.</p>
+<p><em>Stegen</em> redigeras inte här. <strong>Redigera fil…</strong> lämnar över till redigeraren för det, av samma skäl som det inte finns något formulär: ett steg är ett verktygsnamn med sina argument, och det är precis vad JSON är.</p>
 <h2 id="redigera-makron-for-hand">Redigera makron för hand</h2>
-<p><strong>Konfiguration ▸ Redigera makron…</strong> öppnar <code>macros.json</code> i din konfigurationsmapp och lämnar ett kommenterat exempel där första gången. Ett makro är en lista med steg, och varje steg namnger ett verktyg och dess argument:</p>
+<p><strong>Konfiguration ▸ Redigera makron…</strong> öppnar <code>macros.json</code> i din konfigurationsmapp, första gången skapad med exemplen ovan. Ett makro är en lista med steg, och varje steg nämner ett verktyg och dess argument:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Att spara läser in makrona på nytt direkt. Vilka verktyg som finns och vad de tar emot berättar assistenten via <code>list_macros</code> — eller exemplet som filen skapades med.</p>
+<p>Att spara läser om makrona direkt — och säger till om något är fel: ett felstavat verktygsnamn, ett obligatoriskt argument som saknas, två makron med samma id. Ett makro med ett fel körs inte och hamnar inte på någon knapp; du får veta vilket det är och vad som är fel med det, medan redigeraren fortfarande är öppen.</p>
+<p>Vilka verktyg som finns och vad de tar ser du i <strong>Konfiguration ▸ Kommandoöversikt…</strong>, eller fråga assistenten om <code>list_macros</code>.</p>
 <h3 id="platshallare">Platshållare</h3>
 <p>De enskilda bokstäverna är samma som knappraden och Start-menyn använder, så har du gjort en knapp finns inget nytt att lära här.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>Datumet då makrot startade, i det formatet</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Ett namngivet värde ur resultatet av steg 1 — här filen som <code>merge_files</code> skrev</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Resultatet av steg 1, när det steget gav en sökväg eller en lista sökvägar</td>
+<td>Hela resultatet av steg 1, när det steget direkt gav en sökväg eller en lista med sökvägar</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Frågar dig när makrot körs. <code>%{ask:Folder name=Archive}</code> fyller fältet med <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>Klammerparenteserna är till för tilläggen eftersom bokstäverna redan är tagna: <code>%M</code> betyder ”namnet under markören i den andra panelen” i hela resten av programmet, så en månad kunde inte skrivas så.</p>
+<p>Använd den <strong>namngivna</strong> formen för stegresultat. De flesta verktyg rapporterar flera värden i stället för ett — <code>merge_files</code> rapporterar var det skrev, hur många filer det slog ihop och hur många rader det blev — så <code>%{2.destination}</code> är den vanliga skrivningen, och ett naket <code>%{2}</code> fungerar bara för ett verktyg som ger tillbaka en enda sökväg. Ett namn som inte finns, eller som inte är en sökväg, stoppar makrot i stället för att gissas.</p>
+<p>Ett <code>%</code> i ett filnamn är ett <code>%</code>. Inget som ett steg ger, och inget namn från en panel, läses i sin tur som en platshållare — en fil som heter <code>50%Netto.pdf</code> går alltså oförändrad genom makron. Vill du ha ett bokstavligt <code>%</code> i en mall <em>du</em> skriver, dubblera det: <code>%%</code>.</p>
+<h3 id="att-fraga-efter-ett-varde">Att fråga efter ett värde</h3>
+<p><code>%{ask:…}</code> är hur ett makro tar emot något det inte kan veta i förväg — det allra vanligaste makrot är ”flytta markeringen till en mapp som jag namnger”, och utan detta skulle mappen behöva skrivas fast i filen.</p>
+<p>Du får frågan <strong>innan</strong> planen visas, och svaren står redan i den: raderna säger ”Flytta markeringen till ”Fakturor””, inte ”till det du strax ska skriva”. Att avbryta frågan avbryter makrot; ingenting har föreslagits, än mindre körts.</p>
+<p>Samma fråga skriven två gånger ställs en gång och används på båda ställena, så att två steg som nämner samma mapp inte kan gå isär. Det som står efter det första <code>=</code> är vad fältet börjar med. Formuleringen är din: den visas precis som du skrev den, på det språk du skrev den på.</p>
+<p>Ett svar är ett värde, aldrig en mall: skriver du <code>50%Netto</code> får du en mapp som heter <code>50%Netto</code>.</p>
+<p>Ett makro som frågar kan inte köras av en extern agent över MCP — där finns ingen att fråga, och att tyst ta standardvärdena vore att svara i ditt ställe. Det avvisas, och säger det.</p>
 <p><code>%S</code> är det enda stället där ett makro skiljer sig från en knapp: på en knapp blir markeringen en lista ord för en kommandorad, här blir den listan av fullständiga sökvägar som filverktygen tar emot.</p>
 <p>Ett steg vars <code>%S</code> eller <code>%{1}</code> blir <strong>tomt stoppar makrot</strong> i stället för att köra utan något. Ett <code>move</code> utan filer är inte ett mindre <code>move</code> — det är en begäran som inte längre säger något, och att rapportera lyckat vore en lögn.</p>
 <h2 id="kora-ett-makro">Köra ett makro</h2>
@@ -89,9 +159,10 @@
 <li>Assistenten, som kan köra det på namn</li>
 </ul>
 <p>Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga.</p>
-<p>Om ett steg misslyckas <strong>stannar makrot där</strong> i stället för att fortsätta — steg två utgår oftast från att steg ett hände, och att flytta filer till en mapp som inte skapades är inte en delvis framgång. Rapporten namnger steget och säger vad som gick fel, och de steg som kördes finns i åtgärdsloggen.</p>
+<p>Allt som går att se är fel före starten — ett verktyg som inte finns, ett saknat argument, ett steg som skulle köra ett annat makro — stoppar makrot före första steget, inte efter det tredje. Misslyckas ett steg under körningen <strong>stannar makrot där</strong> i stället för att fortsätta: steg två förutsätter oftast att steg ett ägde rum, och att flytta filer till en mapp som inte skapades är ingen delvis framgång. Rapporten nämner steget, säger vad som gick fel och hur många steg som redan hade utförts; vart och ett av dem står i åtgärdsloggen, med sin väg tillbaka där en sådan finns.</p>
 <h2 id="vad-ett-makro-far-gora">Vad ett makro får göra</h2>
 <p>Ett makro bedöms efter det mest krävande i det. Ett makro vars steg bara läser behandlas som en läsning; ett som slutar med en permanent radering hanteras som en permanent radering — innan något av det körs, inte fyra steg in.</p>
+<p>Ett steg som kör ett <em>kommando</em> bedöms efter vad det kommandot gör, inte efter att det är ett kommando — ett makro som kör <code>cm_DeleteReal</code> är alltså ett raderande makro och visas för dig som ett sådant. Ett makro kan inte köra ett annat makro, i ingen av de två skrivningarna.</p>
 <p>Att inte ge något extra är standard. Innehåller ett makro ett steg som dina behörigheter inte tillåter — ett skalkommando, ett skript — nekas hela makrot med sin orsak, och inget händer.</p>
 <h2 id="angra">Ångra</h2>
 <p>Varje steg loggas för sig, så <strong>ångra</strong> efter ett makro tar tillbaka dess <em>sista</em> steg, inte hela makrot. Det finns ingen ångra för hela makrot, eftersom flera verktyg inte har någon invers alls och en knapp som erbjöd den skulle ljuga om dem.</p>

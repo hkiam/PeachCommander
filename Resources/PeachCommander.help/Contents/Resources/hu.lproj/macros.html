@@ -15,16 +15,69 @@
 <h2 id="a-legrovidebb-ut-abbol-amit-epp-most-tett">A legrövidebb út: abból, amit épp most tett</h2>
 <p>A makrót nem kell nulláról megírni.</p>
 <ol>
-<li>Végezze el egyszer — az asszisztensen keresztül, vagy egy meglévő makró lefuttatásával.</li>
+<li>Csinálja meg a dolgot egyszer — másoljon, mozgasson, nevezzen át vagy töröljön a paneleken, vagy csináltassa meg az asszisztenssel.</li>
 <li>Válassza a <strong>Beállítás ▸ Makró a legutóbbi műveletekből…</strong> menüpontot.</li>
 <li>Jelölje be azokat a lépéseket, amelyeket a makrónak meg kell ismételnie, adjon neki nevet, és hagyja bekapcsolva a <strong>Gomb hozzáadása is hozzá</strong> jelölőt.</li>
+<li>Jelölje be a <strong>Kövesse a paneleket ezek helyett a konkrét fájlok helyett</strong> lehetőséget, ha a makrónak legközelebb azzal kell dolgoznia, ami akkor lesz kijelölve. A sorok a bejelöléskor megváltoznak, így látja, mit ment el.</li>
 </ol>
 <p><strong>Makró mentése</strong> — és a gomb ott van a sávban. Ez az egész folyamat.</p>
+<p>A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 és egy átnevezés), és amit az asszisztens vagy egy másik makró csinált. Minden sor megmondja, melyikről van szó — mert egy vegyes munkamenet után ugyanaz a két fájl mindkettőben felbukkanhat.</p>
 <blockquote>
-<p><strong>Amit nem rögzít.</strong> A lista azokból a műveletekből épül fel, amelyek az asszisztenson vagy egy másik makrón mentek át. A panelekben <em>kézzel</em> végzett másolás, áthelyezés és átnevezés — F5, F6, F7 — nem kerül rögzítésre, így ezen az úton nem alakítható makróvá. Azokhoz használja az alábbi szerkesztőt.</p>
+<p><strong>Amit nem kínál fel.</strong> Archívum csomagolása, és minden más, amit az alkalmazás csak név szerint őriz meg, nem alakítható lépéssé — nincs hozzá forma. Az ilyen sorok szürkítve, az okukkal együtt látszanak, ahelyett hogy hiányoznának, hogy egy ötös lista, amely hármat kínál, ne tűnjön úgy, mintha kettőt elnézett volna. Az útvonalak pedig — hacsak nem kér mást — azok, amelyek valóban lefutottak: egy felvett makró <em>azt</em> a másolást ismétli meg, nem „egy olyasfajta másolást”. Nyissa meg a szerkesztőben, és tegyen <code>%S</code>-t vagy <code>%T</code>-t oda, ahol a paneleket kell követnie.</p>
 </blockquote>
+<p><strong>Kövesse a paneleket</strong>: így kér mást. Az egyetlen mappából származó fájlokból a kijelölés lesz; abból a mappából, amelyik a két panel egyike, az a panel lesz, a benne lévő mappa pedig megtartja a végét — a felvett „vidd ezt a négy számlát a Dokumentumok/2026-08 mappába” abból „vidd a kijelöltet a túloldali <em>2026-08</em> mappába” lesz, és holnap két másik mappában is működik. Ami egyik panel alatt sincs, marad az az útvonal, ami — nincs mibe behajtani. A lehetőség csak akkor jelenik meg, ha változtatna valamin.</p>
+<h2 id="a-mellekelt-peldak">A mellékelt példák</h2>
+<p>Amikor először megnyitja a <strong>Beállítások ▸ Makrók szerkesztése…</strong> menüpontot, a fájl hét kidolgozott példával jön létre. Ezek hétköznapi makrók — módosítsa őket, vagy törölje azokat, amelyekre nincs szüksége —, és mindegyik visel egy megjegyzést arról, mit csinál és mit érdemes benne átírni:</p>
+<table>
+<thead>
+<tr>
+<th>Makró</th>
+<th>Mit csinál</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Létrehozza a mai dátummappát az aktív panelen, és belép oda. Holnap újra használható.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Kijelöli az összes PDF-et, a túloldalon év-hónap mappát hoz létre, és odamozgatja őket.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Azt másolja, amit <em>Ön</em> jelölt ki, a túloldal egy dátumozott mappájába.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Egy maszk, egy almappa, abban a mappában, ahol amúgy is áll.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Megmutatja, hogyan használja egy lépés azt, amit egy korábbi lépés előállított.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Futáskor megkérdezi Öntől a mappát.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Címkét ad neki, és dátummal látja el a megjegyzését — egy fájl, nem a kijelölés.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Törlő makró, és épp az, amin egyszer érdemes megnézni a jogosultsági kérdést.</td>
+</tr>
+</tbody>
+</table>
+<p>Mindegyikből parancs lesz, így bármelyiket gombra vagy billentyűre teheti anélkül, hogy bármit írna.</p>
+<h2 id="kezelesuk">Kezelésük</h2>
+<p>A <strong>Beállítások ▸ Makrók kezelése…</strong> maga a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mit fog kérni a jogosultsági ellenőrzés — így a „ez itt töröl” látszik, mielőtt billentyűre tenné. Innen átnevezhet, kettőzhet, átrendezhet és törölhet. A sor fölé érve látszanak a lépései.</p>
+<p>A sorrend nem dísz: a fájl sorrendje az, amelyben a Parancsböngésző és a gombsor választója felsorolja őket.</p>
+<p><strong>Törléskor felajánljuk, hogy a gombok is menjenek vele</strong>, és ezt akkor is érdemes tudni, ha soha nem nyitja meg ezt az ablakot: a kézzel eltávolított makró hátrahagyja a gombját és a billentyűjét, és egyik sem csinál többé semmit — az alkalmazás mostantól megmondja, hogy a makró nincs meg, ahelyett hogy hallgatna, de a gomb továbbra is az Ön dolga. A billentyűt vagy a menüpontot ott kell kivenni, ahol beállították.</p>
+<p>A <em>lépéseket</em> nem itt szerkeszti. A <strong>Fájl szerkesztése…</strong> ehhez átadja a szót a szerkesztőnek, ugyanabból az okból, amiért nincs űrlap: egy lépés egy eszköznév az argumentumaival, és pontosan ez az, ami a JSON.</p>
 <h2 id="makrok-szerkesztese-kezzel">Makrók szerkesztése kézzel</h2>
-<p>A <strong>Beállítás ▸ Makrók szerkesztése…</strong> megnyitja a <code>macros.json</code> fájlt a konfigurációs mappában, és első alkalommal egy megjegyzésekkel ellátott példát hagy benne. A makró lépések listája, és minden lépés megnevez egy eszközt és annak argumentumait:</p>
+<p>A <strong>Beállítások ▸ Makrók szerkesztése…</strong> megnyitja a <code>macros.json</code> fájlt a konfigurációs mappájában, első alkalommal a fenti példákkal létrehozva. A makró lépések listája, és minden lépés megnevez egy eszközt és annak argumentumait:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>A mentés azonnal újratölti a makrókat. Hogy milyen eszközök vannak és mit fogadnak el, az asszisztens mondja meg a <code>list_macros</code> segítségével — vagy a példa, amellyel a fájl létrejött.</p>
+<p>A mentés azonnal újratölti a makrókat — és szól, ha valami nem stimmel: elgépelt eszköznév, hiányzó kötelező argumentum, két azonos azonosítójú makró. A hibás makró nem fut le, és nem kerül gombra sem; megtudja, melyikről van szó és mi a baj vele, amíg a szerkesztő még nyitva van.</p>
+<p>Hogy milyen eszközök vannak és mit fogadnak el, a <strong>Beállítások ▸ Parancsböngésző…</strong> mutatja meg, vagy kérdezze meg az asszisztenst a <code>list_macros</code> felől.</p>
 <h3 id="helyettesitok">Helyettesítők</h3>
 <p>Az egyes betűk ugyanazok, amelyeket a gombsáv és a Start menü használ: aki már készített gombot, annak itt nincs mit újat tanulnia.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>A makró indulásának dátuma, ebben a formában</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Egy megnevezett érték az 1. lépés eredményéből — itt a fájl, amelyet a <code>merge_files</code> írt</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Az 1. lépés eredménye, ha az a lépés útvonalat vagy útvonalak listáját adta</td>
+<td>Az 1. lépés teljes eredménye, ha az a lépés közvetlenül egy útvonalat vagy útvonallistát adott</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Megkérdezi Önt, amikor a makró fut. A <code>%{ask:Folder name=Archive}</code> <em>Archive</em> értékkel tölti fel a mezőt</td>
 </tr>
 </tbody>
 </table>
 <p>A kapcsos zárójelek a kiegészítéseknek szólnak, mert a betűk már foglaltak: a <code>%M</code> a program egészében „a másik panel kurzora alatti nevet” jelenti, így a hónapot nem lehetett így írni.</p>
+<p>A lépések eredményéhez a <strong>megnevezett</strong> alakot használja. A legtöbb eszköz több értéket jelent egy helyett — a <code>merge_files</code> megmondja, hová írt, hány fájlt fűzött össze és hány sor lett belőle —, ezért a <code>%{2.destination}</code> a szokásos írásmód, a puszta <code>%{2}</code> pedig csak olyan eszköznél működik, amely egyetlen útvonalat ad vissza. A nem létező, vagy nem útvonal típusú név megállítja a makrót, ahelyett hogy találgatna.</p>
+<p>A fájlnévben lévő <code>%</code> az egy <code>%</code>. Semmi, amit egy lépés előállít, és semmilyen panelről vett név nem olvasódik újra helyettesítőként — az <code>50%Netto.pdf</code> nevű fájl tehát változatlanul megy át a makrókon. Szó szerinti <code>%</code>-hoz abban a sablonban, amelyet <em>Ön</em> ír, kettőzze meg: <code>%%</code>.</p>
+<h3 id="ertek-bekerese">Érték bekérése</h3>
+<p>A <code>%{ask:…}</code> az a mód, ahogyan egy makró átvesz valamit, amit előre nem tudhat — a leggyakoribb makró az, hogy „vidd a kijelölést egy mappába, amit én nevezek meg”, és e nélkül a mappát fixen bele kellene írni a fájlba.</p>
+<p>A kérdést <strong>azelőtt</strong> kapja meg, hogy a terv megjelenne, és a válaszok már benne vannak: a sorok azt mondják, „Vidd a kijelölést a »Számlák« mappába”, nem azt, hogy „abba, amit mindjárt begépel”. A kérdés megszakítása megszakítja a makrót; semmit sem javasoltunk, nemhogy végrehajtottunk volna.</p>
+<p>Ugyanaz a kérdés kétszer leírva egyszer hangzik el, és mindkét helyen ugyanaz szolgál, így két lépés, amely ugyanazt a mappát nevezi meg, nem térhet el. Az első <code>=</code> után álló szöveg az, amivel a mező indul. A megfogalmazás az Öné: pontosan úgy jelenik meg, ahogy leírta, azon a nyelven, amelyen leírta.</p>
+<p>A válasz érték, sosem sablon: ha <code>50%Netto</code>-t gépel, <code>50%Netto</code> nevű mappát kap.</p>
+<p>Kérdést feltevő makrót külső ügynök MCP-n keresztül nem futtathat — ott nincs kit megkérdezni, és az alapértékeket szó nélkül elfogadni annyi lenne, mint Ön helyett válaszolni. Elutasításra kerül, és ezt meg is mondja.</p>
 <p>A <code>%S</code> az egyetlen pont, ahol a makró eltér a gombtól: gombon a kijelölés szavak listája lesz egy parancssorhoz, itt pedig a teljes útvonalak listája, amelyet a fájleszközök elfogadnak.</p>
 <p>Az a lépés, amelynek <code>%S</code> vagy <code>%{1}</code> értéke <strong>üresen jön ki, megállítja a makrót</strong>, ahelyett hogy semmivel futna. A fájl nélküli <code>move</code> nem kisebb <code>move</code> — olyan kérés, amely már nem mond semmit, és sikert jelenteni rá hazugság lenne.</p>
 <h2 id="makro-futtatasa">Makró futtatása</h2>
@@ -89,9 +159,10 @@
 <li>Az asszisztensben, amely név alapján futtatni tudja</li>
 </ul>
 <p>Mielőtt egy változtató makró lefut, listaként megmutatja a lépéseit és vár. Kihúzhatja azt a lépést, amelyet nem szeretne; ami marad, az fut le. A csak olvasó makró kérdés nélkül fut.</p>
-<p>Ha egy lépés meghiúsul, a makró <strong>ott megáll</strong>, nem megy tovább — a második lépés általában feltételezi, hogy az első megtörtént, és nem létrehozott mappába fájlokat áthelyezni nem részleges siker. A jelentés megnevezi a lépést és megmondja, mi hibázott; a lefutott lépések a műveletnaplóban vannak.</p>
+<p>Minden, ami indulás előtt is felismerhetően hibás — nem létező eszköz, hiányzó argumentum, olyan lépés, amely másik makrót futtatna —, az első lépés előtt állítja meg a makrót, nem a harmadik után. Ha egy lépés futás közben hiúsul meg, a makró <strong>ott áll meg</strong>, ahelyett hogy folytatná: a második lépés rendszerint feltételezi, hogy az első megtörtént, és fájlokat egy létre nem jött mappába mozgatni nem részsiker. A jelentés megnevezi a lépést, elmondja, mi ment félre, és hány lépés futott már le; mindegyik szerepel a műveletnaplóban, a visszaútjával együtt, ahol van ilyen.</p>
 <h2 id="mit-tehet-egy-makro">Mit tehet egy makró</h2>
 <p>A makrót a benne lévő legigényesebb dolog szerint mérik. Az a makró, amelynek lépései csak olvasnak, olvasásnak számít; az, amely végleges törléssel végződik, végleges törlésként van védve — még azelőtt, hogy bármi elindulna, nem négy lépéssel később.</p>
+<p>Az a lépés, amely <em>parancsot</em> futtat, aszerint minősül, hogy az a parancs mit tesz, nem aszerint, hogy parancs — a <code>cm_DeleteReal</code>-t futtató makró tehát törlő makró, és Ön így is látja. Makró nem futtathat másik makrót, egyik írásmóddal sem.</p>
 <p>Alapértelmezés szerint semmi többet nem ad meg. Ha a makró olyan lépést tartalmaz, amelyet az engedélyei nem tesznek lehetővé — shell-parancsot, szkriptet —, az egész makró elutasításra kerül az indoklással, és nem történik semmi.</p>
 <h2 id="visszavonas">Visszavonás</h2>
 <p>Minden lépés önállóan naplózódik, ezért a makró utáni <strong>visszavonás</strong> annak <em>utolsó</em> lépését veszi vissza, nem az egész makrót. Makró egészére vonatkozó visszavonás nincs, mert több eszköznek egyáltalán nincs inverze, és egy gomb, amely ezt felajánlaná, róluk hazudna.</p>

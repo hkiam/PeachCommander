@@ -14,17 +14,49 @@ Wszystko, co robi makro, przechodzi przez tę samą maszynerię, z której korzy
 
 Nie musisz pisać makra od zera.
 
-1. Zrób to raz — przez asystenta albo uruchamiając istniejące makro.
+1. Zróbcie tę rzecz raz — skopiujcie, przenieście, zmieńcie nazwę albo usuńcie w panelach, albo niech zrobi to asystent.
 2. Wybierz **Konfiguracja ▸ Makro z ostatnich działań…**.
 3. Zaznacz kroki, które makro ma powtarzać, nadaj mu nazwę i zostaw włączone **Dodaj też przycisk dla niego**.
+4. Zaznaczcie **Podążaj za panelami zamiast za dokładnie tymi plikami**, jeśli makro ma następnym razem pracować na tym, co będzie wtedy zaznaczone. Wiersze zmieniają się przy zaznaczaniu, więc widzicie, co zapisujecie.
 
 **Zapisz makro** — i przycisk jest na pasku. To cały cykl.
 
-> **Czego się nie zapisuje.** Lista powstaje z działań, które przeszły przez asystenta lub inne makro. Ręczne kopiowanie, przenoszenie i zmiana nazw w panelach — F5, F6, F7 — nie są zapisywane, więc tą drogą nie da się z nich zrobić makra. Do tego użyj edytora poniżej.
+Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich.
+
+> **Czego się nie oferuje.** Spakowania archiwum i wszystkiego innego, co aplikacja zapamiętuje tylko z nazwy, nie da się zamienić w krok — nie ma dla tego kształtu. Takie wiersze widnieją wyszarzone wraz z powodem, zamiast ich brakować, żeby lista pięciu oferująca trzy nie wyglądała, jakby dwóch nie zauważyła. A jeśli nie poprosicie inaczej, ścieżki są te, które naprawdę zadziałały: nagrane makro powtarza *tę* kopię, a nie „kopię tego rodzaju”. Otwórzcie je w edytorze i wstawcie `%S` albo `%T` tam, gdzie ma podążać za panelami.
+
+**Podążaj za panelami** to sposób, by poprosić inaczej. Pliki pochodzące wszystkie z jednego folderu stają się zaznaczeniem; folder będący jednym z dwóch paneli staje się tym panelem, a folder wewnątrz zachowuje swoją końcówkę — z nagranego „przenieś te cztery faktury do Dokumenty/2026-08” robi się „przenieś to, co zaznaczone, do *2026-08* po drugiej stronie”, i jutro działa to w dwóch innych folderach. To, co nie leży pod żadnym z paneli, zostaje ścieżką, którą jest — nie ma w co tego złożyć. Opcja pojawia się tylko wtedy, gdy coś by zmieniła.
+
+## Dołączone przykłady
+
+Przy pierwszym otwarciu **Konfiguracja ▸ Edytuj makra…** plik zostaje założony z siedmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:
+
+| Makro | Co robi |
+| --- | --- |
+| **Open today's folder** | Tworzy w aktywnym panelu dzisiejszy folder z datą i wchodzi do niego. Jutro przyda się znowu. |
+| **File the selection into a dated folder** | Zaznacza wszystkie PDF-y, tworzy po drugiej stronie folder rok-miesiąc i przenosi je tam. |
+| **Copy the selection to a dated backup folder** | Kopiuje to, co zaznaczyliście *wy*, do datowanego folderu po drugiej stronie. |
+| **Move the pictures into an Images subfolder** | Jedna maska, jeden podfolder, w folderze, w którym i tak jesteście. |
+| **Merge the CSV files into one and open it** | Pokazuje, jak krok używa tego, co wytworzył krok wcześniejszy. |
+| **File the selection into a folder you name** | Przy uruchomieniu pyta was o folder. |
+| **Mark the file under the cursor as reviewed** | Nadaje jej etykietę i datuje komentarz — jeden plik, nie zaznaczenie. |
+| **Put the temporary files in the Trash** | Makro usuwające, i to właściwe, by raz zobaczyć pytanie o uprawnienia. |
+
+Każde z nich staje się poleceniem, więc dowolne można umieścić na przycisku albo na klawiszu, nie pisząc niczego.
+
+## Zarządzanie nimi
+
+**Konfiguracja ▸ Zarządzaj makrami…** to ta lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i czego zażąda pytanie o uprawnienia — „to usuwa” widać więc, zanim położycie je na klawiszu. Stamtąd można zmienić nazwę, zduplikować, przestawić i usunąć. Najechanie na wiersz pokazuje jego kroki.
+
+Kolejność nie jest ozdobą: kolejność w pliku jest tą, w jakiej wypisują je Przeglądarka poleceń i wybór do paska przycisków.
+
+**Przy usuwaniu proponuje się zabrać przyciski ze sobą**, i warto o tym wiedzieć, nawet jeśli nigdy nie otworzycie tego okna: makro usunięte ręcznie zostawia po sobie przycisk i klawisz, a żadne z nich już nic nie robi — aplikacja mówi teraz, że makra nie ma, zamiast milczeć, ale przycisk pozostaje waszą sprawą. Klawisz albo pozycję menu trzeba usunąć tam, gdzie zostały ustawione.
+
+*Kroków* się tu nie edytuje. **Edytuj plik…** przekazuje to edytorowi, z tego samego powodu, dla którego nie ma formularza: krok to nazwa narzędzia wraz z argumentami, a to jest właśnie JSON.
 
 ## Ręczna edycja makr
 
-**Konfiguracja ▸ Edytuj makra…** otwiera `macros.json` w folderze konfiguracji i przy pierwszym razie zostawia w nim skomentowany przykład. Makro to lista kroków, a każdy krok wskazuje narzędzie i jego argumenty:
+**Konfiguracja ▸ Edytuj makra…** otwiera `macros.json` w waszym folderze konfiguracji, za pierwszym razem założony z przykładami powyżej. Makro to lista kroków, a każdy krok nazywa narzędzie i jego argumenty:
 
 ```json
 [
@@ -41,7 +73,9 @@ Nie musisz pisać makra od zera.
 ]
 ```
 
-Zapis natychmiast przeładowuje makra. Jakie narzędzia istnieją i co przyjmują, powie asystent przez `list_macros` — albo przykład, z którym plik został utworzony.
+Zapis natychmiast przeładowuje makra — i mówi, jeśli coś jest nie tak: literówka w nazwie narzędzia, brakujący wymagany argument, dwa makra o tym samym id. Makro z błędem nie jest uruchamiane i nie trafia na żaden przycisk; dowiadujecie się, które to i co w nim nie gra, póki edytor jest jeszcze otwarty.
+
+Jakie narzędzia istnieją i co przyjmują, pokazuje **Konfiguracja ▸ Przeglądarka poleceń…**, albo zapytajcie asystenta o `list_macros`.
 
 ### Symbole zastępcze
 
@@ -54,9 +88,28 @@ Pojedyncze litery są te same, których używa pasek przycisków i menu Start: k
 | `%N` | Plik pod kursorem |
 | `%S` | Zaznaczone pliki — **lista**, czyli dokładnie to, co przyjmują `copy`, `move` i `move_to_trash` |
 | `%{date:yyyy-MM}` | Data uruchomienia makra, w tym formacie |
-| `%{1}` | Wynik kroku 1, o ile ten krok zwrócił ścieżkę lub listę ścieżek |
+| `%{1.destination}` | Jedna nazwana wartość z wyniku kroku 1 — tutaj plik, który zapisało `merge_files` |
+| `%{1}` | Cały wynik kroku 1, gdy ten krok wprost wytworzył ścieżkę albo listę ścieżek |
+| `%{ask:Folder name}` | Pyta was, gdy makro się uruchamia. `%{ask:Folder name=Archive}` wypełnia pole wartością *Archive* |
 
 Nawiasy klamrowe służą dodatkom, bo litery są już zajęte: `%M` w całym pozostałym programie oznacza „nazwę pod kursorem w drugim panelu”, więc miesiąca nie można było tak zapisać.
+
+Do wyników kroków używajcie postaci **nazwanej**. Większość narzędzi zgłasza kilka wartości zamiast jednej — `merge_files` zgłasza, dokąd zapisało, ile plików scaliło i ile wierszy z tego wyszło — dlatego `%{2.destination}` to zwykły zapis, a samo `%{2}` działa tylko dla narzędzia zwracającego jedną ścieżkę. Nazwa, której nie ma albo która nie jest ścieżką, zatrzymuje makro, zamiast być zgadywana.
+
+`%` w nazwie pliku to `%`. Nic z tego, co wytworzy krok, ani żadna nazwa z panelu nie jest z kolei czytana jako symbol zastępczy — plik o nazwie `50%Netto.pdf` przechodzi więc przez makra bez zmian. Dosłowny `%` w szablonie, który piszecie *wy*, podwójcie: `%%`.
+
+### Pytanie o wartość
+
+`%{ask:…}` to sposób, w jaki makro przyjmuje coś, czego nie może wiedzieć z góry — najczęstsze makro w ogóle to „przenieś zaznaczenie do folderu, który nazwę”, a bez tego folder musiałby być wpisany na stałe.
+
+Pytanie pada **zanim** pojawi się plan, a odpowiedzi są już w nim: wiersze mówią „Przenieś zaznaczenie do «Faktury»”, a nie „do tego, co zaraz wpiszecie”. Anulowanie pytania anuluje makro; nic nie zostało zaproponowane, a tym bardziej wykonane.
+
+To samo pytanie zapisane dwa razy zadaje się raz i używa w obu miejscach, więc dwa kroki nazywające ten sam folder nie mogą się rozejść. To, co następuje po pierwszym `=`, jest tym, od czego pole zaczyna. Sformułowanie jest wasze: pokazuje się dokładnie tak, jak je napisaliście, w języku, w którym je napisaliście.
+
+Odpowiedź jest wartością, nigdy szablonem: wpisanie `50%Netto` daje folder o nazwie `50%Netto`.
+
+Makra, które pyta, nie może uruchomić zewnętrzny agent przez MCP — nie ma tam kogo zapytać, a milczące wzięcie wartości domyślnych byłoby odpowiedzią w waszym imieniu. Zostaje odrzucone i tak też mówi.
+
 
 `%S` to jedyne miejsce, w którym makro różni się od przycisku: na przycisku zaznaczenie staje się listą słów dla wiersza poleceń, tutaj staje się listą pełnych ścieżek, których oczekują narzędzia plikowe.
 
@@ -74,11 +127,12 @@ Każde makro staje się poleceniem o nazwie `mc_<id>` i dzięki temu samo pojawi
 
 Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania.
 
-Jeśli krok zawiedzie, makro **zatrzymuje się w tym miejscu**, zamiast iść dalej — krok drugi zwykle zakłada, że krok pierwszy się wykonał, a przenoszenie plików do nieutworzonego folderu nie jest częściowym sukcesem. Raport wskazuje krok i mówi, co poszło źle; kroki, które się wykonały, są w dzienniku działań.
-
+Wszystko, co da się rozpoznać jako błędne przed startem — narzędzie, którego nie ma, brakujący argument, krok, który uruchomiłby inne makro — zatrzymuje makro przed pierwszym krokiem, a nie po trzecim. Jeśli krok zawiedzie już w trakcie, makro **zatrzymuje się tam** zamiast iść dalej: krok drugi zwykle zakłada, że krok pierwszy się zdarzył, a przenoszenie plików do nieutworzonego folderu nie jest częściowym sukcesem. Raport nazywa krok, mówi, co poszło źle, i ile kroków już wykonano; każdy z nich jest w dzienniku działań, z drogą powrotną tam, gdzie taka istnieje.
 ## Co makru wolno
 
 Makro ocenia się po tym, co najbardziej wymagające w nim jest. Makro, którego kroki tylko czytają, jest traktowane jak czytanie; takie, które kończy się trwałym usunięciem, jest zabezpieczone jak trwałe usunięcie — przed uruchomieniem czegokolwiek, nie cztery kroki później.
+
+Krok, który uruchamia *polecenie*, ocenia się po tym, co to polecenie robi, a nie po tym, że jest poleceniem — makro uruchamiające `cm_DeleteReal` jest więc makrem usuwającym i tak wam się je pokazuje. Makro nie może uruchomić innego makra, w żadnym z dwóch zapisów.
 
 Nieprzyznawanie niczego ponad to jest domyślne. Jeśli makro zawiera krok, na który Twoje uprawnienia nie pozwalają — polecenie powłoki, skrypt — całe makro jest odrzucane z podaniem przyczyny i nic się nie dzieje.
 

@@ -15,16 +15,69 @@
 <h2 id="raskeste-vei-ut-fra-det-du-nettopp-gjorde">Raskeste vei: ut fra det du nettopp gjorde</h2>
 <p>Du trenger ikke skrive en makro fra bunnen av.</p>
 <ol>
-<li>Gjør tingen én gang — via assistenten, eller ved å kjøre en eksisterende makro.</li>
+<li>Gjør tingen én gang — kopier, flytt, gi nytt navn eller slett i panelene, eller la assistenten gjøre det.</li>
 <li>Velg <strong>Konfigurasjon ▸ Makro fra nylige handlinger…</strong>.</li>
 <li>Kryss av trinnene makroen skal gjenta, gi den et navn, og la <strong>Legg også til en knapp for den</strong> stå på.</li>
+<li>Kryss av for <strong>Følg panelene i stedet for akkurat disse filene</strong> hvis makroen neste gang skal arbeide med det som da er valgt. Linjene endrer seg mens du krysser av, så du ser hva du lagrer.</li>
 </ol>
 <p><strong>Lagre makro</strong>, og knappen er i raden. Det er hele runden.</p>
+<p>Listen inneholder begge deler: hva du har gjort i panelene (F5, F6, F7, F8 og et navnebytte), og hva assistenten eller en annen makro har gjort. Hver linje sier hvilken av de to — for etter en økt med begge kan de samme to filene dukke opp i hver av dem.</p>
 <blockquote>
-<p><strong>Hva som ikke registreres.</strong> Listen bygges av handlinger som har gått gjennom assistenten eller en annen makro. Å kopiere, flytte eller gi nytt navn <em>manuelt</em> i panelene — F5, F6, F7 — registreres ikke og kan derfor ikke bli en makro på denne måten. Bruk redigereren nedenfor til de.</p>
+<p><strong>Hva som ikke tilbys.</strong> Å pakke et arkiv, og alt annet appen bare holder på ved navn, kan ikke bli et trinn — det finnes ingen form å gi det. Slike linjer står grå med sin begrunnelse i stedet for å mangle, så en liste på fem som tilbyr tre ikke leses som om den overså to. Og med mindre du ber om noe annet, er stiene de som faktisk ble brukt: en innspilt makro gjentar <em>den</em> kopien, ikke «en kopi av det slaget». Åpne den i editoren og sett <code>%S</code> eller <code>%T</code> der den skal følge panelene.</p>
 </blockquote>
+<p><strong>Følg panelene</strong> er måten å be om noe annet på. Filer som alle kom fra én mappe blir utvalget; en mappe som er ett av de to panelene blir det panelet, og en mappe inne i den beholder halen sin — et innspilt «flytt disse fire fakturaene til Dokumenter/2026-08» blir til «flytt det som er valgt til <em>2026-08</em> på den andre siden», og det virker i morgen i to andre mapper. Det som ikke ligger under noen av panelene forblir stien det er, for det finnes ingenting å brette det inn i. Valget tilbys bare når det ville endre noe.</p>
+<h2 id="eksemplene-som-flger-med">Eksemplene som følger med</h2>
+<p>Første gang du åpner <strong>Konfigurasjon ▸ Rediger makroer…</strong>, opprettes filen med sju gjennomarbeidede eksempler. Det er helt vanlige makroer — endre dem, eller slett dem du ikke vil ha — og hver av dem bærer en kommentar som sier hva den gjør og hva du kan endre:</p>
+<table>
+<thead>
+<tr>
+<th>Makro</th>
+<th>Hva den gjør</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Oppretter dagens datomappe i det aktive panelet og går inn i den. Kan brukes igjen i morgen.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Velger alle PDF-ene, oppretter en år-måned-mappe på den andre siden og flytter dem dit.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Kopierer det <em>du</em> har valgt til en datert mappe på den andre siden.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Én maske, én undermappe, i mappen du allerede står i.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Viser hvordan et trinn bruker det et tidligere trinn frembrakte.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Spør deg om mappen når den kjører.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Merker den og datostempler kommentaren — én fil, ikke utvalget.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>En slettende makro, og den rette å prøve rettighetsspørsmålet på.</td>
+</tr>
+</tbody>
+</table>
+<p>Hver av dem blir en kommando, så du kan legge hvilken som helst av dem på en knapp eller en tast uten å skrive noe.</p>
+<h2 id="a-handtere-dem">Å håndtere dem</h2>
+<p><strong>Konfigurasjon ▸ Håndter makroer…</strong> er listen: hva hver makro heter, hva kommandoen heter, hvor mange trinn den har, og hva rettighetsspørsmålet vil kreve — slik at «denne sletter» er synlig før du legger den på en tast. Derfra kan du gi nytt navn, duplisere, omordne og slette. Holder du over en rad, ser du trinnene.</p>
+<p>Rekkefølgen er ikke pynt: filens rekkefølge er den Kommandooversikten og knapperadens velger viser dem i.</p>
+<p><strong>Ved sletting tilbys det å ta knappene med</strong>, og det er verdt å vite selv om du aldri åpner dette vinduet: en makro fjernet for hånd etterlater knappen og tasten sin, og ingen av delene gjør noe da — appen sier nå at makroen er borte i stedet for å tie, men knappen er fortsatt din sak. En tast eller et menyvalg må tas ut der det ble satt.</p>
+<p><em>Trinnene</em> redigeres ikke her. <strong>Rediger fil…</strong> gir stafettpinnen videre til editoren til det, av samme grunn som det ikke finnes noe skjema: et trinn er et verktøynavn med argumentene sine, og det er nøyaktig hva JSON er.</p>
 <h2 id="redigere-makroer-manuelt">Redigere makroer manuelt</h2>
-<p><strong>Konfigurasjon ▸ Rediger makroer…</strong> åpner <code>macros.json</code> i konfigurasjonsmappen din og legger et kommentert eksempel der den første gangen. En makro er en liste med trinn, og hvert trinn navngir et verktøy og argumentene dets:</p>
+<p><strong>Konfigurasjon ▸ Rediger makroer…</strong> åpner <code>macros.json</code> i konfigurasjonsmappen din, opprettet første gang med eksemplene over. En makro er en liste med trinn, og hvert trinn nevner et verktøy og argumentene sine:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Lagring laster makroene på nytt umiddelbart. Hvilke verktøy som finnes og hva de tar, forteller assistenten via <code>list_macros</code> — eller eksempelet filen ble opprettet med.</p>
+<p>Å lagre laster makroene inn på nytt med en gang — og sier fra hvis noe er galt: et feilstavet verktøynavn, et manglende påkrevd argument, to makroer med samme id. En makro med en feil kjøres ikke og havner ikke på noen knapp; du får vite hvilken det er og hva som er galt, mens editoren fortsatt er åpen.</p>
+<p>Hvilke verktøy som finnes og hva de tar, ser du i <strong>Konfigurasjon ▸ Kommandooversikt…</strong>, eller spør assistenten om <code>list_macros</code>.</p>
 <h3 id="plassholdere">Plassholdere</h3>
 <p>De enkelte bokstavene er de samme som knapperaden og Start-menyen bruker, så har du laget en knapp, er det ingenting nytt å lære her.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>Datoen makroen startet, i det formatet</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Én navngitt verdi fra resultatet av trinn 1 — her filen <code>merge_files</code> skrev</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Resultatet av trinn 1, når det trinnet ga en sti eller en liste med stier</td>
+<td>Hele resultatet av trinn 1, når det trinnet direkte frembrakte en sti eller en liste med stier</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Spør deg når makroen kjører. <code>%{ask:Folder name=Archive}</code> fyller feltet med <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>Krøllparentesene er for tilleggene, fordi bokstavene allerede er tatt: <code>%M</code> betyr «navnet under markøren i det andre panelet» i hele resten av programmet, så en måned kunne ikke skrives slik.</p>
+<p>Bruk den <strong>navngitte</strong> formen for trinnresultater. De fleste verktøy melder flere verdier i stedet for én — <code>merge_files</code> melder hvor det skrev, hvor mange filer det slo sammen og hvor mange rader det ble — så <code>%{2.destination}</code> er den vanlige skrivemåten, og et bart <code>%{2}</code> virker bare for et verktøy som gir tilbake én enkelt sti. Et navn som ikke finnes, eller som ikke er en sti, stopper makroen i stedet for å bli gjettet.</p>
+<p>En <code>%</code> i et filnavn er en <code>%</code>. Ingenting et trinn frembringer, og ingen navn fra et panel, leses i sin tur som en plassholder — en fil som heter <code>50%Netto.pdf</code> går altså uendret gjennom makroer. Vil du ha en bokstavelig <code>%</code> i en mal <em>du</em> skriver, doble den: <code>%%</code>.</p>
+<h3 id="a-sprre-om-en-verdi">Å spørre om en verdi</h3>
+<p><code>%{ask:…}</code> er måten en makro tar imot noe den ikke kan vite på forhånd — den aller vanligste makroen er «flytt utvalget til en mappe jeg gir navn», og uten dette måtte mappen skrives fast i filen.</p>
+<p>Du blir spurt <strong>før</strong> planen dukker opp, og svarene står allerede i den: linjene sier «Flytt utvalget til «Fakturaer»», ikke «til det du straks skal skrive». Å avbryte spørsmålet avbryter makroen; ingenting er foreslått, langt mindre utført.</p>
+<p>Det samme spørsmålet skrevet to ganger stilles én gang og brukes begge steder, så to trinn som nevner samme mappe ikke kan sprike. Det som står etter det første <code>=</code>, er det feltet begynner med. Ordlyden er din: den vises nøyaktig slik du skrev den, på språket du skrev den på.</p>
+<p>Et svar er en verdi, aldri en mal: skriver du <code>50%Netto</code>, får du en mappe som heter <code>50%Netto</code>.</p>
+<p>En makro som spør kan ikke kjøres av en ekstern agent over MCP — der er det ingen å spørre, og å ta standardverdiene i stillhet ville vært å svare på dine vegne. Den avvises, og sier det.</p>
 <p><code>%S</code> er det ene stedet der en makro skiller seg fra en knapp: på en knapp blir utvalget en liste med ord for en kommandolinje, her blir det listen med fulle stier som filverktøyene tar.</p>
 <p>Et trinn hvis <code>%S</code> eller <code>%{1}</code> kommer ut <strong>tomt, stopper makroen</strong> i stedet for å kjøre uten noe. Et <code>move</code> uten filer er ikke et mindre <code>move</code> — det er en forespørsel som ikke lenger sier noe, og å melde suksess ville vært en løgn.</p>
 <h2 id="kjre-en-makro">Kjøre en makro</h2>
@@ -89,9 +159,10 @@
 <li>Assistenten, som kan kjøre den på navn</li>
 </ul>
 <p>Før en makro som endrer noe kjører, viser den trinnene sine som en liste og venter. Du kan stryke et trinn du ikke vil ha; det som blir igjen er det som kjøres. En makro som bare leser, kjøres uten å spørre.</p>
-<p>Hvis et trinn feiler, <strong>stopper makroen der</strong> i stedet for å fortsette — trinn to forutsetter vanligvis at trinn én skjedde, og å flytte filer til en mappe som ikke ble opprettet er ikke en delvis suksess. Rapporten navngir trinnet og sier hva som gikk galt, og trinnene som kjørte står i handlingsloggen.</p>
+<p>Alt som kan ses å være galt før starten — et verktøy som ikke finnes, et manglende argument, et trinn som ville kjørt en annen makro — stopper makroen før første trinn, ikke etter det tredje. Feiler et trinn underveis, <strong>stopper makroen der</strong> i stedet for å fortsette: trinn to forutsetter som regel at trinn én fant sted, og å flytte filer inn i en mappe som ikke ble opprettet er ingen delvis suksess. Rapporten nevner trinnet, sier hva som gikk galt og hvor mange trinn som allerede var utført; hvert av dem står i handlingsloggen, med veien tilbake der den finnes.</p>
 <h2 id="hva-en-makro-har-lov-til">Hva en makro har lov til</h2>
 <p>En makro måles etter det mest krevende i den. En makro der trinnene bare leser, behandles som en lesing; en som ender med en permanent sletting, håndteres som en permanent sletting — før noe av den kjører, ikke fire trinn inn.</p>
+<p>Et trinn som kjører en <em>kommando</em> bedømmes ut fra hva den kommandoen gjør, ikke ut fra at det er en kommando — en makro som kjører <code>cm_DeleteReal</code> er altså en slettende makro, og vises for deg som det. En makro kan ikke kjøre en annen makro, i ingen av de to skrivemåtene.</p>
 <p>Å ikke gi noe ekstra er standarden. Inneholder en makro et trinn tillatelsene dine ikke godtar — en skallkommando, et skript — avvises hele makroen med årsaken, og ingenting skjer.</p>
 <h2 id="angre">Angre</h2>
 <p>Hvert trinn logges for seg, så <strong>angre</strong> etter en makro tar tilbake dens <em>siste</em> trinn, ikke hele makroen. Det finnes ingen angre for hele makroen, fordi flere verktøy ikke har noen invers i det hele tatt, og en knapp som tilbød den, ville løyet om dem.</p>

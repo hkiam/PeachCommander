@@ -15,16 +15,69 @@
 <h2 id="de-snelste-weg-uit-wat-u-net-hebt-gedaan">De snelste weg: uit wat u net hebt gedaan</h2>
 <p>U hoeft een macro niet vanaf niets te schrijven.</p>
 <ol>
-<li>Doe het één keer — via de assistent, of door een bestaande macro uit te voeren.</li>
+<li>Doe het ding één keer — kopieer, verplaats, hernoem of verwijder in de vensters, of laat de assistent het doen.</li>
 <li>Kies <strong>Configuratie ▸ Macro van recente acties…</strong>.</li>
 <li>Vink de stappen aan die de macro moet herhalen, geef hem een naam en laat <strong>Ook een knop ervoor toevoegen</strong> aan staan.</li>
+<li>Vink <strong>De vensters volgen in plaats van precies deze bestanden</strong> aan als de macro de volgende keer moet werken met wat er dan geselecteerd is. De regels veranderen terwijl u aanvinkt, dus u ziet wat u opslaat.</li>
 </ol>
 <p><strong>Macro opslaan</strong>, en de knop staat in de balk. Dat is de hele cyclus.</p>
+<p>De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan.</p>
 <blockquote>
-<p><strong>Wat niet wordt vastgelegd.</strong> De lijst wordt opgebouwd uit acties die via de assistent of een andere macro zijn gelopen. Handmatig kopiëren, verplaatsen of hernoemen in de vensters — F5, F6, F7 — wordt niet vastgelegd en kan zo dus geen macro worden. Gebruik daarvoor de editor hieronder.</p>
+<p><strong>Wat niet wordt aangeboden.</strong> Een archief inpakken, en al het andere dat de app alleen bij naam vasthoudt, kan geen stap worden — er is geen vorm voor. Zulke regels staan er grijs bij met hun reden in plaats van te ontbreken, zodat een lijst van vijf die er drie aanbiedt niet leest alsof hij er twee heeft gemist. En tenzij u anders vraagt, zijn de paden die welke echt zijn gebruikt: een opgenomen macro herhaalt <em>die</em> kopie, niet ‘een kopie van dat soort’. Open hem in de editor en zet <code>%S</code> of <code>%T</code> waar hij de vensters moet volgen.</p>
 </blockquote>
+<p><strong>De vensters volgen</strong> is hoe u anders vraagt. Bestanden die allemaal uit één map kwamen worden de selectie; een map die een van de twee vensters is wordt dat venster, en een map daarbinnen houdt zijn staart — van een opgenomen ‘verplaats deze vier facturen naar Documenten/2026-08’ wordt ‘verplaats wat geselecteerd is naar <em>2026-08</em> aan de andere kant’, en dat werkt morgen in twee andere mappen. Wat onder geen van beide vensters ligt blijft het pad dat het is, want er is niets om het in te vouwen. De optie wordt alleen aangeboden als ze iets zou veranderen.</p>
+<h2 id="de-meegeleverde-voorbeelden">De meegeleverde voorbeelden</h2>
+<p>De eerste keer dat u <strong>Configuratie ▸ Macro's bewerken…</strong> opent, wordt het bestand aangemaakt met zeven uitgewerkte voorbeelden. Het zijn gewone macro's — wijzig ze, of verwijder degene die u niet wilt — en elk draagt een opmerking die zegt wat het doet en wat u kunt aanpassen:</p>
+<table>
+<thead>
+<tr>
+<th>Macro</th>
+<th>Wat het doet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Maakt de map van vandaag in het actieve venster en gaat erin. Morgen weer bruikbaar.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Selecteert alle PDF's, maakt aan de overkant een jaar-maandmap en verplaatst ze daarheen.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Kopieert wat <em>u</em> hebt geselecteerd naar een gedateerde map aan de andere kant.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Eén masker, één submap, in de map waar u toch al staat.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Laat zien hoe een stap gebruikt wat een eerdere stap heeft opgeleverd.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Vraagt u bij het uitvoeren om de map.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Geeft hem een label en dateert zijn opmerking — één bestand, niet de selectie.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Een verwijderende macro, en de juiste om de rechtenvraag één keer te zien.</td>
+</tr>
+</tbody>
+</table>
+<p>Elk ervan wordt een opdracht, dus u kunt er elke van op een knop of een toets leggen zonder iets te schrijven.</p>
+<h2 id="ze-beheren">Ze beheren</h2>
+<p><strong>Configuratie ▸ Macro’s beheren…</strong> is de lijst: hoe elke macro heet, hoe haar opdracht heet, hoeveel stappen ze heeft en wat de rechtenvraag zal verlangen — zo is ‘deze verwijdert’ te zien vóór u haar op een toets legt. Van daaruit kunt u hernoemen, dupliceren, herordenen en verwijderen. Wie over een regel gaat, ziet haar stappen.</p>
+<p>De volgorde is geen versiering: de volgorde in het bestand is de volgorde waarin het Opdrachtenoverzicht en de knoppenbalkkiezer ze tonen.</p>
+<p><strong>Bij verwijderen wordt aangeboden de knoppen mee te nemen</strong>, en dat is ook goed te weten als u dit venster nooit opent: een met de hand verwijderde macro laat haar knop en haar toets achter, en beide doen dan niets — de app zegt nu dat de macro weg is in plaats van te zwijgen, maar de knop blijft uw zaak. Een toets of menu-item moet daar worden weggehaald waar het is ingesteld.</p>
+<p>De <em>stappen</em> worden hier niet bewerkt. <strong>Bestand bewerken…</strong> geeft daarvoor het stokje aan de editor, om dezelfde reden dat er geen formulier is: een stap is een gereedschapsnaam met zijn argumenten, en dat is precies wat JSON is.</p>
 <h2 id="macros-met-de-hand-bewerken">Macro’s met de hand bewerken</h2>
-<p><strong>Configuratie ▸ Macro’s bewerken…</strong> opent <code>macros.json</code> in uw configuratiemap en zet er de eerste keer een voorbeeld met commentaar in. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:</p>
+<p><strong>Configuratie ▸ Macro's bewerken…</strong> opent <code>macros.json</code> in uw configuratiemap, de eerste keer aangemaakt met de voorbeelden hierboven. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Opslaan laadt de macro’s meteen opnieuw. Welke gereedschappen er zijn en wat ze aannemen, vertelt de assistent via <code>list_macros</code> — of het voorbeeld waarmee het bestand is aangemaakt.</p>
+<p>Opslaan laadt de macro's meteen opnieuw — en zegt het als er iets niet klopt: een verkeerd gespelde gereedschapsnaam, een ontbrekend verplicht argument, twee macro's met hetzelfde id. Een macro met een fout wordt niet uitgevoerd en komt op geen enkele knop; u hoort welke het is en wat eraan mankeert, terwijl de editor nog openstaat.</p>
+<p>Welke gereedschappen er zijn en wat ze aannemen, ziet u in <strong>Configuratie ▸ Opdrachtenoverzicht…</strong>, of vraag de assistent om <code>list_macros</code>.</p>
 <h3 id="aanduidingen">Aanduidingen</h3>
 <p>De losse letters zijn dezelfde die de knoppenbalk en het Start-menu gebruiken: wie al een knop heeft gemaakt, hoeft hier niets nieuws te leren.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>De datum waarop de macro startte, in die opmaak</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Eén benoemde waarde uit het resultaat van stap 1 — hier het bestand dat <code>merge_files</code> heeft geschreven</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Het resultaat van stap 1, mits die stap een pad of een lijst paden opleverde</td>
+<td>Het hele resultaat van stap 1, wanneer die stap rechtstreeks een pad of een lijst paden opleverde</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Vraagt het u wanneer de macro loopt. <code>%{ask:Folder name=Archive}</code> vult het veld vast met <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>De accolades zijn voor de extra’s, omdat de letters al bezet zijn: <code>%M</code> betekent in de rest van het programma ‘de naam onder de cursor in het andere venster’, dus een maand kon zo niet worden geschreven.</p>
+<p>Gebruik voor stapresultaten de <strong>benoemde</strong> vorm. De meeste gereedschappen melden meerdere waarden in plaats van één — <code>merge_files</code> meldt waar het heeft geschreven, hoeveel bestanden het samenvoegde en hoeveel regels eruit kwamen — dus <code>%{2.destination}</code> is de gebruikelijke schrijfwijze, en een kaal <code>%{2}</code> werkt alleen bij een gereedschap dat één enkel pad teruggeeft. Een naam die er niet is, of die geen pad is, stopt de macro in plaats van geraden te worden.</p>
+<p>Een <code>%</code> in een bestandsnaam is een <code>%</code>. Niets wat een stap oplevert, en geen naam uit een venster, wordt op zijn beurt als plaatshouder gelezen — een bestand met de naam <code>50%Netto.pdf</code> gaat dus onveranderd door macro's heen. Voor een letterlijke <code>%</code> in een sjabloon dat <em>u</em> schrijft: verdubbel hem, <code>%%</code>.</p>
+<h3 id="om-een-waarde-vragen">Om een waarde vragen</h3>
+<p><code>%{ask:…}</code> is hoe een macro iets aanneemt dat ze vooraf niet kan weten — de allergewoonste macro is ‘verplaats de selectie naar een map die ik noem’, en zonder dit zou die map vast in het bestand moeten staan.</p>
+<p>U wordt <strong>voordat</strong> het plan verschijnt gevraagd, en de antwoorden staan er al in: de regels zeggen ‘Verplaats de selectie naar “Facturen”’, niet ‘naar wat u zo dadelijk gaat typen’. De vraag annuleren annuleert de macro; er is niets voorgesteld, laat staan uitgevoerd.</p>
+<p>Dezelfde vraag die twee keer staat wordt één keer gesteld en op beide plaatsen gebruikt, zodat twee stappen die dezelfde map noemen niet uiteen kunnen lopen. Wat na de eerste <code>=</code> staat is waarmee het veld begint. De formulering is de uwe: ze wordt precies zo getoond als u ze schreef, in de taal waarin u ze schreef.</p>
+<p>Een antwoord is een waarde, nooit een sjabloon: <code>50%Netto</code> intypen geeft een map die <code>50%Netto</code> heet.</p>
+<p>Een macro die vraagt kan niet worden uitgevoerd door een externe agent via MCP — daar is niemand om te vragen, en stilzwijgend de standaardwaarden nemen zou namens u antwoorden zijn. Ze wordt geweigerd, en zegt dat.</p>
 <p><code>%S</code> is de enige plek waar een macro van een knop afwijkt: op een knop wordt de selectie een lijst woorden voor een opdrachtregel, hier wordt het de lijst volledige paden die de bestandsgereedschappen aannemen.</p>
 <p>Een stap waarvan <code>%S</code> of <code>%{1}</code> <strong>leeg uitkomt, stopt de macro</strong> in plaats van met niets te lopen. Een <code>move</code> zonder bestanden is geen kleinere <code>move</code> — het is een verzoek dat niets meer zegt, en succes melden zou een leugen zijn.</p>
 <h2 id="een-macro-uitvoeren">Een macro uitvoeren</h2>
@@ -89,9 +159,10 @@
 <li>De assistent, die hem op naam kan uitvoeren</li>
 </ul>
 <p>Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen.</p>
-<p>Mislukt een stap, dan <strong>stopt de macro daar</strong> in plaats van door te gaan — stap twee gaat er meestal van uit dat stap één is gebeurd, en bestanden verplaatsen naar een map die niet is aangemaakt is geen gedeeltelijk succes. Het verslag noemt de stap en zegt wat er misging; de stappen die wel liepen staan in het actielogboek.</p>
+<p>Alles wat vóór de start als fout te herkennen is — een gereedschap dat niet bestaat, een ontbrekend argument, een stap die een andere macro zou uitvoeren — stopt de macro vóór de eerste stap, niet na de derde. Faalt een stap tijdens het lopen, dan <strong>stopt de macro daar</strong> in plaats van door te gaan: stap twee gaat er meestal van uit dat stap één heeft plaatsgevonden, en bestanden verplaatsen naar een map die niet is aangemaakt is geen gedeeltelijk succes. Het verslag noemt de stap, zegt wat er misging en hoeveel stappen al waren uitgevoerd; elk daarvan staat in het actielogboek, met zijn weg terug waar die er is.</p>
 <h2 id="wat-een-macro-mag">Wat een macro mag</h2>
 <p>Een macro wordt afgemeten aan het zwaarste wat erin staat. Een macro waarvan de stappen alleen lezen, geldt als lezen; een die eindigt met definitief verwijderen wordt behandeld als definitief verwijderen — voordat er iets loopt, niet vier stappen later.</p>
+<p>Een stap die een <em>opdracht</em> uitvoert wordt beoordeeld op wat die opdracht doet, niet op het feit dat het een opdracht is — een macro die <code>cm_DeleteReal</code> uitvoert is dus een verwijderende macro, en wordt u ook zo getoond. Een macro kan geen andere macro uitvoeren, in geen van beide schrijfwijzen.</p>
 <p>Niets extra toestaan is de standaard. Bevat een macro een stap die uw rechten niet toestaan — een shell-opdracht, een script — dan wordt de hele macro geweigerd met opgave van reden, en gebeurt er niets.</p>
 <h2 id="ongedaan-maken">Ongedaan maken</h2>
 <p>Elke stap wordt afzonderlijk gelogd, dus <strong>ongedaan maken</strong> na een macro haalt de <em>laatste</em> stap terug, niet de hele macro. Er is geen ongedaan maken voor een hele macro, omdat verschillende gereedschappen helemaal geen omgekeerde hebben en een knop die het aanbood daarover zou liegen.</p>

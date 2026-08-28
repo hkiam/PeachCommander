@@ -15,16 +15,69 @@
 <h2 id="der-schnellste-weg-aus-dem-was-sie-eben-getan-haben">Der schnellste Weg: aus dem, was Sie eben getan haben</h2>
 <p>Sie müssen ein Makro nicht von Hand schreiben.</p>
 <ol>
-<li>Tun Sie die Sache einmal — über den Assistenten oder durch Ausführen eines vorhandenen Makros.</li>
+<li>Tun Sie die Sache einmal — kopieren, verschieben, umbenennen oder löschen Sie in den Fenstern, oder lassen Sie es den Assistenten tun.</li>
 <li>Wählen Sie <strong>Konfiguration ▸ Makro aus letzten Aktionen…</strong>.</li>
 <li>Kreuzen Sie die Schritte an, die das Makro wiederholen soll, geben Sie ihm einen Namen und lassen Sie <strong>Außerdem eine Schaltfläche dafür anlegen</strong> eingeschaltet.</li>
+<li>Kreuzen Sie <strong>Den Fenstern folgen statt genau diesen Dateien</strong> an, wenn das Makro beim nächsten Mal mit dem arbeiten soll, was dann ausgewählt ist. Die Zeilen ändern sich beim Ankreuzen, Sie sehen also, was Sie speichern.</li>
 </ol>
 <p><strong>Makro speichern</strong> — und die Schaltfläche ist in der Leiste. Das ist der ganze Ablauf.</p>
+<p>Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen.</p>
 <blockquote>
-<p><strong>Was nicht aufgezeichnet wird.</strong> Die Liste entsteht aus Aktionen, die über den Assistenten oder ein anderes Makro gelaufen sind. Kopieren, Verschieben oder Umbenennen <em>von Hand</em> in den Fenstern — F5, F6, F7 — wird nicht aufgezeichnet und kann so nicht in ein Makro verwandelt werden. Dafür nehmen Sie den Editor unten.</p>
+<p><strong>Was nicht angeboten wird.</strong> Das Packen eines Archivs, und alles andere, was die App nur dem Namen nach festhält, lässt sich nicht in einen Schritt verwandeln — es gibt keine Form dafür. Solche Zeilen stehen ausgegraut mit ihrem Grund da, statt zu fehlen, damit eine Liste von fünf, die drei anbietet, nicht so aussieht, als hätte sie zwei übersehen. Und wenn Sie es nicht anders verlangen, sind die Pfade die, die tatsächlich gelaufen sind: ein aufgezeichnetes Makro wiederholt <em>jene</em> Kopie, nicht „eine Kopie dieser Art“. Öffnen Sie es im Editor und setzen Sie <code>%S</code> oder <code>%T</code> dorthin, wo es den Fenstern folgen soll.</p>
 </blockquote>
+<p><strong>Den Fenstern folgen</strong> ist, wie Sie es anders verlangen. Dateien, die alle aus einem Ordner kamen, werden zur Auswahl; ein Ordner, der eines der beiden Fenster ist, wird zu diesem Fenster, und ein Ordner darin behält seinen Rest — aus einem aufgezeichneten „diese vier Rechnungen nach Dokumente/2026-08 verschieben“ wird „das Ausgewählte nach <em>2026-08</em> auf der anderen Seite verschieben“, und das funktioniert morgen in zwei anderen Ordnern. Was unter keinem der beiden Fenster liegt, bleibt der Pfad, der es ist — es gibt nichts, worin es aufgehen könnte. Die Option wird nur angeboten, wenn sie etwas ändern würde.</p>
+<h2 id="die-mitgelieferten-beispiele">Die mitgelieferten Beispiele</h2>
+<p>Wenn Sie <strong>Konfiguration ▸ Makros bearbeiten…</strong> zum ersten Mal öffnen, wird die Datei mit sieben ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:</p>
+<table>
+<thead>
+<tr>
+<th>Makro</th>
+<th>Was es tut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Legt den heutigen Datumsordner im aktiven Fenster an und wechselt hinein. Morgen wieder ausführbar.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Wählt alle PDFs aus, legt gegenüber einen Jahr-Monat-Ordner an und verschiebt sie hinein.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Kopiert das, was <em>Sie</em> ausgewählt haben, in einen datierten Ordner auf der anderen Seite.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Eine Maske, ein Unterordner, im Ordner, in dem Sie ohnehin stehen.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Zeigt, wie ein Schritt verwendet, was ein früherer Schritt hervorgebracht hat.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Fragt Sie beim Ausführen nach dem Ordner.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Verschlagwortet sie und datiert ihren Kommentar — eine Datei, nicht die Auswahl.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Ein löschendes Makro, und das richtige, um die Rechteabfrage einmal zu sehen.</td>
+</tr>
+</tbody>
+</table>
+<p>Jedes davon wird zu einem Kommando, Sie können also jedes auf eine Schaltfläche oder eine Taste legen, ohne etwas zu schreiben.</p>
+<h2 id="sie-verwalten">Sie verwalten</h2>
+<p><strong>Konfiguration ▸ Makros verwalten…</strong> ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie umbenennen, duplizieren, umsortieren und löschen. Wer über eine Zeile fährt, sieht ihre Schritte.</p>
+<p>Das Umsortieren ist keine Zierde: die Reihenfolge in der Datei ist die Reihenfolge, in der der Kommando-Browser und die Schaltflächenauswahl sie auflisten.</p>
+<p><strong>Beim Löschen wird angeboten, die Schaltflächen mitzunehmen</strong>, und das ist auch dann wissenswert, wenn Sie dieses Fenster nie benutzen: ein von Hand entferntes Makro lässt seine Schaltfläche und seine Taste zurück, und beides tut dann nichts — die App sagt jetzt, dass das Makro weg ist, statt zu schweigen, aber die Schaltfläche bleibt Ihre Sache. Eine Taste oder ein Menüeintrag muss dort herausgenommen werden, wo er gesetzt wurde.</p>
+<p>Die <em>Schritte</em> werden hier nicht bearbeitet. <strong>Datei bearbeiten…</strong> übergibt dafür an den Editor, aus demselben Grund, aus dem es kein Formular gibt: ein Schritt ist ein Werkzeugname mit seinen Argumenten, und das ist, was JSON ist.</p>
 <h2 id="makros-von-hand-bearbeiten">Makros von Hand bearbeiten</h2>
-<p><strong>Konfiguration ▸ Makros bearbeiten…</strong> öffnet <code>macros.json</code> in Ihrem Konfigurationsordner und legt beim ersten Mal ein kommentiertes Beispiel an. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:</p>
+<p><strong>Konfiguration ▸ Makros bearbeiten…</strong> öffnet <code>macros.json</code> in Ihrem Konfigurationsordner, beim ersten Mal angelegt mit den Beispielen von oben. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Das Speichern lädt die Makros sofort neu. Welche Werkzeuge es gibt und was sie nehmen, sagt Ihnen der Assistent über <code>list_macros</code> — oder das Beispiel, mit dem die Datei angelegt wurde.</p>
+<p>Das Speichern lädt die Makros sofort neu — und sagt Ihnen, wenn etwas nicht stimmt: ein falsch geschriebener Werkzeugname, ein fehlendes Pflichtargument, zwei Makros mit derselben Id. Ein Makro mit einem Fehler wird nicht ausgeführt und kommt auf keine Schaltfläche; Sie erfahren, welches Makro es betrifft und was daran falsch ist, solange der Editor noch offen ist.</p>
+<p>Welche Werkzeuge es gibt und was sie nehmen, zeigt <strong>Konfiguration ▸ Kommando-Browser…</strong> — oder der Assistent über <code>list_macros</code>.</p>
 <h3 id="platzhalter">Platzhalter</h3>
 <p>Die einzelnen Buchstaben sind dieselben, die die Schaltflächenleiste und das Start-Menü verwenden. Wer schon eine Schaltfläche gebaut hat, muss hier nichts Neues lernen:</p>
 <table>
@@ -71,12 +125,28 @@
 <td>Das Datum des Makrostarts, in diesem Format</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Ein benannter Wert aus dem Ergebnis von Schritt 1 — hier die Datei, die <code>merge_files</code> geschrieben hat</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Das Ergebnis von Schritt 1, sofern der Schritt einen Pfad oder eine Liste von Pfaden geliefert hat</td>
+<td>Das ganze Ergebnis von Schritt 1, wenn dieser Schritt unmittelbar einen Pfad oder eine Pfadliste geliefert hat</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Fragt Sie, wenn das Makro läuft. <code>%{ask:Folder name=Archive}</code> füllt das Feld mit <em>Archive</em> vor</td>
 </tr>
 </tbody>
 </table>
 <p>Die geschweiften Klammern sind für die Zusätze da, weil die Buchstaben schon belegt sind: <code>%M</code> bedeutet im ganzen übrigen Programm „der Name unter dem Cursor im anderen Panel“, ein Monat könnte also nicht so geschrieben werden.</p>
+<p>Für Schritt-Ergebnisse nehmen Sie die <strong>benannte</strong> Form. Die meisten Werkzeuge melden mehrere Werte statt eines einzigen — <code>merge_files</code> meldet, wohin es geschrieben hat, wie viele Dateien es zusammengeführt hat und wie viele Zeilen entstanden sind —, deshalb ist <code>%{2.destination}</code> die übliche Schreibweise, und ein bloßes <code>%{2}</code> funktioniert nur bei einem Werkzeug, das genau einen Pfad zurückgibt. Ein Name, den es nicht gibt oder der kein Pfad ist, hält das Makro an, statt geraten zu werden.</p>
+<p>Ein <code>%</code> in einem Dateinamen ist ein <code>%</code>. Nichts, was ein Schritt hervorbringt, und kein Name aus einem Fenster wird seinerseits als Platzhalter gelesen — eine Datei namens <code>50%Netto.pdf</code> läuft also unverändert durch Makros hindurch. Ein wörtliches <code>%</code> in einer Vorlage, die <em>Sie</em> schreiben, verdoppeln Sie: <code>%%</code>.</p>
+<h3 id="nach-einem-wert-fragen">Nach einem Wert fragen</h3>
+<p><code>%{ask:…}</code> ist, wie ein Makro etwas entgegennimmt, was es vorher nicht wissen kann — das häufigste Makro überhaupt ist „die Auswahl in einen Ordner verschieben, den ich benenne“, und ohne dies müsste der Ordner fest verdrahtet werden.</p>
+<p>Gefragt werden Sie <strong>bevor</strong> der Plan erscheint, und die Antworten stehen schon darin: Die Zeilen sagen „Die Auswahl nach „Rechnungen“ verschieben“, nicht „nach dem, was Sie gleich tippen werden“. Die Frage abzubrechen bricht das Makro ab; nichts wurde vorgeschlagen, geschweige denn ausgeführt.</p>
+<p>Dieselbe Frage zweimal geschrieben wird einmal gestellt und an beiden Stellen verwendet, sodass zwei Schritte, die denselben Ordner nennen, nicht auseinanderlaufen können. Text nach dem ersten <code>=</code> ist das, womit das Feld vorbelegt ist. Der Wortlaut ist Ihrer — er wird genau so gezeigt, wie Sie ihn geschrieben haben, in der Sprache, in der Sie ihn geschrieben haben.</p>
+<p>Eine Antwort ist ein Wert, nie eine Vorlage: <code>50%Netto</code> getippt ergibt einen Ordner namens <code>50%Netto</code>.</p>
+<p>Ein Makro, das fragt, kann von einem externen Agenten über MCP nicht ausgeführt werden — dort ist niemand, den man fragen könnte, und stillschweigend die Vorgaben zu nehmen hieße, an Ihrer Stelle zu antworten. Es wird abgelehnt und sagt das auch.</p>
 <p><code>%S</code> ist die eine Stelle, an der ein Makro von einer Schaltfläche abweicht: auf einer Schaltfläche wird die Auswahl zu einer Liste von Wörtern für eine Befehlszeile, hier zur Liste vollständiger Pfade, die die Dateiwerkzeuge nehmen.</p>
 <p>Ein Schritt, dessen <code>%S</code> oder <code>%{1}</code> <strong>leer herauskommt, hält das Makro an</strong>, statt mit nichts zu laufen. Ein <code>move</code> ohne Dateien ist kein kleineres <code>move</code> — es ist eine Anweisung, die nichts mehr sagt, und Erfolg dafür zu melden wäre eine Lüge.</p>
 <h2 id="ein-makro-ausfuhren">Ein Makro ausführen</h2>
@@ -89,9 +159,10 @@
 <li>Dem Assistenten, der es beim Namen ausführen kann</li>
 </ul>
 <p>Bevor ein Makro läuft, das etwas verändert, zeigt es Ihnen seine Schritte als Liste und wartet. Sie können einen Schritt streichen, den Sie nicht wollen; was übrig bleibt, läuft. Ein Makro, das nur liest, läuft ohne Rückfrage.</p>
-<p>Scheitert ein Schritt, <strong>hält das Makro dort an</strong>, statt weiterzumachen — Schritt zwei setzt in der Regel voraus, dass Schritt eins passiert ist, und Dateien in einen nicht angelegten Ordner zu verschieben ist kein Teilerfolg. Der Bericht nennt den Schritt und sagt, was schiefging; die Schritte, die gelaufen sind, stehen im Aktionsprotokoll.</p>
+<p>Alles, was sich vor dem Start als falsch erkennen lässt — ein Werkzeug, das es nicht gibt, ein fehlendes Argument, ein Schritt, der ein anderes Makro ausführen würde —, hält das Makro vor dem ersten Schritt an und nicht nach dem dritten. Scheitert ein Schritt während des Laufs, <strong>hält das Makro dort an</strong>, statt weiterzumachen — Schritt zwei setzt meist voraus, dass Schritt eins stattgefunden hat, und Dateien in einen nicht angelegten Ordner zu verschieben ist kein Teilerfolg. Die Meldung nennt den Schritt, sagt, was schiefging, und sagt, wie viele Schritte bereits ausgeführt waren; jeder davon steht im Aktionsprotokoll, mit seinem Rückweg, wo es einen gibt.</p>
 <h2 id="was-ein-makro-darf">Was ein Makro darf</h2>
 <p>Ein Makro wird an dem Anspruchsvollsten gemessen, was darin steht. Ein Makro, dessen Schritte nur lesen, gilt als Lesen; eines, das mit einem endgültigen Löschen endet, wird wie ein endgültiges Löschen abgesichert — bevor irgendetwas davon läuft, nicht vier Schritte später.</p>
+<p>Ein Schritt, der ein <em>Kommando</em> ausführt, wird danach beurteilt, was dieses Kommando tut, und nicht danach, dass es ein Kommando ist — ein Makro, das <code>cm_DeleteReal</code> ausführt, ist also ein löschendes Makro und wird Ihnen als solches gezeigt. Ein Makro kann kein anderes Makro ausführen, in keiner der beiden Schreibweisen.</p>
 <p>Nichts zusätzlich zu gewähren ist der Standard. Enthält ein Makro einen Schritt, den Ihre Berechtigungen nicht erlauben — einen Shell-Befehl, ein Skript —, wird das ganze Makro abgelehnt, mit Begründung, und es passiert nichts.</p>
 <h2 id="widerrufen">Widerrufen</h2>
 <p>Jeder Schritt wird einzeln protokolliert, deshalb nimmt <strong>Widerrufen</strong> nach einem Makro dessen <em>letzten</em> Schritt zurück, nicht das ganze Makro. Ein makroweites Widerrufen gibt es nicht, weil mehrere Werkzeuge überhaupt keine Umkehrung haben und eine Schaltfläche, die es anbietet, über diese lügen würde.</p>

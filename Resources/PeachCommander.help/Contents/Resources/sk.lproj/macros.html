@@ -15,16 +15,69 @@
 <h2 id="najrychlejsia-cesta-z-toho-co-ste-prave-urobili">Najrýchlejšia cesta: z toho, čo ste práve urobili</h2>
 <p>Makro nemusíte písať od začiatku.</p>
 <ol>
-<li>Urobte to raz — cez asistenta alebo spustením existujúceho makra.</li>
+<li>Urobte tú vec raz — skopírujte, presuňte, premenujte alebo zmažte v paneloch, alebo to nechajte urobiť asistenta.</li>
 <li>Zvoľte <strong>Konfigurácia ▸ Makro z nedávnych akcií…</strong>.</li>
 <li>Zaškrtnite kroky, ktoré má makro opakovať, pomenujte ho a nechajte zapnuté <strong>Pridať pre neho aj tlačidlo</strong>.</li>
+<li>Zaškrtnite <strong>Sledovať panely namiesto práve týchto súborov</strong>, ak má makro nabudúce pracovať s tým, čo bude práve vybrané. Riadky sa pri zaškrtnutí zmenia, takže vidíte, čo ukladáte.</li>
 </ol>
 <p><strong>Uložiť makro</strong> — a tlačidlo je v lište. To je celý postup.</p>
+<p>Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie) a čo urobil asistent alebo iné makro. Každý riadok hovorí, ktoré z toho — po sedení s oboma sa tie isté dva súbory môžu objaviť v oboch.</p>
 <blockquote>
-<p><strong>Čo sa nezaznamenáva.</strong> Zoznam sa skladá z akcií, ktoré prešli asistentom alebo iným makrom. Ručné kopírovanie, presúvanie a premenovanie v paneloch — F5, F6, F7 — sa nezaznamenáva, takže sa z nich touto cestou makro urobiť nedá. Na to použite editor nižšie.</p>
+<p><strong>Čo sa neponúka.</strong> Zabalenie archívu a všetko ostatné, čo si aplikácia pamätá len podľa mena, sa nedá premeniť na krok — nie je preň tvar. Také riadky sú vidieť zošednuté aj s dôvodom, namiesto aby chýbali, aby zoznam piatich, ktorý ponúka tri, nevyzeral, že dva prehliadol. A ak nepožiadate inak, cesty sú tie, ktoré naozaj prebehli: zaznamenané makro zopakuje <em>tú</em> kópiu, nie „kópiu toho druhu“. Otvorte ho v editore a dajte <code>%S</code> alebo <code>%T</code> tam, kde má sledovať panely.</p>
 </blockquote>
+<p><strong>Sledovať panely</strong> je spôsob, ako požiadať inak. Zo súborov, ktoré pochádzali všetky z jednej zložky, sa stane výber; zo zložky, ktorá je jedným z dvoch panelov, sa stane ten panel, a zložka vnútri si ponechá svoj zvyšok — zo zaznamenaného „presuň tieto štyri faktúry do Dokumenty/2026-08“ sa stane „presuň vybrané do <em>2026-08</em> na druhej strane“, a zajtra to funguje v dvoch iných zložkách. Čo neleží pod žiadnym z oboch panelov, zostáva cestou, ktorou je — nie je do čoho to zložiť. Voľba sa ponúka len vtedy, keď by niečo zmenila.</p>
+<h2 id="prilozene-priklady">Priložené príklady</h2>
+<p>Keď prvýkrát otvoríte <strong>Konfigurácia ▸ Upraviť makrá…</strong>, súbor sa založí so siedmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:</p>
+<table>
+<thead>
+<tr>
+<th>Makro</th>
+<th>Čo robí</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open today's folder</strong></td>
+<td>Založí v aktívnom paneli dnešný dátumový priečinok a vojde doň. Zajtra poslúži znova.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a dated folder</strong></td>
+<td>Vyberie všetky PDF, na druhej strane založí priečinok rok-mesiac a presunie ich doň.</td>
+</tr>
+<tr>
+<td><strong>Copy the selection to a dated backup folder</strong></td>
+<td>Skopíruje to, čo ste vybrali <em>vy</em>, do datovaného priečinka na druhej strane.</td>
+</tr>
+<tr>
+<td><strong>Move the pictures into an Images subfolder</strong></td>
+<td>Jedna maska, jeden podpriečinok, v priečinku, v ktorom už ste.</td>
+</tr>
+<tr>
+<td><strong>Merge the CSV files into one and open it</strong></td>
+<td>Ukazuje, ako krok použije to, čo vytvoril krok predchádzajúci.</td>
+</tr>
+<tr>
+<td><strong>File the selection into a folder you name</strong></td>
+<td>Pri spustení sa vás spýta na priečinok.</td>
+</tr>
+<tr>
+<td><strong>Mark the file under the cursor as reviewed</strong></td>
+<td>Označí ho štítkom a opatrí komentár dátumom — jeden súbor, nie výber.</td>
+</tr>
+<tr>
+<td><strong>Put the temporary files in the Trash</strong></td>
+<td>Mazacie makro, a to pravé, na ktorom si raz pozrieť otázku na oprávnenia.</td>
+</tr>
+</tbody>
+</table>
+<p>Každé z nich sa stane príkazom, takže ktorékoľvek môžete umiestniť na tlačidlo alebo na klávesu bez toho, aby ste čokoľvek písali.</p>
+<h2 id="spravovat-ich">Spravovať ich</h2>
+<p><strong>Konfigurácia ▸ Spravovať makrá…</strong> je ten zoznam: ako sa každé makro volá, ako sa volá jeho príkaz, koľko má krokov a čo bude chcieť kontrola oprávnení — „toto maže“ je teda vidieť skôr, než ho dáte na kláves. Odtiaľ môžete premenovať, duplikovať, preusporiadať a zmazať. Keď prejdete nad riadkom, uvidíte jeho kroky.</p>
+<p>Poradie nie je ozdoba: poradie v súbore je to, v ktorom ich vypisuje Prehliadač príkazov a výber pre lištu tlačidiel.</p>
+<p><strong>Pri mazaní sa ponúkne vziať so sebou aj tlačidlá</strong>, a to stojí za vedenie, aj keby ste toto okno nikdy neotvorili: makro odstránené ručne nechá po sebe svoje tlačidlo aj kláves, a ani jedno potom nič nerobí — aplikácia teraz povie, že makro nie je, namiesto toho, aby mlčala, ale tlačidlo zostáva na vás. Kláves alebo položku ponuky treba vybrať tam, kde bola nastavená.</p>
+<p><em>Kroky</em> sa tu neupravujú. <strong>Upraviť súbor…</strong> to odovzdá editoru, z rovnakého dôvodu, z akého tu nie je formulár: krok je názov nástroja s jeho argumentmi, a to je presne to, čím JSON je.</p>
 <h2 id="rucne-upravy-makier">Ručné úpravy makier</h2>
-<p><strong>Konfigurácia ▸ Upraviť makrá…</strong> otvorí <code>macros.json</code> vo vašom konfiguračnom adresári a prvýkrát doň vloží komentovaný príklad. Makro je zoznam krokov a každý krok uvádza nástroj a jeho argumenty:</p>
+<p><strong>Konfigurácia ▸ Upraviť makrá…</strong> otvorí <code>macros.json</code> vo vašom konfiguračnom priečinku, prvýkrát založený s príkladmi vyššie. Makro je zoznam krokov a každý krok menuje nástroj a jeho argumenty:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
@@ -39,7 +92,8 @@
 <span class="p">]</span>
 </code></pre></div>
 
-<p>Uloženie makrá okamžite znova načíta. Ktoré nástroje existujú a čo prijímajú, povie asistent cez <code>list_macros</code> — alebo príklad, s ktorým bol súbor vytvorený.</p>
+<p>Uloženie makrá hneď znova načíta — a povie, ak niečo nesedí: preklep v názve nástroja, chýbajúci povinný argument, dve makrá s rovnakým id. Makro s chybou sa nespustí a na žiadne tlačidlo sa nedostane; dozviete sa, o ktoré ide a čo je na ňom zle, kým je editor ešte otvorený.</p>
+<p>Ktoré nástroje existujú a čo berú, ukáže <strong>Konfigurácia ▸ Prehliadač príkazov…</strong>, alebo sa asistenta spýtajte na <code>list_macros</code>.</p>
 <h3 id="zastupne-symboly">Zástupné symboly</h3>
 <p>Samotné písmená sú tie isté, aké používa lišta tlačidiel a ponuka Štart: kto už jedno tlačidlo vytvoril, sa tu nemusí učiť nič nové.</p>
 <table>
@@ -71,12 +125,28 @@
 <td>Dátum spustenia makra v tomto formáte</td>
 </tr>
 <tr>
+<td><code>%{1.destination}</code></td>
+<td>Jedna pomenovaná hodnota z výsledku kroku 1 — tu súbor, ktorý <code>merge_files</code> zapísal</td>
+</tr>
+<tr>
 <td><code>%{1}</code></td>
-<td>Výsledok kroku 1, ak tento krok vrátil cestu alebo zoznam ciest</td>
+<td>Celý výsledok kroku 1, ak tento krok priamo vytvoril cestu alebo zoznam ciest</td>
+</tr>
+<tr>
+<td><code>%{ask:Folder name}</code></td>
+<td>Spýta sa vás, keď makro beží. <code>%{ask:Folder name=Archive}</code> predvyplní pole hodnotou <em>Archive</em></td>
 </tr>
 </tbody>
 </table>
 <p>Zložené zátvorky sú pre doplnky, pretože písmená sú už obsadené: <code>%M</code> znamená vo zvyšku programu „meno pod kurzorom v druhom paneli“, mesiac sa teda takto zapísať nedal.</p>
+<p>Pre výsledky krokov použite <strong>pomenovanú</strong> podobu. Väčšina nástrojov hlási niekoľko hodnôt namiesto jedinej — <code>merge_files</code> hlási, kam zapísal, koľko súborov zlúčil a koľko riadkov z toho vzišlo —, preto je <code>%{2.destination}</code> obvyklý zápis a holé <code>%{2}</code> funguje len pri nástroji, ktorý vracia jedinú cestu. Meno, ktoré tam nie je alebo ktoré nie je cestou, makro zastaví, namiesto toho aby sa hádalo.</p>
+<p><code>%</code> v názve súboru je <code>%</code>. Nič z toho, čo krok vytvorí, ani žiadne meno z panela sa znova nečíta ako zástupný znak — súbor s názvom <code>50%Netto.pdf</code> teda prejde makrami bez zmeny. Doslovné <code>%</code> v šablóne, ktorú píšete <em>vy</em>, zdvojte: <code>%%</code>.</p>
+<h3 id="spytat-sa-na-hodnotu">Spýtať sa na hodnotu</h3>
+<p><code>%{ask:…}</code> je spôsob, akým makro prevezme niečo, čo dopredu vedieť nemôže — vôbec najbežnejšie makro je „presuň výber do priečinka, ktorý pomenujem“, a bez toho by priečinok musel byť napevno v súbore.</p>
+<p>Spýtame sa vás <strong>skôr</strong>, než sa objaví plán, a odpovede sú už v ňom: riadky hovoria „Presunúť výber do „Faktúry““, nie „do toho, čo o chvíľu napíšete“. Zrušenie otázky zruší makro; nič nebolo navrhnuté, nieto ešte vykonané.</p>
+<p>Tá istá otázka napísaná dvakrát sa položí raz a použije sa na oboch miestach, takže dva kroky menujúce ten istý priečinok sa nemôžu rozísť. Čo nasleduje po prvom <code>=</code>, je to, čím pole začína. Znenie je vaše: zobrazí sa presne tak, ako ste ho napísali, v jazyku, v ktorom ste ho napísali.</p>
+<p>Odpoveď je hodnota, nikdy šablóna: ak napíšete <code>50%Netto</code>, dostanete priečinok s menom <code>50%Netto</code>.</p>
+<p>Makro, ktoré sa pýta, nemôže spustiť externý agent cez MCP — nie je sa tam koho spýtať, a mlčky vziať predvolené hodnoty by znamenalo odpovedať za vás. Odmietne sa a povie to.</p>
 <p><code>%S</code> je jediné miesto, kde sa makro líši od tlačidla: na tlačidle sa výber stane zoznamom slov pre príkazový riadok, tu sa stane zoznamom plných ciest, ktoré prijímajú nástroje pre súbory.</p>
 <p>Krok, ktorého <code>%S</code> alebo <code>%{1}</code> vyjde <strong>prázdny, makro zastaví</strong>, namiesto toho, aby bežal s ničím. <code>move</code> bez súborov nie je menší <code>move</code> — je to požiadavka, ktorá už nič nehovorí, a hlásiť pri nej úspech by bola lož.</p>
 <h2 id="spustenie-makra">Spustenie makra</h2>
@@ -89,9 +159,10 @@
 <li>Asistentovi, ktorý ho môže spustiť podľa názvu</li>
 </ul>
 <p>Než sa spustí makro, ktoré niečo mení, ukáže vám svoje kroky ako zoznam a počká. Krok, ktorý nechcete, môžete vyškrtnúť; čo zostane, sa vykoná. Makro, ktoré len číta, beží bez otázky.</p>
-<p>Ak krok zlyhá, makro sa <strong>na tom mieste zastaví</strong>, namiesto toho, aby pokračovalo — krok dva zvyčajne predpokladá, že krok jeden prebehol, a presúvať súbory do nevytvoreného adresára nie je čiastočný úspech. Správa uvedie krok a povie, čo sa pokazilo; kroky, ktoré prebehli, sú v protokole akcií.</p>
+<p>Všetko, čo sa dá rozpoznať ako chybné ešte pred spustením — nástroj, ktorý neexistuje, chýbajúci argument, krok, ktorý by spustil iné makro —, makro zastaví pred prvým krokom, nie až po treťom. Ak krok zlyhá už za behu, makro sa <strong>zastaví tam</strong> namiesto toho, aby pokračovalo: krok dva obvykle predpokladá, že sa krok jeden stal, a presúvať súbory do priečinka, ktorý nevznikol, nie je čiastočný úspech. Hlásenie menuje krok, povie, čo sa pokazilo, a koľko krokov už bolo vykonaných; každý z nich je v protokole akcií, aj s cestou späť, kde nejaká je.</p>
 <h2 id="co-makro-smie">Čo makro smie</h2>
 <p>Makro sa posudzuje podľa toho najnáročnejšieho, čo obsahuje. Makro, ktorého kroky len čítajú, sa považuje za čítanie; to, ktoré končí trvalým vymazaním, je chránené ako trvalé vymazanie — skôr než sa čokoľvek spustí, nie o štyri kroky neskôr.</p>
+<p>Krok, ktorý spúšťa <em>príkaz</em>, sa posudzuje podľa toho, čo ten príkaz robí, nie podľa toho, že je to príkaz — makro, ktoré spúšťa <code>cm_DeleteReal</code>, je teda mazacie makro a ako také sa vám ukáže. Makro nemôže spustiť iné makro, ani jedným z oboch zápisov.</p>
 <p>Nepovoliť nič navyše je predvolený stav. Ak makro obsahuje krok, ktorý vaše oprávnenia nedovoľujú — príkaz shellu, skript —, celé makro je odmietnuté s uvedením dôvodu a nič sa nestane.</p>
 <h2 id="vzatie-spat">Vzatie späť</h2>
 <p>Každý krok je zaznamenaný samostatne, takže <strong>vzatie späť</strong> po makre vráti jeho <em>posledný</em> krok, nie celé makro. Vzatie celého makra späť neexistuje, pretože niekoľko nástrojov nemá žiadnu inverziu a tlačidlo, ktoré by to ponúkalo, by o nich klamalo.</p>
