@@ -168,6 +168,18 @@ extension MainWindowController {
                 let ms = UInt64(arg) ?? 500
                 try? await Task.sleep(nanoseconds: ms * 1_000_000)
             case "dump":       await dumpActivePanel(to: arg)
+            case "navhistdump":                         // navhistdump <out> (F-445): the back/forward stack
+                // The per-panel history is otherwise only observable in `session.ini`, which is
+                // written at quit — after the harness has taken its report and stopped the app. And
+                // the panel's *path* cannot stand in for it: a position left pointing at the wrong
+                // entry and a position put back correctly show the same panel, and differ only in
+                // where the next press goes.
+                if let panel = activePanel {
+                    let h = panel.navigationHistory
+                    var out = "count=\(h.entries.count)\nindex=\(h.index)\n"
+                    for (i, entry) in h.entries.enumerated() { out += "entry\(i)=\(entry)\n" }
+                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "symbols":    dumpSymbols(arg)
             case "editdump":   await editDump(arg)
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)

@@ -21,7 +21,15 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
     private var iconGeneration = 0
 
     // In-cell rename (F-081) state.
-    private var editCommit: ((String) -> Void)?
+    //
+    // `editEnd` fires on *every* way out of the editor, cancel included — it used to be a
+    // commit-only callback, and Escape therefore returned nothing to the caller at all. The caller
+    // is `PanelListView.beginInlineRename`, which clears the flag that suppresses table reloads in
+    // that callback, so an abandoned rename left the panel unable to repaint for the rest of the
+    // session: it went on navigating, the tab and the status bar followed, and only the list stood
+    // still. A second, cancel-only callback would have been the smaller diff and the same trap one
+    // step further along; an optional value nobody can forget to handle is the point.
+    private var editEnd: ((String?) -> Void)?
     private var editOriginal = ""
     private var editCancelled = false
 
@@ -115,11 +123,18 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
 
     /// Turn the label into an editable field seeded with `rawName` (never the
     /// bracketed/symlink-decorated display), select its first `basenameLen`
-    /// characters, and focus it. `onCommit` fires with the final text on Enter or
-    /// focus loss; Escape cancels (onCommit is not called).
+    /// characters, and focus it. `onEnd` fires exactly once when the editor closes,
+    /// whichever way: with the final text on Enter or focus loss, with `nil` when
+    /// Escape cancelled it.
+    ///
+    /// Returns whether the field editor actually opened. False means `onEnd` will never fire, and
+    /// the caller must not leave any "editing" state standing — the same dead panel as the missing
+    /// cancel callback, reached from the other end. It is only reachable with no key window, but the
+    /// cost of the answer is one Bool and the cost of being wrong is the whole panel.
+    @discardableResult
     func beginInlineEdit(rawName: String, selectingBasenameOfLength basenameLen: Int,
-                         onCommit: @escaping (String) -> Void) {
-        editCommit = onCommit
+                         onEnd: @escaping (String?) -> Void) -> Bool {
+        editEnd = onEnd
         editOriginal = rawName
         editCancelled = false
         label.stringValue = rawName
@@ -133,11 +148,17 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
         label.lineBreakMode = .byClipping
         label.delegate = self
         window?.makeFirstResponder(label)
-        if let editor = label.currentEditor() {
-            let len = (label.stringValue as NSString).length
-            let sel = (basenameLen > 0 && basenameLen <= len) ? basenameLen : len
-            editor.selectedRange = NSRange(location: 0, length: sel)
+        guard let editor = label.currentEditor() else {
+            // No editor, so no `controlTextDidEndEditing` is ever coming. Put the cell back the way
+            // it was and say so, rather than leaving a label that merely looks editable.
+            editEnd = nil
+            endInlineEdit()
+            return false
         }
+        let len = (label.stringValue as NSString).length
+        let sel = (basenameLen > 0 && basenameLen <= len) ? basenameLen : len
+        editor.selectedRange = NSRange(location: 0, length: sel)
+        return true
     }
 
     private func endInlineEdit() {
@@ -151,11 +172,13 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
 
     func controlTextDidEndEditing(_ obj: Notification) {
         let value = label.stringValue
-        let commit = editCommit
+        let end = editEnd
         let cancelled = editCancelled
-        editCommit = nil
+        editEnd = nil
         endInlineEdit()
-        if !cancelled { commit?(value) }
+        // Called on both paths. The `if !cancelled` that used to sit here guarded the *whole* call,
+        // so cancelling told the caller nothing — see `editEnd`.
+        end?(cancelled ? nil : value)
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy selector: Selector) -> Bool {

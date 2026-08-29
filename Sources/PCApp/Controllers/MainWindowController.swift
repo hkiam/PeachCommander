@@ -6976,6 +6976,21 @@ extension PanelColumn {
 }
 
 /// Panel position enum
+/// What became of a `loadPath` call.
+///
+/// Three answers rather than two, because a caller with state to undo needs to tell "the folder
+/// refused" apart from "you navigated again while this was arriving" — see `loadPath` (F-445).
+enum DirectoryLoadOutcome {
+    /// The listing arrived and the panel is showing it.
+    case loaded
+    /// The listing was refused and the panel was left where it was; the user has been told.
+    case failed
+    /// A newer navigation took the panel over before this one finished. Nothing is wrong, nothing was
+    /// said, and the newer load owns whatever this one had painted — so a caller must not react to it
+    /// as it would to a refusal, and must not undo state the newer one may already have moved.
+    case superseded
+}
+
 enum PanelPosition: String, CustomStringConvertible {
     case left
     case right
@@ -7133,7 +7148,17 @@ final class PanelController: NSObject, PanelControllerProtocol {
         guard parent != cur else { return }
         // Place the cursor on the folder we came out of, not at the top.
         let childName = (cur as NSString).lastPathComponent
-        await loadPath(parent, recordHistory: true, focusName: childName)
+        // The same rule as `loadDirectory`, and for the same reason (F-445): the tab may only move
+        // once the parent's listing has actually arrived. This was the one navigation that moved it
+        // regardless. Going up is also where an unreadable parent is most likely: the child is
+        // readable — that is how you got into it — and the folder above it need not be.
+        //
+        // Measured on a build with the guard taken back out, entering a directory and then chmod-ing
+        // its parent to 000: `drivebardump` reported `path=…/locked/child` with `tabs=*locked`, and
+        // the run wrote `Tab0Path=…/locked` into `session.ini` — the panel had not moved, and the
+        // next launch would have opened at a folder it cannot list. The breadcrumb is *not* part of
+        // it and was wrong in an earlier version of this comment: it reads the model and stayed put.
+        guard case .loaded = await loadPath(parent, recordHistory: true, focusName: childName) else { return }
         tabs.updateActive { $0.path = parent; $0.cursorName = childName }
         refreshTabBar()
     }
@@ -7559,7 +7584,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         // The tab keeps the folder it is showing, so it may only move once the listing has arrived
         // (F-445): the panel stays where it was, and so does the session.
-        guard await loadPath(path, recordHistory: recordHistory, focusName: nil) else { return }
+        guard case .loaded = await loadPath(path, recordHistory: recordHistory, focusName: nil) else { return }
         tabs.updateActive { $0.path = path; $0.cursorName = nil }
         refreshTabBar()
     }
@@ -7567,7 +7592,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// Navigate to `path` and place the cursor on `name` (used to reveal a file
     /// after jumping to its parent folder).
     func loadDirectory(_ path: String, selecting name: String?) async {
-        guard await loadPath(path, recordHistory: true, focusName: name) else { return }
+        guard case .loaded = await loadPath(path, recordHistory: true, focusName: name) else { return }
         tabs.updateActive { $0.path = path; $0.cursorName = name }
         refreshTabBar()
     }
@@ -7580,11 +7605,16 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// dragged the view back to the cursor row every two seconds — scroll somewhere to read
     /// something and it was gone before you had — and back to the very top when the cursor sat on
     /// "..", which is where it sits until you move it.
-    /// Returns false when the listing failed, so a caller that also records the path — the tab, and
-    /// through it the session — does not record one the panel never reached (F-445).
+    /// The answer says which of the three things happened, so a caller that also records the path —
+    /// the tab, and through it the session — does not record one the panel never reached (F-445).
+    ///
+    /// It was a `Bool`, and one bit is not enough: `false` meant both "the folder refused" and "you
+    /// navigated again while this was arriving", which are opposite instructions to a caller holding
+    /// state to undo. The back/forward history discards an entry it could not open; doing that on a
+    /// superseded load would have thrown away a folder that is perfectly fine, on a race, silently.
     @discardableResult
     private func loadPath(_ path: String, recordHistory: Bool, focusName: String?,
-                          preserveViewport: Bool = false) async -> Bool {
+                          preserveViewport: Bool = false) async -> DirectoryLoadOutcome {
         // Claimed BEFORE the first `await`, and that ordering is the whole point. Everything here runs
         // on the main actor, so the statements between two suspension points are atomic — but the
         // moment this method awaits anything before staking its claim, a refresh looking at
@@ -7659,12 +7689,12 @@ final class PanelController: NSObject, PanelControllerProtocol {
             scheduleStatusRefresh()
             onStateChanged?()
             startWatching(path)
-            return true
+            return .loaded
         } catch is DirectoryLoadSuperseded {
             // The user navigated again while this listing was arriving. Not a failure of anything, and
             // reporting it would put a message on screen about a folder nobody is waiting for. The
             // newer load owns the panel now, including any rows this one painted.
-            return false
+            return .superseded
         } catch {
             logger.error("Failed to load directory \(path): \(error)")
             if painted.isSet {
@@ -7676,7 +7706,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
                 view.updateRows(with: previous, rootLabel: mountedDriveVolume?.name)
             }
             await reportLoadFailure(path, error)
-            return false
+            return .failed
         }
     }
 
@@ -7733,19 +7763,44 @@ final class PanelController: NSObject, PanelControllerProtocol {
         (view.window?.windowController as? MainWindowController)?.presentConnectionLost(name)
     }
 
-    func goBack() async {
-        if let path = history.back() {
-            await loadPath(path, recordHistory: false, focusName: nil)
-            tabs.updateActive { $0.path = path }
-            refreshTabBar()
-        }
-    }
+    func goBack()    async { await navigateHistory { $0.back() } }
+    func goForward() async { await navigateHistory { $0.forward() } }
 
-    func goForward() async {
-        if let path = history.forward() {
-            await loadPath(path, recordHistory: false, focusName: nil)
+    /// Go where a history move points, and leave the history agreeing with the panel whatever happens.
+    ///
+    /// One body for back, forward and the Alt+Down list, because the three had the same defect three
+    /// times over (F-445): each moved the position first, loaded second, and never looked at the
+    /// answer. A folder deleted, ejected or unmounted since it was visited therefore left the position
+    /// one step away from the panel — and the *next* press counted from there, so one dead entry sent
+    /// the following press somewhere nobody had asked for.
+    ///
+    /// The three outcomes are three different obligations, which is why `loadPath` stopped answering
+    /// with a Bool:
+    ///
+    /// - `.loaded` — the tab follows, as everywhere else.
+    /// - `.failed` — the position goes back *and* the entry is dropped. Keeping it would wall off
+    ///   everything behind it: every further press in that direction arrives at the same dead path.
+    /// - `.superseded` — only the position goes back. Nothing is wrong with the entry, and throwing
+    ///   away a perfectly good folder because the user happened to click again while it loaded is a
+    ///   silent, race-dependent data loss.
+    ///
+    /// Both recoveries ask `isStill(at:showing:)` first. A superseded load means a newer navigation is
+    /// running, and whether it has already recorded itself by the time we get here is not ordered — if
+    /// it has, its position is the correct one and ours must keep its hands off.
+    private func navigateHistory(_ move: (inout NavigationHistory) -> String?) async {
+        let origin = history.index
+        guard let path = move(&history) else { return }
+        let moved = history.index
+        switch await loadPath(path, recordHistory: false, focusName: nil) {
+        case .loaded:
             tabs.updateActive { $0.path = path }
             refreshTabBar()
+        case .failed:
+            guard history.isStill(at: moved, showing: path) else { return }
+            history.dropEntry(at: moved, restoringPositionTo: origin)
+        case .superseded:
+            guard history.isStill(at: moved, showing: path) else { return }
+            history.restorePosition(to: origin)
         }
     }
 
@@ -7758,13 +7813,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     /// Jump to a history entry by index (from the history dropdown).
-    func goToHistoryIndex(_ i: Int) async {
-        if let path = history.go(to: i) {
-            await loadPath(path, recordHistory: false, focusName: nil)
-            tabs.updateActive { $0.path = path }
-            refreshTabBar()
-        }
-    }
+    func goToHistoryIndex(_ i: Int) async { await navigateHistory { $0.go(to: i) } }
 
     // MARK: - Tabs (I06-T01)
 
@@ -7933,11 +7982,71 @@ final class PanelController: NSObject, PanelControllerProtocol {
         // The local path first, then the drive on top of it: the mount records where it was entered
         // from, so going up out of the restored drive lands in this tab's own directory rather than
         // wherever the panel happened to be standing.
-        await loadPath(tab.path, recordHistory: true, focusName: tab.cursorName)
+        //
+        // The one place where refusing to move is *not* an option (F-445). Everywhere else a load
+        // that fails leaves the panel where it was and that is consistent; here the tab has already
+        // been switched by the caller, so staying put means showing the previous tab's files under
+        // the new tab's title. A stored path dies easily — a folder deleted since, a disk not
+        // mounted yet at the launch that restores the session — so it retreats to the nearest folder
+        // above it that can actually be listed and the tab is moved to match. Panel and tab agree,
+        // which is the whole of it.
+        switch await loadPath(tab.path, recordHistory: true, focusName: tab.cursorName) {
+        case .loaded:
+            break
+        case .superseded:
+            // A newer navigation owns the panel now, and it brings its own bookkeeping. Remounting
+            // this tab's drive on top of what that one is loading is the opposite of helping.
+            return
+        case .failed:
+            if case .superseded = await settleTabOnNearestReachableAncestor(of: tab.path) { return }
+        }
         if let sentinel = tab.driveVolume { await remountDrive(sentinel) }
         tableView.updateSortArrows(descriptor)
         refreshTabBar()
         onStateChanged?()
+    }
+
+    /// Walk up from a tab's dead path until something lists, and move the tab to what was reached.
+    ///
+    /// One level is the ordinary case (the folder was deleted); several is an unmounted volume, where
+    /// `/Volumes/Disk/work/logs` walks back to `/Volumes`. Each attempt that fails says so in the
+    /// panel's status line and the last one stays on screen — which is the useful one, because it
+    /// names the outermost thing that could not be opened rather than the leaf nobody has a hope of
+    /// finding.
+    ///
+    /// `.loaded` means the panel landed and the tab was moved to match; `.superseded` means a newer
+    /// navigation took over and the caller must stop touching the panel; `.failed` means not even the
+    /// home directory could be listed, at which point there is nothing further this can do and the
+    /// panel keeps whatever it was showing.
+    ///
+    /// The step count is bounded as well as terminating on its own. `deletingLastPathComponent` fixes
+    /// at "/", so the loop ends for every absolute path; the cap is there for a stored path that is
+    /// not one, which a hand-edited `session.ini` is free to contain.
+    private func settleTabOnNearestReachableAncestor(of deadPath: String) async -> DirectoryLoadOutcome {
+        var candidate = (deadPath as NSString).deletingLastPathComponent
+        // Labelled, because an unlabelled `break` in here would leave the `switch` and not the loop —
+        // which compiles, runs, and walks up one level fewer than it reads as doing.
+        walk: for _ in 0..<64 {
+            if candidate.isEmpty { candidate = "/" }
+            switch await loadPath(candidate, recordHistory: true, focusName: nil) {
+            case .loaded:
+                tabs.updateActive { $0.path = candidate; $0.cursorName = nil }
+                return .loaded
+            case .superseded:
+                return .superseded
+            case .failed:
+                let parent = (candidate as NSString).deletingLastPathComponent
+                if parent == candidate { break walk }   // at "/" and even that refused
+                candidate = parent
+            }
+        }
+        // Last resort, and only reached when the root itself would not list: somewhere that exists by
+        // definition beats a tab pointing at a folder the panel is not in.
+        let home = NSHomeDirectory()
+        guard candidate != home, case .loaded = await loadPath(home, recordHistory: true, focusName: nil)
+        else { return .failed }
+        tabs.updateActive { $0.path = home; $0.cursorName = nil }
+        return .loaded
     }
 
     /// Re-enter the plugin drive a tab was left on (or restored with). A drive whose plugin is no

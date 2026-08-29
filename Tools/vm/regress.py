@@ -995,6 +995,98 @@ SCENARIOS = [
                      "for i in range(5000)]\" && ls ~/pc-big | wc -l | tr -d ' '",
                      "active left", "left /Users/admin/pc-big", "wait 4000",
                      "dump /Users/admin/big-listing.txt"], 20),
+    # An in-cell rename abandoned with Escape must leave the panel able to draw (F-081). It did not:
+    # `PanelListView.isInlineEditing` suppresses every model-driven table update, and it was cleared
+    # only in the commit callback — which `DirectoryCellView` did not call when the edit was
+    # cancelled. So one Escape killed that panel's listing for the rest of the session, and killed it
+    # *silently*: the model went on loading, the tab, the breadcrumb and the status bar's path all
+    # followed, and only the rows stood still. Reported as "I press .. and stay in the folder".
+    #
+    # Two things make this a test rather than a coincidence. The negations are the assertion — `path=`
+    # is true either way, because the panel that cannot draw has still navigated, so a report checked
+    # only for the path it claims to be at would pass on the broken build. And the keysend report is
+    # what rules out the vacuous pass: if `cm_RenameOnly` had fallen back to the rename *dialog*, Esc
+    # would merely have closed it, the panel would navigate, and this would go green having tested
+    # nothing. `responder=NSTextView(editing NSTextField)` under the main window's own title is the
+    # in-cell editor and nothing else.
+    ("rename-escape", ["probe /Users/admin/rename-escape-seed.txt|"
+                       "mkdir -p ~/pc-esc/inner && touch ~/pc-esc/alpha.txt ~/pc-esc/beta.txt "
+                       "~/pc-esc/inner/gamma.txt && ls ~/pc-esc | wc -l | tr -d ' '",
+                       "active left", "left /Users/admin/pc-esc", "wait 1500",
+                       "focus alpha.txt", "wait 400",
+                       "cmd cm_RenameOnly", "wait 900",
+                       "keysend ESC|asis|/Users/admin/rename-escape-key.txt", "wait 900",
+                       "left /Users/admin/pc-esc/inner", "wait 1500",
+                       "dump /Users/admin/rename-escape.txt"], 12),
+    # Going up to a parent that cannot be listed must not move the tab (F-445). `goUp` was the one
+    # navigation that updated the tab without waiting to hear whether the listing arrived — the two
+    # `loadDirectory` overloads have guarded it since F-445 — so the panel stayed on the child while
+    # the tab named the parent, and `session.ini` was written from the tab: the next launch opened at
+    # a folder it could not read.
+    #
+    # `chmod 000` on the parent *after* the panel is inside the child is the whole trick, and it is
+    # the realistic shape of this rather than a contrived one: the child is readable, which is how
+    # you got into it, and nothing says the folder above it must be. The probe reports `locked` so a
+    # chmod that silently failed cannot be mistaken for a panel that stayed put correctly. It also
+    # puts the mode back — without that the fixture cannot be deleted and every later run inherits it.
+    ("goup-unreadable", ["probe /Users/admin/goup-seed.txt|"
+                         "mkdir -p ~/pc-updenied/locked/child && touch ~/pc-updenied/locked/child/in.txt "
+                         "&& chmod 755 ~/pc-updenied/locked && echo built",
+                         "active left", "left /Users/admin/pc-updenied/locked/child", "wait 1500",
+                         "probe /Users/admin/goup-lock.txt|"
+                         "chmod 000 ~/pc-updenied/locked && echo locked",
+                         "wait 500",
+                         "cmd cm_GoToParent", "wait 1800",
+                         "probe /Users/admin/goup-unlock.txt|"
+                         "chmod 755 ~/pc-updenied/locked && echo unlocked",
+                         "wait 400",
+                         "drivebardump /Users/admin/goup-unreadable.txt"], 12),
+    # Going back into a folder that has been deleted since it was visited (F-445). The same unchecked
+    # load as `goup-unreadable`, one layer further in: `goBack` moved the history's position before it
+    # loaded and never looked at the answer, so the position ended up one entry away from the panel and
+    # the *next* press counted from there.
+    #
+    # The panel's path cannot see this and neither can a screenshot — a position left on the dead entry
+    # and a position put back correctly show the identical folder, and differ only in where the next
+    # press goes. `navhistdump` exists for that reason: the per-panel history is otherwise only in
+    # `session.ini`, which is written at quit, after this harness has already taken its report.
+    #
+    # `!pc-hist/gone` is the claim. `entry0=` and the surviving `pc-hist/c` are there so that an empty
+    # or truncated report cannot satisfy a report made only of negations.
+    ("history-back-gone", ["probe /Users/admin/histgone-seed.txt|"
+                           "mkdir -p ~/pc-hist/a ~/pc-hist/gone ~/pc-hist/c "
+                           "&& touch ~/pc-hist/a/1.txt ~/pc-hist/gone/2.txt ~/pc-hist/c/3.txt "
+                           "&& echo built",
+                           "active left", "left /Users/admin/pc-hist/a", "wait 900",
+                           "left /Users/admin/pc-hist/gone", "wait 900",
+                           "left /Users/admin/pc-hist/c", "wait 900",
+                           "probe /Users/admin/histgone-rm.txt|rm -rf ~/pc-hist/gone && echo removed",
+                           "wait 400",
+                           "cmd cm_HistoryBack", "wait 1800",
+                           "dump /Users/admin/histgone-panel.txt", "wait 400",
+                           "navhistdump /Users/admin/history-back-gone.txt"], 13),
+    # Switching to a tab whose folder has been deleted since (F-445). The last of the four unchecked
+    # loads, and the only one where standing still is not an option: the tab has already been switched
+    # by the time the panel is asked to follow, so a load that fails leaves the previous tab's files
+    # under the new tab's title. It retreats to the nearest folder above that can be listed and moves
+    # the tab there, so the two agree again.
+    #
+    # Two levels are deleted, not one, because the retreat is a loop and a one-level fixture cannot
+    # tell a loop from a single `deletingLastPathComponent`. `tabs=keep|*pc-tabs` is what carries the
+    # claim: the star marks the active tab, and it must name the folder `path=` reports. Without the
+    # retreat the same run reports `path=…/pc-tabs/keep` — the *other* tab's folder — beside
+    # `tabs=keep|*deeper`.
+    ("tab-path-gone", ["probe /Users/admin/tabgone-seed.txt|"
+                       "mkdir -p ~/pc-tabs/keep ~/pc-tabs/doomed/deeper "
+                       "&& touch ~/pc-tabs/keep/k.txt ~/pc-tabs/doomed/deeper/x.txt && echo built",
+                       "active left", "left /Users/admin/pc-tabs/keep", "wait 900",
+                       "cmd cm_OpenNewTab", "wait 900",
+                       "left /Users/admin/pc-tabs/doomed/deeper", "wait 900",
+                       "cmd cm_NextTab", "wait 900",
+                       "probe /Users/admin/tabgone-rm.txt|rm -rf ~/pc-tabs/doomed && echo removed",
+                       "wait 400",
+                       "cmd cm_NextTab", "wait 2000",
+                       "drivebardump /Users/admin/tab-path-gone.txt"], 13),
     # S3 as a drive, in the running app (F-457). The plugin's own tests drive it through
     # `PFXFileSystem`; this is the only place the *user's* route runs — a saved profile becomes a chip
     # in the drive bar, clicking it connects that profile, and the bucket list is the root of the mount.
@@ -2053,6 +2145,54 @@ REPORTS = {
     # The probe's own count. The comment on the scenario claimed this told a fixture that failed to
     # build apart from a panel that listed wrongly — but nothing read it, so it told nobody anything.
     "big-listing-seed": ("/Users/admin/big-seed.txt", ["5000"]),
+    # The panel after an Escaped in-cell rename. `count=1` and the two negations are the claim: on the
+    # broken build the dump reads `count=3` under the very same `path=`, listing the folder that was
+    # left behind. `alpha.txt` is also the row the rename was started on, so its absence says the old
+    # listing is gone rather than merely re-sorted.
+    "rename-escape": ("/Users/admin/rename-escape.txt",
+                      ["path=/Users/admin/pc-esc/inner", "count=1", "gamma.txt",
+                       "!alpha.txt", "!beta.txt"]),
+    # That the Escape went to the in-cell editor, not to a dialog standing in for it.
+    "rename-escape-key": ("/Users/admin/rename-escape-key.txt",
+                          ["keyWindow=/Users/admin/pc-esc",
+                           "responder=NSTextView(editing NSTextField)"]),
+    # The fixture built: three entries in pc-esc (two files and inner).
+    "rename-escape-seed": ("/Users/admin/rename-escape-seed.txt", ["3"]),
+    # The panel after Ctrl+PageUp into a parent it may not read. `tabs=*child` is the assertion and
+    # `path=` is the control: both name the child, which is where the panel really is. On a build
+    # without the guard the same run reports `tabs=*locked` beside the identical `path=`, and writes
+    # that parent into the session — measured, by taking the guard back out.
+    "goup-unreadable": ("/Users/admin/goup-unreadable.txt",
+                        ["path=/Users/admin/pc-updenied/locked/child", "tabs=*child",
+                         "!tabs=*locked"]),
+    # The chmod really took, and the mode really went back — a fixture left at 000 outlives the run.
+    "goup-unreadable-lock": ("/Users/admin/goup-lock.txt", ["locked"]),
+    "goup-unreadable-unlock": ("/Users/admin/goup-unlock.txt", ["unlocked"]),
+    # The back/forward stack after a press that could not be honoured. The deleted folder is gone from
+    # the list rather than sitting in it as a wall, and `c` — where the panel still is — is still there
+    # for the position to point at. Measured with the recovery taken back out: the same run keeps
+    # `entry2=…/pc-hist/gone` and leaves `index` on it while the panel shows `c`.
+    "history-back-gone": ("/Users/admin/history-back-gone.txt",
+                          ["entry0=", "/Users/admin/pc-hist/c", "!/Users/admin/pc-hist/gone"]),
+    # And the panel did not move, which is the other half: the press failed, it did not half-succeed.
+    "history-back-gone-panel": ("/Users/admin/histgone-panel.txt",
+                                ["path=/Users/admin/pc-hist/c"]),
+    "history-back-gone-seed": ("/Users/admin/histgone-seed.txt", ["built"]),
+    "history-back-gone-rm": ("/Users/admin/histgone-rm.txt", ["removed"]),
+    # The panel and the tab bar in one report, which is the only way this defect is visible: either
+    # line on its own is satisfied by the broken build too. `!deeper` and `!doomed` say the tab stopped
+    # claiming a folder that is not there; `!keep` says it did not simply stay on the other tab.
+    # The panel and the tab bar in one report, which is the only way this defect is visible: either
+    # line on its own is satisfied by the broken build too. The path is anchored with its newline
+    # because the unanchored form is a *prefix* of the broken build's `…/pc-tabs/keep` and would pass
+    # there — the same trap the mount reports above ran into. Measured with the retreat taken back
+    # out, the identical run reports `path=…/pc-tabs/keep` under `tabs=keep|*deeper`: the other tab's
+    # folder beneath this tab's title.
+    "tab-path-gone": ("/Users/admin/tab-path-gone.txt",
+                      ["path=/Users/admin/pc-tabs\n", "tabs=keep|*pc-tabs",
+                       "!*deeper", "!/pc-tabs/keep"]),
+    "tab-path-gone-seed": ("/Users/admin/tabgone-seed.txt", ["built"]),
+    "tab-path-gone-rm": ("/Users/admin/tabgone-rm.txt", ["removed"]),
     # `path=/\n` and not `path=/`: the panel that never mounted reports `path=/Users/admin`, which
     # *contains* `path=/`, so the unanchored form passed whether the mount happened or not. It is the
     # only line here that says the panel is inside the plugin's filesystem at all, and for two runs it

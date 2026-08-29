@@ -827,9 +827,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         let oldName = entry.name
         let basenameLen = inlineBasenameLength(oldName, isDir: PanelEntryHelpers.isDirectoryLike(entry.kind))
         isInlineEditing = true
-        cell.beginInlineEdit(rawName: oldName, selectingBasenameOfLength: basenameLen) { [weak self] value in
+        let opened = cell.beginInlineEdit(rawName: oldName, selectingBasenameOfLength: basenameLen) { [weak self] value in
             guard let self else { return }
+            // First, and outside every other branch: this flag turns off `update(with:)`, so any way
+            // out of the editor that does not reach it leaves the panel unable to draw a new listing
+            // at all — silently, and for as long as the app runs. Escape was such a way out.
             self.isInlineEditing = false
+            // `nil` is Escape. Same repaint as an unchanged name, because the label is still holding
+            // the raw name the editor was seeded with rather than the decorated display.
+            guard let value else {
+                self.reloadRow(forVisible: self.cursorRow)
+                return
+            }
             let newName = value.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !newName.isEmpty, newName != oldName else {
                 self.reloadRow(forVisible: self.cursorRow)   // repaint original name/decorations
@@ -837,6 +846,10 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             }
             onCommit(oldName, newName)
         }
+        // The editor never opened, so nothing will ever clear the flag above. Hand the caller its
+        // `false` and let it put up the rename dialog instead, which is what it does for every other
+        // reason in-cell editing is not available.
+        guard opened else { isInlineEditing = false; return false }
         return true
     }
 

@@ -16,6 +16,44 @@ does not have.
 
 ### Fixed
 
+- **Pressing Escape during an in-cell rename stopped that panel from ever showing another folder.**
+  Renaming in place suspends the panel's table updates so the field editor cannot be torn down under
+  the typing; that suppression was lifted in the *commit* callback, and cancelling with Escape never
+  called it. From then on the panel drew nothing new for the rest of the session — and drew nothing
+  new *silently*: it went on loading directories, the tab, the breadcrumb and the status bar's path
+  all followed, so `..` moved everything except the list of files and the panel appeared to be stuck
+  in the folder. The editor now reports back on every way out, cancel included, and it also says
+  whether it opened at all — the same dead panel was reachable from that end too, and one of the two
+  had already been reached. A VM scenario presses Escape and then navigates.
+
+- **Going up into a folder you may not read moved the tab there anyway.** Every other navigation has
+  waited for the listing to arrive before the tab follows it; Ctrl+PageUp did not, and it is the one
+  navigation where an unreadable destination is likely — the folder you are in is readable, that is
+  how you got into it, and the one above it need not be. The panel stayed put, the tab named the
+  parent, and the session is written from the tab, so the next launch opened at a folder it could not
+  list. Measured with the guard taken back out: the panel reported the child while its tab said
+  `locked` and `Tab0Path` had been written to the parent. A VM scenario walks up out of a folder whose
+  parent is mode 000.
+
+- **Back and Forward counted from the wrong place after a folder had been deleted.** The per-panel
+  back/forward position moved before the folder was loaded and never took the answer into account, so
+  a place that had been deleted, ejected or unmounted since you were there left the position one step
+  away from the panel — and the *next* press then counted from there and landed somewhere nobody had
+  asked for. Worse, the dead entry was a wall: every further press in that direction arrived at the
+  same missing folder and got no further past it. Back, Forward and the Alt+Down history list now
+  share one path that puts the position back, and an entry that cannot be opened is dropped, so the
+  next press reaches what was behind it. A folder that merely lost the race — you navigated again
+  while it was loading — keeps its place: that case is now told apart from a refusal instead of both
+  arriving as a bare "false", which is what made discarding an entry safe to do at all.
+
+- **A tab whose folder had been deleted showed you a different tab's files.** Switching to a tab loads
+  the folder it remembers, and when that failed the panel simply stayed as it was — so the previous
+  tab's contents sat under the new tab's title, and the same thing greeted you at startup for a tab
+  left on a disk that was not mounted yet. This is the one navigation that cannot answer by standing
+  still, because the tab has already changed by the time the panel is asked to follow it. It now
+  retreats to the nearest folder above the missing one that can actually be opened — two levels up if
+  that is what it takes — and moves the tab there, so the title and the files agree again.
+
 - **The quick preview stopped following the cursor after a Markdown or HTML file.** A lister plugin's
   view is added on top of the preview's own renderers and is opaque, and it was taken away only when a
   file fell through to Quick Look. So the next picture, PDF or word-processor document was drawn
