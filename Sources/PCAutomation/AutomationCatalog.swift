@@ -127,6 +127,8 @@ public enum AutomationCatalog {
                .init("directory", .string, "Folder the files are in (default: active folder).", required: false)]),
         .init("make_directory", .write, "Create a new folder (intermediate folders allowed).",
               [.init("path", .string, "Folder path to create.")]),
+        .init("create_file", .write, "Create a new, empty file. Does nothing if a file of that name is already there — it never overwrites. Use this for “make me an empty file”; use write_file when there is content to put in it.",
+              [.init("path", .string, "Absolute path of the file to create.")]),
         .init("write_file", .write, "Create or overwrite a text file with the given UTF-8 content.",
               [.init("path", .string, "Absolute path of the file to write."),
                .init("content", .string, "The full text content to write.")]),

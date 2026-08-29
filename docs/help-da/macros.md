@@ -10,21 +10,38 @@ En makro er en navngiven række filhandlinger — opret en mappe, flyt markering
 
 Alt, hvad en makro gør, går gennem samme maskineri som assistenten bruger, så en makro kan ikke gøre noget, du ikke har tilladt, hvert af dens trin kommer i handlingsloggen, og et trin, der kan fortrydes, kan det stadig.
 
-## Den hurtigste vej: ud fra det, du lige gjorde
+## Ét vindue: Konfiguration ▸ Makroer…
 
-Du behøver ikke skrive en makro fra bunden.
+Alt om makroer ligger bag den ene post: listen over dem, de to måder at lave en på, og vejen ind i filen. Der er ikke andet at vælge imellem i menuen.
 
-1. Gør tingen én gang — kopier, flyt, omdøb eller slet i panelerne, eller lad assistenten gøre det.
-2. Vælg **Konfiguration ▸ Makro ud fra seneste handlinger…**.
-3. Sæt hak ved de trin, makroen skal gentage, giv den et navn, og lad **Tilføj også en knap til den** være slået til.
-4. Sæt flueben ved **Følg panelerne i stedet for netop disse filer**, hvis makroen næste gang skal arbejde med det, der så er markeret. Linjerne ændrer sig, mens du sætter fluebenet, så du kan se, hvad du gemmer.
+## Den hurtigste vej: optag en
+
+Du skal ikke skrive en makro fra bunden — og du skal heller ikke bagefter regne ud, hvor den begyndte.
+
+1. **Konfiguration ▸ Makroer… ▸ Optag makro…**. Vinduet træder til side, og et lille panel dukker op, som siger at en optagelse kører, og tæller trinnene efterhånden.
+2. Gør arbejdet én gang — kopiér, flyt, omdøb, slet, opret mapper og filer. Arbejd som du plejer; optageren er ikke i vejen.
+3. **Stop og arkivér…**.
+4. Trinnene kommer tilbage allerede afkrydset. Fjern krydset ved alt, der kun gjorde klar, giv makroen et navn, og lad **Tilføj også en knap til den** være slået til.
+5. Sæt flueben ved **Følg panelerne i stedet for netop disse filer**, hvis makroen næste gang skal arbejde med det, der så er markeret. Linjerne ændrer sig, mens du sætter fluebenet, så du kan se, hvad du gemmer.
 
 **Gem makro**, og knappen er i linjen. Det er hele forløbet.
+
+**Kassér optagelsen** smider optagelsen væk og arkiverer intet. Der optages intet, før du trykker Optag, og heller ikke efter du stopper — det er netop derfor der er to ender.
+
+En optagelse overlever en genstart. Hvis Peach Commander stopper, mens en kører — du afslutter, eller den går ned — kommer den tilbage med optagelsen, siger det, og du fortsætter eller kasserer den.
+
+Vil du hellere have det på en tast eller en knap, hedder kommandoen `cm_MacroRecord`: den starter en optagelse og stopper den, der kører.
+
+## Den anden vej: ud fra det, der allerede er sket
+
+**Fra seneste handlinger…** i samme vindue bygger en makro af de sidste ting, der er sket, i stedet for at optage nye — nyttigt når du *lige* har gjort arbejdet og først derefter tænker på en makro.
 
 ![Arket “Makro ud fra seneste handlinger” med det netop gjorte som trin, der kan sættes flueben ved](screenshots/macro-recorder.png)
 *Det, der allerede er sket, tilbudt som trinnene i en ny makro.*
 
-Listen indeholder begge dele: hvad du har gjort i panelerne (F5, F6, F7, F8 og en omdøbning), og hvad assistenten eller en anden makro har gjort. Hver linje siger hvilken af de to — for efter en session med begge kan de samme to filer optræde i hver af dem.
+Listen indeholder begge dele: hvad du har gjort i panelerne (F5, F6, F7, F8 og en omdøbning), og hvad assistenten eller en anden makro har gjort. Hver linje siger hvilken af de to — for efter en session med begge kan de samme to filer optræde i hver af dem. Her starter rækkerne uafkrydsede: “alt hvad jeg har lavet den sidste halve time” er sjældent den makro, man mener.
+
+> **Denne vej kræver historikken.** Det, du gør i hånden, læses tilbage fra den globale historik; har du slået den fra (Indstillinger ▸ Diverse ▸ **Optag en global historik**), står der intet af dit på listen — og det siger den. **Optag makro…** afhænger ikke af den.
 
 > **Hvad der ikke tilbydes.** At pakke et arkiv, og alt andet appen kun holder fast i ved navn, kan ikke blive til et trin — der er ingen form at give det. Sådanne linjer står grå med deres begrundelse i stedet for at mangle, så en liste på fem, der tilbyder tre, ikke læses som om den overså to. Og medmindre du beder om andet, er stierne dem, der faktisk blev brugt: en optaget makro gentager *den* kopi, ikke “en kopi af den slags”. Åbn den i editoren, og sæt `%S` eller `%T` der, hvor den skal følge panelerne.
 
@@ -49,7 +66,11 @@ Hver af dem bliver en kommando, så du kan lægge hvilken som helst af dem på e
 
 ## At håndtere dem
 
-**Konfiguration ▸ Håndtér makroer…** er listen: hvad hver makro hedder, hvad dens kommando hedder, hvor mange trin den har, og hvad rettighedsspørgsmålet vil kræve — så “denne her sletter” kan ses, før du lægger den på en tast. Derfra kan du omdøbe, duplikere, omsortere og slette. Kører du hen over en linje, ser du dens trin.
+**Konfiguration ▸ Makroer…** er listen: hvad hver makro hedder, hvad dens kommando hedder, hvor mange trin den har, og hvad tilladelsesporten vil bede om — så “denne her sletter” er synligt, før du lægger den på en tast. Derfra kan du køre, omdøbe, duplikere, omarrangere, slette, eksportere og importere. Holder du markøren over en række, vises dens trin.
+
+**Kør** er måden at prøve den, du lige har optaget, uden først at lukke vinduet for at finde kommandoen. Den går gennem den samme plan og den samme bekræftelse som enhver anden kørsel — dette vindue har ingen privilegier af sig selv.
+
+**Eksportér…** skriver den valgte makro til sin egen fil, og **Importér…** tilføjer makroer fra filer, nogen har sendt dig — det er dét, én fil pr. makro er til for. En import erstatter aldrig: en makro, hvis id allerede er taget, får et ledigt (en `backup`, der ankommer ved siden af din, bliver `backup-2`), og du får at vide, hvilke id’er de nye endte med, for den knap du laver, skal pege på den rigtige.
 
 ![Vinduet “Håndter makroer” med kommandonavn, antal trin og tilladelse for hver makro](screenshots/macro-manager.png)
 *Hvad hver makro hedder, hvad den kører som, og hvad den vil bede om lov til.*
@@ -62,21 +83,19 @@ Rækkefølgen er ikke pynt: filens rækkefølge er den, som Kommandooversigten o
 
 ## Redigér makroer manuelt
 
-**Konfiguration ▸ Rediger makroer…** åbner `macros.json` i din konfigurationsmappe, første gang oprettet med eksemplerne ovenfor. En makro er en liste af trin, og hvert trin nævner et værktøj og dets argumenter:
+**Rediger fil…** åbner den valgte makros egen fil — `macros/<id>.json` i din konfigurationsmappe, oprettet første gang med eksemplerne ovenfor. Uden markering vises selve mappen i panelet, hvor F3 læser en og F4 redigerer en. En makro er en liste af trin, og hvert trin nævner et værktøj og dets argumenter:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 At gemme genindlæser makroerne med det samme — og siger til, hvis noget er galt: et forkert stavet værktøjsnavn, et manglende påkrævet argument, to makroer med samme id. En makro med en fejl køres ikke og kommer ikke på nogen knap; du får at vide hvilken det er, og hvad der er galt med den, mens editoren stadig er åben.
@@ -151,7 +170,7 @@ Hvert trin logges for sig, så **fortryd** efter en makro tager dens *sidste* tr
 
 ## Hvor det hele gemmes
 
-- Dine makroer står i `macros.json` i konfigurationsmappen — en almindelig fil, du kan diffe og holde sammen med dine dotfiles.
+- Dine makroer ligger i `macros/` i konfigurationsmappen, én pr. `<id>.json` — almindelige filer, du kan diffe, gemme sammen med dine dotfiles og sende til nogen. En `macros.json` fra en tidligere version flyttes med ved første start og omdøbes til `macros.json.migrated`; derefter læser ingen den.
 - Knapper, en makro har tilføjet, er almindelige knaplinjeposter i `default.bar`, så at fjerne en er det samme som ved enhver anden knap.
 
 ## Næste skridt

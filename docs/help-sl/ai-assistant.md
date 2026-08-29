@@ -68,7 +68,7 @@ Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje 
 
 Lahko tudi preprosto vprašate: *»razveljavi to«* in *»kaj si spremenil?«* dosežeta isti dve funkciji.
 
-Ta seznam je tudi tisto, iz česar nastane makro: **Konfiguracija ▸ Makro iz nedavnih dejanj…** ponudi to, kar je pomočnik pravkar naredil, kot korake makra, ki ga lahko zaženete znova — z gumba ali s tipke. Glejte [Makri](macros.md).
+Ta seznam je tudi tisto, iz česar nastane makro: **Makri… ▸ Iz zadnjih dejanj…** ponudi to, kar je pomočnik pravkar naredil, kot korake makra, ki ga lahko zaženete znova — z gumba ali s tipke. Glejte [Makri](macros.md). Kar naredi pomočnik, ujame tudi **Posnemi makro…**, poleg tega, kar naredite ročno.
 
 ## Stolpci v pultu
 

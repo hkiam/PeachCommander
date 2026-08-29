@@ -68,7 +68,7 @@ For alt som endrer filer — flytte, gi nytt navn, skrive, slette — viser assi
 
 Du kan også bare spørre: *«angre det»* og *«hva har du endret?»* når de samme to funksjonene.
 
-Den lista er også der en makro kommer fra: **Konfigurasjon ▸ Makro fra siste handlinger…** tilbyr det assistenten nettopp gjorde som trinnene i en makro du kan kjøre igjen, fra en knapp eller en tast. Se [Makroer](macros.md).
+Den lista er også der en makro kommer fra: **Makroer… ▸ Fra siste handlinger…** tilbyr det assistenten nettopp gjorde som trinnene i en makro du kan kjøre igjen, fra en knapp eller en tast. Se [Makroer](macros.md). Det assistenten gjør, fanges også opp av **Ta opp makro…**, ved siden av det du gjør for hånd.
 
 ## Kolonner i panelet
 

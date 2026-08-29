@@ -10,21 +10,38 @@ Makro to nazwana sekwencja działań na plikach — utwórz folder, przenieś do
 
 Wszystko, co robi makro, przechodzi przez tę samą maszynerię, z której korzysta asystent. Makro nie może więc zrobić nic, na co nie ma Twojej zgody, każdy jego krok pojawia się w dzienniku działań, a krok, który da się cofnąć, wciąż się da.
 
-## Najszybsza droga: z tego, co właśnie zrobiłeś
+## Jedno okno: Konfiguracja ▸ Makra…
 
-Nie musisz pisać makra od zera.
+Wszystko, co dotyczy makr, kryje się za tym jednym wpisem: lista, dwa sposoby utworzenia makra i droga do pliku. W menu nie ma już nic do wybierania.
 
-1. Zróbcie tę rzecz raz — skopiujcie, przenieście, zmieńcie nazwę albo usuńcie w panelach, albo niech zrobi to asystent.
-2. Wybierz **Konfiguracja ▸ Makro z ostatnich działań…**.
-3. Zaznacz kroki, które makro ma powtarzać, nadaj mu nazwę i zostaw włączone **Dodaj też przycisk dla niego**.
-4. Zaznaczcie **Podążaj za panelami zamiast za dokładnie tymi plikami**, jeśli makro ma następnym razem pracować na tym, co będzie wtedy zaznaczone. Wiersze zmieniają się przy zaznaczaniu, więc widzicie, co zapisujecie.
+## Najszybsza droga: nagraj makro
+
+Nie musisz pisać makra od zera i nie musisz potem ustalać, gdzie się zaczęło.
+
+1. **Konfiguracja ▸ Makra… ▸ Nagraj makro…**. Okno usuwa się na bok, a pojawia się mały panel informujący, że trwa nagrywanie, i liczący kroki na bieżąco.
+2. Wykonaj pracę raz — kopiuj, przenoś, zmieniaj nazwy, usuwaj, twórz foldery i pliki. Pracuj normalnie; nagrywanie nie przeszkadza.
+3. **Zatrzymaj i zapisz…**.
+4. Kroki wracają już zaznaczone. Odznacz to, co tylko przygotowywało grunt, nadaj makru nazwę i zostaw włączone **Dodaj też przycisk dla niego**.
+5. Zaznaczcie **Podążaj za panelami zamiast za dokładnie tymi plikami**, jeśli makro ma następnym razem pracować na tym, co będzie wtedy zaznaczone. Wiersze zmieniają się przy zaznaczaniu, więc widzicie, co zapisujecie.
 
 **Zapisz makro** — i przycisk jest na pasku. To cały cykl.
+
+**Odrzuć nagranie** wyrzuca nagranie i nic nie zapisuje. Przed naciśnięciem Nagraj nic nie jest nagrywane, po zatrzymaniu również — po to właśnie są oba końce.
+
+Nagranie przeżywa ponowne uruchomienie. Jeśli Peach Commander zakończy się w trakcie — bo wyjdziesz albo bo się zawiesi — wraca razem z nagraniem, mówi o tym, a ty kontynuujesz albo je odrzucasz.
+
+Jeśli wolisz mieć to na klawiszu albo przycisku, polecenie nazywa się `cm_MacroRecord`: rozpoczyna nagrywanie i zatrzymuje trwające.
+
+## Druga droga: z tego, co już się wydarzyło
+
+**Z ostatnich działań…** w tym samym oknie buduje makro z ostatnich rzeczy, które się wydarzyły, zamiast nagrywać nowe — przydatne, gdy *właśnie* wykonałeś pracę i dopiero wtedy pomyślałeś o makrze.
 
 ![Arkusz „Makro z ostatnich działań” z tym, co właśnie zrobiono, jako krokami do zaznaczenia](screenshots/macro-recorder.png)
 *To, co już się wydarzyło, zaproponowane jako kroki nowego makra.*
 
-Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich.
+Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich. Tutaj wiersze są początkowo niezaznaczone: „wszystko, co zrobiłem przez ostatnie pół godziny” rzadko jest tym makrem, o które chodzi.
+
+> **Ta droga potrzebuje historii.** To, co robisz ręcznie, odczytywane jest z globalnej historii; jeśli ją wyłączyłeś (Ustawienia ▸ Różne ▸ **Zapisuj globalną historię**), na tej liście nie ma nic twojego — i lista to mówi. **Nagraj makro…** od tego nie zależy.
 
 > **Czego się nie oferuje.** Spakowania archiwum i wszystkiego innego, co aplikacja zapamiętuje tylko z nazwy, nie da się zamienić w krok — nie ma dla tego kształtu. Takie wiersze widnieją wyszarzone wraz z powodem, zamiast ich brakować, żeby lista pięciu oferująca trzy nie wyglądała, jakby dwóch nie zauważyła. A jeśli nie poprosicie inaczej, ścieżki są te, które naprawdę zadziałały: nagrane makro powtarza *tę* kopię, a nie „kopię tego rodzaju”. Otwórzcie je w edytorze i wstawcie `%S` albo `%T` tam, gdzie ma podążać za panelami.
 
@@ -32,7 +49,7 @@ Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i z
 
 ## Dołączone przykłady
 
-Przy pierwszym otwarciu **Konfiguracja ▸ Edytuj makra…** plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:
+Przy pierwszym otwarciu **Edytuj plik…** plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:
 
 | Makro | Co robi |
 | --- | --- |
@@ -49,7 +66,11 @@ Każde z nich staje się poleceniem, więc dowolne można umieścić na przycisk
 
 ## Zarządzanie nimi
 
-**Konfiguracja ▸ Zarządzaj makrami…** to ta lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i czego zażąda pytanie o uprawnienia — „to usuwa” widać więc, zanim położycie je na klawiszu. Stamtąd można zmienić nazwę, zduplikować, przestawić i usunąć. Najechanie na wiersz pokazuje jego kroki.
+**Konfiguracja ▸ Makra…** to lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i o co zapyta bramka uprawnień — dzięki temu „to usuwa” widać, zanim położysz je na klawiszu. Stamtąd możesz uruchamiać, zmieniać nazwy, duplikować, zmieniać kolejność, usuwać, eksportować i importować. Najechanie na wiersz pokazuje jego kroki.
+
+**Uruchom** to sposób na wypróbowanie makra, które właśnie nagrałeś, bez zamykania okna i szukania polecenia. Przechodzi przez ten sam plan i to samo potwierdzenie co każde inne uruchomienie — to okno nie ma własnych uprawnień.
+
+**Eksportuj…** zapisuje zaznaczone makro do własnego pliku, a **Importuj…** dodaje makra z plików, które ktoś ci przysłał — po to właśnie jest jeden plik na makro. Import nigdy nie zastępuje: makro, którego identyfikator jest już zajęty, dostaje wolny (przychodzące `backup` obok twojego staje się `backup-2`), a ty dowiadujesz się, pod jakimi identyfikatorami wylądowały nowe, bo przycisk, który zrobisz, musi wskazać właściwe.
 
 ![Okno „Zarządzaj makrami” z nazwą polecenia, liczbą kroków i uprawnieniem każdego makra](screenshots/macro-manager.png)
 *Jak nazywa się każde makro, jako co działa i o co poprosi o zgodę.*
@@ -62,21 +83,19 @@ Kolejność nie jest ozdobą: kolejność w pliku jest tą, w jakiej wypisują j
 
 ## Ręczna edycja makr
 
-**Konfiguracja ▸ Edytuj makra…** otwiera `macros.json` w waszym folderze konfiguracji, za pierwszym razem założony z przykładami powyżej. Makro to lista kroków, a każdy krok nazywa narzędzie i jego argumenty:
+**Edytuj plik…** otwiera własny plik zaznaczonego makra — `macros/<id>.json` w twoim folderze konfiguracyjnym, utworzony za pierwszym razem z powyższymi przykładami. Bez zaznaczenia w panelu pokazywany jest sam folder, gdzie F3 czyta jedno, a F4 edytuje jedno. Makro to lista kroków, a każdy krok wskazuje narzędzie i jego argumenty:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Zapis natychmiast przeładowuje makra — i mówi, jeśli coś jest nie tak: literówka w nazwie narzędzia, brakujący wymagany argument, dwa makra o tym samym id. Makro z błędem nie jest uruchamiane i nie trafia na żaden przycisk; dowiadujecie się, które to i co w nim nie gra, póki edytor jest jeszcze otwarty.
@@ -151,7 +170,7 @@ Każdy krok jest zapisywany osobno, więc **cofnij** po makrze wycofuje jego *os
 
 ## Gdzie się to zapisuje
 
-- Twoje makra są w `macros.json` w folderze konfiguracji — to zwykły plik, który można porównywać i trzymać razem z dotfiles.
+- Twoje makra są w `macros/` w folderze konfiguracyjnym, po jednym jako `<id>.json` — zwykłe pliki, które możesz diffować, trzymać z dotfiles i komuś wysłać. `macros.json` ze starszej wersji jest przy pierwszym uruchomieniu przenoszony i zmieniany na `macros.json.migrated`; potem już nikt go nie czyta.
 - Przyciski dodane przez makro to normalne wpisy paska przycisków w `default.bar`, więc usunięcie jednego wygląda tak samo jak przy każdym innym przycisku.
 
 ## Dalsze kroki

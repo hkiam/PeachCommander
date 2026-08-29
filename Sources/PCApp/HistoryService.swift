@@ -83,6 +83,13 @@ final class HistoryService {
 
     var isEmpty: Bool { history.entries.isEmpty }
 
+    /// Whether anything is being recorded at all.
+    ///
+    /// Read by the macro recorder, which builds its list out of this one: without it, a user who had
+    /// switched the history off was told "nothing has happened yet" after doing four things, and the
+    /// setting that caused it is on a different page under a different name (F-478).
+    var isRecordingEnabled: Bool { enabled }
+
     func ranked(kind: HistoryKind? = nil, pinnedOnly: Bool = false, query: String = "") -> [HistoryEntry] {
         history.ranked(kind: kind, pinnedOnly: pinnedOnly, query: query)
     }

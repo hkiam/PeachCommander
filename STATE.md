@@ -15,7 +15,7 @@
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
 | Last updated | 2026-08-29 |
 | Released | **0.8.0 (build 15), 2026-08-29** — the assistant split in two, AppleScript and JavaScript run *by* the app, the side panel's pages switch off, and macros: a named sequence of file actions built from what you just did — in the panels as well as through the assistant — that asks for a value when it needs one, is held to the most demanding thing in it, and is shown to you as rows in your own language before any of it runs. Eight worked examples ship with it. Unsigned, as every build so far. Previously **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
-| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1549 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1549 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
+| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1587 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1587 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
 **Harness: two failures that were mine.** A flaky test — `DirectoryWatcher` expectations were fulfilled
@@ -25,6 +25,73 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-29 (F-478) — A recorder with two ends, and one file per macro
+
+Three reports from one session, and the two design questions behind them.
+
+**"Macro from Recent Actions" told me nothing had happened.** It had: three folders made with F7, a
+file copied in, a new file. What you do by hand is read back out of the global history (F-402) — and
+the history can be switched off in Settings ▸ Misc. With `History.Enabled=0` the recorder was blind and
+said so in the words of somebody who had not done anything yet, which sent the user off to repeat work
+that was never going to be recorded. The old path now names the switch instead of blaming them; the new
+one does not touch the history at all. `PanelController.recordInHistory` tells both listeners from one
+line, so an operation cannot reach one and miss the other.
+
+**"Where does it begin and where does it end?"** That is the question a list of the last thirty things
+cannot answer and the user always can. `MacroRecordingSession` is an explicit recording: armed from
+**Configuration ▸ Macros… ▸ Record Macro…** or the new `cm_MacroRecord`, with a floating indicator that
+says it is running and counts the steps, and **Stop and Save…** offering back exactly what fell between
+the two presses — already ticked, because there the user drew both boundaries themselves. It survives a
+quit: the running recording is written to `macro-recording.json` as it goes and picked up at the next
+launch. That pick-up sat at the end of `restoreStateAndLoad`'s async chain at first and could silently
+replace a recording started in the meantime; it runs early now and refuses to touch a running one.
+
+**Three menu entries became one.** Recording, listing and editing were siblings under Configuration,
+which made the menu ask which of the three was "the macros one". The window is the feature; the other
+two are buttons in it. Both commands stay registered, so an existing key or `.bar` entry still works.
+It also gained **Run**, because trying a macro you have just recorded meant closing the window to go and
+find the command.
+
+**Shift+F4 could not be recorded, and `write_file` was the wrong way to fix that.** `write_file`
+creates *or truncates*, so a macro recorded that way would have emptied an existing file on its second
+run — a different, destructive operation wearing the same row. The catalogue has a non-overwriting
+`create_file` now, which is also what the assistant was missing for "make me an empty file".
+
+**One `macros.json` was never a decision.** No ADR; `MacroStore` said only that it followed the other
+preset stores — and a macro is not a preset, it is a thing people hand to each other. The project
+already draws that line and says why (`scripts/`, one file per script, "because a script is something a
+person opens in Script Editor"). It cost robustness too, measured rather than argued: three entries,
+one with `"steps"` written as a string, and **nothing** loaded — every macro gone, every button and key
+silently dead. Macros are now `macros/<id>.json`, one each, with **Export…**/**Import…** in the manager
+(an import never replaces: a taken id gets a free one and you are told which). A `macros.json` from
+before is moved across once — order and `_comment` notes intact — and renamed `.migrated`. Order lives
+in an `order` key per file, since a directory has none.
+
+**Four measurement defects found on the way.**
+
+  * `Tools/check-format-specifiers.py` reported *every* pluralized string as broken in all nineteen
+    languages: `%#@steps@` names an argument whose type is declared beside the value, and read
+    literally it looks like a `#`-flagged `%@`. The gate had been red for that alone. It expands the
+    token now.
+  * The recording indicator counted "1 steps" — the same defect as the confirmation heading's
+    "step(s)", caught before it shipped.
+  * Its Discard button reused the shared `Discard` string, which several translators had rendered as
+    the answer to "save your changes?" — the Russian button would have read "Cancel changes" over a
+    macro recording.
+  * The macro window opened 889pt wide and the buttons were not why. The explanatory line under the
+    list is a wrapping label, and one of those answers its fitting size as a *single line* unless given
+    a `preferredMaxLayoutWidth`: it asked for 869 against a button row needing 781. A sentence was
+    deciding the window width. The buttons set it now and the sentence wraps into it (781), Move
+    Up/Down became ↑ and ↓, and `automationReport` measures both rows and the note separately so the
+    next thing that widens this window says which of the three it was.
+
+Verified against the running app throughout, mostly through `-AutomationScript` rather than scripted
+clicks: record → Shift+F4 → F7 → stop produced `create_file "notes.txt"` then `make_directory
+"Archiv"` in that order; a recording spanning a quit came back with the folder from before *and* the
+one from after; the same broken macros file that used to load nothing now loads the two good ones. Note
+for whoever reads a screenshot next: `mainshot` does not capture push buttons on macOS 26 — the window
+was fine and the picture was not.
 
 ## 2026-08-28 (F-478 review) — Seven worked examples, and six ways the gate did not hold
 

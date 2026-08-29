@@ -68,7 +68,7 @@ Przy wszystkim, co zmienia pliki — przenoszeniu, zmianie nazwy, zapisie, usuwa
 
 Możesz też po prostu poprosić: *„cofnij to"* i *„co zmieniłeś?"* sięgają do tych samych dwóch funkcji.
 
-Ta lista jest też źródłem makra: **Konfiguracja ▸ Makro z ostatnich działań…** proponuje to, co asystent właśnie zrobił, jako kroki makra, które możecie uruchomić ponownie — z przycisku albo z klawisza. Zobacz [Makra](macros.md).
+Ta lista jest też źródłem makra: **Makra… ▸ Z ostatnich działań…** proponuje to, co asystent właśnie zrobił, jako kroki makra, które możecie uruchomić ponownie — z przycisku albo z klawisza. Zobacz [Makra](macros.md). To, co robi asystent, wyłapuje również **Nagraj makro…**, obok tego, co robisz ręcznie.
 
 ## Kolumny panelu
 

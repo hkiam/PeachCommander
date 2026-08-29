@@ -53,7 +53,9 @@ final class MacroSeedTests: XCTestCase {
     /// command that does nothing and appear on the button-bar picker beside the real ones.
     func test_theReadmeEntryIsNotAMacro() throws {
         let store = try temporaryStore()
-        try MacroSeed.json.write(to: store.url, atomically: true, encoding: .utf8)
+        for file in MacroSeed.files() {
+            try file.data.write(to: store.directory.appendingPathComponent(file.name))
+        }
         let loaded = store.load()
         XCTAssertEqual(loaded.problems, [])
         XCTAssertFalse(loaded.macros.contains { $0.id == "_readme" })
@@ -122,6 +124,6 @@ final class MacroSeedTests: XCTestCase {
             .appendingPathComponent("pc-macro-seed-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
-        return MacroStore(url: dir.appendingPathComponent("macros.json"))
+        return MacroStore(directory: dir)
     }
 }

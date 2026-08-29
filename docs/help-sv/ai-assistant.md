@@ -68,7 +68,7 @@ För allt som ändrar filer — flytta, byta namn, skriva, radera — visar assi
 
 Du kan också bara fråga: *"ångra det"* och *"vad har du ändrat?"* når samma två funktioner.
 
-Den listan är också där ett makro kommer ifrån: **Konfiguration ▸ Makro från senaste åtgärder…** erbjuder det assistenten just gjorde som stegen i ett makro du kan köra igen, från en knapp eller en tangent. Se [Makron](macros.md).
+Den listan är också där ett makro kommer ifrån: **Makron… ▸ Från senaste åtgärderna…** erbjuder det assistenten just gjorde som stegen i ett makro du kan köra igen, från en knapp eller en tangent. Se [Makron](macros.md). Det assistenten gör fångas också av **Spela in makro…**, vid sidan av det du gör för hand.
 
 ## Kolumner i panelen
 

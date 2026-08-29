@@ -10,21 +10,38 @@ Ein Makro ist eine benannte Folge von Dateiaktionen — einen Ordner anlegen, di
 
 Alles, was ein Makro tut, läuft durch dieselbe Maschinerie wie der Assistent. Ein Makro kann also nichts tun, was Sie nicht erlaubt haben, jeder seiner Schritte erscheint im Aktionsprotokoll, und ein Schritt, der zurückgenommen werden kann, kann es weiterhin.
 
-## Der schnellste Weg: aus dem, was Sie eben getan haben
+## Ein Fenster: Konfiguration ▸ Makros…
 
-Sie müssen ein Makro nicht von Hand schreiben.
+Alles rund um Makros steht hinter diesem einen Eintrag: die Liste, die beiden Wege zu einem neuen Makro und der Weg in die Datei. Im Menü gibt es nichts zu wählen.
 
-1. Tun Sie die Sache einmal — kopieren, verschieben, umbenennen oder löschen Sie in den Fenstern, oder lassen Sie es den Assistenten tun.
-2. Wählen Sie **Konfiguration ▸ Makro aus letzten Aktionen…**.
-3. Kreuzen Sie die Schritte an, die das Makro wiederholen soll, geben Sie ihm einen Namen und lassen Sie **Außerdem eine Schaltfläche dafür anlegen** eingeschaltet.
-4. Kreuzen Sie **Den Fenstern folgen statt genau diesen Dateien** an, wenn das Makro beim nächsten Mal mit dem arbeiten soll, was dann ausgewählt ist. Die Zeilen ändern sich beim Ankreuzen, Sie sehen also, was Sie speichern.
+## Der schnellste Weg: eines aufzeichnen
+
+Sie müssen ein Makro nicht von Hand schreiben — und Sie müssen hinterher auch nicht überlegen, wo es angefangen hat.
+
+1. **Konfiguration ▸ Makros… ▸ Makro aufzeichnen…**. Das Fenster tritt beiseite, und ein kleines Feld erscheint, das sagt, dass eine Aufzeichnung läuft und die Schritte mitzählt.
+2. Erledigen Sie die Arbeit einmal — kopieren, verschieben, umbenennen, löschen, Ordner und Dateien anlegen. Arbeiten Sie ganz normal; die Aufzeichnung steht nicht im Weg.
+3. **Beenden und sichern…**.
+4. Die Schritte kommen angekreuzt zurück. Nehmen Sie das Häkchen bei allem weg, was nur vorbereitet hat, und geben Sie dem Makro einen Namen. Lassen Sie **Außerdem eine Schaltfläche dafür anlegen** eingeschaltet.
+5. Kreuzen Sie **Den Fenstern folgen statt genau diesen Dateien** an, wenn das Makro beim nächsten Mal mit dem arbeiten soll, was dann ausgewählt ist. Die Zeilen ändern sich beim Ankreuzen, Sie sehen also, was Sie speichern.
 
 **Makro speichern** — und die Schaltfläche ist in der Leiste. Das ist der ganze Ablauf.
+
+**Aufzeichnung verwerfen** wirft die Aufzeichnung weg und sichert nichts. Vor dem Start wird nichts aufgezeichnet und nach dem Beenden auch nicht — genau dafür gibt es beide Enden.
+
+Eine Aufzeichnung übersteht einen Neustart. Endet Peach Commander, während eine läuft — weil Sie beenden oder weil es abstürzt —, kommt sie mit zurück, sagt das auch, und Sie machen weiter oder verwerfen sie.
+
+Wenn Sie es lieber auf einer Taste oder einer Schaltfläche hätten: der Befehl heißt `cm_MacroRecord`, er startet eine Aufzeichnung und beendet die laufende.
+
+## Der andere Weg: aus dem, was schon geschehen ist
+
+**Aus letzten Aktionen…** im selben Fenster baut ein Makro aus dem, was zuletzt passiert ist, statt Neues aufzuzeichnen — nützlich, wenn Sie die Arbeit *gerade* erledigt haben und erst dann auf die Idee mit dem Makro kommen.
 
 ![Das Blatt „Makro aus letzten Aktionen“ mit dem gerade Geschehenen als ankreuzbaren Schritten](screenshots/macro-recorder.png)
 *Was schon geschehen ist, angeboten als Schritte eines neuen Makros.*
 
-Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen.
+Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen. Hier sind die Zeilen zunächst nicht angekreuzt: „alles, was ich in der letzten halben Stunde getan habe“ ist selten das gemeinte Makro.
+
+> **Dieser Weg braucht den Verlauf.** Was Sie von Hand tun, wird aus dem globalen Verlauf zurückgelesen. Haben Sie den ausgeschaltet (Einstellungen ▸ Sonstiges ▸ **Globalen Verlauf aufzeichnen**), steht nichts von Ihnen in dieser Liste — und sie sagt das auch. **Makro aufzeichnen…** hängt nicht davon ab.
 
 > **Was nicht angeboten wird.** Das Packen eines Archivs, und alles andere, was die App nur dem Namen nach festhält, lässt sich nicht in einen Schritt verwandeln — es gibt keine Form dafür. Solche Zeilen stehen ausgegraut mit ihrem Grund da, statt zu fehlen, damit eine Liste von fünf, die drei anbietet, nicht so aussieht, als hätte sie zwei übersehen. Und wenn Sie es nicht anders verlangen, sind die Pfade die, die tatsächlich gelaufen sind: ein aufgezeichnetes Makro wiederholt *jene* Kopie, nicht „eine Kopie dieser Art“. Öffnen Sie es im Editor und setzen Sie `%S` oder `%T` dorthin, wo es den Fenstern folgen soll.
 
@@ -32,7 +49,7 @@ Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 u
 
 ## Die mitgelieferten Beispiele
 
-Wenn Sie **Konfiguration ▸ Makros bearbeiten…** zum ersten Mal öffnen, wird die Datei mit acht ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:
+Wenn Sie **Datei bearbeiten…** zum ersten Mal öffnen, wird die Datei mit acht ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:
 
 | Makro | Was es tut |
 | --- | --- |
@@ -49,7 +66,11 @@ Jedes davon wird zu einem Kommando, Sie können also jedes auf eine Schaltfläch
 
 ## Sie verwalten
 
-**Konfiguration ▸ Makros verwalten…** ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie umbenennen, duplizieren, umsortieren und löschen. Wer über eine Zeile fährt, sieht ihre Schritte.
+**Konfiguration ▸ Makros…** ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie ausführen, umbenennen, duplizieren, umsortieren, löschen, exportieren und importieren. Wer über eine Zeile fährt, sieht ihre Schritte.
+
+**Ausführen** ist der Weg, ein gerade aufgezeichnetes Makro auszuprobieren, ohne erst das Fenster zu schließen und den Befehl zu suchen. Es läuft durch denselben Plan und dieselbe Bestätigung wie jeder andere Aufruf — dieses Fenster hat keine eigenen Rechte.
+
+**Exportieren…** schreibt das ausgewählte Makro in eine eigene Datei, **Importieren…** fügt Makros aus Dateien hinzu, die Ihnen jemand geschickt hat — dafür ist eine Datei je Makro da. Ein Import ersetzt nie: ein Makro, dessen Kennung schon vergeben ist, bekommt eine freie (ein ankommendes `backup` wird neben Ihrem eigenen zu `backup-2`), und es wird Ihnen gesagt, unter welchen Kennungen die neuen gelandet sind — die Schaltfläche, die Sie anlegen, muss ja die richtige nennen.
 
 ![Das Fenster „Makros verwalten“ mit Befehlsnamen, Schrittzahl und Berechtigung je Makro](screenshots/macro-manager.png)
 *Wie jedes Makro heißt, als was es läuft und wofür es um Erlaubnis fragen wird.*
@@ -62,21 +83,19 @@ Die *Schritte* werden hier nicht bearbeitet. **Datei bearbeiten…** übergibt d
 
 ## Makros von Hand bearbeiten
 
-**Konfiguration ▸ Makros bearbeiten…** öffnet `macros.json` in Ihrem Konfigurationsordner, beim ersten Mal angelegt mit den Beispielen von oben. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:
+**Datei bearbeiten…** öffnet die eigene Datei des ausgewählten Makros — `macros/<kennung>.json` in Ihrem Konfigurationsordner, beim ersten Mal angelegt mit den Beispielen von oben. Ohne Auswahl wird der Ordner selbst im Fenster gezeigt, wo F3 eines liest und F4 eines bearbeitet. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Das Speichern lädt die Makros sofort neu — und sagt Ihnen, wenn etwas nicht stimmt: ein falsch geschriebener Werkzeugname, ein fehlendes Pflichtargument, zwei Makros mit derselben Id. Ein Makro mit einem Fehler wird nicht ausgeführt und kommt auf keine Schaltfläche; Sie erfahren, welches Makro es betrifft und was daran falsch ist, solange der Editor noch offen ist.
@@ -151,7 +170,7 @@ Jeder Schritt wird einzeln protokolliert, deshalb nimmt **Widerrufen** nach eine
 
 ## Wo alles gespeichert wird
 
-- Ihre Makros stehen in `macros.json` im Konfigurationsordner — eine einfache Datei, die Sie diffen und in Ihren Dotfiles halten können.
+- Ihre Makros stehen in `macros/` im Konfigurationsordner, je eines als `<kennung>.json` — einfache Dateien, die Sie diffen, in Ihren Dotfiles halten und jemandem schicken können. Eine `macros.json` aus einer früheren Version wird beim ersten Start übernommen und in `macros.json.migrated` umbenannt; danach liest sie niemand mehr.
 - Schaltflächen, die ein Makro angelegt hat, sind gewöhnliche Einträge der Schaltflächenleiste in `default.bar`; eine davon zu entfernen ist dasselbe wie bei jeder anderen Schaltfläche.
 
 ## Nächste Schritte

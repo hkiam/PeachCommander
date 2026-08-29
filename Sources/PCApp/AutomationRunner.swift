@@ -416,6 +416,15 @@ extension MainWindowController {
                     let out = openHexEditorForAutomation(path: h[0]).automationDialogClipboard(h[1])
                     try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
                 }
+            case "macromanagerdo":                      // macromanagerdo <row>|<action> (F-478)
+                // <row> is one-based; 0 means "nothing selected". <action> is one of run, export,
+                // import, edit, record, recent, duplicate, delete, up, down, addbutton.
+                let parts = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                let row = Int(parts.first ?? "") ?? 0
+                let action = parts.count > 1 ? parts[1] : ""
+                if macroManagerWindow?.performForAutomation(row: row, action: action) != true {
+                    NSLog("[automation] macromanagerdo: no manager, or unknown action \(action)")
+                }
             case "macromanagerdump":                    // macromanagerdump <out> (F-478)
                 let report = macroManagerWindow?.automationReport()
                     ?? "ERROR: the macro manager is not open\n"

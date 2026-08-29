@@ -1102,9 +1102,18 @@ extension PanelController {
     // MARK: - Global history (F-402)
 
     /// Record a completed operation, with the panel it was carried out from.
+    ///
+    /// Two listeners, on purpose. The history is the one this was built for and it can be switched off;
+    /// a *running macro recording* (F-478) must not be, because the user pressed a button that said it
+    /// would record. Both are told from this one line rather than from two call sites, so an operation
+    /// cannot reach one and miss the other — which is exactly how the recording came to be blind for
+    /// anyone with `History.Enabled=0`.
     func recordInHistory(label: String, directory: String, payload: String = "") {
+        let side: HistoryPanelSide = position.isLeft ? .left : .right
         HistoryService.shared.recordOperation(label: label, directory: directory, payload: payload,
-                                             panel: position.isLeft ? .left : .right)
+                                             panel: side)
+        (view.window?.windowController as? MainWindowController)?
+            .noteForMacroRecording(label: label, directory: directory, payload: payload, panel: side)
     }
 
     /// The same, for a queued operation described by its `OperationKind`.

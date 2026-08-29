@@ -68,7 +68,7 @@ U všeho, co mění soubory — přesun, přejmenování, zápis, smazání — 
 
 Můžete se také prostě zeptat: *„vrať to"* a *„co jsi změnil?"* dosáhnou na tytéž dvě funkce.
 
-Ten seznam je zároveň tím, z čeho vzniká makro: **Konfigurace ▸ Makro z posledních akcí…** nabídne to, co asistent právě udělal, jako kroky makra, které můžete spustit znovu — z tlačítka nebo z klávesy. Viz [Makra](macros.md).
+Ten seznam je zároveň tím, z čeho vzniká makro: **Makra… ▸ Z posledních akcí…** nabídne to, co asistent právě udělal, jako kroky makra, které můžete spustit znovu — z tlačítka nebo z klávesy. Viz [Makra](macros.md). To, co dělá asistent, zachytí i **Nahrát makro…**, vedle toho, co děláte ručně.
 
 ## Sloupce panelu
 

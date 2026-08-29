@@ -10,21 +10,38 @@ Makro je poimenovano zaporedje dejanj z datotekami — ustvari mapo, vanjo prema
 
 Vse, kar makro počne, gre skozi isto napravo kot pomočnik. Makro torej ne more storiti ničesar, česar niste dovolili, vsak njegov korak se pojavi v dnevniku dejanj, korak, ki ga je mogoče razveljaviti, pa to ostane.
 
-## Najhitrejša pot: iz tega, kar ste pravkar naredili
+## Eno okno: Konfiguracija ▸ Makri…
 
-Makra ni treba napisati iz nič.
+Vse o makrih je za tem enim vnosom: njihov seznam, oba načina za izdelavo in pot do datoteke. V meniju ni več med čim izbirati.
 
-1. Naredite tisto stvar enkrat — kopirajte, premaknite, preimenujte ali izbrišite v oknih, ali pa naj to naredi pomočnik.
-2. Izberite **Nastavitve ▸ Makro iz nedavnih dejanj…**.
-3. Označite korake, ki naj jih makro ponovi, poimenujte ga in pustite vklopljeno **Zanj dodaj tudi gumb**.
-4. Označite **Sledi oknom namesto točno tem datotekam**, če naj makro naslednjič dela s tem, kar bo takrat izbrano. Vrstice se ob označitvi spremenijo, tako da vidite, kaj shranjujete.
+## Najhitrejša pot: posnemi makro
+
+Makra vam ni treba pisati iz nič — in tudi ni vam treba pozneje ugotavljati, kje se je začel.
+
+1. **Konfiguracija ▸ Makri… ▸ Posnemi makro…**. Okno se umakne in pojavi se majhno okence, ki pove, da snemanje teče, in sproti šteje korake.
+2. Delo opravite enkrat — kopirajte, premikajte, preimenujte, brišite, ustvarjajte mape in datoteke. Delajte običajno; snemanje ni v napoto.
+3. **Ustavi in shrani…**.
+4. Koraki se vrnejo že označeni. Odznačite vse, kar je le pripravljalo teren, poimenujte makro in pustite vklopljeno **Zanj dodaj tudi gumb**.
+5. Označite **Sledi oknom namesto točno tem datotekam**, če naj makro naslednjič dela s tem, kar bo takrat izbrano. Vrstice se ob označitvi spremenijo, tako da vidite, kaj shranjujete.
 
 **Shrani makro** — in gumb je v vrstici. To je ves postopek.
+
+**Zavrzi posnetek** posnetek zavrže in ne shrani ničesar. Pred pritiskom na Posnemi se ne posname nič, po ustavitvi prav tako ne — prav zato ima snemanje oba konca.
+
+Snemanje preživi ponovni zagon. Če se Peach Commander konča med njim — ker končate vi ali ker se sesuje — se vrne skupaj z njim, to tudi pove, vi pa nadaljujete ali ga zavržete.
+
+Če bi to raje imeli na tipki ali gumbu, se ukaz imenuje `cm_MacroRecord`: zažene snemanje in ustavi tisto, ki teče.
+
+## Druga pot: iz tega, kar se je že zgodilo
+
+**Iz zadnjih dejanj…** v istem oknu sestavi makro iz zadnjih stvari, ki so se zgodile, namesto da bi snemal nove — uporabno, ko ste delo *pravkar* opravili in vam je šele nato padel na pamet makro.
 
 ![List »Makro iz nedavnih dejanj« s tem, kar ste pravkar naredili, kot koraki za obkljukanje](screenshots/macro-recorder.png)
 *Kar se je že zgodilo, ponujeno kot koraki novega makra.*
 
-Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje) in kaj je naredil pomočnik ali drug makro. Vsaka vrstica pove, katero od obojega — po seji z obojim se namreč isti dve datoteki lahko pojavita v vsaki.
+Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje) in kaj je naredil pomočnik ali drug makro. Vsaka vrstica pove, katero od obojega — po seji z obojim se namreč isti dve datoteki lahko pojavita v vsaki. Tu so vrstice sprva neoznačene: »vse, kar sem naredil v zadnji pol uri« je redko tisti makro, ki ga imate v mislih.
+
+> **Ta pot potrebuje zgodovino.** Kar naredite ročno, se prebere iz globalne zgodovine; če ste jo izklopili (Nastavitve ▸ Razno ▸ **Snemaj globalno zgodovino**), na tem seznamu ni ničesar vašega — in seznam to pove. **Posnemi makro…** od nje ni odvisen.
 
 > **Kaj ni ponujeno.** Pakiranje arhiva in vse drugo, kar si program zapomni le po imenu, ne more postati korak — zanj ni oblike. Take vrstice so vidne sivo skupaj z razlogom, namesto da bi manjkale, da seznam petih, ki ponudi tri, ne izgleda, kot da je dve spregledal. In če ne zahtevate drugače, so poti tiste, ki so res tekle: posneti makro ponovi *tisto* kopijo, ne »kopije te vrste«. Odprite ga v urejevalniku in postavite `%S` ali `%T` tja, kjer naj sledi oknom.
 
@@ -32,7 +49,7 @@ Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje)
 
 ## Priloženi primeri
 
-Ko prvič odprete **Konfiguracija ▸ Uredi makre…**, se datoteka ustvari z osmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:
+Ko prvič odprete **Uredi datoteko…**, se datoteka ustvari z osmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:
 
 | Makro | Kaj počne |
 | --- | --- |
@@ -49,7 +66,11 @@ Vsak od njih postane ukaz, tako da lahko kateregakoli postavite na gumb ali na t
 
 ## Upravljanje
 
-**Konfiguracija ▸ Upravljanje makrov…** je ta seznam: kako se vsak makro imenuje, kako se imenuje njegov ukaz, koliko korakov ima in kaj bo zahtevalo preverjanje dovoljenj — »ta briše« je torej vidno, preden ga postavite na tipko. Od tam lahko preimenujete, podvojite, prerazvrstite in izbrišete. Če se ustavite nad vrstico, vidite njene korake.
+**Konfiguracija ▸ Makri…** je seznam: kako se vsak makro imenuje, kako se imenuje njegov ukaz, koliko korakov ima in kaj bo zahtevala dovoljenjska zapora — tako je »ta briše« vidno, preden ga daste na tipko. Od tam lahko zaganjate, preimenujete, podvajate, prerazporejate, brišete, izvažate in uvažate. Če se z miško ustavite nad vrstico, se pokažejo njeni koraki.
+
+**Zaženi** je način, kako preizkusite tistega, ki ste ga pravkar posneli, ne da bi prej zaprli okno in iskali ukaz. Gre skozi isti načrt in isto potrditev kot vsak drug zagon — to okno nima lastnih pravic.
+
+**Izvozi…** zapiše izbrani makro v lastno datoteko, **Uvozi…** pa doda makre iz datotek, ki vam jih je kdo poslal — prav zato je ena datoteka na makro. Uvoz nikoli ne zamenja: makro, čigar id je že zaseden, dobi prostega (prihajajoči `backup` ob vašem postane `backup-2`), povedano pa vam je tudi, pod katerimi id-ji so novi pristali, saj mora gumb, ki ga naredite, imenovati pravega.
 
 ![Okno »Upravljanje makrov« z imenom ukaza, številom korakov in dovoljenjem vsakega makra](screenshots/macro-manager.png)
 *Kako se vsak makro imenuje, kot kaj teče in za kaj bo prosil za dovoljenje.*
@@ -62,21 +83,19 @@ Vrstni red ni okras: vrstni red v datoteki je tisti, v katerem jih naštevata Br
 
 ## Ročno urejanje makrov
 
-**Konfiguracija ▸ Uredi makre…** odpre `macros.json` v vaši konfiguracijski mapi, prvič ustvarjen s primeri zgoraj. Makro je seznam korakov, in vsak korak imenuje orodje in njegove argumente:
+**Uredi datoteko…** odpre lastno datoteko izbranega makra — `macros/<id>.json` v vaši mapi z nastavitvami, ob prvem zagonu ustvarjeno s primeri zgoraj. Brez izbire se v podoknu pokaže mapa sama, kjer F3 enega prebere, F4 pa enega uredi. Makro je seznam korakov in vsak korak imenuje orodje in njegove argumente:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Shranjevanje makre takoj znova naloži — in pove, če kaj ni v redu: napačno zapisano ime orodja, manjkajoč obvezen argument, dva makra z istim id. Makro z napako se ne izvede in ne pride na noben gumb; izveste, kateri je in kaj je z njim narobe, dokler je urejevalnik še odprt.
@@ -151,7 +170,7 @@ Vsak korak se zapiše zase, zato **razveljavi** po makru vzame nazaj njegov *zad
 
 ## Kje se vse shrani
 
-- Vaši makri so v `macros.json` v nastavitveni mapi — navadna datoteka, ki jo lahko primerjate in hranite skupaj z dotfiles.
+- Vaši makri so v `macros/` v mapi z nastavitvami, vsak kot `<id>.json` — navadne datoteke, ki jih lahko primerjate, hranite med dotfiles in komu pošljete. `macros.json` iz starejše različice se ob prvem zagonu prevzame in preimenuje v `macros.json.migrated`; potem ga nihče več ne bere.
 - Gumbi, ki jih je dodal makro, so navadni vnosi vrstice z gumbi v `default.bar`, zato je odstraniti enega enako kot pri katerem koli drugem gumbu.
 
 ## Naslednji koraki

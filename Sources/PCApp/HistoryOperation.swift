@@ -27,6 +27,9 @@ enum HistoryOperation {
     static let kindDelete = "delete"
     static let kindRename = "rename"
     static let kindMakeDirectory = "mkdir"
+    /// A new, empty file (Shift+F4). Recorded so the macro recorder can offer it; the palette still
+    /// will not repeat it, for the reason `decode` gives.
+    static let kindCreateFile = "newfile"
 
     private static let separator = "\u{3}"
 

@@ -52,6 +52,8 @@ enum PlanPhraseText {
             return String(format: String(localized: "Comment “%1$@”: %2$@"), a, b)
         case .setTags:
             return String(format: String(localized: "Tag “%1$@”: %2$@"), a, b)
+        case .createFile:
+            return String(format: String(localized: "Create the file “%@”"), a)
         case .writeFile:
             return String(format: String(localized: "Write the file “%@”"), a)
         case .mergeFiles:

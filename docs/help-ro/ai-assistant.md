@@ -68,7 +68,7 @@ Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — a
 
 Puteți și doar să cereți: *„anulează asta"* și *„ce ai modificat?"* ajung la aceleași două funcții.
 
-Lista aceea este și locul din care se naște o macrocomandă: **Configurare ▸ Macrocomandă din acțiuni recente…** oferă ce tocmai a făcut asistentul ca pașii uneia pe care o puteți rula din nou, de pe un buton sau de pe o tastă. Vedeți [Macrocomenzi](macros.md).
+Lista aceea este și locul din care se naște o macrocomandă: **Macrocomenzi… ▸ Din acțiunile recente…** oferă ce tocmai a făcut asistentul ca pașii uneia pe care o puteți rula din nou, de pe un buton sau de pe o tastă. Vedeți [Macrocomenzi](macros.md). Ce face asistentul este prins și de **Înregistrează macrocomandă…**, alături de ce faceți dumneavoastră manual.
 
 ## Coloane în panou
 

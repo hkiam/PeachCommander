@@ -10,21 +10,38 @@ Makro je pojmenovaná posloupnost akcí se soubory — vytvořit adresář, pře
 
 Vše, co makro dělá, prochází stejným strojem jako asistent. Makro tedy nemůže udělat nic, co jste nepovolili, každý jeho krok se objeví v protokolu akcí a krok, který lze vzít zpět, se vzít zpět dá i nadále.
 
-## Nejrychlejší cesta: z toho, co jste právě udělali
+## Jedno okno: Konfigurace ▸ Makra…
 
-Makro nemusíte psát od začátku.
+Všechno kolem maker je za touhle jedinou položkou: jejich seznam, oba způsoby, jak makro vytvořit, i cesta do souboru. V nabídce už není mezi čím vybírat.
 
-1. Udělejte tu věc jednou — zkopírujte, přesuňte, přejmenujte nebo smažte v panelech, nebo to nechte udělat asistenta.
-2. Zvolte **Konfigurace ▸ Makro z nedávných akcí…**.
-3. Zaškrtněte kroky, které má makro opakovat, pojmenujte ho a nechte zapnuté **Přidat pro něj také tlačítko**.
-4. Zaškrtněte **Sledovat panely místo právě těchto souborů**, má-li makro příště pracovat s tím, co bude zrovna vybráno. Řádky se při zaškrtnutí změní, takže vidíte, co ukládáte.
+## Nejrychlejší cesta: nahrát makro
+
+Makro nemusíte psát od nuly — a nemusíte ani dodatečně zjišťovat, kde vlastně začalo.
+
+1. **Konfigurace ▸ Makra… ▸ Nahrát makro…**. Okno ustoupí stranou a objeví se malý panel, který říká, že nahrávání běží, a průběžně počítá kroky.
+2. Udělejte práci jednou — kopírujte, přesouvejte, přejmenovávejte, mažte, zakládejte složky a soubory. Pracujte normálně; nahrávání nepřekáží.
+3. **Zastavit a uložit…**.
+4. Kroky se vrátí už zaškrtnuté. Odškrtněte vše, co jen připravovalo půdu, pojmenujte makro a nechte zapnuté **Přidat pro něj také tlačítko**.
+5. Zaškrtněte **Sledovat panely místo právě těchto souborů**, má-li makro příště pracovat s tím, co bude zrovna vybráno. Řádky se při zaškrtnutí změní, takže vidíte, co ukládáte.
 
 **Uložit makro** — a tlačítko je v liště. To je celý postup.
+
+**Zahodit nahrávku** nahrávku vyhodí a nic neuloží. Před stisknutím Nahrát se nezaznamenává nic a po zastavení také ne — právě proto má nahrávání oba konce.
+
+Nahrávka přežije restart. Pokud se Peach Commander ukončí, zatímco běží — protože skončíte vy, nebo protože spadne — vrátí se i s ní, řekne to a vy buď pokračujete, nebo ji zahodíte.
+
+Jestli to raději chcete na klávese nebo tlačítku, příkaz se jmenuje `cm_MacroRecord`: spustí nahrávání a zastaví to, které běží.
+
+## Druhá cesta: z toho, co se už stalo
+
+**Z posledních akcí…** ve stejném okně sestaví makro z posledních věcí, které se staly, místo aby nahrávalo nové — hodí se, když jste práci *právě* udělali a teprve pak vás makro napadlo.
 
 ![List „Makro z posledních akcí“ s tím, co jste právě udělali, jako zaškrtávatelnými kroky](screenshots/macro-recorder.png)
 *Co se už stalo, nabídnuto jako kroky nového makra.*
 
-Seznam obsahuje obojí: co jste udělali v panelech (F5, F6, F7, F8 a přejmenování) a co udělal asistent nebo jiné makro. Každý řádek říká, které z toho — po sezení s obojím se totiž tytéž dva soubory mohou objevit v obou.
+Seznam obsahuje obojí: co jste udělali v panelech (F5, F6, F7, F8 a přejmenování) a co udělal asistent nebo jiné makro. Každý řádek říká, které z toho — po sezení s obojím se totiž tytéž dva soubory mohou objevit v obou. Tady jsou řádky zpočátku nezaškrtnuté: „všechno, co jsem za poslední půlhodinu udělal“ je málokdy to makro, které máte na mysli.
+
+> **Tahle cesta potřebuje historii.** To, co děláte ručně, se čte z globální historie; pokud jste ji vypnuli (Nastavení ▸ Různé ▸ **Zaznamenávat globální historii**), není v tomhle seznamu nic vašeho — a seznam to říká. **Nahrát makro…** na ní nezávisí.
 
 > **Co se nenabízí.** Zabalení archivu a všechno ostatní, co si aplikace pamatuje jen podle jména, se nedá proměnit v krok — není pro to tvar. Takové řádky jsou vidět zašedlé i s důvodem, místo aby chyběly, aby seznam pěti, který nabízí tři, nevypadal, že dva přehlédl. A pokud nepožádáte jinak, jsou cesty ty, které skutečně proběhly: zaznamenané makro zopakuje *tu* kopii, ne „kopii toho druhu“. Otevřete je v editoru a dejte `%S` nebo `%T` tam, kde má sledovat panely.
 
@@ -32,7 +49,7 @@ Seznam obsahuje obojí: co jste udělali v panelech (F5, F6, F7, F8 a přejmenov
 
 ## Přiložené příklady
 
-Když poprvé otevřete **Konfigurace ▸ Upravit makra…**, soubor se založí s osmi hotovými příklady. Jsou to běžná makra — upravte je, nebo smažte ta, která nechcete — a každé nese komentář, který říká, co dělá a co se v něm dá změnit:
+Když poprvé otevřete **Upravit soubor…**, soubor se založí s osmi hotovými příklady. Jsou to běžná makra — upravte je, nebo smažte ta, která nechcete — a každé nese komentář, který říká, co dělá a co se v něm dá změnit:
 
 | Makro | Co dělá |
 | --- | --- |
@@ -49,7 +66,11 @@ Každé z nich se stane příkazem, takže kterékoli můžete umístit na tlač
 
 ## Spravovat je
 
-**Konfigurace ▸ Spravovat makra…** je ten seznam: jak se každé makro jmenuje, jak se jmenuje jeho příkaz, kolik má kroků a co bude chtít kontrola oprávnění — „tohle maže“ je tedy vidět dřív, než je dáte na klávesu. Odtud můžete přejmenovat, duplikovat, přeskupit a smazat. Když najedete na řádek, uvidíte jeho kroky.
+**Konfigurace ▸ Makra…** je ten seznam: jak se každé makro jmenuje, jak se jmenuje jeho příkaz, kolik má kroků a nač se zeptá kontrola oprávnění — takže „tohle maže“ je vidět dřív, než ho dáte na klávesu. Odtud můžete spouštět, přejmenovávat, duplikovat, měnit pořadí, mazat, exportovat a importovat. Najetím na řádek se ukážou jeho kroky.
+
+**Spustit** je způsob, jak vyzkoušet makro, které jste právě nahráli, aniž byste nejdřív zavírali okno a hledali příkaz. Prochází stejným plánem a stejným potvrzením jako každé jiné spuštění — tohle okno nemá vlastní oprávnění.
+
+**Exportovat…** zapíše vybrané makro do vlastního souboru a **Importovat…** přidá makra ze souborů, které vám někdo poslal — právě k tomu je jeden soubor na makro. Import nikdy nenahrazuje: makro, jehož id je už obsazené, dostane volné (přicházející `backup` se vedle vašeho stane `backup-2`) a dozvíte se, pod jakými id nová skončila, protože tlačítko, které vytvoříte, musí ukázat na to správné.
 
 ![Okno „Spravovat makra“ s názvem příkazu, počtem kroků a oprávněním každého makra](screenshots/macro-manager.png)
 *Jak se každé makro jmenuje, jako co běží a nač si vyžádá svolení.*
@@ -62,21 +83,19 @@ Pořadí není ozdoba: pořadí v souboru je to, ve kterém je vypisuje Prohlí�
 
 ## Ruční úpravy maker
 
-**Konfigurace ▸ Upravit makra…** otevře `macros.json` ve vaší konfigurační složce, poprvé založený s příklady výše. Makro je seznam kroků a každý krok jmenuje nástroj a jeho argumenty:
+**Upravit soubor…** otevře vlastní soubor vybraného makra — `macros/<id>.json` ve vaší konfigurační složce, poprvé vytvořený s příklady výše. Bez výběru se v panelu ukáže samotná složka, kde F3 jedno přečte a F4 jedno upraví. Makro je seznam kroků a každý krok jmenuje nástroj a jeho argumenty:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Uložení makra ihned znovu načte — a řekne, když něco nesedí: překlep v názvu nástroje, chybějící povinný argument, dvě makra se stejným id. Makro s chybou se nespustí a na žádné tlačítko se nedostane; dozvíte se, o které jde a co je na něm špatně, dokud je editor ještě otevřený.
@@ -151,7 +170,7 @@ Každý krok je zaznamenán samostatně, takže **vzít zpět** po makru vrátí
 
 ## Kde se to ukládá
 
-- Vaše makra jsou v `macros.json` v konfiguračním adresáři — obyčejný soubor, který lze porovnávat a držet spolu s dotfiles.
+- Vaše makra jsou v `macros/` v konfigurační složce, každé jako `<id>.json` — obyčejné soubory, které můžete diffovat, držet mezi dotfiles a někomu poslat. `macros.json` ze starší verze se při prvním spuštění převezme a přejmenuje na `macros.json.migrated`; potom už ho nikdo nečte.
 - Tlačítka přidaná makrem jsou běžné položky lišty tlačítek v `default.bar`, takže odebrat jedno je stejné jako u kteréhokoli jiného tlačítka.
 
 ## Další kroky

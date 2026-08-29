@@ -390,12 +390,13 @@ enum AppMenu {
                                    key: "", mask: [], target: target, action: commandAction))
         // Macros (F-478): among the everyday customization tools, because that is what they are —
         // a macro ends up on a button or a key like anything else here.
-        configMenu.addItem(command(String(localized: "Macro from Recent Actions…"),
-                                   cmd: "cm_MacroFromRecentActions",
-                                   key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(command(String(localized: "Manage Macros…"), cmd: "cm_MacroManager",
-                                   key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(command(String(localized: "Edit Macros…"), cmd: "cm_MacroEditor",
+        //
+        // **One entry, not three.** Recording a macro, listing the macros and editing the file were
+        // three sibling items here, which made the menu answer a question nobody asks — *which of these
+        // three is the macros one* — and hid the ordinary case (there is a list; things are done to it)
+        // behind a choice. The window is the feature; the other two are buttons in it. Both commands
+        // stay registered, so a key or a toolbar button already pointing at one still works.
+        configMenu.addItem(command(String(localized: "Macros…"), cmd: "cm_MacroManager",
                                    key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(.separator())
         // One-off actions, kept apart from the everyday tools above.

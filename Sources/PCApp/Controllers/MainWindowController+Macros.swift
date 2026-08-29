@@ -18,14 +18,25 @@ private let logger = PCFoundationLogger.logger
 
 extension MainWindowController {
 
-    var macroStore: MacroStore { MacroStore(url: configPaths.macros) }
+    var macroStore: MacroStore {
+        MacroStore(directory: configPaths.macrosDirectory, legacyFile: configPaths.legacyMacrosFile)
+    }
 
     /// Read the macros and register one command per macro. Called at startup.
     ///
     /// Silent about problems on purpose: this runs during launch, and an alert there is the thing
     /// F-436 was about — a modal nobody is present to click turns a start into a hang. They are
     /// logged here and shown by `reloadMacrosFromDisk`, which is the path an *edit* takes.
-    func loadMacros() { applyMacros(readMacros(), announcingProblems: false) }
+    func loadMacros() {
+        // Before the first read, and only ever once: a `macros.json` from before macros became one
+        // file each is moved across and renamed out of the way. Silent, because it is not a decision
+        // the user makes and there is nothing for them to do about it — the old file is still there,
+        // under `.migrated`, if they want to look (F-478).
+        if macroStore.migrateIfNeeded() {
+            logger.info("macros: macros.json was moved to macros/ and renamed .migrated")
+        }
+        applyMacros(readMacros(), announcingProblems: false)
+    }
 
     /// Re-read `macros.json` and re-register, if anything changed.
     ///
@@ -156,26 +167,52 @@ extension MainWindowController {
 
     /// cm_MacroEditor: edit `macros.json` in the built-in editor, seeding the shipped examples first.
     ///
-    /// A file, not a form — the same answer the Start menu gets (`showEditMainMenu`). A macro is a list
+    /// Files, not a form — the same answer the Start menu gets (`showEditMainMenu`). A macro is a list
     /// of tool names and arguments, which is what JSON is; a form over it would be a worse editor than
     /// the one the app already has, and it would need a control per tool in the catalogue. The examples
-    /// in `MacroSeed` and the recorder below are the two on-ramps, so nobody has to start from an empty
-    /// file — and a broken edit is reported when it is saved, by `reloadMacrosFromDisk`.
+    /// in `MacroSeed` and the recorder are the two on-ramps, so nobody has to start from an empty
+    /// folder — and a broken edit is reported when it is saved, by `reloadMacrosFromDisk`.
+    ///
+    /// With one file per macro there is no single file to open, so this shows the *folder* in the
+    /// active panel: F3 reads one, F4 edits one, and F8 deletes one. Which is the app doing what it is
+    /// for, rather than a second, worse file browser inside a dialog. Editing one macro directly is
+    /// what the manager's **Edit File…** is for, because there a macro is selected.
     func showMacroEditor() {
-        let url = configPaths.macros
-        if !FileManager.default.fileExists(atPath: url.path) {
-            // The shipped examples (`MacroSeed`), written once and the user's afterwards. Only when
-            // there is no file at all: a user who has one macro of their own must not have seven
-            // appear under it because they opened the editor.
-            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
-                                                     withIntermediateDirectories: true)
-            try? MacroSeed.json.write(to: url, atomically: true, encoding: .utf8)
-            // Registered right away, so the examples are in the Command Browser and the button-bar
-            // picker while the editor is still open — which is where somebody reads them and then
-            // goes looking for them.
-            reloadMacrosFromDisk()
+        seedMacrosIfEmpty()
+        Task { @MainActor in
+            await activePanel?.loadDirectory(configPaths.macrosDirectory.path)
         }
-        openEditor(path: url.path, onSaved: { [weak self] in self?.reloadMacrosFromDisk() })
+    }
+
+    /// Write the shipped examples, once, into an empty (or absent) macros folder.
+    ///
+    /// Only when there is nothing there: a user with one macro of their own must not find eight more
+    /// under it because they opened the folder.
+    func seedMacrosIfEmpty() {
+        let directory = configPaths.macrosDirectory
+        guard macroStore.macros().isEmpty else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        // Written as the seed's own text, not encoded from `Macro` values: each example carries a
+        // `_comment` explaining what it does and what to change, and an encoder drops every key the
+        // type does not declare. `_readme.json` comes with them — no steps, so it is not a command,
+        // and it is the thing a new user opens first.
+        for file in MacroSeed.files() {
+            let url = directory.appendingPathComponent(file.name)
+            guard !FileManager.default.fileExists(atPath: url.path) else { continue }
+            try? file.data.write(to: url, options: .atomic)
+        }
+        // Registered right away, so the examples are in the Command Browser and the button-bar picker
+        // while the folder is still open — which is where somebody reads them and then goes looking.
+        reloadMacrosFromDisk()
+    }
+
+    /// Open one macro's own file in the built-in editor.
+    func editMacroFile(_ macro: Macro) {
+        openEditor(path: macroStore.file(for: macro.id).path,
+                   onSaved: { [weak self] in
+                       self?.reloadMacrosFromDisk()
+                       self?.macroManagerWindow?.reload()
+                   })
     }
 
     /// cm_MacroFromRecentActions: offer what the assistant and earlier macros have just done as the
@@ -184,15 +221,44 @@ extension MainWindowController {
         Task { @MainActor in
             let candidates = MacroRecorder.candidates(from: await recentActionsForMacro())
             guard candidates.contains(where: \.isReplayable) else {
-                presentMacroNotice(
-                    String(localized: "There is nothing to make a macro from yet."),
-                    detail: String(localized: """
-                        A macro is built from what has already happened — files you have copied, moved, \
-                        renamed or deleted, and anything the assistant did. Do one of those first, then \
-                        come back.
-                        """))
+                presentMacroNotice(String(localized: "There is nothing to make a macro from yet."),
+                                   detail: nothingRecentDetail())
                 return
             }
+            saveMacro(from: candidates, recorded: false)
+        }
+    }
+
+    /// Why the list is empty, in the terms of whichever cause it actually was.
+    ///
+    /// This is the failure the feature shipped with. Everything the user does by hand is read back out
+    /// of the operation history — and the history can be switched off, at which point the recorder went
+    /// on reporting "do one of those first" to somebody who had just done four of them. A wrong
+    /// diagnosis is worse than no diagnosis: it sends the user off to repeat work that was never going
+    /// to be recorded. So when the history is off, that is what it says, and it names the switch.
+    private func nothingRecentDetail() -> String {
+        guard HistoryService.shared.isRecordingEnabled else {
+            return String(localized: """
+                What you do in the panels is read back out of the history, and the history is switched \
+                off — so nothing you did by hand was kept. Settings ▸ Misc ▸ “Record a global history” \
+                is the switch. Or use “Record Macro…”, which records into the macro itself and does not \
+                need the history at all.
+                """)
+        }
+        return String(localized: """
+            A macro is built from what has already happened — files you have copied, moved, renamed or \
+            deleted, and anything the assistant did. Do one of those first, then come back — or use \
+            “Record Macro…”, which marks the beginning and the end itself.
+            """)
+    }
+
+    /// Put `candidates` in front of the user and save what they keep.
+    ///
+    /// Shared by both ways in — the explicit recording and the read of what recently happened — because
+    /// from this point on they are the same question. `recorded` only changes what the sheet says it is
+    /// showing.
+    func saveMacro(from candidates: [MacroRecorder.Candidate], recorded: Bool) {
+        Task { @MainActor in
             // The panels as they are *now*, which is what "follow the panels" has to mean: the folder
             // an entry was recorded in may be nowhere in sight, and a macro written against a folder
             // the user is not looking at is the guess this feature must not make.
@@ -200,6 +266,7 @@ extension MainWindowController {
             guard let result = MacroRecorderSheet.present(candidates: candidates,
                                                           existingIDs: macroStore.macros().map(\.id),
                                                           context: context,
+                                                          fromRecording: recorded,
                                                           in: window) else { return }
             let macro = MacroRecorder.macro(id: result.id, title: result.title,
                                             from: candidates, keeping: result.kept,
@@ -209,6 +276,7 @@ extension MainWindowController {
                 try macroStore.upsert(macro)
                 reloadMacrosFromDisk()
                 if result.addsButton { addButtonForMacro(macro) }
+                macroManagerWindow?.reload()
             } catch {
                 presentMacroProblem(String(localized: "The macro could not be saved."),
                                     detail: String(describing: error))
@@ -224,6 +292,7 @@ extension MainWindowController {
     func showMacroManager() {
         if let existing = macroManagerWindow {
             existing.reload()
+            existing.recordingChanged(isRecording: isRecordingMacro)
             existing.showWindow(nil)
             existing.window?.makeKeyAndOrderFront(nil)
             return
@@ -231,10 +300,32 @@ extension MainWindowController {
         let manager = MacroManagerWindowController(store: macroStore)
         manager.onChanged = { [weak self] in self?.reloadMacrosFromDisk() }
         manager.onAddButton = { [weak self] macro in self?.addButtonForMacro(macro) }
-        manager.onEditFile = { [weak self] in self?.showMacroEditor() }
+        manager.onEditFile = { [weak self] macro in
+            guard let self else { return }
+            // With a macro selected the button means "edit *this* one", which is what it could not mean
+            // while they all lived in one file. With none selected it falls back to showing the folder
+            // in the panel, which is the honest answer to "the file" when there are eight of them.
+            if let macro { editMacroFile(macro) } else { showMacroEditor() }
+        }
         manager.onRemoveButtons = { [weak self] names in
             self?.removeButtonsRunning(names) ?? 0
         }
+        manager.onToggleRecording = { [weak self] in
+            guard let self else { return }
+            // Starting closes this window, because the recording happens in the panels and a floating
+            // list of macros over them is in the way. The indicator takes its place and is the thing
+            // that stops it. Stopping keeps the window: the sheet it opens belongs over the list the
+            // new macro is about to appear in.
+            let starting = !self.isRecordingMacro
+            self.toggleMacroRecording()
+            if starting { self.macroManagerWindow?.close() }
+        }
+        manager.onMacroFromRecentActions = { [weak self] in self?.showMacroFromRecentActions() }
+        manager.onRun = { [weak self] macro in
+            guard let self else { return }
+            Task { await self.runMacro(id: macro.id) }
+        }
+        manager.isRecording = isRecordingMacro
         macroManagerWindow = manager
         manager.showWindow(nil)
         manager.window?.makeKeyAndOrderFront(nil)
@@ -280,7 +371,7 @@ extension MainWindowController {
         }
     }
 
-    private func presentMacroNotice(_ message: String, detail: String) {
+    func presentMacroNotice(_ message: String, detail: String) {
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = message

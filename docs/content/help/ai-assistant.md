@@ -69,7 +69,7 @@ For anything that modifies files — moving, renaming, writing, deleting — the
 
 You can also just ask: *"undo that"* and *"what did you change?"* reach the same two functions.
 
-That list is also where a macro comes from: **Configuration ▸ Macro from Recent Actions…** offers what the assistant just did as the steps of one you can run again, on a button or a key. See [Macros](macros.md).
+That list is also where a macro comes from: **Configuration ▸ Macros… ▸ From Recent Actions…** offers what the assistant just did as the steps of one you can run again, on a button or a key. What the assistant does is also caught by **Record Macro…**, alongside what you do by hand. See [Macros](macros.md).
 
 ## Panel columns
 

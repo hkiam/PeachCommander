@@ -10,21 +10,38 @@ Makro je pomenovaná sekvencia akcií so súbormi — vytvoriť adresár, presun
 
 Všetko, čo makro robí, prechádza tým istým strojom ako asistent. Makro teda nemôže urobiť nič, čo ste nepovolili, každý jeho krok sa objaví v protokole akcií a krok, ktorý sa dá vzať späť, sa dá vzať späť aj naďalej.
 
-## Najrýchlejšia cesta: z toho, čo ste práve urobili
+## Jedno okno: Konfigurácia ▸ Makrá…
 
-Makro nemusíte písať od začiatku.
+Všetko okolo makier je za touto jedinou položkou: ich zoznam, oba spôsoby, ako makro vytvoriť, aj cesta do súboru. V ponuke už nie je medzi čím vyberať.
 
-1. Urobte tú vec raz — skopírujte, presuňte, premenujte alebo zmažte v paneloch, alebo to nechajte urobiť asistenta.
-2. Zvoľte **Konfigurácia ▸ Makro z nedávnych akcií…**.
-3. Zaškrtnite kroky, ktoré má makro opakovať, pomenujte ho a nechajte zapnuté **Pridať pre neho aj tlačidlo**.
-4. Zaškrtnite **Sledovať panely namiesto práve týchto súborov**, ak má makro nabudúce pracovať s tým, čo bude práve vybrané. Riadky sa pri zaškrtnutí zmenia, takže vidíte, čo ukladáte.
+## Najrýchlejšia cesta: nahrať makro
+
+Makro nemusíte písať od nuly — a nemusíte ani dodatočne zisťovať, kde vlastne začalo.
+
+1. **Konfigurácia ▸ Makrá… ▸ Nahrať makro…**. Okno ustúpi nabok a objaví sa malý panel, ktorý hovorí, že nahrávanie beží, a priebežne počíta kroky.
+2. Urobte prácu raz — kopírujte, presúvajte, premenúvajte, mažte, zakladajte priečinky a súbory. Pracujte normálne; nahrávanie neprekáža.
+3. **Zastaviť a uložiť…**.
+4. Kroky sa vrátia už zaškrtnuté. Odškrtnite všetko, čo len pripravovalo pôdu, pomenujte makro a nechajte zapnuté **Pridať pre neho aj tlačidlo**.
+5. Zaškrtnite **Sledovať panely namiesto práve týchto súborov**, ak má makro nabudúce pracovať s tým, čo bude práve vybrané. Riadky sa pri zaškrtnutí zmenia, takže vidíte, čo ukladáte.
 
 **Uložiť makro** — a tlačidlo je v lište. To je celý postup.
+
+**Zahodiť nahrávku** nahrávku vyhodí a nič neuloží. Pred stlačením Nahrať sa nezaznamenáva nič a po zastavení tiež nie — práve preto má nahrávanie oba konce.
+
+Nahrávka prežije reštart. Ak sa Peach Commander ukončí, kým beží — pretože skončíte vy, alebo pretože spadne — vráti sa aj s ňou, povie to a vy buď pokračujete, alebo ju zahodíte.
+
+Ak to radšej chcete na klávese alebo tlačidle, príkaz sa volá `cm_MacroRecord`: spustí nahrávanie a zastaví to, ktoré beží.
+
+## Druhá cesta: z toho, čo sa už stalo
+
+**Z posledných akcií…** v tom istom okne poskladá makro z posledných vecí, ktoré sa stali, namiesto nahrávania nových — hodí sa, keď ste prácu *práve* urobili a až potom vás makro napadlo.
 
 ![Hárok „Makro z posledných akcií“ s tým, čo ste práve urobili, ako zaškrtávateľnými krokmi](screenshots/macro-recorder.png)
 *Čo sa už stalo, ponúknuté ako kroky nového makra.*
 
-Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie) a čo urobil asistent alebo iné makro. Každý riadok hovorí, ktoré z toho — po sedení s oboma sa tie isté dva súbory môžu objaviť v oboch.
+Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie) a čo urobil asistent alebo iné makro. Každý riadok hovorí, ktoré z toho — po sedení s oboma sa tie isté dva súbory môžu objaviť v oboch. Tu sú riadky spočiatku nezaškrtnuté: „všetko, čo som za poslednú polhodinu urobil“ je málokedy to makro, ktoré máte na mysli.
+
+> **Táto cesta potrebuje históriu.** To, čo robíte ručne, sa číta z globálnej histórie; ak ste ju vypli (Nastavenia ▸ Rôzne ▸ **Zaznamenávať globálnu históriu**), v tomto zozname nie je nič vaše — a zoznam to hovorí. **Nahrať makro…** od nej nezávisí.
 
 > **Čo sa neponúka.** Zabalenie archívu a všetko ostatné, čo si aplikácia pamätá len podľa mena, sa nedá premeniť na krok — nie je preň tvar. Také riadky sú vidieť zošednuté aj s dôvodom, namiesto aby chýbali, aby zoznam piatich, ktorý ponúka tri, nevyzeral, že dva prehliadol. A ak nepožiadate inak, cesty sú tie, ktoré naozaj prebehli: zaznamenané makro zopakuje *tú* kópiu, nie „kópiu toho druhu“. Otvorte ho v editore a dajte `%S` alebo `%T` tam, kde má sledovať panely.
 
@@ -32,7 +49,7 @@ Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie
 
 ## Priložené príklady
 
-Keď prvýkrát otvoríte **Konfigurácia ▸ Upraviť makrá…**, súbor sa založí s ôsmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:
+Keď prvýkrát otvoríte **Upraviť súbor…**, súbor sa založí s ôsmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:
 
 | Makro | Čo robí |
 | --- | --- |
@@ -49,7 +66,11 @@ Každé z nich sa stane príkazom, takže ktorékoľvek môžete umiestniť na t
 
 ## Spravovať ich
 
-**Konfigurácia ▸ Spravovať makrá…** je ten zoznam: ako sa každé makro volá, ako sa volá jeho príkaz, koľko má krokov a čo bude chcieť kontrola oprávnení — „toto maže“ je teda vidieť skôr, než ho dáte na kláves. Odtiaľ môžete premenovať, duplikovať, preusporiadať a zmazať. Keď prejdete nad riadkom, uvidíte jeho kroky.
+**Konfigurácia ▸ Makrá…** je ten zoznam: ako sa každé makro volá, ako sa volá jeho príkaz, koľko má krokov a na čo sa spýta kontrola oprávnení — takže „toto maže“ vidno skôr, než ho dáte na kláves. Odtiaľ môžete spúšťať, premenúvať, duplikovať, meniť poradie, mazať, exportovať a importovať. Prejdením po riadku sa ukážu jeho kroky.
+
+**Spustiť** je spôsob, ako vyskúšať makro, ktoré ste práve nahrali, bez toho, aby ste najprv zatvárali okno a hľadali príkaz. Prechádza rovnakým plánom a rovnakým potvrdením ako každé iné spustenie — toto okno nemá vlastné oprávnenia.
+
+**Exportovať…** zapíše vybrané makro do vlastného súboru a **Importovať…** pridá makrá zo súborov, ktoré vám niekto poslal — práve na to je jeden súbor na makro. Import nikdy nenahrádza: makro, ktorého id je už obsadené, dostane voľné (prichádzajúci `backup` sa vedľa vášho stane `backup-2`) a dozviete sa, pod akými id nové skončili, pretože tlačidlo, ktoré vytvoríte, musí ukázať na to správne.
 
 ![Okno „Spravovať makrá“ s názvom príkazu, počtom krokov a oprávnením každého makra](screenshots/macro-manager.png)
 *Ako sa každé makro volá, ako čo beží a načo si vyžiada povolenie.*
@@ -62,21 +83,19 @@ Poradie nie je ozdoba: poradie v súbore je to, v ktorom ich vypisuje Prehliada�
 
 ## Ručné úpravy makier
 
-**Konfigurácia ▸ Upraviť makrá…** otvorí `macros.json` vo vašom konfiguračnom priečinku, prvýkrát založený s príkladmi vyššie. Makro je zoznam krokov a každý krok menuje nástroj a jeho argumenty:
+**Upraviť súbor…** otvorí vlastný súbor vybraného makra — `macros/<id>.json` vo vašom konfiguračnom priečinku, prvýkrát vytvorený s príkladmi vyššie. Bez výberu sa v paneli ukáže samotný priečinok, kde F3 jedno prečíta a F4 jedno upraví. Makro je zoznam krokov a každý krok menuje nástroj a jeho argumenty:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Uloženie makrá hneď znova načíta — a povie, ak niečo nesedí: preklep v názve nástroja, chýbajúci povinný argument, dve makrá s rovnakým id. Makro s chybou sa nespustí a na žiadne tlačidlo sa nedostane; dozviete sa, o ktoré ide a čo je na ňom zle, kým je editor ešte otvorený.
@@ -151,7 +170,7 @@ Každý krok je zaznamenaný samostatne, takže **vzatie späť** po makre vrát
 
 ## Kde sa to ukladá
 
-- Vaše makrá sú v `macros.json` v konfiguračnom adresári — obyčajný súbor, ktorý možno porovnávať a držať spolu s dotfiles.
+- Vaše makrá sú v `macros/` v konfiguračnom priečinku, každé ako `<id>.json` — obyčajné súbory, ktoré môžete diffovať, držať medzi dotfiles a niekomu poslať. `macros.json` zo staršej verzie sa pri prvom spustení prevezme a premenuje na `macros.json.migrated`; potom ho už nikto nečíta.
 - Tlačidlá pridané makrom sú bežné položky lišty tlačidiel v `default.bar`, takže odobrať jedno je to isté ako u ktoréhokoľvek iného tlačidla.
 
 ## Ďalšie kroky

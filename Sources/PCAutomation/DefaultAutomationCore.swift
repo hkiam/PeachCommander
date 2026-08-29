@@ -376,6 +376,9 @@ public actor DefaultAutomationCore: AutomationCore {
             case "hash_file":
                 let h = try await bridge.hashFile(try a.string("path"), algorithm: (try? a.string("algorithm")) ?? "sha256")
                 return .ok(payload: try json(["hash": h.hash, "algorithm": h.algorithm]))
+            case "create_file":
+                let made = try await bridge.createFile(try a.string("path"))
+                return .ok(payload: try json(["created": made]))
             case "write_file":
                 try await bridge.writeFile(try a.string("path"), content: try a.string("content"))
                 return .ok(payload: nil)
@@ -624,6 +627,7 @@ public actor DefaultAutomationCore: AutomationCore {
             }
             return RenameBatchPlan.table(pairs)
         case "make_directory": return "Create folder \((try? a.string("path")) ?? "?")."
+        case "create_file": return "Create the file \((try? a.string("path")) ?? "?")."
         case "write_file":
             let p = (try? a.string("path")) ?? "?"
             let n = (try? a.string("content"))?.count ?? 0

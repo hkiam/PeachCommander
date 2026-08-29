@@ -68,7 +68,7 @@ Para cualquier cosa que modifique archivos — mover, renombrar, escribir, elimi
 
 También puede pedirlo sin más: *«deshaz eso»* y *«¿qué has cambiado?»* llegan a esas mismas dos funciones.
 
-Esa lista es también el origen de una macro: **Configuración ▸ Macro a partir de acciones recientes…** ofrece lo que el asistente acaba de hacer como los pasos de una que puedes volver a ejecutar, desde un botón o una tecla. Consulta [Macros](macros.md).
+Esa lista es también el origen de una macro: **Macros… ▸ Desde acciones recientes…** ofrece lo que el asistente acaba de hacer como los pasos de una que puedes volver a ejecutar, desde un botón o una tecla. Consulta [Macros](macros.md). Lo que hace el asistente también lo capta **Grabar macro…**, junto a lo que usted hace a mano.
 
 ## Columnas del panel
 

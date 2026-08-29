@@ -194,4 +194,27 @@ public enum MacroSeed {
     public static func macros() -> [Macro] {
         (try? JSONDecoder().decode([Macro].self, from: Data(json.utf8))) ?? []
     }
+
+    /// The examples as the files they are written to, one per macro, verbatim.
+    ///
+    /// Split out of the text rather than encoded from `macros()`: the `_comment` in each entry is the
+    /// point of the seed, and an encoder drops every key `Macro` does not declare. Splitting keeps
+    /// them, so the folder a new user opens explains itself — including `_readme.json`, which has no
+    /// steps, is therefore not a command, and is there to be read and deleted.
+    ///
+    /// `order` is written in as the position, so the examples come out in the order they were written
+    /// in rather than alphabetically by id.
+    public static func files() -> [(name: String, data: Data)] {
+        guard let elements = (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [[String: Any]]
+        else { return [] }
+        return elements.enumerated().compactMap { index, element in
+            guard let id = element["id"] as? String, !id.isEmpty else { return nil }
+            var object = element
+            object["order"] = index
+            guard let data = try? JSONSerialization.data(withJSONObject: object,
+                                                          options: [.prettyPrinted, .sortedKeys])
+            else { return nil }
+            return (name: id + ".json", data: data)
+        }
+    }
 }

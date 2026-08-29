@@ -363,7 +363,7 @@ final class MacroStoreTests: XCTestCase {
             .appendingPathComponent("pc-macros-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         addTeardownBlock { try? FileManager.default.removeItem(at: dir) }
-        return MacroStore(url: dir.appendingPathComponent("macros.json"))
+        return MacroStore(directory: dir)
     }
 
     func test_roundTrip() throws {
@@ -384,7 +384,7 @@ final class MacroStoreTests: XCTestCase {
         let s = try store()
         try s.save([Macro(id: "m", title: "M", steps: [
             MacroStep(tool: "move", arguments: ["sources": .text("%S"), "max": .number(3)])])])
-        let text = try String(contentsOf: s.url, encoding: .utf8)
+        let text = try String(contentsOf: s.file(for: "m"), encoding: .utf8)
         XCTAssertTrue(text.contains("\"sources\" : \"%S\""), text)
         XCTAssertTrue(text.contains("\"max\" : 3"), text)
     }
@@ -392,14 +392,14 @@ final class MacroStoreTests: XCTestCase {
     /// The hard rule for a file a person edits: never trap, never throw, always say what was wrong.
     func test_malformedFile_yieldsNoMacrosAndAProblem() throws {
         let s = try store()
-        try Data("{ this is not json".utf8).write(to: s.url)
+        try write("{ this is not json", named: "m.json", in: s)
         let (macros, problems) = s.load()
         XCTAssertTrue(macros.isEmpty)
         XCTAssertEqual(problems.count, 1)
-        XCTAssertTrue(problems[0].contains("macros.json"))
+        XCTAssertTrue(problems[0].contains("m.json"))
     }
 
-    func test_missingFile_isNotAProblem() throws {
+    func test_missingFolder_isNotAProblem() throws {
         let (macros, problems) = try store().load()
         XCTAssertTrue(macros.isEmpty)
         XCTAssertTrue(problems.isEmpty)
@@ -409,10 +409,12 @@ final class MacroStoreTests: XCTestCase {
     /// silently picking the later one means a button that runs the macro the user was not looking at.
     func test_duplicateIds_keepTheFirstAndReportTheSecond() throws {
         let s = try store()
+        // Two files claiming one id: only reachable by hand, and the one place `save` cannot prevent it.
         let step = #"{"tool":"list_directory","arguments":{"path":"/a"}}"#
-        try Data("""
-        [{"id":"m","title":"First","steps":[\(step)]},{"id":"m","title":"Second","steps":[\(step)]}]
-        """.utf8).write(to: s.url)
+        try write("{\"id\":\"m\",\"order\":0,\"title\":\"First\",\"steps\":[\(step)]}",
+                  named: "m.json", in: s)
+        try write("{\"id\":\"m\",\"order\":1,\"title\":\"Second\",\"steps\":[\(step)]}",
+                  named: "copy-of-m.json", in: s)
         let (macros, problems) = s.load()
         XCTAssertEqual(macros.map(\.title), ["First"])
         XCTAssertEqual(problems.count, 1)
@@ -430,9 +432,8 @@ final class MacroStoreTests: XCTestCase {
     func test_anUnusableIdIsSkippedRatherThanTurnedIntoAnEmptyCommandName() throws {
         let s = try store()
         let step = #"{"tool":"list_directory","arguments":{"path":"/a"}}"#
-        try Data("""
-        [{"id":"!!!","title":"Bad","steps":[\(step)]},{"id":"ok","title":"Good","steps":[\(step)]}]
-        """.utf8).write(to: s.url)
+        try write("{\"id\":\"!!!\",\"title\":\"Bad\",\"steps\":[\(step)]}", named: "bad.json", in: s)
+        try write("{\"id\":\"ok\",\"title\":\"Good\",\"steps\":[\(step)]}", named: "ok.json", in: s)
         let (macros, problems) = s.load()
         XCTAssertEqual(macros.map(\.id), ["ok"])
         XCTAssertEqual(problems.count, 1)
@@ -443,11 +444,18 @@ final class MacroStoreTests: XCTestCase {
     /// keeps it out of the command table without needing a special-cased id.
     func test_aMacroWithNoStepsIsNotLoaded() throws {
         let s = try store()
-        try Data("""
-        [{"id":"_readme","title":"How this works","steps":[]},
-         {"id":"real","title":"Real","steps":[{"tool":"list_directory","arguments":{"path":"/a"}}]}]
-        """.utf8).write(to: s.url)
+        try write(#"{"id":"_readme","title":"How this works","steps":[]}"#,
+                  named: "_readme.json", in: s)
+        try write(#"{"id":"real","title":"Real","steps":[{"tool":"list_directory","arguments":{"path":"/a"}}]}"#,
+                  named: "real.json", in: s)
         XCTAssertEqual(s.macros().map(\.id), ["real"])
+    }
+
+    /// Writing a file into the store's folder, for the cases only a hand-edited folder can produce.
+    private func write(_ text: String, named name: String, in store: MacroStore) throws {
+        try FileManager.default.createDirectory(at: store.directory, withIntermediateDirectories: true)
+        try text.write(to: store.directory.appendingPathComponent(name),
+                       atomically: true, encoding: .utf8)
     }
 
     func test_proposedID_isUniqueAgainstWhatExists() {
@@ -686,5 +694,181 @@ final class PlanPhraseTests: XCTestCase {
             XCTAssertFalse(rendered.isEmpty, "\(key) renders to nothing")
             XCTAssertFalse(rendered.contains("\u{1}"), "\(key)")
         }
+    }
+}
+
+/// One unreadable file costs that macro, not the collection.
+///
+/// It used to cost everything: the macros lived in one `macros.json` decoded in one go, so a single
+/// typo left the user with no macros at all — and with every button, key and menu entry that ran one
+/// silently doing nothing. One file per macro makes that structural: a file that will not parse cannot
+/// take its neighbours with it.
+final class MacroStoreDirectoryTests: XCTestCase {
+
+    private func emptyStore(legacy: String? = nil) throws -> MacroStore {
+        let root = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-macros-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: root) }
+        let legacyFile = root.appendingPathComponent("macros.json")
+        if let legacy { try legacy.write(to: legacyFile, atomically: true, encoding: .utf8) }
+        return MacroStore(directory: root.appendingPathComponent("macros", isDirectory: true),
+                          legacyFile: legacyFile)
+    }
+
+    private func macro(_ id: String, _ path: String = "%P/A") -> Macro {
+        Macro(id: id, title: id.capitalized,
+              steps: [MacroStep(tool: "make_directory", arguments: ["path": .text(path)])])
+    }
+
+    private func write(_ text: String, named name: String, in store: MacroStore) throws {
+        try FileManager.default.createDirectory(at: store.directory, withIntermediateDirectories: true)
+        try text.write(to: store.directory.appendingPathComponent(name),
+                       atomically: true, encoding: .utf8)
+    }
+
+    func test_oneUnreadableFileDoesNotCostTheOthers() throws {
+        let store = try emptyStore()
+        try store.save([macro("first"), macro("second")])
+        try write("{ this is not json at all", named: "broken.json", in: store)
+        let loaded = store.load()
+        XCTAssertEqual(loaded.macros.map(\.id), ["first", "second"])
+        XCTAssertEqual(loaded.problems.count, 1)
+        XCTAssertTrue(loaded.problems[0].contains("broken.json"),
+                      "the report has to name the file, or there is nothing to go and fix")
+    }
+
+    /// A directory has no order of its own, and the order is not decoration — it is what the Command
+    /// Browser and the button-bar picker list them in.
+    func test_theSavedOrderIsTheOrderThatComesBack() throws {
+        let store = try emptyStore()
+        try store.save([macro("zulu"), macro("alpha"), macro("mike")])
+        XCTAssertEqual(store.macros().map(\.id), ["zulu", "alpha", "mike"],
+                       "alphabetical by file name would be “alpha, mike, zulu”")
+    }
+
+    /// A file dropped in by hand has no order, and a new thing belongs at the end.
+    func test_aFileWithNoOrderLandsAtTheEnd() throws {
+        let store = try emptyStore()
+        try store.save([macro("zulu"), macro("alpha")])
+        try write(#"""
+            { "id": "handmade", "title": "By hand",
+              "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/H" } } ] }
+            """#, named: "handmade.json", in: store)
+        XCTAssertEqual(store.macros().map(\.id), ["zulu", "alpha", "handmade"])
+    }
+
+    /// Saving is the whole collection, so a delete has to actually delete.
+    func test_savingRemovesTheFilesOfMacrosThatAreGone() throws {
+        let store = try emptyStore()
+        try store.save([macro("keep"), macro("drop")])
+        try store.save([macro("keep")])
+        XCTAssertEqual(store.macros().map(\.id), ["keep"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: store.file(for: "drop").path))
+    }
+
+    /// …but only files that are macros. `_readme.json` has no steps and is there to be read; so is any
+    /// note a user keeps beside their macros. A reorder must not take those away.
+    func test_savingLeavesFilesThatAreNotMacrosAlone() throws {
+        let store = try emptyStore()
+        try store.save([macro("keep")])
+        try write(#"{ "id": "_readme", "title": "How this works", "steps": [] }"#,
+                  named: "_readme.json", in: store)
+        try store.save([macro("keep")])
+        XCTAssertTrue(FileManager.default.fileExists(
+            atPath: store.directory.appendingPathComponent("_readme.json").path))
+    }
+
+    /// JSON has no comments, so the examples — and a user's own notes — live in a key the decoder
+    /// ignores. Encoding straight from `Macro` would drop them on the first reorder.
+    func test_aCommentInAMacroFileSurvivesBeingSavedAgain() throws {
+        let store = try emptyStore()
+        try write(#"""
+            { "id": "noted", "title": "Noted", "_comment": "why this exists",
+              "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/N" } } ] }
+            """#, named: "noted.json", in: store)
+        try store.save(store.macros())
+        let text = try String(contentsOf: store.file(for: "noted"), encoding: .utf8)
+        XCTAssertTrue(text.contains("why this exists"), text)
+    }
+
+    // MARK: - Exchange
+
+    /// What Export writes is one macro on its own, with no position in anybody's list.
+    func test_anExportedMacroIsOneObjectAndCarriesNoOrder() throws {
+        let data = try MacroStore.encoded(macro("solo"))
+        let object = try XCTUnwrap(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(object["id"] as? String, "solo")
+        XCTAssertNil(object["order"])
+    }
+
+    func test_importReadsBothASingleMacroAndAWholeOldFile() throws {
+        let one = try MacroStore.encoded(macro("solo"))
+        XCTAssertEqual(MacroStore.decodeForImport(one).map(\.id), ["solo"])
+        let many = Data(#"""
+            [ { "id": "a", "title": "A",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/A" } } ] },
+              { "id": "b", "title": "B",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/B" } } ] } ]
+            """#.utf8)
+        XCTAssertEqual(MacroStore.decodeForImport(many).map(\.id), ["a", "b"])
+    }
+
+    /// An import is somebody else's macro arriving. Silently replacing the one you wrote under the
+    /// same obvious name is the one outcome that cannot be undone from here.
+    func test_importNeverReplacesAMacroYouAlreadyHave() throws {
+        let store = try emptyStore()
+        try store.save([macro("backup", "%P/MINE")])
+        let added = try store.importing([macro("backup", "%P/THEIRS")])
+        XCTAssertEqual(added.map(\.id), ["backup-2"])
+        XCTAssertEqual(store.macro(id: "backup")?.steps.first?.arguments["path"], .text("%P/MINE"))
+        XCTAssertEqual(store.macro(id: "backup-2")?.steps.first?.arguments["path"], .text("%P/THEIRS"))
+    }
+
+    // MARK: - The move from one file to a directory
+
+    func test_anOldMacrosFileIsMovedAcrossOnceAndPutOutOfTheWay() throws {
+        let store = try emptyStore(legacy: #"""
+            [ { "id": "first",  "title": "First",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/A" } } ] },
+              { "id": "second", "title": "Second",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/B" } } ] } ]
+            """#)
+        XCTAssertTrue(store.migrateIfNeeded())
+        XCTAssertEqual(store.macros().map(\.id), ["first", "second"], "order is kept")
+        let root = store.directory.deletingLastPathComponent()
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: root.appendingPathComponent("macros.json").path))
+        XCTAssertTrue(FileManager.default.fileExists(
+            atPath: root.appendingPathComponent("macros.json.migrated").path),
+            "the old file is renamed, not deleted — it is the user's data")
+    }
+
+    /// Once. A user who already has a directory has answered this question, and a `macros.json` beside
+    /// it is theirs to do with as they like.
+    func test_nothingIsMovedWhenThereIsAlreadyADirectory() throws {
+        let store = try emptyStore(legacy: #"""
+            [ { "id": "old", "title": "Old",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/O" } } ] } ]
+            """#)
+        try store.save([macro("mine")])
+        XCTAssertFalse(store.migrateIfNeeded())
+        XCTAssertEqual(store.macros().map(\.id), ["mine"])
+    }
+
+    func test_nothingIsMovedWhenThereIsNoOldFile() throws {
+        XCTAssertFalse(try emptyStore().migrateIfNeeded())
+    }
+
+    /// A note somebody wrote next to their own macro comes across with it. JSON has no comments, so it
+    /// lives in a key the decoder ignores — and a tidier layout is a poor trade for deleting it.
+    func test_aCommentInTheOldFileSurvivesTheMove() throws {
+        let store = try emptyStore(legacy: #"""
+            [ { "id": "kept", "title": "Kept", "_comment": "this is why I wrote it",
+                "steps": [ { "tool": "make_directory", "arguments": { "path": "%P/K" } } ] } ]
+            """#)
+        XCTAssertTrue(store.migrateIfNeeded())
+        let text = try String(contentsOf: store.file(for: "kept"), encoding: .utf8)
+        XCTAssertTrue(text.contains("this is why I wrote it"), text)
     }
 }

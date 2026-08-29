@@ -10,21 +10,38 @@ Een macro is een reeks bestandsacties met een naam — een map maken, de selecti
 
 Alles wat een macro doet, gaat door dezelfde machinerie als de assistent. Een macro kan dus niets doen wat u niet hebt toegestaan, elke stap komt in het actielogboek, en een stap die kan worden teruggedraaid kan dat nog steeds.
 
-## De snelste weg: uit wat u net hebt gedaan
+## Eén venster: Configuratie ▸ Macro’s…
 
-U hoeft een macro niet vanaf niets te schrijven.
+Alles rond macro’s zit achter die ene ingang: de lijst, de twee manieren om er een te maken, en de weg naar het bestand. Er valt in het menu verder niets te kiezen.
 
-1. Doe het ding één keer — kopieer, verplaats, hernoem of verwijder in de vensters, of laat de assistent het doen.
-2. Kies **Configuratie ▸ Macro van recente acties…**.
-3. Vink de stappen aan die de macro moet herhalen, geef hem een naam en laat **Ook een knop ervoor toevoegen** aan staan.
-4. Vink **De vensters volgen in plaats van precies deze bestanden** aan als de macro de volgende keer moet werken met wat er dan geselecteerd is. De regels veranderen terwijl u aanvinkt, dus u ziet wat u opslaat.
+## De snelste weg: er een opnemen
+
+U hoeft een macro niet vanaf nul te schrijven, en u hoeft achteraf ook niet uit te zoeken waar hij begon.
+
+1. **Configuratie ▸ Macro’s… ▸ Macro opnemen…**. Het venster gaat opzij en er verschijnt een klein paneel dat zegt dat er een opname loopt en de stappen meetelt.
+2. Doe het werk één keer — kopiëren, verplaatsen, hernoemen, verwijderen, mappen en bestanden maken. Werk gewoon door; de opname zit niet in de weg.
+3. **Stoppen en bewaren…**.
+4. De stappen komen al aangevinkt terug. Vink af wat alleen iets klaarzette, geef de macro een naam en laat **Ook een knop ervoor toevoegen** aan staan.
+5. Vink **De vensters volgen in plaats van precies deze bestanden** aan als de macro de volgende keer moet werken met wat er dan geselecteerd is. De regels veranderen terwijl u aanvinkt, dus u ziet wat u opslaat.
 
 **Macro opslaan**, en de knop staat in de balk. Dat is de hele cyclus.
+
+**Opname weggooien** gooit de opname weg en bewaart niets. Er wordt niets opgenomen vóór u op Opnemen drukt, en niets erna: daar zijn de twee uiteinden voor.
+
+Een opname overleeft een herstart. Stopt Peach Commander terwijl er een loopt — u sluit af, of het crasht — dan komt hij ermee terug, zegt dat ook, en u gaat verder of gooit hem weg.
+
+Wilt u het liever op een toets of een knop, dan heet het commando `cm_MacroRecord`: het start een opname en stopt de lopende.
+
+## De andere weg: uit wat er al gebeurd is
+
+**Van recente acties…**, in hetzelfde venster, bouwt een macro uit de laatste dingen die gebeurd zijn in plaats van nieuwe op te nemen — handig als u het werk *net* gedaan hebt en pas dan aan een macro denkt.
 
 ![Het blad ‘Macro uit recente acties’, met wat zojuist is gedaan als aanvinkbare stappen](screenshots/macro-recorder.png)
 *Wat al is gebeurd, aangeboden als de stappen van een nieuwe macro.*
 
-De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan.
+De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan. Hier beginnen de rijen onaangevinkt: ‘alles wat ik het afgelopen halfuur deed’ is zelden de bedoelde macro.
+
+> **Deze weg heeft de geschiedenis nodig.** Wat u met de hand doet, wordt uit de globale geschiedenis teruggelezen; hebt u die uitgezet (Instellingen ▸ Diversen ▸ **Een globale geschiedenis bijhouden**), dan staat er niets van u in deze lijst — en dat zegt hij ook. **Macro opnemen…** hangt er niet van af.
 
 > **Wat niet wordt aangeboden.** Een archief inpakken, en al het andere dat de app alleen bij naam vasthoudt, kan geen stap worden — er is geen vorm voor. Zulke regels staan er grijs bij met hun reden in plaats van te ontbreken, zodat een lijst van vijf die er drie aanbiedt niet leest alsof hij er twee heeft gemist. En tenzij u anders vraagt, zijn de paden die welke echt zijn gebruikt: een opgenomen macro herhaalt *die* kopie, niet ‘een kopie van dat soort’. Open hem in de editor en zet `%S` of `%T` waar hij de vensters moet volgen.
 
@@ -49,7 +66,11 @@ Elk ervan wordt een opdracht, dus u kunt er elke van op een knop of een toets le
 
 ## Ze beheren
 
-**Configuratie ▸ Macro’s beheren…** is de lijst: hoe elke macro heet, hoe haar opdracht heet, hoeveel stappen ze heeft en wat de rechtenvraag zal verlangen — zo is ‘deze verwijdert’ te zien vóór u haar op een toets legt. Van daaruit kunt u hernoemen, dupliceren, herordenen en verwijderen. Wie over een regel gaat, ziet haar stappen.
+**Configuratie ▸ Macro’s…** is de lijst: hoe elke macro heet, hoe zijn commando heet, hoeveel stappen hij heeft en waar de toestemmingspoort om zal vragen — zo is ‘deze verwijdert’ zichtbaar vóór u hem op een toets legt. Van daaruit kunt u uitvoeren, hernoemen, dupliceren, herordenen, verwijderen, exporteren en importeren. Over een rij zweven toont de stappen.
+
+**Voer uit** is hoe u er een uitprobeert die u zojuist hebt opgenomen, zonder eerst het venster te sluiten om het commando te zoeken. Het gaat door hetzelfde plan en dezelfde bevestiging als elke andere uitvoering — dit venster heeft geen eigen rechten.
+
+**Exporteer…** schrijft de geselecteerde macro naar een eigen bestand, en **Importeer…** voegt macro’s toe uit bestanden die iemand u heeft gestuurd — daar is één bestand per macro voor. Een import vervangt nooit: een macro waarvan het id al bezet is krijgt een vrij id (een binnenkomende `backup` wordt naast die van u `backup-2`), en u hoort met welke ids de nieuwe zijn geëindigd, want de knop die u maakt moet de juiste noemen.
 
 ![Het venster ‘Macro’s beheren’, met opdrachtnaam, aantal stappen en toestemming per macro](screenshots/macro-manager.png)
 *Hoe elke macro heet, waaronder hij draait en waarvoor hij toestemming zal vragen.*
@@ -62,21 +83,19 @@ De *stappen* worden hier niet bewerkt. **Bestand bewerken…** geeft daarvoor he
 
 ## Macro’s met de hand bewerken
 
-**Configuratie ▸ Macro's bewerken…** opent `macros.json` in uw configuratiemap, de eerste keer aangemaakt met de voorbeelden hierboven. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:
+**Bestand bewerken…** opent het eigen bestand van de geselecteerde macro — `macros/<id>.json` in uw configuratiemap, de eerste keer aangemaakt met de voorbeelden hierboven. Zonder selectie wordt de map zelf in het venster getoond, waar F3 er een leest en F4 er een bewerkt. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Opslaan laadt de macro's meteen opnieuw — en zegt het als er iets niet klopt: een verkeerd gespelde gereedschapsnaam, een ontbrekend verplicht argument, twee macro's met hetzelfde id. Een macro met een fout wordt niet uitgevoerd en komt op geen enkele knop; u hoort welke het is en wat eraan mankeert, terwijl de editor nog openstaat.
@@ -151,7 +170,7 @@ Elke stap wordt afzonderlijk gelogd, dus **ongedaan maken** na een macro haalt d
 
 ## Waar alles wordt opgeslagen
 
-- Uw macro’s staan in `macros.json` in de configuratiemap — een gewoon bestand dat u kunt diffen en bij uw dotfiles kunt bewaren.
+- Uw macro’s staan in `macros/` in de configuratiemap, elk als `<id>.json` — gewone bestanden die u kunt diffen, bij uw dotfiles kunt bewaren en naar iemand kunt sturen. Een `macros.json` uit een eerdere versie wordt bij de eerste start overgenomen en hernoemd naar `macros.json.migrated`; daarna leest niemand hem nog.
 - Knoppen die een macro heeft toegevoegd zijn normale knoppenbalk-items in `default.bar`, dus er een weghalen gaat net als bij elke andere knop.
 
 ## Volgende stappen

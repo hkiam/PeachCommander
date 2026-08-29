@@ -68,7 +68,7 @@ A csevegésben a **Műveletek ▾** két bejegyzést tartalmaz:
 
 Egyszerűen kérdezni is lehet: a *„vond vissza"* és a *„mit módosítottál?"* ugyanahhoz a két funkcióhoz jut el.
 
-Ez a lista egyben az is, amiből egy makró születik: a **Beállítások ▸ Makró a legutóbbi műveletekből…** felkínálja, amit a segéd az imént tett, egy újra futtatható makró lépéseiként — gombról vagy billentyűről. Lásd: [Makrók](macros.md).
+Ez a lista egyben az is, amiből egy makró születik: a **Makrók… ▸ Legutóbbi műveletekből…** felkínálja, amit a segéd az imént tett, egy újra futtatható makró lépéseiként — gombról vagy billentyűről. Lásd: [Makrók](macros.md). Amit a segéd csinál, azt a **Makró rögzítése…** is elkapja, amellett, amit ön kézzel csinál.
 
 ## Panel-oszlopok
 

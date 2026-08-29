@@ -10,21 +10,38 @@ O macrocomandă este o secvență cu nume de acțiuni asupra fișierelor — cre
 
 Tot ce face o macrocomandă trece prin aceeași mașinărie pe care o folosește asistentul, așa că o macrocomandă nu poate face nimic ce nu ați permis, fiecare pas al ei apare în jurnalul de acțiuni, iar un pas care poate fi anulat rămâne anulabil.
 
-## Cea mai rapidă cale: din ce ați făcut chiar acum
+## O singură fereastră: Configurare ▸ Macrocomenzi…
 
-Nu trebuie să scrieți o macrocomandă de la zero.
+Tot ce ține de macrocomenzi stă în spatele acelei singure intrări: lista lor, cele două moduri de a crea una și drumul către fișier. În meniu nu mai e nimic altceva de ales.
 
-1. Faceți lucrul o dată — copiați, mutați, redenumiți sau ștergeți în panouri, sau lăsați asistentul să o facă.
-2. Alegeți **Configurare ▸ Macrocomandă din acțiunile recente…**.
-3. Bifați pașii pe care macrocomanda trebuie să îi repete, dați-i un nume și lăsați activat **Adaugă și un buton pentru ea**.
-4. Bifați **Urmează panourile în locul acestor fișiere anume** dacă macrocomanda trebuie să lucreze data viitoare cu ce va fi selectat atunci. Rândurile se schimbă pe măsură ce bifați, deci vedeți ce salvați.
+## Cel mai rapid drum: înregistrează una
+
+Nu trebuie să scrieți o macrocomandă de la zero — și nici să vă dați seama după aceea unde a început.
+
+1. **Configurare ▸ Macrocomenzi… ▸ Înregistrează macrocomandă…**. Fereastra se dă la o parte și apare un panou mic ce spune că o înregistrare este în curs și numără pașii pe măsură ce se întâmplă.
+2. Faceți treaba o dată — copiere, mutare, redenumire, ștergere, creare de dosare și fișiere. Lucrați normal; înregistrarea nu stă în cale.
+3. **Oprește și salvează…**.
+4. Pașii se întorc deja bifați. Debifați tot ce doar a pregătit terenul, dați un nume macrocomenzii și lăsați activat **Adaugă și un buton pentru ea**.
+5. Bifați **Urmează panourile în locul acestor fișiere anume** dacă macrocomanda trebuie să lucreze data viitoare cu ce va fi selectat atunci. Rândurile se schimbă pe măsură ce bifați, deci vedeți ce salvați.
 
 **Salvează macrocomanda**, și butonul este în bară. Acesta este tot ciclul.
+
+**Renunță la înregistrare** aruncă înregistrarea și nu salvează nimic. Nimic nu se înregistrează înainte de a apăsa Înregistrează și nimic după ce opriți — tocmai de aceea există ambele capete.
+
+O înregistrare supraviețuiește unei reporniri. Dacă Peach Commander se oprește în timp ce una este în curs — ieșiți dumneavoastră sau se blochează — revine cu ea, o spune, iar dumneavoastră continuați sau renunțați la ea.
+
+Dacă preferați să o aveți pe o tastă sau pe un buton, comanda se numește `cm_MacroRecord`: pornește o înregistrare și o oprește pe cea în curs.
+
+## Celălalt drum: din ce s-a întâmplat deja
+
+**Din acțiunile recente…**, în aceeași fereastră, construiește o macrocomandă din ultimele lucruri întâmplate în loc să înregistreze altele noi — util când *tocmai* ați făcut treaba și abia apoi v-ați gândit la o macrocomandă.
 
 ![Foaia „Macrocomandă din acțiuni recente”, cu ce tocmai s-a făcut ca pași bifabili](screenshots/macro-recorder.png)
 *Ce s-a întâmplat deja, oferit ca pașii unei macrocomenzi noi.*
 
-Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare.
+Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare. Aici rândurile pornesc nebifate: „tot ce am făcut în ultima jumătate de oră” este rareori macrocomanda la care ne gândim.
+
+> **Acest drum are nevoie de istoric.** Ce faceți manual este citit din istoricul global; dacă l-ați dezactivat (Setări ▸ Diverse ▸ **Înregistrează un istoric global**), în această listă nu este nimic de la dumneavoastră — și o spune. **Înregistrează macrocomandă…** nu depinde de el.
 
 > **Ce nu se oferă.** Împachetarea unei arhive, și tot ce aplicația reține doar după nume, nu poate deveni un pas — nu există o formă pentru asta. Astfel de rânduri apar estompate împreună cu motivul, în loc să lipsească, pentru ca o listă de cinci care oferă trei să nu pară că a scăpat două. Iar dacă nu cereți altfel, căile sunt cele care chiar au rulat: o macrocomandă înregistrată repetă *acea* copiere, nu „o copiere de felul acela”. Deschideți-o în editor și puneți `%S` sau `%T` acolo unde vreți să urmeze panourile.
 
@@ -49,7 +66,11 @@ Fiecare dintre ele devine o comandă, așa că puteți pune oricare pe un buton 
 
 ## Gestionarea lor
 
-**Configurare ▸ Gestionare macrocomenzi…** este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere verificarea drepturilor — astfel „aceasta șterge” se vede înainte de a o pune pe o tastă. De acolo puteți redenumi, duplica, reordona și șterge. Trecând peste un rând i se văd pașii.
+**Configurare ▸ Macrocomenzi…** este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere poarta de permisiuni — astfel „aceasta șterge” se vede înainte să o puneți pe o tastă. De acolo puteți executa, redenumi, duplica, reordona, șterge, exporta și importa. Trecând cu mausul peste un rând i se văd pașii.
+
+**Execută** este modul de a o încerca pe cea tocmai înregistrată, fără să închideți întâi fereastra ca să căutați comanda. Trece prin același plan și aceeași confirmare ca orice altă execuție — această fereastră nu are privilegii proprii.
+
+**Exportă…** scrie macrocomanda selectată într-un fișier al ei, iar **Importă…** adaugă macrocomenzi din fișiere pe care vi le-a trimis cineva — exact pentru asta există câte un fișier per macrocomandă. Un import nu înlocuiește niciodată: o macrocomandă al cărei id este deja ocupat primește unul liber (un `backup` care sosește lângă al dumneavoastră devine `backup-2`), iar vi se spune cu ce id-uri au ajuns cele noi, fiindcă butonul pe care îl faceți trebuie să o numească pe cea potrivită.
 
 ![Fereastra „Gestionare macrocomenzi”, cu numele comenzii, numărul de pași și permisiunea fiecăreia](screenshots/macro-manager.png)
 *Cum se numește fiecare macrocomandă, ca ce rulează și pentru ce va cere permisiunea.*
@@ -62,21 +83,19 @@ Ordinea nu este decor: ordinea din fișier este aceea în care le listează Navi
 
 ## Editarea manuală a macrocomenzilor
 
-**Configurare ▸ Editare macrocomenzi…** deschide `macros.json` din dosarul dumneavoastră de configurare, creat prima dată cu exemplele de mai sus. O macrocomandă este o listă de pași, iar fiecare pas numește un instrument și argumentele lui:
+**Editare fișier…** deschide fișierul propriu al macrocomenzii selectate — `macros/<id>.json` din dosarul dumneavoastră de configurare, creat prima dată cu exemplele de mai sus. Fără selecție, în panou se arată chiar dosarul, unde F3 citește una și F4 editează una. O macrocomandă este o listă de pași, iar fiecare pas numește un instrument și argumentele lui:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Salvarea reîncarcă imediat macrocomenzile — și spune dacă ceva nu este în regulă: un nume de instrument scris greșit, un argument obligatoriu lipsă, două macrocomenzi cu același id. O macrocomandă cu o greșeală nu este rulată și nu ajunge pe niciun buton; aflați care este și ce nu merge la ea, cât timp editorul este încă deschis.
@@ -151,7 +170,7 @@ Fiecare pas este jurnalizat separat, deci **anulează** după o macrocomandă re
 
 ## Unde se salvează totul
 
-- Macrocomenzile dumneavoastră sunt în `macros.json` din dosarul de configurare — un fișier simplu, pe care îl puteți compara și păstra cu dotfiles.
+- Macrocomenzile dumneavoastră sunt în `macros/` din dosarul de configurare, câte una ca `<id>.json` — fișiere simple, pe care le puteți compara, ține cu dotfiles și trimite cuiva. Un `macros.json` dintr-o versiune anterioară este preluat la prima pornire și redenumit `macros.json.migrated`; după aceea nimeni nu îl mai citește.
 - Butoanele adăugate de o macrocomandă sunt intrări obișnuite ale barei de butoane din `default.bar`, deci a elimina unul este la fel ca la orice alt buton.
 
 ## Pașii următori

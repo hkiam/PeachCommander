@@ -131,9 +131,28 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("markcolors.ini")
     }
 
-    /// Saved macros — named sequences of automation steps, `macros.json` (F-478).
-    public var macros: URL {
+    /// Saved macros — one `<id>.json` per macro (F-478).
+    ///
+    /// A directory rather than one file, for the reason `scriptsDirectory` below gives about scripts: a
+    /// macro is a thing people hand to each other, and getting one out of — or into — a JSON array
+    /// meant editing by hand. It also makes a macro that will not parse cost only itself.
+    public var macrosDirectory: URL {
+        root.appendingPathComponent("macros", isDirectory: true)
+    }
+
+    /// The single `macros.json` the directory above replaced, read once so its contents can be moved
+    /// across and then renamed out of the way. Nothing writes it any more.
+    public var legacyMacrosFile: URL {
         root.appendingPathComponent("macros.json")
+    }
+
+    /// A macro recording that was still running when the app stopped, `macro-recording.json` (F-478).
+    ///
+    /// Its own small file rather than a section of `session.ini`: it exists only while a recording is
+    /// armed and is deleted the moment one ends, so "is the file there" is the whole question — and a
+    /// session that a restart restores is not the place for state whose normal condition is absent.
+    public var macroRecording: URL {
+        root.appendingPathComponent("macro-recording.json")
     }
 
     /// Directory holding the user's OSA scripts, one file per script (F-477).

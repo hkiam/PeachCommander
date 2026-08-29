@@ -10,21 +10,38 @@ Une macro est une suite nommée d’actions sur les fichiers — créer un dossi
 
 Tout ce que fait une macro passe par les mêmes mécanismes que l’assistant : une macro ne peut donc rien faire que vous n’ayez autorisé, chacune de ses étapes figure dans le journal des actions, et une étape qui peut être annulée l’est toujours.
 
-## Le plus rapide : à partir de ce que vous venez de faire
+## Une seule fenêtre : Configuration ▸ Macros…
 
-Vous n’avez pas à écrire une macro de zéro.
+Tout ce qui concerne les macros est derrière cette entrée unique : leur liste, les deux façons d’en créer une, et l’accès au fichier. Il n’y a rien d’autre à choisir dans le menu.
 
-1. Faites la chose une fois — copiez, déplacez, renommez ou supprimez dans les panneaux, ou laissez l’assistant le faire.
-2. Choisissez **Configuration ▸ Macro depuis les actions récentes…**.
-3. Cochez les étapes que la macro doit répéter, donnez-lui un nom et laissez **Ajouter aussi un bouton correspondant** activé.
-4. Cochez **Suivre les panneaux plutôt que ces fichiers précis** si la macro doit travailler la prochaine fois sur ce qui sera sélectionné. Les lignes changent quand vous cochez, vous voyez donc ce que vous allez enregistrer.
+## Le plus rapide : en enregistrer une
+
+Vous n’avez pas à écrire une macro de zéro, et vous n’avez pas non plus à déterminer après coup où elle a commencé.
+
+1. **Configuration ▸ Macros… ▸ Enregistrer une macro…**. La fenêtre s’efface et un petit panneau apparaît, indiquant qu’un enregistrement est en cours et comptant les étapes au fur et à mesure.
+2. Faites le travail une fois — copier, déplacer, renommer, supprimer, créer des dossiers et des fichiers. Travaillez normalement ; l’enregistreur ne gêne pas.
+3. **Arrêter et enregistrer…**.
+4. Les étapes reviennent déjà cochées. Décochez tout ce qui ne servait qu’à préparer, donnez un nom à la macro et laissez **Ajouter aussi un bouton correspondant** activé.
+5. Cochez **Suivre les panneaux plutôt que ces fichiers précis** si la macro doit travailler la prochaine fois sur ce qui sera sélectionné. Les lignes changent quand vous cochez, vous voyez donc ce que vous allez enregistrer.
 
 **Enregistrer la macro**, et le bouton est dans la barre. C’est toute la boucle.
+
+**Abandonner l’enregistrement** jette l’enregistrement et n’enregistre rien. Rien n’est capté avant que vous n’appuyiez sur Enregistrer, ni après l’arrêt — c’est tout l’intérêt d’avoir les deux extrémités.
+
+Un enregistrement survit à un redémarrage. Si Peach Commander s’arrête pendant qu’il tourne — vous quittez, ou il plante — il revient avec, le dit, et vous continuez ou l’abandonnez.
+
+Si vous préférez l’avoir sur une touche ou un bouton, la commande s’appelle `cm_MacroRecord` : elle démarre un enregistrement et arrête celui qui tourne.
+
+## L’autre voie : à partir de ce qui s’est déjà passé
+
+**Depuis les actions récentes…**, dans la même fenêtre, construit une macro à partir des dernières choses qui se sont passées au lieu d’en enregistrer de nouvelles — utile quand vous *venez* de faire le travail et n’y pensez qu’après.
 
 ![La feuille « Macro à partir des actions récentes », listant ce qui vient d’être fait comme étapes à cocher](screenshots/macro-recorder.png)
 *Ce qui s’est déjà passé, proposé comme les étapes d’une nouvelle macro.*
 
-La liste contient les deux : ce que vous avez fait dans les panneaux (F5, F6, F7, F8 et un renommage) et ce qu’a fait l’assistant ou une autre macro. Chaque ligne dit lequel des deux — car après une session mêlant les deux, les mêmes fichiers peuvent apparaître dans chacune.
+La liste contient les deux : ce que vous avez fait dans les panneaux (F5, F6, F7, F8 et un renommage) et ce qu’a fait l’assistant ou une autre macro. Chaque ligne dit lequel des deux — car après une session mêlant les deux, les mêmes fichiers peuvent apparaître dans chacune. Ici les lignes commencent décochées : « tout ce que j’ai fait dans la dernière demi-heure » est rarement la macro que l’on veut.
+
+> **Cette voie a besoin de l’historique.** Ce que vous faites à la main est relu depuis l’historique global ; si vous l’avez désactivé (Réglages ▸ Divers ▸ **Enregistrer un historique global**), cette liste ne contient rien de vous — et elle le dit. **Enregistrer une macro…** n’en dépend pas.
 
 > **Ce qui n’est pas proposé.** Créer une archive, et tout ce que l’application ne retient que par son nom, ne peut pas devenir une étape — il n’y a pas de forme pour cela. Ces lignes apparaissent grisées avec leur raison plutôt que d’être omises, pour qu’une liste de cinq qui en propose trois ne donne pas l’impression d’en avoir manqué deux. Et sauf demande contraire, les chemins sont ceux qui ont réellement servi : une macro enregistrée répète *cette* copie-là, pas « une copie du même genre ». Ouvrez-la dans l’éditeur et mettez `%S` ou `%T` là où elle doit suivre les panneaux.
 
@@ -32,7 +49,7 @@ La liste contient les deux : ce que vous avez fait dans les panneaux (F5, F6, F7
 
 ## Les exemples fournis
 
-La première fois que vous ouvrez **Configuration ▸ Modifier les macros…**, le fichier est créé avec huit exemples complets. Ce sont des macros ordinaires — modifiez-les, ou supprimez celles dont vous ne voulez pas — et chacune porte un commentaire disant ce qu'elle fait et ce qu'on peut y changer :
+La première fois que vous ouvrez **Modifier le fichier…**, le fichier est créé avec huit exemples complets. Ce sont des macros ordinaires — modifiez-les, ou supprimez celles dont vous ne voulez pas — et chacune porte un commentaire disant ce qu'elle fait et ce qu'on peut y changer :
 
 | Macro | Ce qu'elle fait |
 | --- | --- |
@@ -49,7 +66,11 @@ Chacune devient une commande : vous pouvez donc en mettre n'importe laquelle sur
 
 ## Les gérer
 
-**Configuration ▸ Gérer les macros…** est la liste : le nom de chaque macro, le nom de sa commande, son nombre d’étapes et ce que la demande d’autorisation exigera — « celle-ci supprime » est donc visible avant de la mettre sur une touche. De là vous pouvez renommer, dupliquer, réordonner et supprimer. Survoler une ligne montre ses étapes.
+**Configuration ▸ Macros…** est la liste : le nom de chaque macro, le nom de sa commande, son nombre d’étapes et ce que la barrière d’autorisation demandera — « celle-ci supprime » est donc visible avant de la mettre sur une touche. De là vous pouvez exécuter, renommer, dupliquer, réordonner, supprimer, exporter et importer. Survoler une ligne montre ses étapes.
+
+**Exécuter** est la façon d’essayer celle que vous venez d’enregistrer, sans d’abord fermer la fenêtre pour aller chercher la commande. Cela passe par le même plan et la même confirmation que toute autre exécution — cette fenêtre n’a aucun privilège propre.
+
+**Exporter…** écrit la macro sélectionnée dans un fichier à elle, et **Importer…** ajoute des macros depuis des fichiers qu’on vous a envoyés — c’est à cela que sert un fichier par macro. Un import ne remplace jamais : une macro dont l’identifiant est déjà pris en reçoit un libre (un `backup` qui arrive à côté du vôtre devient `backup-2`), et on vous dit sous quels identifiants les nouvelles ont atterri, car le bouton que vous créerez doit nommer la bonne.
 
 ![La fenêtre « Gérer les macros », avec le nom de commande, le nombre d’étapes et l’autorisation de chacune](screenshots/macro-manager.png)
 *Le nom de chaque macro, ce sous quoi elle s’exécute, et ce pour quoi elle demandera l’autorisation.*
@@ -62,21 +83,19 @@ Les *étapes* ne se modifient pas ici. **Modifier le fichier…** passe la main 
 
 ## Modifier les macros à la main
 
-**Configuration ▸ Modifier les macros…** ouvre `macros.json` dans votre dossier de configuration, créé la première fois avec les exemples ci-dessus. Une macro est une liste d'étapes, et chaque étape nomme un outil et ses arguments :
+**Modifier le fichier…** ouvre le fichier propre à la macro sélectionnée — `macros/<id>.json` dans votre dossier de configuration, créé la première fois avec les exemples ci-dessus. Sans sélection, c’est le dossier lui-même qui est montré dans le panneau, où F3 en lit une et F4 en modifie une. Une macro est une liste d’étapes, et chaque étape nomme un outil et ses arguments :
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 L'enregistrement recharge les macros immédiatement — et vous prévient si quelque chose ne va pas : un nom d'outil mal orthographié, un argument obligatoire oublié, deux macros partageant un identifiant. Une macro comportant une erreur n'est pas exécutée et ne va sur aucun bouton ; on vous dit laquelle et ce qui ne va pas, pendant que l'éditeur est encore ouvert.
@@ -151,7 +170,7 @@ Chaque étape est journalisée séparément : **annuler** après une macro repre
 
 ## Où tout est enregistré
 
-- Vos macros sont dans `macros.json` du dossier de configuration — un fichier simple, que vous pouvez comparer et garder avec vos dotfiles.
+- Vos macros sont dans `macros/` du dossier de configuration, une par `<id>.json` — des fichiers simples, que vous pouvez comparer, garder avec vos dotfiles et envoyer à quelqu’un. Un `macros.json` d’une version antérieure est repris au premier lancement et renommé `macros.json.migrated` ; plus rien ne le lit ensuite.
 - Les boutons ajoutés par une macro sont des entrées ordinaires de la barre de boutons dans `default.bar` : en supprimer un revient à supprimer n’importe quel bouton.
 
 ## Pour aller plus loin

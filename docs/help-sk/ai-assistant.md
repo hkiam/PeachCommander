@@ -68,7 +68,7 @@ Pri všetkom, čo mení súbory — presun, premenovanie, zápis, zmazanie — a
 
 Môžete sa aj jednoducho spýtať: *„vráť to"* a *„čo si zmenil?"* dosiahnu na tie isté dve funkcie.
 
-Ten zoznam je zároveň tým, z čoho vzniká makro: **Konfigurácia ▸ Makro z posledných akcií…** ponúkne to, čo asistent práve urobil, ako kroky makra, ktoré môžete spustiť znova — z tlačidla alebo z klávesu. Pozri [Makrá](macros.md).
+Ten zoznam je zároveň tým, z čoho vzniká makro: **Makrá… ▸ Z posledných akcií…** ponúkne to, čo asistent práve urobil, ako kroky makra, ktoré môžete spustiť znova — z tlačidla alebo z klávesu. Pozri [Makrá](macros.md). To, čo robí asistent, zachytí aj **Nahrať makro…**, popri tom, čo robíte ručne.
 
 ## Stĺpce panela
 

@@ -123,8 +123,11 @@ SCENARIOS = [
     # a client attaches), and a tree cannot report a *measurement*. `toolbar-fits` is the measurement,
     # and it was verified by putting the defect back: 620 wide against a 683-wide toolbar, `NO`, and
     # zero conflicts.
+    # `cm_MacroEditor` is what seeds the examples; it now shows the macros *folder* in the panel rather
+    # than opening one file, because there is one file per macro (F-478).
     ("macro-manager", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                       "cmd cm_MacroEditor", "wait 1500", "closeeditor", "wait 800",
+                       "cmd cm_MacroEditor", "wait 1500",
+                       "left /Users/admin/pc-demo", "wait 800",
                        "cmd cm_MacroManager", "wait 2000",
                        "macromanagerdump /Users/admin/macro-manager.txt", "wait 800"], 10),
     ("side-panel-tabs", ["active left", "left /Users/admin/pc-demo", "wait 1200",
@@ -1785,7 +1788,11 @@ REPORTS = {
     # between choosing a macro for a key and finding out afterwards.
     "macro-manager": ("/Users/admin/macro-manager.txt",
                       ["toolbar-fits=yes", "!toolbar-fits=NO",
-                       "buttons=Rename…|Duplicate|Delete|Move Up|Move Down|Add Button",
+                       # Both rows are measured now: the second one carries the three ways a macro is
+                       # made, and it can run off the edge exactly the way the first one did.
+                       "make-fits=yes", "!make-fits=NO",
+                       "buttons=Run|Rename…|Duplicate|Delete|Move Up|Move Down|Add Button|Export…",
+                       "make=Record Macro…|From Recent Actions…|Import…|Edit File…|Done",
                        "row=mc_clean-temp|2|deletes", "row=mc_stage-by-month|3|changes files",
                        "row=mc_file-into-named-folder|2|changes files"]),
     # F-435: survival is half of it — a crash means this file never appears and the scenario fails on

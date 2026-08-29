@@ -26,9 +26,14 @@ enum MacroRecorderSheet {
     /// - Parameter context: the panel state the rows can be rewritten against. Without one the
     ///   "follow the panels" option is not offered at all — there would be nothing to fold the paths
     ///   into, and a checkbox that silently does nothing is worse than an absent one.
+    /// - Parameter fromRecording: whether the list is a recording the user started and stopped, rather
+    ///   than a read of what recently happened. Only the wording differs — the two lists are the same
+    ///   thing by the time they reach here — but "these are the steps you just recorded" and "these are
+    ///   the last things that happened" set very different expectations about what is in the list.
     @MainActor
     static func present(candidates: [MacroRecorder.Candidate], existingIDs: [String],
-                        context: MacroContext?, in window: NSWindow?) -> Result? {
+                        context: MacroContext?, fromRecording: Bool = false,
+                        in window: NSWindow?) -> Result? {
         let nameField = NSTextField(string: String(localized: "My macro"))
         nameField.placeholderString = String(localized: "Macro name")
         let buttonBox = NSButton(checkboxWithTitle: String(localized: "Also add a button for it"),
@@ -43,16 +48,24 @@ enum MacroRecorderSheet {
 
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = String(localized: "Make a macro from recent actions")
-        alert.informativeText = String(localized: """
-            These are the things that have happened, newest first — what you did in the panels and \
-            what the assistant did. Keep the ones the macro should repeat.
-            """)
+        alert.messageText = fromRecording
+            ? String(localized: "Save the recorded macro")
+            : String(localized: "Make a macro from recent actions")
+        alert.informativeText = fromRecording
+            ? String(localized: """
+                These are the steps that were recorded, newest first. Keep the ones the macro should \
+                repeat — a step you did to set things up is usually not one of them.
+                """)
+            : String(localized: """
+                These are the things that have happened, newest first — what you did in the panels and \
+                what the assistant did. Keep the ones the macro should repeat.
+                """)
         alert.addButton(withTitle: String(localized: "Save Macro"))
         alert.addButton(withTitle: String(localized: "Cancel"))
         alert.accessoryView = accessory(candidates: candidates, nameField: nameField,
                                         buttonBox: buttonBox, followBox: followBox,
-                                        context: context, into: &checkboxes)
+                                        context: context, preTicked: fromRecording,
+                                        into: &checkboxes)
 
         if let shot = MacroRecorderProbe.shotPath {
             MacroRecorderProbe.record(["shot: " + DialogShot.capture(alert, to: shot)])
@@ -85,6 +98,7 @@ enum MacroRecorderSheet {
     @MainActor
     private static func accessory(candidates: [MacroRecorder.Candidate], nameField: NSTextField,
                                   buttonBox: NSButton, followBox: NSButton, context: MacroContext?,
+                                  preTicked: Bool,
                                   into checkboxes: inout [(id: String, button: NSButton)]) -> NSView {
         var boxes: [NSView] = []
         var titles: [(button: NSButton, recorded: String, following: String)] = []
@@ -105,10 +119,13 @@ enum MacroRecorderSheet {
             let box = NSButton(checkboxWithTitle: title, target: nil, action: nil)
             box.lineBreakMode = .byTruncatingMiddle
             box.toolTip = title
-            // Unavailable rows are visible and unusable, not hidden. Off by default even when usable:
-            // "everything I did in the last half hour" is rarely the macro somebody means.
+            // Unavailable rows are visible and unusable, not hidden.
             box.isEnabled = candidate.isReplayable
-            box.state = .off
+            // Ticked by default only when the list is a *recording*: there the user drew both
+            // boundaries themselves, so everything inside them is what they meant, and unticking the
+            // one setup step is less work than ticking the other six. A read of what recently happened
+            // gets the opposite default — "everything I did in the last half hour" is rarely a macro.
+            box.state = preTicked && candidate.isReplayable ? .on : .off
             boxes.append(box)
             if candidate.isReplayable { checkboxes.append((candidate.id, box)) }
             // What the same row would say with the panels followed, worked out now so that ticking the

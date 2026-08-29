@@ -11,21 +11,38 @@ A macro is a named sequence of file actions — create a folder, move the select
 
 Everything a macro does goes through the same machinery the assistant uses, so a macro cannot do anything you have not permitted, each of its steps appears in the action log, and a step that can be taken back still can be.
 
-## The quickest way in: from what you just did
+## One window: Configuration ▸ Macros…
 
-You do not have to write a macro from scratch.
+Everything about macros is behind that one entry: the list of them, the two ways to make one, and the way into the file. There is nothing else in the menu to choose between.
 
-1. Do the thing once — copy, move, rename or delete in the panels, or have the assistant do it.
-2. Choose **Configuration ▸ Macro from Recent Actions…**.
-3. Tick the steps the macro should repeat, give it a name, and leave **Also add a button for it** on.
-4. Tick **Follow the panels instead of these exact files** if the macro should work on whatever is selected next time. The rows change as you tick it, so you can see what you are about to save.
+## The quickest way in: record one
+
+You do not have to write a macro from scratch, and you do not have to work out afterwards where it began.
+
+1. **Configuration ▸ Macros… ▸ Record Macro…**. The window steps aside and a small panel appears saying a recording is running, counting the steps as they happen.
+2. Do the job once — copy, move, rename, delete, make folders and files. Work normally; the recorder is not in the way.
+3. **Stop and Save…**.
+4. The steps come back ticked. Untick anything that was only setting things up, give the macro a name, and leave **Also add a button for it** on.
+5. Tick **Follow the panels instead of these exact files** if the macro should work on whatever is selected next time. The rows change as you tick it, so you can see what you are about to save.
 
 **Save Macro**, and the button is in the bar. That is the whole loop.
+
+**Discard Recording** throws the recording away and saves nothing. Nothing is recorded before you press Record, and nothing after you stop — that is the point of having both ends.
+
+A recording survives a restart. If Peach Commander stops while one is running — you quit, or it crashes — it comes back with the recording, says so, and you carry on or discard it.
+
+If you would rather have it on a key or a button, the command is `cm_MacroRecord`; it starts a recording and stops the running one.
+
+## The other way in: from what already happened
+
+**From Recent Actions…**, in the same window, builds a macro out of the last things that happened instead of recording new ones — useful when you have *just* done the job and only then thought of making it a macro.
 
 ![The Macro from Recent Actions sheet, listing what was just done as tickable steps](screenshots/macro-recorder.png)
 *What has already happened, offered as the steps of a new macro.*
 
-The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) and what the assistant or another macro did. Each row says which, because after a session with both, the same two files can appear in each.
+The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) and what the assistant or another macro did. Each row says which, because after a session with both, the same two files can appear in each. Here the rows start unticked — "everything I did in the last half hour" is rarely the macro you mean.
+
+> **This one needs the history.** What you do by hand is read back out of the global history, so if you have switched that off (Settings ▸ Misc ▸ **Record a global history**) this list has nothing of yours in it and says so. **Record Macro…** does not depend on it.
 
 > **What is not offered.** Packing an archive, and anything else the app records only by name, cannot be turned into a step — there is no shape for it to take. Those rows are shown greyed out with the reason rather than left out, so a list of five that offers three does not read as having missed two. And unless you ask otherwise, the paths are the ones that actually ran: a recorded macro repeats *that* copy, not "a copy like it".
 
@@ -33,7 +50,7 @@ The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) an
 
 ## The examples that come with it
 
-The first time you open **Configuration ▸ Edit Macros…**, the file is seeded with eight worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:
+The first time you open **Edit File…**, the file is seeded with eight worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:
 
 | Macro | What it does |
 | --- | --- |
@@ -50,7 +67,11 @@ Each of them becomes a command, so you can put any of them on a button or a key 
 
 ## Managing them
 
-**Configuration ▸ Manage Macros…** is the list: what each macro is called, its command name, how many steps it has, and what the permission gate will ask for — so "this one deletes" is visible before you put it on a key. From there you can rename, duplicate, reorder and delete. Hovering a row shows its steps.
+**Configuration ▸ Macros…** is the list: what each macro is called, its command name, how many steps it has, and what the permission gate will ask for — so "this one deletes" is visible before you put it on a key. From there you can run, rename, duplicate, reorder, delete, export and import. Hovering a row shows its steps.
+
+**Run** is how you try one you have just recorded, without first closing the window to go and find the command. It goes through the same plan and the same confirmation as every other way of running a macro — this window has no privileges of its own.
+
+**Export…** writes the selected macro to a file of its own, and **Import…** adds macros from files somebody sent you — which is what one file per macro is for. An import never replaces: a macro whose id is already taken gets a free one (`backup` arriving beside your own becomes `backup-2`), and you are told which ids the new ones ended up with, because the button you make has to name the right one.
 
 ![The Manage Macros window listing each macro with its command name, step count and permission](screenshots/macro-manager.png)
 *What each macro is called, what it runs as, and what it will ask permission for.*
@@ -63,21 +84,19 @@ The *steps* are not edited here. **Edit File…** hands over to the editor for t
 
 ## Editing macros by hand
 
-**Configuration ▸ Edit Macros…** opens `macros.json` in your configuration folder, seeded with the examples above the first time. A macro is a list of steps, and each step names a tool and its arguments:
+**Edit File…** opens the selected macro's own file — `macros/<id>.json` in your configuration folder, seeded with the examples above the first time. With nothing selected the folder itself is shown in the panel, where F3 reads one and F4 edits one. A macro is a list of steps, and each step names a tool and its arguments:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Saving reloads the macros immediately, and says so if something is wrong: a misspelled tool name, a required argument left out, two macros sharing an id. A macro with a mistake in it is not run and not put on a button — you are told which macro and what is wrong with it, while the editor is still open.
@@ -152,7 +171,7 @@ Each step is logged on its own, so **undo** after a macro takes back its *last* 
 
 ## Where things are saved
 
-- Your macros are in `macros.json` in the configuration folder — a plain file you can diff and keep with your dotfiles.
+- Your macros are in `macros/` in the configuration folder, one `<id>.json` each — plain files you can diff, keep with your dotfiles and send to somebody. A `macros.json` from an earlier version is moved across on first launch and renamed `macros.json.migrated`; nothing reads it afterwards.
 - Buttons a macro added are ordinary button-bar entries in `default.bar`, so removing one is the same as removing any button.
 
 ## Next steps

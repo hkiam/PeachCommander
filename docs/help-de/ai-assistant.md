@@ -69,7 +69,7 @@ Bei allem, was Dateien verändert – Verschieben, Umbenennen, Schreiben, Lösch
 
 Sie können auch einfach fragen: *„mach das rückgängig"* und *„was hast du geändert?"* erreichen dieselben zwei Funktionen.
 
-Diese Liste ist auch der Ursprung eines Makros: **Konfiguration ▸ Makro aus letzten Aktionen…** bietet das, was der Assistent gerade getan hat, als Schritte eines Makros an, das Sie erneut ausführen können — auf einer Schaltfläche oder einer Taste. Siehe [Makros](macros.md).
+Diese Liste ist auch der Ursprung eines Makros: **Konfiguration ▸ Makros… ▸ Aus letzten Aktionen…** bietet das, was der Assistent gerade getan hat, als Schritte eines Makros an, das Sie erneut ausführen können — auf einer Schaltfläche oder einer Taste. Was der Assistent tut, fängt auch **Makro aufzeichnen…** mit ein, zusammen mit dem, was Sie von Hand tun. Siehe [Makros](macros.md).
 
 ## Spalten im Dateifenster
 

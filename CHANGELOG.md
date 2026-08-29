@@ -14,6 +14,62 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Macros can be recorded with a beginning and an end.** "Macro from Recent Actions…" offered the last
+  thirty things that happened and left the reader to work out which of them was the job — the one
+  question they could answer and the list could not. **Configuration ▸ Macros… ▸ Record Macro…** now
+  arms a recording: a small floating panel says it is running and counts the steps as they happen, and
+  **Stop and Save…** offers back exactly what fell between the two presses, already ticked. **Discard**
+  throws it away. It is also the command `cm_MacroRecord`, so it can go on a key or a button — a
+  recording is armed before the work and stopped after it, and having to open a window at each end was
+  most of the friction. Reading what recently happened is still there, as **From Recent Actions…** in
+  the same window.
+
+- **A recording survives a restart.** It is armed by hand and then the user goes off and works, so
+  quitting in the middle of one is not a decision to throw it away, and a crash certainly is not. The
+  running recording is written to `macro-recording.json` as it goes and picked up at the next launch:
+  the indicator comes back with the steps it had and says where it came from. The file is deleted the
+  moment a recording ends, so its presence is the whole question and an ordinary launch does no work.
+
+- **A new file (Shift+F4) can be recorded.** It could not be, and recording it as `write_file` would
+  have been worse than not recording it: `write_file` creates *or truncates*, so the macro would have
+  emptied an existing file the second time it ran. The catalogue has a `create_file` alongside it —
+  creates when the name is free, leaves an existing file alone, never overwrites — which is what the
+  panel does and what the assistant was missing for "make me an empty file".
+
+- **The macro window can run a macro.** Trying one you have just recorded meant closing the window and
+  going to find the command. **Run** does it on the panels behind the window, through the same plan and
+  the same confirmation as every other way in — the window has no privileges of its own.
+
+### Changed
+
+- **Each macro is its own file: `macros/<id>.json`.** They lived in one `macros.json`, which followed
+  the other preset stores — and a macro is not a preset. It is a thing people hand to each other, and
+  getting one out of a JSON array, or into one, meant editing by hand. The project already draws this
+  line elsewhere and says why: `scripts/` keeps one file per script because a script is something a
+  person opens in Script Editor. A `macros.json` from an earlier version is moved across at the first
+  launch — order and any `_comment` notes intact — and renamed `macros.json.migrated`; nothing reads
+  it afterwards. Order lives in an `order` key per file, since a directory has none of its own, and a
+  file dropped in by hand lands at the end.
+
+- **Macros can be exported and imported.** **Export…** in the macro window writes the selected macro to
+  a file of its own; **Import…** adds macros from files somebody sent you, and reads both shapes — a
+  single macro and a whole old `macros.json`. An import never replaces: a macro whose id is taken gets
+  a free one (`backup` arriving beside yours becomes `backup-2`), and the ids the new ones ended up
+  with are named, because the button you make next has to point at the right one.
+
+- **The macro window is narrower, and reordering is two arrows.** Adding Run and Export to the row of
+  actions had pushed it wide. **Move Up** and **Move Down** are now ↑ and ↓ — the two whose meaning an
+  arrow carries completely; the rest stay words, because a row of icons would trade a wide window for
+  a guessing game. The arrows keep their names for VoiceOver, the tooltip and the layout report.
+
+- **Macros are one menu entry instead of three.** Recording a macro, listing the macros and editing the
+  file were three siblings under Configuration, which made the menu ask a question nobody has — which
+  of these three is the macros one — and hid the ordinary case behind a choice. **Configuration ▸
+  Macros…** opens the list; the other two are buttons in it. Both commands stay registered, so a key,
+  a toolbar button or a `.mnu` entry already pointing at one still works.
+
 ### Fixed
 
 - **Pressing Escape during an in-cell rename stopped that panel from ever showing another folder.**
@@ -53,6 +109,42 @@ does not have.
   still, because the tab has already changed by the time the panel is asked to follow it. It now
   retreats to the nearest folder above the missing one that can actually be opened — two levels up if
   that is what it takes — and moves the tab there, so the title and the files agree again.
+
+- **The macro recorder reported "nothing has happened yet" to people who had just done four things.**
+  What you do by hand was read back out of the global history — and the history can be switched off in
+  Settings ▸ Misc. With `History.Enabled=0` the recorder was silently blind, and the message sent the
+  user off to repeat work that was never going to be recorded. The new recording does not read the
+  history at all: the panels report each finished operation to it directly, from the same line that
+  feeds the history, so one cannot be reached without the other. The old path still needs the history,
+  and now says so and names the switch instead of blaming the user.
+
+- **A sentence, not the buttons, decided how wide the macro window opened.** The explanatory line
+  under the list is a wrapping label, and a wrapping label answers its fitting size as *one line*
+  unless it is given a `preferredMaxLayoutWidth` — so it asked for 869pt while the widest row of
+  buttons needed 781. The buttons set the width now and the sentence wraps into it; the window opens
+  at 781 instead of 889. The layout report measures both rows and the note, so the next time something
+  quietly widens this window it says which of the three did it.
+
+- **One typo in the macros file cost every macro in it.** The file was decoded in one go, which is
+  all-or-nothing, so a single entry with `"steps"` written as a string left the user with *no* macros —
+  and with every button, key and menu entry that ran one silently doing nothing. Measured: three
+  entries, one broken, nothing loaded. Entries are now read one at a time, so a bad one costs only
+  itself and is reported by name — which is what the rest of the store already did for an unusable id,
+  a duplicate and an empty macro. One file per macro (above) makes that structural: a file that will
+  not parse cannot take its neighbours with it.
+
+- **The recording indicator's Discard button read "Cancel changes" in some languages.** It reused the
+  shared `Discard` string, which several translators had — correctly, for its own context — rendered as
+  the answer to "save your changes?". A recording is not a change to save, so it has its own string now.
+
+- **The recording indicator counted "1 steps".** The same defect as the confirmation dialog's
+  "step(s)", caught before it shipped: the label carries plural variations in all nineteen languages,
+  taken from the ones the translators had already written for the run-a-macro heading.
+
+- **`Tools/check-format-specifiers.py` reported every pluralized string as broken.** `%#@steps@` names
+  an argument whose type is declared beside the value; read literally it looks like a `#`-flagged `%@`,
+  so the gate claimed each of the nineteen translations passed a pointer where the code passes an
+  integer. It now expands the token to the specifier the entry declares, and the gate is green.
 
 - **The quick preview stopped following the cursor after a Markdown or HTML file.** A lister plugin's
   view is added on top of the preview's own renderers and is opaque, and it was taken away only when a

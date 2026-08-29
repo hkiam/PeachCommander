@@ -387,6 +387,8 @@ public enum MacroPlan {
             return name("path").map {
                 PlanPhrase(.setTags, [value($0), list(d["tags"] as? [String] ?? [])])
             }
+        case "create_file":
+            return name("path").map { PlanPhrase(.createFile, [value($0)]) }
         case "write_file":
             return name("path").map { PlanPhrase(.writeFile, [value($0)]) }
         case "merge_files":

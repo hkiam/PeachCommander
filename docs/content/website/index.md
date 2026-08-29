@@ -260,7 +260,7 @@ Rename a few hundred photos with a regex and a counter and watch the preview upd
 
 ## Do it once, then put it on a button
 
-Most repetition is not one action but a small sequence of them: make a folder for this month, move the invoices into it, tag what is left. **Macros** turn that sequence into a single command — and the quickest way to one is not to write it. Do the job once, choose **Macro from Recent Actions…**, and Peach Commander offers back what just happened as tickable steps.
+Most repetition is not one action but a small sequence of them: make a folder for this month, move the invoices into it, tag what is left. **Macros** turn that sequence into a single command — and the quickest way to one is not to write it. Press **Record Macro…**, do the job once, press stop, and Peach Commander offers back exactly what happened in between as tickable steps.
 
 Tick **Follow the panels instead of these exact files** and the recording generalizes itself: the files you used become "the selection", the folder you moved into becomes "the other panel". A macro recorded on three invoices this morning works tomorrow, in two different folders, on whatever you have selected.
 

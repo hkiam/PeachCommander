@@ -68,7 +68,7 @@ Pour tout ce qui modifie des fichiers — déplacer, renommer, écrire, supprime
 
 Vous pouvez aussi simplement demander : *« annule ça »* et *« qu'as-tu modifié ? »* atteignent les deux mêmes fonctions.
 
-Cette liste est aussi l’origine d’une macro : **Configuration ▸ Macro à partir des actions récentes…** propose ce que l’assistant vient de faire comme les étapes d’une macro que vous pourrez relancer, depuis un bouton ou une touche. Voir [Macros](macros.md).
+Cette liste est aussi l’origine d’une macro : **Macros… ▸ Depuis les actions récentes…** propose ce que l’assistant vient de faire comme les étapes d’une macro que vous pourrez relancer, depuis un bouton ou une touche. Voir [Macros](macros.md). Ce que fait l’assistant est aussi capté par **Enregistrer une macro…**, à côté de ce que vous faites à la main.
 
 ## Colonnes du panneau
 

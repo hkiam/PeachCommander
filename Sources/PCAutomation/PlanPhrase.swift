@@ -80,6 +80,7 @@ public struct PlanPhrase: Sendable, Equatable, Codable {
         case clearComment            // 0: file
         case setComment              // 0: file, 1: comment
         case setTags                 // 0: file, 1: tags
+        case createFile              // 0: file
         case writeFile               // 0: file
         case mergeFiles              // 0: destination, count
         case setConfig               // 0: key, 1: value
@@ -135,6 +136,7 @@ public struct PlanPhrase: Sendable, Equatable, Codable {
         case .clearComment:  return "Clear the comment on “\(value(0))”"
         case .setComment:    return "Comment “\(value(0))”: \(value(1))"
         case .setTags:       return "Tag “\(value(0))”: \(value(1))"
+        case .createFile:    return "Create the file “\(value(0))”"
         case .writeFile:     return "Write the file “\(value(0))”"
         case .mergeFiles:    return "Merge \(n) file(s) into “\(value(0))”"
         case .setConfig:     return "Set \(value(0)) = \(value(1))"

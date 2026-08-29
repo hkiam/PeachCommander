@@ -114,6 +114,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     var lastMacroProblems: [String] = []
     /// The macro manager, kept while it is open — it is a list the user works down, not a question.
     var macroManagerWindow: MacroManagerWindowController?
+    /// The explicit recording, when one is running (F-478). Empty and idle otherwise.
+    var macroRecording = MacroRecordingSession()
+    /// The floating "a recording is running" window, alive exactly as long as the recording is.
+    var macroRecordingIndicator: MacroRecordingIndicator?
 
     /// Build the core, merging automation tools contributed by loaded plugins (KI-06).
     private func makeAutomationCore() -> DefaultAutomationCore {
@@ -132,8 +136,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Read through the store on every call rather than captured once: macros are a file the user
         // edits while the app runs, and a snapshot taken when the core was first touched would leave
         // `run_macro` answering about a macros.json that is no longer there (F-478).
-        let macroStoreURL = configPaths.macros
-        let macros: DefaultAutomationCore.MacroLookup = { MacroStore(url: macroStoreURL).macros() }
+        let macroDirectory = configPaths.macrosDirectory
+        let macros: DefaultAutomationCore.MacroLookup = {
+            MacroStore(directory: macroDirectory).macros()
+        }
         return DefaultAutomationCore(bridge: HostAutomationBridge(host: self), bus: hostEventBus,
                                      externalTools: externalTools, externalRouter: router,
                                      audit: audit, macros: macros)
@@ -535,6 +541,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // taken, and `registeredCommandNames` below is what decides whether a menu item is enabled
             // — a macro registered before this line would be missing from both (F-478).
             self.loadMacros()
+            // Before the awaits below, not after them. `restoreStateAndLoad` starts the MCP server and
+            // reads a dozen config values, which takes long enough that the user — or a scenario — can
+            // press Record first; picking the old recording up at that point would silently throw the
+            // new one away. It is one small file read, so there is nothing to gain by deferring it
+            // (F-478).
+            self.resumeMacroRecordingIfAny()
             // Cache the numeric-id → cm_ name map so a .mnu can reference TC ids (F-257),
             // then rebuild in case a user .mnu is present and needed id resolution.
             let all = await self.commandRegistry.getAllCommands()
@@ -2893,6 +2905,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 let full = (dir as NSString).appendingPathComponent(leaf)
                 if !FileManager.default.fileExists(atPath: full) {
                     FileManager.default.createFile(atPath: full, contents: Data())
+                    // Only when one was actually made: opening the editor on a file that was already
+                    // there is not a creation, and a macro repeating it would create nothing. What the
+                    // user types afterwards is a separate edit and is deliberately not recorded — a
+                    // macro that carried a whole document is a different feature (F-478).
+                    self?.activePanel?.recordInHistory(
+                        label: String(localized: "New File"), directory: dir,
+                        payload: HistoryOperation.encode(kind: HistoryOperation.kindCreateFile,
+                                                         items: [full], mask: nil))
                 }
                 Task { @MainActor in
                     await self?.activePanel?.reload()
@@ -4204,6 +4224,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         await saveState()
         await session.flush()
         await mainConfig.flush()
+        // A recording that was still running is put down here rather than thrown away, so that quitting
+        // in the middle of one — or crashing — is not the silent loss this feature exists to prevent.
+        persistMacroRecording()
     }
 
     // MARK: - Global hidden-files toggle (WindowControllerProtocol)

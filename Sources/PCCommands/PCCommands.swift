@@ -334,12 +334,14 @@ public protocol WindowControllerProtocol: AnyObject {
     func showImportWincmd()
     /// Create/edit the user main-menu file (TC .mnu format) — cm_ConfigMainMenu (F-257).
     func showEditMainMenu()
-    /// Create/edit the macros file — cm_MacroEditor (F-478).
+    /// Show the macros folder (one `<id>.json` per macro) in the active panel — cm_MacroEditor (F-478).
     func showMacroEditor()
     /// Offer recent automation actions as the steps of a new macro — cm_MacroFromRecentActions (F-478).
     func showMacroFromRecentActions()
     /// The macros as a list: rename, duplicate, reorder, delete — cm_MacroManager (F-478).
     func showMacroManager()
+    /// Start an explicit recording, or stop the running one — cm_MacroRecord (F-478).
+    func toggleMacroRecording()
     /// Native Quick Look preview of the selection (Cmd+Y) — cm_QuickLook.
     func showQuickLook()
     /// Explain Full Disk Access and offer to open System Settings — cm_FullDiskAccess.
@@ -880,6 +882,7 @@ public actor CommandRegistry {
         register(Self.cm_MacroEditor)
         register(Self.cm_MacroFromRecentActions)
         register(Self.cm_MacroManager)
+        register(Self.cm_MacroRecord)
         register(Self.cm_QuickLook)
         register(Self.cm_EjectVolume)
         register(Self.cm_FullDiskAccess)
@@ -1053,15 +1056,23 @@ public actor CommandRegistry {
     // The two macro commands (F-478). Ids continue the Configuration block rather than starting a new
     // one; `Tools/check-command-ids.py` pins them from here on, so they must not move again.
     static let cm_MacroEditor = PCCommand(id: 30129, name: "cm_MacroEditor", category: "Configuration",
-        help: "Create or edit your macros (macros.json)",
+        help: "Show the macros folder in the panel — one file per macro",
         handler: { ctx in ctx.windowController?.showMacroEditor() })
     static let cm_MacroFromRecentActions = PCCommand(
         id: 30130, name: "cm_MacroFromRecentActions", category: "Configuration",
         help: "Make a macro from what the assistant has just done",
         handler: { ctx in ctx.windowController?.showMacroFromRecentActions() })
     static let cm_MacroManager = PCCommand(id: 30131, name: "cm_MacroManager", category: "Configuration",
-        help: "Manage your macros: rename, duplicate, reorder, delete",
+        help: "Manage your macros: record, rename, duplicate, reorder, delete",
         handler: { ctx in ctx.windowController?.showMacroManager() })
+    /// Start or stop an explicit recording — the answer to "where does the macro begin and end".
+    ///
+    /// A command rather than only a button in the manager window, so it can go on a key or in the
+    /// toolbar: a recording is armed *before* the work and stopped after it, and having to open a
+    /// window at each end is most of the friction the feature had.
+    static let cm_MacroRecord = PCCommand(id: 30132, name: "cm_MacroRecord", category: "Configuration",
+        help: "Start recording a macro, or stop the recording that is running",
+        handler: { ctx in ctx.windowController?.toggleMacroRecording() })
     static let cm_QuickLook = PCCommand(id: 30093, name: "cm_QuickLook", category: "View",
         help: "Quick Look preview of the selection",
         handler: { ctx in ctx.windowController?.showQuickLook() })

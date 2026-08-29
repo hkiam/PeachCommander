@@ -191,6 +191,8 @@ public enum AuditInverse {
             return "a permanent deletion cannot be undone"
         case "make_directory":
             return "the folder was created; remove it yourself if it is not wanted"
+        case "create_file":
+            return "the file was created; remove it yourself if it is not wanted"
         case "copy", "merge_files":
             return "the copy can be deleted; the originals are untouched"
         case "set_config":

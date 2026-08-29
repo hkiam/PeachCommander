@@ -10,21 +10,38 @@ A makró fájlműveletek elnevezett sorozata — mappát létrehozni, a kijelöl
 
 Mindaz, amit egy makró tesz, ugyanazon a gépezeten megy át, mint az asszisztens. A makró tehát semmi olyat nem tehet, amit nem engedélyezett, minden lépése megjelenik a műveletnaplóban, és ami visszavonható volt, az továbbra is az.
 
-## A legrövidebb út: abból, amit épp most tett
+## Egyetlen ablak: Beállítások ▸ Makrók…
 
-A makrót nem kell nulláról megírni.
+A makrókkal kapcsolatos minden e mögött az egyetlen menüpont mögött van: a lista, a makrókészítés két módja és a fájlhoz vezető út. A menüben nincs más, ami közül választani kellene.
 
-1. Csinálja meg a dolgot egyszer — másoljon, mozgasson, nevezzen át vagy töröljön a paneleken, vagy csináltassa meg az asszisztenssel.
-2. Válassza a **Beállítás ▸ Makró a legutóbbi műveletekből…** menüpontot.
-3. Jelölje be azokat a lépéseket, amelyeket a makrónak meg kell ismételnie, adjon neki nevet, és hagyja bekapcsolva a **Gomb hozzáadása is hozzá** jelölőt.
-4. Jelölje be a **Kövesse a paneleket ezek helyett a konkrét fájlok helyett** lehetőséget, ha a makrónak legközelebb azzal kell dolgoznia, ami akkor lesz kijelölve. A sorok a bejelöléskor megváltoznak, így látja, mit ment el.
+## A leggyorsabb út: rögzítsen egyet
+
+Nem kell nulláról megírnia egy makrót — és utólag sem kell kitalálnia, hol kezdődött.
+
+1. **Beállítások ▸ Makrók… ▸ Makró rögzítése…**. Az ablak félreáll, és megjelenik egy kis panel, amely jelzi, hogy rögzítés folyik, és menet közben számolja a lépéseket.
+2. Végezze el a munkát egyszer: másolás, áthelyezés, átnevezés, törlés, mappák és fájlok létrehozása. Dolgozzon a szokásos módon; a rögzítés nincs útban.
+3. **Leállítás és mentés…**.
+4. A lépések már bejelölve térnek vissza. Vegye ki a jelölést mindenből, ami csak előkészített, adjon nevet a makrónak, és hagyja bekapcsolva a **Gomb hozzáadása is hozzá** lehetőséget.
+5. Jelölje be a **Kövesse a paneleket ezek helyett a konkrét fájlok helyett** lehetőséget, ha a makrónak legközelebb azzal kell dolgoznia, ami akkor lesz kijelölve. A sorok a bejelöléskor megváltoznak, így látja, mit ment el.
 
 **Makró mentése** — és a gomb ott van a sávban. Ez az egész folyamat.
+
+A **Rögzítés elvetése** eldobja a felvételt, és semmit nem ment. A Rögzítés megnyomása előtt semmi nem kerül rögzítésre, a leállítás után sem — épp ezért van két vége.
+
+A rögzítés túlél egy újraindítást. Ha a Peach Commander leáll, miközben egy fut — mert kilép, vagy mert összeomlik —, visszatér vele, jelzi is, ön pedig folytatja vagy elveti.
+
+Ha inkább billentyűn vagy gombon szeretné, a parancs neve `cm_MacroRecord`: elindít egy rögzítést, és leállítja a futót.
+
+## A másik út: abból, ami már megtörtént
+
+A **Legutóbbi műveletekből…** ugyanabban az ablakban a legutóbb történtekből épít makrót, ahelyett hogy újat rögzítene — hasznos, ha a munkát *épp most* végezte el, és csak utána jutott eszébe a makró.
 
 ![A „Makró a legutóbbi műveletekből” lap, az imént elvégzettekkel bejelölhető lépésekként](screenshots/macro-recorder.png)
 *Ami már megtörtént, egy új makró lépéseiként felkínálva.*
 
-A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 és egy átnevezés), és amit az asszisztens vagy egy másik makró csinált. Minden sor megmondja, melyikről van szó — mert egy vegyes munkamenet után ugyanaz a két fájl mindkettőben felbukkanhat.
+A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 és egy átnevezés), és amit az asszisztens vagy egy másik makró csinált. Minden sor megmondja, melyikről van szó — mert egy vegyes munkamenet után ugyanaz a két fájl mindkettőben felbukkanhat. Itt a sorok kezdetben nincsenek bejelölve: „minden, amit az elmúlt fél órában csináltam” ritkán az a makró, amire gondolunk.
+
+> **Ehhez az úthoz kellenek az előzmények.** Amit kézzel csinál, azt a globális előzményekből olvassuk vissza; ha azokat kikapcsolta (Beállítások ▸ Egyéb ▸ **Globális előzmények rögzítése**), ebben a listában semmi nincs öntől — és ezt meg is mondja. A **Makró rögzítése…** nem függ tőlük.
 
 > **Amit nem kínál fel.** Archívum csomagolása, és minden más, amit az alkalmazás csak név szerint őriz meg, nem alakítható lépéssé — nincs hozzá forma. Az ilyen sorok szürkítve, az okukkal együtt látszanak, ahelyett hogy hiányoznának, hogy egy ötös lista, amely hármat kínál, ne tűnjön úgy, mintha kettőt elnézett volna. Az útvonalak pedig — hacsak nem kér mást — azok, amelyek valóban lefutottak: egy felvett makró *azt* a másolást ismétli meg, nem „egy olyasfajta másolást”. Nyissa meg a szerkesztőben, és tegyen `%S`-t vagy `%T`-t oda, ahol a paneleket kell követnie.
 
@@ -32,7 +49,7 @@ A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 �
 
 ## A mellékelt példák
 
-Amikor először megnyitja a **Beállítások ▸ Makrók szerkesztése…** menüpontot, a fájl nyolc kidolgozott példával jön létre. Ezek hétköznapi makrók — módosítsa őket, vagy törölje azokat, amelyekre nincs szüksége —, és mindegyik visel egy megjegyzést arról, mit csinál és mit érdemes benne átírni:
+Amikor először megnyitja a **Fájl szerkesztése…** menüpontot, a fájl nyolc kidolgozott példával jön létre. Ezek hétköznapi makrók — módosítsa őket, vagy törölje azokat, amelyekre nincs szüksége —, és mindegyik visel egy megjegyzést arról, mit csinál és mit érdemes benne átírni:
 
 | Makró | Mit csinál |
 | --- | --- |
@@ -49,7 +66,11 @@ Mindegyikből parancs lesz, így bármelyiket gombra vagy billentyűre teheti an
 
 ## Kezelésük
 
-A **Beállítások ▸ Makrók kezelése…** maga a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mit fog kérni a jogosultsági ellenőrzés — így a „ez itt töröl” látszik, mielőtt billentyűre tenné. Innen átnevezhet, kettőzhet, átrendezhet és törölhet. A sor fölé érve látszanak a lépései.
+A **Beállítások ▸ Makrók…** a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mire fog rákérdezni a jogosultsági kapu — így a „ez töröl” látszik, mielőtt billentyűre tenné. Innen futtathat, átnevezhet, duplikálhat, átrendezhet, törölhet, exportálhat és importálhat. Egy sor fölé húzva megjelennek a lépései.
+
+A **Futtatás** az a mód, ahogy kipróbálhatja az imént rögzítettet anélkül, hogy előbb bezárná az ablakot és megkeresné a parancsot. Ugyanazon a terven és ugyanazon a megerősítésen megy át, mint bármely más futtatás — ennek az ablaknak nincsenek saját jogosultságai.
+
+Az **Exportálás…** a kijelölt makrót saját fájlba írja, az **Importálás…** pedig makrókat ad hozzá olyan fájlokból, amelyeket valaki küldött — pontosan ezért van makrónként egy fájl. Az import soha nem ír felül: a már foglalt azonosítójú makró szabadot kap (az érkező `backup` az ön saját `backup`-ja mellett `backup-2` lesz), és megtudja, milyen azonosítókkal kerültek be az újak, hiszen a gombnak, amit készít, a megfelelőt kell megneveznie.
 
 ![A „Makrók kezelése” ablak minden makró parancsnevével, lépésszámával és jogosultságával](screenshots/macro-manager.png)
 *Melyik makrót hogy hívják, miként fut, és mire fog engedélyt kérni.*
@@ -62,21 +83,19 @@ A *lépéseket* nem itt szerkeszti. A **Fájl szerkesztése…** ehhez átadja a
 
 ## Makrók szerkesztése kézzel
 
-A **Beállítások ▸ Makrók szerkesztése…** megnyitja a `macros.json` fájlt a konfigurációs mappájában, első alkalommal a fenti példákkal létrehozva. A makró lépések listája, és minden lépés megnevez egy eszközt és annak argumentumait:
+A **Fájl szerkesztése…** a kijelölt makró saját fájlját nyitja meg — `macros/<id>.json` a konfigurációs mappájában, első alkalommal a fenti példákkal létrehozva. Kijelölés nélkül maga a mappa jelenik meg a panelen, ahol az F3 elolvas egyet, az F4 pedig szerkeszt egyet. A makró lépések listája, és minden lépés megnevez egy eszközt és annak argumentumait:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 A mentés azonnal újratölti a makrókat — és szól, ha valami nem stimmel: elgépelt eszköznév, hiányzó kötelező argumentum, két azonos azonosítójú makró. A hibás makró nem fut le, és nem kerül gombra sem; megtudja, melyikről van szó és mi a baj vele, amíg a szerkesztő még nyitva van.
@@ -151,7 +170,7 @@ Minden lépés önállóan naplózódik, ezért a makró utáni **visszavonás**
 
 ## Hol tárolódik mindez
 
-- A makrói a konfigurációs mappa `macros.json` fájljában vannak — egyszerű fájl, amelyet diffelhet és a dotfiles közt tarthat.
+- A makrói a konfigurációs mappa `macros/` könyvtárában vannak, egyenként `<id>.json` néven — egyszerű fájlok, amelyeket diffelhet, a dotfiles közt tarthat és el is küldhet valakinek. Egy korábbi verzióból származó `macros.json` az első indításkor átkerül, és `macros.json.migrated` néven marad; utána már senki nem olvassa.
 - A makró által hozzáadott gombok a `default.bar` szokásos gombsáv-bejegyzései, így egyet eltávolítani ugyanaz, mint bármely más gombnál.
 
 ## Következő lépések

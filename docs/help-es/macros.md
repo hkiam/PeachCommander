@@ -10,21 +10,38 @@ Una macro es una secuencia con nombre de acciones sobre archivos — crear una c
 
 Todo lo que hace una macro pasa por la misma maquinaria que usa el asistente, así que una macro no puede hacer nada que no hayas permitido, cada uno de sus pasos aparece en el registro de acciones, y un paso que se puede deshacer sigue pudiéndose deshacer.
 
-## La vía más rápida: a partir de lo que acabas de hacer
+## Una sola ventana: Configuración ▸ Macros…
 
-No hace falta escribir una macro desde cero.
+Todo lo relativo a las macros está detrás de esa única entrada: la lista, las dos formas de crear una y el acceso al archivo. En el menú no hay nada más entre lo que elegir.
 
-1. Haga la cosa una vez: copie, mueva, renombre o borre en los paneles, o deje que lo haga el asistente.
-2. Elige **Configuración ▸ Macro a partir de acciones recientes…**.
-3. Marca los pasos que la macro debe repetir, dale un nombre y deja activado **Añadir también un botón para ella**.
-4. Marque **Seguir a los paneles en vez de a estos archivos concretos** si la macro debe trabajar la próxima vez con lo que esté seleccionado. Las filas cambian al marcarla, así que ve lo que va a guardar.
+## Lo más rápido: grabar una
+
+No tiene que escribir una macro desde cero, y tampoco tiene que averiguar después dónde empezó.
+
+1. **Configuración ▸ Macros… ▸ Grabar macro…**. La ventana se aparta y aparece un panel pequeño que dice que hay una grabación en marcha y va contando los pasos.
+2. Haga el trabajo una vez: copiar, mover, renombrar, eliminar, crear carpetas y archivos. Trabaje con normalidad; el grabador no estorba.
+3. **Detener y guardar…**.
+4. Los pasos vuelven ya marcados. Desmarque lo que solo servía de preparación, dé un nombre a la macro y deje **Añadir también un botón para ella** activado.
+5. Marque **Seguir a los paneles en vez de a estos archivos concretos** si la macro debe trabajar la próxima vez con lo que esté seleccionado. Las filas cambian al marcarla, así que ve lo que va a guardar.
 
 **Guardar macro**, y el botón ya está en la barra. Ese es todo el ciclo.
+
+**Descartar la grabación** tira la grabación y no guarda nada. No se graba nada antes de pulsar Grabar, ni después de parar: para eso están los dos extremos.
+
+Una grabación sobrevive a un reinicio. Si Peach Commander se cierra mientras hay una en marcha —porque usted sale o porque falla—, vuelve con ella, lo dice, y usted continúa o la descarta.
+
+Si prefiere tenerlo en una tecla o un botón, el comando se llama `cm_MacroRecord`: inicia una grabación y detiene la que esté en marcha.
+
+## La otra vía: a partir de lo que ya ha ocurrido
+
+**Desde acciones recientes…**, en la misma ventana, construye una macro a partir de lo último que ha ocurrido en vez de grabar algo nuevo — útil cuando *acaba* de hacer el trabajo y solo entonces piensa en la macro.
 
 ![La hoja «Macro a partir de acciones recientes», con lo recién hecho como pasos marcables](screenshots/macro-recorder.png)
 *Lo que ya ha ocurrido, ofrecido como los pasos de una macro nueva.*
 
-La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 y un renombrado) y lo que hizo el asistente u otra macro. Cada fila dice cuál de las dos, porque tras una sesión con ambas los mismos dos archivos pueden aparecer en cada una.
+La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 y un renombrado) y lo que hizo el asistente u otra macro. Cada fila dice cuál de las dos, porque tras una sesión con ambas los mismos dos archivos pueden aparecer en cada una. Aquí las filas empiezan sin marcar: «todo lo que he hecho en la última media hora» rara vez es la macro que uno quiere.
+
+> **Esta vía necesita el historial.** Lo que hace a mano se lee del historial global; si lo ha desactivado (Ajustes ▸ Varios ▸ **Registrar un historial global**), esta lista no contiene nada suyo, y lo dice. **Grabar macro…** no depende de él.
 
 > **Lo que no se ofrece.** Empaquetar un archivo comprimido, y todo lo demás que la aplicación solo guarda por su nombre, no puede convertirse en un paso: no hay forma que darle. Esas filas se muestran atenuadas con su motivo en vez de omitirse, para que una lista de cinco que ofrece tres no parezca haberse dejado dos. Y salvo que pida otra cosa, las rutas son las que se usaron de verdad: una macro grabada repite *esa* copia, no «una copia parecida». Ábrala en el editor y ponga `%S` o `%T` donde quiera que siga a los paneles.
 
@@ -32,7 +49,7 @@ La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 
 
 ## Los ejemplos que vienen incluidos
 
-La primera vez que abre **Configuración ▸ Editar macros…**, el archivo se crea con ocho ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:
+La primera vez que abre **Editar archivo…**, el archivo se crea con ocho ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:
 
 | Macro | Qué hace |
 | --- | --- |
@@ -49,7 +66,11 @@ Cada una se convierte en un comando, así que puede poner cualquiera en un botó
 
 ## Gestionarlas
 
-**Configuración ▸ Gestionar macros…** es la lista: cómo se llama cada macro, cómo se llama su comando, cuántos pasos tiene y qué pedirá la comprobación de permisos, de modo que «esta borra» se ve antes de ponerla en una tecla. Desde ahí puede renombrar, duplicar, reordenar y borrar. Al pasar por encima de una fila se ven sus pasos.
+**Configuración ▸ Macros…** es la lista: cómo se llama cada macro, el nombre de su comando, cuántos pasos tiene y qué pedirá la barrera de permisos — así «esta borra» se ve antes de ponerla en una tecla. Desde ahí puede ejecutar, renombrar, duplicar, reordenar, eliminar, exportar e importar. Al pasar por encima de una fila se ven sus pasos.
+
+**Ejecutar** es la forma de probar la que acaba de grabar, sin cerrar antes la ventana para ir a buscar el comando. Pasa por el mismo plan y la misma confirmación que cualquier otra ejecución: esta ventana no tiene privilegios propios.
+
+**Exportar…** escribe la macro seleccionada en un archivo propio, e **Importar…** añade macros desde archivos que le hayan enviado: para eso está un archivo por macro. Una importación nunca reemplaza: una macro cuyo id ya está ocupado recibe uno libre (un `backup` que llega junto al suyo pasa a ser `backup-2`), y se le dice con qué ids acabaron las nuevas, porque el botón que cree tiene que nombrar la correcta.
 
 ![La ventana «Gestionar macros», con el nombre de orden, el número de pasos y el permiso de cada macro](screenshots/macro-manager.png)
 *Cómo se llama cada macro, como qué se ejecuta y para qué pedirá permiso.*
@@ -62,21 +83,19 @@ Los *pasos* no se editan aquí. **Editar archivo…** cede el paso al editor par
 
 ## Editar macros a mano
 
-**Configuración ▸ Editar macros…** abre `macros.json` en su carpeta de configuración, creado la primera vez con los ejemplos de arriba. Una macro es una lista de pasos, y cada paso nombra una herramienta y sus argumentos:
+**Editar archivo…** abre el archivo propio de la macro seleccionada: `macros/<id>.json` en su carpeta de configuración, creado la primera vez con los ejemplos de arriba. Sin selección se muestra en el panel la carpeta misma, donde F3 lee una y F4 edita una. Una macro es una lista de pasos, y cada paso nombra una herramienta y sus argumentos:
 
 ```json
-[
-  {
-    "id": "stage-by-month",
-    "title": "File the selection into a dated folder",
-    "icon": "calendar",
-    "steps": [
-      { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
-      { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
-      { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
-    ]
-  }
-]
+{
+  "id": "stage-by-month",
+  "title": "File the selection into a dated folder",
+  "icon": "calendar",
+  "steps": [
+    { "tool": "set_selection", "arguments": { "mask": "*.pdf" } },
+    { "tool": "make_directory", "arguments": { "path": "%T/%{date:yyyy-MM}" } },
+    { "tool": "move", "arguments": { "sources": "%S", "destination": "%T/%{date:yyyy-MM}" } }
+  ]
+}
 ```
 
 Guardar recarga las macros de inmediato — y avisa si algo no está bien: un nombre de herramienta mal escrito, un argumento obligatorio que falta, dos macros con el mismo id. Una macro con un error no se ejecuta ni llega a un botón; se le dice cuál es y qué le pasa, con el editor todavía abierto.
@@ -151,7 +170,7 @@ Cada paso se registra por separado, así que **deshacer** después de una macro 
 
 ## Dónde se guarda todo
 
-- Tus macros están en `macros.json` de la carpeta de configuración: un archivo sencillo que puedes comparar y guardar con tus dotfiles.
+- Sus macros están en `macros/` de la carpeta de configuración, una por `<id>.json`: archivos sencillos que puede comparar, guardar con sus dotfiles y enviar a alguien. Un `macros.json` de una versión anterior se traslada en el primer arranque y se renombra a `macros.json.migrated`; después nadie lo lee.
 - Los botones que añadió una macro son entradas normales de la barra de botones en `default.bar`, así que quitar uno es igual que quitar cualquier botón.
 
 ## Siguientes pasos

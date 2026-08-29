@@ -22,25 +22,29 @@ By the end you will have a macro built out of your own actions, working on whate
 
 ## Step 1 — Do it once, by hand
 
-Nothing to configure yet. Just do the job the ordinary way:
+First, tell the app you are about to show it something: choose **Configuration ▸ Macros… ▸ Record Macro…**. The window steps aside, and a small panel appears saying a recording is running.
+
+Now just do the job the ordinary way:
 
 1. Point the left panel at `~/Downloads` and the right panel at `~/Documents`.
 2. Press **F7** and make a folder called `2026-08` on the right.
 3. Select two or three files in the left panel with **Insert** (or Space).
 4. Press **F6** to move them into `2026-08`.
 
-That is the task. Now make it repeatable.
+Watch the little panel count as you go: two steps. That is the task. Now make it repeatable.
 
-## Step 2 — Let the recorder offer it back
+## Step 2 — Stop, and look at what was caught
 
-Choose **Configuration ▸ Macro from Recent Actions…**.
+Press **Stop and Save…** on the recording panel.
 
 ![The Macro from Recent Actions sheet, listing what was just done as tickable steps](screenshots/macro-recorder.png)
-*What has already happened, offered as the steps of a new macro — tick the ones to keep.*
+*What happened between Record and Stop, offered as the steps of a new macro.*
 
-The list holds what you did in the panels *and* anything the assistant did, and each row says which. Tick the two rows you want — the folder you created and the move — and give the macro a name, say **File into a dated folder**.
+The two rows are already ticked, because you drew both ends of this yourself — untick anything that was only setting things up. Give the macro a name, say **File into a dated folder**.
 
 Leave **Also add a button for it** switched on.
+
+> **If you forgot to press Record**, nothing is lost: **From Recent Actions…** in the same window builds the macro out of the last things that happened instead. It reads the global history, so it needs that switched on (Settings ▸ Misc ▸ **Record a global history**); recording does not.
 
 > **Some rows will be greyed out.** Packing an archive, and anything else the app records only by name, cannot be turned into a step — there is no shape for it to take. Those rows are shown with the reason rather than left out, so a list of five that offers three does not read as having missed two.
 
@@ -81,14 +85,18 @@ It also appears in the **Command Browser**, in the button-bar editor's command p
 
 ## Step 6 — Look at what was written
 
-Choose **Configuration ▸ Manage Macros…**.
+Choose **Configuration ▸ Macros…**.
 
 ![The Manage Macros window listing each macro with its command name, step count and permission](screenshots/macro-manager.png)
 *Every macro with its command name, its step count, and what it will ask permission for.*
 
 Yours is in the list, next to the eight worked examples the app seeded the first time the editor was opened. The column that matters most is the last one: what each macro will ask permission for, so "this one deletes" is visible *before* you put it on a key.
 
-The steps themselves are not edited here. **Edit File…** hands over to the editor, because a step is a tool name and its arguments — which is what JSON is:
+**Run** tries it right here, on the panels behind the window — the quickest way to see whether what you recorded is what you meant. It goes through the same plan and confirmation as any other run.
+
+**Export…** writes it to a file of its own — that is how you send this macro to somebody, and how **Import…** takes theirs.
+
+The steps themselves are not edited here. **Edit File…** hands over to the editor — each macro is its own `macros/<id>.json`, because a step is a tool name and its arguments, which is what JSON is:
 
 ```json
 {

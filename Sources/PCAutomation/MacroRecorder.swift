@@ -26,10 +26,13 @@ import Foundation
 /// Core did this" — it carries a capability and an inverse — and a manual F5 did not go through the
 /// Core and has neither. Flattening the two would have the recorder claim a provenance the second kind
 /// does not have.
-public struct RecordedAction: Sendable, Equatable {
+/// `Codable` because a recording has to survive a quit: it is armed by hand, it can be running while
+/// the user does something else entirely, and losing it because the app was restarted would be the
+/// silent kind of loss this feature exists to avoid.
+public struct RecordedAction: Sendable, Equatable, Codable {
     /// Which record this came from. Shown in the sheet, because "the assistant moved these" and "you
     /// moved these" are different enough that a reader wants to know which list they are looking at.
-    public enum Source: Sendable, Equatable {
+    public enum Source: String, Sendable, Equatable, Codable {
         case automation
         case panel
     }
@@ -71,6 +74,10 @@ public struct RecordedAction: Sendable, Equatable {
         /// Leaf names within `directory`, old → new.
         case rename(pairs: [(old: String, new: String)], directory: String)
         case makeDirectory(String)
+        /// A new, empty file — Shift+F4 in the panels. `create_file`, never `write_file`: what the
+        /// panel does is create *if absent*, and a recorded `write_file` would empty an existing file
+        /// the second time the macro ran.
+        case createFile(String)
 
         public static func == (a: PanelOperation, b: PanelOperation) -> Bool {
             a.call?.tool == b.call?.tool && a.callJSON == b.callJSON
@@ -97,6 +104,9 @@ public struct RecordedAction: Sendable, Equatable {
             case .makeDirectory(let path):
                 guard !path.isEmpty else { return nil }
                 return ("make_directory", ["path": path])
+            case .createFile(let path):
+                guard !path.isEmpty else { return nil }
+                return ("create_file", ["path": path])
             }
         }
 

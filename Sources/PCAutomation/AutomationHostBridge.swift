@@ -192,6 +192,13 @@ public extension AutomationHostBridge {
         throw AutomationError.notImplemented("hash_file")
     }
     func writeFile(_ path: String, content: String) async throws { throw AutomationError.notImplemented("write_file") }
+    /// Create an empty file, leaving an existing one alone. Returns whether it made one.
+    ///
+    /// Separate from `writeFile` rather than `writeFile(path, content: "")`, because those are two
+    /// different operations: one creates, the other creates *or truncates*. Shift+F4 in the panels only
+    /// ever creates, so recording it as a write would hand back a macro that silently empties a file
+    /// the second time it runs — a different, destructive operation wearing the same row.
+    func createFile(_ path: String) async throws -> Bool { throw AutomationError.notImplemented("create_file") }
     func mergeFiles(sources: [String], destination: String) async throws -> (destination: String, count: Int, rows: Int) {
         throw AutomationError.notImplemented("merge_files")
     }

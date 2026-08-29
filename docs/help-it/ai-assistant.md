@@ -68,7 +68,7 @@ Per tutto ciò che modifica file — spostare, rinominare, scrivere, eliminare �
 
 Potete anche semplicemente chiedere: *«annulla»* e *«che cosa hai modificato?»* raggiungono le stesse due funzioni.
 
-Quell’elenco è anche l’origine di una macro: **Configurazione ▸ Macro dalle azioni recenti…** offre quello che l’assistente ha appena fatto come i passi di una macro che potete rieseguire, da un pulsante o da un tasto. Vedi [Macro](macros.md).
+Quell’elenco è anche l’origine di una macro: **Macro… ▸ Dalle azioni recenti…** offre quello che l’assistente ha appena fatto come i passi di una macro che potete rieseguire, da un pulsante o da un tasto. Vedi [Macro](macros.md). Quello che fa l’assistente viene colto anche da **Registra macro…**, insieme a quello che fa lei a mano.
 
 ## Colonne del pannello
 

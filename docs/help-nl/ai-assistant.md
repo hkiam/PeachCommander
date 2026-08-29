@@ -68,7 +68,7 @@ Voor alles wat bestanden wijzigt — verplaatsen, hernoemen, schrijven, verwijde
 
 U kunt het ook gewoon vragen: *"maak dat ongedaan"* en *"wat heb je gewijzigd?"* bereiken dezelfde twee functies.
 
-Die lijst is ook de oorsprong van een macro: **Configuratie ▸ Macro uit recente acties…** biedt wat de assistent zojuist deed aan als de stappen van een macro die u opnieuw kunt uitvoeren, vanaf een knop of een toets. Zie [Macro’s](macros.md).
+Die lijst is ook de oorsprong van een macro: **Macro’s… ▸ Van recente acties…** biedt wat de assistent zojuist deed aan als de stappen van een macro die u opnieuw kunt uitvoeren, vanaf een knop of een toets. Zie [Macro’s](macros.md). Wat de assistent doet wordt ook door **Macro opnemen…** meegenomen, naast wat u met de hand doet.
 
 ## Kolommen in het venster
 

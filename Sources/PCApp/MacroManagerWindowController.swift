@@ -18,6 +18,7 @@
 import AppKit
 import PCAutomation
 import PCFoundation
+import UniformTypeIdentifiers
 
 final class MacroManagerWindowController: NSWindowController, NSTableViewDataSource, NSTableViewDelegate {
 
@@ -27,12 +28,32 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
     var onRemoveButtons: (([String]) -> Int)?
     /// Asked to add a button for this macro.
     var onAddButton: ((Macro) -> Void)?
-    /// Asked to open `macros.json` in the app's editor.
-    var onEditFile: (() -> Void)?
+    /// Asked to run this macro, through the same gate every other way of running one goes through.
+    var onRun: ((Macro) -> Void)?
+    /// Asked to open a macro's own file in the app's editor — or, with nothing selected, the folder
+    /// they all live in.
+    var onEditFile: ((Macro?) -> Void)?
+    /// Asked to start a recording, or to stop the one that is running.
+    var onToggleRecording: (() -> Void)?
+    /// Asked to build a macro out of what recently happened.
+    var onMacroFromRecentActions: (() -> Void)?
+    /// Whether a recording is running right now, so the button says the right thing when the window is
+    /// opened *during* one — which is the normal case, because starting one closes this window.
+    var isRecording: Bool = false
 
     private let store: MacroStore
     private var macros: [Macro] = []
     private let table = NSTableView()
+    /// Kept, because its title is the state: this is the one control that says whether a recording is
+    /// running, and a stale "Record Macro…" over a running one is a lie the user acts on.
+    private let recordButton = NSButton()
+    /// What the wordless buttons are called.
+    ///
+    /// Held here rather than read back off the button: `accessibilityLabel()` answers with the role
+    /// ("Button") on an image button whatever is set on it, and `identifier` is not reliably kept
+    /// either — so the report listed the two arrows as the same word and could no longer tell a
+    /// missing button from a picture. A map the window fills in itself cannot disagree with the row.
+    private var wordlessNames: [ObjectIdentifier: String] = [:]
 
     init(store: MacroStore) {
         self.store = store
@@ -79,13 +100,47 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
             b.bezelStyle = .rounded
             return b
         }
+        /// A button that is an arrow rather than a word.
+        ///
+        /// Only for the two whose meaning an arrow carries completely — moving a row up and down. The
+        /// row of buttons is a row of *labels* otherwise, and turning the rest into icons would trade
+        /// a wide window for a guessing game. `title` is still the button's name to everything that
+        /// asks: the accessibility label, the tooltip, and the automation report, which reads a
+        /// picture no better than VoiceOver does.
+        func arrowButton(_ symbol: String, _ title: String, _ action: Selector) -> NSButton {
+            let image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
+            let b = NSButton(image: image ?? NSImage(), target: self, action: action)
+            b.bezelStyle = .rounded
+            b.imageScaling = .scaleProportionallyDown
+            // `NSButton(image:target:action:)` leaves the default title in place — "Button", localized,
+            // which is why the report listed both arrows as the same word. It is not drawn (the button
+            // is image-only), but it is still what `title` answers, so it is cleared here.
+            b.title = ""
+            b.setAccessibilityLabel(title)
+            b.toolTip = title
+            wordlessNames[ObjectIdentifier(b)] = title
+            return b
+        }
+        // Running one from here is not a convenience: it is the only way to *try* a macro you have
+        // just recorded without first closing this window and going to find the command. It runs
+        // through the same permission gate and the same confirmation as every other way in — this
+        // window has no privileges of its own.
+        let run = button(String(localized: "Run"), #selector(runMacro))
+        run.toolTip = String(localized: "Run the selected macro on the panels behind this window. It is shown as a plan and confirmed first, like any other run.")
+        // Export sits with the actions on the *selected* macro, not with the ones that make a new one:
+        // it takes the macro that is highlighted and writes it somewhere. Its counterpart, Import, is
+        // below with the other ways a macro arrives.
+        let export = button(String(localized: "Export…"), #selector(exportMacro))
+        export.toolTip = String(localized: "Write the selected macro to a file of its own, to send to somebody or keep with your dotfiles.")
         let toolbar = NSStackView(views: [
+            run,
             button(String(localized: "Rename…"), #selector(rename)),
             button(String(localized: "Duplicate"), #selector(duplicate)),
             button(String(localized: "Delete"), #selector(deleteMacro)),
-            button(String(localized: "Move Up"), #selector(moveMacroUp)),
-            button(String(localized: "Move Down"), #selector(moveMacroDown)),
+            arrowButton("arrow.up", String(localized: "Move Up"), #selector(moveMacroUp)),
+            arrowButton("arrow.down", String(localized: "Move Down"), #selector(moveMacroDown)),
             button(String(localized: "Add Button"), #selector(addButton)),
+            export,
         ])
         toolbar.orientation = .horizontal
         toolbar.spacing = 8
@@ -99,10 +154,25 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
         note.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(note)
 
+        // The three ways a macro comes into existence, together and under the list they land in. They
+        // were three separate entries in the Configuration menu, which put the same feature in three
+        // places and made none of them the obvious one to press first: this window is now the single
+        // entry, and the making of a macro is what sits under the list of them.
+        recordButton.bezelStyle = .rounded
+        recordButton.target = self
+        recordButton.action = #selector(toggleRecording)
+        applyRecordingTitle()
+        let fromRecent = button(String(localized: "From Recent Actions…"),
+                                #selector(macroFromRecentActions))
+        fromRecent.toolTip = String(localized: "Build a macro out of what has already happened, instead of recording it now.")
+        let importButton = button(String(localized: "Import…"), #selector(importMacros))
+        importButton.toolTip = String(localized: "Add macros from files somebody sent you. An id that is already taken gets a free one, so nothing of yours is replaced.")
         let editFile = button(String(localized: "Edit File…"), #selector(editFile))
+        editFile.toolTip = String(localized: "Edit the selected macro's own file — this is where its steps are changed. With nothing selected, the folder they all live in is shown in the panel.")
         let done = button(String(localized: "Done"), #selector(closeWindow))
         done.keyEquivalent = "\r"
-        let bottom = NSStackView(views: [editFile, NSView(), done])
+        let bottom = NSStackView(views: [recordButton, fromRecent, importButton, editFile,
+                                        NSView(), done])
         bottom.orientation = .horizontal
         bottom.spacing = 10
         bottom.translatesAutoresizingMaskIntoConstraints = false
@@ -128,6 +198,9 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
             // which is the class no conflict count can catch, so it is stated as a constraint here
             // and the window is widened to whatever satisfying it costs.
             toolbar.trailingAnchor.constraint(lessThanOrEqualTo: content.trailingAnchor, constant: -12),
+            // The same rule for the bottom row, which now carries four buttons instead of two and can
+            // run off the edge exactly the way the toolbar did — silently, with no layout conflict.
+            bottom.trailingAnchor.constraint(lessThanOrEqualTo: content.trailingAnchor, constant: -12),
         ])
         sizeToFitContents()
     }
@@ -140,6 +213,17 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
     private func sizeToFitContents() {
         guard let window, let content = window.contentView else { return }
         content.layoutSubtreeIfNeeded()
+        // The explanatory line is *told* how wide it may be before anything is measured. A wrapping
+        // label answers its fitting size as one line unless it is given a `preferredMaxLayoutWidth`,
+        // so it — a sentence, not a control — was what decided how wide this window opened: measured
+        // at 869pt against a button row that needed 781. Now the buttons set the width and the
+        // sentence wraps into it, which is the right way round.
+        let wanted = max(toolbarWidth(), bottomWidth())
+        if let note = (content.subviews.compactMap { $0 as? NSTextField }).first, wanted > 0 {
+            note.preferredMaxLayoutWidth = wanted - 24
+            note.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            content.layoutSubtreeIfNeeded()
+        }
         let needed = content.fittingSize.width
         guard needed > 0 else { return }
         window.contentMinSize = NSSize(width: needed, height: 320)
@@ -163,7 +247,18 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
         var lines = ["window-width=\(Int(width))",
                      "toolbar-width=\(Int(needed))",
                      "toolbar-fits=\(needed <= width ? "yes" : "NO")",
-                     "buttons=" + toolbarTitles().joined(separator: "|")]
+                     "buttons=" + toolbarTitles().joined(separator: "|"),
+                     // The bottom row is measured too: it is now the wider of the two, so it is what
+                     // decides how wide this window opens — and a row that quietly runs off the edge
+                     // is the failure this report was written for.
+                     "make-width=\(Int(bottomWidth()))",
+                     "note-width=\(Int(noteWidth()))",
+                     "make-fits=\(bottomWidth() <= width ? "yes" : "NO")",
+                     // The bottom row now carries the three ways a macro is made, and one of them says
+                     // whether a recording is running — which is state a scenario has to be able to
+                     // read back, and the accessibility tree does not report it.
+                     "make=" + bottomTitles().joined(separator: "|"),
+                     "recording=\(isRecording ? "yes" : "no")"]
         for macro in macros {
             lines.append("row=\(macro.commandName)|\(macro.steps.count)|"
                          + PlanPhraseText.localized(MacroPlan.capability(of: macro)))
@@ -187,7 +282,71 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
     }
 
     private func toolbarTitles() -> [String] {
-        (toolbarRow()?.arrangedSubviews.compactMap { ($0 as? NSButton)?.title } ?? [])
+        (toolbarRow()?.arrangedSubviews.compactMap { $0 as? NSButton } ?? []).map(name(of:))
+    }
+
+    /// What a button is called, whether or not it has a word on it.
+    ///
+    /// The two reordering buttons are arrows, and a report that listed them as two empty strings would
+    /// make the layout scenario unable to tell a missing button from a picture — which is the class of
+    /// wrongness `automationReport` exists to catch.
+    private func name(of button: NSButton) -> String {
+        button.title.isEmpty ? (wordlessNames[ObjectIdentifier(button)] ?? "?") : button.title
+    }
+
+    /// What the explanatory line under the buttons wants to be. A wrapping label answers its fitting
+    /// size as *one line* unless it is told otherwise, so it — and not the buttons — can be the thing
+    /// that decides how wide this window opens.
+    private func noteWidth() -> CGFloat {
+        let labels = (window?.contentView?.subviews.compactMap { $0 as? NSTextField } ?? [])
+        return labels.first?.fittingSize.width ?? 0
+    }
+
+    private func bottomWidth() -> CGFloat {
+        guard let row = bottomRow() else { return 0 }
+        let buttons = row.arrangedSubviews.reduce(0) { $0 + $1.fittingSize.width }
+        return buttons + row.spacing * CGFloat(max(0, row.arrangedSubviews.count - 1)) + 24
+    }
+
+    private func bottomRow() -> NSStackView? {
+        let rows = (window?.contentView?.subviews.compactMap { $0 as? NSStackView } ?? [])
+        guard let bottom = rows.last, bottom !== toolbarRow() else { return nil }
+        return bottom
+    }
+
+    /// The row under the list: the ways a macro is made, plus Done.
+    private func bottomTitles() -> [String] {
+        (bottomRow()?.arrangedSubviews.compactMap { $0 as? NSButton } ?? []).map(name(of:))
+    }
+
+    /// Drive one of this window's actions from a scenario (F-478).
+    ///
+    /// Its own entry point rather than a scripted click, for the reason `automationReport` gives: the
+    /// accessibility tree does not report these buttons until a client attaches, so a scenario cannot
+    /// find them to press. `row` is one-based and 0 means "no selection", which is itself a case worth
+    /// exercising — **Edit File…** with nothing selected shows the folder instead.
+    @discardableResult
+    func performForAutomation(row: Int, action: String) -> Bool {
+        if row > 0, macros.indices.contains(row - 1) {
+            table.selectRowIndexes([row - 1], byExtendingSelection: false)
+        } else {
+            table.deselectAll(nil)
+        }
+        switch action {
+        case "run":        runMacro()
+        case "export":     exportMacro()
+        case "import":     importMacros()
+        case "edit":       editFile()
+        case "record":     toggleRecording()
+        case "recent":     macroFromRecentActions()
+        case "duplicate":  duplicate()
+        case "delete":     deleteMacro()
+        case "up":         moveMacroUp()
+        case "down":       moveMacroDown()
+        case "addbutton":  addButton()
+        default:           return false
+        }
+        return true
     }
 
     /// Re-read the file. Always from disk rather than from a copy held here: the editor can be open on
@@ -297,12 +456,99 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
         table.selectRowIndexes([destination], byExtendingSelection: false)
     }
 
+    /// Run the selected macro. The window steps aside first: what the macro does happens in the
+    /// panels, and a list sitting over them is the one thing that would make the result invisible.
+    @objc private func runMacro() {
+        guard let macro = selected else { return }
+        window?.orderOut(nil)
+        onRun?(macro)
+    }
+
     @objc private func addButton() {
         guard let macro = selected else { return }
         onAddButton?(macro)
     }
 
-    @objc private func editFile() { onEditFile?() }
+    @objc private func editFile() { onEditFile?(selected) }
+
+    /// Write the selected macro to a file of its own.
+    @objc private func exportMacro() {
+        guard let macro = selected else { return }
+        guard let url = MacroManagerPrompt.chooseExportFile(named: "\(macro.id).json",
+                                                            in: window) else { return }
+        do {
+            // Without an `order`: what position it happens to occupy here means nothing on the machine
+            // it is going to, and a number that survives the trip would only be wrong there.
+            try MacroStore.encoded(macro).write(to: url, options: .atomic)
+        } catch {
+            MacroManagerPrompt.note(String(localized: "The macro could not be exported.")
+                                    + "\n" + String(describing: error), in: window)
+        }
+    }
+
+    /// Read macros out of files somebody sent and add them.
+    @objc private func importMacros() {
+        let urls = MacroManagerPrompt.chooseImportFiles(in: window)
+        guard !urls.isEmpty else { return }
+        var incoming: [Macro] = []
+        var unreadable: [String] = []
+        for url in urls {
+            guard let data = try? Data(contentsOf: url) else {
+                unreadable.append(url.lastPathComponent); continue
+            }
+            let found = MacroStore.decodeForImport(data)
+            if found.isEmpty { unreadable.append(url.lastPathComponent) }
+            incoming += found
+        }
+        var added: [Macro] = []
+        do { added = try store.importing(incoming) }
+        catch {
+            MacroManagerPrompt.note(String(localized: "The macros could not be imported.")
+                                    + "\n" + String(describing: error), in: window)
+            return
+        }
+        reload()
+        onChanged?()
+        // Said out loud, and with the ids they ended up with: an import that renamed `backup` to
+        // `backup-2` to protect the one you already had is exactly the thing you need to be told,
+        // because the button you were about to make has to name the right one.
+        var lines: [String] = []
+        if !added.isEmpty {
+            // The ids, not a count: listing them *is* the count, and it is the ids the user needs —
+            // an import that renamed `backup` to `backup-2` to protect the one they already had is
+            // exactly the thing they have to be told, because the button they make has to name the
+            // right one. It also keeps this message free of a counted noun to inflect.
+            lines.append(String(format: String(localized: "Imported: %@"),
+                                added.map(\.id).joined(separator: ", ")))
+        }
+        if !unreadable.isEmpty {
+            lines.append(String(format: String(localized: "Not a macro file: %@"),
+                                unreadable.joined(separator: ", ")))
+        }
+        if added.isEmpty, unreadable.isEmpty {
+            lines.append(String(localized: "There was no macro in those files."))
+        }
+        MacroManagerPrompt.note(lines.joined(separator: "\n"), in: window)
+    }
+
+    @objc private func toggleRecording() { onToggleRecording?() }
+
+    @objc private func macroFromRecentActions() { onMacroFromRecentActions?() }
+
+    /// Told by the host when a recording starts or stops, from wherever it was started — the button in
+    /// this window, a key, or a toolbar button running `cm_MacroRecord`.
+    func recordingChanged(isRecording: Bool) {
+        self.isRecording = isRecording
+        applyRecordingTitle()
+    }
+
+    private func applyRecordingTitle() {
+        recordButton.title = isRecording
+            ? String(localized: "Stop Recording…") : String(localized: "Record Macro…")
+        recordButton.toolTip = isRecording
+            ? String(localized: "Stop the recording and choose which of its steps the macro keeps.")
+            : String(localized: "Start recording. Do the steps in the panels, then stop — what happened in between becomes the macro.")
+    }
 
     @objc private func closeWindow() { close() }
 
@@ -364,6 +610,40 @@ enum MacroManagerPrompt {
         alert.window.initialFirstResponder = field
         guard alert.runModal() == .alertFirstButtonReturn else { return nil }
         return field.stringValue.trimmingCharacters(in: .whitespaces)
+    }
+
+    /// Where to write an exported macro. Answered from the environment in an automation run, for the
+    /// reason the other dialogs here are: an open panel is a modal, and a modal in a headless run is a
+    /// nested runloop the script never gets out of (F-436).
+    @MainActor
+    static func chooseExportFile(named name: String, in window: NSWindow?) -> URL? {
+        if let scripted = AutomationProbe.value("PC_MACRO_EXPORT") {
+            return URL(fileURLWithPath: scripted)
+        }
+        guard !isScripted else { return nil }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = name
+        panel.allowedContentTypes = [.json]
+        panel.canCreateDirectories = true
+        panel.message = String(localized: "Where should this macro be written?")
+        guard panel.runModal() == .OK else { return nil }
+        return panel.url
+    }
+
+    /// The files to import. `PC_MACRO_IMPORT` may name several, separated by `|`.
+    @MainActor
+    static func chooseImportFiles(in window: NSWindow?) -> [URL] {
+        if let scripted = AutomationProbe.value("PC_MACRO_IMPORT") {
+            return scripted.split(separator: "|").map { URL(fileURLWithPath: String($0)) }
+        }
+        guard !isScripted else { return [] }
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.allowedContentTypes = [.json]
+        panel.message = String(localized: "Which macro files should be added?")
+        guard panel.runModal() == .OK else { return [] }
+        return panel.urls
     }
 
     @MainActor

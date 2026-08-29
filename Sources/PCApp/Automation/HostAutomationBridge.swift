@@ -309,6 +309,22 @@ final class HostAutomationBridge: AutomationHostBridge {
         try await host.setFileComment(comment, path: path)
     }
 
+    /// Create an empty file, and say whether it had to.
+    ///
+    /// `createFile(atPath:contents:)` would overwrite, so the check is explicit and the existing file is
+    /// left exactly as it is. Not an error either: what Shift+F4 does when the name is taken is open
+    /// the file that is there, and a macro repeating that should mean the same thing rather than
+    /// failing halfway through.
+    func createFile(_ path: String) async throws -> Bool {
+        let path = await resolveForWriting(path)
+        guard !FileManager.default.fileExists(atPath: path) else { return false }
+        guard FileManager.default.createFile(atPath: path, contents: Data()) else {
+            throw AutomationError.operationFailed("the file could not be created: \(path)")
+        }
+        Task { @MainActor in await host?.activePanel?.reload() }
+        return true
+    }
+
     func writeFile(_ path: String, content: String) async throws {
         let path = await resolveForWriting(path)
         try content.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)

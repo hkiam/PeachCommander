@@ -68,7 +68,7 @@ For alt, der ændrer filer — flytte, omdøbe, skrive, slette — viser assiste
 
 Du kan også bare spørge: *»fortryd det«* og *»hvad har du ændret?«* når de samme to funktioner.
 
-Den liste er også dér, en makro kommer fra: **Konfiguration ▸ Makro ud fra seneste handlinger…** tilbyder det, assistenten lige har gjort, som trinnene i en makro, du kan køre igen — fra en knap eller en tast. Se [Makroer](macros.md).
+Den liste er også dér, en makro kommer fra: **Makroer… ▸ Fra seneste handlinger…** tilbyder det, assistenten lige har gjort, som trinnene i en makro, du kan køre igen — fra en knap eller en tast. Se [Makroer](macros.md). Det, assistenten gør, fanges også af **Optag makro…**, ved siden af det, du gør i hånden.
 
 ## Kolonner i panelet
 
