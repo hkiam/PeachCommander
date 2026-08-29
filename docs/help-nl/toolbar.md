@@ -3,7 +3,7 @@ title: De knoppenbalk
 slug: toolbar
 section: Aanpassen
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 De knoppenbalk is de strook met pictogramknoppen boven aan het venster. Elke knop is een sneltoets met één klik die je zelf definieert: voer een ingebouwde opdracht uit, start een extern programma of app, spring naar een map, of open een hele subbalk met meer knoppen. Het is de snelste manier om de acties die je het meest gebruikt binnen handbereik te plaatsen, en je kunt de balk precies afstemmen op de manier waarop je werkt.

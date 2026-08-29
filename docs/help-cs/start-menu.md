@@ -3,7 +3,7 @@ title: Nabídka Start a vlastní příkazy
 slug: start-menu
 section: Přizpůsobení
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Nabídka **Start** je vaše vlastní osobní nabídka, sedící v panelu nabídek vedle Soubor, Úpravy a ostatních. Obsahuje příkazy, které si sami definujete, takže akce, po kterých saháte nejčastěji, jsou vždy jedno klepnutí daleko. V tradici klasických dvoupanelových správců souborů může každá položka spustit vestavěný příkaz, spustit externí program nebo aplikaci, nebo přeskočit rovnou do složky. Peach Commander se dodává s prázdnou nabídkou Start připravenou k tomu, abyste ji naplnili.

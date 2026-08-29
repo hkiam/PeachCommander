@@ -3,7 +3,7 @@ title: Bara de butoane
 slug: toolbar
 section: Personalizare
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Bara de butoane este banda de butoane cu pictograme de-a lungul părții de sus a ferestrei. Fiecare buton este o comandă rapidă cu un clic pe care o definiți dvs.: rulați o comandă încorporată, lansați un program sau o aplicație externă, săriți la un folder, sau deschideți o întreagă sub-bară cu mai multe butoane. Este cel mai rapid mod de a avea la îndemână acțiunile pe care le folosiți cel mai mult și o puteți adapta exact la modul în care lucrați.

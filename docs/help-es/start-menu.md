@@ -3,7 +3,7 @@ title: El menú Inicio y los comandos personalizados
 slug: start-menu
 section: Personalización
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 El menú **Inicio** es tu propio menú personal, situado en la barra de menús junto a Archivo, Edición y los demás. Contiene comandos que defines tú mismo, de modo que las acciones que más usas están siempre a un clic. Siguiendo la tradición de los gestores de archivos clásicos de dos paneles, cada entrada puede ejecutar un comando integrado, iniciar un programa o app externos, o saltar directamente a una carpeta. Peach Commander se entrega con el menú Inicio vacío y listo para que lo llenes.

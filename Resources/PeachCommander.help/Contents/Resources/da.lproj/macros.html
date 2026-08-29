@@ -21,13 +21,15 @@
 <li>Sæt flueben ved <strong>Følg panelerne i stedet for netop disse filer</strong>, hvis makroen næste gang skal arbejde med det, der så er markeret. Linjerne ændrer sig, mens du sætter fluebenet, så du kan se, hvad du gemmer.</li>
 </ol>
 <p><strong>Gem makro</strong>, og knappen er i linjen. Det er hele forløbet.</p>
+<p><img alt="Arket “Makro ud fra seneste handlinger” med det netop gjorte som trin, der kan sættes flueben ved" src="images/macro-recorder.png" />
+<em>Det, der allerede er sket, tilbudt som trinnene i en ny makro.</em></p>
 <p>Listen indeholder begge dele: hvad du har gjort i panelerne (F5, F6, F7, F8 og en omdøbning), og hvad assistenten eller en anden makro har gjort. Hver linje siger hvilken af de to — for efter en session med begge kan de samme to filer optræde i hver af dem.</p>
 <blockquote>
 <p><strong>Hvad der ikke tilbydes.</strong> At pakke et arkiv, og alt andet appen kun holder fast i ved navn, kan ikke blive til et trin — der er ingen form at give det. Sådanne linjer står grå med deres begrundelse i stedet for at mangle, så en liste på fem, der tilbyder tre, ikke læses som om den overså to. Og medmindre du beder om andet, er stierne dem, der faktisk blev brugt: en optaget makro gentager <em>den</em> kopi, ikke “en kopi af den slags”. Åbn den i editoren, og sæt <code>%S</code> eller <code>%T</code> der, hvor den skal følge panelerne.</p>
 </blockquote>
 <p><strong>Følg panelerne</strong> er måden at bede om andet på. Filer, der alle kom fra én mappe, bliver til markeringen; en mappe, der er et af de to paneler, bliver til det panel, og en mappe inde i den beholder sin hale — et optaget “flyt disse fire fakturaer til Dokumenter/2026-08” bliver til “flyt det markerede til <em>2026-08</em> på den anden side”, og det virker i morgen i to andre mapper. Det, der ikke ligger under nogen af de to paneler, forbliver den sti, det er, for der er intet at folde det ind i. Muligheden tilbydes kun, når den ville ændre noget.</p>
 <h2 id="de-medflgende-eksempler">De medfølgende eksempler</h2>
-<p>Første gang du åbner <strong>Konfiguration ▸ Rediger makroer…</strong>, oprettes filen med syv gennemarbejdede eksempler. Det er helt almindelige makroer — ret i dem, eller slet dem, du ikke vil have — og hver enkelt bærer en kommentar, der siger, hvad den gør, og hvad du kan ændre:</p>
+<p>Første gang du åbner <strong>Konfiguration ▸ Rediger makroer…</strong>, oprettes filen med otte gennemarbejdede eksempler. Det er helt almindelige makroer — ret i dem, eller slet dem, du ikke vil have — og hver enkelt bærer en kommentar, der siger, hvad den gør, og hvad du kan ændre:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Hver af dem bliver en kommando, så du kan lægge hvilken som helst af dem på en knap eller en tast uden at skrive noget.</p>
 <h2 id="at-handtere-dem">At håndtere dem</h2>
 <p><strong>Konfiguration ▸ Håndtér makroer…</strong> er listen: hvad hver makro hedder, hvad dens kommando hedder, hvor mange trin den har, og hvad rettighedsspørgsmålet vil kræve — så “denne her sletter” kan ses, før du lægger den på en tast. Derfra kan du omdøbe, duplikere, omsortere og slette. Kører du hen over en linje, ser du dens trin.</p>
+<p><img alt="Vinduet “Håndter makroer” med kommandonavn, antal trin og tilladelse for hver makro" src="images/macro-manager.png" />
+<em>Hvad hver makro hedder, hvad den kører som, og hvad den vil bede om lov til.</em></p>
 <p>Rækkefølgen er ikke pynt: filens rækkefølge er den, som Kommandooversigten og knapbjælkens vælger viser dem i.</p>
 <p><strong>Ved sletning tilbydes det at tage knapperne med</strong>, og det er værd at vide, selv hvis du aldrig åbner dette vindue: en makro, der fjernes i hånden, efterlader sin knap og sin tast, og ingen af delene gør så noget — appen siger nu, at makroen er væk, i stedet for at tie, men knappen er stadig din sag. En tast eller et menupunkt skal fjernes dér, hvor det blev sat.</p>
 <p><em>Trinnene</em> redigeres ikke her. <strong>Rediger fil…</strong> giver bolden videre til editoren til det, af samme grund som der ikke er en formular: et trin er et værktøjsnavn med sine argumenter, og det er præcis, hvad JSON er.</p>
@@ -158,7 +162,9 @@
 <li>Din <code>.mnu</code>-menufil og <code>usercmd.ini</code>, hvis du bruger dem</li>
 <li>Assistenten, som kan køre den på navn</li>
 </ul>
-<p>Før en makro, der ændrer noget, kører, viser den sine trin som en liste og venter. Du kan strege et trin ud, du ikke vil have; det, der bliver tilbage, er det, der kører. En makro, der kun læser, kører uden at spørge.</p>
+<p>Før en makro, der ændrer noget, kører, viser den sine trin som en liste og venter. Du kan strege et trin ud, du ikke vil have; det, der bliver tilbage, er det, der kører. En makro, der kun læser, kører uden at spørge. <strong>At strege et trin ud tager de trin med, der afhænger af det</strong> — en makro er en rækkefølge, og trinnet, der fylder mappen, kan ikke køre uden trinnet, der opretter den: de linjer slår sig selv fra og bliver grå. Sæt trinnet tilbage, og de kommer igen — bortset fra dem, du selv har streget ud; de bliver ude.</p>
+<p><img alt="Makroens bekræftelsesdialog, hvert trin et afkrydsningsfelt med de filer, det rører" src="images/macro-confirm.png" />
+<em>Trinnene, opløst mod dine paneler — hvert enkelt kan streges ud.</em></p>
 <p>Alt, der kan ses at være forkert før starten — et værktøj, der ikke findes, et manglende argument, et trin, der ville køre en anden makro — standser makroen før det første trin, ikke efter det tredje. Fejler et trin undervejs, <strong>standser makroen dér</strong> i stedet for at fortsætte: trin to forudsætter som regel, at trin et fandt sted, og at flytte filer ind i en mappe, der ikke blev oprettet, er ikke en delvis succes. Rapporten nævner trinnet, siger hvad der gik galt, og hvor mange trin der allerede var udført; hvert af dem står i handlingsloggen med sin vej tilbage, hvor den findes.</p>
 <h2 id="hvad-en-makro-ma">Hvad en makro må</h2>
 <p>En makro måles på det mest krævende i den. En makro, hvis trin kun læser, behandles som en læsning; en, der ender med en permanent sletning, håndteres som en permanent sletning — før noget af den kører, ikke fire trin inde.</p>

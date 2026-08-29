@@ -21,6 +21,9 @@ Makro nemusíte písať od začiatku.
 
 **Uložiť makro** — a tlačidlo je v lište. To je celý postup.
 
+![Hárok „Makro z posledných akcií“ s tým, čo ste práve urobili, ako zaškrtávateľnými krokmi](screenshots/macro-recorder.png)
+*Čo sa už stalo, ponúknuté ako kroky nového makra.*
+
 Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie) a čo urobil asistent alebo iné makro. Každý riadok hovorí, ktoré z toho — po sedení s oboma sa tie isté dva súbory môžu objaviť v oboch.
 
 > **Čo sa neponúka.** Zabalenie archívu a všetko ostatné, čo si aplikácia pamätá len podľa mena, sa nedá premeniť na krok — nie je preň tvar. Také riadky sú vidieť zošednuté aj s dôvodom, namiesto aby chýbali, aby zoznam piatich, ktorý ponúka tri, nevyzeral, že dva prehliadol. A ak nepožiadate inak, cesty sú tie, ktoré naozaj prebehli: zaznamenané makro zopakuje *tú* kópiu, nie „kópiu toho druhu“. Otvorte ho v editore a dajte `%S` alebo `%T` tam, kde má sledovať panely.
@@ -29,7 +32,7 @@ Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie
 
 ## Priložené príklady
 
-Keď prvýkrát otvoríte **Konfigurácia ▸ Upraviť makrá…**, súbor sa založí so siedmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:
+Keď prvýkrát otvoríte **Konfigurácia ▸ Upraviť makrá…**, súbor sa založí s ôsmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:
 
 | Makro | Čo robí |
 | --- | --- |
@@ -47,6 +50,9 @@ Každé z nich sa stane príkazom, takže ktorékoľvek môžete umiestniť na t
 ## Spravovať ich
 
 **Konfigurácia ▸ Spravovať makrá…** je ten zoznam: ako sa každé makro volá, ako sa volá jeho príkaz, koľko má krokov a čo bude chcieť kontrola oprávnení — „toto maže“ je teda vidieť skôr, než ho dáte na kláves. Odtiaľ môžete premenovať, duplikovať, preusporiadať a zmazať. Keď prejdete nad riadkom, uvidíte jeho kroky.
+
+![Okno „Spravovať makrá“ s názvom príkazu, počtom krokov a oprávnením každého makra](screenshots/macro-manager.png)
+*Ako sa každé makro volá, ako čo beží a načo si vyžiada povolenie.*
 
 Poradie nie je ozdoba: poradie v súbore je to, v ktorom ich vypisuje Prehliadač príkazov a výber pre lištu tlačidiel.
 
@@ -125,7 +131,10 @@ Každé makro sa stane príkazom s názvom `mc_<id>`, a preto sa samo objaví v:
 - Vašom súbore ponuky `.mnu` a `usercmd.ini`, ak ich používate
 - Asistentovi, ktorý ho môže spustiť podľa názvu
 
-Než sa spustí makro, ktoré niečo mení, ukáže vám svoje kroky ako zoznam a počká. Krok, ktorý nechcete, môžete vyškrtnúť; čo zostane, sa vykoná. Makro, ktoré len číta, beží bez otázky.
+Než sa spustí makro, ktoré niečo mení, ukáže vám svoje kroky ako zoznam a počká. Krok, ktorý nechcete, môžete vyškrtnúť; čo zostane, sa vykoná. Makro, ktoré len číta, beží bez otázky. **Škrtnutie kroku vezme so sebou kroky, ktoré od neho závisia** — makro je postupnosť a krok, ktorý priečinok napĺňa, nemôže bežať bez kroku, ktorý ho zakladá: tie riadky sa samy vypnú a zošednú. Vráťte krok späť a vrátia sa aj ony — okrem tých, ktoré ste škrtli sami; tie zostanú škrtnuté.
+
+![Potvrdzovací dialóg makra, každý krok zaškrtávacie pole s názvami súborov](screenshots/macro-confirm.png)
+*Kroky, vyhodnotené voči vašim panelom — každý sa dá škrtnúť.*
 
 Všetko, čo sa dá rozpoznať ako chybné ešte pred spustením — nástroj, ktorý neexistuje, chýbajúci argument, krok, ktorý by spustil iné makro —, makro zastaví pred prvým krokom, nie až po treťom. Ak krok zlyhá už za behu, makro sa **zastaví tam** namiesto toho, aby pokračovalo: krok dva obvykle predpokladá, že sa krok jeden stal, a presúvať súbory do priečinka, ktorý nevznikol, nie je čiastočný úspech. Hlásenie menuje krok, povie, čo sa pokazilo, a koľko krokov už bolo vykonaných; každý z nich je v protokole akcií, aj s cestou späť, kde nejaká je.
 ## Čo makro smie

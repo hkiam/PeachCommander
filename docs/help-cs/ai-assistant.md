@@ -3,7 +3,7 @@ title: AI asistent
 slug: ai-assistant
 section: Zásuvné moduly
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 AI asistent je volitelný, odstranitelný zásuvný modul, který vám pomáhá pracovat se soubory běžným jazykem. Umí shrnout nebo vysvětlit dokument, navrhnout lepší název souboru, přeložit nebo zkontrolovat text, převést data do tabulky a dokonce uklidit složku — a umí za vás provést operace se soubory poté, co vám nejdřív ukáže plán. Přichází jako dva moduly: **AI On-Device** běží na Apple Intelligence a přináší akce, které návrh ukážou a provedou, zatímco **AI Assistant** je chat a potřebuje model v cloudu. Zapněte jeden, nebo oba. **Přicházejí vypnuté.** Zapněte je v **Konfigurace ▸ Zásuvné moduly…** a restartujte, nebo je nechte vypnuté a neobjeví se nic — žádná nabídka AI ▸, žádný chat, žádný sloupec. Je to záměr, dokud je funkce v betě: umí soubory přejmenovat, přesouvat a mazat a spouštět za vás příkazy shellu, každý za plánem, který schválíte, a to je hodně dosahu na to, dát ho novince ve výchozím stavu. Bez klíče API se vše odehrává na vašem Macu, takže jde o dosah, a ne o data opouštějící stroj. Modul **AI Column** ukazuje, co ty akce zjistily — shrnutí, druh, téma, datum — jako sloupce panelu; sám žádný model nespouští. Přichází vypnutý spolu s nimi a zůstává volitelný a neukáže nic, dokud jej nezapnete a nepřidáte některý z jeho sloupců. Ze stejné stránky můžete kterýkoli z nich také úplně odstranit.
@@ -67,6 +67,8 @@ U všeho, co mění soubory — přesun, přejmenování, zápis, smazání — 
 - **Vrátit poslední změnu** vezme zpět nejnovější změnu, která má opak: přejmenování se přejmenuje zpět, přesun se přesune zpět. Kde vzít zpět nelze nic, seznam řekne proč — přepsaný soubor se nikde neuchoval a položky v Koši obnovíte z Finderu.
 
 Můžete se také prostě zeptat: *„vrať to"* a *„co jsi změnil?"* dosáhnou na tytéž dvě funkce.
+
+Ten seznam je zároveň tím, z čeho vzniká makro: **Konfigurace ▸ Makro z posledních akcí…** nabídne to, co asistent právě udělal, jako kroky makra, které můžete spustit znovu — z tlačítka nebo z klávesy. Viz [Makra](macros.md).
 
 ## Sloupce panelu
 

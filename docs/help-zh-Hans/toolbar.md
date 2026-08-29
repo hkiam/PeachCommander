@@ -3,7 +3,7 @@ title: 按钮栏
 slug: toolbar
 section: 自定义
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 按钮栏是窗口顶部横排的图标按钮。每个按钮都是你自己定义的一键快捷：运行内置命令、启动外部程序或应用、跳转到某个文件夹，或打开一整栏更多按钮的子栏。它是把你最常用的操作放到触手可及之处的最快方式，你可以精确地按自己的工作方式定制。

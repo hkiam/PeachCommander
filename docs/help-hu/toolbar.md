@@ -3,7 +3,7 @@ title: A gombsáv
 slug: toolbar
 section: Testreszabás
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 A gombsáv az ikongombok csíkja az ablak teteje mentén. Minden gomb egy egykattintásos billentyűparancs, amelyet ön határoz meg: futtasson egy beépített parancsot, indítson el egy külső programot vagy appot, ugorjon egy mappára, vagy nyisson meg egy egész algombsávot további gombokkal. Ez a leggyorsabb mód, hogy a leggyakrabban használt műveleteket kéznél tartsa, és pontosan a munkamódjához igazíthatja.

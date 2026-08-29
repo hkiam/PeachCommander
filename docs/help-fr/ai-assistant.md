@@ -3,7 +3,7 @@ title: Assistant IA
 slug: ai-assistant
 section: Extensions
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 L'assistant IA est une extension facultative et amovible qui vous aide à travailler avec vos fichiers en langage naturel. Il peut résumer ou expliquer un document, suggérer un meilleur nom de fichier, traduire ou relire du texte, transformer des données en tableau et même ranger un dossier — et il peut effectuer des actions sur vos fichiers après vous avoir montré un plan. Il se compose de deux extensions : **AI On-Device** fonctionne avec Apple Intelligence et fournit les actions qui proposent puis appliquent, tandis que **AI Assistant** est le chat et demande un modèle cloud. Activez l'une, ou les deux. **Elles arrivent désactivées.** Activez-les dans **Configuration ▸ Extensions…** puis redémarrez, ou laissez-les éteintes et rien n'apparaît — pas de menu IA ▸, pas de chat, pas de colonne. C'est délibéré tant que la fonction est en bêta : elle peut renommer, déplacer et supprimer des fichiers et exécuter des commandes shell pour vous, chacune derrière un plan que vous approuvez, et c'est beaucoup de portée à confier par défaut à une nouveauté. Sans clé d'API, tout se passe sur votre Mac : il s'agit donc de la portée, et non de données qui quitteraient la machine. L'extension **AI Column** affiche ce que ces actions ont trouvé — un résumé, un type, un sujet, une date — sous forme de colonnes ; elle ne démarre aucun modèle. Elle arrive éteinte avec les autres et reste facultative, et n'affiche rien tant que vous ne l'activez pas et n'ajoutez pas l'une de ses colonnes. Vous pouvez aussi supprimer entièrement l'une ou l'autre depuis la même page.
@@ -67,6 +67,8 @@ Pour tout ce qui modifie des fichiers — déplacer, renommer, écrire, supprime
 - **Annuler la dernière modification** reprend la modification la plus récente qui possède un inverse : un renommage est renommé en sens inverse, un déplacement est redéplacé. Là où rien ne peut être repris, la liste dit pourquoi — un fichier écrasé n'a été conservé nulle part, et les éléments de la Corbeille se restaurent depuis le Finder.
 
 Vous pouvez aussi simplement demander : *« annule ça »* et *« qu'as-tu modifié ? »* atteignent les deux mêmes fonctions.
+
+Cette liste est aussi l’origine d’une macro : **Configuration ▸ Macro à partir des actions récentes…** propose ce que l’assistant vient de faire comme les étapes d’une macro que vous pourrez relancer, depuis un bouton ou une touche. Voir [Macros](macros.md).
 
 ## Colonnes du panneau
 

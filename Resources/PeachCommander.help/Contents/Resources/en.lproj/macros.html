@@ -21,13 +21,15 @@
 <li>Tick <strong>Follow the panels instead of these exact files</strong> if the macro should work on whatever is selected next time. The rows change as you tick it, so you can see what you are about to save.</li>
 </ol>
 <p><strong>Save Macro</strong>, and the button is in the bar. That is the whole loop.</p>
+<p><img alt="The Macro from Recent Actions sheet, listing what was just done as tickable steps" src="images/macro-recorder.png" />
+<em>What has already happened, offered as the steps of a new macro.</em></p>
 <p>The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) and what the assistant or another macro did. Each row says which, because after a session with both, the same two files can appear in each.</p>
 <blockquote>
 <p><strong>What is not offered.</strong> Packing an archive, and anything else the app records only by name, cannot be turned into a step — there is no shape for it to take. Those rows are shown greyed out with the reason rather than left out, so a list of five that offers three does not read as having missed two. And unless you ask otherwise, the paths are the ones that actually ran: a recorded macro repeats <em>that</em> copy, not "a copy like it".</p>
 </blockquote>
 <p><strong>Follow the panels</strong> is how you ask otherwise. Files that all came from one folder become the selection; a folder that is one of the two panels becomes that panel, and a folder inside one keeps its tail — so a recorded "move these four invoices to Documents/2026-08" becomes "move what is selected to <em>2026-08</em> on the other side", and works tomorrow in two different folders. Anything under neither panel is left as the path it is, because there is nothing to fold it into. The option is only offered when it would change something.</p>
 <h2 id="the-examples-that-come-with-it">The examples that come with it</h2>
-<p>The first time you open <strong>Configuration ▸ Edit Macros…</strong>, the file is seeded with seven worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:</p>
+<p>The first time you open <strong>Configuration ▸ Edit Macros…</strong>, the file is seeded with eight worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Each of them becomes a command, so you can put any of them on a button or a key without writing anything.</p>
 <h2 id="managing-them">Managing them</h2>
 <p><strong>Configuration ▸ Manage Macros…</strong> is the list: what each macro is called, its command name, how many steps it has, and what the permission gate will ask for — so "this one deletes" is visible before you put it on a key. From there you can rename, duplicate, reorder and delete. Hovering a row shows its steps.</p>
+<p><img alt="The Manage Macros window listing each macro with its command name, step count and permission" src="images/macro-manager.png" />
+<em>What each macro is called, what it runs as, and what it will ask permission for.</em></p>
 <p>Reordering is not decoration: the file's order is the order the Command Browser and the button-bar picker list them in.</p>
 <p><strong>Deleting offers to take the buttons with it</strong>, and that is worth knowing even if you never use this window: a macro removed by hand leaves its button and its key behind, and pressing either then does nothing — the app now says the macro is gone rather than staying silent, but the button is still yours to remove. A key or a menu entry has to be taken out where it was set.</p>
 <p>The <em>steps</em> are not edited here. <strong>Edit File…</strong> hands over to the editor for that, for the same reason the feature has no form: a step is a tool name and its arguments, which is what JSON is.</p>
@@ -158,7 +162,9 @@
 <li>Your <code>.mnu</code> menu file and <code>usercmd.ini</code>, if you use those</li>
 <li>The assistant, which can run it by name</li>
 </ul>
-<p>Before a macro that changes anything runs, it shows you its steps as a list and waits. You can strike out a step you do not want; what is left is what runs. A macro that only reads runs without asking.</p>
+<p>Before a macro that changes anything runs, it shows you its steps as a list and waits. You can strike out a step you do not want; what is left is what runs. A macro that only reads runs without asking. <strong>Striking one out takes the steps that depend on it with it</strong> — a macro is a sequence, and the step that fills the folder cannot run without the step that creates it: those rows switch themselves off and grey out. Put the step back and they come back, except any you struck out yourself, which stay struck out.</p>
+<p><img alt="The macro confirmation dialog, each step a checkbox naming the files it will act on" src="images/macro-confirm.png" />
+<em>The steps, resolved against your panels — every one of them strikeable.</em></p>
 <p>Anything that can be seen to be wrong before the macro starts — a tool that does not exist, a missing argument, a step that would run another macro — stops it before the first step, not after the third. If a step fails once it is running, the macro <strong>stops there</strong> rather than carrying on — step two of a macro usually assumes step one happened, and moving files into a folder that was not created is not a partial success. The report names the step, says what went wrong and says how many steps had already been carried out; each of them is in the action log with its own way back, where it has one.</p>
 <h2 id="what-a-macro-is-allowed-to-do">What a macro is allowed to do</h2>
 <p>A macro is held to the most demanding thing in it. A macro whose steps only read is treated as a read; one that ends in a permanent delete is gated like a permanent delete — before any of it runs, not four steps in.</p>

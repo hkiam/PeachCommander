@@ -3,7 +3,7 @@ title: Toetsenbord en sneltoetsen
 slug: keyboard-shortcuts
 section: Aanpassen
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander is gemaakt om vanaf het toetsenbord te bedienen. Het wordt geleverd met twee kant-en-klare sneltoetsschema's en laat je elke opdracht opnieuw toewijzen aan de toetsen die je verkiest. Kom je van een klassieke tweepaneels-bestandsbeheerder, dan kun je de toetsen behouden die je al kent; wil je liever vertrouwde Mac-combinaties, schakel dan met één klik over naar het macOS-schema. Een doorzoekbare opdrachtbrowser laat je alles ontdekken wat de app kan en elke opdracht op naam uitvoeren.

@@ -69,6 +69,11 @@ Peach Commander puts two folders side by side and every operation under your fin
     <p>Around 150 named commands, all searchable and rebindable, in two schemes: TC-classic or macOS-native.</p>
   </div>
   <div class="pc-card">
+    <div class="pc-card__icon">🔁</div>
+    <h3>Do it once, then repeat it</h3>
+    <p>Macros turn a sequence of file actions into one button — built out of what you just did, and shown to you as a readable plan before they run.</p>
+  </div>
+  <div class="pc-card">
     <div class="pc-card__icon">🌐</div>
     <h3>Remote as local</h3>
     <p>FTP, FTPS, SFTP/SCP, WebDAV, and SOCKS5 built in — a server browses exactly like a folder on your Mac.</p>
@@ -253,6 +258,24 @@ Rename a few hundred photos with a regex and a counter and watch the preview upd
 
 ---
 
+## Do it once, then put it on a button
+
+Most repetition is not one action but a small sequence of them: make a folder for this month, move the invoices into it, tag what is left. **Macros** turn that sequence into a single command — and the quickest way to one is not to write it. Do the job once, choose **Macro from Recent Actions…**, and Peach Commander offers back what just happened as tickable steps.
+
+Tick **Follow the panels instead of these exact files** and the recording generalizes itself: the files you used become "the selection", the folder you moved into becomes "the other panel". A macro recorded on three invoices this morning works tomorrow, in two different folders, on whatever you have selected.
+
+![The macro confirmation dialog, each step a checkbox naming the files it will act on](screenshots/macro-confirm.png)
+*Nothing runs unannounced: the steps are resolved against your panels — real file names, not templates — and any one of them can be struck out.*
+
+It is deliberately **not** a scripting language. There are no conditions and no loops, because the plan you are asked to approve has to be a list you can read. Every macro is held to the most demanding thing in it, decided before the first step rather than four steps in — a macro that ends in a permanent delete is gated like a permanent delete. Each macro becomes an ordinary command, so it lands on a button, on a key, in the command browser and in your own menu file without anything having to be taught about macros.
+
+![The Manage Macros window listing each macro with its command name, step count and permission](screenshots/macro-manager.png)
+*What each macro runs as, how many steps it has, and what it will ask permission for — visible before you put it on a key.*
+
+Eight worked examples ship with it, and the file is plain JSON you can diff and keep with your dotfiles. Start at the [macro tutorial](tutorial-macros.md).
+
+---
+
 ## Built for macOS, not ported to it
 
 Peach Commander is a native AppKit app that respects the platform end to end. Panels render pixel-perfect on Retina displays, follow your system light/dark appearance automatically, and hand off to the tools you already rely on — Quick Look, "Open With," Reveal in Finder, Finder tags, native Services, and the macOS Share sheet — instead of reinventing them. There is even a built-in editor with syntax highlighting and "Open Terminal here" when you want it.
@@ -339,6 +362,7 @@ Four themes ship in the box. Alongside Light, Dark and Norton Commander there is
 - Hunt down files or text across a whole tree, including inside archives.
 - Rename hundreds of files at once, synchronize two directories, or find duplicates.
 - Queue and manage long transfers in the background with pause, resume, and bandwidth limits.
+- Record a routine you repeat — file this month's invoices, back up the selection — as a macro and run it from a button or a key.
 
 ## Main feature groups
 
@@ -350,6 +374,7 @@ Four themes ship in the box. Alongside Light, Dark and Norton Commander there is
 - **Power tools:** multi-rename, synchronize, compare (text + hex), duplicate finder, checksums (CRC32/MD5/SHA), split/combine, base64/uu/hex.
 - **Viewers and editors:** a built-in text viewer/lister and an editor with syntax highlighting, plus Quick Look.
 - **macOS integration:** native Services, Finder tags, Share sheet, "Open With," Reveal in Finder, Open Terminal here, full Retina, light and dark.
+- **Automation:** macros — a named sequence of file actions, recorded from what you just did, approved as a readable plan, and available as an ordinary command; plus AppleScript, Shortcuts, and your own scripts.
 - **Customization:** button bar with sub-bars, two keyboard schemes plus rebinding, custom colors/fonts/themes, INI-based config with `wincmd.ini` import.
 
 ## How it is different from Finder

@@ -3,7 +3,7 @@ title: Pasek przycisków
 slug: toolbar
 section: Dostosowywanie
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Pasek przycisków to pas przycisków z ikonami wzdłuż górnej części okna. Każdy przycisk to skrót jednego kliknięcia, który sam definiujesz: uruchom wbudowane polecenie, uruchom zewnętrzny program lub aplikację, przeskocz do folderu, lub otwórz cały podpasek dodatkowych przycisków. Jest to najszybszy sposób, aby mieć akcje, których używasz najczęściej, w zasięgu ręki, i możesz go dopasować dokładnie do sposobu, w jaki pracujesz.

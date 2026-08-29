@@ -4,7 +4,7 @@ slug: toolbar
 group: Customise
 section: Customizing
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 The button bar is the strip of icon buttons across the top of the window. Each button is a one-click shortcut you define yourself: run a built-in command, launch an external program or app, jump to a folder, or open a whole sub-bar of more buttons. It's the fastest way to put the actions you use most within reach, and you can tailor it to exactly the way you work.

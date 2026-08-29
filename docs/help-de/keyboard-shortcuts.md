@@ -3,7 +3,7 @@ title: Tastatur & Kurzbefehle
 slug: keyboard-shortcuts
 section: Anpassen
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander ist dafür gebaut, von der Tastatur aus gesteuert zu werden. Er wird mit zwei fertigen Kurzbefehl-Schemata ausgeliefert und lässt Sie jeden Befehl auf die von Ihnen bevorzugten Tasten neu belegen. Wenn Sie von einem klassischen Zwei-Panel-Dateimanager kommen, können Sie die Tasten beibehalten, die Sie bereits kennen; wenn Sie lieber vertraute Mac-Kombinationen nutzen, wechseln Sie mit einem Klick zum macOS-Schema. Ein durchsuchbarer Befehlsbrowser lässt Sie alles entdecken, was die App kann, und jeden Befehl über seinen Namen ausführen.

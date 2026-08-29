@@ -21,6 +21,9 @@ No hace falta escribir una macro desde cero.
 
 **Guardar macro**, y el botón ya está en la barra. Ese es todo el ciclo.
 
+![La hoja «Macro a partir de acciones recientes», con lo recién hecho como pasos marcables](screenshots/macro-recorder.png)
+*Lo que ya ha ocurrido, ofrecido como los pasos de una macro nueva.*
+
 La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 y un renombrado) y lo que hizo el asistente u otra macro. Cada fila dice cuál de las dos, porque tras una sesión con ambas los mismos dos archivos pueden aparecer en cada una.
 
 > **Lo que no se ofrece.** Empaquetar un archivo comprimido, y todo lo demás que la aplicación solo guarda por su nombre, no puede convertirse en un paso: no hay forma que darle. Esas filas se muestran atenuadas con su motivo en vez de omitirse, para que una lista de cinco que ofrece tres no parezca haberse dejado dos. Y salvo que pida otra cosa, las rutas son las que se usaron de verdad: una macro grabada repite *esa* copia, no «una copia parecida». Ábrala en el editor y ponga `%S` o `%T` donde quiera que siga a los paneles.
@@ -29,7 +32,7 @@ La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 
 
 ## Los ejemplos que vienen incluidos
 
-La primera vez que abre **Configuración ▸ Editar macros…**, el archivo se crea con siete ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:
+La primera vez que abre **Configuración ▸ Editar macros…**, el archivo se crea con ocho ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:
 
 | Macro | Qué hace |
 | --- | --- |
@@ -47,6 +50,9 @@ Cada una se convierte en un comando, así que puede poner cualquiera en un botó
 ## Gestionarlas
 
 **Configuración ▸ Gestionar macros…** es la lista: cómo se llama cada macro, cómo se llama su comando, cuántos pasos tiene y qué pedirá la comprobación de permisos, de modo que «esta borra» se ve antes de ponerla en una tecla. Desde ahí puede renombrar, duplicar, reordenar y borrar. Al pasar por encima de una fila se ven sus pasos.
+
+![La ventana «Gestionar macros», con el nombre de orden, el número de pasos y el permiso de cada macro](screenshots/macro-manager.png)
+*Cómo se llama cada macro, como qué se ejecuta y para qué pedirá permiso.*
 
 Reordenar no es adorno: el orden del archivo es el orden en que las listan el Explorador de comandos y el selector de la barra de botones.
 
@@ -125,7 +131,10 @@ Cada macro se convierte en una orden llamada `mc_<id>`, así que aparece por sí
 - Tu archivo de menú `.mnu` y `usercmd.ini`, si los usas
 - El asistente, que puede ejecutarla por su nombre
 
-Antes de que se ejecute una macro que cambia algo, te muestra sus pasos como una lista y espera. Puedes tachar un paso que no quieras; lo que quede es lo que se ejecuta. Una macro que solo lee se ejecuta sin preguntar.
+Antes de que se ejecute una macro que cambia algo, te muestra sus pasos como una lista y espera. Puedes tachar un paso que no quieras; lo que quede es lo que se ejecuta. Una macro que solo lee se ejecuta sin preguntar. **Tachar un paso se lleva consigo los que dependen de él** — una macro es una secuencia, y el paso que llena la carpeta no puede ejecutarse sin el que la crea: esas filas se desmarcan solas y se atenúan. Vuelve a marcar el paso y regresan — salvo las que tachaste tú, que siguen tachadas.
+
+![El diálogo de confirmación de una macro, cada paso una casilla que nombra los archivos que tocará](screenshots/macro-confirm.png)
+*Los pasos, resueltos contra tus paneles — cada uno se puede tachar.*
 
 Todo lo que puede verse mal antes de empezar — una herramienta que no existe, un argumento que falta, un paso que ejecutaría otra macro — la detiene antes del primer paso, no después del tercero. Si un paso falla ya en marcha, la macro **se detiene ahí** en vez de seguir: el paso dos suele suponer que el paso uno ocurrió, y mover archivos a una carpeta que no se creó no es un éxito parcial. El informe nombra el paso, dice qué salió mal y cuántos pasos se habían llevado a cabo ya; cada uno está en el registro de acciones, con su vuelta atrás donde la tiene.
 ## Qué se le permite hacer a una macro

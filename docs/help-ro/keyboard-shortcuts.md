@@ -3,7 +3,7 @@ title: Tastatură și comenzi rapide
 slug: keyboard-shortcuts
 section: Personalizare
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander este construit pentru a fi condus de la tastatură. Vine cu două scheme de comenzi rapide gata făcute și vă permite să reasignați orice comandă tastelor pe care le preferați. Dacă veniți de la un manager de fișiere clasic cu două panouri, puteți păstra tastele pe care le știți deja; dacă preferați să folosiți combinații Mac familiare, comutați la schema macOS cu un clic. Un navigator de comenzi cu căutare vă permite să descoperiți tot ce poate face aplicația și să rulați orice comandă după nume.

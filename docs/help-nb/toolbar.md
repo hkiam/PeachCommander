@@ -3,7 +3,7 @@ title: Knappelinjen
 slug: toolbar
 section: Tilpasning
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Knappelinjen er stripen med ikonknapper langs toppen av vinduet. Hver knapp er en ettklikks snarvei du definerer selv: kjør en innebygd kommando, start et eksternt program eller en app, hopp til en mappe, eller åpne en hel underlinje med flere knapper. Det er den raskeste måten å sette handlingene du bruker mest innen rekkevidde, og du kan skreddersy den til akkurat måten du arbeider på.

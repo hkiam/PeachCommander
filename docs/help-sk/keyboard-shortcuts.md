@@ -3,7 +3,7 @@ title: Klávesnica a skratky
 slug: keyboard-shortcuts
 section: Prispôsobenie
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander je postavený tak, aby sa ovládal z klávesnice. Dodáva sa s dvoma hotovými schémami skratiek a umožňuje znovu priradiť ľubovoľný príkaz klávesám, ktoré preferujete. Ak prichádzate z klasického dvojpanelového správcu súborov, môžete si ponechať klávesy, ktoré už poznáte; ak radšej používate známe kombinácie Mac, prepnite na schému macOS jedným kliknutím. Prehľadávateľný prehliadač príkazov umožňuje objaviť všetko, čo aplikácia dokáže, a spustiť ľubovoľný príkaz podľa názvu.

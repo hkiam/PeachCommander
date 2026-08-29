@@ -3,7 +3,7 @@ title: A Start menü és egyéni parancsok
 slug: start-menu
 section: Testreszabás
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 A **Start** menü az ön saját személyes menüje, amely a menüsávban ül a Fájl, Szerkesztés és a többi mellett. Olyan parancsokat tartalmaz, amelyeket ön határoz meg, így a leggyakrabban használt műveletek mindig egyetlen kattintásnyira vannak. A klasszikus kétpaneles fájlkezelők hagyományában minden bejegyzés futtathat egy beépített parancsot, elindíthat egy külső programot vagy appot, vagy egyenesen egy mappára ugorhat. A Peach Commander üres Start menüvel érkezik, készen arra, hogy megtöltse.

@@ -3,7 +3,7 @@ title: AI Assistant
 slug: ai-assistant
 section: Programtillegg
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 AI-assistenten er et valgfritt, fjernbart programtillegg som hjelper deg å arbeide med filene dine på vanlig språk. Den kan sammenfatte eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med rydde opp i en mappe — og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den kommer som to programtillegg: **AI On-Device** kjører på Apple Intelligence og gir deg handlingene som viser et forslag og utfører det, mens **AI Assistant** er praten og trenger en skymodell. Slå på det ene, eller begge. **De kommer avslått.** Slå dem på i **Konfigurasjon ▸ Programtillegg…** og start på nytt, eller la dem være av så vises ingenting — ingen AI ▸-meny, ingen prat, ingen kolonne. Det er med vilje så lenge dette er i beta: den kan gi filer nytt navn, flytte og slette dem og kjøre skallkommandoer for deg, hver bak en plan du godkjenner, og det er mye rekkevidde å gi noe nytt som standard. Uten API-nøkkel skjer alt på Macen din, så dette handler om rekkevidden og ikke om noe som forlater maskinen. Programtillegget **AI Column** viser hva de handlingene kom fram til — et sammendrag, en sort, et emne, en dato — som kolonner i panelet; det starter ingen egen modell. Det kommer avslått sammen med dem og forblir valgfritt, og viser ingenting før du slår det på og legger til en av kolonnene. Fra samme side kan du også fjerne begge helt.
@@ -67,6 +67,8 @@ For alt som endrer filer — flytte, gi nytt navn, skrive, slette — viser assi
 - **Angre siste endring** tar tilbake den nyeste endringen som har en motsats: et navnebytte byttes tilbake, en flytting flyttes tilbake. Der ingenting kan tas tilbake, sier listen hvorfor — en overskrevet fil ble ikke tatt vare på noe sted, og elementer i Papirkurven gjenopprettes fra Finder.
 
 Du kan også bare spørre: *«angre det»* og *«hva har du endret?»* når de samme to funksjonene.
+
+Den lista er også der en makro kommer fra: **Konfigurasjon ▸ Makro fra siste handlinger…** tilbyr det assistenten nettopp gjorde som trinnene i en makro du kan kjøre igjen, fra en knapp eller en tast. Se [Makroer](macros.md).
 
 ## Kolonner i panelet
 

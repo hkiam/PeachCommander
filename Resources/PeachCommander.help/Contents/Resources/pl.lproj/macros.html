@@ -21,13 +21,15 @@
 <li>Zaznaczcie <strong>Podążaj za panelami zamiast za dokładnie tymi plikami</strong>, jeśli makro ma następnym razem pracować na tym, co będzie wtedy zaznaczone. Wiersze zmieniają się przy zaznaczaniu, więc widzicie, co zapisujecie.</li>
 </ol>
 <p><strong>Zapisz makro</strong> — i przycisk jest na pasku. To cały cykl.</p>
+<p><img alt="Arkusz „Makro z ostatnich działań” z tym, co właśnie zrobiono, jako krokami do zaznaczenia" src="images/macro-recorder.png" />
+<em>To, co już się wydarzyło, zaproponowane jako kroki nowego makra.</em></p>
 <p>Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich.</p>
 <blockquote>
 <p><strong>Czego się nie oferuje.</strong> Spakowania archiwum i wszystkiego innego, co aplikacja zapamiętuje tylko z nazwy, nie da się zamienić w krok — nie ma dla tego kształtu. Takie wiersze widnieją wyszarzone wraz z powodem, zamiast ich brakować, żeby lista pięciu oferująca trzy nie wyglądała, jakby dwóch nie zauważyła. A jeśli nie poprosicie inaczej, ścieżki są te, które naprawdę zadziałały: nagrane makro powtarza <em>tę</em> kopię, a nie „kopię tego rodzaju”. Otwórzcie je w edytorze i wstawcie <code>%S</code> albo <code>%T</code> tam, gdzie ma podążać za panelami.</p>
 </blockquote>
 <p><strong>Podążaj za panelami</strong> to sposób, by poprosić inaczej. Pliki pochodzące wszystkie z jednego folderu stają się zaznaczeniem; folder będący jednym z dwóch paneli staje się tym panelem, a folder wewnątrz zachowuje swoją końcówkę — z nagranego „przenieś te cztery faktury do Dokumenty/2026-08” robi się „przenieś to, co zaznaczone, do <em>2026-08</em> po drugiej stronie”, i jutro działa to w dwóch innych folderach. To, co nie leży pod żadnym z paneli, zostaje ścieżką, którą jest — nie ma w co tego złożyć. Opcja pojawia się tylko wtedy, gdy coś by zmieniła.</p>
 <h2 id="doaczone-przykady">Dołączone przykłady</h2>
-<p>Przy pierwszym otwarciu <strong>Konfiguracja ▸ Edytuj makra…</strong> plik zostaje założony z siedmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:</p>
+<p>Przy pierwszym otwarciu <strong>Konfiguracja ▸ Edytuj makra…</strong> plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Każde z nich staje się poleceniem, więc dowolne można umieścić na przycisku albo na klawiszu, nie pisząc niczego.</p>
 <h2 id="zarzadzanie-nimi">Zarządzanie nimi</h2>
 <p><strong>Konfiguracja ▸ Zarządzaj makrami…</strong> to ta lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i czego zażąda pytanie o uprawnienia — „to usuwa” widać więc, zanim położycie je na klawiszu. Stamtąd można zmienić nazwę, zduplikować, przestawić i usunąć. Najechanie na wiersz pokazuje jego kroki.</p>
+<p><img alt="Okno „Zarządzaj makrami” z nazwą polecenia, liczbą kroków i uprawnieniem każdego makra" src="images/macro-manager.png" />
+<em>Jak nazywa się każde makro, jako co działa i o co poprosi o zgodę.</em></p>
 <p>Kolejność nie jest ozdobą: kolejność w pliku jest tą, w jakiej wypisują je Przeglądarka poleceń i wybór do paska przycisków.</p>
 <p><strong>Przy usuwaniu proponuje się zabrać przyciski ze sobą</strong>, i warto o tym wiedzieć, nawet jeśli nigdy nie otworzycie tego okna: makro usunięte ręcznie zostawia po sobie przycisk i klawisz, a żadne z nich już nic nie robi — aplikacja mówi teraz, że makra nie ma, zamiast milczeć, ale przycisk pozostaje waszą sprawą. Klawisz albo pozycję menu trzeba usunąć tam, gdzie zostały ustawione.</p>
 <p><em>Kroków</em> się tu nie edytuje. <strong>Edytuj plik…</strong> przekazuje to edytorowi, z tego samego powodu, dla którego nie ma formularza: krok to nazwa narzędzia wraz z argumentami, a to jest właśnie JSON.</p>
@@ -158,7 +162,9 @@
 <li>Twoim pliku menu <code>.mnu</code> i <code>usercmd.ini</code>, jeśli ich używasz</li>
 <li>Asystencie, który może je uruchomić po nazwie</li>
 </ul>
-<p>Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania.</p>
+<p>Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania. <strong>Skreślenie kroku zabiera ze sobą kroki, które od niego zależą</strong> — makro to sekwencja, a krok, który napełnia folder, nie może działać bez kroku, który go zakłada: te wiersze same się wyłączają i szarzeją. Przywróć krok, a wrócą — poza tymi, które skreśliłeś sam; te zostają skreślone.</p>
+<p><img alt="Okno potwierdzenia makra, każdy krok to pole wyboru wymieniające pliki" src="images/macro-confirm.png" />
+<em>Kroki, rozwiązane względem waszych paneli — każdy można skreślić.</em></p>
 <p>Wszystko, co da się rozpoznać jako błędne przed startem — narzędzie, którego nie ma, brakujący argument, krok, który uruchomiłby inne makro — zatrzymuje makro przed pierwszym krokiem, a nie po trzecim. Jeśli krok zawiedzie już w trakcie, makro <strong>zatrzymuje się tam</strong> zamiast iść dalej: krok drugi zwykle zakłada, że krok pierwszy się zdarzył, a przenoszenie plików do nieutworzonego folderu nie jest częściowym sukcesem. Raport nazywa krok, mówi, co poszło źle, i ile kroków już wykonano; każdy z nich jest w dzienniku działań, z drogą powrotną tam, gdzie taka istnieje.</p>
 <h2 id="co-makru-wolno">Co makru wolno</h2>
 <p>Makro ocenia się po tym, co najbardziej wymagające w nim jest. Makro, którego kroki tylko czytają, jest traktowane jak czytanie; takie, które kończy się trwałym usunięciem, jest zabezpieczone jak trwałe usunięcie — przed uruchomieniem czegokolwiek, nie cztery kroki później.</p>

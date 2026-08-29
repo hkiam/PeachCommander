@@ -3,7 +3,7 @@ title: Asistent AI
 slug: ai-assistant
 section: Zásuvné moduly
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 Asistent AI je voliteľný, odstrániteľný zásuvný modul, ktorý vám pomáha pracovať so súbormi bežným jazykom. Vie zhrnúť alebo vysvetliť dokument, navrhnúť lepší názov súboru, preložiť alebo skontrolovať text, previesť údaje do tabuľky a dokonca upratať priečinok — a vie za vás vykonať operácie so súbormi po tom, čo vám najprv ukáže plán. Prichádza ako dva moduly: **AI On-Device** beží na Apple Intelligence a prináša akcie, ktoré návrh ukážu a vykonajú, zatiaľ čo **AI Assistant** je chat a potrebuje model v cloude. Zapnite jeden, alebo oba. **Prichádzajú vypnuté.** Zapnite ich v **Konfigurácia ▸ Zásuvné moduly…** a reštartujte, alebo ich nechajte vypnuté a neobjaví sa nič — žiadna ponuka AI ▸, žiadny chat, žiadny stĺpec. Je to zámer, kým je funkcia v beta verzii: vie súbory premenovať, presúvať a mazať a spúšťať za vás príkazy shellu, každý za plánom, ktorý schválite, a to je veľa dosahu na to, dať ho novinke vo východiskovom stave. Bez kľúča API sa všetko odohráva na vašom Macu, takže ide o dosah, nie o údaje opúšťajúce stroj. Modul **AI Column** ukazuje, čo tie akcie zistili — zhrnutie, druh, tému, dátum — ako stĺpce panela; sám žiadny model nespúšťa. Prichádza vypnutý spolu s nimi a zostáva voliteľný a neukáže nič, kým ho nezapnete a nepridáte niektorý z jeho stĺpcov. Z tej istej stránky môžete ktorýkoľvek z nich aj úplne odstrániť.
@@ -67,6 +67,8 @@ Pri všetkom, čo mení súbory — presun, premenovanie, zápis, zmazanie — a
 - **Vrátiť poslednú zmenu** vezme späť najnovšiu zmenu, ktorá má opak: premenovanie sa premenuje späť, presun sa presunie späť. Kde vziať späť nemožno nič, zoznam povie prečo — prepísaný súbor sa nikde neuchoval a položky v Koši obnovíte z Findera.
 
 Môžete sa aj jednoducho spýtať: *„vráť to"* a *„čo si zmenil?"* dosiahnu na tie isté dve funkcie.
+
+Ten zoznam je zároveň tým, z čoho vzniká makro: **Konfigurácia ▸ Makro z posledných akcií…** ponúkne to, čo asistent práve urobil, ako kroky makra, ktoré môžete spustiť znova — z tlačidla alebo z klávesu. Pozri [Makrá](macros.md).
 
 ## Stĺpce panela
 

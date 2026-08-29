@@ -21,6 +21,9 @@ Nu trebuie să scrieți o macrocomandă de la zero.
 
 **Salvează macrocomanda**, și butonul este în bară. Acesta este tot ciclul.
 
+![Foaia „Macrocomandă din acțiuni recente”, cu ce tocmai s-a făcut ca pași bifabili](screenshots/macro-recorder.png)
+*Ce s-a întâmplat deja, oferit ca pașii unei macrocomenzi noi.*
+
 Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare.
 
 > **Ce nu se oferă.** Împachetarea unei arhive, și tot ce aplicația reține doar după nume, nu poate deveni un pas — nu există o formă pentru asta. Astfel de rânduri apar estompate împreună cu motivul, în loc să lipsească, pentru ca o listă de cinci care oferă trei să nu pară că a scăpat două. Iar dacă nu cereți altfel, căile sunt cele care chiar au rulat: o macrocomandă înregistrată repetă *acea* copiere, nu „o copiere de felul acela”. Deschideți-o în editor și puneți `%S` sau `%T` acolo unde vreți să urmeze panourile.
@@ -29,7 +32,7 @@ Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și 
 
 ## Exemplele livrate
 
-Prima dată când deschideți **Configurare ▸ Editare macrocomenzi…**, fișierul este creat cu șapte exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:
+Prima dată când deschideți **Configurare ▸ Editare macrocomenzi…**, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:
 
 | Macrocomandă | Ce face |
 | --- | --- |
@@ -47,6 +50,9 @@ Fiecare dintre ele devine o comandă, așa că puteți pune oricare pe un buton 
 ## Gestionarea lor
 
 **Configurare ▸ Gestionare macrocomenzi…** este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere verificarea drepturilor — astfel „aceasta șterge” se vede înainte de a o pune pe o tastă. De acolo puteți redenumi, duplica, reordona și șterge. Trecând peste un rând i se văd pașii.
+
+![Fereastra „Gestionare macrocomenzi”, cu numele comenzii, numărul de pași și permisiunea fiecăreia](screenshots/macro-manager.png)
+*Cum se numește fiecare macrocomandă, ca ce rulează și pentru ce va cere permisiunea.*
 
 Ordinea nu este decor: ordinea din fișier este aceea în care le listează Navigatorul de comenzi și selectorul barei de butoane.
 
@@ -125,7 +131,10 @@ Fiecare macrocomandă devine o comandă numită `mc_<id>` și apare astfel de la
 - Fișierul dumneavoastră de meniu `.mnu` și `usercmd.ini`, dacă le folosiți
 - Asistentul, care o poate rula după nume
 
-Înainte ca o macrocomandă care schimbă ceva să ruleze, vă arată pașii ca listă și așteaptă. Puteți tăia un pas pe care nu îl doriți; ce rămâne este ce rulează. O macrocomandă care doar citește rulează fără să întrebe.
+Înainte ca o macrocomandă care schimbă ceva să ruleze, vă arată pașii ca listă și așteaptă. Puteți tăia un pas pe care nu îl doriți; ce rămâne este ce rulează. O macrocomandă care doar citește rulează fără să întrebe. **Tăierea unui pas îi ia cu el pe cei care depind de el** — o macrocomandă este o secvență, iar pasul care umple dosarul nu poate rula fără pasul care îl creează: acele rânduri se dezactivează singure și devin gri. Puneți pasul la loc și revin — în afară de cele pe care le-ați tăiat dumneavoastră; acelea rămân tăiate.
+
+![Dialogul de confirmare al macrocomenzii, fiecare pas o casetă care numește fișierele](screenshots/macro-confirm.png)
+*Pașii, rezolvați pe panourile dumneavoastră — fiecare poate fi tăiat.*
 
 Tot ce se poate vedea că este greșit înainte de pornire — un instrument care nu există, un argument lipsă, un pas care ar rula altă macrocomandă — o oprește înainte de primul pas, nu după al treilea. Dacă un pas eșuează în timpul rulării, macrocomanda **se oprește acolo** în loc să continue: pasul doi presupune de regulă că pasul unu a avut loc, iar mutarea fișierelor într-un dosar care nu a fost creat nu este un succes parțial. Raportul numește pasul, spune ce a mers prost și câți pași fuseseră deja executați; fiecare dintre ei se află în jurnalul de acțiuni, cu drumul său înapoi acolo unde există unul.
 ## Ce îi este permis unei macrocomenzi

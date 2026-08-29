@@ -3,7 +3,7 @@ title: Pomočnik UI
 slug: ai-assistant
 section: Vtičniki
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in ki vam pomaga delati z datotekami v vsakdanjem jeziku. Zna povzeti ali pojasniti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, podatke spremeniti v razpredelnico in celo pospraviti mapo — in zna namesto vas izvesti dejanja z datotekami, potem ko vam najprej pokaže načrt. Pride kot dva vtičnika: **AI On-Device** teče na Apple Intelligence in prinaša dejanja, ki pokažejo predlog in ga uveljavijo, medtem ko je **AI Assistant** klepet in potrebuje model v oblaku. Vklopite enega ali oba. **Prideta izklopljena.** Vklopite ju v **Nastavitev ▸ Vtičniki…** in znova zaženite, ali pa ju pustite izklopljena in ne pojavi se nič — noben meni UI ▸, noben klepet, noben stolpec. To je namerno, dokler je funkcija v beta različici: zna preimenovati, premikati in brisati datoteke ter namesto vas poganjati ukaze lupine, vsakega za načrtom, ki ga odobrite, in to je veliko dosega, da bi ga novosti dali privzeto. Brez ključa API se vse dogaja na vašem Macu, torej gre za doseg in ne za podatke, ki bi zapustili napravo. Vtičnik **AI Column** pokaže, kaj so ta dejanja ugotovila — povzetek, vrsto, temo, datum — kot stolpce v pultu; sam ne zažene nobenega modela. Pride izklopljen skupaj z njima in ostane izbiren ter ne pokaže ničesar, dokler ga ne vklopite in ne dodate enega od njegovih stolpcev. Z iste strani lahko katerega koli od njiju tudi povsem odstranite.
@@ -67,6 +67,8 @@ Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje 
 - **Razveljavi zadnjo spremembo** vzame nazaj najnovejšo spremembo, ki ima nasprotje: preimenovanje se preimenuje nazaj, premik se premakne nazaj. Kjer ni mogoče vzeti nazaj ničesar, seznam pove zakaj — prepisana datoteka se ni nikjer ohranila, predmete v Košu pa obnovite iz Finderja.
 
 Lahko tudi preprosto vprašate: *»razveljavi to«* in *»kaj si spremenil?«* dosežeta isti dve funkciji.
+
+Ta seznam je tudi tisto, iz česar nastane makro: **Konfiguracija ▸ Makro iz nedavnih dejanj…** ponudi to, kar je pomočnik pravkar naredil, kot korake makra, ki ga lahko zaženete znova — z gumba ali s tipke. Glejte [Makri](macros.md).
 
 ## Stolpci v pultu
 

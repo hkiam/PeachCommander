@@ -3,7 +3,7 @@ title: Asistente de IA
 slug: ai-assistant
 section: Complementos
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 El asistente de IA es un complemento opcional y desinstalable que le ayuda a trabajar con sus archivos en lenguaje natural. Puede resumir o explicar un documento, proponer un nombre de archivo mejor, traducir o revisar un texto, convertir datos en una tabla e incluso ordenar una carpeta — y puede realizar acciones sobre los archivos después de mostrarle antes un plan. Viene como dos complementos: **AI On-Device** funciona con Apple Intelligence y ofrece las acciones que proponen y aplican, mientras que **AI Assistant** es el chat y necesita un modelo en la nube. Active uno, o ambos. **Llegan desactivados.** Actívelos en **Configuración ▸ Complementos…** y reinicie, o déjelos apagados y no aparecerá nada — ni menú IA ▸, ni chat, ni columna. Es deliberado mientras está en beta: puede renombrar, mover y eliminar archivos y ejecutar órdenes de shell por usted, cada una tras un plan que usted aprueba, y eso es mucho alcance para concederlo por omisión a una función nueva. Sin clave de API todo ocurre en su Mac, así que esto va del alcance y no de datos que salgan de la máquina. El complemento **AI Column** muestra lo que esas acciones averiguaron — un resumen, un tipo, un tema, una fecha — como columnas del panel; no arranca ningún modelo propio. Llega apagado junto a ellos y sigue siendo opcional, y no muestra nada hasta que lo active y añada una de sus columnas. Desde la misma página también puede eliminar cualquiera de los dos por completo.
@@ -67,6 +67,8 @@ Para cualquier cosa que modifique archivos — mover, renombrar, escribir, elimi
 - **Deshacer el último cambio** retira el cambio más reciente que tenga inverso: un renombrado se renombra de vuelta, un movimiento se mueve de vuelta. Donde nada puede retirarse, la lista dice por qué — un archivo sobrescrito no se guardó en ninguna parte, y los elementos de la Papelera se restauran desde el Finder.
 
 También puede pedirlo sin más: *«deshaz eso»* y *«¿qué has cambiado?»* llegan a esas mismas dos funciones.
+
+Esa lista es también el origen de una macro: **Configuración ▸ Macro a partir de acciones recientes…** ofrece lo que el asistente acaba de hacer como los pasos de una que puedes volver a ejecutar, desde un botón o una tecla. Consulta [Macros](macros.md).
 
 ## Columnas del panel
 

@@ -3,7 +3,7 @@ title: Tangentbord och kortkommandon
 slug: keyboard-shortcuts
 section: Anpassning
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander är byggt för att styras från tangentbordet. Det levereras med två färdiga kortkommandoscheman och låter dig binda om vilket kommando som helst till de tangenter du föredrar. Om du kommer från en klassisk tvåpanelsfilhanterare kan du behålla tangenterna du redan kan; om du hellre vill använda välbekanta Mac-kombinationer, byt till macOS-schemat med ett klick. En sökbar kommandowebbläsare låter dig upptäcka allt appen kan göra och köra vilket kommando som helst efter namn.

@@ -52,6 +52,7 @@
 <li><strong>Laatste wijziging ongedaan maken</strong> neemt de meest recente wijziging terug die een omkering heeft: een hernoeming wordt teruggenoemd, een verplaatsing teruggeplaatst. Waar niets teruggenomen kan worden, zegt de lijst waarom — een overschreven bestand is nergens bewaard, en items in de Prullenmand herstelt u vanuit de Finder.</li>
 </ul>
 <p>U kunt het ook gewoon vragen: <em>"maak dat ongedaan"</em> en <em>"wat heb je gewijzigd?"</em> bereiken dezelfde twee functies.</p>
+<p>Die lijst is ook de oorsprong van een macro: <strong>Configuratie ▸ Macro uit recente acties…</strong> biedt wat de assistent zojuist deed aan als de stappen van een macro die u opnieuw kunt uitvoeren, vanaf een knop of een toets. Zie <a href="macros.html">Macro’s</a>.</p>
 <h2 id="kolommen-in-het-venster">Kolommen in het venster</h2>
 <p>Wat de acties hebben uitgezocht is als kolommen beschikbaar. Voeg ze toe via de kolomseteditor: <strong>AI-samenvatting</strong> toont de eerste regel van een samenvatting, en <strong>AI-soort</strong>, <strong>AI-onderwerp</strong> en <strong>AI-datum</strong> tonen wat <strong>Indelen</strong> van een bestand maakte — onder die namen in het Nederlands, vertaald in elke taal. Elk blijft leeg tot een actie dat bestand gelezen heeft — deze kolommen tonen al verricht werk en starten het model nooit zelf. <strong>Taal</strong> in dezelfde plug-in herkent in welke taal een tekstbestand geschreven is, geheel zonder model.</p>
 <p>Diezelfde drie zijn ook hernoemtekens. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> in het venster voor meervoudig hernoemen (Ctrl+M) geeft een map vol <code>dokument1.pdf</code>-bestanden de naam van wat ze zijn: daarvoor is niets gebouwd, want het hernoemmasker heeft <code>[=provider.field]</code> altijd via het kolomsysteem opgelost. Eerst indelen, dan hernoemen. De kop volgt uw taal; de <code>ai_column.ai_topic</code> in het masker niet — een masker blijft dus werken als u van taal wisselt.</p>
@@ -72,7 +73,7 @@
 <li>Een cloudmodel wordt <strong>alleen gebruikt als u er een instelt</strong>, en de API-sleutel blijft in de sleutelhanger.</li>
 <li>Acties die bestanden wijzigen worden bevestigd voordat ze draaien, tenzij u het autonomieniveau bewust verhoogt.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="settings.html">Instellingen</a></li><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="settings.html">Instellingen</a></li><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li><li><a href="macros.html">Macro’s</a></li></ul></section>
 </main>
 </body>
 </html>

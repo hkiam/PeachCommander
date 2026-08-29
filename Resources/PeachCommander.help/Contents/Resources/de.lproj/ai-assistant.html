@@ -52,6 +52,7 @@
 <li><strong>Letzte Änderung rückgängig</strong> nimmt die neueste Änderung zurück, für die es eine Umkehrung gibt: ein Umbenennen wird zurückbenannt, ein Verschieben zurückverschoben. Wo nichts zurückgenommen werden kann, sagt die Liste warum — eine überschriebene Datei wurde nirgends aufbewahrt, und Papierkorb-Einträge holt man im Finder zurück.</li>
 </ul>
 <p>Sie können auch einfach fragen: <em>„mach das rückgängig"</em> und <em>„was hast du geändert?"</em> erreichen dieselben zwei Funktionen.</p>
+<p>Diese Liste ist auch der Ursprung eines Makros: <strong>Konfiguration ▸ Makro aus letzten Aktionen…</strong> bietet das, was der Assistent gerade getan hat, als Schritte eines Makros an, das Sie erneut ausführen können — auf einer Schaltfläche oder einer Taste. Siehe <a href="macros.html">Makros</a>.</p>
 <h2 id="spalten-im-dateifenster">Spalten im Dateifenster</h2>
 <p>Was die Aktionen herausgefunden haben, gibt es als Spalten. Fügen Sie sie über den Spalten-Editor hinzu: <strong>KI-Zusammenfassung</strong> zeigt die erste Zeile einer Zusammenfassung, und <strong>KI-Art</strong>, <strong>KI-Thema</strong> und <strong>KI-Datum</strong> zeigen, was <strong>Einordnen</strong> aus einer Datei gemacht hat. Jede bleibt leer, bis eine Aktion diese Datei gelesen hat — diese Spalten zeigen bereits geleistete Arbeit und starten das Modell niemals selbst. <strong>Language</strong> im selben Plugin erkennt ganz ohne Modell, in welcher Sprache eine Textdatei geschrieben ist.</p>
 <p>Dieselben drei sind Umbenennen-Platzhalter. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> im Mehrfach-Umbenennen (Strg+M) benennt einen Ordner voller <code>dokument1.pdf</code> danach, was sie sind: dafür wurde nichts gebaut, denn die Umbenennen-Maske löst <code>[=provider.field]</code> seit jeher über das Spaltensystem auf. Erst einordnen, dann umbenennen. Die Überschrift folgt Ihrer Sprache, das <code>ai_column.ai_topic</code> in der Maske nicht — eine Maske funktioniert also weiter, wenn Sie die Sprache wechseln.</p>
@@ -72,7 +73,7 @@
 <li>Ein Cloud-Modell wird <strong>nur verwendet, wenn Sie eines konfigurieren</strong>, und sein API-Schlüssel wird im Schlüsselbund aufbewahrt.</li>
 <li>Dateiverändernde Aktionen werden vor ihrer Ausführung bestätigt, sofern Sie die Autonomiestufe nicht bewusst erhöhen.</li>
 </ul>
-<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Einstellungen</a></li><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li></ul></section>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Einstellungen</a></li><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li><li><a href="macros.html">Makros</a></li></ul></section>
 </main>
 </body>
 </html>

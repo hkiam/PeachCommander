@@ -21,6 +21,9 @@ Nie musisz pisać makra od zera.
 
 **Zapisz makro** — i przycisk jest na pasku. To cały cykl.
 
+![Arkusz „Makro z ostatnich działań” z tym, co właśnie zrobiono, jako krokami do zaznaczenia](screenshots/macro-recorder.png)
+*To, co już się wydarzyło, zaproponowane jako kroki nowego makra.*
+
 Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich.
 
 > **Czego się nie oferuje.** Spakowania archiwum i wszystkiego innego, co aplikacja zapamiętuje tylko z nazwy, nie da się zamienić w krok — nie ma dla tego kształtu. Takie wiersze widnieją wyszarzone wraz z powodem, zamiast ich brakować, żeby lista pięciu oferująca trzy nie wyglądała, jakby dwóch nie zauważyła. A jeśli nie poprosicie inaczej, ścieżki są te, które naprawdę zadziałały: nagrane makro powtarza *tę* kopię, a nie „kopię tego rodzaju”. Otwórzcie je w edytorze i wstawcie `%S` albo `%T` tam, gdzie ma podążać za panelami.
@@ -29,7 +32,7 @@ Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i z
 
 ## Dołączone przykłady
 
-Przy pierwszym otwarciu **Konfiguracja ▸ Edytuj makra…** plik zostaje założony z siedmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:
+Przy pierwszym otwarciu **Konfiguracja ▸ Edytuj makra…** plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:
 
 | Makro | Co robi |
 | --- | --- |
@@ -47,6 +50,9 @@ Każde z nich staje się poleceniem, więc dowolne można umieścić na przycisk
 ## Zarządzanie nimi
 
 **Konfiguracja ▸ Zarządzaj makrami…** to ta lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i czego zażąda pytanie o uprawnienia — „to usuwa” widać więc, zanim położycie je na klawiszu. Stamtąd można zmienić nazwę, zduplikować, przestawić i usunąć. Najechanie na wiersz pokazuje jego kroki.
+
+![Okno „Zarządzaj makrami” z nazwą polecenia, liczbą kroków i uprawnieniem każdego makra](screenshots/macro-manager.png)
+*Jak nazywa się każde makro, jako co działa i o co poprosi o zgodę.*
 
 Kolejność nie jest ozdobą: kolejność w pliku jest tą, w jakiej wypisują je Przeglądarka poleceń i wybór do paska przycisków.
 
@@ -125,7 +131,10 @@ Każde makro staje się poleceniem o nazwie `mc_<id>` i dzięki temu samo pojawi
 - Twoim pliku menu `.mnu` i `usercmd.ini`, jeśli ich używasz
 - Asystencie, który może je uruchomić po nazwie
 
-Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania.
+Przed uruchomieniem makra, które coś zmienia, pokazuje ono swoje kroki jako listę i czeka. Możesz wykreślić krok, którego nie chcesz; to, co zostanie, zostanie wykonane. Makro, które tylko czyta, działa bez pytania. **Skreślenie kroku zabiera ze sobą kroki, które od niego zależą** — makro to sekwencja, a krok, który napełnia folder, nie może działać bez kroku, który go zakłada: te wiersze same się wyłączają i szarzeją. Przywróć krok, a wrócą — poza tymi, które skreśliłeś sam; te zostają skreślone.
+
+![Okno potwierdzenia makra, każdy krok to pole wyboru wymieniające pliki](screenshots/macro-confirm.png)
+*Kroki, rozwiązane względem waszych paneli — każdy można skreślić.*
 
 Wszystko, co da się rozpoznać jako błędne przed startem — narzędzie, którego nie ma, brakujący argument, krok, który uruchomiłby inne makro — zatrzymuje makro przed pierwszym krokiem, a nie po trzecim. Jeśli krok zawiedzie już w trakcie, makro **zatrzymuje się tam** zamiast iść dalej: krok drugi zwykle zakłada, że krok pierwszy się zdarzył, a przenoszenie plików do nieutworzonego folderu nie jest częściowym sukcesem. Raport nazywa krok, mówi, co poszło źle, i ile kroków już wykonano; każdy z nich jest w dzienniku działań, z drogą powrotną tam, gdzie taka istnieje.
 ## Co makru wolno

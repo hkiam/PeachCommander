@@ -3,7 +3,7 @@ title: Knaplinjen
 slug: toolbar
 section: Tilpasning
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Knaplinjen er stribien af ikonknapper langs toppen af vinduet. Hver knap er en ét-klik-genvej, du selv definerer: kør en indbygget kommando, start et eksternt program eller en app, spring til en mappe, eller åbn en hel underlinje med flere knapper. Det er den hurtigste måde at få de handlinger, du bruger mest, inden for rækkevidde, og du kan skræddersy den præcis til den måde, du arbejder på.

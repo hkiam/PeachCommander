@@ -21,13 +21,15 @@
 <li>Zaškrtnite <strong>Sledovať panely namiesto práve týchto súborov</strong>, ak má makro nabudúce pracovať s tým, čo bude práve vybrané. Riadky sa pri zaškrtnutí zmenia, takže vidíte, čo ukladáte.</li>
 </ol>
 <p><strong>Uložiť makro</strong> — a tlačidlo je v lište. To je celý postup.</p>
+<p><img alt="Hárok „Makro z posledných akcií“ s tým, čo ste práve urobili, ako zaškrtávateľnými krokmi" src="images/macro-recorder.png" />
+<em>Čo sa už stalo, ponúknuté ako kroky nového makra.</em></p>
 <p>Zoznam obsahuje oboje: čo ste urobili v paneloch (F5, F6, F7, F8 a premenovanie) a čo urobil asistent alebo iné makro. Každý riadok hovorí, ktoré z toho — po sedení s oboma sa tie isté dva súbory môžu objaviť v oboch.</p>
 <blockquote>
 <p><strong>Čo sa neponúka.</strong> Zabalenie archívu a všetko ostatné, čo si aplikácia pamätá len podľa mena, sa nedá premeniť na krok — nie je preň tvar. Také riadky sú vidieť zošednuté aj s dôvodom, namiesto aby chýbali, aby zoznam piatich, ktorý ponúka tri, nevyzeral, že dva prehliadol. A ak nepožiadate inak, cesty sú tie, ktoré naozaj prebehli: zaznamenané makro zopakuje <em>tú</em> kópiu, nie „kópiu toho druhu“. Otvorte ho v editore a dajte <code>%S</code> alebo <code>%T</code> tam, kde má sledovať panely.</p>
 </blockquote>
 <p><strong>Sledovať panely</strong> je spôsob, ako požiadať inak. Zo súborov, ktoré pochádzali všetky z jednej zložky, sa stane výber; zo zložky, ktorá je jedným z dvoch panelov, sa stane ten panel, a zložka vnútri si ponechá svoj zvyšok — zo zaznamenaného „presuň tieto štyri faktúry do Dokumenty/2026-08“ sa stane „presuň vybrané do <em>2026-08</em> na druhej strane“, a zajtra to funguje v dvoch iných zložkách. Čo neleží pod žiadnym z oboch panelov, zostáva cestou, ktorou je — nie je do čoho to zložiť. Voľba sa ponúka len vtedy, keď by niečo zmenila.</p>
 <h2 id="prilozene-priklady">Priložené príklady</h2>
-<p>Keď prvýkrát otvoríte <strong>Konfigurácia ▸ Upraviť makrá…</strong>, súbor sa založí so siedmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:</p>
+<p>Keď prvýkrát otvoríte <strong>Konfigurácia ▸ Upraviť makrá…</strong>, súbor sa založí s ôsmimi hotovými príkladmi. Sú to bežné makrá — upravte ich alebo zmažte tie, ktoré nechcete — a každé nesie komentár, ktorý hovorí, čo robí a čo sa v ňom dá zmeniť:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Každé z nich sa stane príkazom, takže ktorékoľvek môžete umiestniť na tlačidlo alebo na klávesu bez toho, aby ste čokoľvek písali.</p>
 <h2 id="spravovat-ich">Spravovať ich</h2>
 <p><strong>Konfigurácia ▸ Spravovať makrá…</strong> je ten zoznam: ako sa každé makro volá, ako sa volá jeho príkaz, koľko má krokov a čo bude chcieť kontrola oprávnení — „toto maže“ je teda vidieť skôr, než ho dáte na kláves. Odtiaľ môžete premenovať, duplikovať, preusporiadať a zmazať. Keď prejdete nad riadkom, uvidíte jeho kroky.</p>
+<p><img alt="Okno „Spravovať makrá“ s názvom príkazu, počtom krokov a oprávnením každého makra" src="images/macro-manager.png" />
+<em>Ako sa každé makro volá, ako čo beží a načo si vyžiada povolenie.</em></p>
 <p>Poradie nie je ozdoba: poradie v súbore je to, v ktorom ich vypisuje Prehliadač príkazov a výber pre lištu tlačidiel.</p>
 <p><strong>Pri mazaní sa ponúkne vziať so sebou aj tlačidlá</strong>, a to stojí za vedenie, aj keby ste toto okno nikdy neotvorili: makro odstránené ručne nechá po sebe svoje tlačidlo aj kláves, a ani jedno potom nič nerobí — aplikácia teraz povie, že makro nie je, namiesto toho, aby mlčala, ale tlačidlo zostáva na vás. Kláves alebo položku ponuky treba vybrať tam, kde bola nastavená.</p>
 <p><em>Kroky</em> sa tu neupravujú. <strong>Upraviť súbor…</strong> to odovzdá editoru, z rovnakého dôvodu, z akého tu nie je formulár: krok je názov nástroja s jeho argumentmi, a to je presne to, čím JSON je.</p>
@@ -158,7 +162,9 @@
 <li>Vašom súbore ponuky <code>.mnu</code> a <code>usercmd.ini</code>, ak ich používate</li>
 <li>Asistentovi, ktorý ho môže spustiť podľa názvu</li>
 </ul>
-<p>Než sa spustí makro, ktoré niečo mení, ukáže vám svoje kroky ako zoznam a počká. Krok, ktorý nechcete, môžete vyškrtnúť; čo zostane, sa vykoná. Makro, ktoré len číta, beží bez otázky.</p>
+<p>Než sa spustí makro, ktoré niečo mení, ukáže vám svoje kroky ako zoznam a počká. Krok, ktorý nechcete, môžete vyškrtnúť; čo zostane, sa vykoná. Makro, ktoré len číta, beží bez otázky. <strong>Škrtnutie kroku vezme so sebou kroky, ktoré od neho závisia</strong> — makro je postupnosť a krok, ktorý priečinok napĺňa, nemôže bežať bez kroku, ktorý ho zakladá: tie riadky sa samy vypnú a zošednú. Vráťte krok späť a vrátia sa aj ony — okrem tých, ktoré ste škrtli sami; tie zostanú škrtnuté.</p>
+<p><img alt="Potvrdzovací dialóg makra, každý krok zaškrtávacie pole s názvami súborov" src="images/macro-confirm.png" />
+<em>Kroky, vyhodnotené voči vašim panelom — každý sa dá škrtnúť.</em></p>
 <p>Všetko, čo sa dá rozpoznať ako chybné ešte pred spustením — nástroj, ktorý neexistuje, chýbajúci argument, krok, ktorý by spustil iné makro —, makro zastaví pred prvým krokom, nie až po treťom. Ak krok zlyhá už za behu, makro sa <strong>zastaví tam</strong> namiesto toho, aby pokračovalo: krok dva obvykle predpokladá, že sa krok jeden stal, a presúvať súbory do priečinka, ktorý nevznikol, nie je čiastočný úspech. Hlásenie menuje krok, povie, čo sa pokazilo, a koľko krokov už bolo vykonaných; každý z nich je v protokole akcií, aj s cestou späť, kde nejaká je.</p>
 <h2 id="co-makro-smie">Čo makro smie</h2>
 <p>Makro sa posudzuje podľa toho najnáročnejšieho, čo obsahuje. Makro, ktorého kroky len čítajú, sa považuje za čítanie; to, ktoré končí trvalým vymazaním, je chránené ako trvalé vymazanie — skôr než sa čokoľvek spustí, nie o štyri kroky neskôr.</p>

@@ -60,6 +60,25 @@ def resolve_app(explicit):
     sys.exit("could not resolve built .app; pass --app")
 
 
+def say_app(app: str):
+    """Name the bundle this run will photograph, and say so when it predates the sources.
+
+    `resolve_app` prefers `build/` over the default DerivedData, which is right — but silently, and
+    a stale bundle there produces a full set of plausible screenshots of the *old* app. The comment
+    above that preference records it costing three shots; it then cost another three, because
+    nothing in the log said which bundle was picked or how old it was. Both are printed now.
+    """
+    binary = Path(app) / "Contents/MacOS/PeachCommander"
+    built = binary.stat().st_mtime if binary.exists() else Path(app).stat().st_mtime
+    newest = max((p.stat().st_mtime for p in (REPO / "Sources").rglob("*")
+                  if p.suffix in {".swift", ".xcstrings"}), default=0)
+    stamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(built))
+    print(f"app {app} (built {stamp})")
+    if newest > built:
+        print(f"  ! sources are newer than this bundle — rebuild with Tools/build.sh, which is what "
+              f"puts one in build/ where this script looks first", file=sys.stderr)
+
+
 def ssh_guest(ip, script):
     return sh(["ssh", *SSH, f"{GUEST}@{ip}", script])
 
@@ -92,6 +111,37 @@ def vnc_capture(host, port, pw, out: Path):
     out.parent.mkdir(parents=True, exist_ok=True)
     r = sh([VNCDO, "-s", f"{host}::{port}", "-p", pw, "capture", str(out)])
     return r.returncode == 0
+
+
+def pull_capture(ip, guest_path: str, out: Path, timeout=60):
+    """Fetch a PNG the *app* drew, instead of grabbing the framebuffer.
+
+    A modal dialog cannot be photographed over VNC here: `NSAlert.runModal()` holds the main
+    queue, so the automation script never reaches its next verb and the run hangs inside the
+    modal (see DialogShot.swift). The app's own `PC_MACRO_*_SHOT` probes lay the alert out and
+    render it with `cacheDisplay` without ever showing it — which is both the only way to get
+    the picture and a better one: the result is the dialog alone, at its true size, with no
+    desktop, no menu bar and no wallpaper around it.
+
+    Waits for the file rather than trusting the settle: the same lesson `regress-guest.sh`
+    learned, where a slow launch late in a run produced an empty report.
+    """
+    out.parent.mkdir(parents=True, exist_ok=True)
+    for _ in range(timeout * 2):
+        if ssh_guest(ip, f"test -s {guest_path}").returncode == 0:
+            break
+        time.sleep(0.5)
+    else:
+        print(f"  ! {guest_path} never appeared in the guest", file=sys.stderr)
+        return False
+    r = sh(["scp", *SSH, f"{GUEST}@{ip}:{guest_path}", str(out)])
+    if r.returncode != 0:
+        print(f"  ! scp of {guest_path} failed: {r.stderr}", file=sys.stderr)
+        return False
+    # Removed, not left: the next spec waits for a file of its own, and a stale one from this
+    # spec would satisfy that wait instantly and be captured twice.
+    ssh_guest(ip, f"rm -f {guest_path}")
+    return True
 
 
 """A demo user theme, installed into the guest's themes/ folder.
@@ -174,7 +224,7 @@ def flatten(lines):
     return out
 
 
-def launch_app(ip, script_lines, theme):
+def launch_app(ip, script_lines, theme, env=None):
     # write the automation script into the guest, kill any running app, relaunch
     body = "\n".join(flatten(script_lines))
     ssh_guest(ip, f"cat > ~/pc-demo-auto.txt <<'PCEOF'\n{body}\nPCEOF")
@@ -189,11 +239,18 @@ def launch_app(ip, script_lines, theme):
     # themes/ survives on purpose: it is installed state, not per-spec state.
     ssh_guest(ip, f"rm -f {cfg}/session.ini {cfg}/workspaces.ini && "
                   f"printf '[Colors]\\nAppearance={theme}\\n' > {cfg}/peachcmd.ini")
+    # A spec's probe settings, as *arguments*. `open` hands the app arguments and never the
+    # caller's environment, and an ssh session's `launchctl setenv` lands in a different launchd
+    # domain than the auto-logged-in one the app runs in — the mechanism `regress-guest.sh`
+    # established and the reason `AutomationProbe` reads the argument domain at all.
+    probe = ""
+    for key, value in (env or {}).items():
+        probe += f" -{key} '{value}'"
     ssh_guest(ip, "pkill -x PeachCommander 2>/dev/null; sleep 1; "
                   "killall Terminal 2>/dev/null; "
                   f"open ~/pc-test/{APPNAME} --args -ConfigRoot {cfg} "
                   f"-AppleLanguages '(en)' "
-                  f"-AutomationScript /Users/{GUEST}/pc-demo-auto.txt")
+                  f"-AutomationScript /Users/{GUEST}/pc-demo-auto.txt{probe}")
 
 
 def crop(img: Path, region, out: Path):
@@ -225,6 +282,7 @@ def main():
     app = resolve_app(args.app)
     if not Path(app).is_dir():
         sys.exit(f"no .app at {app}")
+    say_app(app)
 
     run = f"pc-cap-{os.getpid()}"
     sh(["tart", "clone", GOLDEN, run])
@@ -271,11 +329,18 @@ def main():
             sid = s["id"]
             themes = ["dark"] if s.get("dark_only") else (["light", "dark"] if s.get("dark") else ["light"])
             for theme in themes:
-                launch_app(ip, s["script"], theme)
+                env = dict(s.get("env") or {})
+                # The guest path the app draws into, when this spec photographs a dialog. Per
+                # theme, so the light run's file cannot be mistaken for the dark one's.
+                if s.get("pull"):
+                    env = {k: v.replace("{shot}", s["pull"]) for k, v in env.items()}
+                launch_app(ip, s["script"], theme, env)
                 time.sleep(s.get("settle", 9))
                 suffix = "" if theme == "light" else "-dark"
                 out = SHOTS / f"{sid}{suffix}.png"
-                if vnc_capture(host, port, pw, out):
+                captured = (pull_capture(ip, s["pull"], out) if s.get("pull")
+                            else vnc_capture(host, port, pw, out))
+                if captured:
                     # For a crop spec, the referenced image (screenshots/<id>.png)
                     # IS the cropped detail; keep the full framebuffer as -full.
                     if s.get("crop"):

@@ -3,6 +3,15 @@
 # (framebuffer is 1024x768), dark: also capture a dark variant, settle: seconds to
 # wait after launch, plus feature/alt/caption/pages metadata for the index.
 #
+# Two more keys, for the states a framebuffer grab cannot reach:
+#   env:  {KEY: value}   probe settings, handed to the app as `-KEY value` arguments —
+#                        `open` never passes the caller's environment, and an ssh session's
+#                        launchctl domain is not the app's (see regress-guest.sh).
+#   pull: <guest path>   fetch a PNG the *app* drew there instead of grabbing the screen.
+#                        `{shot}` in an env value is replaced with this path.
+# A modal dialog needs both: NSAlert.runModal() holds the main queue, so the script never
+# reaches the verb that would photograph it and the run hangs inside the modal instead.
+#
 # Automation verbs (DEBUG -AutomationScript): left/right <path>, active l|r,
 # focus <name>, enter, wait <ms>, cmd <cm_Name>, view <path>, settingspage <Page>,
 # theme <id> (select a colour palette — "system", "norton", …),
@@ -560,3 +569,90 @@ screenshots:
       - wait 500
       - contribcmd plugin.logviewer.view
       - wait 3500
+
+  # ───────────────────────── Macros (F-478) ─────────────────────────
+  #
+  # Three states, and two of them are modal dialogs the framebuffer cannot reach: `NSAlert.runModal()`
+  # holds the main queue, so the automation script never reaches the verb that would take the picture
+  # and the run hangs inside the modal instead. The app's own `PC_MACRO_*_SHOT` probes lay the alert
+  # out and render it with `cacheDisplay` without ever showing it (DialogShot.swift), which this file
+  # reaches through `env:` + `pull:` — the picture is then of the dialog alone, at its true size.
+  #
+  # Every one of them opens the macro editor first and closes it again: that is what writes the
+  # shipped examples to `macros.json`, so what is photographed is `MacroSeed`, not a fixture that
+  # could drift away from it.
+
+  - id: macro-confirm
+    feature: macros
+    alt: "The macro confirmation dialog, each step a checkbox naming the files it will act on"
+    caption: "A macro that changes anything shows its steps first, resolved against your panels — strike one out and it does not run."
+    pages: [macros, tutorial-macros, index]
+    settle: 16
+    # The alert's icon well renders as an empty placeholder under `cacheDisplay` — the app icon is
+    # resolved by the window server at display time, which is exactly what this path skips. Cropped
+    # off rather than shipped looking like a broken image.
+    crop: [0, 92, 452, 194]
+    pull: /Users/admin/macro-confirm-shot.png
+    env:
+      PC_MACRO_CONFIRM_SHOT: "{shot}"
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - right /Users/admin/pc-demo/Archives
+      - active l
+      - wait 900
+      - cmd cm_MacroEditor
+      - wait 2000
+      - closeeditor
+      - wait 800
+      # Marked by name, so the rows read "Copy report.txt, notes.md into …" rather than standing in
+      # for a selection: the resolved phrasing is the thing this picture is for.
+      - marknames report.txt,notes.md
+      - wait 600
+      - cmd mc_backup-selection
+      - wait 2500
+
+  - id: macro-recorder
+    feature: macros
+    alt: "The Macro from Recent Actions sheet, listing what was just done as tickable steps"
+    caption: "Do it once, then keep it: the recorder offers what has already happened as the steps of a new macro."
+    pages: [macros, tutorial-macros]
+    settle: 16
+    pull: /Users/admin/macro-record-shot.png
+    env:
+      PC_MACRO_RECORD_SHOT: "{shot}"
+    script:
+      - probe /Users/admin/macro-shot-made.txt|mkdir -p /Users/admin/macro-src /Users/admin/macro-dst
+        && printf 'payload\n' > /Users/admin/macro-src/invoice.txt
+        && printf 'payload\n' > /Users/admin/macro-src/receipt.txt && echo made
+      - wait 800
+      - left /Users/admin/macro-src
+      - right /Users/admin/macro-dst
+      - active l
+      - wait 900
+      # Through the Automation Core, because the audit log is what the recorder reads — an F5 in the
+      # panels does not reach it, and there is no verb that drives one.
+      - aitool copy:confirm|{"sources":["/Users/admin/macro-src/invoice.txt","/Users/admin/macro-src/receipt.txt"],"destination":"/Users/admin/macro-dst"}|/Users/admin/macro-shot-copy.json
+      - wait 1800
+      - cmd cm_MacroFromRecentActions
+      - wait 2500
+
+  - id: macro-manager
+    feature: macros
+    alt: "The Manage Macros window listing each macro with its command name, step count and permission"
+    caption: "What each macro is called, what it runs as, and what it will ask permission for — visible before you put it on a key."
+    pages: [macros, tutorial-macros, index]
+    settle: 16
+    # An ordinary window, so this one is a framebuffer grab — cropped to the window, because the
+    # desktop around it says nothing about macros.
+    crop: [158, 105, 712, 451]
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - right /Users/admin/pc-demo/Archives
+      - active l
+      - wait 900
+      - cmd cm_MacroEditor
+      - wait 2000
+      - closeeditor
+      - wait 800
+      - cmd cm_MacroManager
+      - wait 2500

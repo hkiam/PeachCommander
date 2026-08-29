@@ -3,7 +3,7 @@ title: Start-menuen og tilpassede kommandoer
 slug: start-menu
 section: Tilpasning
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 **Start**-menuen er din helt egen personlige menu, der sidder i menulinjen ved siden af Arkiv, Rediger og resten. Den indeholder kommandoer, du selv definerer, så de handlinger, du oftest griber efter, altid er kun ét klik væk. I traditionen fra klassiske topanels filhåndteringer kan hver post køre en indbygget kommando, starte et eksternt program eller en app, eller springe direkte til en mappe. Peach Commander leveres med Start-menuen tom og klar til, at du fylder den.

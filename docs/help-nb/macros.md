@@ -21,6 +21,9 @@ Du trenger ikke skrive en makro fra bunnen av.
 
 **Lagre makro**, og knappen er i raden. Det er hele runden.
 
+![Arket «Makro fra siste handlinger» med det du nettopp gjorde som avkryssbare trinn](screenshots/macro-recorder.png)
+*Det som allerede har skjedd, tilbudt som trinnene i en ny makro.*
+
 Listen inneholder begge deler: hva du har gjort i panelene (F5, F6, F7, F8 og et navnebytte), og hva assistenten eller en annen makro har gjort. Hver linje sier hvilken av de to — for etter en økt med begge kan de samme to filene dukke opp i hver av dem.
 
 > **Hva som ikke tilbys.** Å pakke et arkiv, og alt annet appen bare holder på ved navn, kan ikke bli et trinn — det finnes ingen form å gi det. Slike linjer står grå med sin begrunnelse i stedet for å mangle, så en liste på fem som tilbyr tre ikke leses som om den overså to. Og med mindre du ber om noe annet, er stiene de som faktisk ble brukt: en innspilt makro gjentar *den* kopien, ikke «en kopi av det slaget». Åpne den i editoren og sett `%S` eller `%T` der den skal følge panelene.
@@ -29,7 +32,7 @@ Listen inneholder begge deler: hva du har gjort i panelene (F5, F6, F7, F8 og et
 
 ## Eksemplene som følger med
 
-Første gang du åpner **Konfigurasjon ▸ Rediger makroer…**, opprettes filen med sju gjennomarbeidede eksempler. Det er helt vanlige makroer — endre dem, eller slett dem du ikke vil ha — og hver av dem bærer en kommentar som sier hva den gjør og hva du kan endre:
+Første gang du åpner **Konfigurasjon ▸ Rediger makroer…**, opprettes filen med åtte gjennomarbeidede eksempler. Det er helt vanlige makroer — endre dem, eller slett dem du ikke vil ha — og hver av dem bærer en kommentar som sier hva den gjør og hva du kan endre:
 
 | Makro | Hva den gjør |
 | --- | --- |
@@ -47,6 +50,9 @@ Hver av dem blir en kommando, så du kan legge hvilken som helst av dem på en k
 ## Å håndtere dem
 
 **Konfigurasjon ▸ Håndter makroer…** er listen: hva hver makro heter, hva kommandoen heter, hvor mange trinn den har, og hva rettighetsspørsmålet vil kreve — slik at «denne sletter» er synlig før du legger den på en tast. Derfra kan du gi nytt navn, duplisere, omordne og slette. Holder du over en rad, ser du trinnene.
+
+![Vinduet «Håndter makroer» med kommandonavn, antall trinn og tillatelse for hver makro](screenshots/macro-manager.png)
+*Hva hver makro heter, hva den kjører som, og hva den vil be om lov til.*
 
 Rekkefølgen er ikke pynt: filens rekkefølge er den Kommandooversikten og knapperadens velger viser dem i.
 
@@ -125,7 +131,10 @@ Hver makro blir en kommando med navnet `mc_<id>` og dukker derfor opp av seg sel
 - `.mnu`-menyfilen din og `usercmd.ini`, hvis du bruker dem
 - Assistenten, som kan kjøre den på navn
 
-Før en makro som endrer noe kjører, viser den trinnene sine som en liste og venter. Du kan stryke et trinn du ikke vil ha; det som blir igjen er det som kjøres. En makro som bare leser, kjøres uten å spørre.
+Før en makro som endrer noe kjører, viser den trinnene sine som en liste og venter. Du kan stryke et trinn du ikke vil ha; det som blir igjen er det som kjøres. En makro som bare leser, kjøres uten å spørre. **Å stryke et trinn tar med seg trinnene som avhenger av det** — en makro er en rekkefølge, og trinnet som fyller mappen kan ikke kjøre uten trinnet som oppretter den: de radene slår seg av selv og blir grå. Sett trinnet tilbake, og de kommer igjen — bortsett fra dem du selv strøk ut; de blir stående ute.
+
+![Makroens bekreftelsesdialog, hvert trinn en avkryssingsboks som navngir filene](screenshots/macro-confirm.png)
+*Trinnene, løst opp mot panelene dine — hvert enkelt kan strykes.*
 
 Alt som kan ses å være galt før starten — et verktøy som ikke finnes, et manglende argument, et trinn som ville kjørt en annen makro — stopper makroen før første trinn, ikke etter det tredje. Feiler et trinn underveis, **stopper makroen der** i stedet for å fortsette: trinn to forutsetter som regel at trinn én fant sted, og å flytte filer inn i en mappe som ikke ble opprettet er ingen delvis suksess. Rapporten nevner trinnet, sier hva som gikk galt og hvor mange trinn som allerede var utført; hvert av dem står i handlingsloggen, med veien tilbake der den finnes.
 ## Hva en makro har lov til

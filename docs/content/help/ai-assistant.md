@@ -4,7 +4,7 @@ slug: ai-assistant
 group: Plugins
 section: Plugins
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It comes as two plugins: **AI On-Device** runs on Apple Intelligence and gives you the actions that show a proposal and apply it, while **AI Assistant** is the chat and needs a cloud model. Enable either, or both. **It arrives switched off.** Turn it on in **Configuration ▸ Plugins…** and restart, or leave it off and nothing about it appears — no AI ▸ menu, no chat, no column. That is deliberate while it is in beta: it can rename, move and delete files and run shell commands for you, each behind a plan you approve, and that is a lot of reach to hand a new feature by default. Without an API key it works entirely on your Mac, so this is about the reach and not about anything leaving the machine. The **AI Column** plugin shows what those actions worked out — a summary, a kind, a topic, a date — as panel columns; it starts no model of its own. It arrives switched off with them and stays optional, and shows nothing until you switch it on and add one of its columns. You can also remove either one entirely from the same page.
@@ -68,6 +68,8 @@ For anything that modifies files — moving, renaming, writing, deleting — the
 - **Undo the last change** takes back the most recent change that has an inverse: a rename is renamed back, a move is moved back. Where nothing can be taken back, the list says why — an overwritten file was not kept anywhere, and items in the Trash are restored from the Finder.
 
 You can also just ask: *"undo that"* and *"what did you change?"* reach the same two functions.
+
+That list is also where a macro comes from: **Configuration ▸ Macro from Recent Actions…** offers what the assistant just did as the steps of one you can run again, on a button or a key. See [Macros](macros.md).
 
 ## Panel columns
 

@@ -3,7 +3,7 @@ title: Klawiatura i skróty
 slug: keyboard-shortcuts
 section: Dostosowywanie
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander jest zbudowany do sterowania z klawiatury. Dostarczany jest z dwoma gotowymi schematami skrótów i pozwala ponownie przypisać dowolne polecenie do preferowanych klawiszy. Jeśli przychodzisz z klasycznego dwupanelowego menedżera plików, możesz zachować klawisze, które już znasz; jeśli wolisz używać znanych kombinacji Mac, przełącz się na schemat macOS jednym kliknięciem. Przeszukiwalna przeglądarka poleceń pozwala odkryć wszystko, co aplikacja potrafi, i uruchomić dowolne polecenie po nazwie.

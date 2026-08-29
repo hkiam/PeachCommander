@@ -3,7 +3,7 @@ title: 시작 메뉴 및 사용자 지정 명령
 slug: start-menu
 section: 사용자 지정
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 **시작** 메뉴는 파일, 편집 등과 나란히 메뉴 막대에 자리 잡은, 여러분만의 개인 메뉴입니다. 직접 정의한 명령을 담고 있어 가장 자주 쓰는 동작이 항상 한 번의 클릭 거리에 있습니다. 고전적인 이중 패널 파일 관리자의 전통에 따라 각 항목은 기본 제공 명령을 실행하거나, 외부 프로그램이나 앱을 실행하거나, 폴더로 바로 이동할 수 있습니다. Peach Commander는 시작 메뉴를 비운 채로 제공하며 여러분이 채우기를 기다립니다.

@@ -3,7 +3,7 @@ title: Lišta tlačítek
 slug: toolbar
 section: Přizpůsobení
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Lišta tlačítek je pruh ikonových tlačítek podél horní části okna. Každé tlačítko je zkratka na jedno klepnutí, kterou si sami definujete: spustit vestavěný příkaz, spustit externí program nebo aplikaci, přeskočit do složky, nebo otevřít celou podlištu dalších tlačítek. Je to nejrychlejší způsob, jak mít akce, které používáte nejvíce, na dosah, a můžete ji přizpůsobit přesně způsobu, jakým pracujete.

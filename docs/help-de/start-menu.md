@@ -3,7 +3,7 @@ title: Das Start-Menü & eigene Befehle
 slug: start-menu
 section: Anpassen
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Das **Start**-Menü ist Ihr ganz persönliches Menü, das in der Menüleiste neben Datei, Bearbeiten und den übrigen steht. Es enthält Befehle, die Sie selbst definieren, sodass die Aktionen, zu denen Sie am häufigsten greifen, stets nur einen Klick entfernt sind. In der Tradition der klassischen Zwei-Panel-Dateimanager kann jeder Eintrag einen integrierten Befehl ausführen, ein externes Programm oder eine App starten oder direkt zu einem Ordner springen. Peach Commander wird mit leerem Start-Menü ausgeliefert, bereit, von Ihnen gefüllt zu werden.

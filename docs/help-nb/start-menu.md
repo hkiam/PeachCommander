@@ -3,7 +3,7 @@ title: Startmenyen og egendefinerte kommandoer
 slug: start-menu
 section: Tilpasning
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 **Start**-menyen er din egen personlige meny, som sitter i menylinjen ved siden av Arkiv, Rediger og resten. Den holder kommandoer du definerer selv, så handlingene du oftest griper etter alltid er ett klikk unna. I tradisjonen fra klassiske topanels filbehandlere kan hver oppføring kjøre en innebygd kommando, starte et eksternt program eller en app, eller hoppe rett til en mappe. Peach Commander leveres med Startmenyen tom og klar for at du skal fylle den.

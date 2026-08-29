@@ -3,7 +3,7 @@ title: Menu Start i polecenia niestandardowe
 slug: start-menu
 section: Dostosowywanie
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Menu **Start** to Twoje własne osobiste menu, znajdujące się na pasku menu obok Plik, Edycja i pozostałych. Zawiera polecenia, które sam definiujesz, dzięki czemu akcje, po które sięgasz najczęściej, są zawsze o jedno kliknięcie. W tradycji klasycznych dwupanelowych menedżerów plików każda pozycja może uruchomić wbudowane polecenie, uruchomić zewnętrzny program lub aplikację, albo przeskoczyć prosto do folderu. Peach Commander jest dostarczany z pustym menu Start, gotowym do wypełnienia przez Ciebie.

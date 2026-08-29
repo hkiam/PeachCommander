@@ -22,6 +22,9 @@ You do not have to write a macro from scratch.
 
 **Save Macro**, and the button is in the bar. That is the whole loop.
 
+![The Macro from Recent Actions sheet, listing what was just done as tickable steps](screenshots/macro-recorder.png)
+*What has already happened, offered as the steps of a new macro.*
+
 The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) and what the assistant or another macro did. Each row says which, because after a session with both, the same two files can appear in each.
 
 > **What is not offered.** Packing an archive, and anything else the app records only by name, cannot be turned into a step — there is no shape for it to take. Those rows are shown greyed out with the reason rather than left out, so a list of five that offers three does not read as having missed two. And unless you ask otherwise, the paths are the ones that actually ran: a recorded macro repeats *that* copy, not "a copy like it".
@@ -30,7 +33,7 @@ The list holds both: what you did in the panels (F5, F6, F7, F8 and a rename) an
 
 ## The examples that come with it
 
-The first time you open **Configuration ▸ Edit Macros…**, the file is seeded with seven worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:
+The first time you open **Configuration ▸ Edit Macros…**, the file is seeded with eight worked examples. They are ordinary macros — change them, or delete the ones you do not want — and each carries a comment saying what it does and what to change:
 
 | Macro | What it does |
 | --- | --- |
@@ -48,6 +51,9 @@ Each of them becomes a command, so you can put any of them on a button or a key 
 ## Managing them
 
 **Configuration ▸ Manage Macros…** is the list: what each macro is called, its command name, how many steps it has, and what the permission gate will ask for — so "this one deletes" is visible before you put it on a key. From there you can rename, duplicate, reorder and delete. Hovering a row shows its steps.
+
+![The Manage Macros window listing each macro with its command name, step count and permission](screenshots/macro-manager.png)
+*What each macro is called, what it runs as, and what it will ask permission for.*
 
 Reordering is not decoration: the file's order is the order the Command Browser and the button-bar picker list them in.
 
@@ -125,7 +131,10 @@ Each macro becomes a command called `mc_<id>`, so it appears by itself in:
 - Your `.mnu` menu file and `usercmd.ini`, if you use those
 - The assistant, which can run it by name
 
-Before a macro that changes anything runs, it shows you its steps as a list and waits. You can strike out a step you do not want; what is left is what runs. A macro that only reads runs without asking.
+Before a macro that changes anything runs, it shows you its steps as a list and waits. You can strike out a step you do not want; what is left is what runs. A macro that only reads runs without asking. **Striking one out takes the steps that depend on it with it** — a macro is a sequence, and the step that fills the folder cannot run without the step that creates it: those rows switch themselves off and grey out. Put the step back and they come back, except any you struck out yourself, which stay struck out.
+
+![The macro confirmation dialog, each step a checkbox naming the files it will act on](screenshots/macro-confirm.png)
+*The steps, resolved against your panels — every one of them strikeable.*
 
 Anything that can be seen to be wrong before the macro starts — a tool that does not exist, a missing argument, a step that would run another macro — stops it before the first step, not after the third. If a step fails once it is running, the macro **stops there** rather than carrying on — step two of a macro usually assumes step one happened, and moving files into a folder that was not created is not a partial success. The report names the step, says what went wrong and says how many steps had already been carried out; each of them is in the action log with its own way back, where it has one.
 

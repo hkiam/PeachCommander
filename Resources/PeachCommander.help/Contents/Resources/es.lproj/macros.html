@@ -21,13 +21,15 @@
 <li>Marque <strong>Seguir a los paneles en vez de a estos archivos concretos</strong> si la macro debe trabajar la próxima vez con lo que esté seleccionado. Las filas cambian al marcarla, así que ve lo que va a guardar.</li>
 </ol>
 <p><strong>Guardar macro</strong>, y el botón ya está en la barra. Ese es todo el ciclo.</p>
+<p><img alt="La hoja «Macro a partir de acciones recientes», con lo recién hecho como pasos marcables" src="images/macro-recorder.png" />
+<em>Lo que ya ha ocurrido, ofrecido como los pasos de una macro nueva.</em></p>
 <p>La lista contiene ambas cosas: lo que hizo usted en los paneles (F5, F6, F7, F8 y un renombrado) y lo que hizo el asistente u otra macro. Cada fila dice cuál de las dos, porque tras una sesión con ambas los mismos dos archivos pueden aparecer en cada una.</p>
 <blockquote>
 <p><strong>Lo que no se ofrece.</strong> Empaquetar un archivo comprimido, y todo lo demás que la aplicación solo guarda por su nombre, no puede convertirse en un paso: no hay forma que darle. Esas filas se muestran atenuadas con su motivo en vez de omitirse, para que una lista de cinco que ofrece tres no parezca haberse dejado dos. Y salvo que pida otra cosa, las rutas son las que se usaron de verdad: una macro grabada repite <em>esa</em> copia, no «una copia parecida». Ábrala en el editor y ponga <code>%S</code> o <code>%T</code> donde quiera que siga a los paneles.</p>
 </blockquote>
 <p><strong>Seguir a los paneles</strong> es cómo se pide otra cosa. Los archivos que venían todos de una carpeta pasan a ser la selección; una carpeta que es uno de los dos paneles pasa a ser ese panel, y una carpeta dentro de ella conserva su cola: un «mover estas cuatro facturas a Documentos/2026-08» grabado se convierte en «mover lo seleccionado a <em>2026-08</em> del otro lado», y mañana funciona en dos carpetas distintas. Lo que no esté bajo ninguno de los dos paneles se queda como la ruta que es, porque no hay nada en lo que plegarlo. La opción solo se ofrece cuando cambiaría algo.</p>
 <h2 id="los-ejemplos-que-vienen-incluidos">Los ejemplos que vienen incluidos</h2>
-<p>La primera vez que abre <strong>Configuración ▸ Editar macros…</strong>, el archivo se crea con siete ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:</p>
+<p>La primera vez que abre <strong>Configuración ▸ Editar macros…</strong>, el archivo se crea con ocho ejemplos trabajados. Son macros normales — cámbielas, o borre las que no quiera — y cada una lleva un comentario que dice qué hace y qué conviene cambiar:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Cada una se convierte en un comando, así que puede poner cualquiera en un botón o en una tecla sin escribir nada.</p>
 <h2 id="gestionarlas">Gestionarlas</h2>
 <p><strong>Configuración ▸ Gestionar macros…</strong> es la lista: cómo se llama cada macro, cómo se llama su comando, cuántos pasos tiene y qué pedirá la comprobación de permisos, de modo que «esta borra» se ve antes de ponerla en una tecla. Desde ahí puede renombrar, duplicar, reordenar y borrar. Al pasar por encima de una fila se ven sus pasos.</p>
+<p><img alt="La ventana «Gestionar macros», con el nombre de orden, el número de pasos y el permiso de cada macro" src="images/macro-manager.png" />
+<em>Cómo se llama cada macro, como qué se ejecuta y para qué pedirá permiso.</em></p>
 <p>Reordenar no es adorno: el orden del archivo es el orden en que las listan el Explorador de comandos y el selector de la barra de botones.</p>
 <p><strong>Al borrar se ofrece llevarse los botones</strong>, y conviene saberlo aunque nunca use esta ventana: una macro quitada a mano deja atrás su botón y su tecla, y ninguno hace ya nada — ahora la aplicación dice que la macro no está, en vez de callar, pero el botón sigue siendo cosa suya. Una tecla o una entrada de menú hay que quitarla donde se puso.</p>
 <p>Los <em>pasos</em> no se editan aquí. <strong>Editar archivo…</strong> cede el paso al editor para eso, por la misma razón por la que no hay formulario: un paso es un nombre de herramienta con sus argumentos, que es justo lo que es JSON.</p>
@@ -158,7 +162,9 @@
 <li>Tu archivo de menú <code>.mnu</code> y <code>usercmd.ini</code>, si los usas</li>
 <li>El asistente, que puede ejecutarla por su nombre</li>
 </ul>
-<p>Antes de que se ejecute una macro que cambia algo, te muestra sus pasos como una lista y espera. Puedes tachar un paso que no quieras; lo que quede es lo que se ejecuta. Una macro que solo lee se ejecuta sin preguntar.</p>
+<p>Antes de que se ejecute una macro que cambia algo, te muestra sus pasos como una lista y espera. Puedes tachar un paso que no quieras; lo que quede es lo que se ejecuta. Una macro que solo lee se ejecuta sin preguntar. <strong>Tachar un paso se lleva consigo los que dependen de él</strong> — una macro es una secuencia, y el paso que llena la carpeta no puede ejecutarse sin el que la crea: esas filas se desmarcan solas y se atenúan. Vuelve a marcar el paso y regresan — salvo las que tachaste tú, que siguen tachadas.</p>
+<p><img alt="El diálogo de confirmación de una macro, cada paso una casilla que nombra los archivos que tocará" src="images/macro-confirm.png" />
+<em>Los pasos, resueltos contra tus paneles — cada uno se puede tachar.</em></p>
 <p>Todo lo que puede verse mal antes de empezar — una herramienta que no existe, un argumento que falta, un paso que ejecutaría otra macro — la detiene antes del primer paso, no después del tercero. Si un paso falla ya en marcha, la macro <strong>se detiene ahí</strong> en vez de seguir: el paso dos suele suponer que el paso uno ocurrió, y mover archivos a una carpeta que no se creó no es un éxito parcial. El informe nombra el paso, dice qué salió mal y cuántos pasos se habían llevado a cabo ya; cada uno está en el registro de acciones, con su vuelta atrás donde la tiene.</p>
 <h2 id="que-se-le-permite-hacer-a-una-macro">Qué se le permite hacer a una macro</h2>
 <p>Una macro se mide por lo más exigente que contiene. Una macro cuyos pasos solo leen se trata como una lectura; una que acaba en un borrado permanente se controla como un borrado permanente — antes de que se ejecute nada, no cuatro pasos después.</p>

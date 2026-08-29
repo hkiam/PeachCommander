@@ -3,7 +3,7 @@ title: Tastatur og genveje
 slug: keyboard-shortcuts
 section: Tilpasning
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander er bygget til at blive styret fra tastaturet. Den leveres med to færdiglavede genvejsskemaer og lader dig ombinde enhver kommando til de taster, du foretrækker. Hvis du kommer fra en klassisk topanels filhåndtering, kan du beholde de taster, du allerede kender; hvis du hellere vil bruge velkendte Mac-kombinationer, skift til macOS-skemaet med ét klik. En søgbar kommandooversigt lader dig opdage alt, hvad appen kan, og køre enhver kommando efter navn.

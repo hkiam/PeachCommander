@@ -3,7 +3,7 @@ title: MI-asszisztens
 slug: ai-assistant
 section: Bővítmények
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 A MI-asszisztens egy választható, eltávolítható bővítmény, amely hétköznapi nyelven segít a fájljaival dolgozni. Össze tud foglalni vagy el tud magyarázni egy dokumentumot, jobb fájlnevet javasol, szöveget fordít vagy átnéz, adatokból táblázatot készít, sőt rendet is rak egy mappában — és el tudja végezni Ön helyett a fájlműveleteket, miután előbb megmutatta a tervet. Két bővítményként érkezik: az **AI On-Device** az Apple Intelligence-en fut, és azokat a műveleteket adja, amelyek javaslatot mutatnak, majd alkalmazzák, míg az **AI Assistant** a csevegés, és felhőmodellt igényel. Kapcsolja be az egyiket, vagy mindkettőt. **Kikapcsolva érkeznek.** Kapcsolja be őket a **Beállítás ▸ Bővítmények…** alatt és indítsa újra, vagy hagyja kikapcsolva, és semmi sem jelenik meg — nincs MI ▸ menü, nincs csevegés, nincs oszlop. Ez szándékos, amíg a funkció bétában van: át tud nevezni, mozgatni és törölni fájlokat, és shell-parancsokat is futtat Ön helyett, mindegyiket egy Ön által jóváhagyott terv mögött, és ez sok hatáskör ahhoz, hogy egy újdonságnak alapértelmezés szerint adjuk. API-kulcs nélkül minden a Macen történik, tehát a hatáskörről van szó, nem arról, hogy bármi elhagyná a gépet. Az **AI Column** bővítmény azt mutatja, amit ezek a műveletek kiderítettek — összefoglalót, fajtát, témát, dátumot — panel-oszlopokként; saját modellt nem indít. Velük együtt kikapcsolva érkezik, választható marad, és semmit sem mutat, amíg be nem kapcsolja és hozzá nem adja valamelyik oszlopát. Ugyanarról az oldalról bármelyiket teljesen el is távolíthatja.
@@ -67,6 +67,8 @@ A csevegésben a **Műveletek ▾** két bejegyzést tartalmaz:
 - **Utolsó módosítás visszavonása** visszaveszi a legutóbbi olyan módosítást, amelynek van ellentéte: egy átnevezés vissza lesz nevezve, egy mozgatás vissza lesz mozgatva. Ahol semmit sem lehet visszavenni, a lista megmondja, miért — egy felülírt fájlt sehol sem őriztünk meg, a Kukában lévő elemeket pedig a Finderből lehet visszaállítani.
 
 Egyszerűen kérdezni is lehet: a *„vond vissza"* és a *„mit módosítottál?"* ugyanahhoz a két funkcióhoz jut el.
+
+Ez a lista egyben az is, amiből egy makró születik: a **Beállítások ▸ Makró a legutóbbi műveletekből…** felkínálja, amit a segéd az imént tett, egy újra futtatható makró lépéseiként — gombról vagy billentyűről. Lásd: [Makrók](macros.md).
 
 ## Panel-oszlopok
 

@@ -21,13 +21,15 @@
 <li>Spuntate <strong>Seguire i pannelli invece di questi file precisi</strong> se la macro deve lavorare la prossima volta su ciò che sarà selezionato. Le righe cambiano mentre spuntate, così vedete cosa state per salvare.</li>
 </ol>
 <p><strong>Salva macro</strong>, e il pulsante è nella barra. È tutto il ciclo.</p>
+<p><img alt="Il foglio «Macro dalle azioni recenti», con quanto appena fatto come passi spuntabili" src="images/macro-recorder.png" />
+<em>Quello che è già successo, offerto come i passi di una nuova macro.</em></p>
 <p>L’elenco contiene entrambe le cose: quello che avete fatto nei pannelli (F5, F6, F7, F8 e una rinomina) e quello che ha fatto l’assistente o un’altra macro. Ogni riga dice quale delle due, perché dopo una sessione con entrambe gli stessi due file possono comparire in ciascuna.</p>
 <blockquote>
 <p><strong>Cosa non viene offerto.</strong> Creare un archivio, e tutto il resto che l’applicazione registra solo per nome, non può diventare un passo: non c’è una forma da dargli. Quelle righe restano visibili in grigio con la loro ragione invece di sparire, così un elenco di cinque che ne offre tre non sembra averne mancati due. E se non chiedete altrimenti, i percorsi sono quelli davvero usati: una macro registrata ripete <em>quella</em> copia, non «una copia del genere». Apritela nell’editor e mettete <code>%S</code> o <code>%T</code> dove volete che segua i pannelli.</p>
 </blockquote>
 <p><strong>Seguire i pannelli</strong> è il modo di chiedere altrimenti. I file venuti tutti da una cartella diventano la selezione; una cartella che è uno dei due pannelli diventa quel pannello, e una cartella al suo interno conserva la coda — un «sposta queste quattro fatture in Documenti/2026-08» registrato diventa «sposta ciò che è selezionato in <em>2026-08</em> dall’altra parte», e domani funziona in due cartelle diverse. Ciò che non sta sotto nessuno dei due pannelli resta il percorso che è, perché non c’è niente in cui ripiegarlo. L’opzione è offerta solo quando cambierebbe qualcosa.</p>
 <h2 id="gli-esempi-in-dotazione">Gli esempi in dotazione</h2>
-<p>La prima volta che aprite <strong>Configurazione ▸ Modifica macro…</strong>, il file viene creato con sette esempi completi. Sono macro normali — modificatele, oppure cancellate quelle che non volete — e ognuna porta un commento che dice cosa fa e cosa conviene cambiare:</p>
+<p>La prima volta che aprite <strong>Configurazione ▸ Modifica macro…</strong>, il file viene creato con otto esempi completi. Sono macro normali — modificatele, oppure cancellate quelle che non volete — e ognuna porta un commento che dice cosa fa e cosa conviene cambiare:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Ognuna diventa un comando, quindi potete metterne una qualsiasi su un pulsante o su un tasto senza scrivere nulla.</p>
 <h2 id="gestirle">Gestirle</h2>
 <p><strong>Configurazione ▸ Gestisci macro…</strong> è l’elenco: come si chiama ogni macro, come si chiama il suo comando, quanti passi ha e cosa chiederà il controllo dei permessi — così «questa cancella» si vede prima di metterla su un tasto. Da lì potete rinominare, duplicare, riordinare e cancellare. Passando sopra una riga se ne vedono i passi.</p>
+<p><img alt="La finestra «Gestisci macro», con nome del comando, numero di passi e permesso di ciascuna" src="images/macro-manager.png" />
+<em>Come si chiama ogni macro, come cosa gira e per cosa chiederà il permesso.</em></p>
 <p>Riordinare non è ornamento: l’ordine del file è l’ordine in cui le elencano l’Elenco comandi e il selettore della barra dei pulsanti.</p>
 <p><strong>Cancellando vi si propone di portare via anche i pulsanti</strong>, e vale la pena saperlo anche se non aprite mai questa finestra: una macro rimossa a mano lascia dietro di sé il suo pulsante e il suo tasto, e nessuno dei due fa più nulla — ora l’applicazione dice che la macro non c’è più invece di tacere, ma il pulsante resta affar vostro. Un tasto o una voce di menu va tolto dove è stato messo.</p>
 <p>I <em>passi</em> non si modificano qui. <strong>Modifica file…</strong> passa la mano all’editor per quello, per la stessa ragione per cui non c’è un modulo: un passo è il nome di uno strumento con i suoi argomenti, ed è esattamente ciò che JSON è.</p>
@@ -158,7 +162,9 @@
 <li>Il tuo file di menu <code>.mnu</code> e <code>usercmd.ini</code>, se li usi</li>
 <li>L’assistente, che può eseguirla per nome</li>
 </ul>
-<p>Prima che una macro che modifica qualcosa venga eseguita, ti mostra i suoi passi come elenco e attende. Puoi escludere un passo che non vuoi; ciò che resta è ciò che viene eseguito. Una macro che solo legge parte senza chiedere.</p>
+<p>Prima che una macro che modifica qualcosa venga eseguita, ti mostra i suoi passi come elenco e attende. Puoi escludere un passo che non vuoi; ciò che resta è ciò che viene eseguito. Una macro che solo legge parte senza chiedere. <strong>Cancellare un passo si porta via quelli che dipendono da esso</strong> — una macro è una sequenza, e il passo che riempie la cartella non può girare senza quello che la crea: quelle righe si spengono da sole e diventano grigie. Rimettete il passo e tornano — tranne quelle che avete cancellato voi, che restano cancellate.</p>
+<p><img alt="Il dialogo di conferma di una macro, ogni passo una casella che nomina i file su cui agirà" src="images/macro-confirm.png" />
+<em>I passi, risolti sui vostri pannelli — ognuno è cancellabile.</em></p>
 <p>Tutto ciò che si può riconoscere come sbagliato prima della partenza — uno strumento che non esiste, un argomento mancante, un passo che eseguirebbe un'altra macro — la ferma prima del primo passo, non dopo il terzo. Se un passo fallisce mentre gira, la macro <strong>si ferma lì</strong> invece di proseguire: il passo due di solito presuppone che il passo uno sia avvenuto, e spostare file in una cartella non creata non è un successo parziale. Il rapporto nomina il passo, dice cosa è andato storto e quanti passi erano già stati eseguiti; ciascuno è nel registro delle azioni, con la sua via di ritorno dove esiste.</p>
 <h2 id="cosa-puo-fare-una-macro">Cosa può fare una macro</h2>
 <p>Una macro è valutata sulla cosa più impegnativa che contiene. Una macro i cui passi solo leggono è trattata come una lettura; una che termina con un’eliminazione definitiva è protetta come un’eliminazione definitiva — prima che parta qualunque cosa, non quattro passi dopo.</p>

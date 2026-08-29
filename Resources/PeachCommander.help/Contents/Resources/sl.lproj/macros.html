@@ -21,13 +21,15 @@
 <li>Označite <strong>Sledi oknom namesto točno tem datotekam</strong>, če naj makro naslednjič dela s tem, kar bo takrat izbrano. Vrstice se ob označitvi spremenijo, tako da vidite, kaj shranjujete.</li>
 </ol>
 <p><strong>Shrani makro</strong> — in gumb je v vrstici. To je ves postopek.</p>
+<p><img alt="List »Makro iz nedavnih dejanj« s tem, kar ste pravkar naredili, kot koraki za obkljukanje" src="images/macro-recorder.png" />
+<em>Kar se je že zgodilo, ponujeno kot koraki novega makra.</em></p>
 <p>Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje) in kaj je naredil pomočnik ali drug makro. Vsaka vrstica pove, katero od obojega — po seji z obojim se namreč isti dve datoteki lahko pojavita v vsaki.</p>
 <blockquote>
 <p><strong>Kaj ni ponujeno.</strong> Pakiranje arhiva in vse drugo, kar si program zapomni le po imenu, ne more postati korak — zanj ni oblike. Take vrstice so vidne sivo skupaj z razlogom, namesto da bi manjkale, da seznam petih, ki ponudi tri, ne izgleda, kot da je dve spregledal. In če ne zahtevate drugače, so poti tiste, ki so res tekle: posneti makro ponovi <em>tisto</em> kopijo, ne »kopije te vrste«. Odprite ga v urejevalniku in postavite <code>%S</code> ali <code>%T</code> tja, kjer naj sledi oknom.</p>
 </blockquote>
 <p><strong>Sledi oknom</strong> je način, kako zahtevate drugače. Datoteke, ki so vse prišle iz ene mape, postanejo izbor; mapa, ki je eno od obeh oken, postane to okno, mapa znotraj nje pa obdrži svoj rep — iz posnetega »premakni te štiri račune v Dokumenti/2026-08« nastane »premakni izbrano v <em>2026-08</em> na drugi strani«, in jutri to deluje v dveh drugih mapah. Kar ne leži pod nobenim od obeh oken, ostane pot, kar je — ni ničesar, v kar bi jo zložili. Možnost je ponujena le, kadar bi kaj spremenila.</p>
 <h2 id="prilozeni-primeri">Priloženi primeri</h2>
-<p>Ko prvič odprete <strong>Konfiguracija ▸ Uredi makre…</strong>, se datoteka ustvari s sedmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:</p>
+<p>Ko prvič odprete <strong>Konfiguracija ▸ Uredi makre…</strong>, se datoteka ustvari z osmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Vsak od njih postane ukaz, tako da lahko kateregakoli postavite na gumb ali na tipko, ne da bi karkoli napisali.</p>
 <h2 id="upravljanje">Upravljanje</h2>
 <p><strong>Konfiguracija ▸ Upravljanje makrov…</strong> je ta seznam: kako se vsak makro imenuje, kako se imenuje njegov ukaz, koliko korakov ima in kaj bo zahtevalo preverjanje dovoljenj — »ta briše« je torej vidno, preden ga postavite na tipko. Od tam lahko preimenujete, podvojite, prerazvrstite in izbrišete. Če se ustavite nad vrstico, vidite njene korake.</p>
+<p><img alt="Okno »Upravljanje makrov« z imenom ukaza, številom korakov in dovoljenjem vsakega makra" src="images/macro-manager.png" />
+<em>Kako se vsak makro imenuje, kot kaj teče in za kaj bo prosil za dovoljenje.</em></p>
 <p>Vrstni red ni okras: vrstni red v datoteki je tisti, v katerem jih naštevata Brskalnik ukazov in izbirnik za orodno vrstico.</p>
 <p><strong>Pri brisanju je ponujeno, da gumbi odidejo z njim</strong>, in to je vredno vedeti, tudi če tega okna nikoli ne odprete: makro, odstranjen na roko, pusti za sabo svoj gumb in svojo tipko, in nobeno od obojega potem ne naredi ničesar — program zdaj pove, da makra ni, namesto da bi molčal, gumb pa ostane vaša stvar. Tipko ali vnos v meniju je treba odstraniti tam, kjer je bil nastavljen.</p>
 <p><em>Korakov</em> tu ne urejate. <strong>Uredi datoteko…</strong> to preda urejevalniku, iz istega razloga, iz katerega tu ni obrazca: korak je ime orodja z njegovimi argumenti, in prav to je JSON.</p>
@@ -158,7 +162,9 @@
 <li>Vaši datoteki menija <code>.mnu</code> in <code>usercmd.ini</code>, če ju uporabljate</li>
 <li>Pomočniku, ki ga lahko zažene po imenu</li>
 </ul>
-<p>Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja.</p>
+<p>Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja. <strong>Če prečrtate korak, s seboj vzame korake, ki so od njega odvisni</strong> — makro je zaporedje in korak, ki mapo napolni, ne more teči brez koraka, ki jo ustvari: te vrstice se same izklopijo in posivijo. Korak vrnite in vrnejo se tudi one — razen tistih, ki ste jih prečrtali sami; te ostanejo prečrtane.</p>
+<p><img alt="Potrditveno okno makra, vsak korak potrditveno polje z imeni datotek" src="images/macro-confirm.png" />
+<em>Koraki, razrešeni glede na vaša pulta — vsakega je mogoče prečrtati.</em></p>
 <p>Vse, kar je mogoče prepoznati kot napačno pred začetkom — orodje, ki ne obstaja, manjkajoč argument, korak, ki bi izvedel drug makro —, makro ustavi pred prvim korakom, ne po tretjem. Če korak spodleti že med tekom, se makro <strong>ustavi tam</strong> namesto da bi nadaljeval: korak dve običajno predpostavlja, da se je korak ena zgodil, in premikanje datotek v mapo, ki ni bila ustvarjena, ni delni uspeh. Poročilo imenuje korak, pove, kaj je šlo narobe, in koliko korakov je bilo že izvedenih; vsak od njih je v dnevniku dejanj, s svojo potjo nazaj, kjer ta obstaja.</p>
 <h2 id="kaj-makro-sme">Kaj makro sme</h2>
 <p>Makro se presoja po najzahtevnejšem, kar je v njem. Makro, katerega koraki samo berejo, velja za branje; tisti, ki se konča s trajnim brisanjem, je varovan kot trajno brisanje — preden se karkoli zažene, ne štiri korake pozneje.</p>

@@ -21,13 +21,15 @@
 <li>Kryssa i <strong>Följ panelerna i stället för just dessa filer</strong> om makrot nästa gång ska arbeta med det som då är markerat. Raderna ändras medan du kryssar, så du ser vad du sparar.</li>
 </ol>
 <p><strong>Spara makro</strong>, och knappen finns i raden. Det är hela varvet.</p>
+<p><img alt="Bladet ”Makro från senaste åtgärder” med det du nyss gjorde som kryssbara steg" src="images/macro-recorder.png" />
+<em>Det som redan har hänt, erbjudet som stegen i ett nytt makro.</em></p>
 <p>Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en omdöpning) och vad assistenten eller ett annat makro har gjort. Varje rad säger vilket av de två — efter en session med båda kan samma två filer dyka upp i var och en.</p>
 <blockquote>
 <p><strong>Vad som inte erbjuds.</strong> Att packa ett arkiv, och allt annat appen bara håller reda på vid namn, kan inte bli ett steg — det finns ingen form att ge det. Sådana rader står gråa med sitt skäl i stället för att saknas, så att en lista på fem som erbjuder tre inte läses som om den missat två. Och om du inte ber om annat är sökvägarna de som faktiskt användes: ett inspelat makro upprepar <em>den</em> kopian, inte ”en kopia av det slaget”. Öppna det i redigeraren och sätt <code>%S</code> eller <code>%T</code> där det ska följa panelerna.</p>
 </blockquote>
 <p><strong>Följ panelerna</strong> är hur man ber om annat. Filer som alla kom från en mapp blir markeringen; en mapp som är en av de två panelerna blir den panelen, och en mapp inuti den behåller sin svans — ett inspelat ”flytta dessa fyra fakturor till Dokument/2026-08” blir ”flytta det som är markerat till <em>2026-08</em> på andra sidan”, och det fungerar i morgon i två andra mappar. Det som inte ligger under någon av panelerna förblir den sökväg det är, för det finns inget att vika in det i. Alternativet erbjuds bara när det skulle ändra något.</p>
 <h2 id="exemplen-som-foljer-med">Exemplen som följer med</h2>
-<p>Första gången du öppnar <strong>Konfiguration ▸ Redigera makron…</strong> skapas filen med sju genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:</p>
+<p>Första gången du öppnar <strong>Konfiguration ▸ Redigera makron…</strong> skapas filen med åtta genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Vart och ett av dem blir ett kommando, så du kan lägga vilket som helst på en knapp eller en tangent utan att skriva något.</p>
 <h2 id="att-hantera-dem">Att hantera dem</h2>
 <p><strong>Konfiguration ▸ Hantera makron…</strong> är listan: vad varje makro heter, vad dess kommando heter, hur många steg det har och vad rättighetsfrågan kommer att kräva — så att ”det här raderar” syns innan du lägger det på en tangent. Därifrån kan du byta namn, duplicera, ordna om och radera. För du muspekaren över en rad ser du dess steg.</p>
+<p><img alt="Fönstret ”Hantera makron” med kommandonamn, antal steg och behörighet för varje makro" src="images/macro-manager.png" />
+<em>Vad varje makro heter, vad det körs som och vad det kommer att be om lov till.</em></p>
 <p>Ordningen är ingen utsmyckning: filens ordning är den som Kommandoöversikten och knappradens väljare listar dem i.</p>
 <p><strong>Vid radering erbjuds du att ta knapparna med</strong>, och det är värt att veta även om du aldrig öppnar det här fönstret: ett makro som tas bort för hand lämnar kvar sin knapp och sin tangent, och ingendera gör då något — appen säger nu att makrot är borta i stället för att tiga, men knappen är fortfarande din sak. En tangent eller ett menyval måste tas bort där det sattes.</p>
 <p><em>Stegen</em> redigeras inte här. <strong>Redigera fil…</strong> lämnar över till redigeraren för det, av samma skäl som det inte finns något formulär: ett steg är ett verktygsnamn med sina argument, och det är precis vad JSON är.</p>
@@ -158,7 +162,9 @@
 <li>Din <code>.mnu</code>-menyfil och <code>usercmd.ini</code>, om du använder dem</li>
 <li>Assistenten, som kan köra det på namn</li>
 </ul>
-<p>Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga.</p>
+<p>Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga. <strong>Att stryka ett steg tar med sig de steg som beror på det</strong> — ett makro är en följd, och steget som fyller mappen kan inte köra utan steget som skapar den: de raderna stänger av sig själva och gråas ut. Sätt tillbaka steget så kommer de tillbaka — utom de du själv strök, som förblir strukna.</p>
+<p><img alt="Makrots bekräftelsedialog, varje steg en kryssruta som namnger filerna" src="images/macro-confirm.png" />
+<em>Stegen, upplösta mot dina paneler — vart och ett går att stryka.</em></p>
 <p>Allt som går att se är fel före starten — ett verktyg som inte finns, ett saknat argument, ett steg som skulle köra ett annat makro — stoppar makrot före första steget, inte efter det tredje. Misslyckas ett steg under körningen <strong>stannar makrot där</strong> i stället för att fortsätta: steg två förutsätter oftast att steg ett ägde rum, och att flytta filer till en mapp som inte skapades är ingen delvis framgång. Rapporten nämner steget, säger vad som gick fel och hur många steg som redan hade utförts; vart och ett av dem står i åtgärdsloggen, med sin väg tillbaka där en sådan finns.</p>
 <h2 id="vad-ett-makro-far-gora">Vad ett makro får göra</h2>
 <p>Ett makro bedöms efter det mest krävande i det. Ett makro vars steg bara läser behandlas som en läsning; ett som slutar med en permanent radering hanteras som en permanent radering — innan något av det körs, inte fyra steg in.</p>

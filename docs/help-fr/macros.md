@@ -21,6 +21,9 @@ Vous n’avez pas à écrire une macro de zéro.
 
 **Enregistrer la macro**, et le bouton est dans la barre. C’est toute la boucle.
 
+![La feuille « Macro à partir des actions récentes », listant ce qui vient d’être fait comme étapes à cocher](screenshots/macro-recorder.png)
+*Ce qui s’est déjà passé, proposé comme les étapes d’une nouvelle macro.*
+
 La liste contient les deux : ce que vous avez fait dans les panneaux (F5, F6, F7, F8 et un renommage) et ce qu’a fait l’assistant ou une autre macro. Chaque ligne dit lequel des deux — car après une session mêlant les deux, les mêmes fichiers peuvent apparaître dans chacune.
 
 > **Ce qui n’est pas proposé.** Créer une archive, et tout ce que l’application ne retient que par son nom, ne peut pas devenir une étape — il n’y a pas de forme pour cela. Ces lignes apparaissent grisées avec leur raison plutôt que d’être omises, pour qu’une liste de cinq qui en propose trois ne donne pas l’impression d’en avoir manqué deux. Et sauf demande contraire, les chemins sont ceux qui ont réellement servi : une macro enregistrée répète *cette* copie-là, pas « une copie du même genre ». Ouvrez-la dans l’éditeur et mettez `%S` ou `%T` là où elle doit suivre les panneaux.
@@ -29,7 +32,7 @@ La liste contient les deux : ce que vous avez fait dans les panneaux (F5, F6, F7
 
 ## Les exemples fournis
 
-La première fois que vous ouvrez **Configuration ▸ Modifier les macros…**, le fichier est créé avec sept exemples complets. Ce sont des macros ordinaires — modifiez-les, ou supprimez celles dont vous ne voulez pas — et chacune porte un commentaire disant ce qu'elle fait et ce qu'on peut y changer :
+La première fois que vous ouvrez **Configuration ▸ Modifier les macros…**, le fichier est créé avec huit exemples complets. Ce sont des macros ordinaires — modifiez-les, ou supprimez celles dont vous ne voulez pas — et chacune porte un commentaire disant ce qu'elle fait et ce qu'on peut y changer :
 
 | Macro | Ce qu'elle fait |
 | --- | --- |
@@ -47,6 +50,9 @@ Chacune devient une commande : vous pouvez donc en mettre n'importe laquelle sur
 ## Les gérer
 
 **Configuration ▸ Gérer les macros…** est la liste : le nom de chaque macro, le nom de sa commande, son nombre d’étapes et ce que la demande d’autorisation exigera — « celle-ci supprime » est donc visible avant de la mettre sur une touche. De là vous pouvez renommer, dupliquer, réordonner et supprimer. Survoler une ligne montre ses étapes.
+
+![La fenêtre « Gérer les macros », avec le nom de commande, le nombre d’étapes et l’autorisation de chacune](screenshots/macro-manager.png)
+*Le nom de chaque macro, ce sous quoi elle s’exécute, et ce pour quoi elle demandera l’autorisation.*
 
 L’ordre n’est pas décoratif : l’ordre du fichier est celui dans lequel le Navigateur de commandes et le sélecteur de la barre de boutons les listent.
 
@@ -125,7 +131,10 @@ Chaque macro devient une commande nommée `mc_<id>`, et apparaît donc d’elle-
 - Votre fichier de menu `.mnu` et `usercmd.ini`, si vous les utilisez
 - L’assistant, qui peut l’exécuter par son nom
 
-Avant qu’une macro qui modifie quelque chose ne s’exécute, elle vous montre ses étapes sous forme de liste et attend. Vous pouvez rayer une étape dont vous ne voulez pas ; ce qui reste est ce qui s’exécute. Une macro qui ne fait que lire s’exécute sans demander.
+Avant qu’une macro qui modifie quelque chose ne s’exécute, elle vous montre ses étapes sous forme de liste et attend. Vous pouvez rayer une étape dont vous ne voulez pas ; ce qui reste est ce qui s’exécute. Une macro qui ne fait que lire s’exécute sans demander. **Rayer une étape emporte celles qui en dépendent** — une macro est une séquence, et l’étape qui remplit le dossier ne peut pas s’exécuter sans celle qui le crée : ces lignes se décochent d’elles-mêmes et se grisent. Remettez l’étape et elles reviennent — sauf celles que vous aviez rayées vous-même, qui restent rayées.
+
+![Le dialogue de confirmation d’une macro, chaque étape une case à cocher nommant les fichiers concernés](screenshots/macro-confirm.png)
+*Les étapes, résolues sur vos panneaux — chacune peut être rayée.*
 
 Tout ce qui peut être reconnu comme faux avant le départ — un outil qui n'existe pas, un argument manquant, une étape qui exécuterait une autre macro — arrête la macro avant la première étape, et non après la troisième. Si une étape échoue en cours de route, la macro **s'arrête là** au lieu de continuer : l'étape deux suppose généralement que l'étape un a eu lieu, et déplacer des fichiers dans un dossier qui n'a pas été créé n'est pas un succès partiel. Le compte rendu nomme l'étape, dit ce qui s'est passé et combien d'étapes avaient déjà été exécutées ; chacune figure dans le journal des actions, avec son retour en arrière lorsqu'il existe.
 ## Ce qu’une macro est autorisée à faire

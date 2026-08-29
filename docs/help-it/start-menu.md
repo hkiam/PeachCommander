@@ -3,7 +3,7 @@ title: Il menu Avvio e i comandi personalizzati
 slug: start-menu
 section: Personalizzazione
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Il menu **Avvio** è il tuo menu personale, situato nella barra dei menu accanto a File, Modifica e agli altri. Contiene comandi che definisci tu stesso, così le azioni a cui ricorri più spesso sono sempre a un clic di distanza. Nella tradizione dei classici gestori di file a due pannelli, ogni voce può eseguire un comando integrato, avviare un programma o un'app esterna, o saltare direttamente a una cartella. Peach Commander viene fornito con il menu Avvio vuoto e pronto perché tu lo riempia.

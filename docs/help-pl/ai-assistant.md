@@ -3,7 +3,7 @@ title: Asystent AI
 slug: ai-assistant
 section: Wtyczki
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami zwykłym językiem. Potrafi streścić lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i potrafi wykonać za Ciebie operacje na plikach, pokazawszy najpierw plan. Przychodzi jako dwie wtyczki: **AI On-Device** działa na Apple Intelligence i daje akcje, które pokazują propozycję i ją stosują, a **AI Assistant** to czat i wymaga modelu w chmurze. Włącz jedną albo obie. **Przychodzą wyłączone.** Włącz je w **Konfiguracja ▸ Wtyczki…** i uruchom ponownie, albo zostaw wyłączone i nic się nie pojawi — żadnego menu AI ▸, żadnego czatu, żadnej kolumny. To celowe, dopóki funkcja jest w wersji beta: potrafi zmieniać nazwy plików, przenosić je i usuwać oraz uruchamiać za Ciebie polecenia powłoki, każde za planem, który zatwierdzasz, a to dużo zasięgu, by domyślnie powierzać go nowości. Bez klucza API wszystko dzieje się na Twoim Macu, więc chodzi o zasięg, a nie o dane opuszczające maszynę. Wtyczka **AI Column** pokazuje, co te akcje ustaliły — streszczenie, rodzaj, temat, datę — jako kolumny panelu; sama nie uruchamia żadnego modelu. Przychodzi wyłączona razem z nimi i pozostaje opcjonalna, i nie pokazuje nic, dopóki jej nie włączysz i nie dodasz którejś z jej kolumn. Z tej samej strony możesz też usunąć każdą z nich całkowicie.
@@ -67,6 +67,8 @@ Przy wszystkim, co zmienia pliki — przenoszeniu, zmianie nazwy, zapisie, usuwa
 - **Cofnij ostatnią zmianę** wycofuje najnowszą zmianę, która ma odwrotność: zmiana nazwy zostaje odwrócona, przeniesienie przeniesione z powrotem. Tam, gdzie nic nie da się wycofać, lista mówi dlaczego — nadpisany plik nie został nigdzie zachowany, a elementy w Koszu przywraca się z Findera.
 
 Możesz też po prostu poprosić: *„cofnij to"* i *„co zmieniłeś?"* sięgają do tych samych dwóch funkcji.
+
+Ta lista jest też źródłem makra: **Konfiguracja ▸ Makro z ostatnich działań…** proponuje to, co asystent właśnie zrobił, jako kroki makra, które możecie uruchomić ponownie — z przycisku albo z klawisza. Zobacz [Makra](macros.md).
 
 ## Kolumny panelu
 

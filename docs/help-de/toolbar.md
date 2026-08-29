@@ -3,7 +3,7 @@ title: Die Schaltflächenleiste
 slug: toolbar
 section: Anpassen
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Die Schaltflächenleiste ist der Streifen mit Symbolschaltflächen quer über den oberen Rand des Fensters. Jede Schaltfläche ist ein Ein-Klick-Kürzel, das Sie selbst definieren: einen integrierten Befehl ausführen, ein externes Programm oder eine App starten, zu einem Ordner springen oder eine ganze Unterleiste mit weiteren Schaltflächen öffnen. Sie ist der schnellste Weg, die Aktionen, die Sie am häufigsten verwenden, in Reichweite zu bringen, und Sie können sie genau auf Ihre Arbeitsweise zuschneiden.

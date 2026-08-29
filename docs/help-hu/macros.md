@@ -21,6 +21,9 @@ A makrót nem kell nulláról megírni.
 
 **Makró mentése** — és a gomb ott van a sávban. Ez az egész folyamat.
 
+![A „Makró a legutóbbi műveletekből” lap, az imént elvégzettekkel bejelölhető lépésekként](screenshots/macro-recorder.png)
+*Ami már megtörtént, egy új makró lépéseiként felkínálva.*
+
 A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 és egy átnevezés), és amit az asszisztens vagy egy másik makró csinált. Minden sor megmondja, melyikről van szó — mert egy vegyes munkamenet után ugyanaz a két fájl mindkettőben felbukkanhat.
 
 > **Amit nem kínál fel.** Archívum csomagolása, és minden más, amit az alkalmazás csak név szerint őriz meg, nem alakítható lépéssé — nincs hozzá forma. Az ilyen sorok szürkítve, az okukkal együtt látszanak, ahelyett hogy hiányoznának, hogy egy ötös lista, amely hármat kínál, ne tűnjön úgy, mintha kettőt elnézett volna. Az útvonalak pedig — hacsak nem kér mást — azok, amelyek valóban lefutottak: egy felvett makró *azt* a másolást ismétli meg, nem „egy olyasfajta másolást”. Nyissa meg a szerkesztőben, és tegyen `%S`-t vagy `%T`-t oda, ahol a paneleket kell követnie.
@@ -29,7 +32,7 @@ A lista mindkettőt tartalmazza: amit Ön csinált a paneleken (F5, F6, F7, F8 �
 
 ## A mellékelt példák
 
-Amikor először megnyitja a **Beállítások ▸ Makrók szerkesztése…** menüpontot, a fájl hét kidolgozott példával jön létre. Ezek hétköznapi makrók — módosítsa őket, vagy törölje azokat, amelyekre nincs szüksége —, és mindegyik visel egy megjegyzést arról, mit csinál és mit érdemes benne átírni:
+Amikor először megnyitja a **Beállítások ▸ Makrók szerkesztése…** menüpontot, a fájl nyolc kidolgozott példával jön létre. Ezek hétköznapi makrók — módosítsa őket, vagy törölje azokat, amelyekre nincs szüksége —, és mindegyik visel egy megjegyzést arról, mit csinál és mit érdemes benne átírni:
 
 | Makró | Mit csinál |
 | --- | --- |
@@ -47,6 +50,9 @@ Mindegyikből parancs lesz, így bármelyiket gombra vagy billentyűre teheti an
 ## Kezelésük
 
 A **Beállítások ▸ Makrók kezelése…** maga a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mit fog kérni a jogosultsági ellenőrzés — így a „ez itt töröl” látszik, mielőtt billentyűre tenné. Innen átnevezhet, kettőzhet, átrendezhet és törölhet. A sor fölé érve látszanak a lépései.
+
+![A „Makrók kezelése” ablak minden makró parancsnevével, lépésszámával és jogosultságával](screenshots/macro-manager.png)
+*Melyik makrót hogy hívják, miként fut, és mire fog engedélyt kérni.*
 
 A sorrend nem dísz: a fájl sorrendje az, amelyben a Parancsböngésző és a gombsor választója felsorolja őket.
 
@@ -125,7 +131,10 @@ Minden makró `mc_<id>` nevű paranccsá válik, és ezáltal magától megjelen
 - A `.mnu` menüfájljában és a `usercmd.ini` fájlban, ha használja őket
 - Az asszisztensben, amely név alapján futtatni tudja
 
-Mielőtt egy változtató makró lefut, listaként megmutatja a lépéseit és vár. Kihúzhatja azt a lépést, amelyet nem szeretne; ami marad, az fut le. A csak olvasó makró kérdés nélkül fut.
+Mielőtt egy változtató makró lefut, listaként megmutatja a lépéseit és vár. Kihúzhatja azt a lépést, amelyet nem szeretne; ami marad, az fut le. A csak olvasó makró kérdés nélkül fut. **Egy lépés kihúzása magával viszi a tőle függő lépéseket** — a makró egy sorozat, és a mappát megtöltő lépés nem futhat le a mappát létrehozó lépés nélkül: azok a sorok maguktól kikapcsolnak és elszürkülnek. Tegye vissza a lépést, és visszatérnek — kivéve azokat, amelyeket Ön húzott ki; azok kihúzva maradnak.
+
+![A makró megerősítő párbeszéde, minden lépés egy jelölőnégyzet a fájlok nevével](screenshots/macro-confirm.png)
+*A lépések, a paneljeihez feloldva — mindegyik kihúzható.*
 
 Minden, ami indulás előtt is felismerhetően hibás — nem létező eszköz, hiányzó argumentum, olyan lépés, amely másik makrót futtatna —, az első lépés előtt állítja meg a makrót, nem a harmadik után. Ha egy lépés futás közben hiúsul meg, a makró **ott áll meg**, ahelyett hogy folytatná: a második lépés rendszerint feltételezi, hogy az első megtörtént, és fájlokat egy létre nem jött mappába mozgatni nem részsiker. A jelentés megnevezi a lépést, elmondja, mi ment félre, és hány lépés futott már le; mindegyik szerepel a műveletnaplóban, a visszaútjával együtt, ahol van ilyen.
 ## Mit tehet egy makró

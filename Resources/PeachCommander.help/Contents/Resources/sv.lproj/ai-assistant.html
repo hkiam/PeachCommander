@@ -52,6 +52,7 @@
 <li><strong>Ångra senaste ändringen</strong> tar tillbaka den senaste ändringen som har en motsats: ett namnbyte byts tillbaka, en flytt flyttas tillbaka. Där ingenting kan tas tillbaka säger listan varför — en överskriven fil sparades ingenstans, och objekt i Papperskorgen återställs från Finder.</li>
 </ul>
 <p>Du kan också bara fråga: <em>"ångra det"</em> och <em>"vad har du ändrat?"</em> når samma två funktioner.</p>
+<p>Den listan är också där ett makro kommer ifrån: <strong>Konfiguration ▸ Makro från senaste åtgärder…</strong> erbjuder det assistenten just gjorde som stegen i ett makro du kan köra igen, från en knapp eller en tangent. Se <a href="macros.html">Makron</a>.</p>
 <h2 id="kolumner-i-panelen">Kolumner i panelen</h2>
 <p>Vad åtgärderna kom fram till finns som kolumner. Lägg till dem från kolumnuppsättningsredigeraren: <strong>AI-sammanfattning</strong> visar första raden i en sammanfattning, och <strong>AI-typ</strong>, <strong>AI-ämne</strong> och <strong>AI-datum</strong> visar vad <strong>Klassificera</strong> gjorde av en fil — under de namnen på svenska, översatta i varje språk. Var och en förblir tom tills en åtgärd har läst just den filen — de här kolumnerna visar redan utfört arbete och startar aldrig modellen själva. <strong>Språk</strong> i samma insticksprogram känner igen vilket språk en textfil är skriven på, helt utan modell.</p>
 <p>Samma tre är också namnbytesplatshållare. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> i dialogrutan för flerfilsnamnbyte (Ctrl+M) ger en mapp full av <code>dokument1.pdf</code> namn efter vad de är: ingenting byggdes för det, eftersom namnbytesmasken alltid har löst upp <code>[=provider.field]</code> genom kolumnsystemet. Klassificera först, byt namn sedan. Rubriken följer ditt språk; <code>ai_column.ai_topic</code> inuti masken gör det inte — en mask fortsätter alltså fungera om du byter språk.</p>
@@ -72,7 +73,7 @@
 <li>En molnmodell används <strong>bara om du ställer in en</strong>, och dess API-nyckel stannar i nyckelringen.</li>
 <li>Åtgärder som ändrar filer bekräftas innan de körs, om du inte medvetet höjer självständighetsnivån.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="settings.html">Inställningar</a></li><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="settings.html">Inställningar</a></li><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li><li><a href="macros.html">Makron</a></li></ul></section>
 </main>
 </body>
 </html>

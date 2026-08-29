@@ -52,6 +52,7 @@
 <li><strong>Vrátit poslední změnu</strong> vezme zpět nejnovější změnu, která má opak: přejmenování se přejmenuje zpět, přesun se přesune zpět. Kde vzít zpět nelze nic, seznam řekne proč — přepsaný soubor se nikde neuchoval a položky v Koši obnovíte z Finderu.</li>
 </ul>
 <p>Můžete se také prostě zeptat: <em>„vrať to"</em> a <em>„co jsi změnil?"</em> dosáhnou na tytéž dvě funkce.</p>
+<p>Ten seznam je zároveň tím, z čeho vzniká makro: <strong>Konfigurace ▸ Makro z posledních akcí…</strong> nabídne to, co asistent právě udělal, jako kroky makra, které můžete spustit znovu — z tlačítka nebo z klávesy. Viz <a href="macros.html">Makra</a>.</p>
 <h2 id="sloupce-panelu">Sloupce panelu</h2>
 <p>To, co akce zjistily, je k dispozici jako sloupce. Přidejte je v editoru sad sloupců: <strong>Shrnutí AI</strong> ukazuje první řádek shrnutí a <strong>Druh AI</strong>, <strong>Téma AI</strong> a <strong>Datum AI</strong> ukazují, co ze souboru udělalo <strong>Zařadit</strong> — pod těmito názvy v češtině, přeloženými v každém jazyce. Každý zůstane prázdný, dokud některá akce ten soubor nepřečte — tyto sloupce ukazují už odvedenou práci a model samy nikdy nespustí. <strong>Jazyk</strong> ve stejném modulu rozpozná, v jakém jazyce je textový soubor napsán, zcela bez modelu.</p>
 <p>Tytéž tři jsou i zástupné znaky pro přejmenování. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> v dialogu hromadného přejmenování (Ctrl+M) pojmenuje složku plnou souborů <code>dokument1.pdf</code> podle toho, co jsou: nic se pro to nestavělo, protože maska přejmenování <code>[=provider.field]</code> odjakživa řeší přes systém sloupců. Nejdřív zařadit, pak přejmenovat. Záhlaví se řídí vaším jazykem; <code>ai_column.ai_topic</code> uvnitř masky ne — maska tedy funguje dál, i když jazyk změníte.</p>
@@ -72,7 +73,7 @@
 <li>Cloudový model se použije <strong>jen pokud si nějaký nastavíte</strong> a jeho klíč API zůstává v klíčence.</li>
 <li>Akce měnící soubory se potvrzují dřív, než proběhnou, ledaže úroveň samostatnosti vědomě zvýšíte.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="settings.html">Nastavení</a></li><li><a href="privacy-and-security.html">Soukromí a zabezpečení</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="settings.html">Nastavení</a></li><li><a href="privacy-and-security.html">Soukromí a zabezpečení</a></li><li><a href="macros.html">Makra</a></li></ul></section>
 </main>
 </body>
 </html>

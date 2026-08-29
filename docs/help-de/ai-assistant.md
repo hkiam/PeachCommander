@@ -3,7 +3,7 @@ title: KI-Assistent
 slug: ai-assistant
 section: Plugins
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 Der KI-Assistent ist ein optionales, entfernbares Plugin, das Ihnen dabei hilft, in natürlicher Sprache mit Ihren Dateien zu arbeiten. Er kann ein Dokument zusammenfassen oder erläutern, einen besseren Dateinamen vorschlagen, Text übersetzen oder Korrektur lesen, Daten in eine Tabelle umwandeln und sogar einen Ordner organisieren – und er kann Dateiaktionen für Sie ausführen, nachdem er Ihnen zuvor einen Plan gezeigt hat. Er besteht aus zwei Plugins: **AI On-Device** läuft mit Apple Intelligence und liefert die Aktionen, die einen Vorschlag zeigen und ihn anwenden, während **AI Assistant** der Chat ist und ein Cloud-Modell benötigt. Aktivieren Sie eines von beiden oder beide. **Er kommt abgeschaltet.** Schalten Sie ihn in **Konfiguration ▸ Plugins…** ein und starten Sie neu — oder lassen Sie ihn aus, dann erscheint nichts von ihm: kein KI-Menü, kein Chat, keine Spalte. Das ist Absicht, solange er Beta ist: er kann Dateien umbenennen, verschieben und löschen und Shell-Befehle für Sie ausführen, jeweils hinter einem Plan, dem Sie zustimmen — und das ist viel Reichweite, um sie einer neuen Funktion von vornherein zu geben. Ohne API-Schlüssel arbeitet er vollständig auf Ihrem Mac; es geht hier also um die Reichweite und nicht darum, dass etwas das Gerät verlässt. Das Plugin **AI Column** zeigt als Panel-Spalten, was diese Aktionen ermittelt haben — Zusammenfassung, Art, Thema, Datum; es startet kein eigenes Modell. Es kommt mit ihnen abgeschaltet und bleibt optional und zeigt nichts, bevor Sie es einschalten und eine seiner Spalten hinzufügen. Beide können Sie auf derselben Seite auch ganz entfernen.
@@ -68,6 +68,8 @@ Bei allem, was Dateien verändert – Verschieben, Umbenennen, Schreiben, Lösch
 - **Letzte Änderung rückgängig** nimmt die neueste Änderung zurück, für die es eine Umkehrung gibt: ein Umbenennen wird zurückbenannt, ein Verschieben zurückverschoben. Wo nichts zurückgenommen werden kann, sagt die Liste warum — eine überschriebene Datei wurde nirgends aufbewahrt, und Papierkorb-Einträge holt man im Finder zurück.
 
 Sie können auch einfach fragen: *„mach das rückgängig"* und *„was hast du geändert?"* erreichen dieselben zwei Funktionen.
+
+Diese Liste ist auch der Ursprung eines Makros: **Konfiguration ▸ Makro aus letzten Aktionen…** bietet das, was der Assistent gerade getan hat, als Schritte eines Makros an, das Sie erneut ausführen können — auf einer Schaltfläche oder einer Taste. Siehe [Makros](macros.md).
 
 ## Spalten im Dateifenster
 

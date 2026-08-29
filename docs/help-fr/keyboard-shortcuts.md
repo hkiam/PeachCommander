@@ -3,7 +3,7 @@ title: Clavier et raccourcis
 slug: keyboard-shortcuts
 section: Personnalisation
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander est conçu pour être piloté au clavier. Il est livré avec deux schémas de raccourcis prêts à l'emploi et vous permet de réassigner n'importe quelle commande aux touches que vous préférez. Si vous venez d'un gestionnaire de fichiers classique à deux panneaux, vous pouvez conserver les touches que vous connaissez déjà ; si vous préférez les combinaisons Mac familières, basculez vers le schéma macOS en un clic. Un navigateur de commandes avec recherche vous permet de découvrir tout ce que l'application peut faire et d'exécuter n'importe quelle commande par son nom.

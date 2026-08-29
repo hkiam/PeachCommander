@@ -32,6 +32,32 @@ does not have.
   and Czech "2 kroků" in a first attempt at this, and both look plausible in a diff.
   `check-translations.py` now gates the categories, verified by putting a missing one back.
 
+### Documentation
+
+- **Macros are now shown, not only described.** The feature shipped in 0.8.0 with a thorough reference
+  page and no picture on it — the one page in Power tools without one — while the homepage did not
+  mention macros at all and the README listed AppleScript but not them. Three real screenshots now
+  carry it: the confirmation dialog with its steps resolved against the panels, the recorder offering
+  what just happened, and the manager with every macro's command name and permission. Two of the three
+  are dialogs the framebuffer cannot reach — `NSAlert.runModal()` holds the main queue, so the
+  automation script never gets to the verb that would photograph them — so `capture.py` learned `env:`
+  and `pull:`, and the app's own `PC_MACRO_*_SHOT` probes draw them. They are specs like every other
+  screenshot, regenerable on the next release rather than taken by hand.
+
+- **A macro tutorial**, which the six existing ones lacked: do it once, let the recorder offer it back,
+  tick *Follow the panels* so it works tomorrow, read the plan, put it on a key — then open the file
+  and see what was written, ending at the one thing the recorder cannot give you, `%{ask:…}`.
+
+- **Two things the help page had wrong.** It said the file is seeded with *seven* worked examples while
+  listing eight and shipping eight, in all nineteen languages. And it said "strike out a step you do not
+  want; what is left is what runs", which is not what happens: striking one out takes its dependants
+  with it, and a reader whose checkboxes moved on their own had nothing to read about it.
+
+- Macros reached the homepage, the README, the feature inventory (F-477 and F-478 had no rows at all)
+  and the menu reference; and the four help topics macros already named as related — the button bar, the
+  Start menu, shortcuts and the assistant — now point back, the assistant's page from the very section
+  that describes the log the recorder reads.
+
 ## [0.8.0] — 2026-08-29
 
 The assistant is split in two. What ran on your Mac was a chat that could not read a file: measured

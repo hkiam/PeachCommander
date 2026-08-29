@@ -95,10 +95,17 @@ The goal for the text you're reading and the app you'll run is the same: no mark
 - FTP, FTPS (explicit/implicit), SFTP/SCP over SSH
 - Connection manager, download-from-URL, SMB/AFP shares, WebDAV
 
+**Automation**
+- **Macros** — a named sequence of file actions on a button or a key
+- Built out of what you just did: **Macro from Recent Actions…** offers your last copies, moves, renames and deletes as tickable steps
+- "Follow the panels" turns a recording into something that works tomorrow, on whatever is selected
+- Approved as a readable plan first — real file names, each step strikeable — and gated by the most demanding step in it
+- Plain JSON you can diff, seeded with eight worked examples
+
 **macOS integration**
 - Quick Look, Share sheet, Open With, Finder Tags
 - Spotlight metadata, "Open Terminal Here", trackpad swipe history
-- AppleScript & Shortcuts automation
+- AppleScript & Shortcuts automation, plus your own AppleScript/JXA scripts
 
 </td></tr>
 </table>

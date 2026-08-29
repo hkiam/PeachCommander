@@ -3,7 +3,7 @@ title: Het Start-menu & aangepaste opdrachten
 slug: start-menu
 section: Aanpassen
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Het menu **Start** is je eigen persoonlijke menu, dat in de menubalk staat naast Bestand, Bewerken en de rest. Het bevat opdrachten die je zelf definieert, zodat de acties waar je het vaakst naar grijpt altijd op één klik afstand zijn. In de traditie van klassieke bestandsbeheerders met twee panelen kan elk item een ingebouwde opdracht uitvoeren, een extern programma of app starten, of direct naar een map springen. Peach Commander wordt geleverd met een leeg Start-menu, klaar om door jou te worden gevuld.

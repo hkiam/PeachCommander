@@ -21,6 +21,9 @@ U hoeft een macro niet vanaf niets te schrijven.
 
 **Macro opslaan**, en de knop staat in de balk. Dat is de hele cyclus.
 
+![Het blad ‘Macro uit recente acties’, met wat zojuist is gedaan als aanvinkbare stappen](screenshots/macro-recorder.png)
+*Wat al is gebeurd, aangeboden als de stappen van een nieuwe macro.*
+
 De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan.
 
 > **Wat niet wordt aangeboden.** Een archief inpakken, en al het andere dat de app alleen bij naam vasthoudt, kan geen stap worden — er is geen vorm voor. Zulke regels staan er grijs bij met hun reden in plaats van te ontbreken, zodat een lijst van vijf die er drie aanbiedt niet leest alsof hij er twee heeft gemist. En tenzij u anders vraagt, zijn de paden die welke echt zijn gebruikt: een opgenomen macro herhaalt *die* kopie, niet ‘een kopie van dat soort’. Open hem in de editor en zet `%S` of `%T` waar hij de vensters moet volgen.
@@ -29,7 +32,7 @@ De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een 
 
 ## De meegeleverde voorbeelden
 
-De eerste keer dat u **Configuratie ▸ Macro's bewerken…** opent, wordt het bestand aangemaakt met zeven uitgewerkte voorbeelden. Het zijn gewone macro's — wijzig ze, of verwijder degene die u niet wilt — en elk draagt een opmerking die zegt wat het doet en wat u kunt aanpassen:
+De eerste keer dat u **Configuratie ▸ Macro's bewerken…** opent, wordt het bestand aangemaakt met acht uitgewerkte voorbeelden. Het zijn gewone macro's — wijzig ze, of verwijder degene die u niet wilt — en elk draagt een opmerking die zegt wat het doet en wat u kunt aanpassen:
 
 | Macro | Wat het doet |
 | --- | --- |
@@ -47,6 +50,9 @@ Elk ervan wordt een opdracht, dus u kunt er elke van op een knop of een toets le
 ## Ze beheren
 
 **Configuratie ▸ Macro’s beheren…** is de lijst: hoe elke macro heet, hoe haar opdracht heet, hoeveel stappen ze heeft en wat de rechtenvraag zal verlangen — zo is ‘deze verwijdert’ te zien vóór u haar op een toets legt. Van daaruit kunt u hernoemen, dupliceren, herordenen en verwijderen. Wie over een regel gaat, ziet haar stappen.
+
+![Het venster ‘Macro’s beheren’, met opdrachtnaam, aantal stappen en toestemming per macro](screenshots/macro-manager.png)
+*Hoe elke macro heet, waaronder hij draait en waarvoor hij toestemming zal vragen.*
 
 De volgorde is geen versiering: de volgorde in het bestand is de volgorde waarin het Opdrachtenoverzicht en de knoppenbalkkiezer ze tonen.
 
@@ -125,7 +131,10 @@ Elke macro wordt een opdracht met de naam `mc_<id>` en verschijnt daardoor van z
 - Uw `.mnu`-menubestand en `usercmd.ini`, als u die gebruikt
 - De assistent, die hem op naam kan uitvoeren
 
-Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen.
+Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen. **Een stap doorstrepen neemt de stappen mee die ervan afhangen** — een macro is een reeks, en de stap die de map vult kan niet lopen zonder de stap die haar aanmaakt: die regels schakelen zichzelf uit en worden grijs. Zet de stap terug en ze komen terug — behalve die u zelf hebt doorgestreept; die blijven doorgestreept.
+
+![Het bevestigingsvenster van een macro, elke stap een vinkje dat de bestanden noemt](screenshots/macro-confirm.png)
+*De stappen, opgelost tegen uw vensters — elk ervan door te strepen.*
 
 Alles wat vóór de start als fout te herkennen is — een gereedschap dat niet bestaat, een ontbrekend argument, een stap die een andere macro zou uitvoeren — stopt de macro vóór de eerste stap, niet na de derde. Faalt een stap tijdens het lopen, dan **stopt de macro daar** in plaats van door te gaan: stap twee gaat er meestal van uit dat stap één heeft plaatsgevonden, en bestanden verplaatsen naar een map die niet is aangemaakt is geen gedeeltelijk succes. Het verslag noemt de stap, zegt wat er misging en hoeveel stappen al waren uitgevoerd; elk daarvan staat in het actielogboek, met zijn weg terug waar die er is.
 ## Wat een macro mag

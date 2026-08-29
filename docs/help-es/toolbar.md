@@ -3,7 +3,7 @@ title: La barra de botones
 slug: toolbar
 section: Personalización
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 La barra de botones es la tira de botones con iconos en la parte superior de la ventana. Cada botón es un atajo de un clic que defines tú mismo: ejecutar un comando integrado, iniciar un programa o app externos, saltar a una carpeta, o abrir toda una subbarra con más botones. Es la forma más rápida de tener a mano las acciones que más usas, y puedes adaptarla exactamente a tu manera de trabajar.

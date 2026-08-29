@@ -3,7 +3,7 @@ title: Asistent IA
 slug: ai-assistant
 section: Pluginuri
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 Asistentul IA este un plugin opțional, care poate fi eliminat și care vă ajută să lucrați cu fișierele în limbaj obișnuit. Poate rezuma sau explica un document, propune un nume de fișier mai bun, traduce sau corecta un text, transforma date într-un tabel și chiar ordona un dosar — și poate efectua în locul dumneavoastră operații cu fișiere după ce vă arată mai întâi un plan. Vine ca două pluginuri: **AI On-Device** rulează pe Apple Intelligence și oferă acțiunile care arată o propunere și o aplică, în timp ce **AI Assistant** este discuția și are nevoie de un model în cloud. Activați unul, sau pe amândouă. **Sosesc dezactivate.** Activați-le din **Configurare ▸ Pluginuri…** și reporniți, ori lăsați-le oprite și nu apare nimic — niciun meniu IA ▸, nicio discuție, nicio coloană. Este voit cât timp funcția e în beta: poate redenumi, muta și șterge fișiere și poate rula pentru dumneavoastră comenzi de shell, fiecare în spatele unui plan pe care îl aprobați, iar asta e multă putere pentru a i-o da implicit unei noutăți. Fără o cheie API totul se petrece pe Mac-ul dumneavoastră, deci e vorba de putere, nu de date care părăsesc mașina. Pluginul **AI Column** arată ce au aflat acele acțiuni — un rezumat, un tip, un subiect, o dată — drept coloane în panou; el nu pornește niciun model. Sosește oprit împreună cu ele și rămâne opțional, și nu arată nimic până nu îl activați și nu adăugați una dintre coloanele sale. Din aceeași pagină puteți elimina complet oricare dintre ele.
@@ -67,6 +67,8 @@ Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — a
 - **Anulează ultima modificare** ia înapoi cea mai recentă modificare care are un invers: o redenumire se redenumește înapoi, o mutare se mută înapoi. Acolo unde nimic nu poate fi luat înapoi, lista spune de ce — un fișier suprascris nu a fost păstrat nicăieri, iar elementele din Coș se restaurează din Finder.
 
 Puteți și doar să cereți: *„anulează asta"* și *„ce ai modificat?"* ajung la aceleași două funcții.
+
+Lista aceea este și locul din care se naște o macrocomandă: **Configurare ▸ Macrocomandă din acțiuni recente…** oferă ce tocmai a făcut asistentul ca pașii uneia pe care o puteți rula din nou, de pe un buton sau de pe o tastă. Vedeți [Macrocomenzi](macros.md).
 
 ## Coloane în panou
 

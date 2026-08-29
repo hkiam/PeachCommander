@@ -3,7 +3,7 @@ title: 开始菜单与自定义命令
 slug: start-menu
 section: 自定义
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 **开始** 菜单是你自己的个人菜单，与文件、编辑等并列位于菜单栏中。它容纳你自己定义的命令，让你最常用的操作始终一键可达。秉承经典双面板文件管理器的传统，每个条目都可以运行内置命令、启动外部程序或应用，或直接跳转到某个文件夹。Peach Commander 出厂时开始菜单为空，等待你来填充。

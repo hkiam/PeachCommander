@@ -21,13 +21,15 @@
 <li>Bifați <strong>Urmează panourile în locul acestor fișiere anume</strong> dacă macrocomanda trebuie să lucreze data viitoare cu ce va fi selectat atunci. Rândurile se schimbă pe măsură ce bifați, deci vedeți ce salvați.</li>
 </ol>
 <p><strong>Salvează macrocomanda</strong>, și butonul este în bară. Acesta este tot ciclul.</p>
+<p><img alt="Foaia „Macrocomandă din acțiuni recente”, cu ce tocmai s-a făcut ca pași bifabili" src="images/macro-recorder.png" />
+<em>Ce s-a întâmplat deja, oferit ca pașii unei macrocomenzi noi.</em></p>
 <p>Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare.</p>
 <blockquote>
 <p><strong>Ce nu se oferă.</strong> Împachetarea unei arhive, și tot ce aplicația reține doar după nume, nu poate deveni un pas — nu există o formă pentru asta. Astfel de rânduri apar estompate împreună cu motivul, în loc să lipsească, pentru ca o listă de cinci care oferă trei să nu pară că a scăpat două. Iar dacă nu cereți altfel, căile sunt cele care chiar au rulat: o macrocomandă înregistrată repetă <em>acea</em> copiere, nu „o copiere de felul acela”. Deschideți-o în editor și puneți <code>%S</code> sau <code>%T</code> acolo unde vreți să urmeze panourile.</p>
 </blockquote>
 <p><strong>Urmează panourile</strong> este felul în care cereți altfel. Fișierele venite toate dintr-un singur dosar devin selecția; un dosar care este unul dintre cele două panouri devine acel panou, iar un dosar dinăuntru își păstrează coada — dintr-un „mută aceste patru facturi în Documente/2026-08” înregistrat se face „mută ce este selectat în <em>2026-08</em> de partea cealaltă”, iar mâine funcționează în alte două dosare. Ce nu se află sub niciunul dintre panouri rămâne calea care este, fiindcă nu are în ce să fie pliat. Opțiunea apare doar când ar schimba ceva.</p>
 <h2 id="exemplele-livrate">Exemplele livrate</h2>
-<p>Prima dată când deschideți <strong>Configurare ▸ Editare macrocomenzi…</strong>, fișierul este creat cu șapte exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:</p>
+<p>Prima dată când deschideți <strong>Configurare ▸ Editare macrocomenzi…</strong>, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Fiecare dintre ele devine o comandă, așa că puteți pune oricare pe un buton sau pe o tastă fără să scrieți nimic.</p>
 <h2 id="gestionarea-lor">Gestionarea lor</h2>
 <p><strong>Configurare ▸ Gestionare macrocomenzi…</strong> este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere verificarea drepturilor — astfel „aceasta șterge” se vede înainte de a o pune pe o tastă. De acolo puteți redenumi, duplica, reordona și șterge. Trecând peste un rând i se văd pașii.</p>
+<p><img alt="Fereastra „Gestionare macrocomenzi”, cu numele comenzii, numărul de pași și permisiunea fiecăreia" src="images/macro-manager.png" />
+<em>Cum se numește fiecare macrocomandă, ca ce rulează și pentru ce va cere permisiunea.</em></p>
 <p>Ordinea nu este decor: ordinea din fișier este aceea în care le listează Navigatorul de comenzi și selectorul barei de butoane.</p>
 <p><strong>La ștergere vi se oferă să luați și butoanele</strong>, iar asta merită știut chiar dacă nu deschideți niciodată această fereastră: o macrocomandă scoasă manual își lasă în urmă butonul și tasta, iar niciunul nu mai face nimic — aplicația spune acum că macrocomanda nu mai există, în loc să tacă, dar butonul rămâne treaba dumneavoastră. O tastă sau o intrare de meniu trebuie scoasă de acolo de unde a fost pusă.</p>
 <p><em>Pașii</em> nu se editează aici. <strong>Editare fișier…</strong> predă asta editorului, din același motiv pentru care nu există un formular: un pas este un nume de instrument cu argumentele lui, adică exact ceea ce este JSON.</p>
@@ -158,7 +162,9 @@
 <li>Fișierul dumneavoastră de meniu <code>.mnu</code> și <code>usercmd.ini</code>, dacă le folosiți</li>
 <li>Asistentul, care o poate rula după nume</li>
 </ul>
-<p>Înainte ca o macrocomandă care schimbă ceva să ruleze, vă arată pașii ca listă și așteaptă. Puteți tăia un pas pe care nu îl doriți; ce rămâne este ce rulează. O macrocomandă care doar citește rulează fără să întrebe.</p>
+<p>Înainte ca o macrocomandă care schimbă ceva să ruleze, vă arată pașii ca listă și așteaptă. Puteți tăia un pas pe care nu îl doriți; ce rămâne este ce rulează. O macrocomandă care doar citește rulează fără să întrebe. <strong>Tăierea unui pas îi ia cu el pe cei care depind de el</strong> — o macrocomandă este o secvență, iar pasul care umple dosarul nu poate rula fără pasul care îl creează: acele rânduri se dezactivează singure și devin gri. Puneți pasul la loc și revin — în afară de cele pe care le-ați tăiat dumneavoastră; acelea rămân tăiate.</p>
+<p><img alt="Dialogul de confirmare al macrocomenzii, fiecare pas o casetă care numește fișierele" src="images/macro-confirm.png" />
+<em>Pașii, rezolvați pe panourile dumneavoastră — fiecare poate fi tăiat.</em></p>
 <p>Tot ce se poate vedea că este greșit înainte de pornire — un instrument care nu există, un argument lipsă, un pas care ar rula altă macrocomandă — o oprește înainte de primul pas, nu după al treilea. Dacă un pas eșuează în timpul rulării, macrocomanda <strong>se oprește acolo</strong> în loc să continue: pasul doi presupune de regulă că pasul unu a avut loc, iar mutarea fișierelor într-un dosar care nu a fost creat nu este un succes parțial. Raportul numește pasul, spune ce a mers prost și câți pași fuseseră deja executați; fiecare dintre ei se află în jurnalul de acțiuni, cu drumul său înapoi acolo unde există unul.</p>
 <h2 id="ce-ii-este-permis-unei-macrocomenzi">Ce îi este permis unei macrocomenzi</h2>
 <p>O macrocomandă este judecată după cel mai pretențios lucru din ea. O macrocomandă ai cărei pași doar citesc este tratată ca o citire; una care se termină cu o ștergere definitivă este controlată ca o ștergere definitivă — înainte să ruleze orice, nu patru pași mai târziu.</p>

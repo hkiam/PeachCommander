@@ -3,7 +3,7 @@ title: Tastiera e scorciatoie
 slug: keyboard-shortcuts
 section: Personalizzazione
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander è costruito per essere guidato dalla tastiera. Viene fornito con due schemi di scorciatoie già pronti e ti permette di riassegnare qualsiasi comando ai tasti che preferisci. Se vieni da un classico gestore di file a due pannelli, puoi mantenere i tasti che conosci già; se preferisci usare le combinazioni Mac familiari, passa allo schema macOS con un clic. Un esploratore di comandi con ricerca ti permette di scoprire tutto ciò che l'app può fare ed eseguire qualsiasi comando per nome.

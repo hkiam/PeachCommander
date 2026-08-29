@@ -3,7 +3,7 @@ title: Meniul Start și comenzile personalizate
 slug: start-menu
 section: Personalizare
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Meniul **Start** este propriul dvs. meniu personal, care stă în bara de meniu lângă Fișier, Editare și restul. Conține comenzi pe care le definiți dvs., astfel încât acțiunile la care apelați cel mai des sunt întotdeauna la un clic distanță. În tradiția managerelor de fișiere clasice cu două panouri, fiecare intrare poate rula o comandă încorporată, lansa un program sau o aplicație externă, sau sări direct la un folder. Peach Commander vine cu meniul Start gol și gata să fie umplut de dvs.

@@ -3,7 +3,7 @@ title: Assistente AI
 slug: ai-assistant
 section: Plugin
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 L'assistente AI è un plugin facoltativo e rimovibile che vi aiuta a lavorare con i vostri file in linguaggio naturale. Può riassumere o spiegare un documento, proporre un nome migliore, tradurre o rileggere un testo, trasformare dati in una tabella e perfino riordinare una cartella — e può eseguire azioni sui file dopo avervi mostrato un piano. Arriva come due plugin: **AI On-Device** gira su Apple Intelligence e offre le azioni che propongono e poi applicano, mentre **AI Assistant** è la chat e richiede un modello cloud. Attivate l'uno, o entrambi. **Arrivano disattivati.** Attivateli in **Configurazione ▸ Plugin…** e riavviate, oppure lasciateli spenti e non comparirà nulla — nessun menu AI ▸, nessuna chat, nessuna colonna. È voluto finché la funzione è in beta: può rinominare, spostare ed eliminare file ed eseguire comandi shell per voi, ognuno dietro un piano che approvate, ed è molta libertà da concedere per impostazione predefinita a una novità. Senza una chiave API tutto avviene sul vostro Mac: si tratta quindi della portata, non di dati che lascerebbero la macchina. Il plugin **AI Column** mostra quello che quelle azioni hanno ricavato — un riassunto, un tipo, un argomento, una data — come colonne del pannello; non avvia alcun modello. Arriva spento insieme agli altri e resta facoltativo, e non mostra nulla finché non lo attivate e non aggiungete una delle sue colonne. Dalla stessa pagina potete anche rimuovere del tutto l'uno o l'altro.
@@ -67,6 +67,8 @@ Per tutto ciò che modifica file — spostare, rinominare, scrivere, eliminare �
 - **Annulla l'ultima modifica** riprende la modifica più recente che abbia un inverso: una rinomina viene rinominata indietro, uno spostamento rispostato. Dove nulla può essere ripreso, l'elenco dice perché — un file sovrascritto non è stato conservato da nessuna parte, e gli elementi nel Cestino si ripristinano dal Finder.
 
 Potete anche semplicemente chiedere: *«annulla»* e *«che cosa hai modificato?»* raggiungono le stesse due funzioni.
+
+Quell’elenco è anche l’origine di una macro: **Configurazione ▸ Macro dalle azioni recenti…** offre quello che l’assistente ha appena fatto come i passi di una macro che potete rieseguire, da un pulsante o da un tasto. Vedi [Macro](macros.md).
 
 ## Colonne del pannello
 

@@ -21,6 +21,9 @@ Du behöver inte skriva ett makro från början.
 
 **Spara makro**, och knappen finns i raden. Det är hela varvet.
 
+![Bladet ”Makro från senaste åtgärder” med det du nyss gjorde som kryssbara steg](screenshots/macro-recorder.png)
+*Det som redan har hänt, erbjudet som stegen i ett nytt makro.*
+
 Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en omdöpning) och vad assistenten eller ett annat makro har gjort. Varje rad säger vilket av de två — efter en session med båda kan samma två filer dyka upp i var och en.
 
 > **Vad som inte erbjuds.** Att packa ett arkiv, och allt annat appen bara håller reda på vid namn, kan inte bli ett steg — det finns ingen form att ge det. Sådana rader står gråa med sitt skäl i stället för att saknas, så att en lista på fem som erbjuder tre inte läses som om den missat två. Och om du inte ber om annat är sökvägarna de som faktiskt användes: ett inspelat makro upprepar *den* kopian, inte ”en kopia av det slaget”. Öppna det i redigeraren och sätt `%S` eller `%T` där det ska följa panelerna.
@@ -29,7 +32,7 @@ Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en om
 
 ## Exemplen som följer med
 
-Första gången du öppnar **Konfiguration ▸ Redigera makron…** skapas filen med sju genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:
+Första gången du öppnar **Konfiguration ▸ Redigera makron…** skapas filen med åtta genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:
 
 | Makro | Vad det gör |
 | --- | --- |
@@ -47,6 +50,9 @@ Vart och ett av dem blir ett kommando, så du kan lägga vilket som helst på en
 ## Att hantera dem
 
 **Konfiguration ▸ Hantera makron…** är listan: vad varje makro heter, vad dess kommando heter, hur många steg det har och vad rättighetsfrågan kommer att kräva — så att ”det här raderar” syns innan du lägger det på en tangent. Därifrån kan du byta namn, duplicera, ordna om och radera. För du muspekaren över en rad ser du dess steg.
+
+![Fönstret ”Hantera makron” med kommandonamn, antal steg och behörighet för varje makro](screenshots/macro-manager.png)
+*Vad varje makro heter, vad det körs som och vad det kommer att be om lov till.*
 
 Ordningen är ingen utsmyckning: filens ordning är den som Kommandoöversikten och knappradens väljare listar dem i.
 
@@ -125,7 +131,10 @@ Varje makro blir ett kommando som heter `mc_<id>` och dyker därför upp av sig 
 - Din `.mnu`-menyfil och `usercmd.ini`, om du använder dem
 - Assistenten, som kan köra det på namn
 
-Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga.
+Innan ett makro som ändrar något körs visar det sina steg som en lista och väntar. Du kan stryka ett steg du inte vill ha; det som blir kvar är det som körs. Ett makro som bara läser körs utan att fråga. **Att stryka ett steg tar med sig de steg som beror på det** — ett makro är en följd, och steget som fyller mappen kan inte köra utan steget som skapar den: de raderna stänger av sig själva och gråas ut. Sätt tillbaka steget så kommer de tillbaka — utom de du själv strök, som förblir strukna.
+
+![Makrots bekräftelsedialog, varje steg en kryssruta som namnger filerna](screenshots/macro-confirm.png)
+*Stegen, upplösta mot dina paneler — vart och ett går att stryka.*
 
 Allt som går att se är fel före starten — ett verktyg som inte finns, ett saknat argument, ett steg som skulle köra ett annat makro — stoppar makrot före första steget, inte efter det tredje. Misslyckas ett steg under körningen **stannar makrot där** i stället för att fortsätta: steg två förutsätter oftast att steg ett ägde rum, och att flytta filer till en mapp som inte skapades är ingen delvis framgång. Rapporten nämner steget, säger vad som gick fel och hur många steg som redan hade utförts; vart och ett av dem står i åtgärdsloggen, med sin väg tillbaka där en sådan finns.
 ## Vad ett makro får göra

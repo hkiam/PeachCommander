@@ -3,7 +3,7 @@ title: Ponuka Štart a vlastné príkazy
 slug: start-menu
 section: Prispôsobenie
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Ponuka **Štart** je vaša vlastná osobná ponuka, ktorá sedí v lište ponúk vedľa Súbor, Upraviť a ostatných. Obsahuje príkazy, ktoré si sami definujete, takže akcie, po ktorých siahate najčastejšie, sú vždy jedno kliknutie ďaleko. V tradícii klasických dvojpanelových správcov súborov môže každá položka spustiť vstavaný príkaz, spustiť externý program alebo aplikáciu, alebo skočiť rovno do priečinka. Peach Commander sa dodáva s prázdnou ponukou Štart pripravenou na to, aby ste ju naplnili.

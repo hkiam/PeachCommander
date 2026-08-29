@@ -4,7 +4,7 @@ slug: tutorial-automate
 group: Tutorials
 section: tutorials
 order: 116
-related: [toolbar, start-menu, keyboard-shortcuts]
+related: [toolbar, start-menu, keyboard-shortcuts, tutorial-macros]
 ---
 
 If you find yourself doing the same few things over and over — opening a folder in Terminal, running a favorite tool on the selected files, jumping to a project directory — you can put each of them one click or one keystroke away. Peach Commander gives you three complementary ways to do this:
@@ -103,7 +103,7 @@ Use **Clear** to remove a command's shortcut, or **Restore Defaults** to discard
 | A named entry in the menu bar, optionally with a key | A **Start** menu command |
 | Press a key to trigger any built-in command | A **custom shortcut** |
 | Pass the folder, cursor file, or selection to an external program | Placeholders (`%P`, `%N`, `%S`, `%T`) in a button or Start entry |
-| Repeat a whole *sequence* of file actions | A [macro](macros.md) |
+| Repeat a whole *sequence* of file actions | A [macro](macros.md) — walked through in [its own tutorial](tutorial-macros.md) |
 | Run an AppleScript or JavaScript of your own | The [Scripting plugin](automation.md#running-your-own-scripts) |
 
 All three can call the same things — built-in commands, external programs and apps, and folders — so mix and match freely.
@@ -124,3 +124,4 @@ This hook is aimed at developers writing automated tests, not at everyday automa
 - [The button bar](toolbar.md) — separators, sub-bars, overflow, and dropping files onto buttons.
 - [The Start menu & custom commands](start-menu.md) — jumping to folders, chaining commands, and replacing the whole menu bar.
 - [Keyboard & shortcuts](keyboard-shortcuts.md) — schemes, the shortcuts editor, and the command browser.
+- [Turn what you just did into a macro](tutorial-macros.md) — the next step up: repeating a whole sequence, not one command.

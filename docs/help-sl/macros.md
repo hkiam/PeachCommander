@@ -21,6 +21,9 @@ Makra ni treba napisati iz nič.
 
 **Shrani makro** — in gumb je v vrstici. To je ves postopek.
 
+![List »Makro iz nedavnih dejanj« s tem, kar ste pravkar naredili, kot koraki za obkljukanje](screenshots/macro-recorder.png)
+*Kar se je že zgodilo, ponujeno kot koraki novega makra.*
+
 Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje) in kaj je naredil pomočnik ali drug makro. Vsaka vrstica pove, katero od obojega — po seji z obojim se namreč isti dve datoteki lahko pojavita v vsaki.
 
 > **Kaj ni ponujeno.** Pakiranje arhiva in vse drugo, kar si program zapomni le po imenu, ne more postati korak — zanj ni oblike. Take vrstice so vidne sivo skupaj z razlogom, namesto da bi manjkale, da seznam petih, ki ponudi tri, ne izgleda, kot da je dve spregledal. In če ne zahtevate drugače, so poti tiste, ki so res tekle: posneti makro ponovi *tisto* kopijo, ne »kopije te vrste«. Odprite ga v urejevalniku in postavite `%S` ali `%T` tja, kjer naj sledi oknom.
@@ -29,7 +32,7 @@ Seznam vsebuje oboje: kaj ste naredili v oknih (F5, F6, F7, F8 in preimenovanje)
 
 ## Priloženi primeri
 
-Ko prvič odprete **Konfiguracija ▸ Uredi makre…**, se datoteka ustvari s sedmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:
+Ko prvič odprete **Konfiguracija ▸ Uredi makre…**, se datoteka ustvari z osmimi izdelanimi primeri. To so običajni makri — spremenite jih ali izbrišite tiste, ki jih nočete — in vsak nosi komentar, ki pove, kaj počne in kaj v njem spremeniti:
 
 | Makro | Kaj počne |
 | --- | --- |
@@ -47,6 +50,9 @@ Vsak od njih postane ukaz, tako da lahko kateregakoli postavite na gumb ali na t
 ## Upravljanje
 
 **Konfiguracija ▸ Upravljanje makrov…** je ta seznam: kako se vsak makro imenuje, kako se imenuje njegov ukaz, koliko korakov ima in kaj bo zahtevalo preverjanje dovoljenj — »ta briše« je torej vidno, preden ga postavite na tipko. Od tam lahko preimenujete, podvojite, prerazvrstite in izbrišete. Če se ustavite nad vrstico, vidite njene korake.
+
+![Okno »Upravljanje makrov« z imenom ukaza, številom korakov in dovoljenjem vsakega makra](screenshots/macro-manager.png)
+*Kako se vsak makro imenuje, kot kaj teče in za kaj bo prosil za dovoljenje.*
 
 Vrstni red ni okras: vrstni red v datoteki je tisti, v katerem jih naštevata Brskalnik ukazov in izbirnik za orodno vrstico.
 
@@ -125,7 +131,10 @@ Vsak makro postane ukaz z imenom `mc_<id>` in se zato sam pojavi v:
 - Vaši datoteki menija `.mnu` in `usercmd.ini`, če ju uporabljate
 - Pomočniku, ki ga lahko zažene po imenu
 
-Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja.
+Preden se zažene makro, ki kaj spremeni, vam pokaže svoje korake kot seznam in počaka. Korak, ki ga ne želite, lahko prečrtate; kar ostane, se izvede. Makro, ki samo bere, teče brez vprašanja. **Če prečrtate korak, s seboj vzame korake, ki so od njega odvisni** — makro je zaporedje in korak, ki mapo napolni, ne more teči brez koraka, ki jo ustvari: te vrstice se same izklopijo in posivijo. Korak vrnite in vrnejo se tudi one — razen tistih, ki ste jih prečrtali sami; te ostanejo prečrtane.
+
+![Potrditveno okno makra, vsak korak potrditveno polje z imeni datotek](screenshots/macro-confirm.png)
+*Koraki, razrešeni glede na vaša pulta — vsakega je mogoče prečrtati.*
 
 Vse, kar je mogoče prepoznati kot napačno pred začetkom — orodje, ki ne obstaja, manjkajoč argument, korak, ki bi izvedel drug makro —, makro ustavi pred prvim korakom, ne po tretjem. Če korak spodleti že med tekom, se makro **ustavi tam** namesto da bi nadaljeval: korak dve običajno predpostavlja, da se je korak ena zgodil, in premikanje datotek v mapo, ki ni bila ustvarjena, ni delni uspeh. Poročilo imenuje korak, pove, kaj je šlo narobe, in koliko korakov je bilo že izvedenih; vsak od njih je v dnevniku dejanj, s svojo potjo nazaj, kjer ta obstaja.
 ## Kaj makro sme

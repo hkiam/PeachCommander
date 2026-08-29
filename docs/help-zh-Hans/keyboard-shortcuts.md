@@ -3,7 +3,7 @@ title: 键盘与快捷键
 slug: keyboard-shortcuts
 section: 自定义
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander 生来就是为键盘驱动而打造的。它内置了两套现成的快捷键方案，并让你可以将任何命令重新绑定到你偏好的按键上。如果你是从经典的双面板文件管理器过来的，可以保留你已经熟悉的按键；如果你更愿意使用熟悉的 Mac 组合键，只需单击一下即可切换到 macOS 方案。一个可搜索的命令浏览器让你能够发现应用能做的一切，并按名称运行任何命令。

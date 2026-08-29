@@ -21,6 +21,9 @@ Non devi scrivere una macro da zero.
 
 **Salva macro**, e il pulsante è nella barra. È tutto il ciclo.
 
+![Il foglio «Macro dalle azioni recenti», con quanto appena fatto come passi spuntabili](screenshots/macro-recorder.png)
+*Quello che è già successo, offerto come i passi di una nuova macro.*
+
 L’elenco contiene entrambe le cose: quello che avete fatto nei pannelli (F5, F6, F7, F8 e una rinomina) e quello che ha fatto l’assistente o un’altra macro. Ogni riga dice quale delle due, perché dopo una sessione con entrambe gli stessi due file possono comparire in ciascuna.
 
 > **Cosa non viene offerto.** Creare un archivio, e tutto il resto che l’applicazione registra solo per nome, non può diventare un passo: non c’è una forma da dargli. Quelle righe restano visibili in grigio con la loro ragione invece di sparire, così un elenco di cinque che ne offre tre non sembra averne mancati due. E se non chiedete altrimenti, i percorsi sono quelli davvero usati: una macro registrata ripete *quella* copia, non «una copia del genere». Apritela nell’editor e mettete `%S` o `%T` dove volete che segua i pannelli.
@@ -29,7 +32,7 @@ L’elenco contiene entrambe le cose: quello che avete fatto nei pannelli (F5, F
 
 ## Gli esempi in dotazione
 
-La prima volta che aprite **Configurazione ▸ Modifica macro…**, il file viene creato con sette esempi completi. Sono macro normali — modificatele, oppure cancellate quelle che non volete — e ognuna porta un commento che dice cosa fa e cosa conviene cambiare:
+La prima volta che aprite **Configurazione ▸ Modifica macro…**, il file viene creato con otto esempi completi. Sono macro normali — modificatele, oppure cancellate quelle che non volete — e ognuna porta un commento che dice cosa fa e cosa conviene cambiare:
 
 | Macro | Cosa fa |
 | --- | --- |
@@ -47,6 +50,9 @@ Ognuna diventa un comando, quindi potete metterne una qualsiasi su un pulsante o
 ## Gestirle
 
 **Configurazione ▸ Gestisci macro…** è l’elenco: come si chiama ogni macro, come si chiama il suo comando, quanti passi ha e cosa chiederà il controllo dei permessi — così «questa cancella» si vede prima di metterla su un tasto. Da lì potete rinominare, duplicare, riordinare e cancellare. Passando sopra una riga se ne vedono i passi.
+
+![La finestra «Gestisci macro», con nome del comando, numero di passi e permesso di ciascuna](screenshots/macro-manager.png)
+*Come si chiama ogni macro, come cosa gira e per cosa chiederà il permesso.*
 
 Riordinare non è ornamento: l’ordine del file è l’ordine in cui le elencano l’Elenco comandi e il selettore della barra dei pulsanti.
 
@@ -125,7 +131,10 @@ Ogni macro diventa un comando chiamato `mc_<id>`, e compare quindi da sola in:
 - Il tuo file di menu `.mnu` e `usercmd.ini`, se li usi
 - L’assistente, che può eseguirla per nome
 
-Prima che una macro che modifica qualcosa venga eseguita, ti mostra i suoi passi come elenco e attende. Puoi escludere un passo che non vuoi; ciò che resta è ciò che viene eseguito. Una macro che solo legge parte senza chiedere.
+Prima che una macro che modifica qualcosa venga eseguita, ti mostra i suoi passi come elenco e attende. Puoi escludere un passo che non vuoi; ciò che resta è ciò che viene eseguito. Una macro che solo legge parte senza chiedere. **Cancellare un passo si porta via quelli che dipendono da esso** — una macro è una sequenza, e il passo che riempie la cartella non può girare senza quello che la crea: quelle righe si spengono da sole e diventano grigie. Rimettete il passo e tornano — tranne quelle che avete cancellato voi, che restano cancellate.
+
+![Il dialogo di conferma di una macro, ogni passo una casella che nomina i file su cui agirà](screenshots/macro-confirm.png)
+*I passi, risolti sui vostri pannelli — ognuno è cancellabile.*
 
 Tutto ciò che si può riconoscere come sbagliato prima della partenza — uno strumento che non esiste, un argomento mancante, un passo che eseguirebbe un'altra macro — la ferma prima del primo passo, non dopo il terzo. Se un passo fallisce mentre gira, la macro **si ferma lì** invece di proseguire: il passo due di solito presuppone che il passo uno sia avvenuto, e spostare file in una cartella non creata non è un successo parziale. Il rapporto nomina il passo, dice cosa è andato storto e quanti passi erano già stati eseguiti; ciascuno è nel registro delle azioni, con la sua via di ritorno dove esiste.
 ## Cosa può fare una macro

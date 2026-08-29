@@ -65,6 +65,8 @@ Configuration
   Customize Toolbar… (I13)
   Change Start Menu… (I13)
   Change Main Menu… (I19)
+  Command Browser… (I13)
+  Macro from Recent Actions… | Manage Macros… | Edit Macros… (F-478)
   Save Position (I05) | Save Settings (I05)
 
 Start  (user menu, I13)

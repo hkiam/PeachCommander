@@ -3,7 +3,7 @@ title: Le menu Démarrer et les commandes personnalisées
 slug: start-menu
 section: Personnalisation
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Le menu **Démarrer** est votre propre menu personnel, situé dans la barre de menus à côté de Fichier, Édition et les autres. Il contient des commandes que vous définissez vous-même, de sorte que les actions que vous utilisez le plus souvent sont toujours à un clic. Dans la tradition des gestionnaires de fichiers classiques à deux panneaux, chaque entrée peut exécuter une commande intégrée, lancer un programme ou une application externe, ou sauter directement à un dossier. Peach Commander est livré avec le menu Démarrer vide et prêt à être rempli.

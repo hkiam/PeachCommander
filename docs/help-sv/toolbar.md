@@ -3,7 +3,7 @@ title: Knappraden
 slug: toolbar
 section: Anpassning
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Knappraden är remsan med symbolknappar överst i fönstret. Varje knapp är en enklicks-genväg du själv definierar: kör ett inbyggt kommando, starta ett externt program eller en app, hoppa till en mapp, eller öppna en hel underrad med fler knappar. Det är det snabbaste sättet att ha de åtgärder du använder mest inom räckhåll, och du kan skräddarsy den precis efter hur du arbetar.

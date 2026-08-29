@@ -52,6 +52,7 @@
 <li><strong>撤销上一次改动</strong>会收回最近一次存在逆操作的改动：重命名会被改回，移动会被移回。凡是无法收回的，列表会说明原因——被覆盖的文件没有在任何地方保留，而废纸篓中的项目要从访达中恢复。</li>
 </ul>
 <p>你也可以直接问：<em>"撤销那个"</em>和<em>"你改了什么？"</em>会到达同样这两个功能。</p>
+<p>这份清单也是宏的来源：<strong>配置 ▸ 从最近的操作创建宏…</strong> 会把助手刚做过的事，作为一个可以再次运行的宏的步骤提供给你——放在按钮上或键上。参见<a href="macros.html">宏</a>。</p>
 <h2 id="_7">面板中的列</h2>
 <p>这些动作查明的内容可以作为列使用。在列集编辑器中添加它们：<strong>AI 摘要</strong>显示一段摘要的第一行，<strong>AI 种类</strong>、<strong>AI 主题</strong>和 <strong>AI 日期</strong>显示<strong>归类</strong>从一个文件中得出的结果——在中文里就是这些名称，每种语言都有翻译。在某个动作读过该文件之前，每一列都保持为空——这些列显示的是已经完成的工作，从不自行启动模型。同一插件中的<strong>语言</strong>无需任何模型就能识别一个文本文件是用什么语言写的。</p>
 <p>同样这三项也是重命名占位符。在多文件重命名对话框（Ctrl+M）中，<code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> 会按内容给满是 <code>dokument1.pdf</code> 的文件夹命名：为此没有新建任何东西，因为重命名掩码一直是通过列系统解析 <code>[=provider.field]</code> 的。先归类，再重命名。表头随你的语言变化；掩码中的 <code>ai_column.ai_topic</code> 不会——所以换了语言之后掩码依然有效。</p>
@@ -72,7 +73,7 @@
 <li><strong>只有在你配置了云端模型时</strong>才会用到它，其 API 密钥留在钥匙串中。</li>
 <li>改动文件的动作在运行前都会经过确认，除非你有意提高了自主程度。</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="settings.html">设置</a></li><li><a href="privacy-and-security.html">隐私与安全</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="settings.html">设置</a></li><li><a href="privacy-and-security.html">隐私与安全</a></li><li><a href="macros.html">宏</a></li></ul></section>
 </main>
 </body>
 </html>

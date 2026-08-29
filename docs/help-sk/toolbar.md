@@ -3,7 +3,7 @@ title: Lišta tlačidiel
 slug: toolbar
 section: Prispôsobenie
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Lišta tlačidiel je pás ikonových tlačidiel pozdĺž hornej časti okna. Každé tlačidlo je skratka na jedno kliknutie, ktorú si sami definujete: spustite vstavaný príkaz, spustite externý program alebo aplikáciu, skočte do priečinka, alebo otvorte celú podlištu ďalších tlačidiel. Je to najrýchlejší spôsob, ako mať na dosah akcie, ktoré používate najviac, a môžete ju prispôsobiť presne spôsobu, akým pracujete.

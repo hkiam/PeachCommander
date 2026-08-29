@@ -3,7 +3,7 @@ title: AI-assistent
 slug: ai-assistant
 section: Plug-ins
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 De AI-assistent is een optionele, verwijderbare plug-in die u helpt in gewone taal met uw bestanden te werken. Hij kan een document samenvatten of uitleggen, een betere bestandsnaam voorstellen, tekst vertalen of nalezen, gegevens in een tabel omzetten en zelfs een map opruimen — en hij kan bestandsacties voor u uitvoeren nadat hij u eerst een plan heeft getoond. Hij komt als twee plug-ins: **AI On-Device** draait op Apple Intelligence en levert de acties die een voorstel tonen en toepassen, terwijl **AI Assistant** de chat is en een cloudmodel nodig heeft. Schakel er één in, of beide. **Ze komen uitgeschakeld binnen.** Zet ze aan in **Configuratie ▸ Plug-ins…** en herstart, of laat ze uit en er verschijnt niets — geen AI ▸-menu, geen chat, geen kolom. Dat is bewust zolang dit in bèta is: hij kan bestanden hernoemen, verplaatsen en verwijderen en shell-opdrachten voor u uitvoeren, elk achter een plan dat u goedkeurt, en dat is veel bereik om standaard aan iets nieuws te geven. Zonder API-sleutel gebeurt alles op uw Mac, dus dit gaat over het bereik en niet over gegevens die het apparaat verlaten. De plug-in **AI Column** toont wat die acties hebben uitgezocht — een samenvatting, een soort, een onderwerp, een datum — als kolommen in het venster; hij start zelf geen model. Hij komt samen met de andere uitgeschakeld binnen en blijft optioneel, en toont niets tot u hem inschakelt en een van zijn kolommen toevoegt. Vanaf dezelfde pagina kunt u beide ook volledig verwijderen.
@@ -67,6 +67,8 @@ Voor alles wat bestanden wijzigt — verplaatsen, hernoemen, schrijven, verwijde
 - **Laatste wijziging ongedaan maken** neemt de meest recente wijziging terug die een omkering heeft: een hernoeming wordt teruggenoemd, een verplaatsing teruggeplaatst. Waar niets teruggenomen kan worden, zegt de lijst waarom — een overschreven bestand is nergens bewaard, en items in de Prullenmand herstelt u vanuit de Finder.
 
 U kunt het ook gewoon vragen: *"maak dat ongedaan"* en *"wat heb je gewijzigd?"* bereiken dezelfde twee functies.
+
+Die lijst is ook de oorsprong van een macro: **Configuratie ▸ Macro uit recente acties…** biedt wat de assistent zojuist deed aan als de stappen van een macro die u opnieuw kunt uitvoeren, vanaf een knop of een toets. Zie [Macro’s](macros.md).
 
 ## Kolommen in het venster
 

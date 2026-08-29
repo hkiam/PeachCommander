@@ -3,7 +3,7 @@ title: Billentyűzet és billentyűparancsok
 slug: keyboard-shortcuts
 section: Testreszabás
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 A Peach Commandert billentyűzetről való vezérlésre építették. Két kész billentyűparancs-sémával érkezik, és lehetővé teszi bármely parancs újrahozzárendelését az ön által preferált billentyűkhöz. Ha egy klasszikus kétpaneles fájlkezelőtől jön, megtarthatja a már ismert billentyűket; ha inkább ismerős Mac-kombinációkat használna, váltson a macOS-sémára egy kattintással. Egy kereshető parancsböngésző lehetővé teszi, hogy felfedezze mindent, amit az app tud, és bármely parancsot név szerint futtasson.

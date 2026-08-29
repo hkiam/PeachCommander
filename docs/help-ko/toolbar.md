@@ -3,7 +3,7 @@ title: 버튼 막대
 slug: toolbar
 section: 사용자 지정
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 버튼 막대는 창 상단을 가로지르는 아이콘 버튼 줄입니다. 각 버튼은 여러분이 직접 정의하는 한 번-클릭 단축입니다: 기본 제공 명령 실행, 외부 프로그램이나 앱 실행, 폴더로 이동, 또는 더 많은 버튼이 담긴 하위 막대 열기. 가장 많이 쓰는 동작을 손 닿는 곳에 두는 가장 빠른 방법이며, 정확히 자신의 작업 방식에 맞출 수 있습니다.

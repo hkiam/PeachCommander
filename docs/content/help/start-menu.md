@@ -4,7 +4,7 @@ slug: start-menu
 group: Customise
 section: Customizing
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 The **Start** menu is your own personal menu, sitting in the menu bar alongside File, Edit, and the rest. It holds commands you define yourself, so the actions you reach for most often are always one click away. In the tradition of classic dual-panel file managers, each entry can run a built-in command, launch an external program or app, or jump straight to a folder. Peach Commander ships with the Start menu empty and ready for you to fill.

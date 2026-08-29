@@ -21,13 +21,15 @@
 <li>Vink <strong>De vensters volgen in plaats van precies deze bestanden</strong> aan als de macro de volgende keer moet werken met wat er dan geselecteerd is. De regels veranderen terwijl u aanvinkt, dus u ziet wat u opslaat.</li>
 </ol>
 <p><strong>Macro opslaan</strong>, en de knop staat in de balk. Dat is de hele cyclus.</p>
+<p><img alt="Het blad ‘Macro uit recente acties’, met wat zojuist is gedaan als aanvinkbare stappen" src="images/macro-recorder.png" />
+<em>Wat al is gebeurd, aangeboden als de stappen van een nieuwe macro.</em></p>
 <p>De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan.</p>
 <blockquote>
 <p><strong>Wat niet wordt aangeboden.</strong> Een archief inpakken, en al het andere dat de app alleen bij naam vasthoudt, kan geen stap worden — er is geen vorm voor. Zulke regels staan er grijs bij met hun reden in plaats van te ontbreken, zodat een lijst van vijf die er drie aanbiedt niet leest alsof hij er twee heeft gemist. En tenzij u anders vraagt, zijn de paden die welke echt zijn gebruikt: een opgenomen macro herhaalt <em>die</em> kopie, niet ‘een kopie van dat soort’. Open hem in de editor en zet <code>%S</code> of <code>%T</code> waar hij de vensters moet volgen.</p>
 </blockquote>
 <p><strong>De vensters volgen</strong> is hoe u anders vraagt. Bestanden die allemaal uit één map kwamen worden de selectie; een map die een van de twee vensters is wordt dat venster, en een map daarbinnen houdt zijn staart — van een opgenomen ‘verplaats deze vier facturen naar Documenten/2026-08’ wordt ‘verplaats wat geselecteerd is naar <em>2026-08</em> aan de andere kant’, en dat werkt morgen in twee andere mappen. Wat onder geen van beide vensters ligt blijft het pad dat het is, want er is niets om het in te vouwen. De optie wordt alleen aangeboden als ze iets zou veranderen.</p>
 <h2 id="de-meegeleverde-voorbeelden">De meegeleverde voorbeelden</h2>
-<p>De eerste keer dat u <strong>Configuratie ▸ Macro's bewerken…</strong> opent, wordt het bestand aangemaakt met zeven uitgewerkte voorbeelden. Het zijn gewone macro's — wijzig ze, of verwijder degene die u niet wilt — en elk draagt een opmerking die zegt wat het doet en wat u kunt aanpassen:</p>
+<p>De eerste keer dat u <strong>Configuratie ▸ Macro's bewerken…</strong> opent, wordt het bestand aangemaakt met acht uitgewerkte voorbeelden. Het zijn gewone macro's — wijzig ze, of verwijder degene die u niet wilt — en elk draagt een opmerking die zegt wat het doet en wat u kunt aanpassen:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Elk ervan wordt een opdracht, dus u kunt er elke van op een knop of een toets leggen zonder iets te schrijven.</p>
 <h2 id="ze-beheren">Ze beheren</h2>
 <p><strong>Configuratie ▸ Macro’s beheren…</strong> is de lijst: hoe elke macro heet, hoe haar opdracht heet, hoeveel stappen ze heeft en wat de rechtenvraag zal verlangen — zo is ‘deze verwijdert’ te zien vóór u haar op een toets legt. Van daaruit kunt u hernoemen, dupliceren, herordenen en verwijderen. Wie over een regel gaat, ziet haar stappen.</p>
+<p><img alt="Het venster ‘Macro’s beheren’, met opdrachtnaam, aantal stappen en toestemming per macro" src="images/macro-manager.png" />
+<em>Hoe elke macro heet, waaronder hij draait en waarvoor hij toestemming zal vragen.</em></p>
 <p>De volgorde is geen versiering: de volgorde in het bestand is de volgorde waarin het Opdrachtenoverzicht en de knoppenbalkkiezer ze tonen.</p>
 <p><strong>Bij verwijderen wordt aangeboden de knoppen mee te nemen</strong>, en dat is ook goed te weten als u dit venster nooit opent: een met de hand verwijderde macro laat haar knop en haar toets achter, en beide doen dan niets — de app zegt nu dat de macro weg is in plaats van te zwijgen, maar de knop blijft uw zaak. Een toets of menu-item moet daar worden weggehaald waar het is ingesteld.</p>
 <p>De <em>stappen</em> worden hier niet bewerkt. <strong>Bestand bewerken…</strong> geeft daarvoor het stokje aan de editor, om dezelfde reden dat er geen formulier is: een stap is een gereedschapsnaam met zijn argumenten, en dat is precies wat JSON is.</p>
@@ -158,7 +162,9 @@
 <li>Uw <code>.mnu</code>-menubestand en <code>usercmd.ini</code>, als u die gebruikt</li>
 <li>De assistent, die hem op naam kan uitvoeren</li>
 </ul>
-<p>Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen.</p>
+<p>Voordat een macro die iets verandert wordt uitgevoerd, toont hij zijn stappen als lijst en wacht. U kunt een stap doorstrepen die u niet wilt; wat overblijft wordt uitgevoerd. Een macro die alleen leest, loopt zonder te vragen. <strong>Een stap doorstrepen neemt de stappen mee die ervan afhangen</strong> — een macro is een reeks, en de stap die de map vult kan niet lopen zonder de stap die haar aanmaakt: die regels schakelen zichzelf uit en worden grijs. Zet de stap terug en ze komen terug — behalve die u zelf hebt doorgestreept; die blijven doorgestreept.</p>
+<p><img alt="Het bevestigingsvenster van een macro, elke stap een vinkje dat de bestanden noemt" src="images/macro-confirm.png" />
+<em>De stappen, opgelost tegen uw vensters — elk ervan door te strepen.</em></p>
 <p>Alles wat vóór de start als fout te herkennen is — een gereedschap dat niet bestaat, een ontbrekend argument, een stap die een andere macro zou uitvoeren — stopt de macro vóór de eerste stap, niet na de derde. Faalt een stap tijdens het lopen, dan <strong>stopt de macro daar</strong> in plaats van door te gaan: stap twee gaat er meestal van uit dat stap één heeft plaatsgevonden, en bestanden verplaatsen naar een map die niet is aangemaakt is geen gedeeltelijk succes. Het verslag noemt de stap, zegt wat er misging en hoeveel stappen al waren uitgevoerd; elk daarvan staat in het actielogboek, met zijn weg terug waar die er is.</p>
 <h2 id="wat-een-macro-mag">Wat een macro mag</h2>
 <p>Een macro wordt afgemeten aan het zwaarste wat erin staat. Een macro waarvan de stappen alleen lezen, geldt als lezen; een die eindigt met definitief verwijderen wordt behandeld als definitief verwijderen — voordat er iets loopt, niet vier stappen later.</p>

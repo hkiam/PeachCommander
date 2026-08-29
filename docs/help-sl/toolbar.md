@@ -3,7 +3,7 @@ title: Vrstica z gumbi
 slug: toolbar
 section: Prilagajanje
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 Vrstica z gumbi je trak ikonskih gumbov vzdolž vrha okna. Vsak gumb je bližnjica z enim klikom, ki jo določite sami: zaženite vgrajen ukaz, zaženite zunanji program ali aplikacijo, skočite v mapo, ali odprite celotno podvrstico dodatnih gumbov. To je najhitrejši način, da imate dejanja, ki jih uporabljate največ, na dosegu roke, in jo lahko prilagodite natanko načinu, kako delate.

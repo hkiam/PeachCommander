@@ -3,7 +3,7 @@ title: AI-assistent
 slug: ai-assistant
 section: Insticksprogram
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 AI-assistenten är ett valfritt, borttagbart insticksprogram som hjälper dig att arbeta med dina filer på vanligt språk. Den kan sammanfatta eller förklara ett dokument, föreslå ett bättre filnamn, översätta eller korrekturläsa text, göra om data till en tabell och till och med städa upp en mapp — och den kan utföra filåtgärder åt dig efter att först ha visat dig en plan. Den kommer som två insticksprogram: **AI On-Device** körs på Apple Intelligence och ger dig de åtgärder som visar ett förslag och tillämpar det, medan **AI Assistant** är chatten och behöver en molnmodell. Slå på det ena, eller båda. **De kommer avstängda.** Slå på dem i **Konfiguration ▸ Insticksprogram…** och starta om, eller låt dem vara av så syns ingenting — ingen AI ▸-meny, ingen chatt, ingen kolumn. Det är avsiktligt så länge detta är i beta: den kan byta namn på, flytta och radera filer och köra skalkommandon åt dig, var och en bakom en plan som du godkänner, och det är mycket räckvidd att ge en nyhet som standard. Utan API-nyckel sker allt på din Mac, så det här handlar om räckvidden och inte om något som lämnar maskinen. Insticksprogrammet **AI Column** visar vad de åtgärderna kom fram till — en sammanfattning, en sort, ett ämne, ett datum — som kolumner i panelen; det startar ingen egen modell. Det kommer avstängt tillsammans med dem och förblir valfritt, och visar ingenting förrän du slår på det och lägger till någon av dess kolumner. Från samma sida kan du också ta bort vilket som helst av dem helt.
@@ -67,6 +67,8 @@ För allt som ändrar filer — flytta, byta namn, skriva, radera — visar assi
 - **Ångra senaste ändringen** tar tillbaka den senaste ändringen som har en motsats: ett namnbyte byts tillbaka, en flytt flyttas tillbaka. Där ingenting kan tas tillbaka säger listan varför — en överskriven fil sparades ingenstans, och objekt i Papperskorgen återställs från Finder.
 
 Du kan också bara fråga: *"ångra det"* och *"vad har du ändrat?"* når samma två funktioner.
+
+Den listan är också där ett makro kommer ifrån: **Konfiguration ▸ Makro från senaste åtgärder…** erbjuder det assistenten just gjorde som stegen i ett makro du kan köra igen, från en knapp eller en tangent. Se [Makron](macros.md).
 
 ## Kolumner i panelen
 

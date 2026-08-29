@@ -3,7 +3,7 @@ title: Tipkovnica in bližnjice
 slug: keyboard-shortcuts
 section: Prilagajanje
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander je zasnovan za upravljanje s tipkovnice. Prihaja z dvema pripravljenima shemama bližnjic in omogoča, da vsak ukaz preslikate na tipke, ki jih imate raje. Če prehajate s klasičnega upravitelja datotek z dvema podoknoma, lahko obdržite tipke, ki jih že poznate; če pa raje uporabljate znane kombinacije za Mac, z enim klikom preklopite na shemo macOS. Iskalni brskalnik ukazov omogoča, da odkrijete vse, kar aplikacija zmore, in poženete kateri koli ukaz po imenu.

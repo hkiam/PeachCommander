@@ -52,6 +52,7 @@
 <li><strong>Fortryd sidste ændring</strong> tager den nyeste ændring tilbage, som har en modsætning: en omdøbning omdøbes tilbage, en flytning flyttes tilbage. Hvor intet kan tages tilbage, siger listen hvorfor — en overskrevet fil blev ikke gemt noget sted, og emner i Papirkurven gendannes fra Finder.</li>
 </ul>
 <p>Du kan også bare spørge: <em>»fortryd det«</em> og <em>»hvad har du ændret?«</em> når de samme to funktioner.</p>
+<p>Den liste er også dér, en makro kommer fra: <strong>Konfiguration ▸ Makro ud fra seneste handlinger…</strong> tilbyder det, assistenten lige har gjort, som trinnene i en makro, du kan køre igen — fra en knap eller en tast. Se <a href="macros.html">Makroer</a>.</p>
 <h2 id="kolonner-i-panelet">Kolonner i panelet</h2>
 <p>Det, handlingerne fandt frem til, findes som kolonner. Tilføj dem fra kolonnesæt-editoren: <strong>AI-resumé</strong> viser første linje i et resumé, og <strong>AI-art</strong>, <strong>AI-emne</strong> og <strong>AI-dato</strong> viser, hvad <strong>Klassificér</strong> gjorde ud af en fil — under de navne på dansk, oversat i hvert sprog. Hver bliver stående tom, indtil en handling har læst netop den fil — disse kolonner viser arbejde, der allerede er gjort, og starter aldrig modellen selv. <strong>Sprog</strong> i samme plugin genkender, hvilket sprog en tekstfil er skrevet på, helt uden model.</p>
 <p>De samme tre er også omdøbnings-pladsholdere. <code>[=ai_column.ai_topic]-[Y]-[M].[E]</code> i dialogen til at omdøbe mange filer (Ctrl+M) giver en mappe fuld af <code>dokument1.pdf</code> navn efter, hvad de er: der blev ikke bygget noget til det, for omdøbningsmasken har altid løst <code>[=provider.field]</code> gennem kolonnesystemet. Klassificér først, omdøb bagefter. Overskriften følger dit sprog; <code>ai_column.ai_topic</code> inde i masken gør ikke — en maske virker altså fortsat, hvis du skifter sprog.</p>
@@ -72,7 +73,7 @@
 <li>En skymodel bruges <strong>kun, hvis du indstiller en</strong>, og dens API-nøgle bliver i nøgleringen.</li>
 <li>Handlinger, der ændrer filer, bekræftes, før de kører, medmindre du bevidst hæver selvstændighedsniveauet.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Indstillinger</a></li><li><a href="privacy-and-security.html">Anonymitet og sikkerhed</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Indstillinger</a></li><li><a href="privacy-and-security.html">Anonymitet og sikkerhed</a></li><li><a href="macros.html">Makroer</a></li></ul></section>
 </main>
 </body>
 </html>

@@ -3,7 +3,7 @@ title: La barra dei pulsanti
 slug: toolbar
 section: Personalizzazione
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 La barra dei pulsanti è la striscia di pulsanti a icone in cima alla finestra. Ogni pulsante è una scorciatoia con un solo clic che definisci tu stesso: esegui un comando integrato, avvia un programma o un'app esterna, salta a una cartella, o apri un'intera sotto-barra di altri pulsanti. È il modo più rapido di mettere a portata di mano le azioni che usi di più, e puoi adattarla esattamente al tuo modo di lavorare.

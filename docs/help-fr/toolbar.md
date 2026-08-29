@@ -3,7 +3,7 @@ title: La barre de boutons
 slug: toolbar
 section: Personnalisation
 order: 110
-related: [keyboard-shortcuts, settings]
+related: [keyboard-shortcuts, settings, macros]
 ---
 
 La barre de boutons est la bande de boutons à icônes en haut de la fenêtre. Chaque bouton est un raccourci en un clic que vous définissez vous-même : exécuter une commande intégrée, lancer un programme ou une application externe, sauter à un dossier, ou ouvrir toute une sous-barre de boutons supplémentaires. C'est le moyen le plus rapide de mettre à portée les actions que vous utilisez le plus, et vous pouvez l'adapter exactement à votre façon de travailler.

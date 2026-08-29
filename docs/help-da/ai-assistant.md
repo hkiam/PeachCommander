@@ -3,7 +3,7 @@ title: AI-assistent
 slug: ai-assistant
 section: Plugins
 order: 122
-related: [plugins, settings, privacy-and-security]
+related: [plugins, settings, privacy-and-security, macros]
 ---
 
 AI-assistenten er et valgfrit plugin, som kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan sammenfatte eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, lave data om til en tabel og endda rydde op i en mappe — og den kan udføre filhandlinger for dig, efter først at have vist dig en plan. Den kommer som to plugins: **AI On-Device** kører på Apple Intelligence og giver dig de handlinger, der viser et forslag og udfører det, mens **AI Assistant** er chatten og kræver en skymodel. Slå det ene til, eller begge. **De kommer slået fra.** Slå dem til i **Konfiguration ▸ Plugins…** og genstart, eller lad dem være slukket, så viser der sig ingenting — ingen AI ▸-menu, ingen chat, ingen kolonne. Det er med vilje, så længe dette er i beta: den kan omdøbe, flytte og slette filer og køre skalkommandoer for dig, hver bag en plan du godkender, og det er megen rækkevidde at give en nyhed som standard. Uden en API-nøgle sker alt på din Mac, så det handler om rækkevidden og ikke om noget, der forlader maskinen. Pluginet **AI Column** viser, hvad de handlinger fandt frem til — et resumé, en slags, et emne, en dato — som kolonner i panelet; det starter ingen model selv. Det kommer slået fra sammen med dem og forbliver valgfrit, og viser ingenting, før du slår det til og tilføjer en af dets kolonner. Fra samme side kan du også fjerne begge helt.
@@ -67,6 +67,8 @@ For alt, der ændrer filer — flytte, omdøbe, skrive, slette — viser assiste
 - **Fortryd sidste ændring** tager den nyeste ændring tilbage, som har en modsætning: en omdøbning omdøbes tilbage, en flytning flyttes tilbage. Hvor intet kan tages tilbage, siger listen hvorfor — en overskrevet fil blev ikke gemt noget sted, og emner i Papirkurven gendannes fra Finder.
 
 Du kan også bare spørge: *»fortryd det«* og *»hvad har du ændret?«* når de samme to funktioner.
+
+Den liste er også dér, en makro kommer fra: **Konfiguration ▸ Makro ud fra seneste handlinger…** tilbyder det, assistenten lige har gjort, som trinnene i en makro, du kan køre igen — fra en knap eller en tast. Se [Makroer](macros.md).
 
 ## Kolonner i panelet
 

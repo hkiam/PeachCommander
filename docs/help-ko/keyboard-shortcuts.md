@@ -3,7 +3,7 @@ title: 키보드 및 단축키
 slug: keyboard-shortcuts
 section: 사용자 지정
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander는 키보드로 구동되도록 만들어졌습니다. 미리 만들어진 두 가지 단축키 구성과 함께 제공되며, 어떤 명령이든 선호하는 키로 다시 바인딩할 수 있습니다. 고전적인 이중 패널 파일 관리자에서 넘어오는 경우 이미 아는 키를 유지할 수 있고, 익숙한 Mac 조합을 사용하고 싶으면 한 번의 클릭으로 macOS 구성으로 전환할 수 있습니다. 검색 가능한 명령 브라우저를 통해 앱이 할 수 있는 모든 것을 발견하고 이름으로 임의의 명령을 실행할 수 있습니다.

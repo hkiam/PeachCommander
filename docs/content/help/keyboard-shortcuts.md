@@ -4,7 +4,7 @@ slug: keyboard-shortcuts
 group: Customise
 section: Customizing
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander is built to be driven from the keyboard. It ships with two ready-made shortcut schemes and lets you rebind any command to the keys you prefer. If you're coming from a classic dual-panel file manager, you can keep the keys you already know; if you'd rather use familiar Mac combinations, switch to the macOS scheme with one click. A searchable command browser lets you discover everything the app can do and run any command by name.

@@ -3,7 +3,7 @@ title: Meni Start in poljubni ukazi
 slug: start-menu
 section: Prilagajanje
 order: 111
-related: [toolbar, keyboard-shortcuts]
+related: [toolbar, keyboard-shortcuts, macros]
 ---
 
 Meni **Start** je vaš lastni osebni meni, ki sedi v menijski vrstici ob Datoteka, Uredi in drugih. Vsebuje ukaze, ki jih določite sami, tako da so dejanja, po katerih segate najpogosteje, vedno en klik stran. V tradiciji klasičnih dvopodokenskih upraviteljev datotek lahko vsak vnos zažene vgrajen ukaz, zažene zunanji program ali aplikacijo, ali skoči naravnost v mapo. Peach Commander se dobavi s praznim menijem Start, pripravljenim, da ga napolnite.

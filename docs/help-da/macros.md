@@ -21,6 +21,9 @@ Du behøver ikke skrive en makro fra bunden.
 
 **Gem makro**, og knappen er i linjen. Det er hele forløbet.
 
+![Arket “Makro ud fra seneste handlinger” med det netop gjorte som trin, der kan sættes flueben ved](screenshots/macro-recorder.png)
+*Det, der allerede er sket, tilbudt som trinnene i en ny makro.*
+
 Listen indeholder begge dele: hvad du har gjort i panelerne (F5, F6, F7, F8 og en omdøbning), og hvad assistenten eller en anden makro har gjort. Hver linje siger hvilken af de to — for efter en session med begge kan de samme to filer optræde i hver af dem.
 
 > **Hvad der ikke tilbydes.** At pakke et arkiv, og alt andet appen kun holder fast i ved navn, kan ikke blive til et trin — der er ingen form at give det. Sådanne linjer står grå med deres begrundelse i stedet for at mangle, så en liste på fem, der tilbyder tre, ikke læses som om den overså to. Og medmindre du beder om andet, er stierne dem, der faktisk blev brugt: en optaget makro gentager *den* kopi, ikke “en kopi af den slags”. Åbn den i editoren, og sæt `%S` eller `%T` der, hvor den skal følge panelerne.
@@ -29,7 +32,7 @@ Listen indeholder begge dele: hvad du har gjort i panelerne (F5, F6, F7, F8 og e
 
 ## De medfølgende eksempler
 
-Første gang du åbner **Konfiguration ▸ Rediger makroer…**, oprettes filen med syv gennemarbejdede eksempler. Det er helt almindelige makroer — ret i dem, eller slet dem, du ikke vil have — og hver enkelt bærer en kommentar, der siger, hvad den gør, og hvad du kan ændre:
+Første gang du åbner **Konfiguration ▸ Rediger makroer…**, oprettes filen med otte gennemarbejdede eksempler. Det er helt almindelige makroer — ret i dem, eller slet dem, du ikke vil have — og hver enkelt bærer en kommentar, der siger, hvad den gør, og hvad du kan ændre:
 
 | Makro | Hvad den gør |
 | --- | --- |
@@ -47,6 +50,9 @@ Hver af dem bliver en kommando, så du kan lægge hvilken som helst af dem på e
 ## At håndtere dem
 
 **Konfiguration ▸ Håndtér makroer…** er listen: hvad hver makro hedder, hvad dens kommando hedder, hvor mange trin den har, og hvad rettighedsspørgsmålet vil kræve — så “denne her sletter” kan ses, før du lægger den på en tast. Derfra kan du omdøbe, duplikere, omsortere og slette. Kører du hen over en linje, ser du dens trin.
+
+![Vinduet “Håndter makroer” med kommandonavn, antal trin og tilladelse for hver makro](screenshots/macro-manager.png)
+*Hvad hver makro hedder, hvad den kører som, og hvad den vil bede om lov til.*
 
 Rækkefølgen er ikke pynt: filens rækkefølge er den, som Kommandooversigten og knapbjælkens vælger viser dem i.
 
@@ -125,7 +131,10 @@ Hver makro bliver en kommando med navnet `mc_<id>` og optræder derfor af sig se
 - Din `.mnu`-menufil og `usercmd.ini`, hvis du bruger dem
 - Assistenten, som kan køre den på navn
 
-Før en makro, der ændrer noget, kører, viser den sine trin som en liste og venter. Du kan strege et trin ud, du ikke vil have; det, der bliver tilbage, er det, der kører. En makro, der kun læser, kører uden at spørge.
+Før en makro, der ændrer noget, kører, viser den sine trin som en liste og venter. Du kan strege et trin ud, du ikke vil have; det, der bliver tilbage, er det, der kører. En makro, der kun læser, kører uden at spørge. **At strege et trin ud tager de trin med, der afhænger af det** — en makro er en rækkefølge, og trinnet, der fylder mappen, kan ikke køre uden trinnet, der opretter den: de linjer slår sig selv fra og bliver grå. Sæt trinnet tilbage, og de kommer igen — bortset fra dem, du selv har streget ud; de bliver ude.
+
+![Makroens bekræftelsesdialog, hvert trin et afkrydsningsfelt med de filer, det rører](screenshots/macro-confirm.png)
+*Trinnene, opløst mod dine paneler — hvert enkelt kan streges ud.*
 
 Alt, der kan ses at være forkert før starten — et værktøj, der ikke findes, et manglende argument, et trin, der ville køre en anden makro — standser makroen før det første trin, ikke efter det tredje. Fejler et trin undervejs, **standser makroen dér** i stedet for at fortsætte: trin to forudsætter som regel, at trin et fandt sted, og at flytte filer ind i en mappe, der ikke blev oprettet, er ikke en delvis succes. Rapporten nævner trinnet, siger hvad der gik galt, og hvor mange trin der allerede var udført; hvert af dem står i handlingsloggen med sin vej tilbage, hvor den findes.
 ## Hvad en makro må

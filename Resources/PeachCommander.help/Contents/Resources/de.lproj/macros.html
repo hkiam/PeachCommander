@@ -21,13 +21,15 @@
 <li>Kreuzen Sie <strong>Den Fenstern folgen statt genau diesen Dateien</strong> an, wenn das Makro beim nächsten Mal mit dem arbeiten soll, was dann ausgewählt ist. Die Zeilen ändern sich beim Ankreuzen, Sie sehen also, was Sie speichern.</li>
 </ol>
 <p><strong>Makro speichern</strong> — und die Schaltfläche ist in der Leiste. Das ist der ganze Ablauf.</p>
+<p><img alt="Das Blatt „Makro aus letzten Aktionen“ mit dem gerade Geschehenen als ankreuzbaren Schritten" src="images/macro-recorder.png" />
+<em>Was schon geschehen ist, angeboten als Schritte eines neuen Makros.</em></p>
 <p>Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen.</p>
 <blockquote>
 <p><strong>Was nicht angeboten wird.</strong> Das Packen eines Archivs, und alles andere, was die App nur dem Namen nach festhält, lässt sich nicht in einen Schritt verwandeln — es gibt keine Form dafür. Solche Zeilen stehen ausgegraut mit ihrem Grund da, statt zu fehlen, damit eine Liste von fünf, die drei anbietet, nicht so aussieht, als hätte sie zwei übersehen. Und wenn Sie es nicht anders verlangen, sind die Pfade die, die tatsächlich gelaufen sind: ein aufgezeichnetes Makro wiederholt <em>jene</em> Kopie, nicht „eine Kopie dieser Art“. Öffnen Sie es im Editor und setzen Sie <code>%S</code> oder <code>%T</code> dorthin, wo es den Fenstern folgen soll.</p>
 </blockquote>
 <p><strong>Den Fenstern folgen</strong> ist, wie Sie es anders verlangen. Dateien, die alle aus einem Ordner kamen, werden zur Auswahl; ein Ordner, der eines der beiden Fenster ist, wird zu diesem Fenster, und ein Ordner darin behält seinen Rest — aus einem aufgezeichneten „diese vier Rechnungen nach Dokumente/2026-08 verschieben“ wird „das Ausgewählte nach <em>2026-08</em> auf der anderen Seite verschieben“, und das funktioniert morgen in zwei anderen Ordnern. Was unter keinem der beiden Fenster liegt, bleibt der Pfad, der es ist — es gibt nichts, worin es aufgehen könnte. Die Option wird nur angeboten, wenn sie etwas ändern würde.</p>
 <h2 id="die-mitgelieferten-beispiele">Die mitgelieferten Beispiele</h2>
-<p>Wenn Sie <strong>Konfiguration ▸ Makros bearbeiten…</strong> zum ersten Mal öffnen, wird die Datei mit sieben ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:</p>
+<p>Wenn Sie <strong>Konfiguration ▸ Makros bearbeiten…</strong> zum ersten Mal öffnen, wird die Datei mit acht ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:</p>
 <table>
 <thead>
 <tr>
@@ -73,6 +75,8 @@
 <p>Jedes davon wird zu einem Kommando, Sie können also jedes auf eine Schaltfläche oder eine Taste legen, ohne etwas zu schreiben.</p>
 <h2 id="sie-verwalten">Sie verwalten</h2>
 <p><strong>Konfiguration ▸ Makros verwalten…</strong> ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie umbenennen, duplizieren, umsortieren und löschen. Wer über eine Zeile fährt, sieht ihre Schritte.</p>
+<p><img alt="Das Fenster „Makros verwalten“ mit Befehlsnamen, Schrittzahl und Berechtigung je Makro" src="images/macro-manager.png" />
+<em>Wie jedes Makro heißt, als was es läuft und wofür es um Erlaubnis fragen wird.</em></p>
 <p>Das Umsortieren ist keine Zierde: die Reihenfolge in der Datei ist die Reihenfolge, in der der Kommando-Browser und die Schaltflächenauswahl sie auflisten.</p>
 <p><strong>Beim Löschen wird angeboten, die Schaltflächen mitzunehmen</strong>, und das ist auch dann wissenswert, wenn Sie dieses Fenster nie benutzen: ein von Hand entferntes Makro lässt seine Schaltfläche und seine Taste zurück, und beides tut dann nichts — die App sagt jetzt, dass das Makro weg ist, statt zu schweigen, aber die Schaltfläche bleibt Ihre Sache. Eine Taste oder ein Menüeintrag muss dort herausgenommen werden, wo er gesetzt wurde.</p>
 <p>Die <em>Schritte</em> werden hier nicht bearbeitet. <strong>Datei bearbeiten…</strong> übergibt dafür an den Editor, aus demselben Grund, aus dem es kein Formular gibt: ein Schritt ist ein Werkzeugname mit seinen Argumenten, und das ist, was JSON ist.</p>
@@ -158,7 +162,9 @@
 <li>Ihrer <code>.mnu</code>-Menüdatei und <code>usercmd.ini</code>, falls Sie diese verwenden</li>
 <li>Dem Assistenten, der es beim Namen ausführen kann</li>
 </ul>
-<p>Bevor ein Makro läuft, das etwas verändert, zeigt es Ihnen seine Schritte als Liste und wartet. Sie können einen Schritt streichen, den Sie nicht wollen; was übrig bleibt, läuft. Ein Makro, das nur liest, läuft ohne Rückfrage.</p>
+<p>Bevor ein Makro läuft, das etwas verändert, zeigt es Ihnen seine Schritte als Liste und wartet. Sie können einen Schritt streichen, den Sie nicht wollen; was übrig bleibt, läuft. Ein Makro, das nur liest, läuft ohne Rückfrage. <strong>Einen Schritt zu streichen nimmt die Schritte mit, die von ihm abhängen</strong> — ein Makro ist eine Folge, und der Schritt, der den Ordner füllt, kann ohne den Schritt, der ihn anlegt, nicht laufen: diese Zeilen schalten sich selbst ab und werden ausgegraut. Holen Sie den Schritt zurück, kommen sie wieder — bis auf die, die Sie selbst gestrichen haben; die bleiben gestrichen.</p>
+<p><img alt="Der Makro-Bestätigungsdialog, jeder Schritt ein Ankreuzfeld mit den Dateien, die er anfasst" src="images/macro-confirm.png" />
+<em>Die Schritte, aufgelöst gegen Ihre Fenster — jeder einzelne streichbar.</em></p>
 <p>Alles, was sich vor dem Start als falsch erkennen lässt — ein Werkzeug, das es nicht gibt, ein fehlendes Argument, ein Schritt, der ein anderes Makro ausführen würde —, hält das Makro vor dem ersten Schritt an und nicht nach dem dritten. Scheitert ein Schritt während des Laufs, <strong>hält das Makro dort an</strong>, statt weiterzumachen — Schritt zwei setzt meist voraus, dass Schritt eins stattgefunden hat, und Dateien in einen nicht angelegten Ordner zu verschieben ist kein Teilerfolg. Die Meldung nennt den Schritt, sagt, was schiefging, und sagt, wie viele Schritte bereits ausgeführt waren; jeder davon steht im Aktionsprotokoll, mit seinem Rückweg, wo es einen gibt.</p>
 <h2 id="was-ein-makro-darf">Was ein Makro darf</h2>
 <p>Ein Makro wird an dem Anspruchsvollsten gemessen, was darin steht. Ein Makro, dessen Schritte nur lesen, gilt als Lesen; eines, das mit einem endgültigen Löschen endet, wird wie ein endgültiges Löschen abgesichert — bevor irgendetwas davon läuft, nicht vier Schritte später.</p>

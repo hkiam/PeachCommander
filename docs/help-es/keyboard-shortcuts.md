@@ -3,7 +3,7 @@ title: Teclado y atajos
 slug: keyboard-shortcuts
 section: Personalización
 order: 112
-related: [keyboard-shortcuts-reference, settings]
+related: [keyboard-shortcuts-reference, settings, macros]
 ---
 
 Peach Commander está diseñado para controlarse desde el teclado. Viene con dos esquemas de atajos ya preparados y le permite reasignar cualquier comando a las teclas que prefiera. Si viene de un gestor de archivos clásico de doble panel, puede conservar las teclas que ya conoce; si prefiere usar las combinaciones habituales de Mac, cambie al esquema de macOS con un clic. Un explorador de comandos con función de búsqueda le permite descubrir todo lo que la aplicación puede hacer y ejecutar cualquier comando por su nombre.
