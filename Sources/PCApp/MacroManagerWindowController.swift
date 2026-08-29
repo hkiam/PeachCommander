@@ -72,13 +72,19 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
     private func buildUI() {
         guard let content = window?.contentView else { return }
 
-        for (id, title, width) in [("title", String(localized: "Macro"), 240),
-                                   ("command", String(localized: "Command"), 150),
-                                   ("steps", String(localized: "Steps"), 60),
-                                   ("needs", String(localized: "Needs"), 100)] {
+        // "Needs" carries a floor as well as a width. The table shares its spare width out among all
+        // four columns proportionally, so the narrowest one stays narrowest — and at 100pt it rendered
+        // "changes files" as "change…", which answers nothing. That is the column this window exists
+        // for: it is what makes "this one deletes" visible before a macro goes on a key. Measured
+        // against the longest phrase `PlanPhraseText` produces, in English and in German.
+        for (id, title, width, minimum) in [("title", String(localized: "Macro"), 240, 120),
+                                            ("command", String(localized: "Command"), 150, 90),
+                                            ("steps", String(localized: "Steps"), 60, 44),
+                                            ("needs", String(localized: "Needs"), 150, 135)] {
             let column = NSTableColumn(identifier: .init(id))
             column.title = title
             column.width = CGFloat(width)
+            column.minWidth = CGFloat(minimum)
             table.addTableColumn(column)
         }
         table.dataSource = self
@@ -91,6 +97,9 @@ final class MacroManagerWindowController: NSWindowController, NSTableViewDataSou
         let scroll = NSScrollView()
         scroll.documentView = table
         scroll.hasVerticalScroller = true
+        // Hidden while there is nothing to scroll. It was always drawn, and the last column's text ran
+        // under it: "changes files" lost its final letter in a window whose whole point is that column.
+        scroll.autohidesScrollers = true
         scroll.borderType = .bezelBorder
         scroll.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(scroll)

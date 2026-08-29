@@ -578,9 +578,11 @@ screenshots:
   # out and render it with `cacheDisplay` without ever showing it (DialogShot.swift), which this file
   # reaches through `env:` + `pull:` — the picture is then of the dialog alone, at its true size.
   #
-  # Every one of them opens the macro editor first and closes it again: that is what writes the
-  # shipped examples to `macros.json`, so what is photographed is `MacroSeed`, not a fixture that
-  # could drift away from it.
+  # Every one of them runs `cm_MacroEditor` first: that is what writes the shipped examples into
+  # `macros/`, so what is photographed is `MacroSeed` rather than a fixture that could drift away from
+  # it. It no longer opens an *editor* — with one file per macro there is no single file to open, so it
+  # shows the macros folder in the panel — which is why each script sets its panels again afterwards
+  # instead of closing an editor that is not there.
 
   - id: macro-confirm
     feature: macros
@@ -596,14 +598,12 @@ screenshots:
     env:
       PC_MACRO_CONFIRM_SHOT: "{shot}"
     script:
+      - cmd cm_MacroEditor
+      - wait 2000
       - left /Users/admin/pc-demo/Documents
       - right /Users/admin/pc-demo/Archives
       - active l
       - wait 900
-      - cmd cm_MacroEditor
-      - wait 2000
-      - closeeditor
-      - wait 800
       # Marked by name, so the rows read "Copy report.txt, notes.md into …" rather than standing in
       # for a selection: the resolved phrasing is the thing this picture is for.
       - marknames report.txt,notes.md
@@ -643,16 +643,16 @@ screenshots:
     pages: [macros, tutorial-macros, index]
     settle: 16
     # An ordinary window, so this one is a framebuffer grab — cropped to the window, because the
-    # desktop around it says nothing about macros.
-    crop: [158, 105, 712, 451]
+    # desktop around it says nothing about macros. The window opens 781x444 now (it gained Run,
+    # Export… and Import…, and stopped letting the sentence under the list decide its width), so the
+    # crop is wider than it was.
+    crop: [200, 110, 626, 418]
     script:
+      - cmd cm_MacroEditor
+      - wait 2000
       - left /Users/admin/pc-demo/Documents
       - right /Users/admin/pc-demo/Archives
       - active l
       - wait 900
-      - cmd cm_MacroEditor
-      - wait 2000
-      - closeeditor
-      - wait 800
       - cmd cm_MacroManager
       - wait 2500
