@@ -12,24 +12,33 @@
 <h1>Makron</h1>
 <p>Ett makro är en namngiven följd av filåtgärder — skapa en mapp, flytta markeringen dit, tagga det som blir kvar — som du kan köra igen med ett klick. Det är inte ett skriptspråk: det finns inga villkor och inga loopar, och det är avsiktligt. Ett makro är en lista du kan läsa, och läsa är vad du måste kunna göra innan du godkänner den.</p>
 <p>Allt ett makro gör går genom samma maskineri som assistenten använder, så ett makro kan inte göra något du inte har tillåtit, varje steg syns i åtgärdsloggen, och ett steg som kan ångras kan det fortfarande.</p>
-<h2 id="snabbaste-vagen-fran-det-du-just-gjorde">Snabbaste vägen: från det du just gjorde</h2>
-<p>Du behöver inte skriva ett makro från början.</p>
+<h2 id="ett-fonster-konfiguration-makron">Ett fönster: Konfiguration ▸ Makron…</h2>
+<p>Allt om makron ligger bakom den enda posten: listan över dem, de två sätten att skapa ett, och vägen in i filen. Det finns inget annat att välja mellan i menyn.</p>
+<h2 id="snabbaste-vagen-spela-in-ett">Snabbaste vägen: spela in ett</h2>
+<p>Du behöver inte skriva ett makro från grunden — och du behöver inte heller räkna ut efteråt var det började.</p>
 <ol>
-<li>Gör saken en gång — kopiera, flytta, döp om eller radera i panelerna, eller låt assistenten göra det.</li>
-<li>Välj <strong>Konfiguration ▸ Makro från senaste åtgärder…</strong>.</li>
-<li>Markera de steg makrot ska upprepa, ge det ett namn och låt <strong>Lägg även till en knapp för det</strong> vara på.</li>
+<li><strong>Konfiguration ▸ Makron… ▸ Spela in makro…</strong>. Fönstret drar sig undan och en liten panel dyker upp som säger att en inspelning pågår och räknar stegen efter hand.</li>
+<li>Gör jobbet en gång — kopiera, flytta, byt namn, radera, skapa mappar och filer. Arbeta som vanligt; inspelningen är inte i vägen.</li>
+<li><strong>Stoppa och spara…</strong>.</li>
+<li>Stegen kommer tillbaka redan ikryssade. Kryssa ur allt som bara förberedde, ge makrot ett namn och låt <strong>Lägg även till en knapp för det</strong> vara på.</li>
 <li>Kryssa i <strong>Följ panelerna i stället för just dessa filer</strong> om makrot nästa gång ska arbeta med det som då är markerat. Raderna ändras medan du kryssar, så du ser vad du sparar.</li>
 </ol>
 <p><strong>Spara makro</strong>, och knappen finns i raden. Det är hela varvet.</p>
+<p><strong>Kasta inspelningen</strong> slänger inspelningen och sparar ingenting. Ingenting spelas in innan du trycker Spela in, och ingenting efter att du stoppat — det är just därför det finns två ändar.</p>
+<p>En inspelning överlever en omstart. Om Peach Commander avslutas medan en pågår — du avslutar, eller den kraschar — kommer den tillbaka med inspelningen, säger till, och du fortsätter eller kastar den.</p>
+<p>Vill du hellre ha det på en tangent eller en knapp heter kommandot <code>cm_MacroRecord</code>: det startar en inspelning och stoppar den som pågår.</p>
+<h2 id="den-andra-vagen-ur-det-som-redan-hant">Den andra vägen: ur det som redan hänt</h2>
+<p><strong>Från senaste åtgärderna…</strong> i samma fönster bygger ett makro av det senaste som hänt i stället för att spela in nytt — användbart när du <em>precis</em> gjort jobbet och först då tänker på ett makro.</p>
 <p><img alt="Bladet ”Makro från senaste åtgärder” med det du nyss gjorde som kryssbara steg" src="images/macro-recorder.png" />
 <em>Det som redan har hänt, erbjudet som stegen i ett nytt makro.</em></p>
-<p>Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en omdöpning) och vad assistenten eller ett annat makro har gjort. Varje rad säger vilket av de två — efter en session med båda kan samma två filer dyka upp i var och en.</p>
+<p>Listan innehåller båda: vad du har gjort i panelerna (F5, F6, F7, F8 och en omdöpning) och vad assistenten eller ett annat makro har gjort. Varje rad säger vilket av de två — efter en session med båda kan samma två filer dyka upp i var och en. Här börjar raderna okryssade: ”allt jag gjort den senaste halvtimmen” är sällan det makro man menar.</p>
 <blockquote>
+<p><strong>Den här vägen behöver historiken.</strong> Det du gör för hand läses tillbaka ur den globala historiken; har du stängt av den (Inställningar ▸ Övrigt ▸ <strong>Spela in en global historik</strong>) finns ingenting av ditt i listan — och den säger det. <strong>Spela in makro…</strong> beror inte på den.</p>
 <p><strong>Vad som inte erbjuds.</strong> Att packa ett arkiv, och allt annat appen bara håller reda på vid namn, kan inte bli ett steg — det finns ingen form att ge det. Sådana rader står gråa med sitt skäl i stället för att saknas, så att en lista på fem som erbjuder tre inte läses som om den missat två. Och om du inte ber om annat är sökvägarna de som faktiskt användes: ett inspelat makro upprepar <em>den</em> kopian, inte ”en kopia av det slaget”. Öppna det i redigeraren och sätt <code>%S</code> eller <code>%T</code> där det ska följa panelerna.</p>
 </blockquote>
 <p><strong>Följ panelerna</strong> är hur man ber om annat. Filer som alla kom från en mapp blir markeringen; en mapp som är en av de två panelerna blir den panelen, och en mapp inuti den behåller sin svans — ett inspelat ”flytta dessa fyra fakturor till Dokument/2026-08” blir ”flytta det som är markerat till <em>2026-08</em> på andra sidan”, och det fungerar i morgon i två andra mappar. Det som inte ligger under någon av panelerna förblir den sökväg det är, för det finns inget att vika in det i. Alternativet erbjuds bara när det skulle ändra något.</p>
 <h2 id="exemplen-som-foljer-med">Exemplen som följer med</h2>
-<p>Första gången du öppnar <strong>Konfiguration ▸ Redigera makron…</strong> skapas filen med åtta genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:</p>
+<p>Första gången du öppnar <strong>Redigera fil…</strong> skapas filen med åtta genomarbetade exempel. Det är helt vanliga makron — ändra dem, eller ta bort dem du inte vill ha — och vart och ett bär en kommentar som säger vad det gör och vad du kan ändra:</p>
 <table>
 <thead>
 <tr>
@@ -74,26 +83,26 @@
 </table>
 <p>Vart och ett av dem blir ett kommando, så du kan lägga vilket som helst på en knapp eller en tangent utan att skriva något.</p>
 <h2 id="att-hantera-dem">Att hantera dem</h2>
-<p><strong>Konfiguration ▸ Hantera makron…</strong> är listan: vad varje makro heter, vad dess kommando heter, hur många steg det har och vad rättighetsfrågan kommer att kräva — så att ”det här raderar” syns innan du lägger det på en tangent. Därifrån kan du byta namn, duplicera, ordna om och radera. För du muspekaren över en rad ser du dess steg.</p>
+<p><strong>Konfiguration ▸ Makron…</strong> är listan: vad varje makro heter, vad dess kommando heter, hur många steg det har och vad behörighetsspärren kommer att fråga om — så ”det här raderar” syns innan du lägger det på en tangent. Därifrån kan du köra, byta namn, duplicera, ändra ordning, radera, exportera och importera. Håller du pekaren över en rad visas dess steg.</p>
+<p><strong>Kör</strong> är sättet att prova det du just spelat in, utan att först stänga fönstret för att leta rätt på kommandot. Det går genom samma plan och samma bekräftelse som varje annan körning — det här fönstret har inga egna rättigheter.</p>
+<p><strong>Exportera…</strong> skriver det valda makrot till en egen fil, och <strong>Importera…</strong> lägger till makron från filer som någon skickat dig — det är vad en fil per makro är till för. En import ersätter aldrig: ett makro vars id redan är taget får ett ledigt (en inkommande <code>backup</code> blir <code>backup-2</code> bredvid ditt eget), och du får veta vilka id:n de nya hamnade på, eftersom knappen du gör måste peka på rätt.</p>
 <p><img alt="Fönstret ”Hantera makron” med kommandonamn, antal steg och behörighet för varje makro" src="images/macro-manager.png" />
 <em>Vad varje makro heter, vad det körs som och vad det kommer att be om lov till.</em></p>
 <p>Ordningen är ingen utsmyckning: filens ordning är den som Kommandoöversikten och knappradens väljare listar dem i.</p>
 <p><strong>Vid radering erbjuds du att ta knapparna med</strong>, och det är värt att veta även om du aldrig öppnar det här fönstret: ett makro som tas bort för hand lämnar kvar sin knapp och sin tangent, och ingendera gör då något — appen säger nu att makrot är borta i stället för att tiga, men knappen är fortfarande din sak. En tangent eller ett menyval måste tas bort där det sattes.</p>
 <p><em>Stegen</em> redigeras inte här. <strong>Redigera fil…</strong> lämnar över till redigeraren för det, av samma skäl som det inte finns något formulär: ett steg är ett verktygsnamn med sina argument, och det är precis vad JSON är.</p>
 <h2 id="redigera-makron-for-hand">Redigera makron för hand</h2>
-<p><strong>Konfiguration ▸ Redigera makron…</strong> öppnar <code>macros.json</code> i din konfigurationsmapp, första gången skapad med exemplen ovan. Ett makro är en lista med steg, och varje steg nämner ett verktyg och dess argument:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Redigera fil…</strong> öppnar det valda makrots egen fil — <code>macros/&lt;id&gt;.json</code> i din konfigurationsmapp, skapad första gången med exemplen ovan. Utan markering visas själva mappen i panelen, där F3 läser ett och F4 redigerar ett. Ett makro är en lista med steg, och varje steg namnger ett verktyg och dess argument:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Att spara läser om makrona direkt — och säger till om något är fel: ett felstavat verktygsnamn, ett obligatoriskt argument som saknas, två makron med samma id. Ett makro med ett fel körs inte och hamnar inte på någon knapp; du får veta vilket det är och vad som är fel med det, medan redigeraren fortfarande är öppen.</p>
@@ -174,7 +183,7 @@
 <p>Varje steg loggas för sig, så <strong>ångra</strong> efter ett makro tar tillbaka dess <em>sista</em> steg, inte hela makrot. Det finns ingen ångra för hela makrot, eftersom flera verktyg inte har någon invers alls och en knapp som erbjöd den skulle ljuga om dem.</p>
 <h2 id="var-allt-sparas">Var allt sparas</h2>
 <ul>
-<li>Dina makron ligger i <code>macros.json</code> i konfigurationsmappen — en vanlig fil du kan diffa och hålla med dina dotfiles.</li>
+<li>Dina makron ligger i <code>macros/</code> i konfigurationsmappen, ett per <code>&lt;id&gt;.json</code> — vanliga filer som du kan diffa, spara med dina dotfiles och skicka till någon. En <code>macros.json</code> från en tidigare version tas med vid första starten och byter namn till <code>macros.json.migrated</code>; därefter läser ingen den.</li>
 <li>Knappar ett makro lade till är vanliga knappradsposter i <code>default.bar</code>, så att ta bort en är detsamma som för vilken knapp som helst.</li>
 </ul>
 <h2 id="nasta-steg">Nästa steg</h2>

@@ -12,24 +12,33 @@
 <h1>Makros</h1>
 <p>Ein Makro ist eine benannte Folge von Dateiaktionen — einen Ordner anlegen, die Auswahl hineinschieben, den Rest verschlagworten —, die Sie mit einem Klick wieder ausführen können. Es ist keine Skriptsprache: es gibt keine Bedingungen und keine Schleifen, und das ist Absicht. Ein Makro ist eine Liste, die Sie lesen können, und lesen müssen Sie können, bevor Sie zustimmen.</p>
 <p>Alles, was ein Makro tut, läuft durch dieselbe Maschinerie wie der Assistent. Ein Makro kann also nichts tun, was Sie nicht erlaubt haben, jeder seiner Schritte erscheint im Aktionsprotokoll, und ein Schritt, der zurückgenommen werden kann, kann es weiterhin.</p>
-<h2 id="der-schnellste-weg-aus-dem-was-sie-eben-getan-haben">Der schnellste Weg: aus dem, was Sie eben getan haben</h2>
-<p>Sie müssen ein Makro nicht von Hand schreiben.</p>
+<h2 id="ein-fenster-konfiguration-makros">Ein Fenster: Konfiguration ▸ Makros…</h2>
+<p>Alles rund um Makros steht hinter diesem einen Eintrag: die Liste, die beiden Wege zu einem neuen Makro und der Weg in die Datei. Im Menü gibt es nichts zu wählen.</p>
+<h2 id="der-schnellste-weg-eines-aufzeichnen">Der schnellste Weg: eines aufzeichnen</h2>
+<p>Sie müssen ein Makro nicht von Hand schreiben — und Sie müssen hinterher auch nicht überlegen, wo es angefangen hat.</p>
 <ol>
-<li>Tun Sie die Sache einmal — kopieren, verschieben, umbenennen oder löschen Sie in den Fenstern, oder lassen Sie es den Assistenten tun.</li>
-<li>Wählen Sie <strong>Konfiguration ▸ Makro aus letzten Aktionen…</strong>.</li>
-<li>Kreuzen Sie die Schritte an, die das Makro wiederholen soll, geben Sie ihm einen Namen und lassen Sie <strong>Außerdem eine Schaltfläche dafür anlegen</strong> eingeschaltet.</li>
+<li><strong>Konfiguration ▸ Makros… ▸ Makro aufzeichnen…</strong>. Das Fenster tritt beiseite, und ein kleines Feld erscheint, das sagt, dass eine Aufzeichnung läuft und die Schritte mitzählt.</li>
+<li>Erledigen Sie die Arbeit einmal — kopieren, verschieben, umbenennen, löschen, Ordner und Dateien anlegen. Arbeiten Sie ganz normal; die Aufzeichnung steht nicht im Weg.</li>
+<li><strong>Beenden und sichern…</strong>.</li>
+<li>Die Schritte kommen angekreuzt zurück. Nehmen Sie das Häkchen bei allem weg, was nur vorbereitet hat, und geben Sie dem Makro einen Namen. Lassen Sie <strong>Außerdem eine Schaltfläche dafür anlegen</strong> eingeschaltet.</li>
 <li>Kreuzen Sie <strong>Den Fenstern folgen statt genau diesen Dateien</strong> an, wenn das Makro beim nächsten Mal mit dem arbeiten soll, was dann ausgewählt ist. Die Zeilen ändern sich beim Ankreuzen, Sie sehen also, was Sie speichern.</li>
 </ol>
 <p><strong>Makro speichern</strong> — und die Schaltfläche ist in der Leiste. Das ist der ganze Ablauf.</p>
+<p><strong>Aufzeichnung verwerfen</strong> wirft die Aufzeichnung weg und sichert nichts. Vor dem Start wird nichts aufgezeichnet und nach dem Beenden auch nicht — genau dafür gibt es beide Enden.</p>
+<p>Eine Aufzeichnung übersteht einen Neustart. Endet Peach Commander, während eine läuft — weil Sie beenden oder weil es abstürzt —, kommt sie mit zurück, sagt das auch, und Sie machen weiter oder verwerfen sie.</p>
+<p>Wenn Sie es lieber auf einer Taste oder einer Schaltfläche hätten: der Befehl heißt <code>cm_MacroRecord</code>, er startet eine Aufzeichnung und beendet die laufende.</p>
+<h2 id="der-andere-weg-aus-dem-was-schon-geschehen-ist">Der andere Weg: aus dem, was schon geschehen ist</h2>
+<p><strong>Aus letzten Aktionen…</strong> im selben Fenster baut ein Makro aus dem, was zuletzt passiert ist, statt Neues aufzuzeichnen — nützlich, wenn Sie die Arbeit <em>gerade</em> erledigt haben und erst dann auf die Idee mit dem Makro kommen.</p>
 <p><img alt="Das Blatt „Makro aus letzten Aktionen“ mit dem gerade Geschehenen als ankreuzbaren Schritten" src="images/macro-recorder.png" />
 <em>Was schon geschehen ist, angeboten als Schritte eines neuen Makros.</em></p>
-<p>Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen.</p>
+<p>Die Liste enthält beides: was Sie in den Fenstern getan haben (F5, F6, F7, F8 und ein Umbenennen) und was der Assistent oder ein anderes Makro getan hat. Jede Zeile sagt, welches von beidem — denn nach einer Sitzung mit beidem können dieselben zwei Dateien in jeder der beiden auftauchen. Hier sind die Zeilen zunächst nicht angekreuzt: „alles, was ich in der letzten halben Stunde getan habe“ ist selten das gemeinte Makro.</p>
 <blockquote>
+<p><strong>Dieser Weg braucht den Verlauf.</strong> Was Sie von Hand tun, wird aus dem globalen Verlauf zurückgelesen. Haben Sie den ausgeschaltet (Einstellungen ▸ Sonstiges ▸ <strong>Globalen Verlauf aufzeichnen</strong>), steht nichts von Ihnen in dieser Liste — und sie sagt das auch. <strong>Makro aufzeichnen…</strong> hängt nicht davon ab.</p>
 <p><strong>Was nicht angeboten wird.</strong> Das Packen eines Archivs, und alles andere, was die App nur dem Namen nach festhält, lässt sich nicht in einen Schritt verwandeln — es gibt keine Form dafür. Solche Zeilen stehen ausgegraut mit ihrem Grund da, statt zu fehlen, damit eine Liste von fünf, die drei anbietet, nicht so aussieht, als hätte sie zwei übersehen. Und wenn Sie es nicht anders verlangen, sind die Pfade die, die tatsächlich gelaufen sind: ein aufgezeichnetes Makro wiederholt <em>jene</em> Kopie, nicht „eine Kopie dieser Art“. Öffnen Sie es im Editor und setzen Sie <code>%S</code> oder <code>%T</code> dorthin, wo es den Fenstern folgen soll.</p>
 </blockquote>
 <p><strong>Den Fenstern folgen</strong> ist, wie Sie es anders verlangen. Dateien, die alle aus einem Ordner kamen, werden zur Auswahl; ein Ordner, der eines der beiden Fenster ist, wird zu diesem Fenster, und ein Ordner darin behält seinen Rest — aus einem aufgezeichneten „diese vier Rechnungen nach Dokumente/2026-08 verschieben“ wird „das Ausgewählte nach <em>2026-08</em> auf der anderen Seite verschieben“, und das funktioniert morgen in zwei anderen Ordnern. Was unter keinem der beiden Fenster liegt, bleibt der Pfad, der es ist — es gibt nichts, worin es aufgehen könnte. Die Option wird nur angeboten, wenn sie etwas ändern würde.</p>
 <h2 id="die-mitgelieferten-beispiele">Die mitgelieferten Beispiele</h2>
-<p>Wenn Sie <strong>Konfiguration ▸ Makros bearbeiten…</strong> zum ersten Mal öffnen, wird die Datei mit acht ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:</p>
+<p>Wenn Sie <strong>Datei bearbeiten…</strong> zum ersten Mal öffnen, wird die Datei mit acht ausgearbeiteten Beispielen angelegt. Es sind ganz gewöhnliche Makros — ändern Sie sie, oder löschen Sie die, die Sie nicht brauchen —, und jedes trägt einen Kommentar, der sagt, was es tut und was man daran ändern kann:</p>
 <table>
 <thead>
 <tr>
@@ -74,26 +83,26 @@
 </table>
 <p>Jedes davon wird zu einem Kommando, Sie können also jedes auf eine Schaltfläche oder eine Taste legen, ohne etwas zu schreiben.</p>
 <h2 id="sie-verwalten">Sie verwalten</h2>
-<p><strong>Konfiguration ▸ Makros verwalten…</strong> ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie umbenennen, duplizieren, umsortieren und löschen. Wer über eine Zeile fährt, sieht ihre Schritte.</p>
+<p><strong>Konfiguration ▸ Makros…</strong> ist die Liste: wie jedes Makro heißt, wie sein Kommando heißt, wie viele Schritte es hat und was die Rechteabfrage verlangen wird — „dieses hier löscht“ ist also sichtbar, bevor Sie es auf eine Taste legen. Von dort aus können Sie ausführen, umbenennen, duplizieren, umsortieren, löschen, exportieren und importieren. Wer über eine Zeile fährt, sieht ihre Schritte.</p>
+<p><strong>Ausführen</strong> ist der Weg, ein gerade aufgezeichnetes Makro auszuprobieren, ohne erst das Fenster zu schließen und den Befehl zu suchen. Es läuft durch denselben Plan und dieselbe Bestätigung wie jeder andere Aufruf — dieses Fenster hat keine eigenen Rechte.</p>
+<p><strong>Exportieren…</strong> schreibt das ausgewählte Makro in eine eigene Datei, <strong>Importieren…</strong> fügt Makros aus Dateien hinzu, die Ihnen jemand geschickt hat — dafür ist eine Datei je Makro da. Ein Import ersetzt nie: ein Makro, dessen Kennung schon vergeben ist, bekommt eine freie (ein ankommendes <code>backup</code> wird neben Ihrem eigenen zu <code>backup-2</code>), und es wird Ihnen gesagt, unter welchen Kennungen die neuen gelandet sind — die Schaltfläche, die Sie anlegen, muss ja die richtige nennen.</p>
 <p><img alt="Das Fenster „Makros verwalten“ mit Befehlsnamen, Schrittzahl und Berechtigung je Makro" src="images/macro-manager.png" />
 <em>Wie jedes Makro heißt, als was es läuft und wofür es um Erlaubnis fragen wird.</em></p>
 <p>Das Umsortieren ist keine Zierde: die Reihenfolge in der Datei ist die Reihenfolge, in der der Kommando-Browser und die Schaltflächenauswahl sie auflisten.</p>
 <p><strong>Beim Löschen wird angeboten, die Schaltflächen mitzunehmen</strong>, und das ist auch dann wissenswert, wenn Sie dieses Fenster nie benutzen: ein von Hand entferntes Makro lässt seine Schaltfläche und seine Taste zurück, und beides tut dann nichts — die App sagt jetzt, dass das Makro weg ist, statt zu schweigen, aber die Schaltfläche bleibt Ihre Sache. Eine Taste oder ein Menüeintrag muss dort herausgenommen werden, wo er gesetzt wurde.</p>
 <p>Die <em>Schritte</em> werden hier nicht bearbeitet. <strong>Datei bearbeiten…</strong> übergibt dafür an den Editor, aus demselben Grund, aus dem es kein Formular gibt: ein Schritt ist ein Werkzeugname mit seinen Argumenten, und das ist, was JSON ist.</p>
 <h2 id="makros-von-hand-bearbeiten">Makros von Hand bearbeiten</h2>
-<p><strong>Konfiguration ▸ Makros bearbeiten…</strong> öffnet <code>macros.json</code> in Ihrem Konfigurationsordner, beim ersten Mal angelegt mit den Beispielen von oben. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Datei bearbeiten…</strong> öffnet die eigene Datei des ausgewählten Makros — <code>macros/&lt;kennung&gt;.json</code> in Ihrem Konfigurationsordner, beim ersten Mal angelegt mit den Beispielen von oben. Ohne Auswahl wird der Ordner selbst im Fenster gezeigt, wo F3 eines liest und F4 eines bearbeitet. Ein Makro ist eine Liste von Schritten, und jeder Schritt nennt ein Werkzeug und seine Argumente:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Das Speichern lädt die Makros sofort neu — und sagt Ihnen, wenn etwas nicht stimmt: ein falsch geschriebener Werkzeugname, ein fehlendes Pflichtargument, zwei Makros mit derselben Id. Ein Makro mit einem Fehler wird nicht ausgeführt und kommt auf keine Schaltfläche; Sie erfahren, welches Makro es betrifft und was daran falsch ist, solange der Editor noch offen ist.</p>
@@ -174,7 +183,7 @@
 <p>Jeder Schritt wird einzeln protokolliert, deshalb nimmt <strong>Widerrufen</strong> nach einem Makro dessen <em>letzten</em> Schritt zurück, nicht das ganze Makro. Ein makroweites Widerrufen gibt es nicht, weil mehrere Werkzeuge überhaupt keine Umkehrung haben und eine Schaltfläche, die es anbietet, über diese lügen würde.</p>
 <h2 id="wo-alles-gespeichert-wird">Wo alles gespeichert wird</h2>
 <ul>
-<li>Ihre Makros stehen in <code>macros.json</code> im Konfigurationsordner — eine einfache Datei, die Sie diffen und in Ihren Dotfiles halten können.</li>
+<li>Ihre Makros stehen in <code>macros/</code> im Konfigurationsordner, je eines als <code>&lt;kennung&gt;.json</code> — einfache Dateien, die Sie diffen, in Ihren Dotfiles halten und jemandem schicken können. Eine <code>macros.json</code> aus einer früheren Version wird beim ersten Start übernommen und in <code>macros.json.migrated</code> umbenannt; danach liest sie niemand mehr.</li>
 <li>Schaltflächen, die ein Makro angelegt hat, sind gewöhnliche Einträge der Schaltflächenleiste in <code>default.bar</code>; eine davon zu entfernen ist dasselbe wie bei jeder anderen Schaltfläche.</li>
 </ul>
 <h2 id="nachste-schritte">Nächste Schritte</h2>

@@ -12,24 +12,33 @@
 <h1>Makra</h1>
 <p>Makro to nazwana sekwencja działań na plikach — utwórz folder, przenieś do niego zaznaczenie, oznacz to, co zostało — którą można uruchomić ponownie jednym kliknięciem. To nie jest język skryptowy: nie ma warunków ani pętli, i tak jest zamierzone. Makro jest listą, którą można przeczytać, a przeczytać trzeba móc, zanim się je zatwierdzi.</p>
 <p>Wszystko, co robi makro, przechodzi przez tę samą maszynerię, z której korzysta asystent. Makro nie może więc zrobić nic, na co nie ma Twojej zgody, każdy jego krok pojawia się w dzienniku działań, a krok, który da się cofnąć, wciąż się da.</p>
-<h2 id="najszybsza-droga-z-tego-co-wasnie-zrobies">Najszybsza droga: z tego, co właśnie zrobiłeś</h2>
-<p>Nie musisz pisać makra od zera.</p>
+<h2 id="jedno-okno-konfiguracja-makra">Jedno okno: Konfiguracja ▸ Makra…</h2>
+<p>Wszystko, co dotyczy makr, kryje się za tym jednym wpisem: lista, dwa sposoby utworzenia makra i droga do pliku. W menu nie ma już nic do wybierania.</p>
+<h2 id="najszybsza-droga-nagraj-makro">Najszybsza droga: nagraj makro</h2>
+<p>Nie musisz pisać makra od zera i nie musisz potem ustalać, gdzie się zaczęło.</p>
 <ol>
-<li>Zróbcie tę rzecz raz — skopiujcie, przenieście, zmieńcie nazwę albo usuńcie w panelach, albo niech zrobi to asystent.</li>
-<li>Wybierz <strong>Konfiguracja ▸ Makro z ostatnich działań…</strong>.</li>
-<li>Zaznacz kroki, które makro ma powtarzać, nadaj mu nazwę i zostaw włączone <strong>Dodaj też przycisk dla niego</strong>.</li>
+<li><strong>Konfiguracja ▸ Makra… ▸ Nagraj makro…</strong>. Okno usuwa się na bok, a pojawia się mały panel informujący, że trwa nagrywanie, i liczący kroki na bieżąco.</li>
+<li>Wykonaj pracę raz — kopiuj, przenoś, zmieniaj nazwy, usuwaj, twórz foldery i pliki. Pracuj normalnie; nagrywanie nie przeszkadza.</li>
+<li><strong>Zatrzymaj i zapisz…</strong>.</li>
+<li>Kroki wracają już zaznaczone. Odznacz to, co tylko przygotowywało grunt, nadaj makru nazwę i zostaw włączone <strong>Dodaj też przycisk dla niego</strong>.</li>
 <li>Zaznaczcie <strong>Podążaj za panelami zamiast za dokładnie tymi plikami</strong>, jeśli makro ma następnym razem pracować na tym, co będzie wtedy zaznaczone. Wiersze zmieniają się przy zaznaczaniu, więc widzicie, co zapisujecie.</li>
 </ol>
 <p><strong>Zapisz makro</strong> — i przycisk jest na pasku. To cały cykl.</p>
+<p><strong>Odrzuć nagranie</strong> wyrzuca nagranie i nic nie zapisuje. Przed naciśnięciem Nagraj nic nie jest nagrywane, po zatrzymaniu również — po to właśnie są oba końce.</p>
+<p>Nagranie przeżywa ponowne uruchomienie. Jeśli Peach Commander zakończy się w trakcie — bo wyjdziesz albo bo się zawiesi — wraca razem z nagraniem, mówi o tym, a ty kontynuujesz albo je odrzucasz.</p>
+<p>Jeśli wolisz mieć to na klawiszu albo przycisku, polecenie nazywa się <code>cm_MacroRecord</code>: rozpoczyna nagrywanie i zatrzymuje trwające.</p>
+<h2 id="druga-droga-z-tego-co-juz-sie-wydarzyo">Druga droga: z tego, co już się wydarzyło</h2>
+<p><strong>Z ostatnich działań…</strong> w tym samym oknie buduje makro z ostatnich rzeczy, które się wydarzyły, zamiast nagrywać nowe — przydatne, gdy <em>właśnie</em> wykonałeś pracę i dopiero wtedy pomyślałeś o makrze.</p>
 <p><img alt="Arkusz „Makro z ostatnich działań” z tym, co właśnie zrobiono, jako krokami do zaznaczenia" src="images/macro-recorder.png" />
 <em>To, co już się wydarzyło, zaproponowane jako kroki nowego makra.</em></p>
-<p>Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich.</p>
+<p>Lista zawiera jedno i drugie: to, co zrobiliście w panelach (F5, F6, F7, F8 i zmiana nazwy), oraz to, co zrobił asystent albo inne makro. Każdy wiersz mówi, które z dwojga — po sesji z jednym i drugim te same dwa pliki mogą pojawić się w każdym z nich. Tutaj wiersze są początkowo niezaznaczone: „wszystko, co zrobiłem przez ostatnie pół godziny” rzadko jest tym makrem, o które chodzi.</p>
 <blockquote>
+<p><strong>Ta droga potrzebuje historii.</strong> To, co robisz ręcznie, odczytywane jest z globalnej historii; jeśli ją wyłączyłeś (Ustawienia ▸ Różne ▸ <strong>Zapisuj globalną historię</strong>), na tej liście nie ma nic twojego — i lista to mówi. <strong>Nagraj makro…</strong> od tego nie zależy.</p>
 <p><strong>Czego się nie oferuje.</strong> Spakowania archiwum i wszystkiego innego, co aplikacja zapamiętuje tylko z nazwy, nie da się zamienić w krok — nie ma dla tego kształtu. Takie wiersze widnieją wyszarzone wraz z powodem, zamiast ich brakować, żeby lista pięciu oferująca trzy nie wyglądała, jakby dwóch nie zauważyła. A jeśli nie poprosicie inaczej, ścieżki są te, które naprawdę zadziałały: nagrane makro powtarza <em>tę</em> kopię, a nie „kopię tego rodzaju”. Otwórzcie je w edytorze i wstawcie <code>%S</code> albo <code>%T</code> tam, gdzie ma podążać za panelami.</p>
 </blockquote>
 <p><strong>Podążaj za panelami</strong> to sposób, by poprosić inaczej. Pliki pochodzące wszystkie z jednego folderu stają się zaznaczeniem; folder będący jednym z dwóch paneli staje się tym panelem, a folder wewnątrz zachowuje swoją końcówkę — z nagranego „przenieś te cztery faktury do Dokumenty/2026-08” robi się „przenieś to, co zaznaczone, do <em>2026-08</em> po drugiej stronie”, i jutro działa to w dwóch innych folderach. To, co nie leży pod żadnym z paneli, zostaje ścieżką, którą jest — nie ma w co tego złożyć. Opcja pojawia się tylko wtedy, gdy coś by zmieniła.</p>
 <h2 id="doaczone-przykady">Dołączone przykłady</h2>
-<p>Przy pierwszym otwarciu <strong>Konfiguracja ▸ Edytuj makra…</strong> plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:</p>
+<p>Przy pierwszym otwarciu <strong>Edytuj plik…</strong> plik zostaje założony z ośmioma gotowymi przykładami. To zwykłe makra — zmieniaj je albo usuwaj te, których nie chcesz — a każde niesie komentarz mówiący, co robi i co w nim zmienić:</p>
 <table>
 <thead>
 <tr>
@@ -74,26 +83,26 @@
 </table>
 <p>Każde z nich staje się poleceniem, więc dowolne można umieścić na przycisku albo na klawiszu, nie pisząc niczego.</p>
 <h2 id="zarzadzanie-nimi">Zarządzanie nimi</h2>
-<p><strong>Konfiguracja ▸ Zarządzaj makrami…</strong> to ta lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i czego zażąda pytanie o uprawnienia — „to usuwa” widać więc, zanim położycie je na klawiszu. Stamtąd można zmienić nazwę, zduplikować, przestawić i usunąć. Najechanie na wiersz pokazuje jego kroki.</p>
+<p><strong>Konfiguracja ▸ Makra…</strong> to lista: jak nazywa się każde makro, jak nazywa się jego polecenie, ile ma kroków i o co zapyta bramka uprawnień — dzięki temu „to usuwa” widać, zanim położysz je na klawiszu. Stamtąd możesz uruchamiać, zmieniać nazwy, duplikować, zmieniać kolejność, usuwać, eksportować i importować. Najechanie na wiersz pokazuje jego kroki.</p>
+<p><strong>Uruchom</strong> to sposób na wypróbowanie makra, które właśnie nagrałeś, bez zamykania okna i szukania polecenia. Przechodzi przez ten sam plan i to samo potwierdzenie co każde inne uruchomienie — to okno nie ma własnych uprawnień.</p>
+<p><strong>Eksportuj…</strong> zapisuje zaznaczone makro do własnego pliku, a <strong>Importuj…</strong> dodaje makra z plików, które ktoś ci przysłał — po to właśnie jest jeden plik na makro. Import nigdy nie zastępuje: makro, którego identyfikator jest już zajęty, dostaje wolny (przychodzące <code>backup</code> obok twojego staje się <code>backup-2</code>), a ty dowiadujesz się, pod jakimi identyfikatorami wylądowały nowe, bo przycisk, który zrobisz, musi wskazać właściwe.</p>
 <p><img alt="Okno „Zarządzaj makrami” z nazwą polecenia, liczbą kroków i uprawnieniem każdego makra" src="images/macro-manager.png" />
 <em>Jak nazywa się każde makro, jako co działa i o co poprosi o zgodę.</em></p>
 <p>Kolejność nie jest ozdobą: kolejność w pliku jest tą, w jakiej wypisują je Przeglądarka poleceń i wybór do paska przycisków.</p>
 <p><strong>Przy usuwaniu proponuje się zabrać przyciski ze sobą</strong>, i warto o tym wiedzieć, nawet jeśli nigdy nie otworzycie tego okna: makro usunięte ręcznie zostawia po sobie przycisk i klawisz, a żadne z nich już nic nie robi — aplikacja mówi teraz, że makra nie ma, zamiast milczeć, ale przycisk pozostaje waszą sprawą. Klawisz albo pozycję menu trzeba usunąć tam, gdzie zostały ustawione.</p>
 <p><em>Kroków</em> się tu nie edytuje. <strong>Edytuj plik…</strong> przekazuje to edytorowi, z tego samego powodu, dla którego nie ma formularza: krok to nazwa narzędzia wraz z argumentami, a to jest właśnie JSON.</p>
 <h2 id="reczna-edycja-makr">Ręczna edycja makr</h2>
-<p><strong>Konfiguracja ▸ Edytuj makra…</strong> otwiera <code>macros.json</code> w waszym folderze konfiguracji, za pierwszym razem założony z przykładami powyżej. Makro to lista kroków, a każdy krok nazywa narzędzie i jego argumenty:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Edytuj plik…</strong> otwiera własny plik zaznaczonego makra — <code>macros/&lt;id&gt;.json</code> w twoim folderze konfiguracyjnym, utworzony za pierwszym razem z powyższymi przykładami. Bez zaznaczenia w panelu pokazywany jest sam folder, gdzie F3 czyta jedno, a F4 edytuje jedno. Makro to lista kroków, a każdy krok wskazuje narzędzie i jego argumenty:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Zapis natychmiast przeładowuje makra — i mówi, jeśli coś jest nie tak: literówka w nazwie narzędzia, brakujący wymagany argument, dwa makra o tym samym id. Makro z błędem nie jest uruchamiane i nie trafia na żaden przycisk; dowiadujecie się, które to i co w nim nie gra, póki edytor jest jeszcze otwarty.</p>
@@ -174,7 +183,7 @@
 <p>Każdy krok jest zapisywany osobno, więc <strong>cofnij</strong> po makrze wycofuje jego <em>ostatni</em> krok, a nie całe makro. Cofania całego makra nie ma, bo kilka narzędzi nie ma żadnej odwrotności, a przycisk, który by je oferował, kłamałby w ich sprawie.</p>
 <h2 id="gdzie-sie-to-zapisuje">Gdzie się to zapisuje</h2>
 <ul>
-<li>Twoje makra są w <code>macros.json</code> w folderze konfiguracji — to zwykły plik, który można porównywać i trzymać razem z dotfiles.</li>
+<li>Twoje makra są w <code>macros/</code> w folderze konfiguracyjnym, po jednym jako <code>&lt;id&gt;.json</code> — zwykłe pliki, które możesz diffować, trzymać z dotfiles i komuś wysłać. <code>macros.json</code> ze starszej wersji jest przy pierwszym uruchomieniu przenoszony i zmieniany na <code>macros.json.migrated</code>; potem już nikt go nie czyta.</li>
 <li>Przyciski dodane przez makro to normalne wpisy paska przycisków w <code>default.bar</code>, więc usunięcie jednego wygląda tak samo jak przy każdym innym przycisku.</li>
 </ul>
 <h2 id="dalsze-kroki">Dalsze kroki</h2>

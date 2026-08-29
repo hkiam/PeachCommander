@@ -12,24 +12,33 @@
 <h1>宏</h1>
 <p>宏是一串带名字的文件操作——新建文件夹、把选中项移进去、给剩下的加标记——你可以一键再跑一次。它不是脚本语言：没有条件，也没有循环，这是有意为之。宏是一份你能读懂的清单，而在你同意之前，能读懂正是必须做到的事。</p>
 <p>宏所做的一切都走助手所用的同一套机制，所以宏做不了任何你没有许可的事，它的每一步都会进入操作记录，能撤销的一步依然能撤销。</p>
-<h2 id="_1">最快的路：从你刚做过的事开始</h2>
-<p>你不必从零写一个宏。</p>
+<h2 id="_1">一个窗口：配置 ▸ 宏…</h2>
+<p>关于宏的一切都在这一个入口后面：宏的列表、创建宏的两种方式，以及通往文件的路。菜单里再没有别的可选。</p>
+<h2 id="_2">最快的路：录一个</h2>
+<p>你不必从零写一个宏，也不必事后去弄清它是从哪儿开始的。</p>
 <ol>
-<li>先做一次这件事——在面板里复制、移动、重命名或删除，或者让助手来做。</li>
-<li>选择 <strong>配置 ▸ 从最近的操作创建宏…</strong>。</li>
-<li>勾选宏应当重复的步骤，给它取个名字，并保持 <strong>同时为它添加一个按钮</strong> 处于开启状态。</li>
+<li><strong>配置 ▸ 宏… ▸ 录制宏…</strong>。窗口让到一边，出现一个小面板，说明正在录制，并随时数着步骤。</li>
+<li>把活儿做一遍——复制、移动、重命名、删除、新建文件夹和文件。照常工作即可；录制不碍事。</li>
+<li><strong>停止并存储…</strong>.</li>
+<li>步骤回来时已经勾好了。把只是用来做准备的那些取消勾选，给宏起个名字，并让<strong>同时为它添加一个按钮</strong>保持开启。</li>
 <li>如果希望宏下次针对当时选中的东西来做，就勾选<strong>跟随面板，而不是这几个具体文件</strong>。勾选时各行会跟着变，所以你能看清自己要保存的是什么。</li>
 </ol>
 <p><strong>保存宏</strong>，按钮就在工具条上了。这就是全部流程。</p>
+<p><strong>放弃录制</strong>会丢掉这次录制，什么也不保存。按下“录制”之前不会录任何东西，停止之后也不会——这正是要有两端的意义。</p>
+<p>录制能挺过一次重启。如果 Peach Commander 在录制过程中结束——你退出了，或者它崩溃了——它会带着这次录制回来并说明这一点，你可以继续，也可以放弃。</p>
+<p>如果你更愿意把它放在按键或按钮上，命令名叫 <code>cm_MacroRecord</code>：它开始一次录制，并停止正在进行的那次。</p>
+<h2 id="_3">另一条路：从已经发生过的事情来</h2>
+<p>同一个窗口里的<strong>来自最近的操作…</strong>，会用最近发生的事情来构建宏，而不是重新录制——当你<em>刚刚</em>做完这件事、这时才想到要做成宏，它就派上用场。</p>
 <p><img alt="“从最近的操作创建宏”面板，把刚做过的事列成可勾选的步骤" src="images/macro-recorder.png" />
 <em>已经发生过的事，作为一个新宏的步骤提供给你。</em></p>
-<p>列表里两者都有：你在面板里做的（F5、F6、F7、F8 和重命名），以及助手或另一个宏做的。每一行都注明是哪一种——因为两者混着用了一阵之后，同样的两个文件可能在两边都出现。</p>
+<p>列表里两者都有：你在面板里做的（F5、F6、F7、F8 和重命名），以及助手或另一个宏做的。每一行都注明是哪一种——因为两者混着用了一阵之后，同样的两个文件可能在两边都出现。 这里的行一开始并不勾选：“我过去半小时做的一切”很少就是你想要的那个宏。</p>
 <blockquote>
+<p><strong>这条路需要历史记录。</strong>你手动做的事情是从全局历史记录中读回来的；如果你把它关掉了（设置 ▸ 杂项 ▸ <strong>记录全局历史</strong>），这个列表里就没有你的任何内容——它也会这么说。<strong>录制宏…</strong>并不依赖它。</p>
 <p><strong>不会提供的。</strong>打包压缩文件，以及其他应用只按名字记下的事情，都无法变成一个步骤——没有可以套用的形状。这类行会连同原因一起灰着显示，而不是干脆不列，免得五条里只给三条看起来像漏掉了两条。而除非你另有要求，路径就是当时真正用过的：录下的宏重复的是<em>那一次</em>复制，不是“类似的一次复制”。在编辑器里打开它，把 <code>%S</code> 或 <code>%T</code> 放到你希望它跟着面板走的位置。</p>
 </blockquote>
 <p><strong>跟随面板</strong>就是“另有要求”的做法。全都来自同一个文件夹的文件会变成选中项；正好是两个面板之一的文件夹会变成那个面板，而它里面的文件夹保留其余下的部分——录下的“把这四张发票移到 文稿/2026-08”于是变成“把选中的移到另一侧的 <em>2026-08</em>”，明天换两个文件夹照样能用。不在任何一个面板之下的，仍旧保留为它本来的路径，因为没有可以折进去的地方。只有在确实会有变化时，才会出现这个选项。</p>
-<h2 id="_2">随附的示例</h2>
-<p>首次打开<strong>配置 ▸ 编辑宏…</strong>时，文件会带着八个完整的示例被创建。它们就是普通的宏——改写它们，或者删掉你不要的——每一个都带有注释，说明它做什么、可以改什么：</p>
+<h2 id="_4">随附的示例</h2>
+<p>首次打开<strong>编辑文件…</strong>时，文件会带着八个完整的示例被创建。它们就是普通的宏——改写它们，或者删掉你不要的——每一个都带有注释，说明它做什么、可以改什么：</p>
 <table>
 <thead>
 <tr>
@@ -73,32 +82,32 @@
 </tbody>
 </table>
 <p>它们每一个都会成为一条命令，所以你不必写任何东西，就能把其中任意一个放到按钮或按键上。</p>
-<h2 id="_3">管理它们</h2>
-<p><strong>配置 ▸ 管理宏…</strong>就是那张列表：每个宏叫什么、它的命令叫什么、有几步，以及权限检查会要求什么——于是“这个会删除”在你把它放上按键之前就看得见。从那里可以重命名、复制一份、调整顺序和删除。把指针停在某一行上会显示它的步骤。</p>
+<h2 id="_5">管理它们</h2>
+<p><strong>配置 ▸ 宏…</strong>就是那个列表：每个宏叫什么、它的命令名是什么、有多少步骤，以及权限关卡会要求什么——这样“这个会删除”在你把它放到按键上之前就看得见。在那里你可以运行、重命名、复制、调整顺序、删除、导出和导入。把指针停在某一行上会显示它的步骤。</p>
+<p><strong>运行</strong>是试一试你刚录好的那个宏的办法，不必先关掉窗口再去找命令。它和其他任何一次运行一样，先显示为计划并需要确认——这个窗口没有自己的特权。</p>
+<p><strong>导出…</strong>把所选的宏写成一个单独的文件，<strong>导入…</strong>则从别人发给你的文件中添加宏——这正是每个宏一个文件的用处。导入永远不会替换：id 已被占用的宏会换成一个空闲的（送来的 <code>backup</code> 放在你自己的旁边会变成 <code>backup-2</code>），并且会告诉你新的宏最终用了哪些 id，因为你接下来做的按钮必须指向正确的那一个。</p>
 <p><img alt="“管理宏”窗口，列出每个宏的命令名、步骤数和所需权限" src="images/macro-manager.png" />
 <em>每个宏叫什么、以什么身份运行、会为什么请求权限。</em></p>
 <p>顺序不是摆设：文件里的顺序，就是命令浏览器和按钮栏选择器列出它们的顺序。</p>
 <p><strong>删除时会问你要不要把按钮一并带走。</strong>即使你从不打开这个窗口，这一点也值得知道：手工删掉的宏会留下它的按钮和按键，而两者此后什么都不做——应用现在会说这个宏已经没有了，而不是一声不吭，但按钮仍归你自己处理。按键或菜单项要到当初设置的地方去掉。</p>
 <p><em>步骤</em>不在这里编辑。<strong>编辑文件…</strong>会把这件事交给编辑器，理由和这里没有表单是同一个：一个步骤就是一个工具名加上它的参数，而这正是 JSON。</p>
-<h2 id="_4">手动编辑宏</h2>
-<p><strong>配置 ▸ 编辑宏…</strong>会打开配置文件夹中的 <code>macros.json</code>，首次创建时带有上面这些示例。宏是一串步骤，每个步骤指明一个工具及其参数：</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<h2 id="_6">手动编辑宏</h2>
+<p><strong>编辑文件…</strong>打开所选宏自己的文件——配置文件夹中的 <code>macros/&lt;id&gt;.json</code>，第一次会带着上面的示例创建。没有选中任何一项时，面板中会显示这个文件夹本身，在那里用 F3 阅读一个、用 F4 编辑一个。宏是步骤的列表，每个步骤指定一个工具及其参数：</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>保存会立即重新载入这些宏——若有不妥也会告诉你：工具名拼错、缺少必填参数、两个宏用了同一个 id。有错的宏不会运行，也不会出现在按钮上；在编辑器还开着的时候，你就会知道是哪个宏、错在哪里。</p>
 <p>有哪些工具、它们接受什么，可在<strong>配置 ▸ 命令浏览器…</strong>中查看，或者向助手索取 <code>list_macros</code>。</p>
-<h3 id="_5">占位符</h3>
+<h3 id="_7">占位符</h3>
 <p>单个字母与按钮条和“开始”菜单使用的完全一致：做过按钮的人在这里没有新东西要学。</p>
 <table>
 <thead>
@@ -145,7 +154,7 @@
 <p>花括号留给这些扩展，因为字母已经被占用了：<code>%M</code> 在程序其余各处都表示“另一个面板中光标下的名称”，所以月份不能那样写。</p>
 <p>引用步骤结果请用<strong>具名</strong>形式。多数工具报告的是若干个值而不是一个——<code>merge_files</code> 会报告写到了哪里、合并了几个文件、结果有多少行——所以 <code>%{2.destination}</code> 才是通常的写法，而光秃秃的 <code>%{2}</code> 只对返回单个路径的工具有效。名字不存在、或者取到的不是路径时，宏会停下来，而不是去猜。</p>
 <p>文件名里的 <code>%</code> 就是 <code>%</code>。步骤产出的内容和取自面板的名字都不会再被当作占位符读取——所以名为 <code>50%Netto.pdf</code> 的文件原样穿过宏。若要在<em>你自己</em>写的模板里放一个字面的 <code>%</code>，把它写两遍：<code>%%</code>。</p>
-<h3 id="_6">询问一个值</h3>
+<h3 id="_8">询问一个值</h3>
 <p><code>%{ask:…}</code> 是宏接收它事先无法知道的东西的方式——最常见的宏莫过于“把选中项移到一个我来命名的文件夹”，没有它，这个文件夹就只能写死在文件里。</p>
 <p>询问发生在计划出现<strong>之前</strong>，答案早已在计划里：那些行会说“把选中项移到‘发票’”，而不是“移到你马上要输入的东西里”。取消这个提问就是取消这个宏；什么都没有被提议，更谈不上执行。</p>
 <p>同一个问题写两遍只问一次，两处都用同一个答案，所以指向同一个文件夹的两个步骤不会互相矛盾。第一个 <code>=</code> 之后的文字，就是输入框一开始的内容。措辞是你的：它按你写的样子原样显示，用你写它时的语言。</p>
@@ -153,7 +162,7 @@
 <p>会提问的宏无法由外部代理通过 MCP 运行——那里没有人可问，而默不作声地取用默认值等于替你作答。它会被拒绝，并如实说明。</p>
 <p><code>%S</code> 是宏与按钮唯一不同的地方：在按钮上，选中项会变成命令行用的一串词；在这里，它变成文件工具所接受的完整路径列表。</p>
 <p>某一步的 <code>%S</code> 或 <code>%{1}</code> <strong>为空时会让宏停下</strong>，而不是对着空无一物运行。没有文件的 <code>move</code> 不是更小的 <code>move</code>，而是一条不再表达任何意思的请求，为它报告成功就是撒谎。</p>
-<h2 id="_7">运行一个宏</h2>
+<h2 id="_9">运行一个宏</h2>
 <p>每个宏都会成为名为 <code>mc_&lt;id&gt;</code> 的命令，因此会自动出现在：</p>
 <ul>
 <li><strong>配置 ▸ 命令浏览器…</strong></li>
@@ -166,18 +175,18 @@
 <p><img alt="宏的确认对话框，每个步骤是一个复选框，写明它会处理哪些文件" src="images/macro-confirm.png" />
 <em>对照你的面板解析出来的步骤——每一条都能划掉。</em></p>
 <p>凡是开始之前就能看出不对的——不存在的工具、缺少的参数、会去运行另一个宏的步骤——都会在第一步之前拦下这个宏，而不是等到第三步之后。若某一步在运行中失败，宏会<strong>就此停下</strong>而不是继续：第二步通常以第一步已经发生为前提，把文件移进一个没建成的文件夹算不上部分成功。报告会指明是哪一步、出了什么问题，以及已经执行了多少步；其中每一步都在操作日志里，凡有退路的也一并记着。</p>
-<h2 id="_8">宏被允许做什么</h2>
+<h2 id="_10">宏被允许做什么</h2>
 <p>宏按其中最苛刻的那件事来衡量。步骤只做读取的宏视为读取；以永久删除结尾的宏按永久删除来把关——在其中任何一步运行之前，而不是走到第四步才发现。</p>
 <p>运行<em>命令</em>的步骤，按那条命令做什么来判定，而不是按它是一条命令来判定——所以运行 <code>cm_DeleteReal</code> 的宏就是一个会删除的宏，并且会这样呈现给你。宏不能运行另一个宏，两种写法都不行。</p>
 <p>默认不额外授予任何权限。如果宏中含有你的权限不允许的步骤——一条 shell 命令、一个脚本——整个宏会连同原因一并被拒绝，什么都不会发生。</p>
-<h2 id="_9">撤销</h2>
+<h2 id="_11">撤销</h2>
 <p>每一步都单独记录，所以宏之后的<strong>撤销</strong>收回的是它的<em>最后</em>一步，而不是整个宏。没有整宏撤销，因为有几个工具根本没有逆操作，提供这样一个按钮就是在这些工具上撒谎。</p>
-<h2 id="_10">保存在哪里</h2>
+<h2 id="_12">保存在哪里</h2>
 <ul>
-<li>你的宏在配置文件夹的 <code>macros.json</code> 里——一个普通文件，可以 diff，也可以和你的 dotfiles 放在一起。</li>
+<li>你的宏在配置文件夹的 <code>macros/</code> 里，每个是一个 <code>&lt;id&gt;.json</code>——普通文件，可以 diff、可以和你的 dotfiles 放在一起、也可以发给别人。来自旧版本的 <code>macros.json</code> 会在首次启动时被接管并改名为 <code>macros.json.migrated</code>；此后不再有任何东西读取它。</li>
 <li>宏添加的按钮就是 <code>default.bar</code> 中普通的按钮条条目，所以删掉一个和删掉任何别的按钮一样。</li>
 </ul>
-<h2 id="_11">接下来</h2>
+<h2 id="_13">接下来</h2>
 <ul>
 <li><a href="automation.html">自动化（AppleScript 与“快捷指令”）</a> — 从脚本驱动 Peach Commander，以及把自己的脚本作为宏的一步来运行。</li>
 <li><a href="toolbar.html">按钮条</a> — 宏添加的按钮最终去哪里。</li>

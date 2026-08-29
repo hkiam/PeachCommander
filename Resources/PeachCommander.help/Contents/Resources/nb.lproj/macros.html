@@ -12,24 +12,33 @@
 <h1>Makroer</h1>
 <p>En makro er en navngitt rekke filhandlinger — opprett en mappe, flytt utvalget dit, merk det som blir igjen — som du kan kjøre på nytt med ett klikk. Det er ikke et skriptspråk: det finnes ingen betingelser og ingen løkker, og det er tilsiktet. En makro er en liste du kan lese, og å kunne lese den er det som kreves før du godkjenner den.</p>
 <p>Alt en makro gjør går gjennom samme maskineri som assistenten bruker, så en makro kan ikke gjøre noe du ikke har tillatt, hvert av trinnene havner i handlingsloggen, og et trinn som kan angres kan det fortsatt.</p>
-<h2 id="raskeste-vei-ut-fra-det-du-nettopp-gjorde">Raskeste vei: ut fra det du nettopp gjorde</h2>
-<p>Du trenger ikke skrive en makro fra bunnen av.</p>
+<h2 id="ett-vindu-konfigurasjon-makroer">Ett vindu: Konfigurasjon ▸ Makroer…</h2>
+<p>Alt om makroer ligger bak den ene oppføringen: listen over dem, de to måtene å lage en på, og veien inn i filen. Det er ikke noe annet å velge mellom i menyen.</p>
+<h2 id="raskeste-vei-ta-opp-en">Raskeste vei: ta opp en</h2>
+<p>Du trenger ikke skrive en makro fra bunnen av — og du trenger heller ikke finne ut etterpå hvor den begynte.</p>
 <ol>
-<li>Gjør tingen én gang — kopier, flytt, gi nytt navn eller slett i panelene, eller la assistenten gjøre det.</li>
-<li>Velg <strong>Konfigurasjon ▸ Makro fra nylige handlinger…</strong>.</li>
-<li>Kryss av trinnene makroen skal gjenta, gi den et navn, og la <strong>Legg også til en knapp for den</strong> stå på.</li>
+<li><strong>Konfigurasjon ▸ Makroer… ▸ Ta opp makro…</strong>. Vinduet trekker seg til side, og et lite panel dukker opp som sier at et opptak går, og teller trinnene etter hvert.</li>
+<li>Gjør jobben én gang — kopier, flytt, gi nytt navn, slett, lag mapper og filer. Jobb som vanlig; opptakeren er ikke i veien.</li>
+<li><strong>Stopp og arkiver…</strong>.</li>
+<li>Trinnene kommer tilbake allerede avkrysset. Fjern krysset på alt som bare gjorde klar, gi makroen et navn, og la <strong>Legg også til en knapp for den</strong> stå på.</li>
 <li>Kryss av for <strong>Følg panelene i stedet for akkurat disse filene</strong> hvis makroen neste gang skal arbeide med det som da er valgt. Linjene endrer seg mens du krysser av, så du ser hva du lagrer.</li>
 </ol>
 <p><strong>Lagre makro</strong>, og knappen er i raden. Det er hele runden.</p>
+<p><strong>Forkast opptaket</strong> kaster opptaket og arkiverer ingenting. Ingenting tas opp før du trykker Ta opp, og ingenting etter at du stopper — det er nettopp derfor det er to ender.</p>
+<p>Et opptak overlever en omstart. Hvis Peach Commander stopper mens ett går — du avslutter, eller det krasjer — kommer det tilbake med opptaket, sier fra, og du fortsetter eller forkaster det.</p>
+<p>Vil du heller ha det på en tast eller en knapp, heter kommandoen <code>cm_MacroRecord</code>: den starter et opptak og stopper det som går.</p>
+<h2 id="den-andre-veien-ut-fra-det-som-allerede-har-skjedd">Den andre veien: ut fra det som allerede har skjedd</h2>
+<p><strong>Fra siste handlinger…</strong> i samme vindu bygger en makro av de siste tingene som har skjedd, i stedet for å ta opp nye — nyttig når du <em>nettopp</em> har gjort jobben og først da tenker på en makro.</p>
 <p><img alt="Arket «Makro fra siste handlinger» med det du nettopp gjorde som avkryssbare trinn" src="images/macro-recorder.png" />
 <em>Det som allerede har skjedd, tilbudt som trinnene i en ny makro.</em></p>
-<p>Listen inneholder begge deler: hva du har gjort i panelene (F5, F6, F7, F8 og et navnebytte), og hva assistenten eller en annen makro har gjort. Hver linje sier hvilken av de to — for etter en økt med begge kan de samme to filene dukke opp i hver av dem.</p>
+<p>Listen inneholder begge deler: hva du har gjort i panelene (F5, F6, F7, F8 og et navnebytte), og hva assistenten eller en annen makro har gjort. Hver linje sier hvilken av de to — for etter en økt med begge kan de samme to filene dukke opp i hver av dem. Her starter radene uten kryss: «alt jeg har gjort den siste halvtimen» er sjelden makroen man mener.</p>
 <blockquote>
+<p><strong>Denne veien trenger historikken.</strong> Det du gjør for hånd, leses tilbake fra den globale historikken; har du slått den av (Innstillinger ▸ Diverse ▸ <strong>Ta opp en global historikk</strong>), står det ingenting av ditt på denne listen — og den sier det. <strong>Ta opp makro…</strong> er ikke avhengig av den.</p>
 <p><strong>Hva som ikke tilbys.</strong> Å pakke et arkiv, og alt annet appen bare holder på ved navn, kan ikke bli et trinn — det finnes ingen form å gi det. Slike linjer står grå med sin begrunnelse i stedet for å mangle, så en liste på fem som tilbyr tre ikke leses som om den overså to. Og med mindre du ber om noe annet, er stiene de som faktisk ble brukt: en innspilt makro gjentar <em>den</em> kopien, ikke «en kopi av det slaget». Åpne den i editoren og sett <code>%S</code> eller <code>%T</code> der den skal følge panelene.</p>
 </blockquote>
 <p><strong>Følg panelene</strong> er måten å be om noe annet på. Filer som alle kom fra én mappe blir utvalget; en mappe som er ett av de to panelene blir det panelet, og en mappe inne i den beholder halen sin — et innspilt «flytt disse fire fakturaene til Dokumenter/2026-08» blir til «flytt det som er valgt til <em>2026-08</em> på den andre siden», og det virker i morgen i to andre mapper. Det som ikke ligger under noen av panelene forblir stien det er, for det finnes ingenting å brette det inn i. Valget tilbys bare når det ville endre noe.</p>
 <h2 id="eksemplene-som-flger-med">Eksemplene som følger med</h2>
-<p>Første gang du åpner <strong>Konfigurasjon ▸ Rediger makroer…</strong>, opprettes filen med åtte gjennomarbeidede eksempler. Det er helt vanlige makroer — endre dem, eller slett dem du ikke vil ha — og hver av dem bærer en kommentar som sier hva den gjør og hva du kan endre:</p>
+<p>Første gang du åpner <strong>Rediger fil…</strong>, opprettes filen med åtte gjennomarbeidede eksempler. Det er helt vanlige makroer — endre dem, eller slett dem du ikke vil ha — og hver av dem bærer en kommentar som sier hva den gjør og hva du kan endre:</p>
 <table>
 <thead>
 <tr>
@@ -74,26 +83,26 @@
 </table>
 <p>Hver av dem blir en kommando, så du kan legge hvilken som helst av dem på en knapp eller en tast uten å skrive noe.</p>
 <h2 id="a-handtere-dem">Å håndtere dem</h2>
-<p><strong>Konfigurasjon ▸ Håndter makroer…</strong> er listen: hva hver makro heter, hva kommandoen heter, hvor mange trinn den har, og hva rettighetsspørsmålet vil kreve — slik at «denne sletter» er synlig før du legger den på en tast. Derfra kan du gi nytt navn, duplisere, omordne og slette. Holder du over en rad, ser du trinnene.</p>
+<p><strong>Konfigurasjon ▸ Makroer…</strong> er listen: hva hver makro heter, hva kommandoen heter, hvor mange trinn den har, og hva tillatelsesporten vil be om — så «denne sletter» er synlig før du legger den på en tast. Derfra kan du kjøre, gi nytt navn, duplisere, endre rekkefølge, slette, eksportere og importere. Holder du pekeren over en rad, vises trinnene.</p>
+<p><strong>Kjør</strong> er måten å prøve den du nettopp tok opp, uten først å lukke vinduet for å finne kommandoen. Den går gjennom samme plan og samme bekreftelse som enhver annen kjøring — dette vinduet har ingen egne rettigheter.</p>
+<p><strong>Eksporter…</strong> skriver den valgte makroen til en egen fil, og <strong>Importer…</strong> legger til makroer fra filer noen har sendt deg — det er det én fil per makro er til for. En import erstatter aldri: en makro med en id som allerede er tatt, får en ledig (en <code>backup</code> som kommer inn ved siden av din, blir <code>backup-2</code>), og du får vite hvilke id-er de nye endte opp med, for knappen du lager må peke på riktig en.</p>
 <p><img alt="Vinduet «Håndter makroer» med kommandonavn, antall trinn og tillatelse for hver makro" src="images/macro-manager.png" />
 <em>Hva hver makro heter, hva den kjører som, og hva den vil be om lov til.</em></p>
 <p>Rekkefølgen er ikke pynt: filens rekkefølge er den Kommandooversikten og knapperadens velger viser dem i.</p>
 <p><strong>Ved sletting tilbys det å ta knappene med</strong>, og det er verdt å vite selv om du aldri åpner dette vinduet: en makro fjernet for hånd etterlater knappen og tasten sin, og ingen av delene gjør noe da — appen sier nå at makroen er borte i stedet for å tie, men knappen er fortsatt din sak. En tast eller et menyvalg må tas ut der det ble satt.</p>
 <p><em>Trinnene</em> redigeres ikke her. <strong>Rediger fil…</strong> gir stafettpinnen videre til editoren til det, av samme grunn som det ikke finnes noe skjema: et trinn er et verktøynavn med argumentene sine, og det er nøyaktig hva JSON er.</p>
 <h2 id="redigere-makroer-manuelt">Redigere makroer manuelt</h2>
-<p><strong>Konfigurasjon ▸ Rediger makroer…</strong> åpner <code>macros.json</code> i konfigurasjonsmappen din, opprettet første gang med eksemplene over. En makro er en liste med trinn, og hvert trinn nevner et verktøy og argumentene sine:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Rediger fil…</strong> åpner den valgte makroens egen fil — <code>macros/&lt;id&gt;.json</code> i konfigurasjonsmappen din, opprettet første gang med eksemplene over. Uten markering vises selve mappen i vinduet, der F3 leser en og F4 redigerer en. En makro er en liste med trinn, og hvert trinn nevner et verktøy og argumentene sine:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Å lagre laster makroene inn på nytt med en gang — og sier fra hvis noe er galt: et feilstavet verktøynavn, et manglende påkrevd argument, to makroer med samme id. En makro med en feil kjøres ikke og havner ikke på noen knapp; du får vite hvilken det er og hva som er galt, mens editoren fortsatt er åpen.</p>
@@ -174,7 +183,7 @@
 <p>Hvert trinn logges for seg, så <strong>angre</strong> etter en makro tar tilbake dens <em>siste</em> trinn, ikke hele makroen. Det finnes ingen angre for hele makroen, fordi flere verktøy ikke har noen invers i det hele tatt, og en knapp som tilbød den, ville løyet om dem.</p>
 <h2 id="hvor-alt-lagres">Hvor alt lagres</h2>
 <ul>
-<li>Makroene dine ligger i <code>macros.json</code> i konfigurasjonsmappen — en vanlig fil du kan diffe og holde sammen med dotfilene dine.</li>
+<li>Makroene dine ligger i <code>macros/</code> i konfigurasjonsmappen, én per <code>&lt;id&gt;.json</code> — vanlige filer du kan diffe, ha sammen med dotfilene dine og sende til noen. En <code>macros.json</code> fra en tidligere versjon tas med ved første oppstart og får navnet <code>macros.json.migrated</code>; etterpå leser ingen den.</li>
 <li>Knapper en makro la til, er vanlige knapperadsposter i <code>default.bar</code>, så å fjerne en er det samme som for enhver annen knapp.</li>
 </ul>
 <h2 id="neste-steg">Neste steg</h2>

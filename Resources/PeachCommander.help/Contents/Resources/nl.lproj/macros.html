@@ -12,19 +12,28 @@
 <h1>Macro’s</h1>
 <p>Een macro is een reeks bestandsacties met een naam — een map maken, de selectie erin verplaatsen, de rest van een label voorzien — die u met één klik opnieuw kunt uitvoeren. Het is geen scripttaal: er zijn geen voorwaarden en geen lussen, en dat is opzet. Een macro is een lijst die u kunt lezen, en lezen is wat u moet kunnen voordat u ermee instemt.</p>
 <p>Alles wat een macro doet, gaat door dezelfde machinerie als de assistent. Een macro kan dus niets doen wat u niet hebt toegestaan, elke stap komt in het actielogboek, en een stap die kan worden teruggedraaid kan dat nog steeds.</p>
-<h2 id="de-snelste-weg-uit-wat-u-net-hebt-gedaan">De snelste weg: uit wat u net hebt gedaan</h2>
-<p>U hoeft een macro niet vanaf niets te schrijven.</p>
+<h2 id="een-venster-configuratie-macros">Eén venster: Configuratie ▸ Macro’s…</h2>
+<p>Alles rond macro’s zit achter die ene ingang: de lijst, de twee manieren om er een te maken, en de weg naar het bestand. Er valt in het menu verder niets te kiezen.</p>
+<h2 id="de-snelste-weg-er-een-opnemen">De snelste weg: er een opnemen</h2>
+<p>U hoeft een macro niet vanaf nul te schrijven, en u hoeft achteraf ook niet uit te zoeken waar hij begon.</p>
 <ol>
-<li>Doe het ding één keer — kopieer, verplaats, hernoem of verwijder in de vensters, of laat de assistent het doen.</li>
-<li>Kies <strong>Configuratie ▸ Macro van recente acties…</strong>.</li>
-<li>Vink de stappen aan die de macro moet herhalen, geef hem een naam en laat <strong>Ook een knop ervoor toevoegen</strong> aan staan.</li>
+<li><strong>Configuratie ▸ Macro’s… ▸ Macro opnemen…</strong>. Het venster gaat opzij en er verschijnt een klein paneel dat zegt dat er een opname loopt en de stappen meetelt.</li>
+<li>Doe het werk één keer — kopiëren, verplaatsen, hernoemen, verwijderen, mappen en bestanden maken. Werk gewoon door; de opname zit niet in de weg.</li>
+<li><strong>Stoppen en bewaren…</strong>.</li>
+<li>De stappen komen al aangevinkt terug. Vink af wat alleen iets klaarzette, geef de macro een naam en laat <strong>Ook een knop ervoor toevoegen</strong> aan staan.</li>
 <li>Vink <strong>De vensters volgen in plaats van precies deze bestanden</strong> aan als de macro de volgende keer moet werken met wat er dan geselecteerd is. De regels veranderen terwijl u aanvinkt, dus u ziet wat u opslaat.</li>
 </ol>
 <p><strong>Macro opslaan</strong>, en de knop staat in de balk. Dat is de hele cyclus.</p>
+<p><strong>Opname weggooien</strong> gooit de opname weg en bewaart niets. Er wordt niets opgenomen vóór u op Opnemen drukt, en niets erna: daar zijn de twee uiteinden voor.</p>
+<p>Een opname overleeft een herstart. Stopt Peach Commander terwijl er een loopt — u sluit af, of het crasht — dan komt hij ermee terug, zegt dat ook, en u gaat verder of gooit hem weg.</p>
+<p>Wilt u het liever op een toets of een knop, dan heet het commando <code>cm_MacroRecord</code>: het start een opname en stopt de lopende.</p>
+<h2 id="de-andere-weg-uit-wat-er-al-gebeurd-is">De andere weg: uit wat er al gebeurd is</h2>
+<p><strong>Van recente acties…</strong>, in hetzelfde venster, bouwt een macro uit de laatste dingen die gebeurd zijn in plaats van nieuwe op te nemen — handig als u het werk <em>net</em> gedaan hebt en pas dan aan een macro denkt.</p>
 <p><img alt="Het blad ‘Macro uit recente acties’, met wat zojuist is gedaan als aanvinkbare stappen" src="images/macro-recorder.png" />
 <em>Wat al is gebeurd, aangeboden als de stappen van een nieuwe macro.</em></p>
-<p>De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan.</p>
+<p>De lijst bevat allebei: wat u in de vensters hebt gedaan (F5, F6, F7, F8 en een hernoeming) en wat de assistent of een andere macro heeft gedaan. Elke regel zegt welke van de twee — want na een sessie met allebei kunnen dezelfde twee bestanden in elk ervan staan. Hier beginnen de rijen onaangevinkt: ‘alles wat ik het afgelopen halfuur deed’ is zelden de bedoelde macro.</p>
 <blockquote>
+<p><strong>Deze weg heeft de geschiedenis nodig.</strong> Wat u met de hand doet, wordt uit de globale geschiedenis teruggelezen; hebt u die uitgezet (Instellingen ▸ Diversen ▸ <strong>Een globale geschiedenis bijhouden</strong>), dan staat er niets van u in deze lijst — en dat zegt hij ook. <strong>Macro opnemen…</strong> hangt er niet van af.</p>
 <p><strong>Wat niet wordt aangeboden.</strong> Een archief inpakken, en al het andere dat de app alleen bij naam vasthoudt, kan geen stap worden — er is geen vorm voor. Zulke regels staan er grijs bij met hun reden in plaats van te ontbreken, zodat een lijst van vijf die er drie aanbiedt niet leest alsof hij er twee heeft gemist. En tenzij u anders vraagt, zijn de paden die welke echt zijn gebruikt: een opgenomen macro herhaalt <em>die</em> kopie, niet ‘een kopie van dat soort’. Open hem in de editor en zet <code>%S</code> of <code>%T</code> waar hij de vensters moet volgen.</p>
 </blockquote>
 <p><strong>De vensters volgen</strong> is hoe u anders vraagt. Bestanden die allemaal uit één map kwamen worden de selectie; een map die een van de twee vensters is wordt dat venster, en een map daarbinnen houdt zijn staart — van een opgenomen ‘verplaats deze vier facturen naar Documenten/2026-08’ wordt ‘verplaats wat geselecteerd is naar <em>2026-08</em> aan de andere kant’, en dat werkt morgen in twee andere mappen. Wat onder geen van beide vensters ligt blijft het pad dat het is, want er is niets om het in te vouwen. De optie wordt alleen aangeboden als ze iets zou veranderen.</p>
@@ -74,26 +83,26 @@
 </table>
 <p>Elk ervan wordt een opdracht, dus u kunt er elke van op een knop of een toets leggen zonder iets te schrijven.</p>
 <h2 id="ze-beheren">Ze beheren</h2>
-<p><strong>Configuratie ▸ Macro’s beheren…</strong> is de lijst: hoe elke macro heet, hoe haar opdracht heet, hoeveel stappen ze heeft en wat de rechtenvraag zal verlangen — zo is ‘deze verwijdert’ te zien vóór u haar op een toets legt. Van daaruit kunt u hernoemen, dupliceren, herordenen en verwijderen. Wie over een regel gaat, ziet haar stappen.</p>
+<p><strong>Configuratie ▸ Macro’s…</strong> is de lijst: hoe elke macro heet, hoe zijn commando heet, hoeveel stappen hij heeft en waar de toestemmingspoort om zal vragen — zo is ‘deze verwijdert’ zichtbaar vóór u hem op een toets legt. Van daaruit kunt u uitvoeren, hernoemen, dupliceren, herordenen, verwijderen, exporteren en importeren. Over een rij zweven toont de stappen.</p>
+<p><strong>Voer uit</strong> is hoe u er een uitprobeert die u zojuist hebt opgenomen, zonder eerst het venster te sluiten om het commando te zoeken. Het gaat door hetzelfde plan en dezelfde bevestiging als elke andere uitvoering — dit venster heeft geen eigen rechten.</p>
+<p><strong>Exporteer…</strong> schrijft de geselecteerde macro naar een eigen bestand, en <strong>Importeer…</strong> voegt macro’s toe uit bestanden die iemand u heeft gestuurd — daar is één bestand per macro voor. Een import vervangt nooit: een macro waarvan het id al bezet is krijgt een vrij id (een binnenkomende <code>backup</code> wordt naast die van u <code>backup-2</code>), en u hoort met welke ids de nieuwe zijn geëindigd, want de knop die u maakt moet de juiste noemen.</p>
 <p><img alt="Het venster ‘Macro’s beheren’, met opdrachtnaam, aantal stappen en toestemming per macro" src="images/macro-manager.png" />
 <em>Hoe elke macro heet, waaronder hij draait en waarvoor hij toestemming zal vragen.</em></p>
 <p>De volgorde is geen versiering: de volgorde in het bestand is de volgorde waarin het Opdrachtenoverzicht en de knoppenbalkkiezer ze tonen.</p>
 <p><strong>Bij verwijderen wordt aangeboden de knoppen mee te nemen</strong>, en dat is ook goed te weten als u dit venster nooit opent: een met de hand verwijderde macro laat haar knop en haar toets achter, en beide doen dan niets — de app zegt nu dat de macro weg is in plaats van te zwijgen, maar de knop blijft uw zaak. Een toets of menu-item moet daar worden weggehaald waar het is ingesteld.</p>
 <p>De <em>stappen</em> worden hier niet bewerkt. <strong>Bestand bewerken…</strong> geeft daarvoor het stokje aan de editor, om dezelfde reden dat er geen formulier is: een stap is een gereedschapsnaam met zijn argumenten, en dat is precies wat JSON is.</p>
 <h2 id="macros-met-de-hand-bewerken">Macro’s met de hand bewerken</h2>
-<p><strong>Configuratie ▸ Macro's bewerken…</strong> opent <code>macros.json</code> in uw configuratiemap, de eerste keer aangemaakt met de voorbeelden hierboven. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Bestand bewerken…</strong> opent het eigen bestand van de geselecteerde macro — <code>macros/&lt;id&gt;.json</code> in uw configuratiemap, de eerste keer aangemaakt met de voorbeelden hierboven. Zonder selectie wordt de map zelf in het venster getoond, waar F3 er een leest en F4 er een bewerkt. Een macro is een lijst stappen, en elke stap noemt een gereedschap en zijn argumenten:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Opslaan laadt de macro's meteen opnieuw — en zegt het als er iets niet klopt: een verkeerd gespelde gereedschapsnaam, een ontbrekend verplicht argument, twee macro's met hetzelfde id. Een macro met een fout wordt niet uitgevoerd en komt op geen enkele knop; u hoort welke het is en wat eraan mankeert, terwijl de editor nog openstaat.</p>
@@ -174,7 +183,7 @@
 <p>Elke stap wordt afzonderlijk gelogd, dus <strong>ongedaan maken</strong> na een macro haalt de <em>laatste</em> stap terug, niet de hele macro. Er is geen ongedaan maken voor een hele macro, omdat verschillende gereedschappen helemaal geen omgekeerde hebben en een knop die het aanbood daarover zou liegen.</p>
 <h2 id="waar-alles-wordt-opgeslagen">Waar alles wordt opgeslagen</h2>
 <ul>
-<li>Uw macro’s staan in <code>macros.json</code> in de configuratiemap — een gewoon bestand dat u kunt diffen en bij uw dotfiles kunt bewaren.</li>
+<li>Uw macro’s staan in <code>macros/</code> in de configuratiemap, elk als <code>&lt;id&gt;.json</code> — gewone bestanden die u kunt diffen, bij uw dotfiles kunt bewaren en naar iemand kunt sturen. Een <code>macros.json</code> uit een eerdere versie wordt bij de eerste start overgenomen en hernoemd naar <code>macros.json.migrated</code>; daarna leest niemand hem nog.</li>
 <li>Knoppen die een macro heeft toegevoegd zijn normale knoppenbalk-items in <code>default.bar</code>, dus er een weghalen gaat net als bij elke andere knop.</li>
 </ul>
 <h2 id="volgende-stappen">Volgende stappen</h2>

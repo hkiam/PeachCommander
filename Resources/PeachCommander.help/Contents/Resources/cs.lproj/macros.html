@@ -12,24 +12,33 @@
 <h1>Makra</h1>
 <p>Makro je pojmenovaná posloupnost akcí se soubory — vytvořit adresář, přesunout do něj výběr, označit zbytek — kterou lze jedním kliknutím spustit znovu. Není to skriptovací jazyk: nejsou v něm podmínky ani cykly, a to záměrně. Makro je seznam, který si můžete přečíst, a přečíst si ho musíte umět, než ho schválíte.</p>
 <p>Vše, co makro dělá, prochází stejným strojem jako asistent. Makro tedy nemůže udělat nic, co jste nepovolili, každý jeho krok se objeví v protokolu akcí a krok, který lze vzít zpět, se vzít zpět dá i nadále.</p>
-<h2 id="nejrychlejsi-cesta-z-toho-co-jste-prave-udelali">Nejrychlejší cesta: z toho, co jste právě udělali</h2>
-<p>Makro nemusíte psát od začátku.</p>
+<h2 id="jedno-okno-konfigurace-makra">Jedno okno: Konfigurace ▸ Makra…</h2>
+<p>Všechno kolem maker je za touhle jedinou položkou: jejich seznam, oba způsoby, jak makro vytvořit, i cesta do souboru. V nabídce už není mezi čím vybírat.</p>
+<h2 id="nejrychlejsi-cesta-nahrat-makro">Nejrychlejší cesta: nahrát makro</h2>
+<p>Makro nemusíte psát od nuly — a nemusíte ani dodatečně zjišťovat, kde vlastně začalo.</p>
 <ol>
-<li>Udělejte tu věc jednou — zkopírujte, přesuňte, přejmenujte nebo smažte v panelech, nebo to nechte udělat asistenta.</li>
-<li>Zvolte <strong>Konfigurace ▸ Makro z nedávných akcí…</strong>.</li>
-<li>Zaškrtněte kroky, které má makro opakovat, pojmenujte ho a nechte zapnuté <strong>Přidat pro něj také tlačítko</strong>.</li>
+<li><strong>Konfigurace ▸ Makra… ▸ Nahrát makro…</strong>. Okno ustoupí stranou a objeví se malý panel, který říká, že nahrávání běží, a průběžně počítá kroky.</li>
+<li>Udělejte práci jednou — kopírujte, přesouvejte, přejmenovávejte, mažte, zakládejte složky a soubory. Pracujte normálně; nahrávání nepřekáží.</li>
+<li><strong>Zastavit a uložit…</strong>.</li>
+<li>Kroky se vrátí už zaškrtnuté. Odškrtněte vše, co jen připravovalo půdu, pojmenujte makro a nechte zapnuté <strong>Přidat pro něj také tlačítko</strong>.</li>
 <li>Zaškrtněte <strong>Sledovat panely místo právě těchto souborů</strong>, má-li makro příště pracovat s tím, co bude zrovna vybráno. Řádky se při zaškrtnutí změní, takže vidíte, co ukládáte.</li>
 </ol>
 <p><strong>Uložit makro</strong> — a tlačítko je v liště. To je celý postup.</p>
+<p><strong>Zahodit nahrávku</strong> nahrávku vyhodí a nic neuloží. Před stisknutím Nahrát se nezaznamenává nic a po zastavení také ne — právě proto má nahrávání oba konce.</p>
+<p>Nahrávka přežije restart. Pokud se Peach Commander ukončí, zatímco běží — protože skončíte vy, nebo protože spadne — vrátí se i s ní, řekne to a vy buď pokračujete, nebo ji zahodíte.</p>
+<p>Jestli to raději chcete na klávese nebo tlačítku, příkaz se jmenuje <code>cm_MacroRecord</code>: spustí nahrávání a zastaví to, které běží.</p>
+<h2 id="druha-cesta-z-toho-co-se-uz-stalo">Druhá cesta: z toho, co se už stalo</h2>
+<p><strong>Z posledních akcí…</strong> ve stejném okně sestaví makro z posledních věcí, které se staly, místo aby nahrávalo nové — hodí se, když jste práci <em>právě</em> udělali a teprve pak vás makro napadlo.</p>
 <p><img alt="List „Makro z posledních akcí“ s tím, co jste právě udělali, jako zaškrtávatelnými kroky" src="images/macro-recorder.png" />
 <em>Co se už stalo, nabídnuto jako kroky nového makra.</em></p>
-<p>Seznam obsahuje obojí: co jste udělali v panelech (F5, F6, F7, F8 a přejmenování) a co udělal asistent nebo jiné makro. Každý řádek říká, které z toho — po sezení s obojím se totiž tytéž dva soubory mohou objevit v obou.</p>
+<p>Seznam obsahuje obojí: co jste udělali v panelech (F5, F6, F7, F8 a přejmenování) a co udělal asistent nebo jiné makro. Každý řádek říká, které z toho — po sezení s obojím se totiž tytéž dva soubory mohou objevit v obou. Tady jsou řádky zpočátku nezaškrtnuté: „všechno, co jsem za poslední půlhodinu udělal“ je málokdy to makro, které máte na mysli.</p>
 <blockquote>
+<p><strong>Tahle cesta potřebuje historii.</strong> To, co děláte ručně, se čte z globální historie; pokud jste ji vypnuli (Nastavení ▸ Různé ▸ <strong>Zaznamenávat globální historii</strong>), není v tomhle seznamu nic vašeho — a seznam to říká. <strong>Nahrát makro…</strong> na ní nezávisí.</p>
 <p><strong>Co se nenabízí.</strong> Zabalení archivu a všechno ostatní, co si aplikace pamatuje jen podle jména, se nedá proměnit v krok — není pro to tvar. Takové řádky jsou vidět zašedlé i s důvodem, místo aby chyběly, aby seznam pěti, který nabízí tři, nevypadal, že dva přehlédl. A pokud nepožádáte jinak, jsou cesty ty, které skutečně proběhly: zaznamenané makro zopakuje <em>tu</em> kopii, ne „kopii toho druhu“. Otevřete je v editoru a dejte <code>%S</code> nebo <code>%T</code> tam, kde má sledovat panely.</p>
 </blockquote>
 <p><strong>Sledovat panely</strong> je způsob, jak požádat jinak. Ze souborů, které pocházely všechny z jedné složky, se stane výběr; ze složky, která je jedním ze dvou panelů, se stane ten panel, a složka uvnitř si podrží svůj zbytek — ze zaznamenaného „přesuň tyto čtyři faktury do Dokumenty/2026-08“ se stane „přesuň vybrané do <em>2026-08</em> na druhé straně“, a zítra to funguje ve dvou jiných složkách. Co neleží pod žádným z obou panelů, zůstává cestou, kterou je — není do čeho to složit. Volba se nabízí jen tehdy, když by něco změnila.</p>
 <h2 id="prilozene-priklady">Přiložené příklady</h2>
-<p>Když poprvé otevřete <strong>Konfigurace ▸ Upravit makra…</strong>, soubor se založí s osmi hotovými příklady. Jsou to běžná makra — upravte je, nebo smažte ta, která nechcete — a každé nese komentář, který říká, co dělá a co se v něm dá změnit:</p>
+<p>Když poprvé otevřete <strong>Upravit soubor…</strong>, soubor se založí s osmi hotovými příklady. Jsou to běžná makra — upravte je, nebo smažte ta, která nechcete — a každé nese komentář, který říká, co dělá a co se v něm dá změnit:</p>
 <table>
 <thead>
 <tr>
@@ -74,26 +83,26 @@
 </table>
 <p>Každé z nich se stane příkazem, takže kterékoli můžete umístit na tlačítko nebo na klávesu, aniž byste cokoli psali.</p>
 <h2 id="spravovat-je">Spravovat je</h2>
-<p><strong>Konfigurace ▸ Spravovat makra…</strong> je ten seznam: jak se každé makro jmenuje, jak se jmenuje jeho příkaz, kolik má kroků a co bude chtít kontrola oprávnění — „tohle maže“ je tedy vidět dřív, než je dáte na klávesu. Odtud můžete přejmenovat, duplikovat, přeskupit a smazat. Když najedete na řádek, uvidíte jeho kroky.</p>
+<p><strong>Konfigurace ▸ Makra…</strong> je ten seznam: jak se každé makro jmenuje, jak se jmenuje jeho příkaz, kolik má kroků a nač se zeptá kontrola oprávnění — takže „tohle maže“ je vidět dřív, než ho dáte na klávesu. Odtud můžete spouštět, přejmenovávat, duplikovat, měnit pořadí, mazat, exportovat a importovat. Najetím na řádek se ukážou jeho kroky.</p>
+<p><strong>Spustit</strong> je způsob, jak vyzkoušet makro, které jste právě nahráli, aniž byste nejdřív zavírali okno a hledali příkaz. Prochází stejným plánem a stejným potvrzením jako každé jiné spuštění — tohle okno nemá vlastní oprávnění.</p>
+<p><strong>Exportovat…</strong> zapíše vybrané makro do vlastního souboru a <strong>Importovat…</strong> přidá makra ze souborů, které vám někdo poslal — právě k tomu je jeden soubor na makro. Import nikdy nenahrazuje: makro, jehož id je už obsazené, dostane volné (přicházející <code>backup</code> se vedle vašeho stane <code>backup-2</code>) a dozvíte se, pod jakými id nová skončila, protože tlačítko, které vytvoříte, musí ukázat na to správné.</p>
 <p><img alt="Okno „Spravovat makra“ s názvem příkazu, počtem kroků a oprávněním každého makra" src="images/macro-manager.png" />
 <em>Jak se každé makro jmenuje, jako co běží a nač si vyžádá svolení.</em></p>
 <p>Pořadí není ozdoba: pořadí v souboru je to, ve kterém je vypisuje Prohlížeč příkazů a výběr pro lištu tlačítek.</p>
 <p><strong>Při mazání se nabídne vzít s sebou i tlačítka</strong>, a to stojí za vědění, i kdybyste toto okno nikdy neotevřeli: makro odstraněné ručně nechá za sebou své tlačítko i klávesu, a ani jedno pak nic nedělá — aplikace teď říká, že makro není, místo aby mlčela, ale tlačítko zůstává na vás. Klávesu nebo položku nabídky je nutné vyjmout tam, kde byla nastavena.</p>
 <p><em>Kroky</em> se zde neupravují. <strong>Upravit soubor…</strong> to předá editoru, ze stejného důvodu, z jakého tu není formulář: krok je název nástroje s jeho argumenty, a to je přesně to, čím JSON je.</p>
 <h2 id="rucni-upravy-maker">Ruční úpravy maker</h2>
-<p><strong>Konfigurace ▸ Upravit makra…</strong> otevře <code>macros.json</code> ve vaší konfigurační složce, poprvé založený s příklady výše. Makro je seznam kroků a každý krok jmenuje nástroj a jeho argumenty:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
+<p><strong>Upravit soubor…</strong> otevře vlastní soubor vybraného makra — <code>macros/&lt;id&gt;.json</code> ve vaší konfigurační složce, poprvé vytvořený s příklady výše. Bez výběru se v panelu ukáže samotná složka, kde F3 jedno přečte a F4 jedno upraví. Makro je seznam kroků a každý krok jmenuje nástroj a jeho argumenty:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stage-by-month"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"File the selection into a dated folder"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calendar"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set_selection"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"mask"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*.pdf"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"make_directory"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"tool"</span><span class="p">:</span><span class="w"> </span><span class="s2">"move"</span><span class="p">,</span><span class="w"> </span><span class="nt">"arguments"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"sources"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%S"</span><span class="p">,</span><span class="w"> </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%T/%{date:yyyy-MM}"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 
 <p>Uložení makra ihned znovu načte — a řekne, když něco nesedí: překlep v názvu nástroje, chybějící povinný argument, dvě makra se stejným id. Makro s chybou se nespustí a na žádné tlačítko se nedostane; dozvíte se, o které jde a co je na něm špatně, dokud je editor ještě otevřený.</p>
@@ -174,7 +183,7 @@
 <p>Každý krok je zaznamenán samostatně, takže <strong>vzít zpět</strong> po makru vrátí jeho <em>poslední</em> krok, ne celé makro. Vzít zpět celé makro nelze, protože několik nástrojů nemá žádnou inverzi a tlačítko, které by to nabízelo, by o nich lhalo.</p>
 <h2 id="kde-se-to-uklada">Kde se to ukládá</h2>
 <ul>
-<li>Vaše makra jsou v <code>macros.json</code> v konfiguračním adresáři — obyčejný soubor, který lze porovnávat a držet spolu s dotfiles.</li>
+<li>Vaše makra jsou v <code>macros/</code> v konfigurační složce, každé jako <code>&lt;id&gt;.json</code> — obyčejné soubory, které můžete diffovat, držet mezi dotfiles a někomu poslat. <code>macros.json</code> ze starší verze se při prvním spuštění převezme a přejmenuje na <code>macros.json.migrated</code>; potom už ho nikdo nečte.</li>
 <li>Tlačítka přidaná makrem jsou běžné položky lišty tlačítek v <code>default.bar</code>, takže odebrat jedno je stejné jako u kteréhokoli jiného tlačítka.</li>
 </ul>
 <h2 id="dalsi-kroky">Další kroky</h2>
