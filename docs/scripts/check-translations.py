@@ -35,6 +35,46 @@ def load_languages():
     return [(l["code"], l["name"]) for l in data]
 
 
+# The CLDR plural categories each language actually distinguishes. A language that is missing one
+# does not fail loudly — it silently falls through to `other`, which is why this is checked here
+# rather than trusted: Russian read "5 шага" and Czech "2 kroků" in a first attempt at the macro
+# heading, and both looked plausible enough in a diff to survive it.
+#
+# Only the categories the app can hit are required. `many` in Spanish/French/Italian and `other` in
+# the Slavic set are fraction rules, and a count of steps is a whole number.
+PLURAL_CATEGORIES = {
+    "en": {"one", "other"}, "de": {"one", "other"}, "fr": {"one", "other"},
+    "es": {"one", "other"}, "it": {"one", "other"}, "nl": {"one", "other"},
+    "da": {"one", "other"}, "nb": {"one", "other"}, "sv": {"one", "other"},
+    "hu": {"one", "other"},
+    "ko": {"other"}, "zh-Hans": {"other"},
+    "cs": {"one", "few", "other"}, "sk": {"one", "few", "other"},
+    "pl": {"one", "few", "many"}, "ru": {"one", "few", "many"}, "uk": {"one", "few", "many"},
+    "sl": {"one", "two", "few", "other"},
+    "ro": {"one", "few", "other"},
+}
+
+
+def plural_problems(src: dict) -> list[str]:
+    """Every language of a pluralized string must carry the categories its grammar distinguishes."""
+    out = []
+    for key, entry in src.items():
+        for code, loc in entry.get("localizations", {}).items():
+            for name, sub in (loc.get("substitutions") or {}).items():
+                plural = (sub.get("variations") or {}).get("plural")
+                if plural is None:
+                    continue
+                want = PLURAL_CATEGORIES.get(code)
+                if want is None:
+                    out.append(f"{code}: no plural categories recorded for this language")
+                    continue
+                missing = want - set(plural)
+                if missing:
+                    out.append(f"{code}: “{key[:40]}…” substitution “{name}” is missing the "
+                               f"{', '.join(sorted(missing))} form — it would fall back to `other`")
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true", help="write docs/generated/translation-coverage.md")
@@ -47,6 +87,7 @@ def main():
     total_ui = len(src)
 
     rows, problems = [], []
+    problems += plural_problems(src)
     for code, name in languages:
         if code == "en":
             rows.append((code, name, "—", "source", "source"))

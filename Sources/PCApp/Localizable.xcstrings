@@ -122848,114 +122848,604 @@
         }
       }
     },
-    "Run the macro “%1$@” — %2$lld step(s).": {
+    "Run the macro “%@” — %lld steps.": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spustit makro „%1$@“ — %2$lld krok(ů)."
+            "value": "Spustit makro „%@“ — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg krok"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroky"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroku"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroků"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kør makroen “%1$@” — %2$lld trin."
+            "value": "Kør makroen “%@” — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg trin"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg trin"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Das Makro „%1$@“ ausführen — %2$lld Schritt(e)."
+            "value": "Das Makro „%@“ ausführen — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg Schritt"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg Schritte"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run the macro “%@” — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg step"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg steps"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ejecutar la macro «%1$@» — %2$lld paso(s)."
+            "value": "Ejecutar la macro «%@» — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg paso"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg pasos"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Exécuter la macro « %1$@ » — %2$lld étape(s)."
+            "value": "Exécuter la macro « %@ » — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg étape"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg étapes"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "hu": {
           "stringUnit": {
             "state": "translated",
-            "value": "A(z) „%1$@” makró futtatása — %2$lld lépés."
+            "value": "A(z) „%@” makró futtatása — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg lépés"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg lépés"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Eseguire la macro «%1$@» — %2$lld passo/i."
+            "value": "Eseguire la macro «%@» — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg passo"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg passi"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "매크로 “%1$@” 실행 — %2$lld단계."
+            "value": "매크로 “%@” 실행 — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg단계"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kjør makroen «%1$@» — %2$lld trinn."
+            "value": "Kjør makroen «%@» — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg trinn"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg trinn"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "De macro ‘%1$@’ uitvoeren — %2$lld stap(pen)."
+            "value": "De macro ‘%@’ uitvoeren — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg stap"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg stappen"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uruchom makro „%1$@” — %2$lld krok(ów)."
+            "value": "Uruchom makro „%@” — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg krok"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroki"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroków"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroku"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "ro": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rulează macrocomanda „%1$@” — %2$lld pas(pași)."
+            "value": "Rulează macrocomanda „%@” — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg pas"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg pași"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg de pași"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Выполнить макрос «%1$@» — %2$lld шаг(ов)."
+            "value": "Выполнить макрос «%@» — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg шаг"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg шага"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg шагов"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg шага"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "sk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spustiť makro „%1$@“ — %2$lld krok(ov)."
+            "value": "Spustiť makro „%@“ — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg krok"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroky"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg kroku"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg krokov"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "sl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zaženi makro »%1$@« — %2$lld korak(ov)."
+            "value": "Zaženi makro »%@« — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg korak"
+                    }
+                  },
+                  "two": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg koraka"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg koraki"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg korakov"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kör makrot ”%1$@” — %2$lld steg."
+            "value": "Kör makrot ”%@” — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg steg"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg steg"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Виконати макрос «%1$@» — %2$lld крок(ів)."
+            "value": "Виконати макрос «%@» — %#@steps@."
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg крок"
+                    }
+                  },
+                  "few": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg кроки"
+                    }
+                  },
+                  "many": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg кроків"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg кроку"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "运行宏“%1$@”——共 %2$lld 步。"
+            "value": "运行宏“%@”——共 %#@steps@。"
+          },
+          "substitutions": {
+            "steps": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg 步"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

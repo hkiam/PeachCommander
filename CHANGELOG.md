@@ -12,6 +12,26 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Fixed
+
+- **The macro confirmation dialog counted in "step(s)".** It read "Run the macro “Backup” — 2 step(s)."
+  and the parenthetical had been carried into thirteen translations that inflect the noun properly —
+  `krok(ů)`, `шаг(ов)`, `pas(pași)`. It is a real plural now, with the categories each language
+  distinguishes: `one/few/many` for Russian, Ukrainian and Polish, `one/two/few/other` for Slovenian,
+  and Romanian's `de` above nineteen.
+
+  The string was not the whole defect. `String(format:)` over a format fetched by `String(localized:)`
+  cannot expand `%#@…@` — the plural is resolved by the *lookup*, so the lookup has to be the thing
+  that knows the count. Fetching first and formatting afterwards would have printed the substitution
+  marker verbatim, which is why the parenthetical was there in the first place. The call site
+  interpolates instead.
+
+  A missing plural category does not fail loudly, it falls through to `other` — Russian said "5 шага"
+  and Czech "2 kroků" in a first attempt at this, and both look plausible in a diff.
+  `check-translations.py` now gates the categories, verified by putting a missing one back.
+
 ## [0.8.0] — 2026-08-29
 
 The assistant is split in two. What ran on your Mac was a chat that could not read a file: measured

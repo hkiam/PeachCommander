@@ -115,9 +115,14 @@ extension MainWindowController {
             // sentence above the rows is for a person, so the host writes it, out of the macro it
             // already knows it is running. Falls back to the Core's when the macro cannot be found,
             // which is a state `refusalBeforeAsking` should already have caught.
+            // Interpolated rather than `String(format:)` over a fetched format: the catalogue entry
+            // carries plural variations, and `%#@…@` is expanded by the *lookup*, which therefore has
+            // to be the thing that knows the count. Fetching the format first and formatting it
+            // afterwards hands `String(format:)` a specifier it does not understand. This read
+            // "— 2 step(s)." in every language until it did, the parenthetical having been carried
+            // into thirteen translations that inflect the noun properly.
             let heading = macroStore.macro(id: id).map {
-                String(format: String(localized: "Run the macro “%1$@” — %2$lld step(s)."),
-                       $0.title, $0.steps.count)
+                String(localized: "Run the macro “\($0.title)” — \($0.steps.count) steps.")
             } ?? plan
             guard let decision = MacroConfirmSheet.present(plan: heading, rows: rows,
                                                            in: window) else {
