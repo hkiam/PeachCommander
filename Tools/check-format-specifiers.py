@@ -39,6 +39,23 @@ CATALOG = REPO / "Sources/PCApp/Localizable.xcstrings"
 # "% littéral" in a translation is read as prose rather than as a space-flagged conversion.
 SPEC = re.compile(r"%(?:(\d+)\$)?[-+#0]*[\d*]*(?:\.\d+)?(hh|h|ll|l|q|L|z|j|t)?([@dioufFeEgGxXcsSp])")
 
+# A plural token: `%#@steps@` stands for one argument whose *type* is declared beside the value, in
+# `substitutions.steps.formatSpecifier`. Read literally it looks like a `#`-flagged `%@`, which is how
+# every pluralized string in the catalogue came to be reported as a translation that takes a pointer
+# where the code passes an integer — nineteen false alarms per key, in every language including English.
+SUBSTITUTION = re.compile(r"%#@([A-Za-z0-9_]+)@")
+
+
+def expanded(text: str, substitutions: dict) -> str:
+    """`text` with each plural token replaced by the conversion it declares."""
+    def conversion(match: re.Match) -> str:
+        declared = substitutions.get(match.group(1), {})
+        # An undeclared token is left as it is rather than guessed at: it is a malformed entry, and the
+        # comparison below is the right place for it to be noticed.
+        specifier = declared.get("formatSpecifier")
+        return f"%{specifier}" if specifier else match.group(0)
+    return SUBSTITUTION.sub(conversion, text)
+
 
 def argument_types(text: str) -> collections.Counter:
     """The conversions in `text` as a multiset of (length, conversion), ignoring order and position."""
@@ -66,7 +83,7 @@ def main() -> int:
             unit = localization.get("stringUnit")
             if not unit:
                 continue
-            value = unit.get("value", "")
+            value = expanded(unit.get("value", ""), localization.get("substitutions", {}))
             compared += 1
             translated = argument_types(value)
             if translated == source:
