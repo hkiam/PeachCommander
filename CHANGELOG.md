@@ -12,7 +12,7 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
-## [Unreleased]
+## [0.8.0] — 2026-08-29
 
 The assistant is split in two. What ran on your Mac was a chat that could not read a file: measured
 against Apple Intelligence, the thirty-two tools it offered the model cost 3442 of the model's 4096
@@ -26,10 +26,25 @@ which changed nothing. That was the default every new reader landed on.
   creates a folder, moves your selection into it, tags what is left — and then repeats that from a
   button. It is not a scripting language and does not try to be: there are no conditions and no loops,
   because the plan you are asked to approve has to be a list you can *read*. **Configuration ▸ Macro
-  from Recent Actions…** builds one out of what the assistant just did: tick the steps, name it, leave
-  "Also add a button for it" on, and the button is in the bar. **Configuration ▸ Edit Macros…** opens
-  `macros.json` for the rest, seeded with a working example — the same answer the Start menu gets,
-  because a macro is a list of tool calls and that is what JSON is.
+  from Recent Actions…** builds one out of what has already happened — files you copied, moved,
+  renamed or deleted in the panels, and anything the assistant did, in one list with each row saying
+  which. **Configuration ▸ Edit Macros…** opens `macros.json` for the rest, seeded with eight worked
+  examples: today's folder, filing the selection by month, a dated backup, pictures into a subfolder,
+  merging CSVs and opening the result, marking the file under the cursor as reviewed, filing into a
+  folder you name, and temporary files to the Trash. A file, not a form — the same answer the Start
+  menu gets, because a macro is a list of tool calls and that is what JSON is.
+
+  A recorded macro repeats *that* copy: the paths are the ones that actually ran, which is honest and
+  is usually not what you want the second time. **Follow the panels instead of these exact files**
+  rewrites them — files that all came from one folder become the selection, a folder that is one of
+  the two panels becomes that panel — and the rows change as you tick it, so you can see what you are
+  about to save rather than take it on trust.
+
+  **A macro can ask you for a value.** `%{ask:Folder name=Archive}` puts the question to you when the
+  macro runs, which is what makes "move the selection into a folder I name" expressible at all without
+  wiring the folder in. You are asked *before* the plan appears and the answers are already in it, so
+  the rows say "Move the selection into “Rechnungen”" and not "into whatever you are about to type";
+  cancelling the question cancels the macro. The same question written twice is asked once.
 
   Every macro becomes a command called `mc_<id>`, so it turns up by itself in the Command Browser, the
   shortcut editor, the button bar's command picker, your `.mnu` file and the assistant. Nothing had to
@@ -37,14 +52,22 @@ which changed nothing. That was the default every new reader landed on.
   not work for *plugin* commands either, and now do: a button or a `usercmd.ini` entry naming an id that
   was not `cm_` or `em_` used to be looked up as a file name and silently do nothing.
 
+  **Configuration ▸ Manage Macros…** is the list — what each one is called, its command name, how many
+  steps it has, and what it will ask permission for, so "this one deletes" is visible before you put it
+  on a key. Rename, duplicate, reorder, delete; deleting offers to take its buttons with it. The steps
+  themselves stay in the file, and **Edit File…** hands over for that.
+
   What a macro is allowed to do is decided by the most demanding thing in it, and decided *before* the
   first step rather than four steps in — a macro ending in a permanent delete is gated like a permanent
   delete, and one holding a shell step is refused whole on a machine where you have not turned the shell
-  on. Confirmation happens once, for the whole macro, and the rows are resolved against your panels, so
-  you read "Move one.pdf, two.pdf into “2026-08”" rather than `move destination=%T/%{date:yyyy-MM}`.
-  Strike out a row and that step is skipped. Each step is logged and undoable on its own, which also
-  means **undo** after a macro takes back its last step and not the whole thing — several tools have no
-  inverse at all, and a button offering a macro-wide undo would be lying about those.
+  on. A step that runs a *command* is judged by what that command does, not by the fact that it is a
+  command. Confirmation happens once, for the whole macro, and the rows are resolved against your panels
+  and shown in your language, so you read "Move one.pdf, two.pdf into “2026-08”" rather than
+  `move destination=%T/%{date:yyyy-MM}`. Strike out a row and that step is skipped — along with the
+  steps that cannot do without it, because a macro is a sequence and striking out the step that creates
+  the folder leaves the step that fills it aimed at nothing. Each step is logged and undoable on its own,
+  which also means **undo** after a macro takes back its last step and not the whole thing — several
+  tools have no inverse at all, and a button offering a macro-wide undo would be lying about those.
 
   Three things had to change underneath. The panel state is read again before *every* step, not once at
   the start: with one snapshot, a macro that selected its own files as step one still saw the old
@@ -1552,6 +1575,7 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.8.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0
 [0.6.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.2
 [0.6.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.1
 [0.6.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.0
