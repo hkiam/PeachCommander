@@ -14,6 +14,18 @@ does not have.
 
 ## [Unreleased]
 
+## [0.8.1] — 2026-08-29
+
+Macros, worked through against the three things the first person to use them ran into — same day as 0.8.0, which is when a feature is most worth fixing.
+
+The recorder read what had already happened and left you to work out which of the last thirty things
+was the job — the one question you can answer and the list cannot. It now has two ends you press
+yourself. It also told people who had just made three folders that nothing had happened, because what
+you do by hand is read back out of a history that can be switched off; the new recording does not
+depend on it. And each macro is its own file now, because a macro is a thing people hand to each other
+and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs
+you every macro you have.
+
 ### Added
 
 - **Macros can be recorded with a beginning and an end.** "Macro from Recent Actions…" offered the last
@@ -1761,6 +1773,7 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.8.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.1
 [0.8.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0
 [0.6.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.2
 [0.6.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.1
