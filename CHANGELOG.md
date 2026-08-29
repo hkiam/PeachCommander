@@ -16,6 +16,16 @@ does not have.
 
 ### Fixed
 
+- **The quick preview stopped following the cursor after a Markdown or HTML file.** A lister plugin's
+  view is added on top of the preview's own renderers and is opaque, and it was taken away only when a
+  file fell through to Quick Look. So the next picture, PDF or word-processor document was drawn
+  *behind* a web view that was still there: the name, kind and dates under the preview went on updating
+  with every selection while the picture did not change — including across panels, which made it look
+  like the preview had bound itself to one side of the window. A plain text file recovered by itself,
+  which is what made the state hard to read. The plugin view is now put away whenever the next file is
+  not the plugin's, and the automation report names it ahead of the other renderers, because it is what
+  is on screen when it is there.
+
 - **The macro confirmation dialog counted in "step(s)".** It read "Run the macro “Backup” — 2 step(s)."
   and the parenthetical had been carried into thirteen translations that inflect the noun properly —
   `krok(ů)`, `шаг(ов)`, `pas(pași)`. It is a real plural now, with the categories each language

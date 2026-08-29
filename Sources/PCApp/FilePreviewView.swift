@@ -205,6 +205,7 @@ final class FilePreviewView: NSView {
             hidePDF()
             hideRich()
             hideImage()
+            hidePlugin()
             route = .quickLook
             zoomBar.isHidden = true
             levelLabel.stringValue = ""
@@ -223,6 +224,14 @@ final class FilePreviewView: NSView {
         route = PreviewRoute.route(forExtension: ext, isImage: Self.isImage(path),
                                    hasPlugin: Self.lister(claiming: path) != nil,
                                    rendersDocumentsInApp: Self.rendersDocumentsInApp)
+        // A plugin view is added last, so it lies *over* every other renderer and is opaque. Leaving it
+        // there for a file it does not draw kept the panel showing the previous document — the metadata
+        // above it updated, the picture did not, and it looked like the preview had stopped following the
+        // cursor (measured: an .html rendered by the Markdown lister, then a .png in the other panel).
+        // Only the QuickLook fallback at the end of this method used to put it away, which is why a plain
+        // text file recovered and an image or a PDF did not. Before the routes below, since each of them
+        // returns as soon as it has drawn something.
+        if route != .plugin { hidePlugin() }
         if route != .image, route != .pdf {
             // Neither of the zoomable routes: no bar, and no number left over from the file before —
             // `hideImage()` cannot do it, because its guard returns early when there was no image (measured:
@@ -641,12 +650,14 @@ final class FilePreviewView: NSView {
     /// multiline Swift string is text, and it duly appeared in the report (F-429).
     func automationZoomReport() -> String {
         let route: String
-        if !imageScroll.isHidden, zoom.hasImage { route = "image" }
+        // The plugin first, and not only before quicklook: its view is added last, so whatever else is
+        // unhidden underneath it, the plugin is what is on screen. Asking about the image first reported
+        // `route=image` over a web view still covering the panel — the report agreed with the code that
+        // was wrong, so the harness could not see the defect it was pointed at.
+        if let plugin = pluginRoute, !plugin.view.isHidden { route = "plugin · \(plugin.lister.name)" }
+        else if !imageScroll.isHidden, zoom.hasImage { route = "image" }
         else if pdfView?.isHidden == false { route = "pdf" }
         else if richScroll?.isHidden == false { route = "rich" }
-        // Before quicklook: a plugin view is what is on screen when there is one, and the QuickLook
-        // view is only hidden rather than gone.
-        else if let plugin = pluginRoute, !plugin.view.isHidden { route = "plugin · \(plugin.lister.name)" }
         else if quickLook?.isHidden == false { route = "quicklook" }
         else { route = "icon" }
         let size = zoom.hasImage ? ImageZoomController.pixelSize(of: imageView.image ?? NSImage()) : .zero

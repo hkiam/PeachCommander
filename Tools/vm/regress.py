@@ -377,6 +377,24 @@ SCENARIOS = [
                       "previewzoom fit|/Users/admin/pz-fit.txt", "wait 500",
                       "focus photo_1.txt", "wait 1800",
                       "previewzoom state|/Users/admin/pz-text.txt", "wait 700"], 12),
+    # Handing the panel from a plugin's view to one of our own renderers (F-343 + F-465): a plugin view
+    # is added last, so it lies *over* the image, the PDF and the rich text and is opaque. It used to be
+    # taken away only on the QuickLook fallback, so a picture after a Markdown or HTML file drew behind a
+    # web view that was still there — the metadata above the preview followed the cursor while the picture
+    # did not, which reads as "the preview stopped working" and not as "one renderer was left on screen".
+    # A text file recovered by itself (that is the QuickLook path), which is why the second file here is a
+    # picture: the control in `preview-zoom` cannot see this.
+    ("preview-plugin-handover", ["probe /Users/admin/pv-seed.txt|mkdir -p ~/pc-preview && "
+                                 "printf '<!DOCTYPE html><html><body><p>page</p></body></html>\\n' "
+                                 "> ~/pc-preview/page.html && "
+                                 "cp ~/pc-demo/Images/big.png ~/pc-preview/ && ls ~/pc-preview | wc -l",
+                                 "wait 800",
+                                 "active left", "left /Users/admin/pc-preview", "wait 1500",
+                                 "previewpanel on", "wait 1500",
+                                 "focus page.html", "wait 2500",
+                                 "previewzoom state|/Users/admin/pv-html.txt", "wait 500",
+                                 "focus big.png", "wait 2500",
+                                 "previewzoom state|/Users/admin/pv-image.txt", "wait 700"], 14),
     # The *other* quick preview (F-118 + F-389): Ctrl+Q turns the inactive panel into a preview area, so
     # with the right panel active it is the **left** one — which is where the zoom was asked for. Same
     # class as the sidebar's preview, hence the same report; the point of the scenario is that the third
@@ -2464,6 +2482,12 @@ REPORTS = {
                           "!level=100%"]),
     "preview-zoom-actual": ("/Users/admin/pz-100.txt", ["level=100%", "fitting=false", "drawn=yes"]),
     "preview-zoom-fit": ("/Users/admin/pz-fit.txt", ["fitting=true", "drawn=yes"]),
+    # The plugin has to be gone once the cursor is on a picture, not merely behind it. `route` reports the
+    # plugin ahead of everything else exactly so this can be seen: with the handover missing the image is
+    # drawn and `drawn=yes` is true, and the panel still shows the web view.
+    "preview-plugin-handover": ("/Users/admin/pv-image.txt", ["route=image", "drawn=yes"]),
+    "preview-plugin-handover-html": ("/Users/admin/pv-html.txt",
+                                     ["route=plugin", "Markdown and HTML"]),
     "quickview-zoom": ("/Users/admin/qv-text.txt", ["route=quicklook", "bar=hidden"]),
     "quickview-zoom-big": ("/Users/admin/qv-big.txt",
                            ["route=image", "bar=shown", "fitting=true", "pixels=3000x2000",
