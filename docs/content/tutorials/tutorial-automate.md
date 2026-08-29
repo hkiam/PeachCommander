@@ -15,7 +15,7 @@ If you find yourself doing the same few things over and over — opening a folde
 
 This tutorial walks through all three with real examples. By the end you'll have a button that opens the current folder in Terminal, a Start-menu entry that runs a tool on your selected files, and a shortcut of your own.
 
-> **Three ways here, and two more elsewhere.** This tutorial is about wiring up the commands, programs and folders you already use so they run instantly, which covers most day-to-day repetition. For repeating a *sequence* of file actions, see [Macros](../help/macros.md); for running an AppleScript or JavaScript of your own, see [Automation](../help/automation.md). Peach Commander still does not record or replay clicks — a macro is a list of file actions, not a recording of the mouse.
+> **Three ways here, and two more elsewhere.** This tutorial is about wiring up the commands, programs and folders you already use so they run instantly, which covers most day-to-day repetition. For repeating a *sequence* of file actions, see [Macros](macros.md); for running an AppleScript or JavaScript of your own, see [Automation](automation.md). Peach Commander still does not record or replay clicks — a macro is a list of file actions, not a recording of the mouse.
 
 ![The main window with the button bar across the top](screenshots/main-window.png)
 *The button bar sits above the two file panels; each button runs one action you define.*
@@ -103,8 +103,8 @@ Use **Clear** to remove a command's shortcut, or **Restore Defaults** to discard
 | A named entry in the menu bar, optionally with a key | A **Start** menu command |
 | Press a key to trigger any built-in command | A **custom shortcut** |
 | Pass the folder, cursor file, or selection to an external program | Placeholders (`%P`, `%N`, `%S`, `%T`) in a button or Start entry |
-| Repeat a whole *sequence* of file actions | A [macro](../help/macros.md) |
-| Run an AppleScript or JavaScript of your own | The [Scripting plugin](../help/automation.md#running-your-own-scripts) |
+| Repeat a whole *sequence* of file actions | A [macro](macros.md) |
+| Run an AppleScript or JavaScript of your own | The [Scripting plugin](automation.md#running-your-own-scripts) |
 
 All three can call the same things — built-in commands, external programs and apps, and folders — so mix and match freely.
 
@@ -112,7 +112,7 @@ All three can call the same things — built-in commands, external programs and 
 
 Preview builds include a **testing hook** used to drive the app non-interactively during development and QA. Launching the app with the `-AutomationScript` argument (pointing at a small script of `connect` / `dump` / `cmd` verbs) lets a test harness open connections, dump panel state, and run commands without clicking.
 
-This hook is aimed at developers writing automated tests, not at everyday automation — it isn't a supported way to script your daily workflow, and it may change or disappear between builds. For repeatable everyday tasks use the button bar, the Start menu and custom shortcuts covered above, plus [Macros](../help/macros.md) for a sequence and [Automation](../help/automation.md) for your own scripts.
+This hook is aimed at developers writing automated tests, not at everyday automation — it isn't a supported way to script your daily workflow, and it may change or disappear between builds. For repeatable everyday tasks use the button bar, the Start menu and custom shortcuts covered above, plus [Macros](macros.md) for a sequence and [Automation](automation.md) for your own scripts.
 
 ## Where things are saved
 
