@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **114 scenarios with reports** (`macro-confirm`, `macro-ask`, `macro-record` and `macro-manager` are new with F-478) (`side-panel-tabs` is new with F-476) (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 128 of 128 green (2026-08-28)** — after `plugin-context-menu` was found to be naming the wrong plugin and passing only by riding a one-time migration; see the F-478 review entry. Previously **122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-29 |
+| Last updated | 2026-08-30 |
 | Released | **0.8.1 (build 16), 2026-08-29** — macros worked through against the three things the first person to use them ran into: a recorder with two ends you press yourself instead of a list of the last thirty things; the "nothing has happened yet" it told somebody who had just made three folders, because what you do by hand is read out of a history that can be switched off; and one file per macro, since a macro is a thing people hand to each other and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs every macro in the file. Plus Export…/Import…, Run in the macro window, Shift+F4 recordable through a non-overwriting `create_file`, and a recording that survives a quit. Unsigned, as every build so far. Previously **0.8.0 (build 15), 2026-08-29** — the assistant split in two, AppleScript and JavaScript run *by* the app, the side panel's pages switch off, and macros: a named sequence of file actions built from what you just did — in the panels as well as through the assistant — that asks for a value when it needs one, is held to the most demanding thing in it, and is shown to you as rows in your own language before any of it runs. Eight worked examples ship with it. Unsigned, as every build so far. Previously **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1587 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1587 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,85 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-30 — SMB listing reads a whole batch per syscall, and a memory report that did not reproduce
+
+Two questions from one session: an instance that had grown to 2 GB, and why a listing over SMB is slow.
+The second is fixed below. The first is not, and what was measured and ruled out is written down rather
+than left as a hunch — the measurements are the expensive part of that answer.
+
+**SMB: the cost is `lstat`, once per file, serially.** `LocalFS.list` reads the names with
+`contentsOfDirectory` and then calls `Self.entry(atPath:)` per name, and every one of those is a network
+round trip. Measured on `/Volumes/maik` (SMB, macOS-to-macOS): pure `readdir` over 1366 entries is
+**0.098 s**, `readdir` + one `stat` each is **19.6 s**. The panel shows the same shape — a cold listing of
+that directory takes 6.5–7.8 s, a warm one 0.2–0.7 s, so what a user experiences is entirely the cold path.
+Extended attributes were the first suspicion and are **not** it: `listxattr`/`getxattr` measure ~0 ms per
+file on this server, and the 34 ms/file an earlier `xattr(1)` loop appeared to show was process-spawn cost,
+not I/O.
+
+`getattrlistbulk(2)` is the fix, was already named as the intention — `PCVFS.swift:313` carries
+"Using FileManager for now - will be replaced with getattrlistbulk(2) in T03" — and is now **done** in
+`LocalFS.list` (`LocalBulkList`). Locally it changes nothing anyone can feel: the per-file stat is free
+on APFS, which is why this never showed up before a network volume made it visible.
+
+Measured on cold SMB directories, syscalls alone (a C harness, bulk first so it warms the cache for its
+competitor and the numbers are conservative): 3375 entries **146 ms** against **16.3 s** — 112×; 13450
+entries **927 ms** against **20.9 s** — 23×. In the app, that same 13452-entry cold directory now lists
+in **1.55 s**. A small cold directory is dominated by fixed cost rather than per-entry cost (270 entries
+took 2.94 s), so the win is in the big listings, which is where the complaint was.
+
+**What still takes the per-file path, and why.** A directory (`ATTR_FILE_DATALENGTH` is a file attribute
+and is not reported for one — verified on APFS and SMB; the panel draws `<DIR>` rather than that number,
+but sorting by size orders directories among themselves with it, so dropping it would quietly reshuffle a
+sorted panel), a symlink (its kind depends on whether the *target* is a directory, and it needs
+`readlink`) and a Finder alias (resolving one goes through a URL API). Plain files — nearly all of any
+real listing — need nothing further. A volume that declines the bulk read, or an attribute it does not
+report, falls back per entry, so an unusual filesystem costs speed and not correctness.
+
+**The trap, written down because it cost a wrong measurement first.** The kernel packs the attributes
+sorted by *bit value*, not in the order they were requested, so `ATTR_CMN_FNDRINFO` (0x4000) arrives
+before `ATTR_CMN_ACCESSMASK` (0x20000) and `ATTR_CMN_FLAGS` (0x40000). Unpacking it in the order it is
+usually written shifts every field after it and reads back as mode `0` on every file — which is exactly
+what the first verification harness did, and it looked like a filesystem quirk rather than a bug in the
+reader. `ATTR_CMN_RETURNED_ATTRS` is requested for the same reason: without being told which attributes
+actually arrived, one missing attribute on a network volume misaligns all the rest.
+
+`Tests/PCVFSTests/BulkListingTests.swift` is differential rather than a table of expected values: every
+entry `list` produces is compared field for field against what `stat` produces for the same path, and
+`stat` still goes down the untouched per-file walk. One test asserts the bulk reader is the one
+answering — without it the comparison would pass just as happily with every entry taking the fallback,
+having tested nothing. Both were checked by putting the field-order defect back: three of the eight fail
+with it in, and pass with it out.
+
+**A second, latent one, not currently firing.** `PanelListView.prefetchContentValuesSync` loops over *all*
+`visibleEntries` — the whole filtered listing, not the rows on screen — and calls `syncContentValue`
+synchronously on the main thread once per entry **per content column**. This config had five content
+columns saved (`git.git_status`, `git.branch`, `notes.note`, `notes.note_text`, `notes.note_lines`), which
+for that 1366-entry directory is 6830 main-thread calls before the table draws. It costs nothing today
+only because neither plugin is in `plugins.ini`'s enabled list, so each call returns nil cheaply — an A/B
+between that column set and the defaults was inconclusive for exactly that reason (both runs were
+dominated by SMB cache warmth, whichever ran first). Enabling Git or Notes on a network share would turn
+this on. Worth bounding to the visible rows regardless of which plugins are loaded.
+
+**The 2 GB did not reproduce, and the paths that were suspected are clean.** Driving the debug build with
+`memdump` (which reads `phys_footprint`, the number Activity Monitor shows): 200 navigations between two
+large directories plateau at **254–273 MB**; 30 cycles of remote navigation over `/Volumes/maik` with the
+viewer opened and closed each time plateau at **112 MB**; mounting five 158 MB `.lbu` images and then
+descending into the compressed initramfs inside each stays flat at **98–105 MB**. Idle is flat too, and
+`leaks` on the user's own 500 MB instance reports **1280 bytes** — so whatever this is, it is reachable
+memory, not a leak in the sense `leaks` can see.
+
+Two things remain open and are written down so the next attempt does not start over:
+
+- Over one ~30 minute window that instance grew four classes in exact lockstep — `__NSMallocBlock__`,
+  `__NSExactBlockVariable__`, `NSKeyValueDependencyContext` and `NSKeyValueDependency`, **+840 each** —
+  which is the signature of a KVO registration that is never removed. It is *not* on a timer (62 s of idle
+  adds zero) and it is *not* window activation (ten focus changes add zero). It was not isolated. Whatever
+  triggers it happened while other app instances were mounting and browsing the SMB share.
+- `ImageLimits.maxInMemoryImage` is 512 MB per image, justified in its comment as "small enough that a bomb
+  cannot exhaust the app" — which is true of one image, but `ImageCache.capacity` is 4 and neither constant
+  knows about the other. 4 × 512 MB is exactly the 2 GB that was reported. This is arithmetic from the
+  source, **not** a reproduction: the images to hand decompress to far less and stayed flat.
 
 ## 2026-08-29 (F-478) — A recorder with two ends, and one file per macro
 
