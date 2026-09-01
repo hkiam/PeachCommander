@@ -750,10 +750,36 @@ extension PanelController {
                                     kind: HistoryOperation.kindMakeDirectory,
                                     items: created, mask: nil))
             }
+            await reload()
+            focusNewFolder(created.first, in: parent)
+            return
         } catch {
             presentError(String(localized: "Could not create directory."), detail: "\(error)")
         }
         await reload()
+    }
+
+    /// Put the cursor on the folder just created.
+    ///
+    /// `reload()` preserves the *old* cursor, which is right for a refresh and wrong here: somebody
+    /// who has just named a folder is about to enter it or drop something into it, and had to find
+    /// it again in the listing first.
+    ///
+    /// `leaf` is a full path and may be nested (`a/b/c` creates one leaf three levels down) or one
+    /// of several (`x|y|z`), so what gets focused is the first component below `parent` — the only
+    /// part of either that the panel is showing. A name the listing does not hold (a filter is on,
+    /// the folder is hidden) leaves the cursor where `focusEntry` puts it, which is what it already
+    /// does for every other caller.
+    private func focusNewFolder(_ leaf: String?, in parent: String) {
+        guard let leaf else { return }
+        // The separator is part of the prefix, or `/a/b` would count as the parent of `/a/bc/d` and
+        // the cursor would go to a name nobody created. Every leaf here is built from `parent` by
+        // `appendingPathComponent`, so this cannot bite today — it is the kind of thing that starts
+        // biting the day someone passes a path from somewhere else.
+        let prefix = parent.hasSuffix("/") ? parent : parent + "/"
+        guard leaf.hasPrefix(prefix) else { return }
+        guard let first = leaf.dropFirst(prefix.count).split(separator: "/").first else { return }
+        tableView.focusEntry(named: String(first))
     }
 
     /// Create `spec`'s directories through the panel's own filesystem (server, plugin mount).
@@ -782,16 +808,20 @@ extension PanelController {
                          detail: String(format: String(localized: "%@ could not be created."),
                                         failed.joined(separator: ", ")))
         }
-        if failed.count < names.count {
+        let succeeded = names.filter { !failed.contains($0) }
+        if !succeeded.isEmpty {
             // The operation, not the folders — same reason as the local path.
             recordInHistory(label: String(localized: "New Folder"), directory: parent,
                             payload: HistoryOperation.encode(
                                 kind: HistoryOperation.kindMakeDirectory,
-                                items: names.filter { !failed.contains($0) }
-                                    .map { (parent as NSString).appendingPathComponent($0) },
+                                items: succeeded.map { (parent as NSString).appendingPathComponent($0) },
                                 mask: nil))
         }
         await reload()
+        // The first one that actually got created — not the first one asked for, which may be
+        // among the ones the mount refused.
+        focusNewFolder(succeeded.first.map { (parent as NSString).appendingPathComponent($0) },
+                       in: parent)
     }
 
     func deleteSelection(permanent explicitPermanent: Bool) async {
