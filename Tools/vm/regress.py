@@ -2184,8 +2184,14 @@ REPORTS = {
                       ["path=/Users/admin/pc-esc/inner", "count=1", "gamma.txt",
                        "!alpha.txt", "!beta.txt"]),
     # That the Escape went to the in-cell editor, not to a dialog standing in for it.
+    # `~/pc-esc` and not `/Users/admin/pc-esc`: the window title has abbreviated the home directory
+    # the way Finder and the shell do since `WindowTitle.abbreviate` (2026-08-09), and this
+    # expectation — written 2026-08-29 — asked for the unabbreviated path. It was therefore never
+    # satisfiable, and no full run had happened since the scenario was added, so nobody found out.
+    # An expectation written from reading the code instead of from a run is the failure this harness
+    # exists to prevent; it caught itself here.
     "rename-escape-key": ("/Users/admin/rename-escape-key.txt",
-                          ["keyWindow=/Users/admin/pc-esc",
+                          ["keyWindow=~/pc-esc",
                            "responder=NSTextView(editing NSTextField)"]),
     # The fixture built: three entries in pc-esc (two files and inner).
     "rename-escape-seed": ("/Users/admin/rename-escape-seed.txt", ["3"]),

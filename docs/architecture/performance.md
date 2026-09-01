@@ -121,6 +121,28 @@ Two sources feed it, and between them they cover every remote case:
 
 An explicit gesture — Cmd+Y, Enter, F3 — is not budgeted and does not consult the function at all.
 
+## Reading a member out of an archive
+
+Bounded end to end since F-479. `ArchiveSource.reader(atIndex:password:)` hands back an
+`ArchiveMemberReader` that produces the member a chunk at a time, and `ArchiveFS.openRead` prefers it
+— so the viewer, the search, `MemberStage` and Alt+F9 all read a member without it existing whole:
+
+| Backend | how |
+|---|---|
+| zip, stored | slices of the mapped archive — no copy at all |
+| zip, deflated | `compression_stream_*`, the incremental half of the same framework `inflate` uses |
+| tar | slices of the tar (mapped, for a plain `.tar`) |
+| zip, **encrypted** | one-shot, deliberately: the decryption code is where a mistake hands back plausible wrong bytes, and the case it would buy does not pay for the risk |
+| a format read per subprocess | one-shot, via the protocol's default |
+
+`ArchiveExtractor` writes as the bytes arrive, into a scratch file it moves into place. Measured on a
+400 MB member inside a zip, opened with Cmd+Y: **588 MB RSS before, 151 MB after**, same bytes on
+disk.
+
+Two shapes stay whole in memory regardless, because the *format* requires it: a `.tar.gz` is inflated
+entirely before any member can be located (`TarReader.retainedBytes` reports it, and the archive cache
+budgets against it), and an encrypted zip member as above.
+
 ## Measurement discipline
 
 - Every perf-relevant task in iterations has a "Perf check" line: run the named

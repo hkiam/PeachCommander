@@ -26,6 +26,59 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-01 — the full VM suite, and the last claim made true
+
+**The suite ran: 136 views, zero Auto Layout conflicts, one failing scenario — and it was not this
+work.** `rename-escape-key` expects `keyWindow=/Users/admin/pc-esc` while the app reports
+`keyWindow=~/pc-esc`: the window title has abbreviated the home directory the way Finder and the
+shell do since `WindowTitle.abbreviate` (2026-08-09), and that expectation was written on 2026-08-29,
+after it. It was therefore never satisfiable, and the last full run predates the scenario, so nobody
+found out. Written from reading the code instead of from a run — the failure this harness exists to
+prevent, caught in the harness itself. Expectation corrected.
+
+**`archive-preview` failed first too, and that one *was* mine.** `/bin/sh` does not expand a tilde
+after `of=`, so the `dd` building the 2 MB member failed, the `&&` chain stopped, and the zip the
+scenario is about never existed. The run then walked a folder with one loose `icon.png` and both
+halves reported the state of the first. It failed loudly only because the deferral half carries a
+*negative* expectation (`!deferred=none`) rather than only asserting what it hopes to see. `$HOME`
+throughout now; on the guest: `route=image drawn=yes rendered=#4B8DD2 expected=#4B8DD2` and
+`route=deferred` with the size and Cmd+Y named.
+
+**Then the streaming read, which is the claim the review made me take back.** `ArchiveSource` gained
+`reader(atIndex:password:)` — an `ArchiveMemberReader` pulled a chunk at a time — with a default that
+returns nil, so backends adopt one at a time. A stored zip member is now *slices of the mapped
+archive*; a deflated one goes through `compression_stream_*`, the incremental half of the framework
+the one-shot `inflate` already used; a tar member is slices. Encrypted members keep the one-shot path
+on purpose: that is where a mistake hands back plausible wrong bytes, and a multi-gigabyte member
+inside an encrypted zip does not pay for the risk.
+
+Pull and not push, deliberately: `VFSReadStream` is an `AsyncSequence`, and bridging a push producer
+into one needs either a thread to block or a buffer to grow — and a buffer that grows is the whole
+problem again wearing a hat.
+
+**Measured, on a 400 MB member opened with Cmd+Y: 588 MB RSS before, 151 MB after**, byte-identical
+output. `check-archive-listing.sh` (which reads the fixtures with an independent implementation),
+`check-pack-formats.sh` and the perf suite all still pass.
+
+Three defects on the way, and only one of them a compiler's business:
+
+  * **The reader was never called.** `reader(atIndex:)` was declared only in the protocol *extension*
+    and not in the protocol body, so a call through an `ArchiveSource` dispatched statically to the
+    extension's `nil`. Everything worked and nothing used it; two tests asserting the stream's type
+    are what found it.
+  * **An infinite loop.** The guard against a round that makes no progress compared
+    `stream.dst_size` with `want - produced` — true by construction, so it could never fire. A
+    truncated member would have spun forever, which is worse than any wrong answer. Progress is
+    checked per round now, on input consumed *or* output produced.
+  * **A silent short read.** A stream ending before the size the central directory claims was handed
+    back as a complete member; `data(for:)` refuses that, and the two paths have to agree about what
+    malformed means.
+
+And one thing the corruption test made explicit rather than asserting away: **neither path verifies
+the entry's CRC-32**, so damage that still inflates to the declared length comes back as bytes. That
+is pre-existing, and the test now checks the two paths *agree* rather than pretending either detects
+it.
+
 ## 2026-09-01 — the smaller findings worked off, and the two the app itself showed
 
 The P4 list from the review, plus a memory problem that turned out to be older than this feature —

@@ -50,12 +50,13 @@ does not have.
 
 ### Changed
 
-- **Unpacking uses far less memory, and says so when it takes a while.** Every file read out of an
-  archive used to exist two or three times over in memory at once — once decompressed, once cut into
-  pieces, and once more while being written out. Unpacking a 4 GB file needed 4 GB of memory before
-  a single byte reached the disk. The pieces are now made one at a time and written straight out, so
-  a large file costs what it weighs rather than three times that. An unpack of more than 20 MB
-  announces itself above the file list while it runs.
+- **A file inside an archive no longer has to fit in memory.** Reading one — to view it, to preview
+  it, to search it or to unpack it — used to decompress the whole thing first and then hold it two or
+  three times over, so a 4 GB file inside a ZIP needed several gigabytes of memory before a single
+  byte reached the disk. It is now read and written in pieces from end to end. Measured on a 400 MB
+  file opened with Cmd+Y from inside a ZIP: 588 MB of memory before, 151 MB after, with identical
+  contents. Encrypted archive members are the deliberate exception and are unchanged. An unpack of
+  more than 20 MB announces itself above the file list while it runs.
 
 ### Fixed
 
