@@ -14,6 +14,45 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A double-click on an .xlsx opened the spreadsheet's zip instead of the spreadsheet.** An Office or
+  OpenDocument file is a zip, which is why its extension is deliberately absent from what the built-in
+  reader claims — a text search that descends into one drowns in `word/document.xml`, and anyone who
+  wants it can add the extension under Settings ▸ Extra archive extensions. Enter and a double-click
+  undid that decision by a side door. When a content-detecting packer plugin is enabled — the
+  "Linux Filesystem Images" reader is one — a file whose name matched nothing was offered to the
+  *whole* archive registry rather than to the plugins that had asked for the look, and the built-in
+  reader does not re-check the name before trying to parse: it simply opened the zip. So the panel
+  descended into `xl/` and `[Content_Types].xml`, and the same held for .docx, .pptx and every
+  OpenDocument file. The speculative Enter now asks only the content-detecting plugins, which is what
+  it was written to do. Ctrl+PageDown is unchanged and is still the gesture that means "open this as an
+  archive whatever it is", so the zip inside a spreadsheet is one keystroke away rather than in the way.
+  Proved in both directions with the defect put back: the same file, the same configuration, mounted
+  without the fix and stayed put with it.
+
+- **A new folder left the cursor where it was.** F7 reloaded the listing the way a refresh does, which
+  preserves the *old* cursor — right for a refresh and wrong here, since somebody who has just named a
+  folder is about to enter it or drop something into it and had to find it in the listing first. The
+  cursor now lands on it. A nested name (`a/b/c`) and several at once (`x|y|z`) both focus the part the
+  panel is actually showing, and on a server or plugin mount it is the first folder that was really
+  created rather than the first one asked for.
+
+### Changed
+
+- **The editor's "Save changes?" prompt now puts its buttons where macOS puts them.** They were Save,
+  Discard, Cancel, which `NSAlert` lays out right to left — so Cancel sat at the far left, where every
+  other Mac document window has "Don't Save", and Discard sat next to Save, where the hand goes for
+  Cancel. Reaching for either by habit did the opposite of what was intended, and one of those two
+  throws away work. It is now Save, Cancel, Don't Save, with Escape on Cancel and ⌘D on Don't Save set
+  explicitly rather than left to AppKit's match on the *localised* button title, which cannot be relied
+  on across nineteen languages. Same prompt in the hex editor.
+
+- **An unsaved document marks itself the way macOS marks one.** The dot now appears in the window's
+  close button (`isDocumentEdited`), instead of a bullet glued to the front of the title — where it
+  also showed up in the Window menu, in Mission Control and in every screenshot, reading as part of
+  the file's name. Text and hex editor both.
+
 ## [0.8.1] — 2026-08-29
 
 Macros, worked through against the three things the first person to use them ran into — same day as 0.8.0, which is when a feature is most worth fixing.
