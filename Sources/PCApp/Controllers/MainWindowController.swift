@@ -7329,15 +7329,31 @@ final class PanelController: NSObject, PanelControllerProtocol {
         // call sites that each used to do it — and each had a different idea of who
         // deletes the result — now share one.
         var opened: OpenedArchive?
-        switch await opening.open(fs: fs, path: pathToOpen, intent: .interactive) {
-        case .opened(let archive, _):
-            opened = archive
-        case .skipped, .notAnArchive:
-            // Nothing claimed it by name. Give the content-detecting plugins a look:
-            // a filesystem image called `firmware.bin`, or a rootfs with no extension
-            // at all, is exactly the file somebody installs an image reader for.
+        if speculative {
+            // Only the content-detecting plugins get a look, and deliberately not the rest of the
+            // registry. `NativeArchiveBackend.open` does not re-check the name — it simply tries to
+            // parse the file — and an .xlsx *is* a zip, as are .docx, .pptx and every OpenDocument
+            // file. Routing a speculative Enter through the whole registry therefore undid the one
+            // decision that keeps them out of it (see `NativeArchiveBackend.zipFamily`, where the
+            // Office extensions are absent on purpose): a double-click on a spreadsheet opened
+            // `xl/workbook.xml` instead of the spreadsheet, for anyone who had enabled a
+            // content-detecting plugin — the FSImage reader is one, and it never even claimed the
+            // file. Ctrl+PageDown is the gesture that means "open this as an archive whatever it
+            // is", and it does not come through here (`speculative` is false).
             if fs is LocalFS {
                 opened = await opening.probeByContent(localFile: URL(fileURLWithPath: pathToOpen))
+            }
+        } else {
+            switch await opening.open(fs: fs, path: pathToOpen, intent: .interactive) {
+            case .opened(let archive, _):
+                opened = archive
+            case .skipped, .notAnArchive:
+                // Nothing claimed it by name. Give the content-detecting plugins a look:
+                // a filesystem image called `firmware.bin`, or a rootfs with no extension
+                // at all, is exactly the file somebody installs an image reader for.
+                if fs is LocalFS {
+                    opened = await opening.probeByContent(localFile: URL(fileURLWithPath: pathToOpen))
+                }
             }
         }
 

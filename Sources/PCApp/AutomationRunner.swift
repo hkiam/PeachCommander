@@ -98,6 +98,12 @@ extension MainWindowController {
             case "active":     arg.lowercased().hasPrefix("r") ? activateRightPanel() : activateLeftPanel()
             case "focus":      activePanel?.tableView.focusEntry(named: arg)   // move cursor onto <name>
             case "enter":      activePanel?.tableView.enterUnderCursor()   // descend into the cursor item
+            // Enter / double-click on the cursor item — a *different* question from `enter`, which is
+            // Ctrl+PageDown and means "open this as an archive whatever it is". The two answers diverge
+            // on exactly the files this distinguishes (an .xlsx is a zip), and with only `enter` here the
+            // harness could not see the difference at all.
+            case "openunder":
+                if let p = activePanel { p.tableView.activateVisibleIndex(p.tableView.cursorRow) }
             case "reordertab":                                            // reorder tabs: reordertab <from> <to> (F-008)
                 let p = arg.split(separator: " ").compactMap { Int($0) }
                 if p.count == 2 { activePanel?.reorderTab(from: p[0], to: p[1]) }
