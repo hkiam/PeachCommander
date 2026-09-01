@@ -60,17 +60,48 @@ public enum ArchiveExtractor {
         return (files, bytes)
     }
 
+    /// One member, written out as it arrives rather than assembled first.
+    ///
+    /// The first version accumulated the whole member into a `Data` and wrote that, so unpacking a
+    /// 4 GB file needed 4 GB of memory before a single byte reached the disk. The stream is chunked
+    /// (`ArchiveReadStream`), so there is nothing to assemble.
+    ///
+    /// Still atomic from the destination's point of view: the bytes go to a sibling temporary file
+    /// and are moved into place at the end, so a cancelled or failed extraction leaves no
+    /// half-written file where a whole one is expected — which `.atomic` used to provide.
     private static func extractFile(fs: VirtualFileSystem, path: String, to outURL: URL) async throws -> Int64 {
-        let stream = try await fs.openRead(VFSPath(filesystemId: fs.scheme, path: path))
-        var data = Data()
-        for try await element in stream {
-            if Task.isCancelled { try? await stream.close(); throw CancellationError() }
-            if let chunk = element as? Data { data.append(chunk) }
-            if data.count >= perFileLimit { break }
+        let directory = outURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let partial = directory.appendingPathComponent(".\(outURL.lastPathComponent).pcpart")
+        try? FileManager.default.removeItem(at: partial)
+        guard FileManager.default.createFile(atPath: partial.path, contents: nil),
+              let handle = try? FileHandle(forWritingTo: partial) else {
+            throw CocoaError(.fileWriteUnknown)
         }
+
+        let stream = try await fs.openRead(VFSPath(filesystemId: fs.scheme, path: path))
+        var written: Int64 = 0
+        do {
+            for try await element in stream {
+                if Task.isCancelled { throw CancellationError() }
+                guard let chunk = element as? Data else { continue }
+                try handle.write(contentsOf: chunk)
+                written += Int64(chunk.count)
+                // A crafted archive may claim an enormous single entry; the cap is the viewer's and
+                // the search's, and it truncates rather than failing, as it always has.
+                if written >= perFileLimit { break }
+            }
+        } catch {
+            try? handle.close()
+            try? await stream.close()
+            try? FileManager.default.removeItem(at: partial)
+            throw error
+        }
+        try? handle.close()
         try? await stream.close()
-        try FileManager.default.createDirectory(at: outURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try data.write(to: outURL, options: .atomic)
-        return Int64(data.count)
+
+        try? FileManager.default.removeItem(at: outURL)
+        try FileManager.default.moveItem(at: partial, to: outURL)
+        return written
     }
 }

@@ -277,4 +277,44 @@ final class ArchiveFSTests: XCTestCase {
         let payload = try await inner.localFileIfAvailable(VFSPath(filesystemId: "zip:inner", path: "/hello.txt"))
         XCTAssertEqual(try Data(contentsOf: try XCTUnwrap(payload)), Data("nested payload".utf8))
     }
+    // MARK: - The read stream (F-479)
+
+    /// It slices as it is read now instead of cutting the member into an array up front, which held
+    /// the whole thing a second time for the life of the stream. The bytes have to come out
+    /// unchanged across every boundary case.
+    func test_openRead_deliversTheWholeMemberWhateverTheChunking() async throws {
+        for size in [0, 1, 1023, 1 << 20, (1 << 20) + 1, 3 * (1 << 20)] {
+            let zipURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent("PCStream-\(UUID().uuidString).zip")
+            defer { try? FileManager.default.removeItem(at: zipURL) }
+            var payload = Data(count: size)
+            for i in 0..<size { payload[i] = UInt8(i % 251) }
+            try ZipWriter.create(at: zipURL, files: [(path: "m.bin", data: payload)])
+            let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "z"))
+
+            let stream = try await fs.openRead(fs.path("/m.bin"))
+            var got = Data()
+            for try await element in stream {
+                if let chunk = element as? Data { got.append(chunk) }
+            }
+            try await stream.close()
+            XCTAssertEqual(got, payload, "size \(size)")
+        }
+    }
+
+    func test_openRead_deliversNothingAfterClose() async throws {
+        let zipURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("PCStream-\(UUID().uuidString).zip")
+        defer { try? FileManager.default.removeItem(at: zipURL) }
+        try ZipWriter.create(at: zipURL, files: [(path: "m.bin", data: Data(repeating: 7, count: 4096))])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "z"))
+        let stream = try await fs.openRead(fs.path("/m.bin"))
+        try await stream.close()
+        var got = Data()
+        for try await element in stream {
+            if let chunk = element as? Data { got.append(chunk) }
+        }
+        XCTAssertTrue(got.isEmpty, "a closed stream still handed out bytes")
+    }
+
 }

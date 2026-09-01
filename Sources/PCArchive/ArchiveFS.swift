@@ -300,28 +300,34 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
 
 /// Streams a zip entry's already-decompressed bytes from memory, chunked to
 /// mirror `LocalReadStream`'s shape (see `PCVFS/LocalFS.swift`).
+///
+/// **Sliced as it is read, not cut up in advance.** The first version built an array of chunks in
+/// `init` — `subdata` copies, so the whole member existed twice for as long as the stream did, on
+/// top of the copy `ArchiveSource.data(atIndex:)` had just produced. Three full copies of a 2 GB
+/// member, two of them for nothing. Now one chunk at a time is materialised and the caller is
+/// expected to be done with it before asking for the next, which every caller in the app is.
+///
+/// What this does *not* fix: `openRead` still decompresses the member whole before this exists. That
+/// needs an incremental inflate in `ArchiveSource`, which is a change to every backend.
 final class ArchiveReadStream: VFSReadStream, @unchecked Sendable {
     typealias Element = Data
 
-    private let chunks: [Data]
-    private var nextIndex = 0
+    private let data: Data
+    private let chunkSize: Int
+    private var offset: Data.Index
     private var closed = false
 
     init(data: Data, chunkSize: Int = 1 << 20) {
-        var built: [Data] = []
-        var offset = data.startIndex
-        while offset < data.endIndex {
-            let end = data.index(offset, offsetBy: chunkSize, limitedBy: data.endIndex) ?? data.endIndex
-            built.append(data.subdata(in: offset..<end))
-            offset = end
-        }
-        self.chunks = built
+        self.data = data
+        self.chunkSize = Swift.max(1, chunkSize)
+        self.offset = data.startIndex
     }
 
     fileprivate func readChunk() -> Data? {
-        guard !closed, nextIndex < chunks.count else { return nil }
-        defer { nextIndex += 1 }
-        return chunks[nextIndex]
+        guard !closed, offset < data.endIndex else { return nil }
+        let end = data.index(offset, offsetBy: chunkSize, limitedBy: data.endIndex) ?? data.endIndex
+        defer { offset = end }
+        return data.subdata(in: offset..<end)
     }
 
     func close() async throws {

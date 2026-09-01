@@ -182,28 +182,27 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
     }
 }
 
-/// Chunked in-memory read stream (mirrors PCArchive.ArchiveReadStream).
+/// Chunked in-memory read stream (mirrors PCArchive.ArchiveReadStream, including its slicing:
+/// building the chunks up front held the whole member a second time for the life of the stream).
 final class PCXReadStream: VFSReadStream, @unchecked Sendable {
     typealias Element = Data
-    private let chunks: [Data]
-    private var idx = 0
+    private let data: Data
+    private let chunkSize: Int
+    private var offset: Data.Index
     private var closed = false
 
     init(data: Data, chunkSize: Int = 1 << 20) {
-        var built: [Data] = []
-        var off = data.startIndex
-        while off < data.endIndex {
-            let end = data.index(off, offsetBy: chunkSize, limitedBy: data.endIndex) ?? data.endIndex
-            built.append(data.subdata(in: off..<end)); off = end
-        }
-        self.chunks = built
+        self.data = data
+        self.chunkSize = Swift.max(1, chunkSize)
+        self.offset = data.startIndex
     }
     func close() async throws { closed = true }
     func makeAsyncIterator() -> AsyncIterator { AsyncIterator(stream: self) }
     fileprivate func readChunk() -> Data? {
-        guard !closed, idx < chunks.count else { return nil }
-        defer { idx += 1 }
-        return chunks[idx]
+        guard !closed, offset < data.endIndex else { return nil }
+        let end = data.index(offset, offsetBy: chunkSize, limitedBy: data.endIndex) ?? data.endIndex
+        defer { offset = end }
+        return data.subdata(in: offset..<end)
     }
     struct AsyncIterator: AsyncIteratorProtocol {
         let stream: PCXReadStream

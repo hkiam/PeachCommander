@@ -47,6 +47,41 @@ final class ArchiveExtractorTests: XCTestCase {
     // success and a file appears somewhere the user was not looking, possibly overwriting one that
     // matters.
 
+    /// The member is written out as it arrives now, not assembled in memory first — so the two
+    /// things `.atomic` used to give have to be checked by hand: nothing half-written is left where
+    /// a whole file is expected, and the scratch file does not survive.
+    func test_extractAll_leavesNoScratchFileBehind() async throws {
+        let zipURL = tempDir.appendingPathComponent("b.zip")
+        // Bigger than one chunk, so more than one write goes into the same scratch file.
+        let payload = Data(repeating: 0x42, count: 3 * 1024 * 1024)
+        try ZipWriter.create(at: zipURL, files: [(path: "big.bin", data: payload)])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "z"))
+        let dest = tempDir.appendingPathComponent("out", isDirectory: true)
+
+        let result = try await ArchiveExtractor.extractAll(from: fs, to: dest)
+
+        XCTAssertEqual(result.bytes, Int64(payload.count))
+        XCTAssertEqual(try Data(contentsOf: dest.appendingPathComponent("big.bin")), payload)
+        let left = try FileManager.default.contentsOfDirectory(atPath: dest.path)
+        XCTAssertEqual(left.sorted(), ["big.bin"], "a .pcpart scratch file survived the extraction")
+    }
+
+    func test_extractAll_overwritesAnExistingFileRatherThanAppendingToIt() async throws {
+        // The scratch-and-move has to replace, not merge: an unpack over a previous one used to be
+        // a plain atomic write, and a move onto an existing path fails unless it is cleared first.
+        let zipURL = tempDir.appendingPathComponent("c.zip")
+        try ZipWriter.create(at: zipURL, files: [(path: "note.txt", data: Data("new".utf8))])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "z"))
+        let dest = tempDir.appendingPathComponent("out", isDirectory: true)
+        try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true)
+        try Data("a much longer previous content".utf8)
+            .write(to: dest.appendingPathComponent("note.txt"))
+
+        _ = try await ArchiveExtractor.extractAll(from: fs, to: dest)
+
+        XCTAssertEqual(try String(contentsOf: dest.appendingPathComponent("note.txt"), encoding: .utf8), "new")
+    }
+
     func test_extractAll_refusesToWriteAboveTheDestination() async throws {
         let zipURL = tempDir.appendingPathComponent("evil.zip")
         try ZipWriter.create(at: zipURL, files: [
