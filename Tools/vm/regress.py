@@ -404,11 +404,14 @@ SCENARIOS = [
     # a member over the ceiling must say so rather than silently unpack itself, so the archive limit is
     # set to 1 MB and the cursor moved onto a 2 MB member. Both answers come out of the same report, so
     # a fix that unpacked everything would fail the scenario just as loudly as one that unpacked nothing.
-    ("archive-preview", ["probe /Users/admin/ap-seed.txt|mkdir -p ~/pc-arch && "
-                         "cp ~/pc-demo/Images/icon.png ~/pc-arch/ && "
-                         "dd if=/dev/urandom of=~/pc-arch/big.bin bs=1m count=2 2>/dev/null && "
-                         "cd ~/pc-arch && rm -f box.zip && zip -q box.zip icon.png big.bin && "
-                         "rm -f icon.png big.bin && ls ~/pc-arch | wc -l",
+    # `$HOME` and not `~`: /bin/sh does not expand a tilde after `of=`, so `dd` failed, the `&&`
+    # chain stopped, and the zip this scenario is about was never built. The run then reported the
+    # *first* half's state twice — which the negative expectation below is what caught.
+    ("archive-preview", ["probe /Users/admin/ap-seed.txt|mkdir -p $HOME/pc-arch && "
+                         "cp $HOME/pc-demo/Images/icon.png $HOME/pc-arch/ && "
+                         "dd if=/dev/urandom of=$HOME/pc-arch/big.bin bs=1m count=2 2>/dev/null && "
+                         "cd $HOME/pc-arch && rm -f box.zip && zip -q box.zip icon.png big.bin && "
+                         "rm -f icon.png big.bin && ls $HOME/pc-arch | wc -l",
                          "wait 1200",
                          "setstring Preview.AutoPreviewArchiveMB|1", "wait 600",
                          "active left", "left /Users/admin/pc-arch", "wait 1500",
