@@ -101,13 +101,23 @@ a pure function over the source's *locality* rather than over the path:
 | Archive member | 32 MB (`Preview.AutoPreviewArchiveMB`), on top of the locality's own | — |
 | `MemberAccessCost.processPerMember` archive | never automatically | — |
 
-Throughput comes from `TransferRateEstimator`, fed by `MemberStage`'s own reads (EWMA per mount,
-samples under 64 KB and reads that took no measurable time discarded — both would teach a number
-that then decides what the user gets to see). A *throttled* transfer and a `clonefile` copy measure
-something other than the link and must never be recorded.
+Throughput comes from `TransferRateEstimator`, an EWMA per mount. Samples under 64 KB are discarded
+(that is latency, not throughput) and a duration is clamped to a 1 ms floor rather than discarded —
+a read too fast to time is a *fast* link, and throwing those away kept the conservative fallback in
+place on exactly the links that deserved none. A *throttled* transfer and a `clonefile` copy measure
+something other than the link and must never be recorded, which is why the copy engine does not feed
+this.
 
-An explicit gesture — Cmd+Y, Enter, F3 — asks the same function with `ImplicitWorkLimits`
-`.unrestricted`, so there is one rule with two settings rather than two rules.
+Two sources feed it, and between them they cover every remote case:
+
+- `MemberStage`, for anything it stages — archive members, FTP, SFTP, S3, plugin mounts. The key it
+  records under has to be the key `ImplicitWorkBudget` looks up, or the samples are filed where
+  nobody reads them.
+- `TransferRateEstimator.probe`, one bounded read (≤ 1 MB) per directory on a **mounted share**. A
+  share is `LocalFS`, so nothing stages from it and nothing else ever times it. Never for a dormant
+  file: reading one is what downloads it.
+
+An explicit gesture — Cmd+Y, Enter, F3 — is not budgeted and does not consult the function at all.
 
 ## Measurement discipline
 

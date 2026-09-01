@@ -41,6 +41,12 @@ does not have.
   its icon, its name, size and date from the listing, and one line saying why — and Cmd+Y always previews
   it whatever the limits say. All of it is under *Configuration ▸ Edit/View*, and there is a new help
   topic — "Previews of files that are not on this Mac" — in all nineteen languages.
+- **The measurement behind that now actually runs on a mounted share.** A share looks like an ordinary
+  local folder, so nothing Peach Commander does on one was ever timed, and the promise above — "after
+  that it allows whatever fits in about a second and a half" — could never come true there: only the
+  cautious 4 MB fallback ever applied. One bounded read per folder measures the connection now (never
+  for a file the cloud has not downloaded, since reading one is what downloads it), and a read too
+  fast to time counts as fast instead of being thrown away.
 
 ### Fixed
 

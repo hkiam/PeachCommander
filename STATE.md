@@ -26,6 +26,60 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-01 — the review of F-479, and the five things it found
+
+A read of the change against the code rather than against the commit message. Two of the findings
+could have cost data or shown the wrong file, one meant a documented feature never ran, and four were
+the change's own prose claiming more than the code did.
+
+**The editor was handed an evictable copy.** `localPathForCursor` staged with `purpose: .preview`,
+and `.preview` means *may be evicted* and *dies when the panel leaves the mount* — while that same
+function feeds F4, which on a writable network mount writes the copy and uploads it back on save
+(F-214). Leave the mount with the editor open, or let the LRU turn over, and the save had nowhere to
+go. Before F-479 there was no cleanup at all on that path, so this was a hazard the cleanup
+introduced. There is a third purpose now: `.editing` outlives the mount like a handoff and stays
+writable, unlike one. F3's viewer takes `.handoff` for the same reason — it keeps the path and reads
+it again.
+
+**Two FTP hosts could share a cache.** The key for a network mount was
+`"\(fs.scheme)://\(mountStack.last?.archivePath)"`, and `archivePath` on a network frame is the
+*local directory the connection was opened from*. Two sites entered from the same folder shared the
+throughput estimate and the staging cache, whose entries are (mount, member path, size) — same path
+and size, and one host's file is served for the other's. It is the registry's `netmount:` sentinel
+now, with the mount object's own identity as the fallback.
+
+**The measurement almost never ran.** The point of the budget is that it stops guessing after a few
+reads. Checked source by source: a mounted share is `LocalFS`, so `MemberStage` hands it straight
+back and nothing times it; an archive was timed under its `FileStamp` key while the budget looked up
+an empty one; only the network VFS mounts lined up, and those under the colliding key above. So on
+the very case the report was about — 32 MB over SMB — only the 4 MB fallback ever applied, while the
+help text in nineteen languages promised otherwise. Archives now record and read the same key, and a
+share gets one bounded probe per directory (`TransferRateEstimator.probe`, ≤ 1 MB, never on a dormant
+file). Writing its test found a second defect in the estimator: it *discarded* any read too fast to
+time, which kept the cautious fallback on precisely the fastest links. Clamped to a 1 ms floor now,
+which bounds the answer instead of throwing it away.
+
+**A late unpacking could paint over a newer selection.** `previewMember` guarded the result, but the
+two exits that do not stage — the refusal and the ordinary local file — never cleared it, so a member
+whose extraction finished after the cursor had moved to a local file was drawn over it.
+
+**`retained` drifted upward.** `entries[key] = …` overwrote without dropping the old entry's bytes,
+which happens whenever a staged file vanished underneath the stage. The budget then evicted early for
+the rest of the session, and the replaced directory stayed on disk.
+
+**And four things the prose claimed that the code did not do.** "Cancellable" — nothing called
+`cancel()`, so the check in `streamToFile` was decoration; it is wired now, and only preview
+extractions are ever abandoned, since an explicit open can be waiting on the same task. "Streaming
+instead of one `Data`" — true for FTP and SFTP, *false* for zips, because `ArchiveFS.openRead`
+decompresses the member whole before the first chunk exists; the claim is corrected everywhere rather
+than quietly left standing, and making the zip reader stream is its own piece of work.
+`ImplicitWorkLimits.unrestricted` and `SourceLocalityProbe.of(localPath:volumeIsLocal:)` were both
+*tested and unused* — the first is deleted (an explicit gesture asks nothing, which is not the same
+as asking with no limits), the second is now what the panel actually calls instead of a second copy
+of its two questions. And `deferredThumbnails` was write-only while STATE said it was in the harness
+dump; `dump` reports `locality=` and `deferredthumbs=` now, so the claim is true and a scenario can
+assert it.
+
 ## 2026-09-01 — the preview that did nothing inside a zip, and the reading nobody had asked for (F-479)
 
 Reported as two things — "in an archive the quick preview does not work, and I cannot open an .xlsx by
@@ -41,10 +95,12 @@ defect of its own: no cache (it decompresses the whole member into one `Data` on
 info page and Quick View following one cursor paid twice per move), one lifetime where two are needed
 (`ArchiveFS` deletes its temp root in `deinit` — right for a preview, data loss for a file Excel still
 has open), no ceiling at all, and no measurement. `MemberStage` in PCVFS is now the single place a member
-becomes a real file: keyed on the archive's `FileStamp` plus the member path and size, streaming
-`openRead` chunk by chunk into the file rather than through one `Data`, sharing a single read between
-simultaneous askers, LRU with a byte budget and a memory-pressure hook, `.preview` copies dying with the
-mount and `.handoff` copies outliving it at 0444 with a one-off notice that changes are not written back.
+becomes a real file: keyed on the archive's `FileStamp` plus the member path and size, writing the
+stream out chunk by chunk rather than building one `Data` (which saves the second copy — a zip member
+is still decompressed whole inside `ArchiveFS.openRead`), sharing a single read between simultaneous
+askers, LRU with a byte budget and a memory-pressure hook, and three lifetimes: `.preview` dies with
+the mount, `.handoff` outlives it at 0444 with a one-off notice that changes are not written back, and
+`.editing` outlives it writable for the editors.
 Leftovers are found by **process id** (`PCStage-<pid>-<uuid>`) rather than by age, so a crash mid-session
 no longer leaves a staged file sitting in the temp directory for a day; `ArchiveTempSweeper` keeps the
 24-hour rule for the two older prefixes, which carry no pid.
@@ -93,7 +149,10 @@ in all nineteen, so the reader who is *in* the settings finds it. The Help Book 
 **Not done, deliberately, and each is its own piece of work:** writing an edited copy back into a zip
 (the machinery is all there — `ArchiveEditor.add` plus `reloadCurrentArchive` — it is a UX decision, and
 the user has said it is not wanted for now); thumbnails for archive members in the gallery (still
-skipped, which is the safe answer). **Measured in the running app** (DEBUG build, fresh `-ConfigRoot`, scripted), because a preview is only
+skipped, which is the safe answer). **Superseded in part by the review entry above** — five defects in this change were found and fixed
+after it was first written; what follows describes the change as designed.
+
+**Measured in the running app** (DEBUG build, fresh `-ConfigRoot`, scripted), because a preview is only
 verified by a picture: inside a zip with the archive ceiling set to 1 MB, the cursor on a 3.7 KB `pic.png`
 reports `route=image … drawn=yes rendered=#D6E7FE expected=#D5E7FF` — drawn, not merely loaded — and the
 cursor on a 2 MB member reports `route=deferred` with `deferred=2,0 MB — zu groß für eine automatische
