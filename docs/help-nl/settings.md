@@ -29,7 +29,7 @@ Het venster heeft deze pagina's, op volgorde:
 - **Bediening** — algemeen gedrag, zoals wat er gebeurt als je in een paneel typt (snelzoeken versus de opdrachtregel).
 - **Kleuren** — aangepaste paneelkleuren, of laat ze het huidige thema volgen.
 - **Bevestiging** — welke acties eerst om bevestiging vragen, zoals verwijderen.
-- **Bewerken/Bekijken** — of bewaren in de editor een `.bak`-back-upkopie houdt, de programma's om bestanden te bewerken en te bekijken, en koppelingen per type.
+- **Bewerken/Bekijken** — of bewaren in de editor een `.bak`-back-upkopie houdt, de programma's om bestanden te bewerken en te bekijken, koppelingen per type, en wat een voorvertoning mag kosten op netwerklocaties en in archieven.
 - **Kopiëren/Verwijderen** — bestandsmetadata behouden, snel klonen, alleen nieuwere bestanden kopiëren, controleren na kopiëren, verwijderingen naar de prullenmand sturen, en een optionele snelheidslimiet instellen.
 - **Zip/Inpakken** — het standaard archiefformaat en compressieniveau bij inpakken.
 - **Plug-ins** — schakel geïnstalleerde plug-ins in of uit.

@@ -29,7 +29,7 @@ Okno ma następujące strony, w kolejności:
 - **Obsługa** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).
 - **Kolory** — niestandardowe kolory paneli, lub pozostaw je podążające za bieżącym motywem.
 - **Potwierdzenie** — które akcje najpierw proszą o potwierdzenie, jak usuwanie.
-- **Edycja/Podgląd** — czy zapis w edytorze zachowuje kopię zapasową `.bak`, programy używane do edycji i wyświetlania plików oraz skojarzenia według typu.
+- **Edycja/Podgląd** — czy zapis w edytorze zachowuje kopię zapasową `.bak`, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.
 - **Kopiowanie/Usuwanie** — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.
 - **Zip/Pakowacz** — domyślny format archiwum i poziom kompresji używane przy pakowaniu.
 - **Wtyczki** — włącz lub wyłącz zainstalowane wtyczki.

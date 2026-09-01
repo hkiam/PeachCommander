@@ -30,7 +30,7 @@ The window has these pages, in order:
 - **Operation** — general behavior, such as what happens when you type in a panel (quick search versus the command line).
 - **Colors** — custom panel colors, or leave them following the current theme.
 - **Confirmation** — which actions ask you to confirm first, such as deleting.
-- **Edit/View** — whether saving in the editor keeps a `.bak` backup copy, the programs used to edit and view files, and per-type associations.
+- **Edit/View** — whether saving in the editor keeps a `.bak` backup copy, the programs used to edit and view files, per-type associations, and what a preview may cost on network locations and inside archives.
 - **Copy/Delete** — preserve file metadata, use fast cloning, copy only newer files, verify after copying, send deletions to the Trash, and set an optional speed limit.
 - **Zip/Packer** — the default archive format and compression level used when you pack.
 - **Plugins** — turn installed plugins on or off.

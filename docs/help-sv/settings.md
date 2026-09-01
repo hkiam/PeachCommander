@@ -29,7 +29,7 @@ Fönstret har dessa sidor, i ordning:
 - **Åtgärder** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).
 - **Färger** — anpassade panelfärger, eller låt dem följa det aktuella temat.
 - **Bekräftelse** — vilka åtgärder som ber dig bekräfta först, till exempel radering.
-- **Redigera/Visa** — om sparande i redigeraren behåller en `.bak`-säkerhetskopia, programmen som används för att redigera och visa filer, och kopplingar per typ.
+- **Redigera/Visa** — om sparande i redigeraren behåller en `.bak`-säkerhetskopia, programmen som används för att redigera och visa filer, kopplingar per typ, och vad en förhandsvisning får kosta på nätverksplatser och i arkiv.
 - **Kopiera/Radera** — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer, verifiera efter kopiering, skicka raderingar till papperskorgen och ange en valfri hastighetsgräns.
 - **Zip/Packare** — standardarkivformatet och komprimeringsnivån som används när du packar.
 - **Insticksprogram** — slå på eller av installerade insticksprogram.

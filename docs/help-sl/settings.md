@@ -29,7 +29,7 @@ Okno ima te strani, po vrsti:
 - **Delovanje** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).
 - **Barve** — poljubne barve podoken, ali jih pustite slediti trenutni temi.
 - **Potrditev** — katera dejanja najprej prosijo za potrditev, kot je brisanje.
-- **Uredi/Poglej** — ali shranjevanje v urejevalniku ohrani varnostno kopijo `.bak`, programi, uporabljeni za urejanje in pregledovanje datotek, in povezave po vrsti.
+- **Uredi/Poglej** — ali shranjevanje v urejevalniku ohrani varnostno kopijo `.bak`, programi, uporabljeni za urejanje in pregledovanje datotek, povezave po vrsti in koliko sme stati predogled na omrežnih mestih in v arhivih.
 - **Kopiranje/Brisanje** — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke, preveri po kopiranju, pošlji brisanja v Koš in nastavi izbirno omejitev hitrosti.
 - **Zip/Pakirnik** — privzeta oblika arhiva in raven stiskanja, uporabljena pri pakiranju.
 - **Vtičniki** — vklopi ali izklopi nameščene vtičnike.

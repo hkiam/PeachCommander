@@ -29,7 +29,7 @@ Az ablaknak ezek az oldalai vannak, sorrendben:
 - **Működés** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).
 - **Színek** — egyéni panelszínek, vagy hagyja őket az aktuális témát követni.
 - **Megerősítés** — mely műveletek kérnek először megerősítést, mint a törlés.
-- **Szerkesztés/Megtekintés** — hogy a szerkesztőben való mentés megtart-e `.bak` biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok és a típusonkénti társítások.
+- **Szerkesztés/Megtekintés** — hogy a szerkesztőben való mentés megtart-e `.bak` biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.
 - **Másolás/Törlés** — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.
 - **Zip/Tömörítő** — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.
 - **Bővítmények** — a telepített bővítmények be- vagy kikapcsolása.

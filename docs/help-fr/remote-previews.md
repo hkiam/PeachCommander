@@ -1,0 +1,42 @@
+---
+title: Aperçu de fichiers qui ne sont pas sur ce Mac
+slug: remote-previews
+section: Affichage et édition
+order: 71
+related: [viewing-files, archives, network-shares]
+---
+
+Peach Commander affiche un aperçu du fichier sous le curseur dans le panneau latéral d'informations, dans Quick View et sous forme de vignettes en vue galerie. Quand ce fichier n'est pas sur un disque attaché à ce Mac, l'afficher coûte quelque chose de réel — un téléchargement, une décompression, ou les deux — et personne ne l'a demandé : le curseur s'est simplement déplacé sur le fichier. Peach Commander décide donc à l'avance ce qu'un aperçu a le droit de coûter ; cette page explique ce qu'il décide et comment le changer.
+
+## Fichiers à l'intérieur d'une archive
+
+Un fichier dans une archive se prévisualise exactement comme un fichier hors archive. Peach Commander le décompresse en arrière-plan dans une copie temporaire et affiche celle-ci. Il en va de même pour Quick Look, pour l'ouverture dans une autre application avec Entrée ou un double-clic, et pour le sous-menu Ouvrir avec.
+
+Ce qu'une autre application reçoit est une copie, et elle est en lecture seule : ce que vous y modifiez n'est pas réécrit dans l'archive. Peach Commander le dit la première fois, avec une case pour ne plus le dire. Pour modifier un fichier qui vit dans une archive, décompressez-le d'abord avec F5 et travaillez sur le fichier décompressé.
+
+## Ce qu'un aperçu a le droit de coûter
+
+Un aperçu suit le curseur : il se produit sans qu'on le demande. Il est donc soumis à un budget qui dépend de l'endroit où se trouve réellement le contenu du fichier :
+
+- Sur un disque attaché à ce Mac il n'y a aucune limite, et les aperçus se comportent exactement comme avant.
+- Sur un emplacement réseau — un partage monté, FTP, SFTP, Amazon S3 ou un volume de plug-in — les fichiers sont prévisualisés jusqu'à 4 Mo, tant que Peach Commander n'a pas mesuré la vitesse réelle de cette connexion. Ensuite il autorise tout ce qu'il peut lire en une seconde et demie environ, si bien qu'un partage rapide affiche de gros fichiers et un partage lent en refuse de petits.
+- Dans une archive, un fichier est décompressé pour l'aperçu jusqu'à 32 Mo.
+- Un fichier qu'un service cloud n'a pas encore téléchargé sur ce Mac n'est jamais récupéré simplement parce que le curseur s'est posé dessus.
+- Dans les formats d'archive qui doivent être décompressés fichier par fichier — CPIO, ISO, CAB, LZH et similaires — rien n'est prévisualisé automatiquement, car chaque fichier coûte un parcours complet de l'archive.
+
+Un aperçu refusé n'est pas un panneau vide : le panneau latéral affiche l'icône du fichier, son nom, sa taille et sa date, plus une ligne indiquant pourquoi. Quick Look l'affiche quand même et n'est soumis à aucune de ces limites.
+
+## Modifier les limites
+
+1. Ouvrez Réglages ▸ Modifier/Afficher.
+2. Désactivez « Prévisualiser automatiquement les fichiers sur les emplacements réseau » pour arrêter complètement les aperçus réseau, ou réglez « Fichiers réseau jusqu’à (Mo) » à la taille voulue.
+3. Activez « Télécharger les fichiers depuis le cloud pour les prévisualiser » si vous préférez l'aperçu au trafic économisé.
+4. Réglez « Décompresser des archives jusqu’à (Mo) » pour la taille maximale d'un fichier dans une archive.
+
+Deux autres réglages n'ont pas de commande propre et se trouvent dans `peachcmd.ini` sous `[Preview]` : `AutoPreviewSeconds` est le budget de temps qui s'applique une fois la connexion mesurée (1,5 par défaut ; 0 le désactive), et `AutoPreviewLocalMB` est un plafond pour les disques locaux (0 signifie aucune limite).
+
+## Où vont les copies décompressées
+
+Les copies sont écrites dans le dossier temporaire du système, et les aperçus les partagent au lieu que chacun crée la sienne. Une copie faite pour un aperçu est supprimée quand vous quittez l'archive ; une copie remise à une autre application reste jusqu'à ce que vous quittiez Peach Commander, parce que cette application l'a encore ouverte. Ce qu'un arrêt inattendu laisse derrière lui est reconnu au lancement suivant et supprimé alors.
+
+Les vignettes de la vue galerie suivent le même budget, et les fichiers dans une archive y gardent leur icône générique au lieu d'une vignette.

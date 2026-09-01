@@ -29,7 +29,7 @@ Vinduet har disse sidene, i rekkefølge:
 - **Betjening** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen).
 - **Farger** – egendefinerte panelfarger, eller la dem følge det gjeldende temaet.
 - **Bekreftelse** – hvilke handlinger som ber deg bekrefte først, som sletting.
-- **Rediger/Vis** – om lagring i redigeringsprogrammet beholder en `.bak`-sikkerhetskopi, programmene brukt til å redigere og vise filer, og assosiasjoner per type.
+- **Rediger/Vis** – om lagring i redigeringsprogrammet beholder en `.bak`-sikkerhetskopi, programmene brukt til å redigere og vise filer, assosiasjoner per type, og hva en forhåndsvisning får koste på nettverkssteder og i arkiver.
 - **Kopier/Slett** – bevar filmetadata, bruk rask kloning, kopier bare nyere filer, verifiser etter kopiering, send slettinger til papirkurven, og sett en valgfri hastighetsgrense.
 - **Zip/Pakker** – standard arkivformat og komprimeringsnivå brukt når du pakker.
 - **Programtillegg** – slå installerte programtillegg på eller av.
