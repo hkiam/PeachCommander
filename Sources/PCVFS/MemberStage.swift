@@ -82,9 +82,10 @@ public actor MemberStage {
     /// Directory-name prefix, also swept at launch by `ArchiveTempSweeper`.
     public static let prefix = "PCStage-"
 
-    /// Budgets, in the shape `docs/architecture/performance.md` states the others.
-    private let maxEntries = 64
-    private let maxRetainedBytes: Int64 = 256 * 1024 * 1024
+    /// Budgets, in the shape `docs/architecture/performance.md` states the others. Settable so a
+    /// test can cross them without staging a quarter of a gigabyte.
+    private let maxEntries: Int
+    private let maxRetainedBytes: Int64
 
     private struct Key: Hashable {
         let mount: String
@@ -119,7 +120,9 @@ public actor MemberStage {
 
     private var pressureSource: DispatchSourceMemoryPressure?
 
-    public init() {
+    public init(maxEntries: Int = 64, maxRetainedBytes: Int64 = 256 * 1024 * 1024) {
+        self.maxEntries = maxEntries
+        self.maxRetainedBytes = maxRetainedBytes
         // Caches give way under pressure rather than compete with the app that filled them
         // (performance.md); `ArchiveDirectoryCache` hooks the same source for the same reason.
         // Previews only — a copy another application is holding open is not this actor's to reclaim.
@@ -236,7 +239,7 @@ public actor MemberStage {
         remove(key)
         entries[key] = Entry(url: destination, bytes: written, purpose: purpose, usedAt: Date(), pins: 0)
         retained += written
-        evictIfNeeded()
+        evictIfNeeded(protecting: key)
         return destination
     }
 
@@ -327,7 +330,19 @@ public actor MemberStage {
     }
 
     /// What the stage is holding, for the harness and the tests.
-    public func report() -> (files: Int, bytes: Int64) { (entries.count, retained) }
+    ///
+    /// Split, because the budget only governs one half of it: `evictable` is what the LRU may
+    /// reclaim, `kept` is what an application or an editor is holding open and nothing here may
+    /// touch. A session that opens fifty files out of archives exceeds the byte budget by design,
+    /// and a number that hid that would be the wrong number.
+    public func report() -> (files: Int, bytes: Int64, evictable: Int64, kept: Int64) {
+        var evictable: Int64 = 0
+        var kept: Int64 = 0
+        for entry in entries.values {
+            if entry.purpose.outlivesMount || entry.pins > 0 { kept += entry.bytes } else { evictable += entry.bytes }
+        }
+        return (entries.count, retained, evictable, kept)
+    }
 
     // MARK: - Internals
 
@@ -344,10 +359,18 @@ public actor MemberStage {
     }
 
     /// Least recently used first, skipping anything pinned or handed to another application.
-    private func evictIfNeeded() {
+    ///
+    /// - Parameter protecting: the entry the caller is about to be handed. **Never** evictable here,
+    ///   whatever the budget says. Without it, a single member larger than the whole byte budget was
+    ///   deleted by the very call that created it — the caller got back a path to a file that no
+    ///   longer existed, which for Cmd+Y meant "nothing here could be unpacked" for every archive
+    ///   member over 256 MB. A budget is a bound on what is *kept*, not a licence to undo the work
+    ///   that was just asked for; one oversized entry over the line for a moment is the smaller
+    ///   wrong, and the next staging clears it.
+    private func evictIfNeeded(protecting: Key? = nil) {
         guard entries.count > maxEntries || retained > maxRetainedBytes else { return }
         let evictable = entries
-            .filter { $0.value.pins == 0 && !$0.value.purpose.outlivesMount }
+            .filter { $0.key != protecting && $0.value.pins == 0 && !$0.value.purpose.outlivesMount }
             .sorted { $0.value.usedAt < $1.value.usedAt }
         for (key, _) in evictable {
             guard entries.count > maxEntries || retained > maxRetainedBytes else { return }

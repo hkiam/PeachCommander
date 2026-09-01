@@ -253,6 +253,44 @@ final class MemberStageTests: XCTestCase {
         XCTAssertEqual(fs.readCount("/doc.txt"), 1)
     }
 
+    // MARK: - The budget must not undo the work it was asked for
+
+    func testAMemberBiggerThanTheWholeBudgetIsStillHandedOver() async throws {
+        // Found by driving the app: Cmd+Y on a 400 MB member reported "nothing here could be
+        // unpacked" *every time*. The extraction had worked — and then the eviction that runs
+        // straight after deleted the only entry there was, because one file was over the byte
+        // budget by itself. The caller was handed a path to a file that no longer existed.
+        let small = MemberStage(maxEntries: 64, maxRetainedBytes: 1024)
+        defer { Task { await small.removeAll() } }
+        let fs = self.fs(["/huge.bin": 8192])
+        let staged = try await small.stage(path("/huge.bin"), on: fs, mountKey: "m",
+                                           bytes: 8192, purpose: .preview)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: staged.url.path),
+                      "the staging deleted the file it had just produced")
+        XCTAssertEqual(try Data(contentsOf: staged.url).count, 8192)
+    }
+
+    func testTheOldestIsStillEvictedOnceSomethingElseIsStaged() async throws {
+        // The protection is for the entry being handed over, not a general exemption: the next
+        // staging must still bring the budget back down.
+        let small = MemberStage(maxEntries: 64, maxRetainedBytes: 1024)
+        defer { Task { await small.removeAll() } }
+        let fs = self.fs(["/a.bin": 4096, "/b.bin": 4096])
+        let first = try await small.stage(path("/a.bin"), on: fs, mountKey: "m", bytes: 4096, purpose: .preview)
+        let second = try await small.stage(path("/b.bin"), on: fs, mountKey: "m", bytes: 4096, purpose: .preview)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: first.url.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: second.url.path))
+    }
+
+    func testTheEntryCountBudgetAlsoSparesTheFreshEntry() async throws {
+        let small = MemberStage(maxEntries: 1, maxRetainedBytes: 0)
+        defer { Task { await small.removeAll() } }
+        let fs = self.fs(["/a.txt": 10, "/b.txt": 10])
+        _ = try await small.stage(path("/a.txt"), on: fs, mountKey: "m", bytes: 10, purpose: .preview)
+        let second = try await small.stage(path("/b.txt"), on: fs, mountKey: "m", bytes: 10, purpose: .preview)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: second.url.path))
+    }
+
     // MARK: - The byte budget must describe what is actually held
 
     func testReStagingAFileThatVanishedDoesNotCountItTwice() async throws {
@@ -270,6 +308,20 @@ final class MemberStageTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(
             atPath: first.url.deletingLastPathComponent().path), "the replaced directory stayed behind")
         XCTAssertTrue(FileManager.default.fileExists(atPath: second.url.path))
+    }
+
+    func testTheReportSeparatesWhatTheBudgetGovernsFromWhatItDoesNot() async throws {
+        // The 256 MB budget bounds the evictable half only: a copy another application has open is
+        // not the stage's to reclaim, and one number for both would have hidden that.
+        let fs = self.fs(["/p.png": 100, "/h.xlsx": 200, "/e.txt": 400])
+        _ = try await stage.stage(path("/p.png"), on: fs, mountKey: "m", bytes: 100, purpose: .preview)
+        _ = try await stage.stage(path("/h.xlsx"), on: fs, mountKey: "m", bytes: 200, purpose: .handoff)
+        _ = try await stage.stage(path("/e.txt"), on: fs, mountKey: "m", bytes: 400, purpose: .editing)
+        let report = await stage.report()
+        XCTAssertEqual(report.files, 3)
+        XCTAssertEqual(report.bytes, 700)
+        XCTAssertEqual(report.evictable, 100)
+        XCTAssertEqual(report.kept, 600)
     }
 
     func testACopyHandedToAnotherApplicationIsReadOnly() async throws {

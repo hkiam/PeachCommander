@@ -2081,14 +2081,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             var staged: [String] = []
             for path in capped {
                 let bytes = await panel.sizeOfEntry(named: (path as NSString).lastPathComponent)
-                if let local = await panel.stagedPath(for: path, bytes: bytes, purpose: .preview) {
+                if let local = await panel.stagedPath(for: path, bytes: bytes, purpose: .preview,
+                                                      announcesProgress: true) {
                     staged.append(local)
                 }
             }
             guard !staged.isEmpty else {
+                // Over the path bar, not in an alert. `NSAlert.runModal` spins a nested runloop that
+                // drains the main queue, so a scripted run carries on *inside* it and never reaches
+                // `quit` — which is how this failure first showed up, looking like a deadlock. The
+                // same reasoning `showTransientMessage` was written with (F-214).
                 NSSound.beep()
-                self.presentInfo(String(localized: "Quick Look"),
-                                 String(localized: "Nothing here could be unpacked for a preview. The archive may be encrypted or damaged."))
+                panel.view.showTransientMessage(
+                    String(localized: "Nothing here could be unpacked for a preview. The archive may be encrypted or damaged."))
                 return
             }
             self.quickLook.show(staged)
@@ -4230,20 +4235,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
            !PanelEntryHelpers.isDirectoryLike(entry.kind),
            case .onRequest(let reason) = panel.implicitWorkDecision(forEntryNamed: entry.name,
                                                                     bytes: entry.size) {
-            var parts: [String] = []
-            if let type = UTType(filenameExtension: entry.ext), let kind = type.localizedDescription {
-                parts.append(kind)
-            }
-            if entry.size >= 0 { parts.append(ByteSize(entry.size).formatted(style: .bytesWithSep)) }
-            var details: [(String, String)] = [
-                (String(localized: "Modified"), Self.previewDateFormatter.string(from: entry.modified))
-            ]
-            details.append((String(localized: "Where"), (path as NSString).deletingLastPathComponent))
+            let described = Self.describe(entry: entry, at: path)
             previewMember = nil
             previewPanel.setInfo(path: path,
                                  title: entry.name,
-                                 subtitle: parts.joined(separator: " — "),
-                                 details: details,
+                                 subtitle: described.subtitle,
+                                 details: described.details,
                                  deferredKey: "\(path)|\(ImplicitWork.tag(for: .onRequest(reason)))",
                                  deferredMessage: ImplicitWork.sentence(for: reason),
                                  fallbackIcon: Self.icon(forEntryNamed: entry.name, path: path))
@@ -4253,22 +4250,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // the listing, and the picture follows once the member is unpacked (F-479).
         if let panel = activePanel, panel.isInArchive, let entry = panel.tableView.cursorEntry(),
            !PanelEntryHelpers.isDirectoryLike(entry.kind) {
-            var parts: [String] = []
-            if let type = UTType(filenameExtension: entry.ext), let kind = type.localizedDescription {
-                parts.append(kind)
-            }
-            if entry.size >= 0 { parts.append(ByteSize(entry.size).formatted(style: .bytesWithSep)) }
-            let details: [(String, String)] = [
-                (String(localized: "Modified"), Self.previewDateFormatter.string(from: entry.modified)),
-                (String(localized: "Where"), (path as NSString).deletingLastPathComponent),
-            ]
+            let described = Self.describe(entry: entry, at: path)
             stagePreview(member: path, entry: entry, panel: panel) { [weak self] outcome in
                 guard let self else { return }
                 switch outcome {
                 case .waiting(let key, let message, let icon):
                     self.previewPanel.setInfo(path: path, title: entry.name,
-                                              subtitle: parts.joined(separator: " — "),
-                                              details: details, deferredKey: key,
+                                              subtitle: described.subtitle,
+                                              details: described.details, deferredKey: key,
                                               deferredMessage: message, fallbackIcon: icon)
                 case .ready(let local):
                     self.previewPanel.setPreviewFile(local, fallbackIcon: nil)
@@ -4307,6 +4296,24 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                              subtitle: subtitleParts.joined(separator: " — "),
                              details: details,
                              fallbackIcon: NSWorkspace.shared.icon(forFile: path))
+    }
+
+    /// What the info page says about a row when the file itself cannot be asked (F-479).
+    ///
+    /// Both callers that describe a listing row rather than a file on disk — the refusal and the
+    /// not-yet-unpacked member — use this. Written twice at first, twenty lines apart, which is how
+    /// two descriptions of the same thing come to disagree.
+    private static func describe(entry: VFSEntry,
+                                 at path: String) -> (subtitle: String, details: [(String, String)]) {
+        var parts: [String] = []
+        if let type = UTType(filenameExtension: entry.ext), let kind = type.localizedDescription {
+            parts.append(kind)
+        }
+        if entry.size >= 0 { parts.append(ByteSize(entry.size).formatted(style: .bytesWithSep)) }
+        return (parts.joined(separator: " — "), [
+            (String(localized: "Modified"), previewDateFormatter.string(from: entry.modified)),
+            (String(localized: "Where"), (path as NSString).deletingLastPathComponent),
+        ])
     }
 
     @objc private func hotlistAddCurrent() {
@@ -7797,9 +7804,21 @@ final class PanelController: NSObject, PanelControllerProtocol {
         return rateKey.isEmpty ? "\(fs.scheme)://\(view.currentPathValue)" : rateKey
     }
 
+    /// Above this, an explicit unpack says that it is happening (SPEC-007 §2).
+    private static let unpackNoticeBytes: Int64 = 20 * 1024 * 1024
+
     /// Stage `path` out of the current mount and return the local copy's path, or nil.
+    /// - Parameter announcesProgress: whether a long unpack should say so over the path bar.
+    ///   Defaults to "yes unless this is a preview" — the cursor-following previews have a budget
+    ///   precisely so they never arrive here with something large, and a message per cursor movement
+    ///   is noise. Cmd+Y overrides it: it stages as a `.preview` (its copy should die with the mount
+    ///   and is pinned while the panel shows it) but it is an explicit gesture with no ceiling, so it
+    ///   is the one most likely to be waited on.
     func stagedPath(for path: String, bytes: Int64, purpose: StagePurpose,
-                    limitBytes: Int64 = 0) async -> String? {
+                    limitBytes: Int64 = 0, announcesProgress: Bool? = nil) async -> String? {
+        let announce = (announcesProgress ?? (purpose != .preview)) && bytes > Self.unpackNoticeBytes
+        if announce { view.beginStandingMessage(String(localized: "Unpacking…")) }
+        defer { if announce { view.endStandingMessage() } }
         let vpath = VFSPath(filesystemId: fs.scheme, path: path)
         do {
             let staged = try await MemberStage.shared.stage(vpath, on: fs, mountKey: mountKey,
@@ -7819,6 +7838,14 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// which is what makes a double-click on an .xlsx inside a zip do the thing everybody expects.
     /// The copy outlives the mount on purpose: the application it was handed to still has it open.
     func openExternally(_ path: String, with app: URL?) async {
+        // A folder inside a mount is not a file to hand anybody: "Open in Default App" on one used
+        // to try to unpack it and then report that it could not. Do what Enter does instead.
+        if isInArchive, app == nil,
+           let entry = try? await fs.stat(VFSPath(filesystemId: fs.scheme, path: path)),
+           PanelEntryHelpers.isDirectoryLike(entry.kind) {
+            await loadDirectory(path)
+            return
+        }
         guard isInArchive else {
             HistoryService.shared.recordFile(path)
             Self.launch(path, with: app)
@@ -7830,9 +7857,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
         // user asked for, and the progress the panel already shows for a long operation is the
         // answer to a big one.
         guard let local = await stagedPath(for: path, bytes: bytes, purpose: .handoff) else {
+            // Not an alert, for the reason spelled out at the Quick Look failure above.
             NSSound.beep()
-            (view.window?.windowController as? MainWindowController)?.presentInfo(
-                String(localized: "Open"),
+            view.showTransientMessage(
                 String(localized: "“\(name)” could not be unpacked. It may be encrypted, or the archive may be damaged."))
             return
         }
@@ -9672,7 +9699,7 @@ final class PanelView: NSView {
         // The generation check is the whole reason this is not a stored timer: two failures in quick
         // succession would otherwise leave the first one's timer to clear the second one's message.
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            guard let self, self.messageGeneration == mine else { return }
+            guard let self, self.messageGeneration == mine, self.standingMessages == 0 else { return }
             self.messageLabel.isHidden = true
         }
     }
@@ -9680,6 +9707,32 @@ final class PanelView: NSView {
     /// The message currently shown, for tests and the automation harness.
     var transientMessageForAutomation: String? {
         messageLabel.isHidden ? nil : messageLabel.stringValue
+    }
+
+    /// How many things are currently announcing themselves over the path bar.
+    private var standingMessages = 0
+
+    /// Show `text` until `endStandingMessage()` takes it away (F-479).
+    ///
+    /// The five-second variant above is for something that has already happened. This is for
+    /// something that is happening — unpacking a large member for an explicit gesture, which
+    /// SPEC-007 §2 asks be shown above 20 MB. Deliberately not a modal: a sheet per unpack would be
+    /// worse than the wait, and a modal spins a nested runloop that hangs a scripted run.
+    ///
+    /// Counted, because Cmd+Y on a marked set unpacks several one after another and the last one to
+    /// finish must not clear a message the next one is still using.
+    func beginStandingMessage(_ text: String) {
+        standingMessages += 1
+        messageGeneration += 1          // so a five-second message in flight cannot clear this one
+        messageLabel.stringValue = text
+        messageLabel.isHidden = false
+    }
+
+    func endStandingMessage() {
+        standingMessages = max(0, standingMessages - 1)
+        guard standingMessages == 0 else { return }
+        messageGeneration += 1
+        messageLabel.isHidden = true
     }
 
     // MARK: - View modes (TODOS #58)
