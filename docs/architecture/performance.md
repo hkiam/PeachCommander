@@ -81,11 +81,13 @@ Budgets live machine-readable in `Tests/PCPerfTests/budgets.json`; CI compares.
 | Dir-size cache | path+mtime | 64k entries |
 | Collation-key cache | string | 2M keys, evict with model |
 | Archive directory cache | archive path+mtime | 32 archives |
-| Member stage (F-479) | mount identity + member path + size | 64 files / 256 MB LRU |
+| Member stage (F-479) | mount identity + member path + size | 64 files / 256 MB LRU, *preview copies only* |
 
 All caches respond to memory-pressure notifications (`DISPATCH_SOURCE_TYPE_MEMORYPRESSURE`). The
-member stage gives up only what a *preview* staged: a copy another application has open is not the
-app's to reclaim.
+member stage gives up only what a *preview* staged: a copy another application has open, or one the
+editor is writing, is not the app's to reclaim — so its budget bounds the evictable half and nothing
+else, and `report()` states both halves rather than one number that would hide it. Copies that
+outlive their mount are created one explicit gesture at a time and go at the next quit.
 
 ## Work nobody asked for (F-479)
 

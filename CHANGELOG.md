@@ -48,8 +48,20 @@ does not have.
   for a file the cloud has not downloaded, since reading one is what downloads it), and a read too
   fast to time counts as fast instead of being thrown away.
 
+### Changed
+
+- **Unpacking uses far less memory, and says so when it takes a while.** Every file read out of an
+  archive used to exist two or three times over in memory at once — once decompressed, once cut into
+  pieces, and once more while being written out. Unpacking a 4 GB file needed 4 GB of memory before
+  a single byte reached the disk. The pieces are now made one at a time and written straight out, so
+  a large file costs what it weighs rather than three times that. An unpack of more than 20 MB
+  announces itself above the file list while it runs.
+
 ### Fixed
 
+- **Opening or previewing a file larger than 256 MB from inside an archive said "nothing here could
+  be unpacked".** It had been unpacked; the housekeeping that keeps temporary copies within a memory
+  budget then deleted it again, because one file that size is the whole budget by itself.
 - **A double-click on an .xlsx opened the spreadsheet's zip instead of the spreadsheet.** An Office or
   OpenDocument file is a zip, which is why its extension is deliberately absent from what the built-in
   reader claims — a text search that descends into one drowns in `word/document.xml`, and anyone who

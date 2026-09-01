@@ -26,6 +26,51 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-01 — the smaller findings worked off, and the two the app itself showed
+
+The P4 list from the review, plus a memory problem that turned out to be older than this feature —
+and then two defects that only appeared because the work was driven in the running app rather than
+declared finished when the tests passed.
+
+**Every archive member existed three times in memory.** `ArchiveSource.data(atIndex:)` produces the
+decompressed member, and `ArchiveReadStream` then cut that into an array of chunks in its
+initialiser — `subdata` copies, so the whole thing existed a second time for as long as the stream
+did. It slices as it reads now, one chunk at a time. `PCXReadStream` in the plugin host had the same
+shape and the same fix. On top of that, `ArchiveExtractor` accumulated each member into one `Data`
+before writing it, so unpacking a 4 GB file needed 4 GB of memory before a byte reached the disk; it
+writes as the bytes arrive, into a sibling scratch file that is moved into place at the end — which
+is what keeps the destination atomic now that `.atomic` is gone. What is *not* fixed, and is now
+written down in two places rather than implied: `ArchiveFS.openRead` still decompresses the member
+whole before the stream exists. That needs an incremental inflate in `ArchiveSource`, a change to
+every backend, and it is its own piece of work.
+
+**A long unpack says so.** SPEC-007 §2 has always asked for progress above 20 MB. It is a standing
+message over the path bar, not a sheet — a modal per unpack would be worse than the wait, and it
+would hang every scripted run. Counted, so Cmd+Y over a marked set does not have the first member's
+completion clear the last one's message. Cmd+Y has to ask for it explicitly: it stages as a
+`.preview` (its copy should die with the mount) while being an explicit gesture with no ceiling, so
+it is the one most likely to be waited on.
+
+**Then the app showed two things no test had.** Cmd+Y on a 400 MB member reported "nothing here could
+be unpacked" — every time. The extraction had *worked*: 88 ms, 419,430,400 bytes on disk. The
+eviction that runs immediately after then deleted it, because one file over the 256 MB byte budget
+made the only entry there was the one to reclaim. The caller was handed a path to a file that no
+longer existed. A budget bounds what is *kept*; it may not undo the work it was just asked for, so
+the entry being handed over is never evictable by its own staging.
+
+And the way that defect presented was itself the second one: the failure path called `presentInfo`,
+which is `NSAlert.runModal`, so the scripted run carried on inside the modal's nested runloop and
+never reached `quit`. It looked exactly like a deadlock — `sample` showed every thread parked and
+0 % CPU — and cost three runs before the modal was the suspect. Both failure paths use the panel's
+transient message now. This is the third time this project has paid for a modal in a code path a
+script can reach (F-436, then `ArchiveHandoffNotice`, now these two); the rule is in CONVENTIONS
+territory by now: **anything that can be reached from an automation verb must not `runModal`.**
+
+Also in this round: `MemberStage.report()` states the evictable and the kept halves separately,
+because the budget only governs one of them and one number hid that; the info page's two
+descriptions of a listing row are one function; and "Open in Default App" on a folder inside an
+archive navigates into it instead of trying to unpack it and failing.
+
 ## 2026-09-01 — the review of F-479, and the five things it found
 
 A read of the change against the code rather than against the commit message. Two of the findings
