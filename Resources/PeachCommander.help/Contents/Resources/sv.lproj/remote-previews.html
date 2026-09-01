@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Förhandsvisning av filer som inte finns på den här Macen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Förhandsvisning av filer som inte finns på den här Macen</h1>
+<p>Peach Commander visar en förhandsvisning av filen under markören i informationssidopanelen, i Quick View och som miniatyrer i gallerivyn. När den filen inte ligger på en disk i den här Macen kostar det något verkligt att visa den — en nedladdning, en uppackning eller båda — och ingen har bett om det: markören har bara flyttats till filen. Därför avgör Peach Commander i förväg vad en förhandsvisning får kosta; den här sidan förklarar vad den avgör och hur du ändrar det.</p>
+<h2 id="filer-inuti-ett-arkiv">Filer inuti ett arkiv</h2>
+<p>En fil inuti ett arkiv kan förhandsvisas precis som en fil utanför. Peach Commander packar upp den i bakgrunden till en tillfällig kopia och visar den. Detsamma gäller Quick Look, att öppna i ett annat program med Retur eller dubbelklick, och undermenyn Öppna med.</p>
+<p>Det ett annat program får är en kopia, och den är skrivskyddad: det du ändrar där skrivs inte tillbaka till arkivet. Peach Commander säger det första gången, med en ruta för att sluta säga det. Vill du redigera en fil som ligger i ett arkiv packar du först upp den med F5 och arbetar med den uppackade filen.</p>
+<h2 id="vad-en-forhandsvisning-far-kosta">Vad en förhandsvisning får kosta</h2>
+<p>En förhandsvisning följer markören och sker alltså utan att någon bett om det. Därför gäller en budget som beror på var filens innehåll faktiskt finns:</p>
+<ul>
+<li>På en disk i den här Macen finns ingen gräns, och förhandsvisningar beter sig precis som förut.</li>
+<li>På en nätverksplats — en monterad utdelning, FTP, SFTP, Amazon S3 eller en plugin-volym — förhandsvisas filer upp till 4 MB, tills Peach Commander har mätt hur snabb den anslutningen verkligen är. Därefter tillåts allt som kan läsas på ungefär en och en halv sekund, så att en snabb utdelning visar stora filer och en långsam avvisar små.</li>
+<li>I ett arkiv packas en fil upp för förhandsvisning upp till 32 MB.</li>
+<li>En fil som en molntjänst ännu inte har laddat ner till den här Macen hämtas aldrig bara för att markören hamnat på den.</li>
+<li>I arkivformat som måste packas upp fil för fil — CPIO, ISO, CAB, LZH och liknande — förhandsvisas ingenting automatiskt, eftersom varje enskild fil kostar en full genomgång av arkivet.</li>
+</ul>
+<p>En avvisad förhandsvisning är inte en tom panel: sidopanelen visar filens symbol, namn, storlek och datum samt en rad med skälet. Quick Look visar den ändå och är inte bunden av någon av dessa gränser.</p>
+<h2 id="andra-granserna">Ändra gränserna</h2>
+<ol>
+<li>Öppna Inställningar ▸ Redigera/Visa.</li>
+<li>Stäng av ”Förhandsvisa filer på nätverksplatser automatiskt” för att helt stoppa förhandsvisningar över nätverket, eller sätt ”Nätverksfiler upp till (MB)” till önskad storlek.</li>
+<li>Slå på ”Hämta filer från molnet för att förhandsvisa dem” om du hellre vill ha förhandsvisningen än den sparade trafiken.</li>
+<li>Ställ in ”Packa upp ur arkiv upp till (MB)” för hur stor en fil i ett arkiv får vara.</li>
+</ol>
+<p>Två ytterligare inställningar har ingen egen kontroll och står i <code>peachcmd.ini</code> under <code>[Preview]</code>: <code>AutoPreviewSeconds</code> är tidsbudgeten som gäller när en anslutning har mätts (1,5 som standard; 0 stänger av den), och <code>AutoPreviewLocalMB</code> är ett tak för lokala diskar (0 betyder ingen gräns).</p>
+<h2 id="var-de-uppackade-kopiorna-hamnar">Var de uppackade kopiorna hamnar</h2>
+<p>Kopior skrivs till systemets tillfälliga mapp, och förhandsvisningarna delar på dem i stället för att var och en gör sin egen. En kopia som gjorts för en förhandsvisning tas bort när du lämnar arkivet; en kopia som lämnats till ett annat program blir kvar tills du avslutar Peach Commander, eftersom det programmet fortfarande har den öppen. Det som en oväntad avslutning lämnar efter sig känns igen vid nästa start och rensas då.</p>
+<p>Miniatyrer i galerivyn följer samma budget, och filer inuti ett arkiv behåller där sin allmänna symbol i stället för en miniatyr.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Visa filer</a></li><li><a href="archives.html">Arbeta med arkiv</a></li><li><a href="network-shares.html">Nätverksresurser</a></li></ul></section>
+</main>
+</body>
+</html>

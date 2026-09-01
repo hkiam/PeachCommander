@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forhåndsvisning av filer som ikke ligger på denne Macen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Forhåndsvisning av filer som ikke ligger på denne Macen</h1>
+<p>Peach Commander viser en forhåndsvisning av filen under markøren i informasjonssidepanelet, i Quick View og som miniatyrbilder i gallerivisningen. Når den filen ikke ligger på en disk i denne Macen, koster det noe virkelig å vise den — en nedlasting, en utpakking eller begge deler — og ingen har bedt om det: markøren har bare flyttet seg til filen. Derfor avgjør Peach Commander på forhånd hva en forhåndsvisning får koste; denne siden forklarer hva den avgjør og hvordan du endrer det.</p>
+<h2 id="filer-inne-i-et-arkiv">Filer inne i et arkiv</h2>
+<p>En fil inne i et arkiv kan forhåndsvises akkurat som en fil utenfor. Peach Commander pakker den ut i bakgrunnen til en midlertidig kopi og viser den. Det samme gjelder Quick Look, åpning i et annet program med Enter eller dobbeltklikk, og undermenyen Åpne med.</p>
+<p>Det et annet program får, er en kopi, og den er skrivebeskyttet: det du endrer der, skrives ikke tilbake til arkivet. Peach Commander sier det første gang, med en avkrysningsboks for å slutte å si det. Vil du redigere en fil som ligger i et arkiv, pakk den først ut med F5 og arbeid med den utpakkede filen.</p>
+<h2 id="hva-en-forhandsvisning-far-koste">Hva en forhåndsvisning får koste</h2>
+<p>En forhåndsvisning følger markøren og skjer altså uten at noen har bedt om det. Derfor er den bundet av et budsjett som avhenger av hvor filens innhold faktisk ligger:</p>
+<ul>
+<li>På en disk i denne Macen finnes ingen grense, og forhåndsvisninger oppfører seg nøyaktig som før.</li>
+<li>På et nettverkssted — en montert deling, FTP, SFTP, Amazon S3 eller et plugin-volum — vises filer opptil 4 MB, helt til Peach Commander har målt hvor rask den forbindelsen egentlig er. Deretter tillates alt som kan leses på omtrent halvannet sekund, slik at en rask deling viser store filer og en treg avviser små.</li>
+<li>I et arkiv pakkes en fil ut for forhåndsvisning opptil 32 MB.</li>
+<li>En fil som en skytjeneste ennå ikke har lastet ned til denne Macen, hentes aldri bare fordi markøren havnet på den.</li>
+<li>I arkivformater som må pakkes ut fil for fil — CPIO, ISO, CAB, LZH og lignende — forhåndsvises ingenting automatisk, fordi hver eneste fil koster en full gjennomgang av arkivet.</li>
+</ul>
+<p>En avvist forhåndsvisning er ikke et tomt panel: sidepanelet viser filens symbol, navn, størrelse og dato, pluss én linje med grunnen. Quick Look viser den likevel og er ikke bundet av noen av disse grensene.</p>
+<h2 id="endre-grensene">Endre grensene</h2>
+<ol>
+<li>Åpne Innstillinger ▸ Rediger/Vis.</li>
+<li>Slå av «Forhåndsvis filer på nettverkssteder automatisk» for å stoppe nettverksforhåndsvisninger helt, eller sett «Nettverksfiler opptil (MB)» til ønsket størrelse.</li>
+<li>Slå på «Last ned filer fra skyen for å forhåndsvise dem» hvis du heller vil ha forhåndsvisningen enn den sparte trafikken.</li>
+<li>Sett «Pakk ut fra arkiver opptil (MB)» for hvor stor en fil i et arkiv får være.</li>
+</ol>
+<p>To andre innstillinger har ingen egen kontroll og står i <code>peachcmd.ini</code> under <code>[Preview]</code>: <code>AutoPreviewSeconds</code> er tidsbudsjettet som gjelder når en forbindelse er målt (1,5 som standard; 0 slår det av), og <code>AutoPreviewLocalMB</code> er et tak for lokale disker (0 betyr ingen grense).</p>
+<h2 id="hvor-de-utpakkede-kopiene-havner">Hvor de utpakkede kopiene havner</h2>
+<p>Kopier skrives til systemets midlertidige mappe, og forhåndsvisningene deler dem i stedet for at hver lager sin egen. En kopi laget for en forhåndsvisning fjernes når du forlater arkivet; en kopi gitt til et annet program blir liggende til du avslutter Peach Commander, fordi det programmet fortsatt har den åpen. Det en uventet avslutning etterlater, gjenkjennes ved neste oppstart og ryddes bort da.</p>
+<p>Miniatyrbilder i gallerivisningen følger samme budsjett, og filer inne i et arkiv beholder der sitt generelle symbol i stedet for et miniatyrbilde.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Vise filer</a></li><li><a href="archives.html">Arbeide med arkiver</a></li><li><a href="network-shares.html">Nettverksressurser</a></li></ul></section>
+</main>
+</body>
+</html>

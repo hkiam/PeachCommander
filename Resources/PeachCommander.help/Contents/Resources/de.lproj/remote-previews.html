@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vorschau von Dateien, die nicht auf diesem Mac liegen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vorschau von Dateien, die nicht auf diesem Mac liegen</h1>
+<p>Peach Commander zeigt die Datei unter dem Cursor im Info-Seitenfenster, in der Schnellansicht und als Miniatur in der Galerie-Ansicht. Wenn diese Datei nicht auf einer Platte dieses Mac liegt, kostet ihre Anzeige etwas Reales – einen Download, ein Entpacken oder beides – und niemand hat darum gebeten: der Cursor ist lediglich auf die Datei gewandert. Peach Commander entscheidet deshalb vorher, wie viel eine Vorschau kosten darf; diese Seite erklärt, wie es entscheidet und wie Sie das ändern.</p>
+<h2 id="dateien-in-einem-archiv">Dateien in einem Archiv</h2>
+<p>Eine Datei in einem Archiv lässt sich genauso in der Vorschau ansehen wie eine außerhalb. Peach Commander entpackt sie im Hintergrund in eine temporäre Kopie und zeigt diese an. Dasselbe gilt für Quick Look, für das Öffnen in einem anderen Programm mit Enter oder Doppelklick und für das Untermenü „Öffnen mit“.</p>
+<p>Was ein anderes Programm bekommt, ist eine Kopie, und sie ist schreibgeschützt: Was Sie dort ändern, wird nicht ins Archiv zurückgeschrieben. Peach Commander sagt das beim ersten Mal, mit einem Kästchen, um es nicht mehr zu sagen. Zum Bearbeiten einer Datei, die in einem Archiv liegt, entpacken Sie sie zuerst mit F5 und arbeiten mit der entpackten Datei.</p>
+<h2 id="was-eine-vorschau-kosten-darf">Was eine Vorschau kosten darf</h2>
+<p>Eine Vorschau folgt dem Cursor, geschieht also ungefragt. Sie ist deshalb an ein Budget gebunden, das davon abhängt, wo der Inhalt der Datei tatsächlich liegt:</p>
+<ul>
+<li>Auf einer Platte dieses Mac gibt es keine Grenze, und Vorschauen verhalten sich genau wie bisher.</li>
+<li>An einem Netzwerkort – eine eingebundene Freigabe, FTP, SFTP, Amazon S3 oder ein Plugin-Laufwerk – werden Dateien bis 4 MB angezeigt, solange Peach Commander noch nicht gemessen hat, wie schnell diese Verbindung wirklich ist. Danach ist alles erlaubt, was in etwa anderthalb Sekunden gelesen werden kann, sodass eine schnelle Freigabe große Dateien zeigt und eine langsame kleine ablehnt.</li>
+<li>In einem Archiv wird eine Datei für die Vorschau bis 32 MB entpackt.</li>
+<li>Eine Datei, die ein Cloud-Dienst noch nicht auf diesen Mac geladen hat, wird nie allein deshalb geholt, weil der Cursor darauf gewandert ist.</li>
+<li>In Archivformaten, die Datei für Datei entpackt werden müssen – CPIO, ISO, CAB, LZH und ähnliche –, wird nichts automatisch angezeigt, weil jede einzelne Datei einen vollständigen Durchgang durch das Archiv kostet.</li>
+</ul>
+<p>Eine abgelehnte Vorschau ist kein leeres Panel: Das Seitenfenster zeigt das Symbol der Datei, ihren Namen, ihre Größe und ihr Datum sowie eine Zeile mit dem Grund. Quick Look zeigt sie trotzdem an und ist an keine dieser Grenzen gebunden.</p>
+<h2 id="die-grenzen-andern">Die Grenzen ändern</h2>
+<ol>
+<li>Öffnen Sie Einstellungen ▸ Bearbeiten/Ansehen.</li>
+<li>Schalten Sie „Dateien an Netzwerkorten automatisch in der Vorschau anzeigen“ aus, um Netzwerk-Vorschauen ganz zu unterbinden, oder setzen Sie „Netzwerkdateien bis (MB)“ auf die gewünschte Größe.</li>
+<li>Schalten Sie „Dateien für die Vorschau aus der Cloud laden“ ein, wenn Ihnen die Vorschau lieber ist als der gesparte Datenverkehr.</li>
+<li>Setzen Sie „Aus Archiven entpacken bis (MB)“ dafür, wie groß eine Datei in einem Archiv sein darf.</li>
+</ol>
+<p>Zwei weitere Einstellungen haben kein eigenes Bedienelement und stehen in <code>peachcmd.ini</code> unter <code>[Preview]</code>: <code>AutoPreviewSeconds</code> ist das Zeitbudget, das gilt, sobald eine Verbindung gemessen wurde (standardmäßig 1,5; 0 schaltet es ab), und <code>AutoPreviewLocalMB</code> ist eine Obergrenze für lokale Platten (0 bedeutet keine Grenze).</p>
+<h2 id="wo-die-entpackten-kopien-liegen">Wo die entpackten Kopien liegen</h2>
+<p>Kopien werden in den temporären Ordner des Systems geschrieben, und die Vorschauen teilen sie sich, statt dass jede ihre eigene anlegt. Eine für eine Vorschau angelegte Kopie wird entfernt, sobald Sie das Archiv verlassen; eine an ein anderes Programm übergebene Kopie bleibt, bis Sie Peach Commander beenden, weil dieses Programm sie noch geöffnet hat. Was ein unerwartetes Beenden hinterlässt, wird beim nächsten Start erkannt und dann entfernt.</p>
+<p>Miniaturen in der Galerie-Ansicht folgen demselben Budget, und Dateien in einem Archiv behalten dort ihr allgemeines Symbol statt einer Miniatur.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="archives.html">Mit Archiven arbeiten</a></li><li><a href="network-shares.html">Netzwerkfreigaben</a></li></ul></section>
+</main>
+</body>
+</html>

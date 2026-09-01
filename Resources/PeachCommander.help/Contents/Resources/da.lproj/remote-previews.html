@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eksempelvisning af filer, der ikke ligger på denne Mac</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Eksempelvisning af filer, der ikke ligger på denne Mac</h1>
+<p>Peach Commander viser en eksempelvisning af filen under markøren i informationssidepanelet, i Quick View og som miniaturer i galerivisningen. Når den fil ikke ligger på en disk i denne Mac, koster det noget virkeligt at vise den — en overførsel, en udpakning eller begge dele — og ingen har bedt om det: markøren er blot flyttet hen på filen. Derfor afgør Peach Commander på forhånd, hvad en eksempelvisning må koste; denne side forklarer, hvad den afgør, og hvordan du ændrer det.</p>
+<h2 id="filer-inde-i-et-arkiv">Filer inde i et arkiv</h2>
+<p>En fil inde i et arkiv kan vises på samme måde som en fil udenfor. Peach Commander pakker den i baggrunden ud til en midlertidig kopi og viser den. Det samme gælder Quick Look, åbning i et andet program med Enter eller dobbeltklik og undermenuen Åbn med.</p>
+<p>Det, et andet program får, er en kopi, og den er skrivebeskyttet: det, du ændrer dér, skrives ikke tilbage i arkivet. Peach Commander siger det første gang, med et felt til at holde op med at sige det. Vil du redigere en fil, der ligger i et arkiv, så pak den først ud med F5 og arbejd med den udpakkede fil.</p>
+<h2 id="hvad-en-eksempelvisning-ma-koste">Hvad en eksempelvisning må koste</h2>
+<p>En eksempelvisning følger markøren og sker altså uden at være bedt om det. Derfor er den underlagt et budget, der afhænger af, hvor filens indhold i virkeligheden ligger:</p>
+<ul>
+<li>På en disk i denne Mac er der ingen grænse, og eksempelvisninger opfører sig præcis som hidtil.</li>
+<li>På en netværksplacering — et tilsluttet delt drev, FTP, SFTP, Amazon S3 eller et plugin-drev — vises filer op til 4 MB, indtil Peach Commander har målt, hvor hurtig den forbindelse i virkeligheden er. Derefter tillades alt, hvad der kan læses på omkring halvandet sekund, så et hurtigt delt drev viser store filer og et langsomt afviser små.</li>
+<li>I et arkiv pakkes en fil ud til eksempelvisning op til 32 MB.</li>
+<li>En fil, som en skytjeneste endnu ikke har hentet ned til denne Mac, hentes aldrig, blot fordi markøren er flyttet hen på den.</li>
+<li>I arkivformater, der skal pakkes ud fil for fil — CPIO, ISO, CAB, LZH og lignende — vises intet automatisk, fordi hver enkelt fil koster en fuld gennemgang af arkivet.</li>
+</ul>
+<p>En afvist eksempelvisning er ikke et tomt panel: sidepanelet viser filens symbol, dens navn, størrelse og dato samt en linje med begrundelsen. Quick Look viser den alligevel og er ikke underlagt nogen af disse grænser.</p>
+<h2 id="ndr-grnserne">Ændr grænserne</h2>
+<ol>
+<li>Åbn Indstillinger ▸ Rediger/Vis.</li>
+<li>Slå “Vis automatisk eksempler på filer på netværksplaceringer” fra for helt at stoppe eksempelvisninger over netværket, eller sæt “Netværksfiler op til (MB)” til den ønskede størrelse.</li>
+<li>Slå “Hent filer fra skyen for at vise dem” til, hvis du hellere vil have eksempelvisningen end den sparede trafik.</li>
+<li>Sæt “Pak ud fra arkiver op til (MB)” for, hvor stor en fil i et arkiv må være.</li>
+</ol>
+<p>To yderligere indstillinger har ingen egen betjening og står i <code>peachcmd.ini</code> under <code>[Preview]</code>: <code>AutoPreviewSeconds</code> er tidsbudgettet, der gælder, når en forbindelse er målt (1,5 som standard; 0 slår det fra), og <code>AutoPreviewLocalMB</code> er et loft for lokale diske (0 betyder ingen grænse).</p>
+<h2 id="hvor-de-udpakkede-kopier-havner">Hvor de udpakkede kopier havner</h2>
+<p>Kopier skrives til systemets midlertidige mappe, og eksempelvisningerne deles om dem i stedet for hver at lave sin egen. En kopi lavet til en eksempelvisning fjernes, når du forlader arkivet; en kopi givet til et andet program bliver, indtil du afslutter Peach Commander, fordi det program stadig har den åben. Det, en uventet afslutning efterlader, genkendes ved næste start og ryddes så væk.</p>
+<p>Miniaturer i galerivisningen følger samme budget, og filer inde i et arkiv beholder dér deres generelle symbol i stedet for en miniature.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Visning af filer</a></li><li><a href="archives.html">Arbejde med arkiver</a></li><li><a href="network-shares.html">Netværksshares</a></li></ul></section>
+</main>
+</body>
+</html>

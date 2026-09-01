@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Podgląd plików, których nie ma na tym Macu</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Podgląd plików, których nie ma na tym Macu</h1>
+<p>Peach Commander pokazuje podgląd pliku pod kursorem w bocznym panelu informacji, w Quick View i jako miniatury w widoku galerii. Gdy tego pliku nie ma na dysku podłączonym do tego Maca, pokazanie go kosztuje coś realnego — pobranie, rozpakowanie albo jedno i drugie — a nikt o to nie prosił: kursor po prostu na niego najechał. Dlatego Peach Commander z góry ustala, ile podgląd może kosztować; ta strona wyjaśnia, co ustala i jak to zmienić.</p>
+<h2 id="pliki-wewnatrz-archiwum">Pliki wewnątrz archiwum</h2>
+<p>Plik w archiwum można podejrzeć dokładnie tak samo jak plik poza nim. Peach Commander rozpakowuje go w tle do tymczasowej kopii i pokazuje tę kopię. To samo dotyczy Quick Look, otwierania w innym programie klawiszem Enter lub dwukrotnym kliknięciem oraz podmenu Otwórz w programie.</p>
+<p>To, co dostaje inny program, jest kopią i jest tylko do odczytu: zmiany wprowadzone tam nie są zapisywane z powrotem do archiwum. Peach Commander mówi o tym za pierwszym razem, z polem pozwalającym przestać o tym mówić. Aby edytować plik znajdujący się w archiwum, najpierw rozpakuj go klawiszem F5 i pracuj na rozpakowanym pliku.</p>
+<h2 id="ile-moze-kosztowac-podglad">Ile może kosztować podgląd</h2>
+<p>Podgląd podąża za kursorem, więc odbywa się bez proszenia. Dlatego obowiązuje limit zależny od tego, gdzie naprawdę znajduje się zawartość pliku:</p>
+<ul>
+<li>Na dysku podłączonym do tego Maca nie ma żadnego limitu, a podglądy działają dokładnie tak jak dotąd.</li>
+<li>W lokalizacji sieciowej — zamontowanym zasobie, FTP, SFTP, Amazon S3 lub dysku wtyczki — pliki są podglądane do 4 MB, dopóki Peach Commander nie zmierzy, jak szybkie naprawdę jest to połączenie. Potem dopuszcza wszystko, co da się odczytać w około półtorej sekundy, więc szybki zasób pokazuje duże pliki, a wolny odrzuca małe.</li>
+<li>W archiwum plik jest rozpakowywany do podglądu do 32 MB.</li>
+<li>Plik, którego usługa chmurowa jeszcze nie pobrała na tego Maca, nigdy nie jest pobierany tylko dlatego, że kursor na niego najechał.</li>
+<li>W formatach archiwów, które trzeba rozpakowywać plik po pliku — CPIO, ISO, CAB, LZH i podobne — nic nie jest podglądane automatycznie, bo każdy pojedynczy plik kosztuje pełne przejście przez archiwum.</li>
+</ul>
+<p>Odrzucony podgląd to nie pusty panel: panel boczny pokazuje ikonę pliku, jego nazwę, rozmiar i datę oraz jeden wiersz z powodem. Quick Look pokaże go mimo to i nie podlega żadnemu z tych limitów.</p>
+<h2 id="zmiana-limitow">Zmiana limitów</h2>
+<ol>
+<li>Otwórz Ustawienia ▸ Edycja/Podgląd.</li>
+<li>Wyłącz „Automatycznie podglądaj pliki w lokalizacjach sieciowych”, aby całkowicie zatrzymać podglądy sieciowe, albo ustaw „Pliki sieciowe do (MB)” na żądany rozmiar.</li>
+<li>Włącz „Pobieraj pliki z chmury, aby je podejrzeć”, jeśli wolisz podgląd niż zaoszczędzony transfer.</li>
+<li>Ustaw „Rozpakowuj z archiwów do (MB)”, aby określić, jak duży może być plik w archiwum.</li>
+</ol>
+<p>Dwa kolejne ustawienia nie mają własnej kontrolki i znajdują się w <code>peachcmd.ini</code> w sekcji <code>[Preview]</code>: <code>AutoPreviewSeconds</code> to limit czasu obowiązujący po zmierzeniu połączenia (domyślnie 1,5; 0 go wyłącza), a <code>AutoPreviewLocalMB</code> to pułap dla dysków lokalnych (0 oznacza brak limitu).</p>
+<h2 id="gdzie-trafiaja-rozpakowane-kopie">Gdzie trafiają rozpakowane kopie</h2>
+<p>Kopie są zapisywane w tymczasowym folderze systemu, a podglądy współdzielą je, zamiast każdy tworzyć własną. Kopia zrobiona na potrzeby podglądu jest usuwana po wyjściu z archiwum; kopia przekazana innemu programowi zostaje do zamknięcia Peach Commandera, bo ten program wciąż ma ją otwartą. To, co pozostawi nieoczekiwane zakończenie, jest rozpoznawane przy następnym uruchomieniu i wtedy usuwane.</p>
+<p>Miniatury w widoku galerii podlegają temu samemu limitowi, a pliki w archiwum zachowują tam swoją ogólną ikonę zamiast miniatury.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="archives.html">Praca z archiwami</a></li><li><a href="network-shares.html">Udziały sieciowe</a></li></ul></section>
+</main>
+</body>
+</html>

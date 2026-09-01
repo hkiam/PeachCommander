@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>预览不在这台 Mac 上的文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>预览不在这台 Mac 上的文件</h1>
+<p>Peach Commander 会在信息侧栏、Quick View 和图库视图的缩略图中预览光标下的文件。当该文件不在这台 Mac 连接的磁盘上时，显示它就有实实在在的代价——一次下载、一次解包，或者两者兼有——而且没有人要求过：光标只是移到了它上面。因此 Peach Commander 会先判断一次预览可以花多少代价；本页说明它如何判断，以及你如何改变它。</p>
+<h2 id="_1">压缩包里的文件</h2>
+<p>压缩包里的文件可以像包外的文件一样预览。Peach Commander 会在后台把它解包成一个临时副本并显示该副本。Quick Look、用回车或双击在其他应用中打开，以及“打开方式”子菜单，都是如此。</p>
+<p>其他应用拿到的是一个副本，而且是只读的：你在那里所做的更改不会写回压缩包。Peach Commander 会在第一次时说明这一点，并附一个不再提示的选项框。要编辑位于压缩包中的文件，请先用 F5 解包，然后在解包后的文件上操作。</p>
+<h2 id="_2">一次预览可以花多少代价</h2>
+<p>预览跟随光标，因此是在没有请求的情况下发生的。所以它受一个预算约束，而这个预算取决于文件内容究竟在哪里：</p>
+<ul>
+<li>在这台 Mac 连接的磁盘上没有任何限制，预览的行为与一直以来完全相同。</li>
+<li>在网络位置——已挂载的共享、FTP、SFTP、Amazon S3 或插件驱动器——文件预览上限为 4 MB，直到 Peach Commander 测出该连接实际有多快。之后它允许约一秒半内能读完的任何内容，于是快速的共享会显示大文件，慢速的会连小文件也拒绝。</li>
+<li>在压缩包中，为预览解包的文件上限为 32 MB。</li>
+<li>云服务尚未下载到这台 Mac 的文件，绝不会仅仅因为光标移到上面就被取回。</li>
+<li>在必须逐个文件解包的压缩格式中——CPIO、ISO、CAB、LZH 及类似格式——不会自动预览任何内容，因为每一个文件都要完整地扫一遍整个压缩包。</li>
+</ul>
+<p>被拒绝的预览不是空面板：侧栏仍会显示文件的图标、名称、大小和日期，以及说明原因的一行文字。Quick Look 无论如何都会显示它，并且不受上述任何限制。</p>
+<h2 id="_3">更改限制</h2>
+<ol>
+<li>打开设置 ▸ 编辑/查看。</li>
+<li>关闭“自动预览网络位置上的文件”可完全停止网络预览，或把“网络文件最大 (MB)”设为你想要的大小。</li>
+<li>如果你更看重预览而不是省下的流量，请打开“为预览从云端下载文件”。</li>
+<li>用“从压缩包解包上限 (MB)”设置压缩包内文件的大小上限。</li>
+</ol>
+<p>另有两项设置没有自己的控件，位于 <code>peachcmd.ini</code> 的 <code>[Preview]</code> 段中：<code>AutoPreviewSeconds</code> 是连接被测量之后适用的时间预算（默认 1.5，0 表示关闭），<code>AutoPreviewLocalMB</code> 是本地磁盘的上限（0 表示不限）。</p>
+<h2 id="_4">解包后的副本放在哪里</h2>
+<p>副本写入系统的临时文件夹，各个预览共用它们，而不是各做一份。为预览所做的副本会在你离开压缩包时移除；交给其他应用的副本会保留到你退出 Peach Commander 为止，因为那个应用还开着它。意外退出留下的东西会在下次启动时被识别并清理。</p>
+<p>图库视图的缩略图遵循同一个预算，压缩包内的文件在那里保留其通用图标而不是缩略图。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">查看文件</a></li><li><a href="archives.html">使用压缩包</a></li><li><a href="network-shares.html">网络共享</a></li></ul></section>
+</main>
+</body>
+</html>
