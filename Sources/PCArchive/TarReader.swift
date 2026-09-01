@@ -73,6 +73,18 @@ public final class TarReader: ArchiveSource {
         return tar.subdata(in: r)
     }
 
+    /// A member is a range of `tar`, so reading it in pieces is slicing in pieces (F-479).
+    ///
+    /// Worth having even though the tar itself is already in hand: a plain `.tar` is *mapped*, so
+    /// the pieces come from the file rather than from a copy of the member, and either way the
+    /// caller no longer has to hold the whole member to read the first byte of it.
+    public func reader(atIndex index: Int, password: String?) throws -> ArchiveMemberReader? {
+        guard ranges.indices.contains(index) else { return nil }
+        let r = ranges[index]
+        guard r.lowerBound <= r.upperBound, r.upperBound <= tar.count else { return nil }
+        return TarMemberReader(tar: tar, range: r)
+    }
+
     // MARK: - gzip
 
     /// The uncompressed size a gzip stream claims in its 4-byte ISIZE trailer.
@@ -289,5 +301,25 @@ public final class TarReader: ArchiveSource {
             if kv.hasPrefix("path=") { return String(kv.dropFirst("path=".count)) }
         }
         return nil
+    }
+}
+
+/// Slices of the tar the reader already holds.
+private final class TarMemberReader: ArchiveMemberReader {
+    private let tar: Data
+    private var offset: Int
+    private let end: Int
+
+    init(tar: Data, range: Range<Int>) {
+        self.tar = tar
+        self.offset = range.lowerBound
+        self.end = range.upperBound
+    }
+
+    func next(maxBytes: Int) throws -> Data? {
+        guard offset < end else { return nil }
+        let stop = Swift.min(offset + Swift.max(1, maxBytes), end)
+        defer { offset = stop }
+        return tar.subdata(in: offset..<stop)
     }
 }

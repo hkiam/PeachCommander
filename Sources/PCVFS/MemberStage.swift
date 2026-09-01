@@ -16,10 +16,10 @@
 //     for the first and data loss for the second.
 //   * **A ceiling.** Nothing stopped a 4 GB member from being asked for at all.
 //
-// One thing this does *not* fix, so as not to be read as fixing it: a zip member still passes
-// through memory whole. `ArchiveFS.openRead` decompresses it into one `Data` and hands back a
-// stream over that, so writing it out chunk by chunk here saves the second copy and not the first.
-// For the filesystems that really do stream — FTP, SFTP — the whole read is bounded.
+// This was written when it saved only the second copy: `ArchiveFS.openRead` used to decompress the
+// member into one `Data` first, so a 4 GB member still cost 4 GB. It streams now for everything but
+// an encrypted zip member, which keeps the one-shot path on purpose — so the read is bounded end to
+// end for FTP, SFTP, a plain zip and a tar alike.
 //   * **A measurement.** Somebody has to time these reads, or `ImplicitWorkBudget` never learns how
 //     fast the mount is and judges every preview by the conservative fallback forever.
 //

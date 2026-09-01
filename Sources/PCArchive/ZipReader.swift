@@ -212,6 +212,60 @@ public final class ZipReader {
         }
     }
 
+    // MARK: - Reading a member a piece at a time (F-479)
+
+    /// An incremental reader for `entry`, or nil when this member has to be produced whole.
+    ///
+    /// Nil for an **encrypted** member, deliberately. ZipCrypto and WinZip AES are both stream
+    /// ciphers and could be decrypted incrementally, but that is the code where a mistake does not
+    /// crash — it hands back plausible wrong bytes — and the case it would buy (a multi-gigabyte
+    /// member inside an encrypted zip) does not pay for the risk. Those keep the one-shot path
+    /// exactly as it was.
+    public func reader(for entry: ZipEntry, password: String?) throws -> ArchiveMemberReader? {
+        guard !entry.isDirectory, !entry.isEncrypted else { return nil }
+        guard entry.compressionMethod == 0 || entry.compressionMethod == 8 else { return nil }
+
+        let payload = try rawRange(of: entry)
+        switch entry.compressionMethod {
+        case 0:
+            // Stored: the member *is* a range of the mapped file. Slices of it, and not one copy of
+            // the whole thing, which is what `data(for:)` has to make.
+            return ZipStoredReader(volumes: volumes, range: payload)
+        default:
+            return try ZipInflateReader(volumes: volumes, range: payload,
+                                        expectedSize: Int(entry.uncompressedSize))
+        }
+    }
+
+    /// Where `entry`'s compressed payload sits in the archive, after its local header.
+    ///
+    /// The same header walk `data(for:)` does, kept separate so both can use it without one of them
+    /// having to read the payload to find out where it starts.
+    private func rawRange(of entry: ZipEntry) throws -> Range<Int> {
+        guard entry.localHeaderOffset <= UInt64(Int.max),
+              Int(entry.localHeaderOffset) < volumes.count else {
+            throw ZipError.malformed("local header offset outside the archive")
+        }
+        var reader = ByteReader(data: volumes, at: Int(entry.localHeaderOffset))
+        let signature = try reader.readUInt32LE()
+        guard signature == Self.localHeaderSignature else {
+            throw ZipError.malformed("bad local file header signature")
+        }
+        try reader.skip(2 + 2 + 2 + 2 + 2 + 4 + 4 + 4)   // version…uncompressed size
+        let nameLength = try reader.readUInt16LE()
+        let extraLength = try reader.readUInt16LE()
+        try reader.skip(Int(nameLength) + Int(extraLength))
+        guard entry.compressedSize >= 0, entry.compressedSize <= Int64(Int.max) else {
+            throw ZipError.malformed("invalid compressed size")
+        }
+        let start = reader.currentOffset
+        let end = start + Int(entry.compressedSize)
+        guard start >= 0, end <= volumes.count else {
+            throw ZipError.malformed("compressed payload runs past the end of the archive")
+        }
+        return start..<end
+    }
+
     // MARK: - Traditional ZipCrypto (PKWARE) decryption
 
     /// Decrypt a classic-ZipCrypto stream: derive the keystream from `password`,
@@ -595,7 +649,147 @@ private struct ByteReader {
         }
         offset += count
     }
+
+    /// Where the next read would start — for a caller that wants the *position* of a payload
+    /// rather than the payload itself (F-479).
+    var currentOffset: Int { offset }
 }
+
+/// A stored member: slices of the mapped archive, so nothing is ever held whole.
+private final class ZipStoredReader: ArchiveMemberReader {
+    private let volumes: ZipVolumes
+    private var offset: Int
+    private let end: Int
+
+    init(volumes: ZipVolumes, range: Range<Int>) {
+        self.volumes = volumes
+        self.offset = range.lowerBound
+        self.end = range.upperBound
+    }
+
+    func next(maxBytes: Int) throws -> Data? {
+        guard offset < end else { return nil }
+        let stop = min(offset + Swift.max(1, maxBytes), end)
+        defer { offset = stop }
+        return volumes.subdata(in: offset..<stop)
+    }
+}
+
+/// A deflated member, inflated a piece at a time.
+///
+/// `compression_decode_buffer` — what `ZipReader.inflate` uses — needs the whole output buffer up
+/// front, which is exactly the allocation this exists to avoid. The framework's stream API keeps the
+/// same state machine across calls, so the member comes out in fixed-size pieces however large it
+/// is, and the compressed side is read from the mapped archive in pieces too.
+///
+/// Both buffers are owned allocations rather than `Data` handed to `withUnsafeBytes`. The framework
+/// keeps `src_ptr` **between** calls — it consumes what it wants and leaves the rest for next time —
+/// so the memory it points at has to outlive the call. A pointer into a `Data`'s storage does not.
+private final class ZipInflateReader: ArchiveMemberReader {
+    private let volumes: ZipVolumes
+    private var inputOffset: Int
+    private let inputEnd: Int
+    private var remaining: Int
+
+    private let stream: UnsafeMutablePointer<compression_stream>
+    private var streamIsLive = false
+    /// Compressed bytes handed to the framework; stable for the reader's life.
+    private let inBuffer: UnsafeMutablePointer<UInt8>
+    private var inFilled = 0        // valid bytes in inBuffer
+    private var inConsumed = 0      // how many of them the framework has taken
+    private var finished = false
+
+    private static let inputChunk = 256 * 1024
+
+    init(volumes: ZipVolumes, range: Range<Int>, expectedSize: Int) throws {
+        self.volumes = volumes
+        self.inputOffset = range.lowerBound
+        self.inputEnd = range.upperBound
+        self.remaining = Swift.max(0, expectedSize)
+        self.stream = UnsafeMutablePointer<compression_stream>.allocate(capacity: 1)
+        self.inBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: Self.inputChunk)
+        guard compression_stream_init(stream, COMPRESSION_STREAM_DECODE, COMPRESSION_ZLIB)
+                == COMPRESSION_STATUS_OK else {
+            inBuffer.deallocate()
+            stream.deallocate()
+            throw ZipError.inflateFailed
+        }
+        streamIsLive = true
+        stream.pointee.src_size = 0
+        stream.pointee.dst_size = 0
+    }
+
+    deinit {
+        if streamIsLive { compression_stream_destroy(stream) }
+        inBuffer.deallocate()
+        stream.deallocate()
+    }
+
+    func next(maxBytes: Int) throws -> Data? {
+        guard !finished, remaining > 0 else { return nil }
+        let want = Swift.min(Swift.max(1, maxBytes), remaining)
+        var output = Data(count: want)
+        var produced = 0
+
+        while produced < want, !finished {
+            if inConsumed >= inFilled, inputOffset < inputEnd {
+                let stop = Swift.min(inputOffset + Self.inputChunk, inputEnd)
+                let slice = volumes.subdata(in: inputOffset..<stop)
+                slice.copyBytes(to: inBuffer, count: slice.count)
+                inFilled = slice.count
+                inConsumed = 0
+                inputOffset = stop
+            }
+            let noMoreInput = inConsumed >= inFilled && inputOffset >= inputEnd
+            let flags = noMoreInput ? Int32(COMPRESSION_STREAM_FINALIZE.rawValue) : 0
+            let consumedBefore = inConsumed
+            let producedBefore = produced
+
+            stream.pointee.src_ptr = UnsafePointer(inBuffer) + inConsumed
+            stream.pointee.src_size = inFilled - inConsumed
+
+            let status: compression_status = output.withUnsafeMutableBytes { raw in
+                guard let base = raw.bindMemory(to: UInt8.self).baseAddress else {
+                    return COMPRESSION_STATUS_ERROR
+                }
+                stream.pointee.dst_ptr = base + produced
+                stream.pointee.dst_size = want - produced
+                return compression_stream_process(stream, flags)
+            }
+
+            inConsumed = inFilled - stream.pointee.src_size
+            produced = want - stream.pointee.dst_size
+
+            switch status {
+            case COMPRESSION_STATUS_OK:
+                // **The loop's only exit for a broken stream.** A round that took no input and gave
+                // no output will do the same thing next time round, so without this the reader spins
+                // forever on a truncated or corrupt member — a hang, which is a worse failure than
+                // any wrong answer. Checked per round and not against the totals: the first version
+                // compared `dst_size` with `want - produced`, which is true by construction and
+                // therefore never fired.
+                if inConsumed == consumedBefore, produced == producedBefore {
+                    throw ZipError.inflateFailed
+                }
+            case COMPRESSION_STATUS_END:
+                finished = true
+            default:
+                throw ZipError.inflateFailed
+            }
+        }
+
+        remaining -= produced
+        // The stream ended before the size the central directory claims. `data(for:)` refuses that
+        // too (`decodedCount == expectedSize`), and the two paths have to agree about what a
+        // malformed archive is — a short read handed back as a complete member is the shape that
+        // gets written to disk and believed.
+        if finished, remaining > 0 { throw ZipError.inflateFailed }
+        guard produced > 0 else { return nil }
+        if produced < output.count { output.removeSubrange(produced..<output.count) }
+        return output
+    }
+}
+
 
 /// The three 32-bit keys of PKWARE's traditional ZipCrypto stream cipher
 /// (APPNOTE.TXT §6.1), seeded from the password and advanced by each plaintext

@@ -197,6 +197,13 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
         guard let node = nodes[key], !node.isDirectory, let index = node.memberIndex else {
             throw VFSError.notFound(path.path)
         }
+        // Incrementally where the backend can (F-479): the member then never exists whole, so
+        // viewing, unpacking or searching a multi-gigabyte file inside an archive costs a chunk
+        // rather than its size. Backends that cannot say so by returning nil — an encrypted zip
+        // member, a format read through a helper process — and get the old behaviour unchanged.
+        if let reader = try source.reader(atIndex: index, password: password) {
+            return ArchiveMemberStream(reader: reader)
+        }
         let data = try source.data(atIndex: index, password: password)
         return ArchiveReadStream(data: data)
     }
@@ -307,8 +314,8 @@ public final class ArchiveFS: VirtualFileSystem, @unchecked Sendable {
 /// member, two of them for nothing. Now one chunk at a time is materialised and the caller is
 /// expected to be done with it before asking for the next, which every caller in the app is.
 ///
-/// What this does *not* fix: `openRead` still decompresses the member whole before this exists. That
-/// needs an incremental inflate in `ArchiveSource`, which is a change to every backend.
+/// Used for what cannot be read incrementally — an encrypted zip member, a format read through a
+/// helper process. Everything else comes through `ArchiveMemberStream` and is never held whole.
 final class ArchiveReadStream: VFSReadStream, @unchecked Sendable {
     typealias Element = Data
 
@@ -339,5 +346,36 @@ final class ArchiveReadStream: VFSReadStream, @unchecked Sendable {
     struct AsyncIterator: AsyncIteratorProtocol {
         let stream: ArchiveReadStream
         func next() async -> Data? { stream.readChunk() }
+    }
+}
+
+/// Pulls a member out of an `ArchiveMemberReader` a chunk at a time (F-479).
+///
+/// The iterator throws, unlike `ArchiveReadStream`'s: a decompression that fails halfway has to be
+/// an error and not an early nil, which the caller cannot tell from a member that simply ended.
+final class ArchiveMemberStream: VFSReadStream, @unchecked Sendable {
+    typealias Element = Data
+
+    private let reader: ArchiveMemberReader
+    private let chunkSize: Int
+    private var closed = false
+
+    init(reader: ArchiveMemberReader, chunkSize: Int = 1 << 20) {
+        self.reader = reader
+        self.chunkSize = Swift.max(1, chunkSize)
+    }
+
+    fileprivate func readChunk() throws -> Data? {
+        guard !closed else { return nil }
+        return try reader.next(maxBytes: chunkSize)
+    }
+
+    func close() async throws { closed = true }
+
+    func makeAsyncIterator() -> AsyncIterator { AsyncIterator(stream: self) }
+
+    struct AsyncIterator: AsyncIteratorProtocol {
+        let stream: ArchiveMemberStream
+        func next() async throws -> Data? { try stream.readChunk() }
     }
 }
