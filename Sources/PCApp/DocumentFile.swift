@@ -108,16 +108,30 @@ enum DocumentFile {
 
     /// The standard "Save changes to X?" prompt shown when a modified document is
     /// closing.
+    ///
+    /// The order is the one macOS uses, not the order the three choices happen to be declared in.
+    /// `NSAlert` lays its buttons out right to left and puts a third one on the far left, so adding
+    /// Save, Cancel, Don’t Save produces the arrangement every other Mac document window has. That
+    /// is not cosmetic: with Discard in the middle, a hand reaching for the leftmost button — where
+    /// "Don’t Save" lives everywhere else — found Cancel, and the button beside Save, the one the
+    /// hand goes to for Cancel, threw the changes away.
+    ///
+    /// The key equivalents are set here rather than left to AppKit, which recognises Cancel and
+    /// Don’t Save by their *localised* titles — a match this app cannot rely on across the eighteen
+    /// languages it ships, and Escape has to mean Cancel in all of them.
     @MainActor
     static func confirmClose(name: String) -> CloseChoice {
         let alert = NSAlert()
         alert.messageText = String(format: NSLocalizedString("Save changes to “%@”?", comment: ""), name)
         alert.addButton(withTitle: String(localized: "Save"))
-        alert.addButton(withTitle: String(localized: "Discard"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
+        let cancel = alert.addButton(withTitle: String(localized: "Cancel"))
+        cancel.keyEquivalent = "\u{1b}"
+        let dontSave = alert.addButton(withTitle: String(localized: "Don’t Save"))
+        dontSave.keyEquivalent = "d"
+        dontSave.keyEquivalentModifierMask = .command
         switch alert.runModal() {
         case .alertFirstButtonReturn: return .save
-        case .alertSecondButtonReturn: return .discard
+        case .alertThirdButtonReturn: return .discard
         default: return .cancel
         }
     }

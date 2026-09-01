@@ -950,7 +950,12 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         // The lock in the title travels with the window: it is still there in the Window menu, in
         // Mission Control and in a screenshot of a session from yesterday.
         let lock = writability.isWritable ? "" : "🔒 "
-        window?.title = (isDirty ? "• " : "") + lock + name
+        window?.title = lock + name
+        // The dot in the close button is where a Mac user looks for "unsaved", and only
+        // `isDocumentEdited` puts it there. A bullet glued to the front of the title said the same
+        // thing in a place macOS does not use for it — and said it in the Window menu, in Mission
+        // Control and in every screenshot, where it reads as part of the file's name.
+        window?.isDocumentEdited = isDirty
         let langName = language?.name
             ?? TreeSitterLanguages.displayName(forExtension: (path as NSString).pathExtension)
             ?? String(localized: "Plain")

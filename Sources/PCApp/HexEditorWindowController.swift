@@ -523,7 +523,8 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
 
     private func updateStatus() {
         let name = (path as NSString).lastPathComponent
-        window?.title = (doc.isModified ? "• " : "") + name + " — Hex"
+        window?.title = name + " — Hex"
+        window?.isDocumentEdited = doc.isModified   // the dot in the close button (see the editor)
         var text = String(format:
             NSLocalizedString("%@   offset 0x%llX   %d bytes%@", comment: ""),
             editor.modeName, Int64(editor.caretOffset), doc.count,
