@@ -3,6 +3,7 @@
 
 import AppKit
 import PCFoundation
+import PCVFS
 
 /// Application delegate: owns the main window controller and persists state on quit.
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -78,6 +79,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             await withDeadline(seconds: 3) { @MainActor in
                 await controller.closeAllMountsForTermination()
             }
+            // The copies staged out of archives and mounts, except any the user has saved into: that
+            // one is somebody's work and is left for the sweeper, which takes it once this process is
+            // gone (F-479). Under the deadline too — it is file deletion, but on a temp directory
+            // that may itself be on something slow.
+            await withDeadline(seconds: 2) { await MemberStage.shared.purgeAtExit() }
             NSApp.reply(toApplicationShouldTerminate: true)
         }
         return .terminateLater

@@ -57,6 +57,17 @@ public struct SettingsSnapshot: Sendable {
     /// Viewer.RenderDocumentsInApp — render PDFs and word-processor documents in the previews, rather than
     /// leaving every non-image file to Quick Look (F-429).
     public var previewRenderDocuments: Bool = true
+    // What the cursor alone may cause to be read (F-479). The two ceilings are megabytes; the time
+    // budget and the local ceiling are `[Preview]` keys without a control, because they are the two
+    // nobody should have to think about to get the behaviour right.
+    /// Preview.AutoPreviewRemote — may the cursor pull anything off a share or a remote mount?
+    public var previewAutoRemote: Bool = true
+    /// Preview.AutoPreviewRemoteMB — how much, until the connection has been measured.
+    public var previewRemoteMB: Int = 4
+    /// Preview.AutoPreviewDormant — may it download what a sync provider has evicted? Off by design.
+    public var previewAutoDormant: Bool = false
+    /// Preview.AutoPreviewArchiveMB — how large a member may be unpacked for a preview.
+    public var previewArchiveMB: Int = 32
     // Tabs page
     public var tabOpenInForeground: Bool
     public var tabLockedOpensNewTab: Bool
@@ -112,6 +123,8 @@ public struct SettingsSnapshot: Sendable {
                 editorCreateBackups: Bool = false,
                 viewerSearchFromFind: Bool = true,
                 previewRenderDocuments: Bool = true,
+                previewAutoRemote: Bool = true, previewRemoteMB: Int = 4,
+                previewAutoDormant: Bool = false, previewArchiveMB: Int = 32,
                 tabOpenInForeground: Bool = true, tabLockedOpensNewTab: Bool = true,
                 ftpKeepAliveSeconds: Int = 0,
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
@@ -178,6 +191,10 @@ public struct SettingsSnapshot: Sendable {
         self.editorCreateBackups = editorCreateBackups
         self.viewerSearchFromFind = viewerSearchFromFind
         self.previewRenderDocuments = previewRenderDocuments
+        self.previewAutoRemote = previewAutoRemote
+        self.previewRemoteMB = previewRemoteMB
+        self.previewAutoDormant = previewAutoDormant
+        self.previewArchiveMB = previewArchiveMB
         self.tabOpenInForeground = tabOpenInForeground
         self.tabLockedOpensNewTab = tabLockedOpensNewTab
         self.ftpKeepAliveSeconds = ftpKeepAliveSeconds
@@ -363,6 +380,10 @@ public final class SettingsWindowController: NSWindowController {
     private let historyMaxField = NSTextField()
     private let historyKeepDaysField = NSTextField()
     private let speedLimitField = NSTextField()
+    private let previewAutoRemoteCheckbox = NSButton()
+    private let previewRemoteMBField = NSTextField()
+    private let previewAutoDormantCheckbox = NSButton()
+    private let previewArchiveMBField = NSTextField()
 
     // AI page controls
     private let aiMCPCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -841,12 +862,32 @@ public final class SettingsWindowController: NSWindowController {
             "The side panel, Quick View and the info page draw PDFs page by page with zoom controls, and show Word, OpenDocument and RTF documents as formatted text. Switch this off to leave every file except pictures to macOS Quick Look."))
         previewNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         previewNote.textColor = .secondaryLabelColor
+        // F-479: what a preview may cost when the file is not on a local disk.
+        makeCheckbox(previewAutoRemoteCheckbox,
+                     title: String(localized: "Preview files on network locations automatically"),
+                     isOn: snapshot.previewAutoRemote, action: #selector(previewAutoRemoteChanged))
+        makeCheckbox(previewAutoDormantCheckbox,
+                     title: String(localized: "Download files from the cloud to preview them"),
+                     isOn: snapshot.previewAutoDormant, action: #selector(previewAutoDormantChanged))
+        let remoteRow = numberRow(previewRemoteMBField, value: snapshot.previewRemoteMB,
+                                  title: String(localized: "Network files up to (MB):"),
+                                  action: #selector(previewRemoteMBChanged))
+        let archiveRow = numberRow(previewArchiveMBField, value: snapshot.previewArchiveMB,
+                                   title: String(localized: "Unpack from archives up to (MB):"),
+                                   action: #selector(previewArchiveMBChanged))
+        let costNote = NSTextField(wrappingLabelWithString: String(localized:
+            "The side panel, Quick View and the gallery's thumbnails follow the cursor, so on a share or in an archive they can read a great deal nobody asked for. These limits apply until Peach Commander has measured how fast the connection actually is, after which it allows whatever fits in about a second and a half. Cmd+Y always previews the file whatever the limits say."))
+        costNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        costNote.textColor = .secondaryLabelColor
+
         let table = AssociationsPageView(associations: associations) { [weak self] updated in
             self?.onSaveAssociations(updated)
         }
         let page = NSView()
         for view in [editorBackupsCheckbox, note, viewerSearchFromFindCheckbox, seedNote,
-                     previewRenderDocumentsCheckbox, previewNote, table] as [NSView] {
+                     previewRenderDocumentsCheckbox, previewNote,
+                     previewAutoRemoteCheckbox, remoteRow, previewAutoDormantCheckbox, archiveRow,
+                     costNote, table] as [NSView] {
             view.translatesAutoresizingMaskIntoConstraints = false
             page.addSubview(view)
         }
@@ -866,7 +907,18 @@ public final class SettingsWindowController: NSWindowController {
             previewNote.topAnchor.constraint(equalTo: previewRenderDocumentsCheckbox.bottomAnchor, constant: 6),
             previewNote.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             previewNote.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
-            table.topAnchor.constraint(equalTo: previewNote.bottomAnchor, constant: 18),
+            previewAutoRemoteCheckbox.topAnchor.constraint(equalTo: previewNote.bottomAnchor, constant: 14),
+            previewAutoRemoteCheckbox.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            remoteRow.topAnchor.constraint(equalTo: previewAutoRemoteCheckbox.bottomAnchor, constant: 8),
+            remoteRow.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 32),
+            previewAutoDormantCheckbox.topAnchor.constraint(equalTo: remoteRow.bottomAnchor, constant: 10),
+            previewAutoDormantCheckbox.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            archiveRow.topAnchor.constraint(equalTo: previewAutoDormantCheckbox.bottomAnchor, constant: 10),
+            archiveRow.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            costNote.topAnchor.constraint(equalTo: archiveRow.bottomAnchor, constant: 6),
+            costNote.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            costNote.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
+            table.topAnchor.constraint(equalTo: costNote.bottomAnchor, constant: 18),
             table.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             table.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
             table.bottomAnchor.constraint(equalTo: page.bottomAnchor, constant: -16)
@@ -884,6 +936,27 @@ public final class SettingsWindowController: NSWindowController {
 
     @objc private func previewRenderDocumentsChanged() {
         onSetBool("Viewer.RenderDocumentsInApp", previewRenderDocumentsCheckbox.state == .on)
+    }
+
+    @objc private func previewAutoRemoteChanged() {
+        onSetBool("Preview.AutoPreviewRemote", previewAutoRemoteCheckbox.state == .on)
+    }
+    @objc private func previewAutoDormantChanged() {
+        onSetBool("Preview.AutoPreviewDormant", previewAutoDormantCheckbox.state == .on)
+    }
+    @objc private func previewRemoteMBChanged() {
+        onSetString("Preview.AutoPreviewRemoteMB", Self.clampedNumber(previewRemoteMBField))
+    }
+    @objc private func previewArchiveMBChanged() {
+        onSetString("Preview.AutoPreviewArchiveMB", Self.clampedNumber(previewArchiveMBField))
+    }
+
+    /// A non-negative whole number, written back into the field so what is stored and what is shown
+    /// cannot disagree. 0 means "no limit" in every one of these, as it does in `Copy.SpeedLimitKBps`.
+    private static func clampedNumber(_ field: NSTextField) -> String {
+        let n = max(0, Int(field.stringValue.trimmingCharacters(in: .whitespaces)) ?? 0)
+        field.stringValue = String(n)
+        return String(n)
     }
 
     // MARK: - Copy/Delete page (F-271)
@@ -1681,6 +1754,19 @@ public final class SettingsWindowController: NSWindowController {
         }
         popup.target = self
         popup.action = action
+    }
+
+    /// A right-aligned number field behind a label, the shape `Copy.SpeedLimitKBps` already uses.
+    private func numberRow(_ field: NSTextField, value: Int, title: String, action: Selector) -> NSView {
+        field.stringValue = String(value)
+        field.alignment = .right
+        field.target = self
+        field.action = action
+        field.translatesAutoresizingMaskIntoConstraints = false
+        field.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        let row = labeledRow(title: title, control: field)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
     }
 
     private func labeledRow(title: String, control: NSView) -> NSView {

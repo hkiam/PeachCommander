@@ -888,6 +888,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // built, so the first file the cursor lands on already follows the setting.
         FilePreviewView.rendersDocumentsInApp =
             await mainConfig.bool("Viewer", "RenderDocumentsInApp", default: true)
+        // What the cursor alone may cause to be read (F-479). One block, so a half-applied set of
+        // ceilings cannot exist, and before the first listing so the first directory is already
+        // judged by the configured limits rather than by the built-in ones.
+        ImplicitWork.limits = await ImplicitWork.limits(from: mainConfig)
         // Panel tabs (session).
         didRestore = true
         // Putting the panels back is not visiting them (F-402): the per-panel history still gets the
@@ -2053,14 +2057,43 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    /// Native Quick Look (Cmd+Y) for the selected/cursor local files. cm_QuickLook.
+    /// Native Quick Look (Cmd+Y) for the selected/cursor files. cm_QuickLook.
+    ///
+    /// Inside an archive or on a remote mount the items are staged first (F-479). This used to beep:
+    /// the panel's paths are not files there, and the comment in `QuickLookController` said as much
+    /// ("archive entries would need extraction first") — which is now what happens. Cmd+Y is also
+    /// the gesture every deferred preview names, so it is deliberately held to no size ceiling:
+    /// somebody who presses it has asked for the wait.
     func showQuickLook() {
-        guard let panel = activePanel, !panel.isInArchive else { NSSound.beep(); return }
+        guard let panel = activePanel else { NSSound.beep(); return }
         var paths = panel.tableView.selectedFilePaths()
         if paths.isEmpty, let cursor = panel.tableView.cursorItemFullPath() { paths = [cursor] }
         guard !paths.isEmpty else { return }
-        quickLook.show(paths)
+        guard panel.isInArchive else { quickLook.show(paths); return }
+
+        // A marked-everything selection would otherwise unpack the whole archive to fill a panel
+        // that shows one file at a time; Quick Look's own arrow keys page through what it is given.
+        let capped = Array(paths.prefix(Self.quickLookMemberCap))
+        Task { @MainActor in
+            var staged: [String] = []
+            for path in capped {
+                let bytes = await panel.sizeOfEntry(named: (path as NSString).lastPathComponent)
+                if let local = await panel.stagedPath(for: path, bytes: bytes, purpose: .preview) {
+                    staged.append(local)
+                }
+            }
+            guard !staged.isEmpty else {
+                NSSound.beep()
+                self.presentInfo(String(localized: "Quick Look"),
+                                 String(localized: "Nothing here could be unpacked for a preview. The archive may be encrypted or damaged."))
+                return
+            }
+            self.quickLook.show(staged)
+        }
     }
+
+    /// How many marked members one Cmd+Y unpacks.
+    private static let quickLookMemberCap = 10
 
     /// Open the FTP console for the active panel's FTP session: a live raw-protocol
     /// log plus a field to send custom commands (F-217). cm_FtpRawCommand.
@@ -3589,7 +3622,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    private func presentInfo(_ message: String, _ detail: String) {
+    /// Internal rather than private: a panel reports a failure of its own with it (F-479), and one
+    /// informational alert in one shape beats a second copy of `NSAlert` set-up in the panel.
+    func presentInfo(_ message: String, _ detail: String) {
         // Defensive: NSAlert must be created and run on the main thread. Command
         // handlers are @MainActor, but this keeps any other caller safe too.
         if !Thread.isMainThread {
@@ -3912,8 +3947,90 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func setQuickViewItem(_ path: String?) {
         guard let preview = quickViewPreview else { return }
+        // The cost gate before the file system, not after it: on a share `fileExists` is itself a
+        // round trip, and the answer it gives ("yes") is the one that used to start a 200 MB read
+        // because an arrow key moved (F-479).
+        if let panel = activePanel, let entry = panel.tableView.cursorEntry(),
+           !PanelEntryHelpers.isDirectoryLike(entry.kind),
+           case .onRequest(let reason) = panel.implicitWorkDecision(forEntryNamed: entry.name,
+                                                                    bytes: entry.size) {
+            preview.showDeferred(key: "\(entry.name)|\(ImplicitWork.tag(for: .onRequest(reason)))",
+                                 message: ImplicitWork.sentence(for: reason),
+                                 fallbackIcon: Self.icon(forEntryNamed: entry.name, path: path))
+            return
+        }
+        // Inside an archive or on a remote mount there is no file to show yet. Within the budget
+        // above, unpack one — this is what made Quick View blank in an archive (F-479).
+        if let panel = activePanel, panel.isInArchive, let member = path,
+           let entry = panel.tableView.cursorEntry(), !PanelEntryHelpers.isDirectoryLike(entry.kind) {
+            stagePreview(member: member, entry: entry, panel: panel) { [weak preview] outcome in
+                guard let preview else { return }
+                switch outcome {
+                case .ready(let local): preview.show(path: local, fallbackIcon: nil)
+                case .waiting(let key, let message, let icon):
+                    preview.showDeferred(key: key, message: message, fallbackIcon: icon)
+                }
+            }
+            return
+        }
         let exists = path.map { FileManager.default.fileExists(atPath: $0) } ?? false
         preview.show(path: exists ? path : nil, fallbackIcon: nil)
+    }
+
+    /// What a two-step preview has to show at each step.
+    enum StagedPreviewOutcome {
+        case ready(String)
+        case waiting(key: String, message: String, icon: NSImage)
+    }
+
+    /// The member the previews are currently asking about, so an unpacking that finishes after the
+    /// cursor has moved on does not paint the wrong file into the panel.
+    ///
+    /// The member and not a counter: the info page and Quick View follow the *same* cursor and both
+    /// ask, and with a counter whichever asked second invalidated the first — so with both surfaces
+    /// open one of them would never have received its picture. Keyed this way they agree, and
+    /// `MemberStage` gives them one extraction between them.
+    private var previewMember: String?
+
+    /// How long an unpacking may take before the panel says it is unpacking. Below this the answer
+    /// arrives in the same breath and the message would be a flicker per cursor movement.
+    private static let unpackingNoticeDelay: TimeInterval = 0.15
+
+    /// Unpack `member` for a preview and report back — with the answer, and with "unpacking" first
+    /// if it is slow enough to be worth saying.
+    private func stagePreview(member: String, entry: VFSEntry, panel: PanelController,
+                              report: @escaping (StagedPreviewOutcome) -> Void) {
+        previewMember = member
+        let icon = Self.icon(forEntryNamed: entry.name, path: nil)
+        let notice = DispatchWorkItem { [weak self] in
+            guard self?.previewMember == member else { return }
+            report(.waiting(key: "unpacking|\(member)",
+                            message: String(localized: "Unpacking…"), icon: icon))
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.unpackingNoticeDelay, execute: notice)
+        Task { @MainActor in
+            let local = await panel.stagedPath(for: member, bytes: entry.size, purpose: .preview)
+            notice.cancel()
+            guard self.previewMember == member else { return }
+            guard let local else {
+                report(.waiting(key: "failed|\(member)",
+                                message: String(localized: "This file could not be unpacked for a preview."),
+                                icon: icon))
+                return
+            }
+            report(.ready(local))
+        }
+    }
+
+    /// The icon to show beside a deferral: the real file's when it is reachable, the type's when it
+    /// is not — a member inside an archive has no local path to ask about.
+    static func icon(forEntryNamed name: String, path: String?) -> NSImage {
+        if let path, FileManager.default.fileExists(atPath: path) {
+            return NSWorkspace.shared.icon(forFile: path)
+        }
+        let ext = (name as NSString).pathExtension
+        if let type = UTType(filenameExtension: ext) { return NSWorkspace.shared.icon(for: type) }
+        return NSWorkspace.shared.icon(for: .data)
     }
 
     private func updateQuickView() {
@@ -4086,6 +4203,58 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         guard let path = activePanel?.tableView.cursorItemFullPath() else {
             previewPanel.setInfo(path: nil, title: String(localized: "No selection."),
                                  subtitle: "", details: [], fallbackIcon: nil)
+            return
+        }
+        // Before anything touches the file: the info page follows the cursor, so on a share or in an
+        // archive every arrow key would otherwise pay for a read nobody asked for (F-479). The
+        // details still come from the listing, so the page says what the file is either way.
+        if let panel = activePanel, let entry = panel.tableView.cursorEntry(),
+           !PanelEntryHelpers.isDirectoryLike(entry.kind),
+           case .onRequest(let reason) = panel.implicitWorkDecision(forEntryNamed: entry.name,
+                                                                    bytes: entry.size) {
+            var parts: [String] = []
+            if let type = UTType(filenameExtension: entry.ext), let kind = type.localizedDescription {
+                parts.append(kind)
+            }
+            if entry.size >= 0 { parts.append(ByteSize(entry.size).formatted(style: .bytesWithSep)) }
+            var details: [(String, String)] = [
+                (String(localized: "Modified"), Self.previewDateFormatter.string(from: entry.modified))
+            ]
+            details.append((String(localized: "Where"), (path as NSString).deletingLastPathComponent))
+            previewPanel.setInfo(path: path,
+                                 title: entry.name,
+                                 subtitle: parts.joined(separator: " — "),
+                                 details: details,
+                                 deferredKey: "\(path)|\(ImplicitWork.tag(for: .onRequest(reason)))",
+                                 deferredMessage: ImplicitWork.sentence(for: reason),
+                                 fallbackIcon: Self.icon(forEntryNamed: entry.name, path: path))
+            return
+        }
+        // In an archive or on a mount the file is not there to be asked about: the details come from
+        // the listing, and the picture follows once the member is unpacked (F-479).
+        if let panel = activePanel, panel.isInArchive, let entry = panel.tableView.cursorEntry(),
+           !PanelEntryHelpers.isDirectoryLike(entry.kind) {
+            var parts: [String] = []
+            if let type = UTType(filenameExtension: entry.ext), let kind = type.localizedDescription {
+                parts.append(kind)
+            }
+            if entry.size >= 0 { parts.append(ByteSize(entry.size).formatted(style: .bytesWithSep)) }
+            let details: [(String, String)] = [
+                (String(localized: "Modified"), Self.previewDateFormatter.string(from: entry.modified)),
+                (String(localized: "Where"), (path as NSString).deletingLastPathComponent),
+            ]
+            stagePreview(member: path, entry: entry, panel: panel) { [weak self] outcome in
+                guard let self else { return }
+                switch outcome {
+                case .waiting(let key, let message, let icon):
+                    self.previewPanel.setInfo(path: path, title: entry.name,
+                                              subtitle: parts.joined(separator: " — "),
+                                              details: details, deferredKey: key,
+                                              deferredMessage: message, fallbackIcon: icon)
+                case .ready(let local):
+                    self.previewPanel.setPreviewFile(local, fallbackIcon: nil)
+                }
+            }
             return
         }
         let url = URL(fileURLWithPath: path)
@@ -4342,6 +4511,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             editorCreateBackups: await mainConfig.bool("Editor", "CreateBackups", default: false),
             viewerSearchFromFind: await mainConfig.bool("Viewer", "SearchFromFind", default: true),
             previewRenderDocuments: await mainConfig.bool("Viewer", "RenderDocumentsInApp", default: true),
+            previewAutoRemote: await mainConfig.bool("Preview", "AutoPreviewRemote", default: true),
+            previewRemoteMB: await mainConfig.int("Preview", "AutoPreviewRemoteMB", default: 4),
+            previewAutoDormant: await mainConfig.bool("Preview", "AutoPreviewDormant", default: false),
+            previewArchiveMB: await mainConfig.int("Preview", "AutoPreviewArchiveMB", default: 32),
             tabOpenInForeground: await mainConfig.bool("Tabs", "OpenInForeground", default: true),
             tabLockedOpensNewTab: await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true),
             ftpKeepAliveSeconds: Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0,
@@ -4466,6 +4639,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // Read when a viewer is opened, so this takes effect on the next hit opened rather than
             // reaching back into windows that are already up (F-407).
             viewerSearchFromFind = value
+        case "Preview.AutoPreviewRemote", "Preview.AutoPreviewDormant":
+            // Both halves in one place: the limits are read as a block so a half-applied set cannot
+            // exist, and the previews that are open are re-decided at once — switching this on and
+            // having to move the cursor to see it would read as ignored (F-479).
+            reloadImplicitWorkLimits()
         case "Tabs.OpenInForeground":
             tabOpenInForeground = value; applyTabDefaultsToPanels()
         case "Tabs.LockedOpensNewTab":
@@ -4481,6 +4659,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
         default:
             break // Operation.* read at action time
+        }
+    }
+
+    /// Re-read `[Preview]` and re-decide whatever is on screen (F-479).
+    private func reloadImplicitWorkLimits() {
+        Task { @MainActor in
+            ImplicitWork.limits = await ImplicitWork.limits(from: mainConfig)
+            refreshOpenPreviews()
+            leftPanelController?.view.refreshGrid()
+            rightPanelController?.view.refreshGrid()
         }
     }
 
@@ -4562,6 +4750,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             ftpKeepAliveSeconds = max(0, Int(value) ?? 0)   // applies to new connections
         case "Copy.SpeedLimitKBps":
             copySpeedLimitKBps = max(0, Int(value) ?? 0); applyCopyDefaultsToPanels()
+        case "Preview.AutoPreviewRemoteMB", "Preview.AutoPreviewArchiveMB",
+             "Preview.AutoPreviewLocalMB", "Preview.AutoPreviewSeconds":
+            reloadImplicitWorkLimits()
         default:
             break
         }
@@ -7360,9 +7551,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
         guard let archive = opened else {
             if speculative {
                 // Nobody claimed it, and nobody said it was an archive in the first
-                // place. Carry on with the open that would have happened.
-                HistoryService.shared.recordFile(pathToOpen)
-                NSWorkspace.shared.open(URL(fileURLWithPath: pathToOpen))
+                // place. Carry on with the open that would have happened — through the same
+                // route Enter takes, so a member inside an archive is staged rather than
+                // handed to `NSWorkspace` as a path that is not a file (F-479).
+                await openExternally(pathToOpen, with: nil)
                 return
             }
             // Not a (readable) archive — e.g. Ctrl+PageDown on a plain file. Beep
@@ -7390,6 +7582,80 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     /// True when the panel is browsing a non-local filesystem (e.g. inside an archive).
     var isInArchive: Bool { !(fs is LocalFS) }
+
+    // MARK: - Where this directory's bytes really are (F-479)
+    //
+    // `isInArchive` is the wrong question for anything that costs time: a mounted SMB share is
+    // `LocalFS` and an evicted iCloud file is on the startup disk. The classification is made once
+    // per directory load, because the volume question is a `resourceValues` and on a share that is a
+    // round trip — asking it per row would cost more than the previews it is guarding.
+
+    private(set) var sourceLocality: SourceLocality = .fast
+
+    /// The mount this panel's reads are measured against, for `TransferRateEstimator`. Empty for a
+    /// local disk, which is deliberately not measured.
+    private(set) var rateKey: String = ""
+
+    /// The archive file this panel is inside, when it is inside one. Also the discriminator between
+    /// an archive mount and a network mount: both push a frame, but a network mount's `archivePath`
+    /// is the directory it was entered from, and an archive's is a file.
+    private(set) var enclosingArchiveFile: String?
+
+    /// Only worth an `lstat` per row inside a directory a sync provider manages.
+    private var mayHoldDormantFiles = false
+
+    /// Recompute the above for `path`. Called from the one place every listing goes through.
+    func updateSourceLocality(path: String, volume: Volume?) {
+        enclosingArchiveFile = nil
+        mayHoldDormantFiles = false
+        rateKey = ""
+
+        if fs is LocalFS || fs is ResultsFS {
+            // A branch view's rows are real local paths, so it is classified like the disk it is
+            // showing rather than as a mount — treating it as remote would defer previews for a
+            // perfectly ordinary local search.
+            mayHoldDormantFiles = SourceLocalityProbe.mayBeDormant(path)
+            let isLocal = volume?.isLocal ?? SourceLocalityProbe.volumeIsLocal(path)
+            sourceLocality = isLocal ? .fast : .remote
+            if !isLocal { rateKey = volume?.path ?? path }
+            return
+        }
+
+        if let frame = mountStack.last, Self.isExistingFile(frame.archivePath) {
+            enclosingArchiveFile = frame.archivePath
+            // The archive's own file decides: unpacking a member of a zip that is itself on a share
+            // is a transfer as well as a decompression.
+            sourceLocality = SourceLocalityProbe.ofDirectory(
+                (frame.archivePath as NSString).deletingLastPathComponent)
+            return
+        }
+
+        // FTP, SFTP, WebDAV, S3, a plugin drive: not on this machine by construction.
+        sourceLocality = .remote
+        rateKey = "\(fs.scheme)://\(mountStack.last?.archivePath ?? "")"
+    }
+
+    private static func isExistingFile(_ path: String) -> Bool {
+        var isDir: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDir) && !isDir.boolValue
+    }
+
+    /// The locality of one row, which is the directory's answer unless the file itself has been
+    /// evicted by a sync provider.
+    func locality(ofEntryNamed name: String) -> SourceLocality {
+        guard mayHoldDormantFiles, sourceLocality == .fast else { return sourceLocality }
+        let full = (view.currentPathValue as NSString).appendingPathComponent(name)
+        return SourceLocalityProbe.isDataless(full) ? .dormant : .fast
+    }
+
+    /// May the cursor alone cause `bytes` of the entry named `name` to be read?
+    func implicitWorkDecision(forEntryNamed name: String, bytes: Int64) -> ImplicitWorkDecision {
+        ImplicitWork.decide(bytes: bytes,
+                            locality: locality(ofEntryNamed: name),
+                            inArchive: enclosingArchiveFile != nil,
+                            rescansPerRead: (fs as? ArchiveFS)?.memberAccessCost == .processPerMember,
+                            rateKey: rateKey)
+    }
 
     /// The filesystem this panel is currently browsing (LocalFS, ArchiveFS, or a
     /// network/plugin FS) — used to run searches over the current mount (F-153).
@@ -7424,13 +7690,93 @@ final class PanelController: NSObject, PanelControllerProtocol {
         await loadDirectory(sub)
     }
 
-    /// A local path for the cursor file (extracting to temp when inside an archive).
+    /// A local path for the cursor file (staging a copy when the panel is not on the local disk).
+    ///
+    /// Everything that needs a real file goes through here — F3, the hex editor, the tool bridge,
+    /// image metadata — and since F-479 through `MemberStage` underneath, which means they share one
+    /// extraction instead of paying for their own, and the copy has a defined lifetime.
     func localPathForCursor() async -> String? {
         guard let p = tableView.cursorItemFullPath() else { return nil }
         if fs is LocalFS { return p }
-        let vpath = VFSPath(filesystemId: fs.scheme, path: p)
-        guard let url = (try? await fs.localFileIfAvailable(vpath)) ?? nil else { return nil }
-        return url.path
+        let bytes = tableView.cursorEntry()?.size ?? 0
+        return await stagedPath(for: p, bytes: bytes, purpose: .preview)
+    }
+
+    /// The listing's size for one entry by name, for a caller holding a path rather than a row.
+    func sizeOfEntry(named name: String) async -> Int64 {
+        if let cursor = tableView.cursorEntry(), cursor.name == name { return cursor.size }
+        return tableView.currentVisibleEntries().first { $0.name == name }?.size ?? 0
+    }
+
+    /// The mount's identity for the staging cache and the throughput estimate.
+    ///
+    /// An archive is keyed by its file's `FileStamp` and not by its path, for the reason
+    /// `ArchiveDirectoryCache` gives: the usual way a program rewrites an archive is to write a
+    /// temporary file and rename it over the old one, and a rename carries the source's mtime across.
+    var mountKey: String {
+        if let archive = enclosingArchiveFile {
+            guard let stamp = FileStamp.of(archive) else { return archive }
+            return "\(archive)#\(stamp.size)-\(stamp.modified)-\(stamp.inode)"
+        }
+        return rateKey.isEmpty ? "\(fs.scheme)://\(view.currentPathValue)" : rateKey
+    }
+
+    /// Stage `path` out of the current mount and return the local copy's path, or nil.
+    func stagedPath(for path: String, bytes: Int64, purpose: StagePurpose,
+                    limitBytes: Int64 = 0) async -> String? {
+        let vpath = VFSPath(filesystemId: fs.scheme, path: path)
+        do {
+            let staged = try await MemberStage.shared.stage(vpath, on: fs, mountKey: mountKey,
+                                                            bytes: bytes, purpose: purpose,
+                                                            limitBytes: limitBytes)
+            return staged.url.path
+        } catch {
+            logger.error("staging \(path, privacy: .public) failed: \(error)")
+            return nil
+        }
+    }
+
+    /// Hand a panel item to another application (F-479).
+    ///
+    /// On the local disk this is what it always was. Inside an archive, or on FTP/SFTP/S3/a plugin
+    /// mount, the item is not a file, so a read-only copy is staged first and *that* is opened —
+    /// which is what makes a double-click on an .xlsx inside a zip do the thing everybody expects.
+    /// The copy outlives the mount on purpose: the application it was handed to still has it open.
+    func openExternally(_ path: String, with app: URL?) async {
+        guard isInArchive else {
+            HistoryService.shared.recordFile(path)
+            Self.launch(path, with: app)
+            return
+        }
+        let name = (path as NSString).lastPathComponent
+        let bytes = await sizeOfEntry(named: name)
+        // No ceiling: this is a gesture, not a cursor movement. The wait it can cause is one the
+        // user asked for, and the progress the panel already shows for a long operation is the
+        // answer to a big one.
+        guard let local = await stagedPath(for: path, bytes: bytes, purpose: .handoff) else {
+            NSSound.beep()
+            (view.window?.windowController as? MainWindowController)?.presentInfo(
+                String(localized: "Open"),
+                String(localized: "“\(name)” could not be unpacked. It may be encrypted, or the archive may be damaged."))
+            return
+        }
+        HistoryService.shared.recordFile(path)
+        // Only for an archive: the sentence is about unpacking and about the archive not changing,
+        // and neither is true of a file downloaded from FTP or S3. Those copies are read-only too,
+        // so the application that gets one still says so — this only stops the app from explaining
+        // a mechanism that is not the one in play.
+        if enclosingArchiveFile != nil { ArchiveHandoffNotice.presentIfNeeded(name: name) }
+        Self.launch(local, with: app)
+    }
+
+    private static func launch(_ path: String, with app: URL?) {
+        let url = URL(fileURLWithPath: path)
+        if let app {
+            NSWorkspace.shared.open([url], withApplicationAt: app,
+                                    configuration: NSWorkspace.OpenConfiguration())
+        } else {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     /// Extract items (archive-relative paths) from the current fs into a local dir.
@@ -7502,7 +7848,12 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     private func exitArchive() async {
+        // Before the frame is popped, while `mountKey` still names the mount being left: the copies
+        // its previews staged go with it (F-479). What was handed to another application stays —
+        // that application still has it open.
+        let leaving = mountKey
         guard let frame = mountStack.popLast() else { return }
+        Task.detached { await MemberStage.shared.releasePreviews(mountKey: leaving) }
         let wasContentMount = (fs as? PFXFileSystem)?.contentFields.isEmpty == false
         // Tear down a live network connection (FTP keep-alive/control, SSH session)
         // when leaving its mount so it doesn't leak.
@@ -7703,6 +8054,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
             }
             let snapshot = try await model.load(path, fs: fs, onPartial: onPartial)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
+            // One question per listing, not per row: everything implicit (the info page, Quick View,
+            // the gallery's thumbnails) is judged against this (F-479).
+            updateSourceLocality(path: path, volume: volume)
             view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name,
                         preserveViewport: preserveViewport)
             if let focusName {
@@ -8978,6 +9332,9 @@ final class PanelView: NSView {
         tableView.onEnterArchive = { [weak controller] path in
             Task { @MainActor in await controller?.enterArchive(path) }
         }
+        tableView.onOpenExternally = { [weak controller] path, app in
+            Task { @MainActor in await controller?.openExternally(path, with: app) }
+        }
         // Left unset here on purpose: `loadPlugins` installs it only once an enabled
         // packer plugin has advertised PC_CAP_BY_CONTENT, so with none installed Enter on
         // an unrecognised file behaves exactly as before and reads nothing.
@@ -9311,6 +9668,9 @@ final class PanelView: NSView {
         if viewMode == .gallery { requestThumbnails(for: entries, generation: gridGeneration) }
     }
 
+    /// How many thumbnails the last gallery refresh declined to generate (F-479), for the harness.
+    private(set) var deferredThumbnails = 0
+
     /// Generate thumbnails for the gallery and swap them in as they arrive (grid index = entry index
     /// + 1 for the synthetic "..").
     ///
@@ -9321,10 +9681,20 @@ final class PanelView: NSView {
     /// stays the answer for everything else, which is most things.
     private func requestThumbnails(for entries: [VFSEntry], generation: Int) {
         guard !currentPath.isEmpty else { return }
+        deferredThumbnails = 0
         let scale = window?.backingScaleFactor ?? 2
         let px = CGSize(width: 128, height: 128)
         for (i, entry) in entries.enumerated() where !PanelEntryHelpers.isDirectoryLike(entry.kind) {
             let gridIndex = i + 1
+            // Nothing here asked for a thumbnail: switching the panel to gallery is not a request to
+            // read every file in the directory. On a share that is what it was — one full read per
+            // entry, over the wire — and in iCloud it downloaded what had been evicted (F-479). The
+            // placeholder icon stays for whatever is declined.
+            guard controller?.implicitWorkDecision(forEntryNamed: entry.name,
+                                                   bytes: entry.size).isGo ?? true else {
+                deferredThumbnails += 1
+                continue
+            }
             let url = URL(fileURLWithPath: (currentPath as NSString).appendingPathComponent(entry.name))
             if let image = pluginThumbnail(for: url, size: px) {
                 iconGrid.setThumbnail(image, at: gridIndex)

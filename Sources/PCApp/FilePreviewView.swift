@@ -38,6 +38,8 @@ final class FilePreviewView: NSView {
     private var pluginRoute: (lister: PLXLister, handle: PLXHandle, view: NSView)?
     /// Which renderer is showing, so the zoom buttons act on the right one.
     private var route: PreviewRoute = .quickLook
+    /// The deferral currently on screen (F-479), so the same one is not rebuilt per cursor arrival.
+    private var deferredReason: String?
 
     /// `Viewer.RenderDocumentsInApp` (F-429): render PDFs and word-processor documents in the application,
     /// or leave everything to Quick Look as before.
@@ -63,6 +65,10 @@ final class FilePreviewView: NSView {
     var surfaceName = "preview"
 
     private let iconView = NSImageView()
+    /// Shown instead of a preview when the file would cost too much to read just because the cursor
+    /// landed on it (F-479). A sentence rather than a blank panel: "nothing here" is how the missing
+    /// archive preview was reported in the first place.
+    private let deferredLabel = NSTextField(wrappingLabelWithString: "")
     private let imageScroll = NSScrollView()
     private let imageView = NSImageView()
     private lazy var zoom = ImageZoomController(scrollView: imageScroll, imageView: imageView)
@@ -91,6 +97,13 @@ final class FilePreviewView: NSView {
         iconView.imageScaling = .scaleProportionallyUpOrDown
         iconView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(iconView)
+
+        deferredLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        deferredLabel.textColor = .secondaryLabelColor
+        deferredLabel.alignment = .center
+        deferredLabel.isHidden = true
+        deferredLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(deferredLabel)
 
         imageScroll.translatesAutoresizingMaskIntoConstraints = false
         imageScroll.hasVerticalScroller = false      // a narrow panel has no points to spare for them
@@ -135,6 +148,8 @@ final class FilePreviewView: NSView {
         let sides = [
             imageScroll.leadingAnchor.constraint(equalTo: leadingAnchor),
             imageScroll.trailingAnchor.constraint(equalTo: trailingAnchor),
+            deferredLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            deferredLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
         ]
         // A collapsed sidebar is width 0, and a scroll view's clip view still wants room for itself: as a
         // required rule the pair cannot hold, and Auto Layout then drops one of its own choosing.
@@ -145,6 +160,8 @@ final class FilePreviewView: NSView {
             imageScroll.bottomAnchor.constraint(equalTo: bottomAnchor),
             iconView.centerXAnchor.constraint(equalTo: centerXAnchor),
             iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            deferredLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 10),
+            deferredLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             iconView.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor),
             iconView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
             zoomBar.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
@@ -190,7 +207,10 @@ final class FilePreviewView: NSView {
     }
 
     func show(path: String?, fallbackIcon: NSImage?) {
-        guard shownPath != path else { return }
+        guard shownPath != path || !deferredLabel.isHidden else { return }
+        deferredLabel.isHidden = true
+        deferredLabel.stringValue = ""
+        deferredReason = nil
         shownPath = path
         lastFallbackIcon = fallbackIcon
         pendingLoad?.cancel()
@@ -216,6 +236,33 @@ final class FilePreviewView: NSView {
         let work = DispatchWorkItem { [weak self] in self?.load(path) }
         pendingLoad = work
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.debounce, execute: work)
+    }
+
+    /// Show the file's icon and why it is not being previewed (F-479).
+    ///
+    /// A state of its own rather than `show(path: nil)`: the panel is not empty because there is
+    /// nothing to show, it is waiting because showing it would cost more than a cursor movement is
+    /// allowed to. `key` is what makes a repeated cursor arrival cheap — the sentence names a size,
+    /// so comparing the text alone would rebuild the label per file of the same size.
+    func showDeferred(key: String, message: String, fallbackIcon: NSImage?) {
+        guard deferredReason != key else { return }
+        deferredReason = key
+        shownPath = nil
+        lastFallbackIcon = fallbackIcon
+        pendingLoad?.cancel()
+        quickLook?.previewItem = nil
+        quickLook?.isHidden = true
+        hidePDF()
+        hideRich()
+        hideImage()
+        hidePlugin()
+        route = .quickLook
+        zoomBar.isHidden = true
+        levelLabel.stringValue = ""
+        iconView.isHidden = false
+        iconView.image = fallbackIcon
+        deferredLabel.stringValue = message
+        deferredLabel.isHidden = false
     }
 
     private func load(_ path: String) {
@@ -659,10 +706,12 @@ final class FilePreviewView: NSView {
         else if pdfView?.isHidden == false { route = "pdf" }
         else if richScroll?.isHidden == false { route = "rich" }
         else if quickLook?.isHidden == false { route = "quicklook" }
+        else if !deferredLabel.isHidden { route = "deferred" }
         else { route = "icon" }
         let size = zoom.hasImage ? ImageZoomController.pixelSize(of: imageView.image ?? NSImage()) : .zero
         return """
         route=\(route)
+        deferred=\(deferredLabel.isHidden ? "none" : deferredLabel.stringValue)
         bar=\(zoomBar.isHidden ? "hidden" : "shown")
         level=\(levelLabel.stringValue)
         imagelevel=\(zoom.levelText)

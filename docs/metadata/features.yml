@@ -1229,6 +1229,52 @@ features:
       before every step rather than snapshotted once: with one snapshot a macro that selected its own
       files at step one still saw the old selection at step three.
 
+  - id: archive-preview-open
+    name: Vorschau und Öffnen aus Archiven und Netzwerkorten
+    name_en: Preview and open from archives and network locations
+    category: archive
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["Cmd+Y", "Ctrl+Q", "Enter"], commands: [cm_QuickLook, cm_SrcQuickview] }
+    source:
+      modules: [PCFoundation, PCVFS, PCArchive, PCApp]
+      types: [ImplicitWorkBudget, SourceLocalityProbe, TransferRateEstimator, MemberStage,
+              ImplicitWork, ArchiveHandoffNotice]
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      F-479. Reported as "inside a zip the quick preview does nothing and a double-click on an .xlsx
+      does not open it". Both are the same defect in three places: the panel's paths are not files
+      inside a mount, and every surface began with `fileExists` — Cmd+Y refused outright, the info
+      page and Quick View drew the fallback icon, and Enter handed `/xl/sheet.xlsx` to `NSWorkspace`.
+      The extraction itself had existed since F-120; what was missing was a cache, a lifetime, a
+      ceiling and a measurement, and each of those was a defect of its own.
+      `MemberStage` (PCVFS) is the one place a member becomes a real file. It keys on the archive's
+      `FileStamp` plus the member path and size, so two surfaces following one cursor share a single
+      read; it streams `openRead` chunk by chunk into the file rather than through one `Data`, which
+      is what makes a 2 GB member survivable and a cursor that has moved on cancellable; and it keeps
+      **two lifetimes**, because a preview's copy must die with the mount and a copy Excel is holding
+      must not. Handoff copies are written 0444 and announced once ("changes are not written back"),
+      which is the honest answer until a write-back feature exists. Leftovers are found by process id
+      rather than by age — `PCStage-<pid>-<uuid>`, swept at launch by `ArchiveTempSweeper`.
+      The other half is the one the report did not ask for and needed anyway: **what a cursor
+      movement is allowed to cost.** `isInArchive` is `!(fs is LocalFS)`, which is wrong in both
+      directions — a mounted SMB share *is* `LocalFS`, and an evicted iCloud file is on the startup
+      disk and costs a full download to touch. `SourceLocalityProbe` answers where the bytes really
+      are (`.fast` / `.remote` / `.dormant`, the last from the kernel's `SF_DATALESS` flag, asked only
+      inside a provider's own directory and never by following a symlink), and `ImplicitWorkBudget`
+      is a pure function over that. **Bytes are the wrong unit**: 32 MB is 30 ms on an SSD and half a
+      minute over a VPN, so where `TransferRateEstimator` has measured a mount the limit is a time
+      budget, in both directions — a fast share may show a large file and a slow one refuses a small
+      one. Until something is measured, conservative byte ceilings apply. Settings live in
+      `[Preview]`; the shipped defaults leave local disks exactly as they were, cap network previews
+      at 4 MB and never materialise a dormant file.
+      The worst offender was outside archives altogether: the gallery asked QuickLook for a thumbnail
+      of **every** entry in the directory with no ceiling of any kind, so switching to gallery on a
+      share read every file over the wire and in iCloud downloaded what had been evicted.
+      A refusal is never silence — the panel shows the file's icon, its details from the listing, and
+      a sentence naming Cmd+Y, which is held to no ceiling because somebody who presses it has asked
+      for the wait.
+
   # ───────────────────────── Plugins (user + developer) ─────────────────────────
   - id: plugins-user
     name: Plugins (Anwendersicht)

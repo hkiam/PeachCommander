@@ -620,9 +620,30 @@ final class PreviewPanelView: NSView {
         setPreview(path: path, fallbackIcon: fallbackIcon)
     }
 
+    /// Swap only the preview, leaving the name and details as they are.
+    ///
+    /// For the two-step case (F-479): the details come from the listing at once, and the picture
+    /// arrives when the member has been unpacked.
+    func setPreviewFile(_ path: String?, fallbackIcon: NSImage?) {
+        previewArea.show(path: path, fallbackIcon: fallbackIcon)
+    }
+
     /// Hand the item to the preview area, which decides how to draw it.
     private func setPreview(path: String?, fallbackIcon: NSImage?) {
         previewArea.show(path: path, fallbackIcon: fallbackIcon)
+    }
+
+    /// The same page, with the file's details but no preview: reading it would cost more than a
+    /// cursor movement is allowed to (F-479). The metadata still comes from the listing, so the page
+    /// answers "what is this file" even when it declines to draw it.
+    func setInfo(path: String?, title: String, subtitle: String, details: [(String, String)],
+                 deferredKey: String, deferredMessage: String, fallbackIcon: NSImage?) {
+        titleLabel.stringValue = title
+        subtitleLabel.stringValue = subtitle
+        infoLabel.stringValue = ""
+        detailStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for (key, value) in details { detailStack.addArrangedSubview(Self.detailRow(key, value)) }
+        previewArea.showDeferred(key: deferredKey, message: deferredMessage, fallbackIcon: fallbackIcon)
     }
 
     /// One "Key    Value" row, laid out like Finder's: dimmed key on the left, value right-aligned.

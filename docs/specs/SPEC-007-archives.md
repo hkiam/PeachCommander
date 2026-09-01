@@ -54,6 +54,15 @@ Shift+Alt+F5 = move-to-archive preset (F-132). Per-file progress, background.
 
 - Status bar shows packed+unpacked sizes; Attr column shows ratio (TC shows
   packed size column in archives — custom column set auto-switch).
+- **Everything that needs a real file goes through one stage (`MemberStage`, F-479)**: F3, the hex
+  editor, Quick Look (Cmd+Y), the info page, Quick View, Enter/double-click and Open With. One
+  extraction is shared between them, keyed by the archive's `FileStamp` + member path + size, LRU
+  with a byte budget (performance.md). Two lifetimes: a *preview* copy dies when the panel leaves
+  the mount, a *handoff* copy (given to another application) outlives it, is written 0444 and is
+  swept at the next launch by its own process id. Nothing is written back into the archive — the
+  user is told so once, with a "don't show again" box.
+- **The cursor-following previews are budgeted, the gestures are not** — see performance.md, "Work
+  nobody asked for". A member over the ceiling shows its icon and a sentence naming Cmd+Y.
 - F3 view (temp extract, F-120); Enter on nested archive → nested FS (F-134);
   Alt+Enter → archive properties (format, entries, sizes, comment).
 - Archive comment shown after open if present (config toggle, TC behavior).

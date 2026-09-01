@@ -81,8 +81,33 @@ Budgets live machine-readable in `Tests/PCPerfTests/budgets.json`; CI compares.
 | Dir-size cache | path+mtime | 64k entries |
 | Collation-key cache | string | 2M keys, evict with model |
 | Archive directory cache | archive path+mtime | 32 archives |
+| Member stage (F-479) | mount identity + member path + size | 64 files / 256 MB LRU |
 
-All caches respond to memory-pressure notifications (`DISPATCH_SOURCE_TYPE_MEMORYPRESSURE`).
+All caches respond to memory-pressure notifications (`DISPATCH_SOURCE_TYPE_MEMORYPRESSURE`). The
+member stage gives up only what a *preview* staged: a copy another application has open is not the
+app's to reclaim.
+
+## Work nobody asked for (F-479)
+
+Three surfaces read a file because the cursor moved onto it — the side panel's info page, the
+embedded Quick View, and the gallery's thumbnails. They are held to `ImplicitWorkBudget`, which is
+a pure function over the source's *locality* rather than over the path:
+
+| Source | Ceiling until measured | Then |
+|---|---|---|
+| Local disk (`.fast`) | none (`Preview.AutoPreviewLocalMB`, 0) | unchanged |
+| Share / FTP / SFTP / S3 / plugin mount (`.remote`) | 4 MB (`Preview.AutoPreviewRemoteMB`) | whatever fits in `Preview.AutoPreviewSeconds` (1.5 s) at the measured rate |
+| Dataless cloud file (`.dormant`) | never (`Preview.AutoPreviewDormant`, off) | — |
+| Archive member | 32 MB (`Preview.AutoPreviewArchiveMB`), on top of the locality's own | — |
+| `MemberAccessCost.processPerMember` archive | never automatically | — |
+
+Throughput comes from `TransferRateEstimator`, fed by `MemberStage`'s own reads (EWMA per mount,
+samples under 64 KB and reads that took no measurable time discarded — both would teach a number
+that then decides what the user gets to see). A *throttled* transfer and a `clonefile` copy measure
+something other than the link and must never be recorded.
+
+An explicit gesture — Cmd+Y, Enter, F3 — asks the same function with `ImplicitWorkLimits`
+`.unrestricted`, so there is one rule with two settings rather than two rules.
 
 ## Measurement discipline
 

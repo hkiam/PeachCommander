@@ -291,6 +291,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Enter the archive file at the given local path (Enter on a .zip etc.).
     var onEnterArchive: ((String) -> Void)?
 
+    /// Open a panel item with another application — the system's choice, or `app` when the user
+    /// picked one. Enter, a double-click, "Open in Default App" and the Open With submenu all end
+    /// here (F-402), and since F-479 that includes items that are not files yet: inside an archive
+    /// or on a remote mount the host stages a copy first. Unset falls back to opening the path
+    /// directly, which is right for a panel with no host and was the only behaviour before.
+    var onOpenExternally: ((_ path: String, _ app: URL?) -> Void)?
+
     /// Enter on a file whose extension says nothing, when a packer plugin has offered to
     /// recognise archives by *content* (PC_CAP_BY_CONTENT).
     ///
@@ -769,6 +776,16 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         if let name = cursorEntryName(),
            let i = files.firstIndex(where: { PathUtils.nameEquivalent($0.name, name) }) { start = i }
         return (paths, start)
+    }
+
+    /// The listing's own record for the entry under the cursor (nil when on `..`).
+    ///
+    /// The size in it is what the *listing* said, which is the point: asking the file system again
+    /// for a file on a share is a round trip, and the cost gate that wants the size (F-479) runs on
+    /// every cursor movement.
+    func cursorEntry() -> VFSEntry? {
+        guard cursorRow >= 0 else { return nil }
+        return entry(atCursor: cursorRow)
     }
 
     /// Name of the entry under the cursor (nil when on `..`) — for per-tab cursor memory.
@@ -1818,6 +1835,22 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         return fullPath(of: entry)
     }
 
+    /// Hand `path` to another application, through the host when there is one.
+    ///
+    /// The host is what knows whether the panel is standing in something that has to be unpacked
+    /// first; this view only knows the path the listing gave it, which inside an archive is not a
+    /// file at all — `NSWorkspace.open("/xl/sheet.xlsx")` is what a double-click used to do there.
+    private func openExternally(_ path: String, app: URL? = nil) {
+        if let handler = onOpenExternally { handler(path, app); return }
+        HistoryService.shared.recordFile(path)
+        if let app {
+            NSWorkspace.shared.open([URL(fileURLWithPath: path)], withApplicationAt: app,
+                                    configuration: NSWorkspace.OpenConfiguration())
+        } else {
+            NSWorkspace.shared.open(URL(fileURLWithPath: path))
+        }
+    }
+
     private func handleEnter() {
         guard let snapshot else { return }
         if cursorRow == -1 { onGoUp?(); return }
@@ -1827,8 +1860,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         case .directory, .symlinkDir, .package:
             navigate(to: path)
         case .appBundle:
-            HistoryService.shared.recordFile(path)
-            NSWorkspace.shared.open(URL(fileURLWithPath: path))
+            openExternally(path)
         case .file, .symlinkFile:
             if isArchiveName?(entry.name) == true {
                 onEnterArchive?(path)
@@ -1840,8 +1872,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             } else {
                 // Opening with the system is a file open like any other, and this is where Enter and a
                 // double-click both arrive (F-402).
-                HistoryService.shared.recordFile(path)
-                NSWorkspace.shared.open(URL(fileURLWithPath: path))
+                openExternally(path)
             }
         }
     }
@@ -2549,7 +2580,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
     @objc private func ctxOpen() { handleEnter() }
     @objc private func ctxOpenDefault() {
-        if let path = cursorItemFullPath() { NSWorkspace.shared.open(URL(fileURLWithPath: path)) }
+        if let path = cursorItemFullPath() { openExternally(path) }
     }
     @objc private func ctxRevealInFinder() {
         if let path = cursorItemFullPath() {
@@ -2562,9 +2593,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// "Open With" submenu: the apps macOS can open the cursor file with (name +
     /// icon), or nil for the ".." row / non-local entries.
     private func buildOpenWithMenu() -> NSMenu? {
-        guard let path = cursorItemFullPath(), FileManager.default.fileExists(atPath: path) else { return nil }
-        let url = URL(fileURLWithPath: path)
-        let apps = NSWorkspace.shared.urlsForApplications(toOpen: url)
+        guard let path = cursorItemFullPath() else { return nil }
+        // By type when the file is not on disk: a member inside an archive has no local path to ask
+        // about, and asking by path is why the submenu was missing there entirely (F-479). macOS
+        // answers the same question either way — which applications open this kind of file.
+        let apps: [URL]
+        if FileManager.default.fileExists(atPath: path) {
+            apps = NSWorkspace.shared.urlsForApplications(toOpen: URL(fileURLWithPath: path))
+        } else if let type = UTType(filenameExtension: (path as NSString).pathExtension) {
+            apps = NSWorkspace.shared.urlsForApplications(toOpen: type)
+        } else {
+            apps = []
+        }
         guard !apps.isEmpty else { return nil }
         let submenu = NSMenu()
         for app in apps {
@@ -2587,8 +2627,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     @objc private func ctxOpenWith(_ sender: NSMenuItem) {
         guard let app = sender.representedObject as? URL, let path = cursorItemFullPath() else { return }
-        let config = NSWorkspace.OpenConfiguration()
-        NSWorkspace.shared.open([URL(fileURLWithPath: path)], withApplicationAt: app, configuration: config)
+        openExternally(path, app: app)
     }
 
     /// "Open With ▸ Other…": choose an arbitrary application to open the file (F-068).
@@ -2600,8 +2639,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let app = panel.url else { return }
-        NSWorkspace.shared.open([URL(fileURLWithPath: path)], withApplicationAt: app,
-                                configuration: NSWorkspace.OpenConfiguration())
+        openExternally(path, app: app)
     }
 
     /// macOS Share sheet for the selected (or cursor) LOCAL files.

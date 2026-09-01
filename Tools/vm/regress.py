@@ -398,6 +398,27 @@ SCENARIOS = [
                                  "previewzoom state|/Users/admin/pv-html.txt", "wait 500",
                                  "focus big.png", "wait 2500",
                                  "previewzoom state|/Users/admin/pv-image.txt", "wait 700"], 14),
+    # Preview *inside a zip* (F-479), which is the report this feature came from: the info page followed
+    # the cursor into an archive and drew nothing at all, because the panel's paths are not files there
+    # and every renderer starts with `fileExists`. The second half is the other side of the same coin —
+    # a member over the ceiling must say so rather than silently unpack itself, so the archive limit is
+    # set to 1 MB and the cursor moved onto a 2 MB member. Both answers come out of the same report, so
+    # a fix that unpacked everything would fail the scenario just as loudly as one that unpacked nothing.
+    ("archive-preview", ["probe /Users/admin/ap-seed.txt|mkdir -p ~/pc-arch && "
+                         "cp ~/pc-demo/Images/icon.png ~/pc-arch/ && "
+                         "dd if=/dev/urandom of=~/pc-arch/big.bin bs=1m count=2 2>/dev/null && "
+                         "cd ~/pc-arch && rm -f box.zip && zip -q box.zip icon.png big.bin && "
+                         "rm -f icon.png big.bin && ls ~/pc-arch | wc -l",
+                         "wait 1200",
+                         "setstring Preview.AutoPreviewArchiveMB|1", "wait 600",
+                         "active left", "left /Users/admin/pc-arch", "wait 1500",
+                         "previewpanel on", "wait 1200",
+                         "focus box.zip", "wait 800",
+                         "enter", "wait 2000",
+                         "focus icon.png", "wait 2500",
+                         "previewzoom state|/Users/admin/ap-image.txt", "wait 600",
+                         "focus big.bin", "wait 2500",
+                         "previewzoom state|/Users/admin/ap-defer.txt", "wait 800"], 16),
     # The *other* quick preview (F-118 + F-389): Ctrl+Q turns the inactive panel into a preview area, so
     # with the right panel active it is the **left** one — which is where the zoom was asked for. Same
     # class as the sidebar's preview, hence the same report; the point of the scenario is that the third
@@ -2633,6 +2654,12 @@ REPORTS = {
     # plugin ahead of everything else exactly so this can be seen: with the handover missing the image is
     # drawn and `drawn=yes` is true, and the panel still shows the web view.
     "preview-plugin-handover": ("/Users/admin/pv-image.txt", ["route=image", "drawn=yes"]),
+    # A member of a zip drawn as a picture: `drawn=yes` is the part that matters, because the panel
+    # holding the right *item* proves only that a path arrived (F-429 paid for that lesson).
+    "archive-preview-image": ("/Users/admin/ap-image.txt",
+                              ["route=image", "pixels=16x16", "drawn=yes"]),
+    # Over the ceiling: the icon and a sentence, not a preview and not an empty panel.
+    "archive-preview": ("/Users/admin/ap-defer.txt", ["route=deferred", "!deferred=none"]),
     "preview-plugin-handover-html": ("/Users/admin/pv-html.txt",
                                      ["route=plugin", "Markdown and HTML"]),
     "quickview-zoom": ("/Users/admin/qv-text.txt", ["route=quicklook", "bar=hidden"]),
