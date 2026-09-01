@@ -43,13 +43,22 @@ public final class TransferRateEstimator: @unchecked Sendable {
 
     public init() {}
 
-    /// Record one completed whole-file read of `bytes` that took `seconds`.
+    /// The shortest duration a sample may claim.
     ///
-    /// Silently ignores samples too small to mean anything and non-positive durations (a read served
-    /// from a cache completes in no measurable time and would teach an infinite rate).
+    /// A read can finish faster than the clock can say, and the first version of this *discarded*
+    /// those — which kept the conservative fallback in place on exactly the fastest links, the
+    /// opposite of what the measurement is for. Clamping instead bounds the rate at
+    /// `bytes / floor` — 64 MB/s for the smallest sample accepted — which is a floor on
+    /// "immeasurably fast", not an infinity.
+    private static let floorSeconds = 0.001
+
+    /// Record one completed read of `bytes` that took `seconds`.
+    ///
+    /// Ignores samples too small to mean anything (that is latency, not throughput) and
+    /// non-positive durations, which are not measurements at all.
     public func record(key: String, bytes: Int64, seconds: Double, now: Date = Date()) {
-        guard bytes >= Self.minimumBytes, seconds > 0.001 else { return }
-        let rate = Double(bytes) / seconds
+        guard bytes >= Self.minimumBytes, seconds > 0 else { return }
+        let rate = Double(bytes) / max(seconds, Self.floorSeconds)
         lock.lock()
         defer { lock.unlock() }
         if let previous = samples[key], now.timeIntervalSince(previous.at) <= Self.staleAfter {
@@ -79,5 +88,24 @@ public final class TransferRateEstimator: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         samples.removeAll()
+    }
+
+    /// Read the first `maxBytes` of `path` and record what that cost.
+    ///
+    /// For the one source that is never staged and so never measured: a **mounted share**. It is an
+    /// ordinary local path, so `MemberStage` hands it straight back and nothing times it — which
+    /// left the time budget permanently inert on exactly the case it was written for, with only the
+    /// conservative byte fallback ever applying.
+    ///
+    /// Bounded on purpose. A megabyte is enough to measure a link and small enough that probing a
+    /// 500 MB file costs the same as probing a 2 MB one, and the bytes land in the file cache the
+    /// preview is about to read from anyway. Call it off the main thread; never call it for a file a
+    /// sync provider has not materialised, since reading one is what downloads it.
+    public func probe(path: String, key: String, maxBytes: Int = 1024 * 1024) {
+        guard let handle = FileHandle(forReadingAtPath: path) else { return }
+        defer { try? handle.close() }
+        let started = Date()
+        guard let data = try? handle.read(upToCount: maxBytes) else { return }
+        record(key: key, bytes: Int64(data.count), seconds: Date().timeIntervalSince(started))
     }
 }

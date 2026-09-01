@@ -16,6 +16,10 @@
 // So the decision is made here, once, as a pure function over four inputs, and every implicit
 // surface asks it rather than carrying its own ceiling — the same reason `PreviewRoute` exists.
 //
+// Only the *implicit* surfaces ask. An explicit gesture — Cmd+Y, Enter, F3 — is not budgeted at all
+// and does not consult this: "no ceiling" is the absence of a question, and a set of limits that
+// answers `.go` to everything would only have been a way of asking it anyway.
+//
 // **Bytes are the wrong unit and time is the right one.** 32 MB is 30 ms on an SSD, half a second
 // over LAN SMB and half a minute over a VPN'd FTP. Where a throughput measurement exists
 // (`TransferRateEstimator`), the limit is derived from it in both directions: a fast share may show
@@ -73,12 +77,6 @@ public struct ImplicitWorkLimits: Sendable, Equatable {
         archiveBytes: 32 * 1024 * 1024,
         allowRemote: true,
         allowDormant: false)
-
-    /// Every ceiling off — what an explicit gesture (Cmd+Y, Enter, F3) is held to, so the same
-    /// function can answer for both and only the limits differ.
-    public static let unrestricted = ImplicitWorkLimits(
-        seconds: 0, localBytes: 0, remoteBytes: 0, archiveBytes: 0,
-        allowRemote: true, allowDormant: true)
 }
 
 /// Why implicit work was declined. Rendered into a sentence in PCApp, where the catalogue is.

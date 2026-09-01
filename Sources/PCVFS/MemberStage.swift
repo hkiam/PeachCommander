@@ -14,7 +14,12 @@
 //   * **Two lifetimes.** A preview's copy should die with the mount; a copy handed to Excel must not,
 //     because Excel still has it open. `ArchiveFS` deletes its temp root in `deinit`, which is right
 //     for the first and data loss for the second.
-//   * **A ceiling.** Nothing stopped a 4 GB member from being read into memory as one `Data`.
+//   * **A ceiling.** Nothing stopped a 4 GB member from being asked for at all.
+//
+// One thing this does *not* fix, so as not to be read as fixing it: a zip member still passes
+// through memory whole. `ArchiveFS.openRead` decompresses it into one `Data` and hands back a
+// stream over that, so writing it out chunk by chunk here saves the second copy and not the first.
+// For the filesystems that really do stream — FTP, SFTP — the whole read is bounded.
 //   * **A measurement.** Somebody has to time these reads, or `ImplicitWorkBudget` never learns how
 //     fast the mount is and judges every preview by the conservative fallback forever.
 //
@@ -25,7 +30,12 @@
 import Foundation
 import PCFoundation
 
-/// How long a staged file has to live.
+/// How long a staged file has to live, and whether anything may write to it.
+///
+/// Three cases and not two, because the second one was wrong for the caller that matters most: the
+/// F4 editor on a writable network mount writes the copy and uploads it back on save (F-214). A
+/// `.preview` copy is evictable and dies when the panel leaves the mount, so the editor could be
+/// left holding a path that is no longer there; a `.handoff` copy is 0444, so it could not write it.
 public enum StagePurpose: Sendable, Equatable {
     /// Shown in a preview. Dies with the mount, and may be evicted under pressure.
     case preview
@@ -33,6 +43,12 @@ public enum StagePurpose: Sendable, Equatable {
     /// read-only — so a user editing it is told by that application rather than discovering later
     /// that the archive never changed.
     case handoff
+    /// The app itself will write to this copy and may put it back (the editor, the hex editor).
+    /// Outlives the mount and is never evicted, like a handoff, but stays writable.
+    case editing
+
+    /// Whether this copy has to survive the panel walking out of the mount it came from.
+    var outlivesMount: Bool { self != .preview }
 }
 
 /// Where a staged file came from, so a caller knows whether it may delete it.
@@ -89,8 +105,17 @@ public actor MemberStage {
     private var retained: Int64 = 0
     private var counter = 0
     private var root: URL?
-    /// Extractions in flight, so two surfaces following one cursor do the work once.
-    private var inFlight: [Key: Task<URL, Error>] = [:]
+    /// An extraction that is running, and whether it may be abandoned.
+    ///
+    /// Cancellable only while every caller waiting on it is a preview: two surfaces following one
+    /// cursor share the task, and so does an explicit open of the same member — abandoning *that*
+    /// because the cursor moved would take away something the user asked for.
+    private struct Running {
+        let task: Task<URL, Error>
+        var cancellable: Bool
+    }
+
+    private var inFlight: [Key: Running] = [:]
 
     private var pressureSource: DispatchSourceMemoryPressure?
 
@@ -109,7 +134,7 @@ public actor MemberStage {
 
     /// Everything a preview staged that nothing is currently showing.
     public func dropEvictablePreviews() {
-        for (key, entry) in entries where entry.purpose == .preview && entry.pins == 0 {
+        for (key, entry) in entries where !entry.purpose.outlivesMount && entry.pins == 0 {
             remove(key)
         }
     }
@@ -143,25 +168,28 @@ public actor MemberStage {
         let key = Key(mount: mountKey, member: path.path, bytes: bytes)
         if var hit = entries[key], FileManager.default.fileExists(atPath: hit.url.path) {
             hit.usedAt = Date()
-            // A file first staged for a preview and then handed to an application is promoted, never
-            // demoted: the copy Excel is holding must not become evictable because a preview reused it.
-            if purpose == .handoff, hit.purpose == .preview {
-                hit.purpose = .handoff
-                Self.makeReadOnly(hit.url)
+            // A file first staged for a preview and then handed on is promoted, never demoted: the
+            // copy Excel is holding must not become evictable because a preview reused it. A
+            // `.handoff` is likewise never demoted to `.editing` — read-only is the stricter answer
+            // and the application that has it open was told so.
+            if purpose.outlivesMount, hit.purpose == .preview {
+                hit.purpose = purpose
+                if purpose == .handoff { Self.makeReadOnly(hit.url) }
             }
             entries[key] = hit
             return StagedFile(url: hit.url, isCopy: true)
         }
 
         if let running = inFlight[key] {
-            return StagedFile(url: try await running.value, isCopy: true)
+            if purpose.outlivesMount { inFlight[key]?.cancellable = false }
+            return StagedFile(url: try await running.task.value, isCopy: true)
         }
 
         let task = Task<URL, Error> { [weak self] in
             guard let self else { throw MemberStageError.unreadable }
             return try await self.extract(path, on: fs, key: key, mountKey: mountKey, purpose: purpose)
         }
-        inFlight[key] = task
+        inFlight[key] = Running(task: task, cancellable: !purpose.outlivesMount)
         defer { inFlight[key] = nil }
         return StagedFile(url: try await task.value, isCopy: true)
     }
@@ -197,7 +225,15 @@ public actor MemberStage {
                                                 seconds: Date().timeIntervalSince(started))
         }
         if purpose == .handoff { Self.makeReadOnly(destination) }
+        if purpose == .editing { Self.stamp(destination) }
 
+        // Drop any entry this one replaces before counting the new bytes. Two ways to get here with
+        // one already present: the staged file was deleted from underneath us (the `fileExists`
+        // check above then falls through to a fresh extraction), and an in-flight task whose first
+        // caller went away finishing after a second one started its own. Overwriting without this
+        // left `retained` too high for the rest of the session — so the budget evicted early — and
+        // the replaced directory behind.
+        remove(key)
         entries[key] = Entry(url: destination, bytes: written, purpose: purpose, usedAt: Date(), pins: 0)
         retained += written
         evictIfNeeded()
@@ -206,9 +242,9 @@ public actor MemberStage {
 
     /// Chunk by chunk into a real file, checking for cancellation between chunks.
     ///
-    /// The reason this is not `localFileIfAvailable`: that reads the whole member into one `Data`
-    /// and writes it out, so a 2 GB member costs 2 GB of memory twice over, and it cannot be
-    /// interrupted — which is what makes cancelling a preview the cursor has moved on from possible.
+    /// The reason this is not `localFileIfAvailable`: that builds the whole member as one `Data` and
+    /// writes it out in one go, so nothing can interrupt it and the bytes are held twice. Note what
+    /// this does and does not buy per filesystem — see the note at the top of the file.
     private static func streamToFile(fs: VirtualFileSystem, path: VFSPath, destination: URL) async throws -> Int64 {
         let stream = try await fs.openRead(path)
         FileManager.default.createFile(atPath: destination.path, contents: nil)
@@ -231,6 +267,23 @@ public actor MemberStage {
         return total
     }
 
+    /// Abandon the preview extractions this mount has running, except the one for `member`.
+    ///
+    /// What makes the cancellation check in `streamToFile` more than decoration: arrowing through an
+    /// archive used to leave every member the cursor passed over still being unpacked, all of them
+    /// finishing work nobody would look at.
+    ///
+    /// How much it buys depends on the filesystem. A stream that arrives in chunks — FTP, SFTP, a
+    /// large member — stops at the next chunk boundary. A zip does not: `ArchiveFS.openRead`
+    /// decompresses the whole member inside itself before the first chunk exists, so there the check
+    /// can only fire while the bytes are being written out.
+    public func cancelPreviewsInFlight(mountKey: String, keeping member: String?) {
+        for (key, running) in inFlight
+        where key.mount == mountKey && running.cancellable && key.member != member {
+            running.task.cancel()
+        }
+    }
+
     // MARK: - Lifetime
 
     /// Hold `url` against eviction while something is showing it.
@@ -248,7 +301,7 @@ public actor MemberStage {
     /// copies handed to other applications stay, because those applications still have them open.
     public func releasePreviews(mountKey: String) {
         for (key, entry) in entries
-        where key.mount == mountKey && entry.purpose == .preview && entry.pins == 0 {
+        where key.mount == mountKey && !entry.purpose.outlivesMount && entry.pins == 0 {
             remove(key)
         }
     }
@@ -260,7 +313,7 @@ public actor MemberStage {
     /// `ArchiveTempSweeper`, which takes it once the process it belonged to is gone.
     public func purgeAtExit() {
         for (key, entry) in entries {
-            if entry.purpose == .handoff, Self.wasModified(entry.url) { continue }
+            if entry.purpose.outlivesMount, Self.wasModified(entry.url) { continue }
             remove(key)
         }
         if let root, entries.isEmpty { try? FileManager.default.removeItem(at: root) }
@@ -294,7 +347,7 @@ public actor MemberStage {
     private func evictIfNeeded() {
         guard entries.count > maxEntries || retained > maxRetainedBytes else { return }
         let evictable = entries
-            .filter { $0.value.pins == 0 && $0.value.purpose == .preview }
+            .filter { $0.value.pins == 0 && !$0.value.purpose.outlivesMount }
             .sorted { $0.value.usedAt < $1.value.usedAt }
         for (key, _) in evictable {
             guard entries.count > maxEntries || retained > maxRetainedBytes else { return }
@@ -327,6 +380,12 @@ public actor MemberStage {
     /// failed worse than one whose application says "read only" at the top.
     private static func makeReadOnly(_ url: URL) {
         try? FileManager.default.setAttributes([.posixPermissions: 0o444], ofItemAtPath: url.path)
+        stamp(url)
+    }
+
+    /// Remember the modification date as staged, so "the user saved into this" can be told from
+    /// "nothing happened" when the session ends.
+    private static func stamp(_ url: URL) {
         if let modified = try? FileManager.default.attributesOfItem(atPath: url.path)[.modificationDate] as? Date {
             stampedDates.set(url.path, modified)
         }

@@ -1199,7 +1199,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             let plugins = await self.makeListerPlugins()
             if panel.isInArchive {
-                if let local = await panel.localPathForCursor() {
+                // `.handoff` and not `.preview`: the viewer window keeps the path and reads it again
+                // — a reload, an encoding change, a search — and may outlive the panel's stay in the
+                // mount (F-479).
+                if let local = await panel.localPathForCursor(purpose: .handoff) {
                     self.openLister(files: [local], index: 0, plugins: plugins)
                 }
             } else {
@@ -2868,7 +2871,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 // Non-local filesystem: edit a downloaded temp copy. For writable
                 // network filesystems (SFTP/FTP/WebDAV) upload the edited copy back
                 // to the origin on each save (F-214); archives are read-only here.
-                let local = await panel.localPathForCursor()
+                // `.editing`: this copy is written and, on a writable network mount, uploaded back
+                // on every save (F-214). It must survive the panel leaving the mount and must stay
+                // writable, which neither of the other two purposes gives (F-479).
+                let local = await panel.localPathForCursor(purpose: .editing)
                 let remotePath = panel.tableView.cursorItemFullPath()
                 let fs = panel.currentFileSystem
                 // Is this a copy, and can anything put it back?
@@ -3133,7 +3139,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             let path: String?
             if panel.isInArchive {
-                path = await panel.localPathForCursor()
+                path = await panel.localPathForCursor(purpose: .editing)   // it can save (F-479)
             } else {
                 path = panel.tableView.cursorDirectoryPath() == nil
                     ? panel.tableView.cursorItemFullPath() : nil
@@ -3954,6 +3960,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
            !PanelEntryHelpers.isDirectoryLike(entry.kind),
            case .onRequest(let reason) = panel.implicitWorkDecision(forEntryNamed: entry.name,
                                                                     bytes: entry.size) {
+            previewMember = nil
             preview.showDeferred(key: "\(entry.name)|\(ImplicitWork.tag(for: .onRequest(reason)))",
                                  message: ImplicitWork.sentence(for: reason),
                                  fallbackIcon: Self.icon(forEntryNamed: entry.name, path: path))
@@ -3973,6 +3980,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             return
         }
+        // Nothing here is being unpacked, so no unpacking that is still running belongs in this
+        // panel either: without this line a member whose extraction finished after the cursor had
+        // moved on to a local file was drawn over it, because the guard still matched (F-479).
+        previewMember = nil
         let exists = path.map { FileManager.default.fileExists(atPath: $0) } ?? false
         preview.show(path: exists ? path : nil, fallbackIcon: nil)
     }
@@ -4000,6 +4011,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// if it is slow enough to be worth saying.
     private func stagePreview(member: String, entry: VFSEntry, panel: PanelController,
                               report: @escaping (StagedPreviewOutcome) -> Void) {
+        if previewMember != member {
+            // Not only ignore the old answer — stop paying for it. Arrowing through an archive
+            // otherwise left every member the cursor passed over still being unpacked (F-479).
+            let mount = panel.mountKey
+            Task.detached { await MemberStage.shared.cancelPreviewsInFlight(mountKey: mount, keeping: member) }
+        }
         previewMember = member
         let icon = Self.icon(forEntryNamed: entry.name, path: nil)
         let notice = DispatchWorkItem { [weak self] in
@@ -4201,6 +4218,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func refreshPreviewInfo() {
         guard let path = activePanel?.tableView.cursorItemFullPath() else {
+            previewMember = nil
             previewPanel.setInfo(path: nil, title: String(localized: "No selection."),
                                  subtitle: "", details: [], fallbackIcon: nil)
             return
@@ -4221,6 +4239,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 (String(localized: "Modified"), Self.previewDateFormatter.string(from: entry.modified))
             ]
             details.append((String(localized: "Where"), (path as NSString).deletingLastPathComponent))
+            previewMember = nil
             previewPanel.setInfo(path: path,
                                  title: entry.name,
                                  subtitle: parts.joined(separator: " — "),
@@ -4282,6 +4301,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         details.append((String(localized: "Where"), (path as NSString).deletingLastPathComponent))
 
+        previewMember = nil   // see the same line in `setQuickViewItem`
         previewPanel.setInfo(path: path,
                              title: url.lastPathComponent,
                              subtitle: subtitleParts.joined(separator: " — "),
@@ -7604,10 +7624,14 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// Only worth an `lstat` per row inside a directory a sync provider manages.
     private var mayHoldDormantFiles = false
 
+    /// Whether this directory has already had its one throughput probe (see `probeRateIfNeeded`).
+    private var didProbeRate = false
+
     /// Recompute the above for `path`. Called from the one place every listing goes through.
     func updateSourceLocality(path: String, volume: Volume?) {
         enclosingArchiveFile = nil
         mayHoldDormantFiles = false
+        didProbeRate = false
         rateKey = ""
 
         if fs is LocalFS || fs is ResultsFS {
@@ -7627,12 +7651,33 @@ final class PanelController: NSObject, PanelControllerProtocol {
             // is a transfer as well as a decompression.
             sourceLocality = SourceLocalityProbe.ofDirectory(
                 (frame.archivePath as NSString).deletingLastPathComponent)
+            // The same key the stage records under, or the samples it takes are filed where nobody
+            // looks — which is what happened until this line: every archive extraction was timed and
+            // the budget then judged the next one by the untested fallback anyway (F-479).
+            rateKey = mountKey
             return
         }
 
         // FTP, SFTP, WebDAV, S3, a plugin drive: not on this machine by construction.
         sourceLocality = .remote
-        rateKey = "\(fs.scheme)://\(mountStack.last?.archivePath ?? "")"
+        rateKey = Self.networkMountKey(for: fs)
+    }
+
+    /// A key that identifies one *connection*.
+    ///
+    /// The registry's `netmount:` sentinel is exactly that and already exists. What this replaced
+    /// was `"\(fs.scheme)://\(mountStack.last?.archivePath ?? "")"`, and `archivePath` on a network
+    /// frame is the **local directory the connection was opened from** — so two different FTP hosts
+    /// entered from the same folder shared a key, and with it both the throughput estimate and the
+    /// member-staging cache, whose entries are (mount, member path, size). Same path, same size, and
+    /// one host's file was served for the other's.
+    ///
+    /// The fallback is the mount object's own identity rather than any path: a mount nobody
+    /// registered still cannot be confused with a different one, and losing the estimate when a
+    /// connection is reopened is the harmless half of the trade.
+    private static func networkMountKey(for fs: VirtualFileSystem) -> String {
+        if let sentinel = NetworkMountRegistry.shared.volume(for: fs)?.path { return sentinel }
+        return "\(fs.scheme)://\(UInt(bitPattern: ObjectIdentifier(fs as AnyObject).hashValue))"
     }
 
     private static func isExistingFile(_ path: String) -> Bool {
@@ -7644,17 +7689,42 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// evicted by a sync provider.
     func locality(ofEntryNamed name: String) -> SourceLocality {
         guard mayHoldDormantFiles, sourceLocality == .fast else { return sourceLocality }
+        // Through the probe rather than repeating its two questions here: a rule with two copies is
+        // a rule that will disagree with itself, and the tests are written against the probe.
         let full = (view.currentPathValue as NSString).appendingPathComponent(name)
-        return SourceLocalityProbe.isDataless(full) ? .dormant : .fast
+        return SourceLocalityProbe.of(localPath: full, volumeIsLocal: true)
     }
 
     /// May the cursor alone cause `bytes` of the entry named `name` to be read?
     func implicitWorkDecision(forEntryNamed name: String, bytes: Int64) -> ImplicitWorkDecision {
-        ImplicitWork.decide(bytes: bytes,
-                            locality: locality(ofEntryNamed: name),
-                            inArchive: enclosingArchiveFile != nil,
-                            rescansPerRead: (fs as? ArchiveFS)?.memberAccessCost == .processPerMember,
-                            rateKey: rateKey)
+        let locality = locality(ofEntryNamed: name)
+        let decision = ImplicitWork.decide(bytes: bytes,
+                                           locality: locality,
+                                           inArchive: enclosingArchiveFile != nil,
+                                           rescansPerRead: (fs as? ArchiveFS)?.memberAccessCost == .processPerMember,
+                                           rateKey: rateKey)
+        probeRateIfNeeded(name: name, bytes: bytes, locality: locality)
+        return decision
+    }
+
+    /// Time one bounded read on a mounted share, once per directory, so the budget stops being a
+    /// guess (F-479).
+    ///
+    /// A share is `LocalFS`, so nothing stages from it and nothing ever timed it — the time budget
+    /// was dead on precisely the source it exists for, and only the 4 MB fallback ever applied. This
+    /// reads at most a megabyte of a file the panel is about to be asked about anyway, off the main
+    /// thread, and the bytes are in the file cache for whoever reads it next.
+    ///
+    /// Deliberately not for `.dormant`: reading a file a provider has not materialised is what
+    /// downloads it, which is the one thing the budget promises not to do by itself.
+    private func probeRateIfNeeded(name: String, bytes: Int64, locality: SourceLocality) {
+        guard !didProbeRate, locality == .remote, fs is LocalFS || fs is ResultsFS,
+              !rateKey.isEmpty, bytes >= TransferRateEstimator.minimumBytes,
+              TransferRateEstimator.shared.rate(for: rateKey) == nil else { return }
+        didProbeRate = true
+        let path = (view.currentPathValue as NSString).appendingPathComponent(name)
+        let key = rateKey
+        Task.detached(priority: .utility) { TransferRateEstimator.shared.probe(path: path, key: key) }
     }
 
     /// The filesystem this panel is currently browsing (LocalFS, ArchiveFS, or a
@@ -7692,14 +7762,20 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     /// A local path for the cursor file (staging a copy when the panel is not on the local disk).
     ///
-    /// Everything that needs a real file goes through here — F3, the hex editor, the tool bridge,
-    /// image metadata — and since F-479 through `MemberStage` underneath, which means they share one
+    /// Everything that needs a real file goes through here — F3, the editors, the tool bridge, image
+    /// metadata — and since F-479 through `MemberStage` underneath, which means they share one
     /// extraction instead of paying for their own, and the copy has a defined lifetime.
-    func localPathForCursor() async -> String? {
+    ///
+    /// **The purpose is the caller's to state.** The default is right for something read once and
+    /// thrown away; a window that keeps the path has to say so, or the copy is evicted or deleted
+    /// when the panel walks out of the mount while the window is still open. The editor on a
+    /// writable network mount is the case that makes this load-bearing: it writes the copy and
+    /// uploads it back on save (F-214), so its copy must be neither evictable nor read-only.
+    func localPathForCursor(purpose: StagePurpose = .preview) async -> String? {
         guard let p = tableView.cursorItemFullPath() else { return nil }
         if fs is LocalFS { return p }
         let bytes = tableView.cursorEntry()?.size ?? 0
-        return await stagedPath(for: p, bytes: bytes, purpose: .preview)
+        return await stagedPath(for: p, bytes: bytes, purpose: purpose)
     }
 
     /// The listing's size for one entry by name, for a caller holding a path rather than a row.

@@ -130,23 +130,17 @@ final class ImplicitWorkBudgetTests: XCTestCase {
                        .rescansPerRead)
     }
 
-    // MARK: - The explicit gesture
+    // MARK: - Every ceiling off
 
-    func testAnExplicitGestureIsHeldToNothing() {
-        // Cmd+Y, Enter and F3 ask the same function with the unrestricted limits, so there is one
-        // rule with two settings rather than two rules.
+    func testCeilingsOfZeroMeanNoCeiling() {
+        // 0 is "no limit" in each of these fields, the way `Copy.SpeedLimitKBps` already reads — the
+        // shape somebody reaches for when they want the budget out of the way.
+        let off = ImplicitWorkLimits(seconds: 0, localBytes: 0, remoteBytes: 0, archiveBytes: 0,
+                                     allowRemote: true, allowDormant: true)
         for locality in SourceLocality.allCases {
             XCTAssertEqual(ImplicitWorkBudget.decide(locality: locality, bytes: 4 * 1024 * mb,
-                                                     inArchive: true,
-                                                     limits: .unrestricted), .go, "\(locality)")
+                                                     inArchive: true, limits: off), .go, "\(locality)")
         }
-    }
-
-    func testEvenAnExplicitGestureIsToldAboutARescanningFormat() {
-        // Not declined — `rescansPerRead` is only ever passed by a caller that wants the automatic
-        // answer suppressed, and the explicit paths do not pass it.
-        XCTAssertEqual(ImplicitWorkBudget.decide(locality: .fast, bytes: 2048, rescansPerRead: true,
-                                                 limits: .unrestricted).reason, .rescansPerRead)
     }
 
     // MARK: - Shapes that must not crash or refuse by accident

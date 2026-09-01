@@ -219,6 +219,59 @@ final class MemberStageTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: shown.url.path))
     }
 
+    func testACopyTheAppWillEditSurvivesTheMountAndStaysWritable() async throws {
+        // The case that made a third purpose necessary: F4 on a writable network mount writes this
+        // copy and uploads it back on save (F-214). A `.preview` copy is deleted when the panel
+        // leaves the mount — the editor would then be holding a path that is gone — and a
+        // `.handoff` copy is 0444, so it could not be written at all.
+        let fs = self.fs(["/notes.txt": 64])
+        let editing = try await stage.stage(path("/notes.txt"), on: fs, mountKey: "m",
+                                            bytes: 64, purpose: .editing)
+        await stage.releasePreviews(mountKey: "m")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: editing.url.path))
+        let mode = try FileManager.default.attributesOfItem(atPath: editing.url.path)[.posixPermissions] as? Int
+        XCTAssertNotEqual(mode, 0o444, "the editor has to be able to write it")
+        XCTAssertNoThrow(try Data("edited".utf8).write(to: editing.url))
+    }
+
+    func testACopyTheAppWillEditIsNeverEvicted() async throws {
+        let fs = self.fs(["/doc.txt": 32])
+        let editing = try await stage.stage(path("/doc.txt"), on: fs, mountKey: "m",
+                                            bytes: 32, purpose: .editing)
+        await stage.dropEvictablePreviews()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: editing.url.path))
+    }
+
+    func testAPreviewPromotedToAnEditIsNotDemotedAgain() async throws {
+        // The preview and the editor look at the same file in that order all the time.
+        let fs = self.fs(["/doc.txt": 32])
+        _ = try await stage.stage(path("/doc.txt"), on: fs, mountKey: "m", bytes: 32, purpose: .preview)
+        let editing = try await stage.stage(path("/doc.txt"), on: fs, mountKey: "m", bytes: 32, purpose: .editing)
+        _ = try await stage.stage(path("/doc.txt"), on: fs, mountKey: "m", bytes: 32, purpose: .preview)
+        await stage.releasePreviews(mountKey: "m")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: editing.url.path))
+        XCTAssertEqual(fs.readCount("/doc.txt"), 1)
+    }
+
+    // MARK: - The byte budget must describe what is actually held
+
+    func testReStagingAFileThatVanishedDoesNotCountItTwice() async throws {
+        // The staged copy can go without the stage being told — the OS reaping the temp directory,
+        // or a second in-flight extraction finishing after the first caller gave up. Overwriting the
+        // entry without dropping it left `retained` too high for the rest of the session, so the
+        // budget evicted early, and left the replaced directory behind.
+        let fs = self.fs(["/a.bin": 4096])
+        let first = try await stage.stage(path("/a.bin"), on: fs, mountKey: "m", bytes: 4096, purpose: .preview)
+        try FileManager.default.removeItem(at: first.url)
+        let second = try await stage.stage(path("/a.bin"), on: fs, mountKey: "m", bytes: 4096, purpose: .preview)
+        let report = await stage.report()
+        XCTAssertEqual(report.files, 1)
+        XCTAssertEqual(report.bytes, 4096, "one file staged, one file's worth of budget")
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: first.url.deletingLastPathComponent().path), "the replaced directory stayed behind")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: second.url.path))
+    }
+
     func testACopyHandedToAnotherApplicationIsReadOnly() async throws {
         // Nothing writes an edited copy back into an archive yet. An application that says "read
         // only" at the top has told the user; one that saves into a temp file has not.

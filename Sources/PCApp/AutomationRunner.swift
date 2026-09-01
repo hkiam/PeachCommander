@@ -2286,7 +2286,12 @@ extension MainWindowController {
         // that could not open a directory is indistinguishable from one that did — which is how the
         // silent-failure path stayed invisible to the harness for as long as it did.
         let message = panel.view.transientMessageForAutomation.map { "message=\($0)\n" } ?? ""
-        let out = "path=\(path)\ncount=\(names.count)\n" + message
+        // What the cost gate declined to do here (F-479). A gallery on a share is *supposed* to show
+        // placeholder icons, and without a number the harness cannot tell that from a gallery whose
+        // thumbnails simply have not arrived yet.
+        let out = "path=\(path)\ncount=\(names.count)\n"
+            + "locality=\(panel.sourceLocality.rawValue)\n"
+            + "deferredthumbs=\(panel.view.deferredThumbnails)\n" + message
             + names.joined(separator: "\n") + "\n"
         try? out.write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] dumped \(names.count) entries of \(path) → \(file)")

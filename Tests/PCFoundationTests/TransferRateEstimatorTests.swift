@@ -37,12 +37,21 @@ final class TransferRateEstimatorTests: XCTestCase {
         XCTAssertNil(estimator.rate(for: "sftp://host"), "a 3 KB read is a round trip, not a rate")
     }
 
-    func testAReadThatTookNoTimeIsIgnored() {
-        // Served from a cache. Recording it would teach a rate of several gigabytes a second and let
-        // every later preview through on a link that has never been tested.
+    func testAReadWithNoDurationAtAllIsIgnored() {
+        // Not a measurement — nothing can take zero time. Distinct from the case below.
         let estimator = TransferRateEstimator()
         estimator.record(key: "k", bytes: 100 * mb, seconds: 0)
         XCTAssertNil(estimator.rate(for: "k"))
+    }
+
+    func testAReadTooFastToTimeIsClampedRatherThanDiscarded() {
+        // A read can finish faster than the clock can say. Discarding those — which the first
+        // version did — kept the conservative fallback in place on the *fastest* links, which is
+        // backwards. The clamp bounds the answer instead of throwing it away.
+        let estimator = TransferRateEstimator()
+        estimator.record(key: "k", bytes: mb, seconds: 0.000_01)
+        let rate = try? XCTUnwrap(estimator.rate(for: "k"))
+        XCTAssertEqual(rate ?? 0, Double(mb) / 0.001, accuracy: 1)
     }
 
     func testAMeasurementExpires() {
@@ -68,6 +77,50 @@ final class TransferRateEstimatorTests: XCTestCase {
         estimator.record(key: "k", bytes: 10 * mb, seconds: 1)
         estimator.forget(key: "k")
         XCTAssertNil(estimator.rate(for: "k"))
+    }
+
+    // MARK: - The bounded probe, for the source nothing else measures
+
+    func testProbingARealFileTeachesARate() throws {
+        // A mounted share is an ordinary local path, so nothing stages from it and nothing times it.
+        // This is the only measurement that source ever gets.
+        let file = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-probe-\(UUID().uuidString).bin")
+        defer { try? FileManager.default.removeItem(at: file) }
+        try Data(repeating: 0x41, count: 512 * 1024).write(to: file)
+        let estimator = TransferRateEstimator()
+        estimator.probe(path: file.path, key: "share")
+        XCTAssertNotNil(estimator.rate(for: "share"))
+    }
+
+    func testProbingReadsNoMoreThanItsCap() throws {
+        // A 500 MB file must cost the same probe as a 2 MB one, or the measurement is the very
+        // expense it exists to avoid.
+        let file = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-probe-\(UUID().uuidString).bin")
+        defer { try? FileManager.default.removeItem(at: file) }
+        try Data(repeating: 0x41, count: 4 * 1024 * 1024).write(to: file)
+        let estimator = TransferRateEstimator()
+        let started = Date()
+        estimator.probe(path: file.path, key: "capped", maxBytes: 128 * 1024)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2.0)
+        XCTAssertNotNil(estimator.rate(for: "capped"))
+    }
+
+    func testProbingSomethingThatIsNotThereIsHarmless() {
+        let estimator = TransferRateEstimator()
+        estimator.probe(path: "/no/such/file", key: "missing")
+        XCTAssertNil(estimator.rate(for: "missing"))
+    }
+
+    func testProbingATinyFileTeachesNothing() throws {
+        let file = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-probe-\(UUID().uuidString).bin")
+        defer { try? FileManager.default.removeItem(at: file) }
+        try Data(repeating: 0x41, count: 1024).write(to: file)
+        let estimator = TransferRateEstimator()
+        estimator.probe(path: file.path, key: "tiny")
+        XCTAssertNil(estimator.rate(for: "tiny"), "a 1 KB read is latency, not a rate")
     }
 
     func testMountsAreKeptApart() {
