@@ -14,6 +14,34 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **A file inside an archive can be previewed and opened.** Space and Cmd+Y showed nothing there, and a
+  double-click on a spreadsheet inside a zip did nothing at all: the panel's paths are not files inside a
+  mount, so Quick Look refused outright, the info page and Quick View fell back to the file's icon, and
+  Enter handed `/xl/sheet.xlsx` to macOS, which has no such file. All of them now go through one place
+  that unpacks the member to a temporary copy and hands *that* over — the same for FTP, SFTP, S3 and
+  plugin mounts, where the same gestures were equally dead. "Open With" lists the applications for the
+  file's *kind* now, so the submenu is there for a member too. The copy an application is given is
+  read-only and Peach Commander says so once, with a "don't show this again" box: it is a copy, and
+  saving into it does not change the archive. Copies are shared between the previews rather than made
+  again per surface, are thrown away when the panel leaves the archive, and any left behind by a crash
+  are recognised by the process that made them and cleared at the next launch rather than a day later.
+- **A budget for everything the cursor reads by itself.** The side panel, Quick View and the gallery's
+  thumbnails follow the cursor, and none of them had ever asked what a file costs — only whether its path
+  existed. That is the wrong question three times over: a mounted network share looks like an ordinary
+  local folder, a file iCloud has evicted sits on the startup disk with none of its contents on this
+  machine, and a member of an archive costs a decompression. Switching a panel on a network share to
+  gallery view read *every* file in the folder over the wire, one thumbnail at a time, and in iCloud it
+  downloaded what had been evicted. Now each of them asks first, and the answer is in seconds rather than
+  megabytes: after a few reads Peach Commander knows how fast that mount actually is, and allows whatever
+  fits in about a second and a half — so a fast share shows large files and a slow one declines small
+  ones. Until it has measured, network files are previewed up to 4 MB and archive members up to 32 MB;
+  local disks are unrestricted, exactly as before. A file that is declined is not a blank panel: it shows
+  its icon, its name, size and date from the listing, and one line saying why — and Cmd+Y always previews
+  it whatever the limits say. All of it is under *Configuration ▸ Edit/View*, and there is a new help
+  topic — "Previews of files that are not on this Mac" — in all nineteen languages.
+
 ### Fixed
 
 - **A double-click on an .xlsx opened the spreadsheet's zip instead of the spreadsheet.** An Office or

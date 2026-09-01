@@ -26,6 +26,89 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-01 — the preview that did nothing inside a zip, and the reading nobody had asked for (F-479)
+
+Reported as two things — "in an archive the quick preview does not work, and I cannot open an .xlsx by
+double-clicking it" — and it was one defect wearing three hats. Inside a mount the panel's paths are not
+files, and every surface began by asking whether the path existed: `showQuickLook` refused outright with
+`guard !panel.isInArchive else { NSSound.beep() }`, `setQuickViewItem` and `refreshPreviewInfo` fell
+through `fileExists` to the fallback icon, and `handleEnter` handed `/xl/sheet.xlsx` to `NSWorkspace`.
+The Open With submenu was missing for the same reason: it was built from a path that does not exist.
+
+**The extraction was never the missing part.** `localFileIfAvailable` has existed since F-120 and F3, the
+hex editor and the tool bridge use it. What was missing was everything around it, and each piece was a
+defect of its own: no cache (it decompresses the whole member into one `Data` on *every* call, so the
+info page and Quick View following one cursor paid twice per move), one lifetime where two are needed
+(`ArchiveFS` deletes its temp root in `deinit` — right for a preview, data loss for a file Excel still
+has open), no ceiling at all, and no measurement. `MemberStage` in PCVFS is now the single place a member
+becomes a real file: keyed on the archive's `FileStamp` plus the member path and size, streaming
+`openRead` chunk by chunk into the file rather than through one `Data`, sharing a single read between
+simultaneous askers, LRU with a byte budget and a memory-pressure hook, `.preview` copies dying with the
+mount and `.handoff` copies outliving it at 0444 with a one-off notice that changes are not written back.
+Leftovers are found by **process id** (`PCStage-<pid>-<uuid>`) rather than by age, so a crash mid-session
+no longer leaves a staged file sitting in the temp directory for a day; `ArchiveTempSweeper` keeps the
+24-hour rule for the two older prefixes, which carry no pid.
+
+**The half that was not reported is the one worth reading.** `isInArchive` is `!(fs is LocalFS)`, and as a
+question about *cost* it is wrong in both directions. A mounted SMB share **is** `LocalFS`: previewing a
+200 MB file on one pulled it over the wire because an arrow key moved, and that was true before any of
+this work. A file a sync provider has evicted is on the startup disk with none of its bytes here, and
+touching it starts a full download — nothing in the codebase had ever asked (no `ubiquitous`, no
+`SF_DATALESS`, anywhere). So the classification is its own thing now: `SourceLocalityProbe` answers
+`.fast`/`.remote`/`.dormant` — the last from the kernel's dataless flag, via `lstat` so a symlink is not
+followed into a materialisation, and only inside a provider's own directory — asked once per *listing*,
+because on a share the volume question is itself a round trip.
+
+**Bytes are the wrong unit.** 32 MB is 30 ms on an SSD, half a second over LAN SMB and half a minute over
+a VPN'd FTP, so `ImplicitWorkBudget` answers in seconds wherever `TransferRateEstimator` has measured the
+mount — in both directions: a fast share may show a large file and a slow one refuses a small one. The
+estimator is fed by the stage's own reads and refuses two kinds of sample that would teach a number which
+then decides what the user sees: anything under 64 KB (that is latency) and anything that took no
+measurable time (that is a cache). It is deliberately **not** wired to `CopyEngine`, whose throughput is
+computed over throttled transfers and `clonefile` copies alike.
+
+**The worst offender was outside archives altogether.** `requestThumbnails` asked QuickLook for a
+thumbnail of *every* entry in the directory, with no size, count or locality ceiling — so gallery view on
+a share read every file over the wire, and in iCloud downloaded what had been evicted. It is gated now,
+and the count it declined is in the harness dump.
+
+Defaults keep local disks exactly as they were (`Preview.AutoPreviewLocalMB` = 0 = no limit); network
+previews stop at 4 MB until measured, archive members at 32 MB, and a dormant file is never materialised
+by a cursor. All four, plus the time budget, are `[Preview]` keys, with the two switches and the two
+ceilings under *Configuration ▸ Edit/View*. A refusal is never silence: the icon, the details from the
+listing, and one sentence naming Cmd+Y — which asks the same function with `.unrestricted` limits, so
+there is one rule with two settings rather than two rules.
+
+Nineteen strings, translated into all eighteen other languages; `check-translations.py` is back to
+`behind=0`. Two of them were going to be `"%lld seconds"`/`"%lld minutes"` and are now `Measurement`
+formatting instead — F-478 paid the CLDR-plural bill once for a heading that counted steps, and this did
+not need to pay it again.
+
+**Documented**: a new help topic, `remote-previews` ("Previews of files that are not on this Mac"),
+in all nineteen languages — what happens inside an archive, what a preview may cost where, how to change
+it, and where the unpacked copies go — plus one clause added to the Edit/View bullet on the Settings page
+in all nineteen, so the reader who is *in* the settings finds it. The Help Book is rebuilt
+(`build-helpbook.py --all`); `check-translation-drift.py` reports 990 pages, 0 drifted.
+
+**Not done, deliberately, and each is its own piece of work:** writing an edited copy back into a zip
+(the machinery is all there — `ArchiveEditor.add` plus `reloadCurrentArchive` — it is a UX decision, and
+the user has said it is not wanted for now); thumbnails for archive members in the gallery (still
+skipped, which is the safe answer). **Measured in the running app** (DEBUG build, fresh `-ConfigRoot`, scripted), because a preview is only
+verified by a picture: inside a zip with the archive ceiling set to 1 MB, the cursor on a 3.7 KB `pic.png`
+reports `route=image … drawn=yes rendered=#D6E7FE expected=#D5E7FF` — drawn, not merely loaded — and the
+cursor on a 2 MB member reports `route=deferred` with `deferred=2,0 MB — zu groß für eine automatische
+Vorschau. Cmd+Y zeigt sie an.` (the machine's locale is German, so that also proves the new strings are
+wired). Cmd+Y in the same archive stages
+`…/PCStage-96955-<uuid>/1/pic.png` and brings up the Quick Look panel — `mainshot: 522x223`, titled
+`pic.png`, where it used to beep and show nothing. A double-click on the member opens Preview.app on a
+staged copy that is `-r--r--r--`, and after quitting the app no `PCStage-*` root is left in the temp
+directory. **Not run:** the VM harness — `archive-preview` is written and passes
+`check-scenario-reports.py`, but there was no VM in this session.
+
+**One thing the verification itself forced:** `ArchiveHandoffNotice` is `runModal`, and the project's own
+note about F-436 says a modal hangs a scripted run — the script carries on inside the nested runloop and
+`quit` never lands. It is now skipped when `-AutomationScript` is given, like the two launch-time prompts.
+
 ## 2026-09-01 — three things a Mac user expected, and the one that was losing the file
 
 Three reports from one session. The third is the one that mattered: a double-click on a spreadsheet
