@@ -26,6 +26,43 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-02 — the gallery asked for every file in the folder, ten times a second
+
+The prerequisite for archive thumbnails, and worth more than the thing it unblocks: it fixes what
+gallery view does *today*, locally.
+
+`requestThumbnails` ran over the whole filtered listing and is called from `updateRows`, which fires
+for every partial batch of a listing — up to ten times a second. A 2,000-file folder asked the system
+for 2,000 thumbnails, over and over. And the cache `performance.md` has always listed
+("Thumbnail cache | path+mtime+size | 128 MB LRU") **did not exist**: `QLThumbnailGenerator` was
+called at one place with nothing in front of it. QuickLook's own daemon hid the cost locally, which is
+why nobody noticed; on a share or for an archive member there is no daemon to hide it.
+
+Both fixed. `GridLayout.indexes(intersecting:width:count:)` answers which items a viewport covers, by
+arithmetic rather than by testing every cell, and the grid re-asks on scroll (coalesced to one pass
+per run-loop turn). The cache is `ThumbnailCache` over a new `PCFoundation.ByteBudgetCache` — the LRU
+lives in PCFoundation because **PCApp has no unit-test bundle**, and a cache whose eviction nobody
+tests is one that quietly holds everything or quietly holds nothing.
+
+**Measured**, because "only what is visible" is otherwise a claim nobody can check — the shape of
+defect this whole round kept turning up. `dump` reports `thumbsrequested`, `thumbscached` and
+`thumbcache` now. On 300 images: first visit **12 requested** (the cells actually on screen), 0
+cached; each scroll 13 more; **second visit 0 requested, 12 from cache**.
+
+**And it crashed the app the first time it ran.** `visibleRect` is `CGRect.infinite` — not `.zero` —
+while a view has no clipping ancestor, which is exactly the state during `setViewMode`. Two things
+about that are worth keeping: `CGRect.infinite` is built from *finite* numbers (its corner is
+-8.99e307), so an `isFinite` guard sails straight past it and only `isInfinite` catches it; and
+`Int(Double)` **traps** rather than saturating, so the arithmetic downstream took the process down
+(`EXC_BREAKPOINT` in `GridLayout.band`). Found by reading the crash report's own stack rather than by
+guessing, and instrumented with one `NSLog` of the actual rect — which is what named it in one run.
+
+The fix is split where the knowledge is: the geometry now clamps at both ends and never traps, and it
+still answers honestly that an infinite viewport covers every cell, because it does. Deciding that
+"no clip yet" means "nothing is on screen" is the *view's* business. Both are tested, so the two
+cannot later be changed to agree on a wrong answer. My own first clamp held only the upper end and
+trapped on the lower one — the test caught that too.
+
 ## 2026-09-02 — the release would not package, and it was not the release's fault
 
 `release.yml` refused 0.8.2, twice. The first refusal was mine: I triggered the packaging eight

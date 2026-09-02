@@ -77,7 +77,7 @@ Budgets live machine-readable in `Tests/PCPerfTests/budgets.json`; CI compares.
 | Cache | Key | Budget |
 |---|---|---|
 | Icon cache | ext or UTType or path (apps) | 4k entries LRU |
-| Thumbnail cache | path+mtime+size | 128 MB LRU |
+| Thumbnail cache | path+mtime+size (or mount+member+size) | 128 MB LRU |
 | Dir-size cache | path+mtime | 64k entries |
 | Collation-key cache | string | 2M keys, evict with model |
 | Archive directory cache | archive path+mtime | 32 archives |
@@ -120,6 +120,28 @@ Two sources feed it, and between them they cover every remote case:
   file: reading one is what downloads it.
 
 An explicit gesture — Cmd+Y, Enter, F3 — is not budgeted and does not consult the function at all.
+
+## Gallery thumbnails
+
+Two rules, both added after the table above had described the first one for a long time without it
+existing:
+
+- **Only what is on screen.** `requestThumbnails` ran over the whole filtered listing, and it is
+  called from `updateRows` — which fires for every partial batch of a listing, up to ten times a
+  second. A 2,000-file folder therefore asked the system for 2,000 thumbnails, repeatedly.
+  `GridLayout.indexes(intersecting:width:count:)` answers which items a viewport covers, by
+  arithmetic rather than by testing every cell, and the grid re-asks on scroll (coalesced to one
+  pass per run-loop turn).
+- **A cache that exists.** `ThumbnailCache` over `PCFoundation.ByteBudgetCache`, keyed by identity
+  and not by location — a file replaced in place keeps its path, and a path-only key would serve the
+  previous file's picture for the rest of the session. Budgeted in *decoded pixels*, because a
+  128×128 thumbnail at 2× is 256 KB and budgeting in points would hold four times what the number
+  says.
+
+Measured on a folder of 300 images: first visit **12** thumbnails requested (the cells actually
+visible) and 0 from cache; scrolling through it requests 13 more per screen; a second visit requests
+**0** and answers all 12 from cache. Locally this was churn that QuickLook's own daemon hid; the
+moment a thumbnail costs a read — a share, an archive member — there is no daemon to hide it.
 
 ## Reading a member out of an archive
 
