@@ -9839,6 +9839,17 @@ final class PanelView: NSView {
         // range is shifted back by one to index `entries`.
         let visible = iconGrid.visibleItemIndexes()
         guard !visible.isEmpty else { return }
+        // Inside an archive or on a mount every thumbnail costs an unpack or a download, so the
+        // budget above and the visible-range narrowing are what make this affordable — neither is
+        // optional here. An **encrypted** archive is skipped outright: the password is asked once
+        // when the archive is entered, and a member the panel merely scrolled past is not a reason
+        // to go looking for it.
+        let inMount = controller?.isInArchive ?? false
+        let mountKey = controller?.mountKey ?? ""
+        if inMount, (controller?.currentFileSystem as? ArchiveFS)?.hasEncryptedEntries == true {
+            deferredThumbnails = max(0, visible.count - 1)
+            return
+        }
         let lower = max(0, visible.lowerBound - 1)
         let upper = min(entries.count, visible.upperBound)
         guard lower < upper else { return }
@@ -9855,35 +9866,64 @@ final class PanelView: NSView {
                 deferredThumbnails += 1
                 continue
             }
+            let itemPath = (currentPath as NSString).appendingPathComponent(entry.name)
             // The cache first, and by identity rather than by path: a file replaced in place keeps
             // its name, and a path-only key would show the previous file's picture for the rest of
-            // the session.
-            let key = ThumbnailCache.key(path: (currentPath as NSString).appendingPathComponent(entry.name),
-                                         modified: entry.modified, size: entry.size)
+            // the session. Inside a mount there is no path to stamp, so the key is the mount's own
+            // identity plus the member — which is the reason the key was a string from the start.
+            let key = inMount
+                ? ThumbnailCache.key(mount: mountKey, member: itemPath, size: entry.size)
+                : ThumbnailCache.key(path: itemPath, modified: entry.modified, size: entry.size)
             if let cached = ThumbnailCache.shared.image(for: key) {
                 thumbnailsFromCache += 1
                 iconGrid.setThumbnail(cached, at: gridIndex)
                 continue
             }
-            let url = URL(fileURLWithPath: (currentPath as NSString).appendingPathComponent(entry.name))
+
+            if inMount {
+                // A member has to be unpacked before anything can look at it. The budget above has
+                // already decided this one is worth it, and "only what is on screen" is what makes
+                // that affordable at all — a screenful is a dozen members, not the whole archive.
+                guard let controller else { continue }
+                thumbnailsRequested += 1
+                Task { @MainActor in
+                    guard let local = await controller.stagedPath(for: itemPath, bytes: entry.size,
+                                                                  purpose: .preview) else { return }
+                    guard self.gridGeneration == generation else { return }
+                    self.generateThumbnail(at: URL(fileURLWithPath: local), key: key, px: px,
+                                           scale: scale, gridIndex: gridIndex, generation: generation)
+                }
+                continue
+            }
+
+            let url = URL(fileURLWithPath: itemPath)
             if let image = pluginThumbnail(for: url, size: px) {
                 ThumbnailCache.shared.store(image, for: key)
                 iconGrid.setThumbnail(image, at: gridIndex)
                 continue
             }
             thumbnailsRequested += 1
-            let request = QLThumbnailGenerator.Request(fileAt: url, size: px, scale: scale,
-                                                       representationTypes: .thumbnail)
-            QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { [weak self] rep, _ in
-                guard let rep else { return }
-                Task { @MainActor in
-                    guard let self else { return }
-                    // Cached even when the grid has moved on: the work is done, and the next visit
-                    // to this folder is exactly when it pays.
-                    ThumbnailCache.shared.store(rep.nsImage, for: key)
-                    guard self.gridGeneration == generation else { return }
-                    self.iconGrid.setThumbnail(rep.nsImage, at: gridIndex)
-                }
+            generateThumbnail(at: url, key: key, px: px, scale: scale,
+                              gridIndex: gridIndex, generation: generation)
+        }
+    }
+
+    /// Ask QuickLook for one thumbnail, cache it, and show it if the grid still wants it.
+    ///
+    /// One place, because there are two callers now — a file on disk and an unpacked member — and
+    /// the caching had to happen in both. The store is deliberately *outside* the generation check:
+    /// the work is already paid for, and the next visit to that folder is exactly when it pays.
+    private func generateThumbnail(at url: URL, key: String, px: CGSize, scale: CGFloat,
+                                   gridIndex: Int, generation: Int) {
+        let request = QLThumbnailGenerator.Request(fileAt: url, size: px, scale: scale,
+                                                   representationTypes: .thumbnail)
+        QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { [weak self] rep, _ in
+            guard let rep else { return }
+            Task { @MainActor in
+                guard let self else { return }
+                ThumbnailCache.shared.store(rep.nsImage, for: key)
+                guard self.gridGeneration == generation else { return }
+                self.iconGrid.setThumbnail(rep.nsImage, at: gridIndex)
             }
         }
     }

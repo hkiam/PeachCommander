@@ -422,6 +422,24 @@ SCENARIOS = [
                          "previewzoom state|/Users/admin/ap-image.txt", "wait 600",
                          "focus big.bin", "wait 2500",
                          "previewzoom state|/Users/admin/ap-defer.txt", "wait 800"], 16),
+    # Thumbnails of files *inside* a zip, and only of the cells on screen (F-479 follow-up). Two
+    # numbers make it checkable: `thumbsrequested` must be far below the member count — a screenful,
+    # not the archive — and `deferredthumbs` must be 0, because these members are small and local, so
+    # nothing here should be declining them. Before this, gallery view in an archive showed generic
+    # icons and asked for nothing at all; before *that*, outside an archive, it asked for every file
+    # in the directory on every partial batch of the listing.
+    ("archive-thumbnails", ["probe /Users/admin/at-seed.txt|mkdir -p $HOME/pc-thumbs && "
+                            "cd $HOME/pc-thumbs && rm -f pics.zip && "
+                            "for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do "
+                            "cp $HOME/pc-demo/Images/icon.png i$i.png; done && "
+                            "zip -q pics.zip i*.png && rm -f i*.png && "
+                            "ls $HOME/pc-thumbs | wc -l",
+                            "wait 1200",
+                            "active left", "left /Users/admin/pc-thumbs", "wait 1500",
+                            "focus pics.zip", "wait 700",
+                            "enter", "wait 2000",
+                            "cmd cm_SrcThumbs", "wait 4000",
+                            "dump /Users/admin/at-zip.txt", "wait 600"], 14),
     # The *other* quick preview (F-118 + F-389): Ctrl+Q turns the inactive panel into a preview area, so
     # with the right panel active it is the **left** one — which is where the zoom was asked for. Same
     # class as the sidebar's preview, hence the same report; the point of the scenario is that the third
@@ -2669,6 +2687,12 @@ REPORTS = {
                               ["route=image", "pixels=16x16", "drawn=yes"]),
     # Over the ceiling: the icon and a sentence, not a preview and not an empty panel.
     "archive-preview": ("/Users/admin/ap-defer.txt", ["route=deferred", "!deferred=none"]),
+    # Twenty members, one screenful asked for. The negative expectations are the ones that matter:
+    # `!thumbsrequested=0` fails if the archive path stopped working at all, and `!thumbsrequested=20`
+    # fails if it went back to fetching the whole directory.
+    "archive-thumbnails": ("/Users/admin/at-zip.txt",
+                           ["count=20", "deferredthumbs=0",
+                            "!thumbsrequested=0", "!thumbsrequested=20"]),
     "preview-plugin-handover-html": ("/Users/admin/pv-html.txt",
                                      ["route=plugin", "Markdown and HTML"]),
     "quickview-zoom": ("/Users/admin/qv-text.txt", ["route=quicklook", "bar=hidden"]),
