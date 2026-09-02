@@ -14,6 +14,24 @@ does not have.
 
 ## [Unreleased]
 
+## [0.8.2] — 2026-09-02
+
+A file inside an archive can be previewed and opened — and, because working out why it could not led
+straight into it, the app stopped reading things nobody asked it to read.
+
+The first half is what was reported: in a ZIP the quick preview showed nothing and a double-click on a
+spreadsheet did nothing at all. The second half is what that turned up on the way. Three parts of the
+window read a file simply because the cursor landed on it, and none of them had ever asked what that
+costs — only whether the path existed. That is the wrong question on a network share (which looks
+exactly like an ordinary folder), on a file the cloud has not downloaded yet (which sits on your own
+disk with none of its contents), and inside an archive. Switching a panel on a network share to gallery
+view read *every* file in the folder over the wire, one thumbnail at a time. It asks first now, and
+answers in seconds rather than megabytes: after a few reads it knows how fast that connection actually
+is.
+
+Underneath both, reading a file out of an archive no longer needs it to fit in memory. A 400 MB file
+opened from a ZIP cost 588 MB before and costs 151 MB now.
+
 ### Added
 
 - **A file inside an archive can be previewed and opened.** Space and Cmd+Y showed nothing there, and a
@@ -1859,6 +1877,7 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.8.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.2
 [0.8.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.1
 [0.8.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0
 [0.6.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.2
