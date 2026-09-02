@@ -588,6 +588,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         NotificationCenter.default.addObserver(self, selector: #selector(splitViewResized),
                                                name: NSSplitView.didResizeSubviewsNotification,
                                                object: splitView)
+        // A display that changes mode or goes away leaves the window sized for the one before it.
+        NotificationCenter.default.addObserver(self, selector: #selector(screensChanged),
+                                               name: NSApplication.didChangeScreenParametersNotification,
+                                               object: nil)
     }
 
     @objc private func splitViewResized() { scheduleSaveState() }
@@ -647,6 +651,47 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
         }
         walk(menu)
+    }
+
+    /// The frame the window had before a screen change forced it smaller.
+    ///
+    /// So that unplugging a monitor for a minute does not cost the layout: plugging it back in puts
+    /// this frame back, rather than leaving a window sized for a laptop screen forever. Also what
+    /// gets *saved* for the next session, because the clamped frame is the accident and this is what
+    /// the user chose.
+    private var frameBeforeScreenChange: NSRect?
+
+    /// The frame worth remembering across a quit — the pre-clamp one when a screen change shrank the
+    /// window, otherwise what is on screen now.
+    var frameForSession: NSRect? {
+        guard let window else { return nil }
+        if let saved = frameBeforeScreenChange, saved.width > 200, saved.height > 200 { return saved }
+        return window.frame
+    }
+
+    /// Follow a change to the screens (`didChangeScreenParametersNotification`).
+    ///
+    /// The case this exists for, measured on this machine: an external display switched from
+    /// 2560×1320 to 2560×1080 while the app was running, and macOS does not resize windows for you.
+    /// The main window stayed 1320 points tall, so its bottom 270 points — the status bar, the
+    /// function-key row and the command line — sat below the edge of the screen with no way to reach
+    /// them. `ensureWindowOnScreen` already knew how to fix that and was wired only to launch.
+    ///
+    /// Deliberately conservative: a window that still fits is never touched, so the notification
+    /// firing for a Dock resize or a menu-bar change costs nothing.
+    @objc private func screensChanged() {
+        guard let window, let vf = (window.screen ?? NSScreen.main)?.visibleFrame else { return }
+        switch WindowScreenFit.decide(frame: window.frame, remembered: frameBeforeScreenChange,
+                                      visible: vf) {
+        case .leaveAlone:
+            break
+        case .clamp(let target):
+            if frameBeforeScreenChange == nil { frameBeforeScreenChange = window.frame }
+            window.setFrame(target, display: true)
+        case .restore(let target):
+            frameBeforeScreenChange = nil
+            window.setFrame(target, display: true)
+        }
     }
 
     /// Clamp the window's size + position into the current screen's visible frame so
@@ -4390,8 +4435,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         await saveTabs(left, prefix: "LeftPanel")
         await saveTabs(right, prefix: "RightPanel")
         await session.setString(activePanel === right ? "right" : "left", "Window", "Active")
-        if let window, window.frame.width > 200, window.frame.height > 200 {
-            await session.setString(Self.frameString(window.frame), "Window", "Frame")
+        // `frameForSession` and not `window.frame`: if a screen change shrank the window, the next
+        // launch should get back what the user chose, not what the smaller screen forced.
+        if let frame = frameForSession, frame.width > 200, frame.height > 200 {
+            await session.setString(Self.frameString(frame), "Window", "Frame")
         }
         let leftWidth = leftPanelController?.view.frame.width ?? 0
         if leftWidth > 50 { await session.setDouble(Double(leftWidth), "Window", "LeftWidth") }

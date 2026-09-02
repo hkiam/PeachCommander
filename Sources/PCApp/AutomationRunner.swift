@@ -495,6 +495,12 @@ extension MainWindowController {
                     let out = currentLister()?.automationZoom(z[0]) ?? "ERROR: no lister window\n"
                     try? out.write(toFile: z[1], atomically: true, encoding: .utf8)
                 }
+            case "screenclamp":                         // screenclamp <W>x<H>|<out>
+                // A screen change cannot be provoked from outside the app, so this provokes it from
+                // inside: force the window to a size a smaller display would leave behind, post the
+                // notification AppKit posts, and report what came of it — then post it again with
+                // the window fitting, which is the "monitor plugged back in" half.
+                await screenClampReport(arg)
             case "previewpanel":                        // previewpanel on|off: *set* it, do not toggle
                 // A toggle depends on what the previous scenario left behind — this scenario measured a
                 // closed panel in the full run and an open one when run alone, which is how a layout
@@ -2275,6 +2281,36 @@ extension MainWindowController {
 
     /// Write the active panel's current path and visible entry names to `file`, so a
     /// driver can assert on what the panel actually shows (local or remote).
+    /// Drive the screen-change clamp and report both halves of it (F-479 follow-up).
+    private func screenClampReport(_ spec: String) async {
+        let parts = spec.split(separator: "|", maxSplits: 1).map(String.init)
+        guard parts.count == 2, let window = self.window else { return }
+        let wh = parts[0].split(separator: "x").compactMap { Double($0) }
+        guard wh.count == 2 else { return }
+        let vf = (window.screen ?? NSScreen.main)?.visibleFrame ?? .zero
+
+        func line(_ label: String) -> String {
+            let f = window.frame
+            return "\(label)=\(Int(f.width))x\(Int(f.height))@\(Int(f.minX)),\(Int(f.minY))\n"
+        }
+
+        var out = "visibleframe=\(Int(vf.width))x\(Int(vf.height))@\(Int(vf.minX)),\(Int(vf.minY))\n"
+        let wanted = NSRect(x: vf.minX, y: vf.minY, width: wh[0], height: wh[1])
+        window.setFrame(wanted, display: true)
+        out += "forced=\(Int(wh[0]))x\(Int(wh[1]))\n"
+        NotificationCenter.default.post(name: NSApplication.didChangeScreenParametersNotification,
+                                        object: NSApp)
+        out += line("afterchange")
+        out += "fits=\(vf.contains(window.frame))\n"
+        // The second half: the notification firing again while the window fits must put back what
+        // was there before the clamp — that is the whole point of remembering it.
+        NotificationCenter.default.post(name: NSApplication.didChangeScreenParametersNotification,
+                                        object: NSApp)
+        out += line("afterrestore")
+        try? out.write(toFile: parts[1], atomically: true, encoding: .utf8)
+        NSLog("[automation] screenclamp → \(parts[1])")
+    }
+
     private func dumpActivePanel(to file: String) async {
         guard let panel = activePanel else {
             try? "ERROR: no active panel\n".write(toFile: file, atomically: true, encoding: .utf8)
