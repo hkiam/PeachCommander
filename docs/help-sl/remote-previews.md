@@ -39,4 +39,4 @@ Dve nadaljnji nastavitvi nimata svojega gumba in sta v `peachcmd.ini` pod `[Prev
 
 Kopije se zapišejo v začasno mapo sistema, predogledi pa si jih delijo, namesto da bi vsak izdelal svojo. Kopija, izdelana za predogled, se odstrani, ko zapustite arhiv; kopija, izročena drugemu programu, ostane, dokler ne končate Peach Commanderja, ker jo ima ta program še odprto. Kar za sabo pusti nepričakovan konec, se prepozna ob naslednjem zagonu in se takrat pospravi.
 
-Sličice v pogledu galerije upoštevajo isti proračun, datoteke v arhivu pa tam obdržijo svojo splošno ikono namesto sličice.
+Sličice v pogledu galerije upoštevajo isti proračun in nastanejo samo za celice, ki so res na zaslonu — mapa z dva tisoč datotekami tako stane en zaslon in ne dva tisoč. Tudi datoteke v arhivu dobijo prave sličice; vsaka se za to razpakira, in prav zato proračun tam šteje najbolj.

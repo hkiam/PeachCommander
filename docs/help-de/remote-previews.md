@@ -39,4 +39,4 @@ Zwei weitere Einstellungen haben kein eigenes Bedienelement und stehen in `peach
 
 Kopien werden in den temporären Ordner des Systems geschrieben, und die Vorschauen teilen sie sich, statt dass jede ihre eigene anlegt. Eine für eine Vorschau angelegte Kopie wird entfernt, sobald Sie das Archiv verlassen; eine an ein anderes Programm übergebene Kopie bleibt, bis Sie Peach Commander beenden, weil dieses Programm sie noch geöffnet hat. Was ein unerwartetes Beenden hinterlässt, wird beim nächsten Start erkannt und dann entfernt.
 
-Miniaturen in der Galerie-Ansicht folgen demselben Budget, und Dateien in einem Archiv behalten dort ihr allgemeines Symbol statt einer Miniatur.
+Miniaturen in der Galerie-Ansicht folgen demselben Budget, und es werden nur die Zellen erzeugt, die wirklich auf dem Bildschirm sind — ein Ordner mit zweitausend Dateien kostet also einen Bildschirm und nicht zweitausend. Auch Dateien in einem Archiv bekommen echte Miniaturen; jede wird dafür entpackt, weshalb das Budget dort am meisten zählt.

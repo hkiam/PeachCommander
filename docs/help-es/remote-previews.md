@@ -39,4 +39,4 @@ Otros dos ajustes no tienen control propio y viven en `peachcmd.ini` bajo `[Prev
 
 Las copias se escriben en la carpeta temporal del sistema, y las vistas previas las comparten en lugar de crear cada una la suya. Una copia hecha para una vista previa se elimina al salir del comprimido; una copia entregada a otra aplicación permanece hasta que cierres Peach Commander, porque esa aplicación todavía la tiene abierta. Lo que deje atrás un cierre inesperado se reconoce en el siguiente arranque y se limpia entonces.
 
-Las miniaturas de la vista de galería siguen el mismo presupuesto, y los archivos dentro de un comprimido conservan allí su icono genérico en lugar de una miniatura.
+Las miniaturas de la vista de galería siguen el mismo presupuesto, y solo se generan las celdas que están realmente en pantalla: una carpeta con dos mil archivos cuesta una pantalla, no dos mil. Los archivos dentro de un comprimido también obtienen miniaturas de verdad; cada uno se descomprime para ello, y por eso allí el presupuesto importa más que en ningún otro sitio.

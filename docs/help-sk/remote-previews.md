@@ -39,4 +39,4 @@ Odmietnutý náhľad nie je prázdny panel: bočný panel ukáže ikonu súboru,
 
 Kópie sa zapisujú do dočasného priečinka systému a náhľady ich zdieľajú, namiesto toho, aby si každý robil vlastnú. Kópia vytvorená pre náhľad sa odstráni, len čo archív opustíte; kópia odovzdaná inej aplikácii zostane, kým Peach Commander neukončíte, pretože tá aplikácia ju má stále otvorenú. To, čo po sebe zanechá neočakávané ukončenie, sa rozpozná pri ďalšom spustení a vtedy sa upratá.
 
-Miniatúry v zobrazení galérie podliehajú rovnakému rozpočtu a súbory v archíve si tam ponechajú svoju všeobecnú ikonu namiesto miniatúry.
+Miniatúry v zobrazení galérie podliehajú rovnakému rozpočtu a vytvárajú sa len bunky, ktoré sú naozaj na obrazovke — priečinok s dvoma tisícmi súborov teda stojí jednu obrazovku, nie dva tisíce. Aj súbory v archíve dostanú skutočné miniatúry; každý sa na to rozbalí, a práve preto tam rozpočet záleží najviac.

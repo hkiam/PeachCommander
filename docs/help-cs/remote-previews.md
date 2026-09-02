@@ -39,4 +39,4 @@ Další dvě nastavení nemají vlastní ovládací prvek a jsou v `peachcmd.ini
 
 Kopie se zapisují do dočasné složky systému a náhledy je sdílejí, místo aby si každý dělal vlastní. Kopie vytvořená pro náhled se odstraní, jakmile archiv opustíte; kopie předaná jiné aplikaci zůstane, dokud Peach Commander neukončíte, protože ta aplikace ji má stále otevřenou. Co po sobě zanechá neočekávané ukončení, se rozpozná při dalším spuštění a tehdy se uklidí.
 
-Miniatury v zobrazení galerie podléhají stejnému rozpočtu a soubory v archivu si tam ponechají svou obecnou ikonu místo miniatury.
+Miniatury v zobrazení galerie podléhají stejnému rozpočtu a vytvářejí se jen buňky, které jsou skutečně na obrazovce — složka s dvěma tisíci soubory tedy stojí jednu obrazovku, ne dva tisíce. I soubory v archivu dostanou skutečné miniatury; každý se k tomu rozbalí, a právě proto tam rozpočet záleží nejvíc.

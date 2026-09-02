@@ -39,4 +39,4 @@ További két beállításnak nincs saját vezérlője, és a `peachcmd.ini` fá
 
 A másolatok a rendszer ideiglenes mappájába kerülnek, és az előnézetek osztoznak rajtuk ahelyett, hogy mindegyik sajátot készítene. Az előnézethez készült másolat törlődik, amint elhagyja az archívumot; a más alkalmazásnak átadott másolat megmarad, amíg ki nem lép a Peach Commanderből, mert az az alkalmazás még nyitva tartja. Amit egy váratlan kilépés hátrahagy, azt a következő indításkor felismeri és akkor takarítja el.
 
-A galéria nézet miniatűrjei ugyanezt a keretet követik, az archívumban lévő fájlok pedig ott az általános ikonjukat tartják meg miniatűr helyett.
+A galéria nézet miniatűrjei ugyanezt a keretet követik, és csak a valóban a képernyőn lévő cellák készülnek el — egy kétezer fájlos mappa tehát egy képernyőbe kerül, nem kétezerbe. Az archívumban lévő fájlok is igazi miniatűrt kapnak; mindegyiket ehhez ki kell csomagolni, és épp ezért ott számít a keret a legtöbbet.

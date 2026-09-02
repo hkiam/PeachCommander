@@ -39,4 +39,4 @@ Deux autres réglages n'ont pas de commande propre et se trouvent dans `peachcmd
 
 Les copies sont écrites dans le dossier temporaire du système, et les aperçus les partagent au lieu que chacun crée la sienne. Une copie faite pour un aperçu est supprimée quand vous quittez l'archive ; une copie remise à une autre application reste jusqu'à ce que vous quittiez Peach Commander, parce que cette application l'a encore ouverte. Ce qu'un arrêt inattendu laisse derrière lui est reconnu au lancement suivant et supprimé alors.
 
-Les vignettes de la vue galerie suivent le même budget, et les fichiers dans une archive y gardent leur icône générique au lieu d'une vignette.
+Les vignettes de la vue galerie suivent le même budget, et seules les cellules réellement à l'écran sont produites — un dossier de deux mille fichiers coûte donc un écran, pas deux mille. Les fichiers dans une archive obtiennent eux aussi de vraies vignettes ; chacun est décompressé pour cela, et c'est là que le budget compte le plus.

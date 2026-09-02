@@ -39,4 +39,4 @@ Alte două setări nu au un control propriu și se află în `peachcmd.ini`, la 
 
 Copiile sunt scrise în dosarul temporar al sistemului, iar previzualizările le împart în loc ca fiecare să și-o facă pe a sa. O copie făcută pentru o previzualizare este ștearsă când părăsiți arhiva; o copie predată altei aplicații rămâne până când închideți Peach Commander, pentru că acea aplicație o mai are deschisă. Ce lasă în urmă o închidere neașteptată este recunoscut la următoarea pornire și curățat atunci.
 
-Miniaturile din vizualizarea galerie respectă același buget, iar fișierele dintr-o arhivă își păstrează acolo pictograma generică în loc de o miniatură.
+Miniaturile din vizualizarea galerie respectă același buget și se creează doar celulele aflate efectiv pe ecran — un dosar cu două mii de fișiere costă deci un ecran, nu două mii. Și fișierele dintr-o arhivă primesc miniaturi adevărate; fiecare este dezarhivat pentru asta, și tocmai de aceea bugetul contează cel mai mult acolo.

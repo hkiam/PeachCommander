@@ -39,4 +39,4 @@ Två ytterligare inställningar har ingen egen kontroll och står i `peachcmd.in
 
 Kopior skrivs till systemets tillfälliga mapp, och förhandsvisningarna delar på dem i stället för att var och en gör sin egen. En kopia som gjorts för en förhandsvisning tas bort när du lämnar arkivet; en kopia som lämnats till ett annat program blir kvar tills du avslutar Peach Commander, eftersom det programmet fortfarande har den öppen. Det som en oväntad avslutning lämnar efter sig känns igen vid nästa start och rensas då.
 
-Miniatyrer i galerivyn följer samma budget, och filer inuti ett arkiv behåller där sin allmänna symbol i stället för en miniatyr.
+Miniatyrer i gallerivyn följer samma budget, och bara de celler som verkligen syns på skärmen skapas — en mapp med tvåtusen filer kostar alltså en skärm och inte tvåtusen. Filer inuti ett arkiv får också riktiga miniatyrer; var och en packas upp för det, och därför betyder budgeten mest just där.

@@ -39,4 +39,4 @@ Altre due impostazioni non hanno un comando proprio e stanno in `peachcmd.ini` s
 
 Le copie vengono scritte nella cartella temporanea del sistema e le anteprime le condividono invece di crearne una ciascuna. Una copia fatta per un'anteprima viene rimossa quando uscite dall'archivio; una copia consegnata a un'altra applicazione resta finché non chiudete Peach Commander, perché quell'applicazione la tiene ancora aperta. Ciò che una chiusura inattesa lascia indietro viene riconosciuto al lancio successivo e rimosso allora.
 
-Le miniature nella vista galleria seguono lo stesso budget, e i file dentro un archivio vi conservano la loro icona generica invece di una miniatura.
+Le miniature nella vista galleria seguono lo stesso budget e vengono prodotte solo per le celle davvero sullo schermo: una cartella con duemila file costa una schermata, non duemila. Anche i file dentro un archivio ottengono vere miniature; ognuno viene estratto per questo, ed è lì che il budget conta di più.

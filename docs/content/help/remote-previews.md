@@ -40,4 +40,4 @@ Two more settings have no control of their own and live in `peachcmd.ini` under 
 
 Copies are written to the system's temporary folder, and the previews share them rather than each making its own. A copy made for a preview is removed when you leave the archive; a copy handed to another application stays until you quit Peach Commander, because that application still has it open. Whatever an unexpected quit leaves behind is recognized at the next launch and cleared then.
 
-Thumbnails in gallery view follow the same budget, and files inside an archive keep their generic icon there instead of a thumbnail.
+Thumbnails in gallery view follow the same budget, and only the cells actually on screen are made — so a folder of two thousand files costs a screenful, not two thousand. Files inside an archive get real thumbnails too; each one is unpacked for it, which is why the budget matters there most.

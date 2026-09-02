@@ -39,4 +39,4 @@ Twee andere instellingen hebben geen eigen bedieningselement en staan in `peachc
 
 Kopieën worden naar de tijdelijke map van het systeem geschreven, en de voorvertoningen delen ze in plaats van elk een eigen kopie te maken. Een kopie voor een voorvertoning wordt verwijderd zodra u het archief verlaat; een kopie die aan een ander programma is gegeven blijft tot u Peach Commander afsluit, omdat dat programma hem nog open heeft. Wat een onverwacht afsluiten achterlaat wordt bij de volgende start herkend en dan opgeruimd.
 
-Miniaturen in de galerijweergave volgen hetzelfde budget, en bestanden in een archief houden daar hun algemene symbool in plaats van een miniatuur.
+Miniaturen in de galerijweergave volgen hetzelfde budget, en alleen de cellen die echt op het scherm staan worden gemaakt — een map met tweeduizend bestanden kost dus één scherm en geen tweeduizend. Bestanden in een archief krijgen ook echte miniaturen; elk wordt daarvoor uitgepakt, en daarom telt het budget daar het zwaarst.

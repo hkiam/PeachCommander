@@ -34,7 +34,7 @@
 <p>Dwa kolejne ustawienia nie mają własnej kontrolki i znajdują się w <code>peachcmd.ini</code> w sekcji <code>[Preview]</code>: <code>AutoPreviewSeconds</code> to limit czasu obowiązujący po zmierzeniu połączenia (domyślnie 1,5; 0 go wyłącza), a <code>AutoPreviewLocalMB</code> to pułap dla dysków lokalnych (0 oznacza brak limitu).</p>
 <h2 id="gdzie-trafiaja-rozpakowane-kopie">Gdzie trafiają rozpakowane kopie</h2>
 <p>Kopie są zapisywane w tymczasowym folderze systemu, a podglądy współdzielą je, zamiast każdy tworzyć własną. Kopia zrobiona na potrzeby podglądu jest usuwana po wyjściu z archiwum; kopia przekazana innemu programowi zostaje do zamknięcia Peach Commandera, bo ten program wciąż ma ją otwartą. To, co pozostawi nieoczekiwane zakończenie, jest rozpoznawane przy następnym uruchomieniu i wtedy usuwane.</p>
-<p>Miniatury w widoku galerii podlegają temu samemu limitowi, a pliki w archiwum zachowują tam swoją ogólną ikonę zamiast miniatury.</p>
+<p>Miniatury w widoku galerii podlegają temu samemu limitowi i tworzone są tylko komórki naprawdę widoczne na ekranie — folder z dwoma tysiącami plików kosztuje więc jeden ekran, a nie dwa tysiące. Pliki w archiwum również dostają prawdziwe miniatury; każdy jest do tego rozpakowywany, dlatego właśnie tam limit liczy się najbardziej.</p>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="archives.html">Praca z archiwami</a></li><li><a href="network-shares.html">Udziały sieciowe</a></li></ul></section>
 </main>
 </body>

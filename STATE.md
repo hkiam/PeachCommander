@@ -26,6 +26,28 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-02 — and then the archive thumbnails, which were the cheap part
+
+With the two prerequisites in, this was the few hours the estimate promised rather than the day it
+would have been on its own: each visible member is staged (`MemberStage`, `.preview`) and the
+thumbnail made from the copy. The cache key for a member — `ThumbnailCache.key(mount:member:size:)` —
+had already been written and left unused for exactly this.
+
+An **encrypted** archive is skipped outright and counted as deferred: the password is asked once when
+the archive is entered, and a member the panel merely scrolled past is not a reason to go looking for
+it. Formats that re-read the whole file per member were already excluded by `MemberAccessCost`.
+
+Verified as a *picture*, not as a number, because that is the project's rule for a view: the
+screenshot shows twenty PNGs inside a zip drawn as their own contents instead of twenty identical
+document icons. The numbers back it — 12 of 40 requested on this machine, 3 of 20 on the guest, whose
+window is smaller — and `archive-thumbnails` in `Tools/vm/regress.py` guards it with two *negative*
+expectations, which are the ones that would catch a regression: `!thumbsrequested=0` if the archive
+path stops working at all, and `!thumbsrequested=20` if it goes back to fetching the whole directory.
+
+One sentence in the help topic had to be taken back in nineteen languages — I had written that files
+inside an archive keep their generic icon there. It says what the two rules do now instead, and the
+drift gate still reports 990 pages with 0 drifted because the paragraph count did not change.
+
 ## 2026-09-02 — the gallery asked for every file in the folder, ten times a second
 
 The prerequisite for archive thumbnails, and worth more than the thing it unblocks: it fixes what

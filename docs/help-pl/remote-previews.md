@@ -39,4 +39,4 @@ Dwa kolejne ustawienia nie mają własnej kontrolki i znajdują się w `peachcmd
 
 Kopie są zapisywane w tymczasowym folderze systemu, a podglądy współdzielą je, zamiast każdy tworzyć własną. Kopia zrobiona na potrzeby podglądu jest usuwana po wyjściu z archiwum; kopia przekazana innemu programowi zostaje do zamknięcia Peach Commandera, bo ten program wciąż ma ją otwartą. To, co pozostawi nieoczekiwane zakończenie, jest rozpoznawane przy następnym uruchomieniu i wtedy usuwane.
 
-Miniatury w widoku galerii podlegają temu samemu limitowi, a pliki w archiwum zachowują tam swoją ogólną ikonę zamiast miniatury.
+Miniatury w widoku galerii podlegają temu samemu limitowi i tworzone są tylko komórki naprawdę widoczne na ekranie — folder z dwoma tysiącami plików kosztuje więc jeden ekran, a nie dwa tysiące. Pliki w archiwum również dostają prawdziwe miniatury; każdy jest do tego rozpakowywany, dlatego właśnie tam limit liczy się najbardziej.

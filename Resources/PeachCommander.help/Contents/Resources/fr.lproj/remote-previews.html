@@ -34,7 +34,7 @@
 <p>Deux autres réglages n'ont pas de commande propre et se trouvent dans <code>peachcmd.ini</code> sous <code>[Preview]</code> : <code>AutoPreviewSeconds</code> est le budget de temps qui s'applique une fois la connexion mesurée (1,5 par défaut ; 0 le désactive), et <code>AutoPreviewLocalMB</code> est un plafond pour les disques locaux (0 signifie aucune limite).</p>
 <h2 id="ou-vont-les-copies-decompressees">Où vont les copies décompressées</h2>
 <p>Les copies sont écrites dans le dossier temporaire du système, et les aperçus les partagent au lieu que chacun crée la sienne. Une copie faite pour un aperçu est supprimée quand vous quittez l'archive ; une copie remise à une autre application reste jusqu'à ce que vous quittiez Peach Commander, parce que cette application l'a encore ouverte. Ce qu'un arrêt inattendu laisse derrière lui est reconnu au lancement suivant et supprimé alors.</p>
-<p>Les vignettes de la vue galerie suivent le même budget, et les fichiers dans une archive y gardent leur icône générique au lieu d'une vignette.</p>
+<p>Les vignettes de la vue galerie suivent le même budget, et seules les cellules réellement à l'écran sont produites — un dossier de deux mille fichiers coûte donc un écran, pas deux mille. Les fichiers dans une archive obtiennent eux aussi de vraies vignettes ; chacun est décompressé pour cela, et c'est là que le budget compte le plus.</p>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="archives.html">Utiliser les archives</a></li><li><a href="network-shares.html">Partages réseau</a></li></ul></section>
 </main>
 </body>

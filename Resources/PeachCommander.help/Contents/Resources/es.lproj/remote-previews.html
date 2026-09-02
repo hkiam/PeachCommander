@@ -34,7 +34,7 @@
 <p>Otros dos ajustes no tienen control propio y viven en <code>peachcmd.ini</code> bajo <code>[Preview]</code>: <code>AutoPreviewSeconds</code> es el presupuesto de tiempo que se aplica una vez medida la conexión (1,5 por omisión; 0 lo desactiva), y <code>AutoPreviewLocalMB</code> es un tope para los discos locales (0 significa sin límite).</p>
 <h2 id="donde-van-las-copias-descomprimidas">Dónde van las copias descomprimidas</h2>
 <p>Las copias se escriben en la carpeta temporal del sistema, y las vistas previas las comparten en lugar de crear cada una la suya. Una copia hecha para una vista previa se elimina al salir del comprimido; una copia entregada a otra aplicación permanece hasta que cierres Peach Commander, porque esa aplicación todavía la tiene abierta. Lo que deje atrás un cierre inesperado se reconoce en el siguiente arranque y se limpia entonces.</p>
-<p>Las miniaturas de la vista de galería siguen el mismo presupuesto, y los archivos dentro de un comprimido conservan allí su icono genérico en lugar de una miniatura.</p>
+<p>Las miniaturas de la vista de galería siguen el mismo presupuesto, y solo se generan las celdas que están realmente en pantalla: una carpeta con dos mil archivos cuesta una pantalla, no dos mil. Los archivos dentro de un comprimido también obtienen miniaturas de verdad; cada uno se descomprime para ello, y por eso allí el presupuesto importa más que en ningún otro sitio.</p>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Ver archivos</a></li><li><a href="archives.html">Trabajar con archivos comprimidos</a></li><li><a href="network-shares.html">Recursos compartidos de red</a></li></ul></section>
 </main>
 </body>

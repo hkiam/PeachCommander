@@ -14,6 +14,22 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Pictures inside an archive get real thumbnails.** Gallery view showed a generic document icon for
+  everything inside a ZIP, because a thumbnail needs a file and a member of an archive is not one
+  yet. Each visible one is now unpacked for it — which is affordable only because of the other half
+  of this change.
+
+### Changed
+
+- **Gallery view stopped reading the whole folder.** It asked the system for a thumbnail of *every*
+  file in the directory, and it did so again for every batch of a listing as it arrived — up to ten
+  times a second. A folder of two thousand files therefore cost two thousand thumbnail requests, over
+  and over. Only the cells actually on screen are made now, and the results are kept, so scrolling
+  back costs nothing and returning to a folder costs nothing. Measured on 300 images: twelve requests
+  on the first visit, none at all on the second.
+
 ## [0.8.2] — 2026-09-02
 
 A file inside an archive can be previewed and opened — and, because working out why it could not led

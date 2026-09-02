@@ -143,6 +143,13 @@ visible) and 0 from cache; scrolling through it requests 13 more per screen; a s
 **0** and answers all 12 from cache. Locally this was churn that QuickLook's own daemon hid; the
 moment a thumbnail costs a read — a share, an archive member — there is no daemon to hide it.
 
+**Inside a mount**, each visible member is staged (`MemberStage`, `.preview`) and the thumbnail made
+from the copy — which is only affordable because of the two rules above: a screenful is a dozen
+members, not the archive. The key is the mount's identity plus the member, so leaving and returning
+costs nothing. An **encrypted** archive is skipped outright: the password is asked once when the
+archive is entered, and a member the panel merely scrolled past is not a reason to go looking for it.
+Formats that re-read the whole file per member are already excluded by `MemberAccessCost`.
+
 ## Reading a member out of an archive
 
 Bounded end to end since F-479. `ArchiveSource.reader(atIndex:password:)` hands back an
