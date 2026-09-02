@@ -120,6 +120,71 @@ public struct GridLayout: Equatable, Sendable {
         return (index >= 0 && index < count) ? index : nil
     }
 
+    // MARK: - What is on screen
+    //
+    // The grid draws every cell it has and the panel asked for a thumbnail of every *file* it had —
+    // for the whole directory, on every partial batch of a listing. Locally that is churn; on a
+    // share or inside an archive it is one full read per entry (F-479). So the caller needs to know
+    // which items a viewport actually covers, and it has to be cheap: iterating every index to test
+    // its frame is the thing being replaced, not a cheaper way to do it.
+    //
+    // The answer is a *range* and not a set, in both flows, because the grid is exactly as wide (or
+    // tall) as its clip view: a visible row has all of its columns visible with it.
+
+    /// The items whose cells intersect `rect`, row-major (icons / gallery / thumbnails).
+    public func indexes(intersecting rect: CGRect, width: CGFloat, count: Int) -> Range<Int> {
+        let band = Self.band(from: rect.minY, to: rect.maxY, extent: itemHeight,
+                             step: itemHeight + spacing, inset: edgeInset)
+        return Self.range(band, perBand: columns(forWidth: width), count: count)
+    }
+
+    /// The items whose cells intersect `rect`, column-major (brief).
+    public func indexesColumnMajor(intersecting rect: CGRect, height: CGFloat,
+                                   count: Int) -> Range<Int> {
+        let band = Self.band(from: rect.minX, to: rect.maxX, extent: itemWidth,
+                             step: itemWidth + spacing, inset: edgeInset)
+        return Self.range(band, perBand: rowsPerColumn(forHeight: height), count: count)
+    }
+
+    /// Which rows (or columns) a viewport touches.
+    ///
+    /// Solved from the cell's own geometry rather than by rounding the viewport, because cells do
+    /// **not** tile: `step` is the cell plus the gap, so a coordinate can land between two cells and
+    /// belong to neither. Band `b` occupies `[inset + b*step, inset + b*step + extent]`, and it is
+    /// touched when its far edge is past `from` and its near edge is before `to`.
+    ///
+    /// `floor`/`ceil` and not `Int(...)`: Swift's `Int(Double)` truncates *toward zero*, so the
+    /// first version turned a cell scrolled half off the top (a negative quotient) into band 0 by
+    /// accident and into the wrong band on purpose.
+    private static func band(from: CGFloat, to: CGFloat, extent: CGFloat,
+                             step: CGFloat, inset: CGFloat) -> Range<Int> {
+        guard step > 0, to > from, from.isFinite, to.isFinite else { return 0..<0 }
+        let firstD = floor(Double(from - inset - extent) / Double(step)) + 1
+        let lastD = ceil(Double(to - inset) / Double(step)) - 1
+        guard firstD.isFinite, lastD.isFinite, lastD >= 0 else { return 0..<0 }
+        // Clamped at **both** ends before it becomes an `Int`. `Int(Double)` traps on anything
+        // outside Int's range, and this took the app down the first time a panel switched to
+        // gallery view: a view with no clipping ancestor reports `CGRect.infinite`, whose corner is
+        // -8.99e307. Note what that means — `CGRect.infinite` is built from *finite* numbers, so an
+        // `isFinite` check sails straight past it, and the first version of this clamp only held the
+        // upper end and trapped on the lower one instead.
+        let cap = Double(1 << 40)          // past any listing, and far inside Int
+        let first = max(0, Int(min(max(firstD, -cap), cap)))
+        let last = Int(min(max(lastD, -cap), cap))
+        guard last >= first else { return 0..<0 }
+        return first..<(last + 1)
+    }
+
+    private static func range(_ bands: Range<Int>, perBand: Int, count: Int) -> Range<Int> {
+        guard count > 0, perBand > 0, !bands.isEmpty else { return 0..<0 }
+        // Clamp the band index before multiplying, not after: `bands.lowerBound * perBand` on a
+        // scrolled-past-the-end viewport can overflow, which traps just as hard as the conversion.
+        let maxBand = count / perBand + 1
+        let lower = min(count, min(bands.lowerBound, maxBand) * perBand)
+        let upper = min(count, min(bands.upperBound, maxBand) * perBand)
+        return lower..<max(lower, upper)
+    }
+
     /// Item index at `point`, or nil if the point is in a gap / past the end.
     public func index(at point: CGPoint, width: CGFloat, count: Int) -> Int? {
         let cols = columns(forWidth: width)

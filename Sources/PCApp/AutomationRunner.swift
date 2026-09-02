@@ -2291,7 +2291,11 @@ extension MainWindowController {
         // thumbnails simply have not arrived yet.
         let out = "path=\(path)\ncount=\(names.count)\n"
             + "locality=\(panel.sourceLocality.rawValue)\n"
-            + "deferredthumbs=\(panel.view.deferredThumbnails)\n" + message
+            + "deferredthumbs=\(panel.view.deferredThumbnails)\n"
+            + "thumbsrequested=\(panel.view.thumbnailsRequested)\n"
+            + "thumbscached=\(panel.view.thumbnailsFromCache)\n"
+            + "thumbcache=\(ThumbnailCache.shared.report.count)/"
+            + "\(ThumbnailCache.shared.report.bytes / (1024 * 1024))MB\n" + message
             + names.joined(separator: "\n") + "\n"
         try? out.write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] dumped \(names.count) entries of \(path) → \(file)")

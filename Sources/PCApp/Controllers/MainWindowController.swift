@@ -9794,11 +9794,28 @@ final class PanelView: NSView {
         gridGeneration &+= 1
         let entries = tableView.currentVisibleEntries()
         iconGrid.setItems(gridItems(from: entries), cursor: max(0, tableView.cursorRow + 1))
+        gridEntries = entries
+        // Installed once, not per refresh, and it drives the same request path a refresh does.
+        if iconGrid.onVisibleRangeChanged == nil {
+            iconGrid.onVisibleRangeChanged = { [weak self] in
+                guard let self, self.viewMode == .gallery else { return }
+                self.requestThumbnails(for: self.gridEntries, generation: self.gridGeneration)
+            }
+        }
         if viewMode == .gallery { requestThumbnails(for: entries, generation: gridGeneration) }
     }
 
+    /// The rows the grid is currently showing, so a scroll can ask for thumbnails without the
+    /// listing being handed in again.
+    private var gridEntries: [VFSEntry] = []
+
     /// How many thumbnails the last gallery refresh declined to generate (F-479), for the harness.
     private(set) var deferredThumbnails = 0
+    /// How many the last pass asked the system for, and how many the cache answered (F-479
+    /// follow-up). Without these two numbers "it only fetches what is visible" is a claim nobody can
+    /// check — which is the shape of defect this whole feature round kept turning up.
+    private(set) var thumbnailsRequested = 0
+    private(set) var thumbnailsFromCache = 0
 
     /// Generate thumbnails for the gallery and swap them in as they arrive (grid index = entry index
     /// + 1 for the synthetic "..").
@@ -9811,9 +9828,23 @@ final class PanelView: NSView {
     private func requestThumbnails(for entries: [VFSEntry], generation: Int) {
         guard !currentPath.isEmpty else { return }
         deferredThumbnails = 0
+        thumbnailsRequested = 0
+        thumbnailsFromCache = 0
         let scale = window?.backingScaleFactor ?? 2
         let px = CGSize(width: 128, height: 128)
-        for (i, entry) in entries.enumerated() where !PanelEntryHelpers.isDirectoryLike(entry.kind) {
+        // Only what is on screen. This used to run over the *whole* filtered listing, and it is
+        // called from `updateRows` — which fires for every partial batch of a listing, up to ten
+        // times a second. A 2,000-file folder therefore asked the system for 2,000 thumbnails,
+        // repeatedly. The grid index is the entry index + 1 for the synthetic "..", so the visible
+        // range is shifted back by one to index `entries`.
+        let visible = iconGrid.visibleItemIndexes()
+        guard !visible.isEmpty else { return }
+        let lower = max(0, visible.lowerBound - 1)
+        let upper = min(entries.count, visible.upperBound)
+        guard lower < upper else { return }
+
+        for i in lower..<upper where !PanelEntryHelpers.isDirectoryLike(entries[i].kind) {
+            let entry = entries[i]
             let gridIndex = i + 1
             // Nothing here asked for a thumbnail: switching the panel to gallery is not a request to
             // read every file in the directory. On a share that is what it was — one full read per
@@ -9824,17 +9855,33 @@ final class PanelView: NSView {
                 deferredThumbnails += 1
                 continue
             }
+            // The cache first, and by identity rather than by path: a file replaced in place keeps
+            // its name, and a path-only key would show the previous file's picture for the rest of
+            // the session.
+            let key = ThumbnailCache.key(path: (currentPath as NSString).appendingPathComponent(entry.name),
+                                         modified: entry.modified, size: entry.size)
+            if let cached = ThumbnailCache.shared.image(for: key) {
+                thumbnailsFromCache += 1
+                iconGrid.setThumbnail(cached, at: gridIndex)
+                continue
+            }
             let url = URL(fileURLWithPath: (currentPath as NSString).appendingPathComponent(entry.name))
             if let image = pluginThumbnail(for: url, size: px) {
+                ThumbnailCache.shared.store(image, for: key)
                 iconGrid.setThumbnail(image, at: gridIndex)
                 continue
             }
+            thumbnailsRequested += 1
             let request = QLThumbnailGenerator.Request(fileAt: url, size: px, scale: scale,
                                                        representationTypes: .thumbnail)
             QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { [weak self] rep, _ in
                 guard let rep else { return }
                 Task { @MainActor in
-                    guard let self, self.gridGeneration == generation else { return }
+                    guard let self else { return }
+                    // Cached even when the grid has moved on: the work is done, and the next visit
+                    // to this folder is exactly when it pays.
+                    ThumbnailCache.shared.store(rep.nsImage, for: key)
+                    guard self.gridGeneration == generation else { return }
                     self.iconGrid.setThumbnail(rep.nsImage, at: gridIndex)
                 }
             }

@@ -117,10 +117,60 @@ final class IconGridView: NSView, NSDraggingSource {
         clip.postsFrameChangedNotifications = true
         NotificationCenter.default.addObserver(self, selector: #selector(clipResized),
                                                name: NSView.frameDidChangeNotification, object: clip)
+        // Scrolling changes which cells are on screen, and since F-479 that is the set the panel
+        // fetches thumbnails for — so it has to be told. A clip view posts this only when asked to.
+        clip.postsBoundsChangedNotifications = true
+        NotificationCenter.default.addObserver(self, selector: #selector(clipScrolled),
+                                               name: NSView.boundsDidChangeNotification, object: clip)
         registerForDraggedTypes([.fileURL])
         relayout()
     }
-    @objc private func clipResized() { relayout(); needsDisplay = true }
+    @objc private func clipResized() { relayout(); needsDisplay = true; onVisibleRangeChanged?() }
+
+    /// Fired when the visible cells change — a scroll, or a resize that reflows the grid.
+    ///
+    /// Coalesced to the end of the run loop turn: a live scroll posts this continuously, and each
+    /// one may start work per newly visible cell. One pass after the gesture settles is the whole
+    /// point of asking only for what is visible.
+    var onVisibleRangeChanged: (() -> Void)?
+
+    private var visibleChangeScheduled = false
+
+    @objc private func clipScrolled() {
+        guard !visibleChangeScheduled else { return }
+        visibleChangeScheduled = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.visibleChangeScheduled = false
+            self.onVisibleRangeChanged?()
+        }
+    }
+
+    /// The items currently on screen.
+    ///
+    /// Arithmetic in `GridLayout`, not a loop over every cell here: the loop is what this replaces.
+    /// Empty while the view has no size yet, which is the state during window setup — asking for
+    /// thumbnails then would fetch the whole directory and throw it away.
+    func visibleItemIndexes() -> Range<Int> {
+        // `visibleRect` is `CGRect.infinite` — not `.zero` — while the view has no clipping
+        // ancestor, which is exactly the state during `setViewMode`: the grid is swapped in as the
+        // scroll view's document view a moment later. Measured: `rect=(-8.99e307, -8.99e307,
+        // 1.80e308, 1.80e308)` with `bounds=(0, 0, 1, 49982)`. A `width > 1` check passes that
+        // happily and the arithmetic downstream then trapped. Nothing is visible yet, so nothing is
+        // asked for; the resize that follows drives the real pass.
+        let rect = visibleRect
+        // `isInfinite` and not `isFinite`: `CGRect.infinite` is made of finite numbers
+        // (-8.99e307 … 1.80e308), so checking the components passes it through. It is what AppKit
+        // reports while a view has no clipping ancestor — the state during `setViewMode`, when the
+        // grid has not yet been installed as the scroll view's document view. Measured:
+        // `rect=(-8.99e307, -8.99e307, 1.80e308, 1.80e308)` with `bounds=(0, 0, 1, 49982)`. The
+        // geometry would honestly answer "every cell"; nothing is on screen, so the answer here is
+        // none, and the resize that follows drives the real pass.
+        guard !rect.isInfinite, rect.width > 1, rect.height > 1 else { return 0..<0 }
+        return columnMajor
+            ? layout.indexesColumnMajor(intersecting: rect, height: bounds.height, count: items.count)
+            : layout.indexes(intersecting: rect, width: bounds.width, count: items.count)
+    }
 
     private var columns: Int { layout.columns(forWidth: bounds.width) }
 
