@@ -73,6 +73,24 @@ result on its own before:
    a single-architecture dylib inside a universal app, breaking SFTP on Intel.
    The bottles come straight from Homebrew's registry (checksum verified) because
    `brew fetch --bottle-tag` refuses a foreign architecture on an arm64 install.
+
+   **A bottle that no longer exists is built instead.** On 2026-09-02 — four days after the
+   0.8.1 release packaged cleanly — Homebrew stopped publishing Intel macOS bottles for
+   `openssl@3`: it has `arm64_tahoe/sequoia/sonoma` and, for x86_64, only `x86_64_linux`.
+   `libssh2` still has both. The script asked for one codename serving both architectures of
+   both formulae, found none, and refused to package at all. It now asks **per formula and per
+   architecture** and builds a missing x86_64 slice from OpenSSL's own source release —
+   version and checksum taken from the same formula API the bottles come from, so the slice
+   that is built is the same release as the slice that is fetched. About 30 seconds on ten
+   cores; `no-tests no-docs`, and the build log is kept only if it fails, because OpenSSL 3.6's
+   installer prints a page of harmless perl warnings that would bury a real error.
+
+   Only `openssl@3` is built this way, deliberately: `libssh2` needs an openssl to build
+   *against*, so a general "build anything" fallback would be a build system rather than a
+   fallback. If `libssh2` loses its x86_64 bottle too, the script stops with a sentence saying
+   exactly that — and so does the point at which shipping a universal binary needs a different
+   answer (an Intel runner, or dropping the promise in `CONVENTIONS.md` and
+   `docs/architecture/tech-stack.md`).
 3. **Universal plugins.** Every `Tools/build-*-plugin*.sh` goes through
    `Tools/lib/pc-universal.sh`. They used to compile for `$(uname -m)`, which meant
    the app launched on Intel while *no plugin could load* — Git, Archive, WebDAV,

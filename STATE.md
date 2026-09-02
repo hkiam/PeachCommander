@@ -26,6 +26,40 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-02 — the release would not package, and it was not the release's fault
+
+`release.yml` refused 0.8.2, twice. The first refusal was mine: I triggered the packaging eight
+seconds after pushing the release commit, and the workflow correctly declines to build from a commit
+with no green CI run (`CI for 261efa75: <no run>`). The guard doing its job, in other words.
+
+The second was real and came from outside. **Homebrew stopped publishing Intel macOS bottles for
+`openssl@3`** — it has `arm64_tahoe/sequoia/sonoma` and, for x86_64, only `x86_64_linux`, while
+`libssh2` still has both. `make-universal-deps.sh` looked for one codename serving both architectures
+of both formulae, found none, and stopped. The 0.8.1 release packaged cleanly on 2026-08-29, so this
+broke within four days.
+
+Four ways out were weighed and written down in the answer: build the missing slice from source, ship
+arm64-only, add an Intel runner, or pin a stale openssl. Shipping arm64-only was the tempting one and
+would have quietly withdrawn a promise made in two places (`CONVENTIONS.md`,
+`docs/architecture/tech-stack.md`), so it was put to the user rather than taken.
+
+**Chosen and done: build it.** The script now asks per formula *and* per architecture instead of
+demanding one shared codename, and builds a missing x86_64 slice from OpenSSL's own source release —
+version and checksum from the same formula API the bottles come from, so the slice built is the same
+release as the slice fetched (verified: both slices of `libcrypto.3.dylib` report
+`OpenSSL 3.6.4 25 Aug 2026`). Thirty seconds on ten cores. `--libdir=lib` is not decoration: without
+it OpenSSL's installer resolves LIBDIR to the *source* directory and the install lands correctly by
+luck. The build log is discarded on success and printed on failure, because OpenSSL 3.6's installer
+emits a page of harmless perl warnings that would bury a real error in a release log.
+
+Verified end to end locally rather than by pushing and hoping: `make-dmg.sh` runs to completion, and
+`verify-shipping.sh` — which checks **every** Mach-O in the bundle, not a sample — reports 33 binaries
+all arm64 + x86_64, with a 128 MB DMG at the end.
+
+Only `openssl@3` is built from source, and the script says why: `libssh2` needs an openssl to build
+against, so a general fallback would be a build system. If `libssh2` loses its bottle too, it stops
+with that sentence instead of half working.
+
 ## 2026-09-01 — the full VM suite, and the last claim made true
 
 **The suite ran: 136 views, zero Auto Layout conflicts, one failing scenario — and it was not this
