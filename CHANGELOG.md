@@ -21,6 +21,17 @@ does not have.
   yet. Each visible one is now unpacked for it — which is affordable only because of the other half
   of this change.
 
+### Fixed
+
+- **A window sized for a larger display no longer hangs off the screen.** Change a monitor's
+  resolution, or unplug it, and macOS leaves every window at the size it had — so the main window
+  could keep a height the new screen does not have, putting the status bar, the function-key row and
+  the command line below the bottom edge with no way to reach them. The window is now brought back
+  inside the screen when that happens. Deliberately without forgetting what you chose: the size from
+  before is put back as soon as there is room for it again, so unplugging a monitor for a minute does
+  not cost you your layout — and it is that size, not the shrunken one, that is remembered for the
+  next launch.
+
 ### Changed
 
 - **Gallery view stopped reading the whole folder.** It asked the system for a thumbnail of *every*

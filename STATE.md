@@ -26,6 +26,50 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-02 — "the running instance is stuck", and it was the display
+
+Reported as a hang: no window on clicking the Dock icon, nothing coming to the front. It was not a
+hang, and the app was not at fault — but there is a real gap behind it, and it is now closed.
+
+**What the running instance actually was**, measured rather than assumed: main thread idle in the
+ordinary `_DPSNextEvent` (no `runModal` anywhere in the stack, so no modal), no thread inside PCApp,
+PCVFS or PCArchive, accessibility answering immediately, and `set frontmost to true` succeeding in
+**67 ms**. A healthy process.
+
+The `protocol.h` viewer window did come back **pure white** from a window-ID capture — and that was
+real, not an artefact: the equally-occluded main window captured correctly by the same method, which
+is the control that made the white one worth believing. Its model was intact throughout
+(`AXTextArea 1030×2115` for a 5.9 KB file, 7 symbol rows), and the same file in a fresh instance on
+the same build rendered fine.
+
+Then the measurement that explained everything: `CGGetActiveDisplayList` reported **0 active
+displays**, and a `screencapture -R 0,30,2560,1320` that had worked ten minutes earlier failed with
+"could not create image from rect". A minute later there was one external display again, at
+2560×**1080** — where the main window was still **2560×1320**, hanging 270 points below the bottom
+edge. The display had changed mode (or gone away) under a running app, which is also why a window
+lost its backing and came back white.
+
+Two hypotheses were killed on the way, both mine, both cheaply: that a modal was blocking the loop
+(the stack says otherwise), and that my own rebuilds had replaced the bundle under the live process
+(`find -newermt` says **0** files changed after its 15:32:41 launch).
+
+**The gap:** `ensureWindowOnScreen()` already existed and already did the right thing — its own
+comment names this case, "after moving to a smaller monitor" — and it was wired to *launch only*.
+Nothing observed `NSApplication.didChangeScreenParametersNotification`; `grep` found no mention of it
+anywhere in the app.
+
+It is observed now, conservatively, because always clamping is the wrong answer: unplug a monitor for
+a minute and a window sized for it would be laptop-sized forever. So the frame from before a clamp is
+remembered, restored as soon as there is room again, and it is that frame — not the clamped
+accident — that gets written to the session on quit.
+
+The decision is a pure function (`PCFoundation.WindowScreenFit`) for a reason worth naming: **the
+half that matters most cannot be tested on this machine.** "The monitor is plugged back in" needs a
+second screen configuration, and there is one screen. Driving the app can only ever exercise the
+shrinking half — which it does, end to end, through a new `screenclamp` verb: `forced=2560x1320` →
+`afterchange=2560x960 fits=true`. The restore half, and the case where a *third*, still-too-small
+screen must not trigger it, are covered by the unit tests instead.
+
 ## 2026-09-02 — and then the archive thumbnails, which were the cheap part
 
 With the two prerequisites in, this was the few hours the estimate promised rather than the day it
