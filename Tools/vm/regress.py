@@ -355,6 +355,24 @@ SCENARIOS = [
     #
     # The fitted percentage is deliberately not asserted: it depends on the window, which depends on the
     # screen. `docFrame` is the fixture's own 3000x2000 and does not.
+    # F-489. Both surfaces the strings panel appears on, over a fixture built to carry one string in
+    # each reading. The list alone is not the claim — a correct list beside a jump that lands
+    # somewhere else looks like a working feature — so each half also activates a row and reports the
+    # byte range the hex view then highlights.
+    #
+    # `listerstrings`/`hexstrings` wait for the background scan themselves. That wait is not a
+    # convenience: the scan is off the main thread by design, so a report taken as the panel opens
+    # finds nothing over a file full of strings, which reads as a broken feature and is the harness
+    # measuring itself.
+    #
+    # The editor's report is written last, and is the one the guest waits for.
+    ("hex-strings", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                     "view /Users/admin/pc-demo/strings.bin", "wait 2000",
+                     "listermode hex|/Users/admin/hexstrings-mode.txt", "wait 1200",
+                     "listerstrings 0|/Users/admin/hexstrings-viewer.txt", "wait 900",
+                     "listerdump /Users/admin/hexstrings-dump.txt", "wait 600",
+                     "hexstrings /Users/admin/pc-demo/strings.bin|1|/Users/admin/hexstrings-editor.txt",
+                     "wait 900"], 20),
     ("viewer-zoom", ["active left", "left /Users/admin/pc-demo/Images", "wait 2000",
                      "focus big.png", "wait 900",
                      "cmd cm_List", "wait 2500",
@@ -2171,6 +2189,22 @@ REPORTS = {
     # palette for four commits, because nobody had asked the audit about a view that has to be opened
     # first), and the dock's terminal. `windows=` stays in the dump, where it is worth reading and
     # costs nothing when it moves.
+    # F-489. Measured from a real run rather than computed: the offsets are what the scanner
+    # reports over this fixture, and the selection is what clicking the second row produced.
+    # `utf16be` is deliberately NOT asserted — a NUL-padded big-endian run and a little-endian
+    # one a byte later decode to identical text over identical bytes, so which label it carries
+    # is a documented tie-break and not something a screen test should pin. The scanner's
+    # encoding decisions are BinaryStringsTests' job; this scenario's job is that the panel is on
+    # screen, populated, and moves the hex view to the right bytes.
+    "hex-strings": ("/Users/admin/hexstrings-editor.txt",
+                    ["stringrow=00000010 ascii PeachCommander-ASCII",
+                     "stringrow=0000002d utf16le wide-little-endian",
+                     "stringrow=00000083 utf8 Gr\u00fc\u00dfe aus Erfurt",
+                     "clicked=0000002d utf16le wide-little-endian",
+                     "hexselection=0000002d-00000050",
+                     # The scan finished before the report was taken. Zero here means the wait
+                     # above did nothing and every row below it is an accident.
+                     "!stringsfound=0"]),
     "surface-colours": ("/Users/admin/surfaces.txt",
                         ["findings=0", "audited: Settings", "audited: side:Git",
                          "audited: dock:plugin.terminal.view"]),
@@ -2941,6 +2975,20 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # A binary carrying one string in each of the readings the strings panel
+                  # performs (F-489), at fixed offsets so the report is an exact claim rather
+                  # than "something was found". Written from integers only: the UTF-8 string is
+                  # spelled out as bytes because non-ASCII source through three layers of shell
+                  # quoting is a way to test the harness instead of the app. The tail is x86
+                  # function prologues — printable, and not text, which is what the panel's
+                  # plausibility rule is for.
+                  "python3 -c \"open('pc-demo/strings.bin','wb').write("
+                  "bytes([0,1,2,3]*4) + b'PeachCommander-ASCII' + bytes(9) + "
+                  "'wide-little-endian'.encode('utf-16-le') + bytes(10) + "
+                  "'wide-big-endian'.encode('utf-16-be') + bytes(10) + "
+                  "bytes([0x47,0x72,0xc3,0xbc,0xc3,0x9f,0x65,0x20,0x61,0x75,0x73,0x20,"
+                  "0x45,0x72,0x66,0x75,0x72,0x74]) + bytes(9) + "
+                  "bytes([0x48,0x89,0xe5,0x41,0x57,0x41,0x56])*20)\" && "
                   # A name with a space and an apostrophe, for the terminal's drop quoting: a naive
                   # implementation turns this one file into three arguments.
                   "printf 'dropped\\n' > \"pc-demo/it's a file.txt\" && "

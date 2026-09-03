@@ -39,6 +39,15 @@ final class StringsSidebar: NSView {
     private var shown: [FoundString] = []
     private var truncated = false
     private var options = StringScanOptions()
+    /// The dimmed text colour for the offset and encoding columns and the two labels.
+    ///
+    /// Derived from the palette, never borrowed from the system. `.secondaryLabelColor` follows
+    /// the *macOS* appearance rather than the app's theme, so under Midnight it resolved to
+    /// near-black on a near-black panel — the colour audit found forty findings at a contrast
+    /// ratio of 1.1, which is text nobody can read. `quietened` dims the theme's own text
+    /// against the theme's own background and holds a floor of 4.0 while doing it.
+    private let dimmedText = ColourContrast.quietened(Theme.current.listText,
+                                                      on: Theme.current.listBackground)
 
     // MARK: - Construction
 
@@ -59,7 +68,7 @@ final class StringsSidebar: NSView {
 
         let lengthLabel = NSTextField(labelWithString: String(localized: "Min. length:"))
         lengthLabel.font = NSFont.systemFont(ofSize: 11)
-        lengthLabel.textColor = .secondaryLabelColor
+        lengthLabel.textColor = dimmedText
         lengthLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(lengthLabel)
 
@@ -110,7 +119,7 @@ final class StringsSidebar: NSView {
         addSubview(scroll)
 
         status.font = NSFont.systemFont(ofSize: 10)
-        status.textColor = .secondaryLabelColor
+        status.textColor = dimmedText
         status.translatesAutoresizingMaskIntoConstraints = false
         addSubview(status)
 
@@ -348,12 +357,12 @@ extension StringsSidebar: NSTableViewDataSource, NSTableViewDelegate {
         switch column.identifier.rawValue {
         case "offset":
             field.stringValue = String(format: "%08llx", hit.offset)
-            field.textColor = .secondaryLabelColor
+            field.textColor = dimmedText
             field.toolTip = String(format: String(localized: "%lld byte(s) at 0x%llX"),
                                    Int64(hit.byteLength), hit.offset)
         case "encoding":
             field.stringValue = Self.tag(hit.encoding)
-            field.textColor = .secondaryLabelColor
+            field.textColor = dimmedText
             field.toolTip = Self.name(hit.encoding)
         default:
             // Tabs inside a string would render as a gap wide enough to look like the end
