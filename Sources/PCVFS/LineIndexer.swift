@@ -7,6 +7,25 @@ import Foundation
 
 /// Computes line-start byte offsets for text-mode viewing.
 public enum LineIndexer {
+
+    /// The index of the line containing `offset`, given ascending line-start offsets.
+    ///
+    /// The largest line whose start is at or before the offset — a binary search that the viewer's
+    /// virtual text views had each written out for themselves. Kept here because it is the half of
+    /// "show me the match" that has nothing to do with drawing, and because two copies of a search
+    /// like this is one copy too many.
+    ///
+    /// Returns 0 for an empty index, and clamps an offset past the end to the last line.
+    public static func line(containing offset: Int64, in starts: [Int64]) -> Int {
+        guard !starts.isEmpty else { return 0 }
+        var line = 0
+        var lo = 0, hi = starts.count - 1
+        while lo <= hi {
+            let mid = (lo + hi) / 2
+            if starts[mid] <= offset { line = mid; lo = mid + 1 } else { hi = mid - 1 }
+        }
+        return line
+    }
     private static let lf: UInt8 = 0x0A
     private static let cr: UInt8 = 0x0D
 

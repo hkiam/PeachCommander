@@ -1227,7 +1227,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 view = tv
             } else if slice.count <= Self.highlightSizeLimit, !hasBinaryContent(slice) {
                 // Still small enough to highlight in one pass (materialized).
-                view = CodeListerView(text: decodedText(slice), language: language)
+                view = CodeListerView(text: decodedText(slice), language: language,
+                                      encoding: searchEncoding)
             } else {
                 // Beyond practical highlighting: stream as plain text, uncapped (F-112).
                 view = TextListerView(slice: slice, encoding: textEncoding?.encoding)
@@ -1707,7 +1708,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // the right byte and highlighted nothing passed for working: in hex every row looks like
         // every other row, so "it scrolled somewhere" and "it found it" are indistinguishable
         // without this line.
-        let shown = (contentView as? HexListerView)?.automationSelectionDescription ?? ""
+        // Which view answered, and in which encoding it reads the file. Both were guesses while
+        // this was being debugged, and a guess about the encoding is what a byte-to-character
+        // mapping gets wrong silently.
+        var shown = "contentview=\(contentView.map { String(describing: type(of: $0)) } ?? "none")\n"
+            + "encoding=\(searchEncoding.rawValue)\n"
+        shown += (contentView as? HexListerView)?.automationSelectionDescription ?? ""
+        // In text and code the observable is the selected *text*, and it is the strongest one
+        // available: a hit that is highlighted in the wrong place reports the wrong characters,
+        // where an offset would still have looked right. A byte offset mapped to the wrong column
+        // is precisely how this went unnoticed in the code view, whose mapping was documented as
+        // "best-effort" and drifted with every multi-byte character above the match.
+        if let text = (contentView as? ViewerTextProviding)?.selectedText {
+            shown += "selectedtext=\(text)\n"
+        }
         return "regex=\(regex)\nfound=\(found)\nmatch=\(found ? String(lastMatchOffset) : "-")\n" + shown
     }
 
@@ -2288,9 +2302,10 @@ protocol ListerScrollable: AnyObject {
     /// eye at whatever line the view happened to stop on, while the hex *editor*, which selects its
     /// hit, made the difference obvious.
     ///
-    /// The default is the old behaviour on purpose: `TextListerView` and `CodeListerView` have
-    /// selection machinery of their own but reach it by line and column, not by byte, so wiring
-    /// them up is a change of its own rather than something to slip in here.
+    /// The three views that scroll by byte offset all implement it — hex selects the bytes, the two
+    /// virtual text views select the characters those bytes decode to. The default remains scrolling
+    /// alone, so a representation added later shows a match no worse than it used to rather than not
+    /// compiling.
     func showMatch(byteRange range: Range<Int64>)
 }
 
@@ -2577,14 +2592,34 @@ final class TextListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
     }
 
     func scroll(toByteOffset offset: Int64) {
-        // Largest line whose start <= offset (within the indexed content).
-        var line = 0
-        var lo = 0, hi = lineStarts.count - 1
-        while lo <= hi {
-            let mid = (lo + hi) / 2
-            if lineStarts[mid] <= offset { line = mid; lo = mid + 1 } else { hi = mid - 1 }
-        }
+        let line = LineIndexer.line(containing: offset, in: lineStarts)
         scrollToVisible(NSRect(x: 0, y: CGFloat(line) * lineHeight, width: 1, height: lineHeight * 3))
+    }
+
+    /// Select the bytes a search matched, and bring them into view.
+    ///
+    /// The column has to be counted in *characters*, not bytes: this view's selection is a
+    /// (line, column) pair over the decoded line, so a match after an umlaut would otherwise be
+    /// highlighted a character to the right of itself, and further right the deeper into the line
+    /// it sits. The bytes from the line start up to the match are decoded and counted, which is
+    /// exact for every encoding this view indexes lines in.
+    func showMatch(byteRange range: Range<Int64>) {
+        guard !lineStarts.isEmpty else { return }
+        let start = position(ofByte: range.lowerBound)
+        // At least one character, so a zero-length match is still visible as a caret.
+        let end = position(ofByte: Swift.max(range.lowerBound + 1, range.upperBound))
+        selStart = start
+        selEnd = end
+        scroll(toByteOffset: range.lowerBound)
+        needsDisplay = true
+    }
+
+    /// Where a byte offset falls, as the line holding it and the character column within it.
+    private func position(ofByte offset: Int64) -> (line: Int, col: Int) {
+        let line = LineIndexer.line(containing: offset, in: lineStarts)
+        let lead = backing.bytes(lineStarts[line], Swift.min(offset, contentEnd))
+        let decoded = String(bytes: lead, encoding: encoding) ?? String(decoding: lead, as: UTF8.self)
+        return (line, decoded.count)
     }
 
     /// Scroll a 1-based line number into view (clamped to the indexed prefix).
@@ -2867,6 +2902,16 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
     private let charW: CGFloat
     private let chars: [Character]
     private let lineRanges: [Range<Int>]     // per-line character ranges (newline excluded)
+    /// Byte offset of each line's start, in `encoding`.
+    ///
+    /// This view is built from *decoded text* and so has no idea, on its own, where a byte offset
+    /// falls — which is why `scroll(toByteOffset:)` used to say "best-effort: treat the search byte
+    /// offset as a character offset". That holds for pure ASCII and drifts everywhere else, further
+    /// with every umlaut and every CRLF above the target, and a *selection* built on a drifting
+    /// offset is worse than no selection: it points confidently at the wrong characters. Costs one
+    /// pass over the text at construction, next to the syntax pass already made there.
+    private let lineByteStarts: [Int64]
+    private let encoding: String.Encoding
     private let tokens: [SyntaxToken]
     private var selStart: (line: Int, col: Int)?
     private var selEnd: (line: Int, col: Int)?
@@ -2884,7 +2929,11 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
 
     var copyText: String { String(chars) }
 
-    init(text: String, language: SyntaxLanguage) {
+    /// - Parameter encoding: what the file's bytes were decoded from, so a search hit's byte offset
+    ///   can be mapped back to a character. Formatted content is a Swift string of this view's own
+    ///   making and is UTF-8 by construction.
+    init(text: String, language: SyntaxLanguage, encoding: String.Encoding = .utf8) {
+        self.encoding = encoding
         self.chars = Array(text)
         self.tokens = SyntaxHighlighter.tokens(text, language: language)
         self.charW = ("0" as NSString).size(withAttributes: [.font: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)]).width
@@ -2897,6 +2946,20 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
         for (i, ch) in chars.enumerated() where ch.isNewline { ranges.append(start..<i); start = i + 1 }
         ranges.append(start..<chars.count)
         self.lineRanges = ranges
+        // The line's own characters plus the newline that ended it. `chars[range.upperBound]` is
+        // that newline — one Character, which for CRLF is two bytes, which is exactly the case the
+        // range-building above exists for.
+        var byteStarts: [Int64] = []
+        byteStarts.reserveCapacity(ranges.count)
+        var byteOffset: Int64 = 0
+        for range in ranges {
+            byteStarts.append(byteOffset)
+            byteOffset += Self.byteCount(String(chars[range]), in: encoding)
+            if range.upperBound < chars.count {
+                byteOffset += Self.byteCount(String(chars[range.upperBound]), in: encoding)
+            }
+        }
+        self.lineByteStarts = byteStarts
         super.init(frame: .zero)
         setFrameSize(NSSize(width: 2000, height: CGFloat(max(1, ranges.count)) * lineHeight))
     }
@@ -3010,15 +3073,39 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
     }
 
     func scroll(toByteOffset offset: Int64) {
-        // Best-effort: treat the search byte offset as a character offset to find the line.
-        let target = Int(offset)
-        var line = 0
-        var lo = 0, hi = lineRanges.count - 1
-        while lo <= hi {
-            let mid = (lo + hi) / 2
-            if lineRanges[mid].lowerBound <= target { line = mid; lo = mid + 1 } else { hi = mid - 1 }
-        }
+        let line = LineIndexer.line(containing: offset, in: lineByteStarts)
         scrollToVisible(NSRect(x: 0, y: CGFloat(line) * lineHeight, width: 1, height: lineHeight * 3))
+    }
+
+    /// Select the bytes a search matched, and bring them into view.
+    func showMatch(byteRange range: Range<Int64>) {
+        guard !lineByteStarts.isEmpty else { return }
+        selStart = position(ofByte: range.lowerBound)
+        // At least one character, so a zero-length match is still visible as a caret.
+        selEnd = position(ofByte: Swift.max(range.lowerBound + 1, range.upperBound))
+        scroll(toByteOffset: range.lowerBound)
+        needsDisplay = true
+    }
+
+    /// Where a byte offset falls, as the line holding it and the character column within it.
+    private func position(ofByte offset: Int64) -> (line: Int, col: Int) {
+        let line = LineIndexer.line(containing: offset, in: lineByteStarts)
+        guard lineRanges.indices.contains(line) else { return (line, 0) }
+        var remaining = offset - lineByteStarts[line]
+        var col = 0
+        for character in chars[lineRanges[line]] {
+            let size = Self.byteCount(String(character), in: encoding)
+            if remaining < size { break }
+            remaining -= size
+            col += 1
+        }
+        return (line, col)
+    }
+
+    /// How many bytes `text` occupies in `encoding`, falling back to UTF-8 for anything it cannot
+    /// be expressed in — the same fallback the line decoding uses, so the two agree.
+    private static func byteCount(_ text: String, in encoding: String.Encoding) -> Int64 {
+        Int64(text.data(using: encoding)?.count ?? text.utf8.count)
     }
 
     func scroll(toLine line: Int) {

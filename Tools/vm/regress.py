@@ -355,6 +355,22 @@ SCENARIOS = [
     #
     # The fitted percentage is deliberately not asserted: it depends on the window, which depends on the
     # screen. `docFrame` is the fixture's own 3000x2000 and does not.
+    # The same gap as the two hex reports, in the other two views that scroll by byte offset:
+    # `findNext` scrolled to its hit and highlighted nothing. Both are exercised over one file,
+    # because past 4 MiB the code representation is `CodeListerView` and the text representation is
+    # `TextListerView` — the two virtual views, and the NSTextView path is not involved.
+    #
+    # The code view is the interesting one and so is gated. It is built from decoded *text* and had
+    # no idea where a byte offset falls; its own comment said "best-effort: treat the search byte
+    # offset as a character offset", which is right for ASCII and drifts everywhere else. The
+    # negative expectation is the defect's actual output, measured by putting it back: four
+    # characters late, exactly the byte-versus-character difference on that line.
+    ("viewer-find-highlight", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                               "view /Users/admin/pc-demo/bigcode.swift", "wait 3000",
+                               "listermode text|/Users/admin/vfh-textmode.txt", "wait 2500",
+                               "listerfind FINDMEHERE|0|/Users/admin/vfh-text.txt", "wait 900",
+                               "listermode code|/Users/admin/vfh-codemode.txt", "wait 2500",
+                               "listerfind FINDMEHERE|0|/Users/admin/vfh-code.txt", "wait 900"], 26),
     # Reported: in the hex representation only the bytes could be selected, not the text beside
     # them — while the hex *editor*, which has its own layout and its own mapping, answered for
     # both. The view's column arithmetic was a second, silent copy of what `HexFormatter` draws,
@@ -2208,6 +2224,12 @@ REPORTS = {
     # palette for four commits, because nobody had asked the audit about a view that has to be opened
     # first), and the dock's terminal. `windows=` stays in the dump, where it is worth reading and
     # costs nothing when it moves.
+    # `contentview=` names which view answered: the whole claim is about the virtual views, and a
+    # file that slipped under the 4 MiB threshold would be answered by an NSTextView that highlights
+    # for entirely different reasons. `!selectedtext=MEHERE` is the defect verbatim.
+    "viewer-find-highlight": ("/Users/admin/vfh-code.txt",
+                              ["contentview=CodeListerView", "found=true",
+                               "selectedtext=FINDMEHERE", "!selectedtext=MEHERE\""]),
     # Row 1 is the row at offset 0x10, so byte 3 of it is 0x13 — from either half of the row. The
     # negative expectation is the defect itself: with the gutter unmapped the report said
     # `hexselection=none`, measured by putting the fault back in.
@@ -3007,6 +3029,19 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # Past 4 MiB, so the viewer's *virtual* text views take over from the NSTextView
+                  # — those are the ones that scroll by byte offset and had to learn to show a
+                  # search hit. The needle sits behind umlauts ON ITS OWN LINE, which is the only
+                  # place a byte column and a character column drift apart: the line starts are
+                  # exact either way, so a fixture with the umlauts on earlier lines proves nothing.
+                  # (It proved nothing here first, and the reintroduced defect is what said so.)
+                  # 90,000 lines, not 60,000: the first count came to 3.03 MiB, *under* the
+                  # threshold, so the scenario would have measured the NSTextView path and called
+                  # it a pass. `contentview=` in the report is there to catch exactly that.
+                  "python3 -c \"open('pc-demo/bigcode.swift','w').write("
+                  "'// Gr\\u00fc\\u00dfe, Gr\\u00f6\\u00dfe, Stra\\u00dfe \\u2014 zweibytig in UTF-8.\\n'*90000 + "
+                  "'let marker = \\\"Gr\\u00fc\\u00dfe Gr\\u00f6\\u00dfe FINDMEHERE\\\"\\n' + "
+                  "'// tail\\n'*100)\" && "
                   # A binary carrying one string in each of the readings the strings panel
                   # performs (F-489), at fixed offsets so the report is an exact claim rather
                   # than "something was found". Written from integers only: the UTF-8 string is
