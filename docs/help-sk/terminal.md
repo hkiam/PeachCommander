@@ -34,6 +34,13 @@ Všetko ostatné je v ponuke **Terminál**:
 
 Kým má terminál zameranie, idú **funkčné klávesy tam**, nie do súborového panela — F5 v textovom editore vnútri terminálu sa musí dostať k editoru. Lišta funkčných klávesov to hovorí, namiesto toho, aby ukazovala klávesy, ktoré nič neurobia.
 
+## Písanie @, ~ a zložených zátvoriek
+
+Na väčšine klávesníc mimo Spojených štátov sa `@`, `~`, `|`, `\` a zložené zátvorky píšu klávesom Option. Tieto stlačenia dorazia do shellu ako znaky vytlačené na klávesoch.
+
+- Alternatívou je brať Option ako kláves Meta, čo chcú Alt+B, Alt+F a klávesové skratky Emacsu: terminál potom pred klávesom pošle Esc namiesto znaku. Zapnite to v **Konfigurácia ▸ Zásuvné moduly ▸ Terminál** voľbou **Používať Option ako kláves Meta**.
+- Zmena platí ihneď, aj pre už otvorené terminály, nielen pre nové.
+
 ## Most späť do panela
 
 **Cmd-kliknite na cestu** vo výstupe terminálu a panel tam prejde. Súbor z `ls`, cesta v chybe prekladača, meno z `git status` — jedno kliknutie a pozeráte sa naň.

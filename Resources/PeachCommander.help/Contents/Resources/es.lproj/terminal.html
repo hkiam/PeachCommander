@@ -61,6 +61,12 @@
 </tbody>
 </table>
 <p>Mientras la terminal tiene el foco, las <strong>teclas de función van a ella</strong>, no al panel de archivos: F5 en un editor de texto dentro de la terminal tiene que llegar al editor. La barra de teclas de función lo indica, en vez de mostrar teclas que no van a funcionar.</p>
+<h2 id="escribir-y-las-llaves">Escribir @, ~ y las llaves</h2>
+<p>En la mayoría de los teclados fuera de los Estados Unidos, <code>@</code>, <code>~</code>, <code>|</code>, <code>\</code> y las llaves se escriben con la tecla Opción. Esas pulsaciones llegan al intérprete de órdenes como los caracteres impresos en las teclas.</p>
+<ul>
+<li>La alternativa es tratar Opción como la tecla Meta, que es lo que quieren Alt+B, Alt+F y los atajos de Emacs: el terminal envía entonces Esc antes de la tecla en lugar del carácter. Actívela en <strong>Configuración ▸ Complementos ▸ Terminal</strong> con <strong>Usar Opción como tecla Meta</strong>.</li>
+<li>El cambio se aplica de inmediato, tanto a los terminales ya abiertos como a los nuevos.</li>
+</ul>
 <h2 id="el-puente-de-vuelta-al-panel">El puente de vuelta al panel</h2>
 <p><strong>Cmd-clic en una ruta</strong> de la salida de la terminal y el panel va allí. Un archivo de <code>ls</code>, una ruta en un error del compilador, un nombre de <code>git status</code>: un clic y lo estás mirando.</p>
 <p>Solo actúa cuando la palabra bajo el puntero corresponde de verdad a algo que existe. Un Cmd-clic sobre texto normal no hace nada, en lugar de navegar a un sitio arbitrario, y un clic simple sigue seleccionando texto como siempre.</p>

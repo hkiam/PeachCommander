@@ -127,6 +127,13 @@
 <li>Type hex digits to overwrite bytes, or use the arrow keys to move through the file. Backspace and Delete remove bytes.</li>
 <li>Press Cmd+S to save. As in the text editor, the previous contents are only kept if you switched backups on.</li>
 </ol>
+<h2 id="the-strings-in-the-file-you-are-editing">The strings in the file you are editing</h2>
+<p>The hex editor has the same <strong>Strings</strong> panel as the viewer: every readable run of text in the file, in four encodings at once, and a click puts the caret and the selection on it.</p>
+<ul>
+<li>It reads the bytes as you have edited them, not as they are on disk, so the offsets keep pointing at the right place after an insert has shifted everything below it.</li>
+<li>The list follows your edits: change a byte and it is rebuilt a moment after you stop typing.</li>
+<li>It is described in full under <a href="viewing-files.html#read-the-strings-in-a-binary">Viewing files</a>, and behaves the same way here.</li>
+</ul>
 <h2 id="shortcuts">Shortcuts</h2>
 <table>
 <thead>

@@ -128,6 +128,14 @@ Formátovače mohou dodávat i zásuvné moduly — viz [Plugins](plugins.md).
 3. Psaním hexadecimálních číslic přepisujete byty, nebo se šipkami pohybujte souborem. Backspace a Delete odstraňují byty.
 4. Stiskem Cmd+S uložíte. Stejně jako v textovém editoru se předchozí obsah zachová jen tehdy, když jste zálohy zapnuli.
 
+## Řetězce v souboru, který upravujete
+
+Šestnáctkový editor má stejný panel **Řetězce** jako prohlížeč: každou čitelnou posloupnost textu v souboru, ve čtyřech kódováních naráz, a kliknutí na ni umístí kurzor i výběr.
+
+- Čte bajty tak, jak jste je upravili, ne jak leží na disku, takže offsety ukazují na správné místo i poté, co vložení posunulo vše pod ním.
+- Seznam sleduje vaše úpravy: změňte bajt a chvíli po dopsání se přestaví.
+- Celý je popsán v [Prohlížení souborů](viewing-files.md#read-the-strings-in-a-binary) a chová se tu stejně.
+
 ## Zkratky
 
 | Akce | Klávesa |

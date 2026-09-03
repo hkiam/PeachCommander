@@ -128,6 +128,14 @@ Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
 3. Saisissez des chiffres hexadécimaux pour écraser des octets, ou utilisez les flèches pour parcourir le fichier. Retour arrière et Suppr retirent des octets.
 4. Appuyez sur Cmd+S pour enregistrer. Comme dans l'éditeur de texte, le contenu précédent n'est conservé que si vous avez activé les sauvegardes.
 
+## Les chaînes du fichier que vous modifiez
+
+L'éditeur hexadécimal dispose du même panneau **Chaînes** que la visionneuse : chaque suite de texte lisible du fichier, dans quatre encodages à la fois, et un clic y place le curseur et la sélection.
+
+- Il lit les octets tels que vous les avez modifiés, et non tels qu'ils sont sur le disque : les décalages continuent donc de désigner le bon endroit après qu'une insertion a décalé tout ce qui suit.
+- La liste suit vos modifications : changez un octet et elle est reconstruite un instant après que vous cessez de taper.
+- Elle est décrite en détail sous [Consulter des fichiers](viewing-files.md#read-the-strings-in-a-binary) et se comporte ici de la même façon.
+
 ## Raccourcis
 
 | Action | Raccourci |

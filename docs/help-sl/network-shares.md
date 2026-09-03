@@ -15,7 +15,7 @@ Peach Commander se lahko poveže z datotečnimi strežniki v vašem lokalnem ali
 3. V pogovornem oknu **Poveži s strežnikom** vnesite naslov strežnika. Navedete lahko:
    - naslov SMB, na primer `smb://fileserver/projects`
    - naslov AFP, na primer `afp://fileserver/projects`
-   - pot v slogu Windows, na primer `\\fileserver\projects`
+   - pot v slogu Windows, na primer `\\fileserver\projects\reports`
    - preprosto ime `strežnik/mapa`
 4. Kliknite Poveži (ali pritisnite Enter). Če strežnik potrebuje ime in geslo, macOS prikaže svoje običajno okno za prijavo — tam vnesite svoje podatke.
 5. Ko je mapa pripravljena, jo dejavno podokno samodejno odpre. Brskajte in delajte z njo kot s katero koli drugo mapo.
@@ -36,3 +36,5 @@ Povezana mapa se pojavi kot priklopljen nosilec na vašem Macu. Za prekinitev po
 - Če navedete naslov, ki ga ni mogoče razčleniti, Peach Commander prosi za naslov SMB/AFP, pot v slogu Windows ali ime `strežnik/mapa`, in nič ni priklopljeno.
 - Po potrditvi lahko povezava traja trenutek, medtem ko macOS priklaplja mapo; podokno preklopi nanjo, takoj ko postane na voljo.
 - To se poveže s skupnimi napravami v omrežju. Za dosego strežnika FTP, FTPS ali SFTP glejte sorodno temo spodaj.
+- Pot v slogu Windows deluje tudi v **Pojdi v mapo** in v vrstici poti nad podoknom, ne le v »Poveži se s strežnikom«. Vpišite tja `\\fileserver\projects\reports` in pristanete v tej mapi.
+- Če je souporaba že povezana, greste naravnost v mapo — brez prijavnega okna in brez druge poti do strežnika. Priklopljena je vedno le souporaba sama; do map pod njo pridete z običajnim krmarjenjem, tako da celotno drevo nad njimi ostane dosegljivo.

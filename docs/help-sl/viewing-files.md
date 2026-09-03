@@ -29,6 +29,16 @@ Peach Commander ima vgrajen pregledovalnik, ki omogoča, da pogledate v datoteko
 - Pritisnite Ctrl+G za skok na vrstico, v šestnajstiškem načinu na bajtni odmik. Računanje med številskimi sistemi je dovoljeno: `0x1000 + 15 + 1` pripelje na 4112 — šestnajstiško z `0x`, `$` ali končnim `h`, dvojiško z `0b`, osmiško z `0o`, in `+ - * /` z oklepaji.
 - Če odprete zadetek iz Poišči datoteke, kjer je bilo polje **Najdi besedilo** izpolnjeno, se pregledovalnik začne s tem iskanjem: besedilo je že v iskalni vrstici in prva pojavitev je na zaslonu, tako da pristanete pri ujemanju in ne na začetku datoteke. Če ga tam spremenite ali počistite, ostane vaša različica. V Nastavitvah ▸ Urejanje/Ogled je to mogoče izklopiti, če naj se vsaka datoteka odpre na začetku.
 
+## Branje nizov v binarni datoteki
+
+V šestnajstiškem prikazu orodna vrstica ponuja **Nizi**: podokno s seznamom vsakega berljivega zaporedja besedila v datoteki, z odmikom, na katerem leži, in načinom, kako je bilo dekodirano. Klik na vrstico premakne šestnajstiški pogled na te bajte in jih izbere, tako da se naslednje dejanje — Kopiraj izbor kot … ali preprosto branje okolice — nanaša na kliknjeni niz.
+
+- Štiri branja tečejo hkrati: ASCII, UTF-8, UTF-16 little-endian in UTF-16 big-endian. Široki nizi izvršljive datoteke za Windows in preprosti se tako znajdejo na enem seznamu, namesto da bi vsak zahteval svoj prehod. Latin-1 je ponujen tudi pod **Kodiranja**, a je sprva izklopljen, ker so tri četrtine vseh vrednosti bajtov natisljiv Latin-1 in prevedena koda to branje prestane v velikem obsegu.
+- Isti bajti so pogosto berljivi v več kot enem kodiranju. Kadar si dve branji lastita isti obseg, zmaga tisto, ki se najbolj bere kot besedilo — `Hello` je torej na seznamu enkrat, in ne tudi kot par pismenk, ki jih isti bajti tvorijo, prebrani po dva.
+- **Najm. dolžina** določa, kako kratko zaporedje še šteje. Štirje znaki so običajno izhodišče; pri veliki binarni datoteki jo povečajte, da se seznam razredči.
+- Polje filtra zoži prikazano brez ponovnega branja datoteke in zato ostane hipno tudi pri zelo veliki. Sprememba dolžine ali kodiranj datoteko prebere znova, ker spremeni, kaj šteje za niz.
+- **Pokaži tudi malo verjetne nize** pod Kodiranja doda vse, kar je zgolj natisljivo — tudi besedilo UTF-16, ki ni pretežno latinično in ga običajni seznam izpusti, ker ga nič v bajtih ne loči od običajnega besedila, prebranega po dva bajta.
+
 ## Povečava slike
 
 V slikovnem prikazu pregledovalnik odpre sliko prilagojeno oknu, majhno sliko pa pusti v njeni lastni velikosti, namesto da bi jo napihnil.

@@ -18,7 +18,7 @@
 <li>Dans le dialogue <strong>Se connecter au serveur</strong>, saisissez l'adresse du serveur. Vous pouvez indiquer :
    - une adresse SMB, par exemple <code>smb://fileserver/projects</code>
    - une adresse AFP, par exemple <code>afp://fileserver/projects</code>
-   - un chemin de style Windows, par exemple <code>\\fileserver\projects</code>
+   - un chemin de style Windows, par exemple <code>\\fileserver\projects\reports</code>
    - un simple nom <code>serveur/partage</code></li>
 <li>Cliquez sur Se connecter (ou appuyez sur Retour). Si le serveur a besoin d'un nom et d'un mot de passe, macOS affiche sa fenêtre de connexion habituelle — saisissez-y vos informations.</li>
 <li>Une fois le partage prêt, le panneau actif l'ouvre automatiquement. Parcourez-le et travaillez avec comme avec n'importe quel autre dossier.</li>
@@ -46,6 +46,8 @@
 <li>Si vous saisissez une adresse impossible à interpréter, Peach Commander vous demande une adresse SMB/AFP, un chemin de style Windows ou un nom <code>serveur/partage</code>, et rien n'est monté.</li>
 <li>Après confirmation, la connexion peut prendre un moment pendant que macOS monte le partage ; le panneau bascule dessus dès qu'il devient disponible.</li>
 <li>Cela connecte à des appareils partagés sur un réseau. Pour atteindre plutôt un serveur FTP, FTPS ou SFTP, consultez la rubrique liée ci-dessous.</li>
+<li>Un chemin à la mode Windows fonctionne aussi dans <strong>Aller au dossier</strong> et dans la barre de chemin au-dessus d'un panneau, pas seulement dans « Se connecter au serveur ». Tapez-y <code>\\fileserver\projects\reports</code> et vous arrivez dans ce dossier.</li>
+<li>Si le partage est déjà connecté, vous allez directement au dossier — sans feuille d'authentification et sans second aller-retour vers le serveur. Seul le partage lui-même est monté ; les dossiers en dessous sont atteints par une navigation ordinaire, de sorte que tout l'arbre au-dessus reste accessible.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Se connecter en FTP et SFTP</a></li></ul></section>
 </main>

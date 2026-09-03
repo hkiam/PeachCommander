@@ -128,6 +128,14 @@ Formátovače môžu dodávať aj zásuvné moduly — pozri [Plugins](plugins.m
 3. Zadajte šestnástkové číslice na prepísanie bajtov, alebo použite šípky na pohyb súborom. Backspace a Delete odstraňujú bajty.
 4. Stlačte Cmd+S na uloženie. Ako v textovom editore sa predchádzajúci obsah zachová len vtedy, keď ste zálohy zapli.
 
+## Reťazce v súbore, ktorý upravujete
+
+Šestnástkový editor má rovnaký panel **Reťazce** ako prehliadač: každú čitateľnú postupnosť textu v súbore, v štyroch kódovaniach naraz, a kliknutie naň umiestni kurzor aj výber.
+
+- Číta bajty tak, ako ste ich upravili, nie ako ležia na disku, takže offsety ukazujú na správne miesto aj po tom, čo vloženie posunulo všetko pod ním.
+- Zoznam sleduje vaše úpravy: zmeňte bajt a chvíľu po dopísaní sa prestaví.
+- Celý je opísaný v [Prezeranie súborov](viewing-files.md#read-the-strings-in-a-binary) a správa sa tu rovnako.
+
 ## Skratky
 
 | Akcia | Klávesa |

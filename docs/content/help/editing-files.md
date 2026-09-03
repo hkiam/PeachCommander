@@ -129,6 +129,14 @@ Plugins can contribute formatters too — see [Plugins](plugins.md).
 3. Type hex digits to overwrite bytes, or use the arrow keys to move through the file. Backspace and Delete remove bytes.
 4. Press Cmd+S to save. As in the text editor, the previous contents are only kept if you switched backups on.
 
+## The strings in the file you are editing
+
+The hex editor has the same **Strings** panel as the viewer: every readable run of text in the file, in four encodings at once, and a click puts the caret and the selection on it.
+
+- It reads the bytes as you have edited them, not as they are on disk, so the offsets keep pointing at the right place after an insert has shifted everything below it.
+- The list follows your edits: change a byte and it is rebuilt a moment after you stop typing.
+- It is described in full under [Viewing files](viewing-files.md#read-the-strings-in-a-binary), and behaves the same way here.
+
 ## Shortcuts
 
 | Action | Key |

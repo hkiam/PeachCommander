@@ -18,7 +18,7 @@
 <li>În dialogul <strong>Conectare la server</strong>, tastați adresa serverului. Puteți indica:
    - o adresă SMB, de exemplu <code>smb://fileserver/projects</code>
    - o adresă AFP, de exemplu <code>afp://fileserver/projects</code>
-   - o cale în stil Windows, de exemplu <code>\\fileserver\projects</code>
+   - o cale în stil Windows, de exemplu <code>\\fileserver\projects\reports</code>
    - un simplu nume <code>server/partajare</code></li>
 <li>Faceți clic pe Conectează (sau apăsați Enter). Dacă serverul are nevoie de nume și parolă, macOS afișează fereastra sa obișnuită de autentificare — introduceți acolo datele dvs.</li>
 <li>Când partajarea este gata, panoul activ o deschide automat. Parcurgeți și lucrați cu ea ca cu orice alt folder.</li>
@@ -46,6 +46,8 @@
 <li>Dacă indicați o adresă care nu poate fi analizată, Peach Commander cere o adresă SMB/AFP, o cale în stil Windows sau un nume <code>server/partajare</code>, și nimic nu este montat.</li>
 <li>După ce confirmați, conexiunea poate dura un moment în timp ce macOS montează partajarea; panoul comută la ea de îndată ce devine disponibilă.</li>
 <li>Aceasta se conectează la dispozitive partajate într-o rețea. Pentru a ajunge în schimb la un server FTP, FTPS sau SFTP, vedeți subiectul înrudit de mai jos.</li>
+<li>O cale în stil Windows funcționează și în <strong>Mergi la dosar</strong> și în bara de cale de deasupra unui panou, nu doar în „Conectare la server”. Tastați acolo <code>\\fileserver\projects\reports</code> și ajungeți în acel dosar.</li>
+<li>Dacă partajarea este deja conectată, mergeți direct la dosar — fără fereastră de autentificare și fără un al doilea drum la server. Se montează întotdeauna doar partajarea în sine; dosarele de dedesubt se ating printr-o navigare obișnuită, astfel încât tot arborele de deasupra rămâne accesibil.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarea la FTP și SFTP</a></li></ul></section>
 </main>

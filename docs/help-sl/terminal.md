@@ -34,6 +34,13 @@ Vse drugo je v meniju **Terminal**:
 
 Dokler ima terminal pozornost, gredo **funkcijske tipke tja**, ne na ploščo z datotekami — F5 v urejevalniku besedila znotraj terminala mora doseči urejevalnik. Vrstica s funkcijskimi tipkami to pove, namesto da bi kazala tipke, ki ne bodo sprožile ničesar.
 
+## Tipkanje @, ~ in zavitih oklepajev
+
+Na večini tipkovnic zunaj Združenih držav se `@`, `~`, `|`, `\` in zaviti oklepaji tipkajo s tipko Option. Ti pritiski dosežejo lupino kot znaki, natisnjeni na tipkah.
+
+- Druga možnost je obravnavati Option kot tipko Meta, kar hočejo Alt+B, Alt+F in bližnjice Emacsa: terminal takrat pred tipko pošlje Esc namesto znaka. Vklopite jo pod **Nastavitve ▸ Vtičniki ▸ Terminal** z **Uporabi tipko Option kot tipko Meta**.
+- Sprememba učinkuje takoj, tudi za že odprte terminale, ne šele za nove.
+
 ## Most nazaj na ploščo
 
 **Cmd-kliknite pot** v izpisu terminala in plošča gre tja. Datoteka iz `ls`, pot v napaki prevajalnika, ime iz `git status` — en klik in jo že gledate.

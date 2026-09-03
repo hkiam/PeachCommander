@@ -127,6 +127,13 @@
 <li>Escriba dígitos hexadecimales para sobrescribir bytes, o use las teclas de flecha para desplazarse por el archivo. Backspace y Delete eliminan bytes.</li>
 <li>Pulse Cmd+S para guardar. Como en el editor de texto, el contenido anterior solo se conserva si activó las copias de seguridad.</li>
 </ol>
+<h2 id="las-cadenas-del-archivo-que-esta-editando">Las cadenas del archivo que está editando</h2>
+<p>El editor hexadecimal tiene el mismo panel <strong>Cadenas</strong> que el visor: cada secuencia de texto legible del archivo, en cuatro codificaciones a la vez, y un clic pone allí el cursor y la selección.</p>
+<ul>
+<li>Lee los bytes tal como los ha editado, no como están en el disco, de modo que los desplazamientos siguen señalando el lugar correcto después de que una inserción haya desplazado todo lo que hay debajo.</li>
+<li>La lista sigue sus ediciones: cambie un byte y se reconstruye un momento después de que deje de escribir.</li>
+<li>Está descrito por completo en <a href="viewing-files.html#read-the-strings-in-a-binary">Ver archivos</a> y se comporta aquí igual.</li>
+</ul>
 <h2 id="atajos">Atajos</h2>
 <table>
 <thead>

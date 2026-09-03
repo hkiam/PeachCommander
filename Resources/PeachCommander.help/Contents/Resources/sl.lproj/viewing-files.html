@@ -31,6 +31,15 @@
 <li>Pritisnite Ctrl+G za skok na vrstico, v šestnajstiškem načinu na bajtni odmik. Računanje med številskimi sistemi je dovoljeno: <code>0x1000 + 15 + 1</code> pripelje na 4112 — šestnajstiško z <code>0x</code>, <code>$</code> ali končnim <code>h</code>, dvojiško z <code>0b</code>, osmiško z <code>0o</code>, in <code>+ - * /</code> z oklepaji.</li>
 <li>Če odprete zadetek iz Poišči datoteke, kjer je bilo polje <strong>Najdi besedilo</strong> izpolnjeno, se pregledovalnik začne s tem iskanjem: besedilo je že v iskalni vrstici in prva pojavitev je na zaslonu, tako da pristanete pri ujemanju in ne na začetku datoteke. Če ga tam spremenite ali počistite, ostane vaša različica. V Nastavitvah ▸ Urejanje/Ogled je to mogoče izklopiti, če naj se vsaka datoteka odpre na začetku.</li>
 </ul>
+<h2 id="branje-nizov-v-binarni-datoteki">Branje nizov v binarni datoteki</h2>
+<p>V šestnajstiškem prikazu orodna vrstica ponuja <strong>Nizi</strong>: podokno s seznamom vsakega berljivega zaporedja besedila v datoteki, z odmikom, na katerem leži, in načinom, kako je bilo dekodirano. Klik na vrstico premakne šestnajstiški pogled na te bajte in jih izbere, tako da se naslednje dejanje — Kopiraj izbor kot … ali preprosto branje okolice — nanaša na kliknjeni niz.</p>
+<ul>
+<li>Štiri branja tečejo hkrati: ASCII, UTF-8, UTF-16 little-endian in UTF-16 big-endian. Široki nizi izvršljive datoteke za Windows in preprosti se tako znajdejo na enem seznamu, namesto da bi vsak zahteval svoj prehod. Latin-1 je ponujen tudi pod <strong>Kodiranja</strong>, a je sprva izklopljen, ker so tri četrtine vseh vrednosti bajtov natisljiv Latin-1 in prevedena koda to branje prestane v velikem obsegu.</li>
+<li>Isti bajti so pogosto berljivi v več kot enem kodiranju. Kadar si dve branji lastita isti obseg, zmaga tisto, ki se najbolj bere kot besedilo — <code>Hello</code> je torej na seznamu enkrat, in ne tudi kot par pismenk, ki jih isti bajti tvorijo, prebrani po dva.</li>
+<li><strong>Najm. dolžina</strong> določa, kako kratko zaporedje še šteje. Štirje znaki so običajno izhodišče; pri veliki binarni datoteki jo povečajte, da se seznam razredči.</li>
+<li>Polje filtra zoži prikazano brez ponovnega branja datoteke in zato ostane hipno tudi pri zelo veliki. Sprememba dolžine ali kodiranj datoteko prebere znova, ker spremeni, kaj šteje za niz.</li>
+<li><strong>Pokaži tudi malo verjetne nize</strong> pod Kodiranja doda vse, kar je zgolj natisljivo — tudi besedilo UTF-16, ki ni pretežno latinično in ga običajni seznam izpusti, ker ga nič v bajtih ne loči od običajnega besedila, prebranega po dva bajta.</li>
+</ul>
 <h2 id="povecava-slike">Povečava slike</h2>
 <p>V slikovnem prikazu pregledovalnik odpre sliko prilagojeno oknu, majhno sliko pa pusti v njeni lastni velikosti, namesto da bi jo napihnil.</p>
 <table>

@@ -29,6 +29,16 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 - Stlačte Ctrl+G pre prechod na riadok, v hex režime na bajtovú pozíciu. Počítať sa dá aj medzi číselnými sústavami: `0x1000 + 15 + 1` vedie na 4112 — šestnástkovo s `0x`, `$` alebo koncovým `h`, dvojkovo s `0b`, osmičkovo s `0o`, a `+ - * /` so zátvorkami.
 - Ak otvoríte nájdený súbor z Nájsť súbory, kde bolo vyplnené **Nájsť text**, prehliadač začne týmto hľadaním: text už je v hľadacom poli a prvý výskyt je vidieť, takže prídete priamo k zhode, nie na začiatok súboru. Keď ho tam zmeníte alebo vymažete, zostane vaša verzia. V Nastaveniach pod Úpravy/Zobrazenie sa to dá vypnúť, ak má každý súbor otvárať na začiatku.
 
+## Čítanie reťazcov v binárnom súbore
+
+V šestnástkovom zobrazení ponúka panel nástrojov **Reťazce**: zoznam každej čitateľnej postupnosti textu v súbore, s offsetom, na ktorom leží, a s tým, ako bola dekódovaná. Kliknutím na riadok skočí šestnástkový pohľad na tieto bajty a označí ich, takže ďalší krok — Kopírovať výber ako… alebo jednoducho prečítať, čo je okolo — sa týka práve toho reťazca.
+
+- Štyri čítania bežia naraz: ASCII, UTF-8, UTF-16 little-endian a UTF-16 big-endian. Široké reťazce spustiteľného súboru Windows aj tie jednoduché sa tak objavia v jednom zozname namiesto toho, aby každý vyžadoval vlastný prechod. Latin-1 sa ponúka aj pod **Kódovania**, ale spočiatku je vypnuté, pretože tri štvrtiny všetkých hodnôt bajtov sú tlačiteľné Latin-1 a skompilovaný kód týmto čítaním prechádza vo veľkom.
+- Tie isté bajty sú často čitateľné vo viac než jednom kódovaní. Ak si dve čítania nárokujú rovnaký rozsah, vyhráva to, ktoré sa najviac číta ako text — `Hello` je teda v zozname raz, a nie aj ako dvojica znakov, ktorú tie isté bajty tvoria po dvoch.
+- **Min. dĺžka** určuje, aká krátka postupnosť ešte počíta. Štyri znaky sú obvyklý východiskový bod; pri veľkom binárnom súbore ju zvýšte, aby sa zoznam preriedil.
+- Pole filtra zužuje zobrazené bez opätovného čítania súboru, takže zostáva okamžité aj pri veľmi veľkom. Zmena dĺžky alebo kódovaní súbor prečíta znova, lebo mení, čo sa za reťazec považuje.
+- **Zobraziť aj nepravdepodobné reťazce** pod Kódovaniami pridá všetko, čo je iba tlačiteľné — vrátane textu UTF-16, ktorý nie je prevažne latinkový a ktorý bežný zoznam vynecháva, pretože nič v bajtoch ho neodlíši od bežného textu čítaného po dvoch bajtoch.
+
 ## Priblíženie obrázka
 
 V obrazovej reprezentácii prehliadač otvorí obrázok prispôsobený oknu a malý obrázok nechá v jeho vlastnej veľkosti, namiesto toho aby ho nafúkol.

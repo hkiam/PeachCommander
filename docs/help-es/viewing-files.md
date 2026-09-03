@@ -29,6 +29,16 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 - Pulsa Ctrl+G para ir a una línea, o a un desplazamiento de bytes en modo hexadecimal. Admite operaciones entre bases: `0x1000 + 15 + 1` lleva a 4112 — hexadecimal con `0x`, `$` o una `h` final, binario con `0b`, octal con `0o`, y `+ - * /` con paréntesis.
 - Si abres un resultado de Buscar archivos con **Buscar texto** rellenado, el visor empieza con esa búsqueda: el texto ya está en el campo de búsqueda y la primera aparición se ve en pantalla, así que aterrizas en la coincidencia y no al principio del archivo. Si lo cambias o lo borras ahí, se queda tu versión. Puedes desactivarlo en Ajustes ▸ Editar/Ver si prefieres que cada archivo se abra por el principio.
 
+## Leer las cadenas de un binario
+
+En la representación hexadecimal la barra de herramientas ofrece **Cadenas**: un panel que lista cada secuencia de texto legible del archivo, con el desplazamiento en el que está y cómo se descodificó. Haga clic en una fila y la vista hexadecimal salta a esos bytes y los selecciona, de modo que lo siguiente que haga —Copiar selección como…, o simplemente leer lo que hay alrededor— se aplica a la cadena en la que hizo clic.
+
+- Cuatro lecturas se ejecutan a la vez: ASCII, UTF-8, UTF-16 little-endian y UTF-16 big-endian. Las cadenas anchas de un ejecutable de Windows y las sencillas aparecen así en una sola lista, en vez de necesitar una pasada para cada una. Latin-1 también se ofrece bajo **Codificaciones**, pero desactivado de entrada, porque tres cuartas partes de los valores de byte son Latin-1 imprimible y el código compilado supera esa lectura en masa.
+- Los mismos bytes suelen ser legibles en más de una codificación. Cuando dos lecturas reclaman el mismo rango, gana la que más se lee como texto: `Hello` aparece una vez y no también como el par de ideogramas que esos bytes componen leídos de dos en dos.
+- **Longitud mín.** fija cuán corta puede ser una secuencia y seguir contando. Cuatro caracteres es el punto de partida habitual; súbala en un binario grande para aligerar la lista.
+- El campo de filtro reduce lo que se muestra sin releer el archivo, así que sigue siendo instantáneo incluso en uno muy grande. Cambiar la longitud o las codificaciones sí lo relee, porque eso cambia qué cuenta como cadena.
+- **Mostrar también las cadenas improbables**, bajo Codificaciones, añade todo lo que es meramente imprimible —incluido texto UTF-16 que no es mayoritariamente latino, que la lista ordinaria omite porque nada en los bytes lo distingue de texto corriente leído de dos en dos.
+
 ## Ampliar una imagen
 
 En la representación de imagen el visor abre la imagen ajustada a la ventana y deja una imagen pequeña a su propio tamaño en lugar de agrandarla.

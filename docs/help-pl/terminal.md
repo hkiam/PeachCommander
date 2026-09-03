@@ -34,6 +34,13 @@ Cała reszta jest w menu **Terminal**:
 
 Dopóki terminal ma fokus, **klawisze funkcyjne trafiają do niego**, nie do panelu plików — F5 w edytorze tekstu wewnątrz terminala musi dotrzeć do edytora. Pasek klawiszy funkcyjnych to mówi, zamiast pokazywać klawisze, które niczego nie uruchomią.
 
+## Wpisywanie @, ~ i nawiasów klamrowych
+
+Na większości klawiatur poza Stanami Zjednoczonymi `@`, `~`, `|`, `\` i nawiasy klamrowe wpisuje się klawiszem Option. Te naciśnięcia docierają do powłoki jako znaki nadrukowane na klawiszach.
+
+- Alternatywą jest traktowanie klawisza Option jako Meta, czego oczekują Alt+B, Alt+F i skróty Emacsa: terminal wysyła wtedy Esc przed klawiszem zamiast znaku. Włącz to w **Konfiguracja ▸ Wtyczki ▸ Terminal** opcją **Używaj klawisza Option jako Meta**.
+- Zmiana działa natychmiast, także dla już otwartych terminali, nie tylko dla nowych.
+
 ## Most z powrotem do panelu
 
 **Kliknij ścieżkę z Cmd** w wyjściu terminala, a panel tam przejdzie. Plik z `ls`, ścieżka w błędzie kompilatora, nazwa z `git status` — jedno kliknięcie i już na nią patrzysz.

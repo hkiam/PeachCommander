@@ -34,6 +34,13 @@ Vše ostatní je v nabídce **Terminál**:
 
 Dokud má terminál zaměření, jdou **funkční klávesy tam**, ne do souborového panelu — F5 v textovém editoru uvnitř terminálu se musí dostat k editoru. Lišta funkčních kláves to říká, místo aby ukazovala klávesy, které nic neudělají.
 
+## Psaní @, ~ a složených závorek
+
+Na většině klávesnic mimo Spojené státy se `@`, `~`, `|`, `\` a složené závorky píší klávesou Option. Tyto stisky dorazí do shellu jako znaky vytištěné na klávesách.
+
+- Alternativou je brát Option jako klávesu Meta, což chtějí Alt+B, Alt+F a klávesové zkratky Emacsu: terminál pak před klávesou pošle Esc místo znaku. Zapněte to v **Konfigurace ▸ Zásuvné moduly ▸ Terminál** volbou **Používat Option jako klávesu Meta**.
+- Změna platí ihned, i pro už otevřené terminály, nejen pro nové.
+
 ## Most zpět do panelu
 
 **Cmd-klikněte na cestu** ve výstupu terminálu a panel tam přejde. Soubor z `ls`, cesta v chybě překladače, jméno z `git status` — jedno kliknutí a díváte se na něj.

@@ -518,9 +518,24 @@ features:
     audiences: [user]
     status: stable
     ui: { menus: [Go, Net], shortcuts: ["Cmd+K"], commands: [cm_MountShare, cm_NetConnect] }
-    source: { modules: [PCApp], types: [MainWindowController] }
+    source: { modules: [PCApp, PCFoundation], types: [MainWindowController, NetworkShare] }
     documentation: { integrated_help: true, website: true }
-    open_question: "Mount implementation not located in read files (likely NSWorkspace/mount) — verify (UNCLEAR)."
+    notes: >-
+      The address is normalised by `NetworkShare` (smb/afp/nfs/cifs URLs, Windows UNC
+      `\\server\share\dir`, `//server/share`, bare server/share, a `DOMAIN;user@` prefix) and
+      mounted with `NetFSMountURLSync`, which still shows the system's authentication sheet.
+      Deliberately not `NSWorkspace.open`: that asks *Finder* to mount, so Finder's own window came
+      up in front of the app, and handed a URL with a path it mounted the SUBDIRECTORY as the
+      volume — a volume whose root is the target folder, with no way to navigate up. Only the share
+      is mounted; the rest of the path is an ordinary directory change. An already-mounted share is
+      reverse-mapped through the mount table instead (shallowest covering mount, whole remote path
+      compared), so a typed UNC path costs no server round trip, and the mount point is read rather
+      than guessed as `/Volumes/<share>`, which is wrong whenever macOS had to append `-1`. A share
+      with no name given is the one case still handed to Finder, whose server browser is the native
+      answer to "which shares does this host have". UNC is accepted by "Go to Folder" and the path
+      bar too, not only by Cmd+K. Mounted shares are detachable (`VolumeEjection`): the system
+      reports them as not ejectable — there is no device — and reading that literally left a share
+      with no way back out.
 
   # ───────────────────────── Viewers & editors ─────────────────────────
   - id: lister-viewer
@@ -533,7 +548,7 @@ features:
     source: { modules: [PCApp], types: [ListerWindow] }
     documentation: { integrated_help: true, website: true }
     screenshots: [lister-text, lister-hex]
-    notes: "Modes text/code/hex/image/media/web/plugin/directory/xmlTree/binary; find, encoding, marks, symbols outline, minimap, uncapped mmap streaming (>16 MB)."
+    notes: "Modes text/code/hex/image/media/web/plugin/directory/xmlTree/binary; find, encoding, marks, symbols outline, minimap, strings panel in hex (see binary-strings), uncapped mmap streaming (>16 MB)."
 
   - id: quick-view
     name: Schnellansicht & Quick Look
@@ -1475,6 +1490,29 @@ features:
       equivalent for an FTP site or the inside of an archive, where F2 still re-reads. What was there
       before was a watcher named after FSEvents that polled an mtime every two seconds and had no
       callback at all, so nothing could ever arrive.
+
+  - id: binary-strings
+    name: Strings in Binärdateien (Hex-Betrachter und -Editor)
+    name_en: Strings in binaries (hex viewer and editor)
+    category: viewer
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [], shortcuts: [], commands: [] }
+    source: { modules: [PCFoundation, PCApp], types: [BinaryStrings, StringsSidebar, StringScanJob] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      A panel beside the hex representation — in the viewer and in the hex editor, and offered nowhere
+      else — listing every readable run of text in the file with its offset and how it was decoded;
+      clicking a row selects those bytes. Four readings run over the same bytes at once (ASCII, UTF-8,
+      UTF-16 LE and BE, both alignments, with Latin-1 available but off), and the results are reconciled
+      rather than concatenated: where two readings claim the same range the one that reads most like
+      text wins, so ASCII text is not also listed as the ideographs those bytes spell read two at a
+      time. Printability alone is not a filter — every byte pair that is not a surrogate is printable
+      UTF-16 — so runs that do not read like text are dropped, which over /bin/zsh is the difference
+      between 65,000 findings and 8,000. Latin-1 is the one reading no rule separates from machine
+      code, and is therefore opt-in. The viewer scans the file in megabyte windows off the main
+      thread; the editor scans the bytes as edited, so an insert does not leave the offsets pointing
+      at the wrong place.
 
   - id: zip64
     name: ZIP64-Archive

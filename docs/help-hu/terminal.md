@@ -34,6 +34,13 @@ Minden más a **Terminál** menüben van:
 
 Amíg a terminálé a fókusz, a **funkcióbillentyűk oda kerülnek**, nem a fájlpanelhez — a terminálon belüli szövegszerkesztőben az F5-nek el kell érnie a szerkesztőt. A funkcióbillentyű-sáv ezt kiírja, ahelyett hogy olyan billentyűket mutatna, amelyek nem sülnek el.
 
+## A @, a ~ és a kapcsos zárójelek beírása
+
+Az Egyesült Államokon kívüli billentyűzetek többségén a `@`, a `~`, a `|`, a `\` és a kapcsos zárójelek az Option billentyűvel írhatók. Ezek a leütések a billentyűkre nyomtatott karakterekként érkeznek a parancsértelmezőhöz.
+
+- A másik lehetőség az Option Meta billentyűként kezelése, amit az Alt+B, az Alt+F és az Emacs-billentyűparancsok kívánnak: a terminál ilyenkor a karakter helyett Esc-et küld a billentyű elé. A **Beállítások ▸ Bővítmények ▸ Terminál** alatt kapcsolható be **Az Option billentyű Meta billentyűként** jelölőnégyzettel.
+- A változás azonnal érvényes, a már megnyitott terminálokra is, nem csak az újakra.
+
 ## A híd vissza a panelhez
 
 **Cmd-kattintson egy útvonalra** a terminál kimenetében, és a panel odamegy. Egy fájl az `ls`-ből, egy útvonal egy fordítói hibában, egy név a `git status`-ból — egy kattintás, és már nézi is.

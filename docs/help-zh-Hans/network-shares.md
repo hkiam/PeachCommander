@@ -15,7 +15,7 @@ Peach Commander 可以连接到本地网络或公司网络上的文件服务器 
 3. 在 **连接服务器** 对话框中输入服务器地址。可以输入：
    - SMB 地址，例如 `smb://fileserver/projects`
    - AFP 地址，例如 `afp://fileserver/projects`
-   - Windows 风格路径，例如 `\\fileserver\projects`
+   - Windows 风格路径，例如 `\\fileserver\projects\reports`
    - 简单的 `server/share` 名称
 4. 点按“连接”（或按 Return）。如果服务器需要用户名和密码，macOS 会显示其标准登录提示 —— 在那里输入你的凭据。
 5. 共享就绪后，活动面板会自动打开它。像其他任何文件夹一样浏览和使用它。
@@ -36,3 +36,5 @@ Peach Commander 可以连接到本地网络或公司网络上的文件服务器 
 - 如果你输入的地址无法识别，Peach Commander 会要求你提供 SMB/AFP 地址、Windows 风格路径或 `server/share` 名称，且不会挂载任何内容。
 - 确认后，连接可能需要片刻，因为 macOS 正在挂载共享；共享可用后面板会立即切换到它。
 - 这是连接到网络上的共享驱动器。若要改为访问 FTP、FTPS 或 SFTP 服务器，请参阅下面的相关主题。
+- Windows 风格的路径不只在“连接服务器”里可用，在**前往文件夹**和面板上方的路径栏里同样可用。在那里输入 `\\fileserver\projects\reports`，你就会落到那个文件夹里。
+- 如果共享已经连接，就直接进入该文件夹——没有登录面板，也不会再跑一趟服务器。挂载的始终只是共享本身；它下面的文件夹是用普通的导航到达的，因此它们上方的整棵树都仍然可用。

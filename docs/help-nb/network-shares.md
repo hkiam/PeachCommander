@@ -15,7 +15,7 @@ Peach Commander kan koble til filtjenere i det lokale nettverket ditt eller bedr
 3. I dialogen **Koble til tjener**, skriv tjeneradressen. Du kan angi:
    - en SMB-adresse, for eksempel `smb://fileserver/projects`
    - en AFP-adresse, for eksempel `afp://fileserver/projects`
-   - en bane i Windows-stil, for eksempel `\\fileserver\projects`
+   - en bane i Windows-stil, for eksempel `\\fileserver\projects\reports`
    - et enkelt `tjener/ressurs`-navn
 4. Klikk på Koble til (eller trykk Return). Hvis tjeneren trenger navn og passord, viser macOS sitt vanlige innloggingsvindu – skriv inn opplysningene dine der.
 5. Når ressursen er klar, åpner det aktive panelet den automatisk. Bla og arbeid med den som med en hvilken som helst annen mappe.
@@ -36,3 +36,5 @@ En tilkoblet ressurs vises som et montert volum på din Mac. For å koble fra de
 - Hvis du angir en adresse som ikke kan tolkes, ber Peach Commander deg om en SMB/AFP-adresse, en bane i Windows-stil eller et `tjener/ressurs`-navn, og ingenting monteres.
 - Etter at du bekrefter, kan tilkoblingen ta et øyeblikk mens macOS monterer ressursen; panelet bytter til den så snart den blir tilgjengelig.
 - Dette kobler til delte enheter i et nettverk. For å nå en FTP-, FTPS- eller SFTP-tjener i stedet, se det relaterte emnet nedenfor.
+- En sti i Windows-stil virker også i **Gå til mappe** og i stilinjen over et panel, ikke bare i «Koble til tjener». Skriv `\\fileserver\projects\reports` der, så havner du i den mappen.
+- Er delingen allerede tilkoblet, går du rett til mappen — uten innloggingsark og uten en tur til hos tjeneren. Bare selve delingen monteres; mappene under den nås med vanlig navigering, så hele treet over dem forblir tilgjengelig.

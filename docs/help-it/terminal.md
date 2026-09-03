@@ -34,6 +34,13 @@ Tutto il resto è nel menu **Terminale**:
 
 Finché il terminale ha il fuoco, i **tasti funzione vanno lì**, non al pannello dei file: F5 in un editor di testo dentro il terminale deve raggiungere l’editor. La barra dei tasti funzione lo dice, invece di mostrare tasti che non faranno nulla.
 
+## Digitare @, ~ e le parentesi graffe
+
+Sulla maggior parte delle tastiere fuori dagli Stati Uniti, `@`, `~`, `|`, `\` e le parentesi graffe si digitano con il tasto Opzione. Quei tasti raggiungono la shell come i caratteri stampati sui tasti.
+
+- L'alternativa è trattare Opzione come tasto Meta, che è ciò che vogliono Alt+B, Alt+F e le scorciatoie di Emacs: il terminale invia allora Esc prima del tasto anziché il carattere. Attivatelo in **Configurazione ▸ Plugin ▸ Terminale** con **Usa Opzione come tasto Meta**.
+- La modifica ha effetto subito, anche sui terminali già aperti e non solo su quelli nuovi.
+
 ## Il ponte di ritorno al pannello
 
 **Cmd-clic su un percorso** nell’output del terminale e il pannello ci va. Un file da `ls`, un percorso in un errore del compilatore, un nome da `git status`: un clic e lo state guardando.

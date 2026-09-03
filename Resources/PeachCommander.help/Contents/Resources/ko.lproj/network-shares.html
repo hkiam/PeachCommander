@@ -18,7 +18,7 @@
 <li><strong>서버에 연결</strong> 대화상자에 서버 주소를 입력합니다. 다음을 입력할 수 있습니다.
    - SMB 주소, 예: <code>smb://fileserver/projects</code>
    - AFP 주소, 예: <code>afp://fileserver/projects</code>
-   - Windows 스타일 경로, 예: <code>\\fileserver\projects</code>
+   - Windows 스타일 경로, 예: <code>\\fileserver\projects\reports</code>
    - 일반 <code>server/share</code> 이름</li>
 <li>연결을 클릭합니다(또는 Return을 누릅니다). 서버가 이름과 암호를 필요로 하면 macOS가 표준 로그인 프롬프트를 표시합니다. 거기에 자격 증명을 입력하십시오.</li>
 <li>공유가 준비되면 활성 패널이 자동으로 그것을 엽니다. 다른 폴더와 마찬가지로 탐색하고 작업하십시오.</li>
@@ -46,6 +46,8 @@
 <li>이해할 수 없는 주소를 입력하면 Peach Commander는 SMB/AFP 주소, Windows 스타일 경로, 또는 <code>server/share</code> 이름을 제공하도록 요청하며, 아무것도 마운트되지 않습니다.</li>
 <li>확인한 후 macOS가 공유를 마운트하는 동안 연결에 잠시 걸릴 수 있습니다. 사용할 수 있게 되는 즉시 패널이 그것으로 전환됩니다.</li>
 <li>이는 네트워크의 공유 드라이브에 연결합니다. 대신 FTP, FTPS, SFTP 서버에 도달하려면 아래 관련 항목을 참조하십시오.</li>
+<li>Windows 방식의 경로는 「서버에 연결」에서만이 아니라 <strong>폴더로 이동</strong>과 패널 위의 경로 막대에서도 동작합니다. 거기에 <code>\\fileserver\projects\reports</code>를 입력하면 그 폴더로 갑니다.</li>
+<li>공유가 이미 연결되어 있으면 로그인 창도, 서버로의 두 번째 왕복도 없이 곧바로 그 폴더로 갑니다. 마운트되는 것은 언제나 공유 자체뿐이며, 그 아래 폴더에는 평범한 이동으로 도달하므로 그 위의 트리 전체가 계속 열려 있습니다.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">FTP 및 SFTP 연결</a></li></ul></section>
 </main>

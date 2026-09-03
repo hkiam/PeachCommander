@@ -128,6 +128,14 @@ Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
 3. Skriv hex-siffror för att skriva över byte, eller använd piltangenterna för att röra dig genom filen. Backspace och Delete tar bort byte.
 4. Tryck på Cmd+S för att spara. Precis som i textredigeraren behålls det tidigare innehållet bara om du har slagit på säkerhetskopior.
 
+## Strängarna i filen du redigerar
+
+Hexredigeraren har samma **Strängar**-panel som visaren: varje läsbar textsträng i filen, i fyra kodningar samtidigt, och ett klick sätter markören och markeringen på den.
+
+- Den läser byten som du har redigerat dem, inte som de ligger på disken, så offseten fortsätter peka på rätt ställe efter att en infogning har flyttat allt nedanför.
+- Listan följer dina ändringar: ändra en byte så byggs den om strax efter att du slutat skriva.
+- Den beskrivs i sin helhet under [Visa filer](viewing-files.md#read-the-strings-in-a-binary) och beter sig likadant här.
+
 ## Kortkommandon
 
 | Åtgärd | Tangent |

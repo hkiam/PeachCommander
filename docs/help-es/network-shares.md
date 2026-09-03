@@ -15,7 +15,7 @@ Peach Commander puede conectarse a servidores de archivos de tu red local o de e
 3. En el diálogo **Conectarse al servidor**, escribe la dirección del servidor. Puedes introducir:
    - una dirección SMB, por ejemplo `smb://fileserver/projects`
    - una dirección AFP, por ejemplo `afp://fileserver/projects`
-   - una ruta al estilo de Windows, por ejemplo `\\fileserver\projects`
+   - una ruta al estilo de Windows, por ejemplo `\\fileserver\projects\reports`
    - un nombre sencillo `servidor/recurso`
 4. Haz clic en Conectar (o pulsa Return). Si el servidor necesita nombre y contraseña, macOS muestra su cuadro de inicio de sesión estándar: introduce ahí tus credenciales.
 5. Cuando el recurso esté listo, el panel activo lo abre automáticamente. Explóralo y trabaja con él como con cualquier otra carpeta.
@@ -36,3 +36,5 @@ Un recurso conectado aparece como un volumen montado en tu Mac. Para desconectar
 - Si introduces una dirección que no puede interpretarse, Peach Commander te pide una dirección SMB/AFP, una ruta al estilo de Windows o un nombre `servidor/recurso`, y no se monta nada.
 - Tras confirmar, la conexión puede tardar un momento mientras macOS monta el recurso; el panel cambia a él en cuanto esté disponible.
 - Esto conecta con unidades compartidas de una red. Para acceder en su lugar a un servidor FTP, FTPS o SFTP, consulta el tema relacionado más abajo.
+- Una ruta al estilo de Windows también funciona en **Ir a la carpeta** y en la barra de ruta sobre un panel, no solo en «Conectar al servidor». Escriba allí `\\fileserver\projects\reports` y llegará a esa carpeta.
+- Si el recurso compartido ya está conectado, va directamente a la carpeta: sin hoja de inicio de sesión y sin un segundo viaje al servidor. Solo se monta el recurso compartido en sí; a las carpetas de debajo se llega con una navegación normal, de modo que todo el árbol por encima sigue disponible.

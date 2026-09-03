@@ -31,6 +31,15 @@
 <li>Premi Ctrl+G per andare a una riga, o a un offset di byte in modalità esadecimale. Sono ammessi calcoli tra basi diverse: <code>0x1000 + 15 + 1</code> porta a 4112 — esadecimale con <code>0x</code>, <code>$</code> o una <code>h</code> finale, binario con <code>0b</code>, ottale con <code>0o</code>, e <code>+ - * /</code> con parentesi.</li>
 <li>Se apri un risultato di Trova file con <strong>Trova testo</strong> compilato, il visualizzatore parte da quella ricerca: il testo è già nella barra di ricerca e la prima occorrenza è a schermo, quindi arrivi sulla corrispondenza invece che all'inizio del file. Se lo modifichi o lo cancelli lì, resta la tua versione. Puoi disattivarlo in Impostazioni ▸ Modifica/Visualizza se preferisci che ogni file si apra dall'inizio.</li>
 </ul>
+<h2 id="leggere-le-stringhe-di-un-binario">Leggere le stringhe di un binario</h2>
+<p>Nella rappresentazione esadecimale la barra degli strumenti offre <strong>Stringhe</strong>: un pannello che elenca ogni sequenza di testo leggibile del file, con l'offset in cui si trova e il modo in cui è stata decodificata. Fate clic su una riga e la vista esadecimale salta su quei byte e li seleziona, così la cosa successiva — Copia selezione come…, o semplicemente leggere ciò che sta intorno — riguarda la stringa su cui avete fatto clic.</p>
+<ul>
+<li>Quattro letture procedono insieme: ASCII, UTF-8, UTF-16 little-endian e UTF-16 big-endian. Le stringhe larghe di un eseguibile Windows e quelle semplici compaiono così in un unico elenco, invece di richiedere un passaggio ciascuna. Latin-1 è offerto anch'esso sotto <strong>Codifiche</strong>, ma è disattivo all'inizio, perché tre quarti di tutti i valori di byte sono Latin-1 stampabile e il codice compilato supera quella lettura in massa.</li>
+<li>Gli stessi byte sono spesso leggibili in più di una codifica. Quando due letture rivendicano lo stesso intervallo vince quella che più si legge come testo: <code>Hello</code> compare una volta sola e non anche come la coppia di ideogrammi che quei byte formano letti a due a due.</li>
+<li><strong>Lungh. min.</strong> stabilisce quanto può essere corta una sequenza e contare ancora. Quattro caratteri sono il punto di partenza abituale; alzatelo su un binario grande per alleggerire l'elenco.</li>
+<li>Il campo di filtro restringe ciò che è mostrato senza rileggere il file, e resta quindi immediato anche su uno molto grande. Cambiare la lunghezza o le codifiche lo rilegge, perché cambia che cosa conti come stringa.</li>
+<li><strong>Mostra anche le stringhe improbabili</strong>, sotto Codifiche, aggiunge tutto ciò che è soltanto stampabile — compreso il testo UTF-16 non prevalentemente latino, che l'elenco ordinario tralascia perché nulla nei byte lo distingue dal testo comune letto due byte alla volta.</li>
+</ul>
 <h2 id="zoom-di-unimmagine">Zoom di un’immagine</h2>
 <p>Nella rappresentazione immagine il visualizzatore apre l’immagine adattata alla finestra e lascia un’immagine piccola alla sua dimensione invece di ingrandirla.</p>
 <table>

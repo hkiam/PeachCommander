@@ -18,7 +18,7 @@
 <li>En el diálogo <strong>Conectarse al servidor</strong>, escribe la dirección del servidor. Puedes introducir:
    - una dirección SMB, por ejemplo <code>smb://fileserver/projects</code>
    - una dirección AFP, por ejemplo <code>afp://fileserver/projects</code>
-   - una ruta al estilo de Windows, por ejemplo <code>\\fileserver\projects</code>
+   - una ruta al estilo de Windows, por ejemplo <code>\\fileserver\projects\reports</code>
    - un nombre sencillo <code>servidor/recurso</code></li>
 <li>Haz clic en Conectar (o pulsa Return). Si el servidor necesita nombre y contraseña, macOS muestra su cuadro de inicio de sesión estándar: introduce ahí tus credenciales.</li>
 <li>Cuando el recurso esté listo, el panel activo lo abre automáticamente. Explóralo y trabaja con él como con cualquier otra carpeta.</li>
@@ -46,6 +46,8 @@
 <li>Si introduces una dirección que no puede interpretarse, Peach Commander te pide una dirección SMB/AFP, una ruta al estilo de Windows o un nombre <code>servidor/recurso</code>, y no se monta nada.</li>
 <li>Tras confirmar, la conexión puede tardar un momento mientras macOS monta el recurso; el panel cambia a él en cuanto esté disponible.</li>
 <li>Esto conecta con unidades compartidas de una red. Para acceder en su lugar a un servidor FTP, FTPS o SFTP, consulta el tema relacionado más abajo.</li>
+<li>Una ruta al estilo de Windows también funciona en <strong>Ir a la carpeta</strong> y en la barra de ruta sobre un panel, no solo en «Conectar al servidor». Escriba allí <code>\\fileserver\projects\reports</code> y llegará a esa carpeta.</li>
+<li>Si el recurso compartido ya está conectado, va directamente a la carpeta: sin hoja de inicio de sesión y sin un segundo viaje al servidor. Solo se monta el recurso compartido en sí; a las carpetas de debajo se llega con una navegación normal, de modo que todo el árbol por encima sigue disponible.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li></ul></section>
 </main>

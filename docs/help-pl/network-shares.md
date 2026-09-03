@@ -15,7 +15,7 @@ Peach Commander może łączyć się z serwerami plików w Twojej sieci lokalnej
 3. W oknie dialogowym **Połącz z serwerem** wpisz adres serwera. Możesz podać:
    - adres SMB, na przykład `smb://fileserver/projects`
    - adres AFP, na przykład `afp://fileserver/projects`
-   - ścieżkę w stylu Windows, na przykład `\\fileserver\projects`
+   - ścieżkę w stylu Windows, na przykład `\\fileserver\projects\reports`
    - prostą nazwę `serwer/udział`
 4. Kliknij Połącz (lub naciśnij Enter). Jeśli serwer wymaga nazwy i hasła, macOS pokazuje swoje zwykłe okno logowania — wprowadź tam swoje dane.
 5. Gdy udział jest gotowy, aktywny panel otwiera go automatycznie. Przeglądaj i pracuj z nim jak z każdym innym folderem.
@@ -36,3 +36,5 @@ Połączony udział pojawia się jako zamontowany wolumin na Twoim Macu. Aby go 
 - Jeśli podasz adres, którego nie da się przeanalizować, Peach Commander prosi o adres SMB/AFP, ścieżkę w stylu Windows lub nazwę `serwer/udział`, a nic nie zostaje zamontowane.
 - Po potwierdzeniu połączenie może chwilę potrwać, podczas gdy macOS montuje udział; panel przełącza się na niego, gdy tylko stanie się dostępny.
 - To łączy z urządzeniami udostępnionymi w sieci. Aby zamiast tego dotrzeć do serwera FTP, FTPS lub SFTP, zobacz powiązany temat poniżej.
+- Ścieżka w stylu Windows działa także w **Przejdź do folderu** i na pasku ścieżki nad panelem, nie tylko w „Połącz z serwerem”. Wpisz tam `\\fileserver\projects\reports`, a trafisz do tego folderu.
+- Jeśli udział jest już podłączony, przechodzisz prosto do folderu — bez okna logowania i bez drugiej podróży do serwera. Podłączany jest zawsze tylko sam udział; do folderów poniżej dochodzi się zwykłą nawigacją, więc całe drzewo powyżej pozostaje dostępne.

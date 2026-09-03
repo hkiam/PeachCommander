@@ -127,6 +127,13 @@
 <li>Skriv hex-siffror för att skriva över byte, eller använd piltangenterna för att röra dig genom filen. Backspace och Delete tar bort byte.</li>
 <li>Tryck på Cmd+S för att spara. Precis som i textredigeraren behålls det tidigare innehållet bara om du har slagit på säkerhetskopior.</li>
 </ol>
+<h2 id="strangarna-i-filen-du-redigerar">Strängarna i filen du redigerar</h2>
+<p>Hexredigeraren har samma <strong>Strängar</strong>-panel som visaren: varje läsbar textsträng i filen, i fyra kodningar samtidigt, och ett klick sätter markören och markeringen på den.</p>
+<ul>
+<li>Den läser byten som du har redigerat dem, inte som de ligger på disken, så offseten fortsätter peka på rätt ställe efter att en infogning har flyttat allt nedanför.</li>
+<li>Listan följer dina ändringar: ändra en byte så byggs den om strax efter att du slutat skriva.</li>
+<li>Den beskrivs i sin helhet under <a href="viewing-files.html#read-the-strings-in-a-binary">Visa filer</a> och beter sig likadant här.</li>
+</ul>
 <h2 id="kortkommandon">Kortkommandon</h2>
 <table>
 <thead>

@@ -18,7 +18,7 @@
 <li>Skriv serveradressen i dialogrutan <strong>Anslut till server</strong>. Du kan ange:
    - en SMB-adress, till exempel <code>smb://fileserver/projects</code>
    - en AFP-adress, till exempel <code>afp://fileserver/projects</code>
-   - en sökväg i Windows-stil, till exempel <code>\\fileserver\projects</code>
+   - en sökväg i Windows-stil, till exempel <code>\\fileserver\projects\reports</code>
    - ett enkelt <code>server/resurs</code>-namn</li>
 <li>Klicka på Anslut (eller tryck på Return). Om servern kräver namn och lösenord visar macOS sin vanliga inloggningsruta — ange dina uppgifter där.</li>
 <li>När resursen är klar öppnar den aktiva panelen den automatiskt. Bläddra och arbeta med den som med vilken annan mapp som helst.</li>
@@ -46,6 +46,8 @@
 <li>Om du anger en adress som inte kan tolkas ber Peach Commander dig om en SMB/AFP-adress, en sökväg i Windows-stil eller ett <code>server/resurs</code>-namn, och inget monteras.</li>
 <li>Efter din bekräftelse kan anslutningen ta en stund medan macOS monterar resursen; panelen växlar till den så snart den blir tillgänglig.</li>
 <li>Detta ansluter till delade enheter i ett nätverk. Se det relaterade ämnet nedan för att i stället nå en FTP-, FTPS- eller SFTP-server.</li>
+<li>En sökväg i Windows-stil fungerar också i <strong>Gå till mapp</strong> och i sökvägsraden ovanför en panel, inte bara i "Anslut till server". Skriv <code>\\fileserver\projects\reports</code> där, så hamnar du i den mappen.</li>
+<li>Är resursen redan ansluten går du direkt till mappen — utan inloggningsruta och utan en andra resa till servern. Bara själva resursen monteras; mapparna under den nås med vanlig navigering, så hela trädet ovanför dem förblir tillgängligt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li></ul></section>
 </main>

@@ -61,6 +61,12 @@
 </tbody>
 </table>
 <p>Dopóki terminal ma fokus, <strong>klawisze funkcyjne trafiają do niego</strong>, nie do panelu plików — F5 w edytorze tekstu wewnątrz terminala musi dotrzeć do edytora. Pasek klawiszy funkcyjnych to mówi, zamiast pokazywać klawisze, które niczego nie uruchomią.</p>
+<h2 id="wpisywanie-i-nawiasow-klamrowych">Wpisywanie @, ~ i nawiasów klamrowych</h2>
+<p>Na większości klawiatur poza Stanami Zjednoczonymi <code>@</code>, <code>~</code>, <code>|</code>, <code>\</code> i nawiasy klamrowe wpisuje się klawiszem Option. Te naciśnięcia docierają do powłoki jako znaki nadrukowane na klawiszach.</p>
+<ul>
+<li>Alternatywą jest traktowanie klawisza Option jako Meta, czego oczekują Alt+B, Alt+F i skróty Emacsa: terminal wysyła wtedy Esc przed klawiszem zamiast znaku. Włącz to w <strong>Konfiguracja ▸ Wtyczki ▸ Terminal</strong> opcją <strong>Używaj klawisza Option jako Meta</strong>.</li>
+<li>Zmiana działa natychmiast, także dla już otwartych terminali, nie tylko dla nowych.</li>
+</ul>
 <h2 id="most-z-powrotem-do-panelu">Most z powrotem do panelu</h2>
 <p><strong>Kliknij ścieżkę z Cmd</strong> w wyjściu terminala, a panel tam przejdzie. Plik z <code>ls</code>, ścieżka w błędzie kompilatora, nazwa z <code>git status</code> — jedno kliknięcie i już na nią patrzysz.</p>
 <p>Zadziała tylko wtedy, gdy słowo pod wskaźnikiem naprawdę odpowiada czemuś, co istnieje. Cmd-kliknięcie w zwykły tekst nie robi nic, zamiast nawigować gdzieś przypadkowo, a zwykłe kliknięcie nadal zaznacza tekst jak dotąd.</p>

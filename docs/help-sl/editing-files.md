@@ -128,6 +128,14 @@ Oblikovalnike lahko prispevajo tudi vstavki — glejte [Plugins](plugins.md).
 3. Vnesite šestnajstiške števke za prepis bajtov, ali uporabite puščice za pomikanje po datoteki. Backspace in Delete odstranita bajte.
 4. Pritisnite Cmd+S za shranjevanje. Tako kot v urejevalniku besedila se prejšnja vsebina ohrani le, če ste vklopili varnostne kopije.
 
+## Nizi v datoteki, ki jo urejate
+
+Šestnajstiški urejevalnik ima isto podokno **Nizi** kot pregledovalnik: vsako berljivo zaporedje besedila v datoteki, v štirih kodiranjih hkrati, in klik nanj postavi kazalko in izbor.
+
+- Bere bajte tako, kot ste jih uredili, ne kot ležijo na disku, zato odmiki še naprej kažejo na pravo mesto, potem ko je vstavljanje premaknilo vse pod njim.
+- Seznam sledi vašim spremembam: spremenite bajt in trenutek po tem, ko nehate tipkati, se na novo zgradi.
+- V celoti je opisan pod [Ogled datotek](viewing-files.md#read-the-strings-in-a-binary) in se tu vede enako.
+
 ## Bližnjice
 
 | Dejanje | Bližnjica |

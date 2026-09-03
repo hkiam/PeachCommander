@@ -35,6 +35,13 @@ Everything else is in the **Terminal** menu:
 
 While the terminal has the focus the **function keys go to it**, not to the file panel — F5 in a text editor inside the terminal has to reach the editor. The function-key bar says so rather than showing keys that will not fire.
 
+## Typing @, ~ and the brackets
+
+On most keyboards outside the United States, `@`, `~`, `|`, `\` and the curly brackets are typed with the Option key. Those keystrokes reach the shell as the characters printed on the keys.
+
+- The alternative is to treat Option as the Meta key, which is what Alt+B and Alt+F and the Emacs bindings want: the terminal then sends Esc before the key instead of the character. Switch it on under **Configuration ▸ Plugins ▸ Terminal** with **Use Option as the Meta key**.
+- The change applies at once, to terminals that are already open as well as to new ones.
+
 ## The bridge back to the panel
 
 **Cmd-click a path** in the terminal's output and the panel goes there. A file from `ls`, a path in a compiler error, a name from `git status` — one click and you are looking at it.

@@ -18,7 +18,7 @@
 <li>In the <strong>Connect to Server</strong> dialog, type the server address. You can enter:
    - an SMB address, for example <code>smb://fileserver/projects</code>
    - an AFP address, for example <code>afp://fileserver/projects</code>
-   - a Windows-style path, for example <code>\\fileserver\projects</code>
+   - a Windows-style path, for example <code>\\fileserver\projects\reports</code>
    - a plain <code>server/share</code> name</li>
 <li>Click Connect (or press Return). If the server needs a name and password, macOS shows its standard sign-in prompt — enter your credentials there.</li>
 <li>When the share is ready, the active panel opens it automatically. Browse and work with it like any other folder.</li>
@@ -46,6 +46,8 @@
 <li>If you enter an address that can't be understood, Peach Commander asks you to provide an SMB/AFP address, a Windows-style path, or a <code>server/share</code> name, and nothing is mounted.</li>
 <li>After you confirm, connecting can take a moment while macOS mounts the share; the panel switches to it as soon as it becomes available.</li>
 <li>This connects to shared drives on a network. To reach an FTP, FTPS, or SFTP server instead, see the related topic below.</li>
+<li>A Windows-style path works in <strong>Go to Folder</strong> and in the path bar above a panel too, not only in Connect to Server. Type <code>\\fileserver\projects\reports</code> there and you land in that folder.</li>
+<li>If the share is already connected you go straight to the folder — no sign-in sheet and no second trip to the server. Only the share itself is ever mounted; the folders below it are reached by ordinary navigation, so the whole tree above them stays available.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li></ul></section>
 </main>

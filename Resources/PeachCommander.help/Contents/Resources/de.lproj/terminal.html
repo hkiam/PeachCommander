@@ -61,6 +61,12 @@
 </tbody>
 </table>
 <p>Solange das Terminal den Fokus hat, gehen die <strong>Funktionstasten dorthin</strong>, nicht ans Dateipanel — F5 in einem Texteditor im Terminal muss den Editor erreichen. Die Funktionstastenleiste sagt das, statt Tasten zu zeigen, die nicht auslösen.</p>
+<h2 id="und-die-klammern-tippen">@, ~ und die Klammern tippen</h2>
+<p>Auf den meisten Tastaturen außerhalb der Vereinigten Staaten werden <code>@</code>, <code>~</code>, <code>|</code>, <code>\</code> und die geschweiften Klammern mit der Wahltaste getippt. Diese Tastendrücke erreichen die Shell als die Zeichen, die auf den Tasten stehen.</p>
+<ul>
+<li>Die Alternative ist, die Wahltaste als Meta-Taste zu behandeln, was Alt+B, Alt+F und die Emacs-Tastenbelegungen brauchen: Das Terminal sendet dann Esc vor der Taste statt des Zeichens. Einschalten unter <strong>Konfiguration ▸ Plugins ▸ Terminal</strong> mit <strong>Wahltaste (⌥) als Meta-Taste verwenden</strong>.</li>
+<li>Die Änderung wirkt sofort, auch für bereits geöffnete Terminals, nicht erst für neue.</li>
+</ul>
 <h2 id="die-brucke-zuruck-ins-panel">Die Brücke zurück ins Panel</h2>
 <p><strong>Cmd-klicken Sie einen Pfad</strong> in der Ausgabe des Terminals, und das Panel geht dorthin. Eine Datei aus <code>ls</code>, ein Pfad in einer Compiler-Meldung, ein Name aus <code>git status</code> — ein Klick, und Sie sehen sie an.</p>
 <p>Es reagiert nur, wenn das Wort unter dem Zeiger wirklich auf etwas Vorhandenes zeigt. Ein Cmd-Klick auf Fließtext tut nichts, statt irgendwohin zu navigieren, und ein einfacher Klick markiert Text weiterhin wie immer.</p>

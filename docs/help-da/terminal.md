@@ -34,6 +34,13 @@ Alt andet står i menuen **Terminal**:
 
 Så længe terminalen har fokus, går **funktionstasterne dertil**, ikke til filpanelet — F5 i en teksteditor inde i terminalen skal nå editoren. Funktionstastlinjen siger det i stedet for at vise taster, der ikke udløser noget.
 
+## At skrive @, ~ og krøllede parenteser
+
+På de fleste tastaturer uden for USA skrives `@`, `~`, `|`, `\` og de krøllede parenteser med Option-tasten. Disse tastetryk når frem til skallen som de tegn, der står på tasterne.
+
+- Alternativet er at behandle Option som Meta-tasten, hvilket er det Alt+B, Alt+F og Emacs-tastebindingerne vil have: terminalen sender så Esc før tasten i stedet for tegnet. Slå det til under **Konfiguration ▸ Plugins ▸ Terminal** med **Brug Option som Meta-tast**.
+- Ændringen gælder straks, også for terminaler der allerede er åbne, og ikke først for nye.
+
 ## Broen tilbage til panelet
 
 **Cmd-klik på en sti** i terminalens output, og panelet går derhen. En fil fra `ls`, en sti i en compilerfejl, et navn fra `git status` — ét klik, og du kigger på den.

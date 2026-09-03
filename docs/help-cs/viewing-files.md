@@ -29,6 +29,16 @@ Peach Commander má vestavěný prohlížeč, který umožňuje nahlédnout dovn
 - Stiskněte Ctrl+G pro přechod na řádek, v hex režimu na bajtovou pozici. Počítat lze i mezi číselnými soustavami: `0x1000 + 15 + 1` vede na 4112 — šestnáctkově s `0x`, `$` nebo koncovým `h`, dvojkově s `0b`, osmičkově s `0o`, a `+ - * /` se závorkami.
 - Otevřete-li nalezený soubor z Najít soubory, kde bylo vyplněno **Najít text**, začne prohlížeč tímto hledáním: text už je v hledacím poli a první výskyt je vidět, takže přejdete přímo ke shodě, ne na začátek souboru. Když jej tam změníte nebo vymažete, zůstane vaše verze. V Nastavení pod Úpravy/Zobrazení to lze vypnout, pokud má každý soubor otevírat na začátku.
 
+## Čtení řetězců v binárním souboru
+
+V šestnáctkovém zobrazení nabízí panel nástrojů **Řetězce**: seznam každé čitelné posloupnosti textu v souboru, s offsetem, na němž leží, a s tím, jak byla dekódována. Kliknutím na řádek skočí šestnáctkový pohled na tyto bajty a označí je, takže další krok — Kopírovat výběr jako… nebo prostě přečíst, co je kolem — se týká právě toho řetězce.
+
+- Čtyři čtení běží zároveň: ASCII, UTF-8, UTF-16 little-endian a UTF-16 big-endian. Široké řetězce spustitelného souboru Windows i ty prosté se tak objeví v jednom seznamu, místo aby každý vyžadoval vlastní průchod. Latin-1 se nabízí také pod **Kódování**, ale zpočátku je vypnuté, protože tři čtvrtiny všech hodnot bajtů jsou tisknutelné Latin-1 a zkompilovaný kód tímto čtením prochází ve velkém.
+- Tytéž bajty jsou často čitelné ve více než jednom kódování. Pokud si dvě čtení nárokují stejný rozsah, vyhrává to, které se nejvíc čte jako text — `Hello` je tedy v seznamu jednou, a ne také jako dvojice znaků, kterou tytéž bajty tvoří po dvou.
+- **Min. délka** určuje, jak krátká posloupnost ještě počítá. Čtyři znaky jsou obvyklý výchozí bod; u velkého binárního souboru ji zvyšte, aby se seznam prořídl.
+- Pole filtru zužuje zobrazené bez opětovného čtení souboru, takže zůstává okamžité i u velmi velkého. Změna délky nebo kódování soubor znovu přečte, protože mění, co se za řetězec považuje.
+- **Zobrazit i nepravděpodobné řetězce** pod Kódováním přidá vše, co je pouze tisknutelné — včetně textu UTF-16, který není převážně latinkový a který běžný seznam vynechává, protože nic v bajtech ho neodliší od běžného textu čteného po dvou bajtech.
+
 ## Přiblížení obrázku
 
 V obrazové reprezentaci prohlížeč otevře obrázek přizpůsobený oknu a malý obrázek nechá v jeho vlastní velikosti, místo aby jej nafoukl.

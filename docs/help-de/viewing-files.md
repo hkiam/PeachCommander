@@ -29,6 +29,16 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 - Drücken Sie Ctrl+G, um zu einer Zeile zu springen — im Hex-Modus zu einem Byte-Offset. Dabei ist Rechnen über Zahlensysteme hinweg erlaubt: `0x1000 + 15 + 1` führt zu 4112 — hexadezimal mit `0x`, `$` oder angehängtem `h`, binär mit `0b`, oktal mit `0o`, und `+ - * /` mit Klammern.
 - Öffnen Sie einen Treffer aus Dateien suchen, in dem **Text suchen** gefüllt war, beginnt der Betrachter mit dieser Suche: der Text steht bereits im Suchfeld und das erste Vorkommen ist zu sehen, Sie landen also beim Treffer statt am Dateianfang. Ändern oder löschen Sie ihn dort, bleibt Ihre Fassung. In den Einstellungen unter Bearbeiten/Ansehen lässt sich das abschalten, wenn jede Datei am Anfang öffnen soll.
 
+## Die Strings in einer Binärdatei lesen
+
+In der Hex-Darstellung bietet die Symbolleiste **Strings** an: eine Liste jeder lesbaren Textfolge in der Datei, mit dem Offset, an dem sie steht, und der Kodierung, mit der sie gelesen wurde. Ein Klick auf eine Zeile bringt die Hex-Ansicht an diese Bytes und markiert sie, sodass der nächste Schritt — Auswahl kopieren als… oder einfach lesen, was daneben steht — für genau diesen String gilt.
+
+- Vier Lesarten laufen gleichzeitig: ASCII, UTF-8, UTF-16 Little-Endian und UTF-16 Big-Endian. Die breiten Strings einer Windows-Programmdatei und ihre einfachen stehen damit in einer Liste, statt je einen eigenen Durchlauf zu brauchen. Latin-1 wird unter **Kodierungen** ebenfalls angeboten, ist aber zunächst aus, denn drei Viertel aller Bytewerte sind druckbares Latin-1, und kompilierter Code besteht diese Lesart massenhaft.
+- Dieselben Bytes sind oft in mehr als einer Kodierung lesbar. Beanspruchen zwei Lesarten denselben Bereich, gewinnt die, die sich am ehesten wie Text liest — `Hello` steht also einmal in der Liste und nicht zusätzlich als das Paar Schriftzeichen, das dieselben Bytes paarweise gelesen ergeben.
+- **Min. Länge** legt fest, wie kurz eine Folge sein darf und noch zählt. Vier Zeichen sind der übliche Ausgangspunkt; bei einer großen Binärdatei erhöhen Sie ihn, um die Liste auszudünnen.
+- Das Filterfeld schränkt die Anzeige ein, ohne die Datei neu zu lesen, und bleibt deshalb auch bei sehr großen Dateien verzögerungsfrei. Länge und Kodierungen zu ändern liest neu, denn beides ändert, was als String gilt.
+- **Auch unwahrscheinliche Strings anzeigen** unter Kodierungen nimmt alles hinzu, was lediglich druckbar ist — auch UTF-16-Text, der nicht überwiegend lateinisch ist und den die gewöhnliche Liste weglässt, weil ihn nichts in den Bytes von gewöhnlichem, paarweise gelesenem Text unterscheidet.
+
 ## Ein Bild zoomen
 
 In der Bilddarstellung öffnet der Betrachter ein Bild eingepasst in das Fenster und lässt ein kleines Bild in seiner eigenen Größe, statt es aufzublasen.

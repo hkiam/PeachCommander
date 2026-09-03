@@ -128,6 +128,14 @@ Plugins kan også bidrage med formatterere — se [Plugins](plugins.md).
 3. Skriv hexcifre for at overskrive bytes, eller brug piletasterne til at bevæge dig gennem filen. Backspace og Delete fjerner bytes.
 4. Tryk på Cmd+S for at gemme. Som i teksteditoren beholdes det tidligere indhold kun, hvis du har slået backup til.
 
+## Strengene i den fil du redigerer
+
+Hexeditoren har det samme **Strenge**-panel som fremviseren: hver læsbar tekststreng i filen, i fire kodninger på én gang, og et klik sætter markør og markering på den.
+
+- Den læser byten, som du har redigeret dem, ikke som de står på disken, så offsettene bliver ved med at pege det rigtige sted hen, efter at en indsættelse har rykket alt nedenunder.
+- Listen følger dine rettelser: ret en byte, og den bygges op igen kort efter, at du holder op med at skrive.
+- Den er beskrevet fuldt ud under [Se filer](viewing-files.md#read-the-strings-in-a-binary) og opfører sig her på samme måde.
+
 ## Genveje
 
 | Handling | Tast |

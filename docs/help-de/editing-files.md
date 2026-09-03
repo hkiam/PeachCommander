@@ -128,6 +128,14 @@ Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
 3. Tippen Sie Hexziffern, um Bytes zu überschreiben, oder verwenden Sie die Pfeiltasten, um sich durch die Datei zu bewegen. Rücktaste und Entf entfernen Bytes.
 4. Drücken Sie Cmd+S, um zu sichern. Wie im Texteditor wird der vorherige Inhalt nur aufbewahrt, wenn Sie die Sicherungskopien eingeschaltet haben.
 
+## Die Strings in der Datei, die Sie bearbeiten
+
+Der Hex-Editor hat dieselbe **Strings**-Leiste wie der Betrachter: jede lesbare Textfolge der Datei, in vier Kodierungen gleichzeitig, und ein Klick setzt Cursor und Auswahl darauf.
+
+- Gelesen werden die Bytes so, wie Sie sie bearbeitet haben, nicht wie sie auf der Platte stehen — die Offsets zeigen also weiter an die richtige Stelle, nachdem ein Einfügen alles darunter verschoben hat.
+- Die Liste folgt Ihren Änderungen: Ändern Sie ein Byte, wird sie kurz nach dem Tippen neu aufgebaut.
+- Vollständig beschrieben ist sie unter [Dateien ansehen](viewing-files.md#read-the-strings-in-a-binary) und verhält sich hier genauso.
+
 ## Kurzbefehle
 
 | Aktion | Taste |

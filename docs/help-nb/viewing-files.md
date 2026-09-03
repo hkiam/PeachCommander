@@ -29,6 +29,16 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Trykk Ctrl+G for å gå til en linje, eller til en byteforskyvning i heksmodus. Regning på tvers av tallsystemer er tillatt: `0x1000 + 15 + 1` fører til 4112 — heksadesimalt med `0x`, `$` eller en `h` til slutt, binært med `0b`, oktalt med `0o`, og `+ - * /` med parenteser.
 - Åpner du et treff fra Finn filer der **Finn tekst** var fylt ut, starter fremviseren med det søket: teksten står allerede i søkefeltet og det første treffet er synlig, så du havner ved treffet i stedet for øverst i filen. Endrer eller tømmer du det der, er det din versjon som blir stående. Det kan slås av i Innstillinger under Rediger/Vis hvis du heller vil at hver fil åpnes fra begynnelsen.
 
+## Les strengene i en binærfil
+
+I den heksadesimale visningen tilbyr verktøylinjen **Strenger**: et panel med hver lesbare tekststreng i filen, med forskyvningen den står på, og hvordan den ble dekodet. Klikk på en rad, så hopper heksvisningen til de bytene og merker dem, slik at det neste du gjør — Kopier merket område som … eller bare lese det som står rundt — gjelder strengen du klikket på.
+
+- Fire lesninger går samtidig: ASCII, UTF-8, UTF-16 little-endian og UTF-16 big-endian. De brede strengene i en Windows-programfil og de vanlige havner derfor på én liste i stedet for å kreve hver sin gjennomgang. Latin-1 tilbys også under **Kodinger**, men er av til å begynne med, for tre fjerdedeler av alle byteverdier er skrivbar Latin-1, og kompilert kode består den lesningen i mengder.
+- De samme bytene lar seg ofte lese i mer enn én koding. Når to lesninger gjør krav på det samme området, vinner den som mest leser som tekst — `Hello` står altså én gang, og ikke i tillegg som det paret skrifttegn de samme bytene danner lest to om gangen.
+- **Min. lengde** bestemmer hvor kort en streng kan være og fremdeles telle. Fire tegn er det vanlige utgangspunktet; hev den på en stor binærfil for å tynne ut listen.
+- Filterfeltet snevrer inn det som vises uten å lese filen på nytt, og er derfor umiddelbart selv på en svært stor. Å endre lengden eller kodingene leser den derimot på nytt, fordi det endrer hva som teller som en streng.
+- **Vis også usannsynlige strenger** under Kodinger legger til alt som bare er skrivbart — også UTF-16-tekst som ikke i hovedsak er latinsk, og som den vanlige listen utelater fordi ingenting i bytene skiller den fra vanlig tekst lest to byte om gangen.
+
 ## Zoom et bilde
 
 I bilderepresentasjonen åpner fremviseren et bilde tilpasset vinduet, og lar et lite bilde være i sin egen størrelse i stedet for å blåse det opp.

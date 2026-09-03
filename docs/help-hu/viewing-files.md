@@ -29,6 +29,16 @@ A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé tes
 - Nyomja meg a Ctrl+G-t egy sorra ugráshoz, hexadecimális módban egy bájteltolásra. A számrendszerek közötti számolás megengedett: a `0x1000 + 15 + 1` a 4112-re visz — hexadecimális `0x`, `$` vagy záró `h` jelöléssel, bináris `0b`, oktális `0o`, valamint `+ - * /` zárójelekkel.
 - Ha a Fájlok keresése egy találatát nyitja meg, ahol a **Szöveg keresése** ki volt töltve, a megjelenítő ezzel a kereséssel indul: a szöveg már a keresősávban van, és az első előfordulás látszik, tehát a találatnál érkezik meg, nem a fájl elején. Ha ott módosítja vagy törli, az ön változata marad. A Beállítások Szerkesztés/Megjelenítés lapján kikapcsolható, ha inkább minden fájl az elején nyíljon.
 
+## Egy bináris fájl szövegeinek olvasása
+
+A hexadecimális ábrázolásban az eszköztár felkínálja a **Szövegek** panelt: felsorolja a fájl minden olvasható szövegrészletét, azzal az eltolással, ahol áll, és azzal, ahogyan dekódolták. Egy sorra kattintva a hexadecimális nézet ezekre a bájtokra ugrik és kijelöli őket, így a következő lépés — Kijelölés másolása mint…, vagy egyszerűen a környezet elolvasása — pontosan arra a szövegre vonatkozik.
+
+- Négy olvasat fut egyszerre: ASCII, UTF-8, UTF-16 little-endian és UTF-16 big-endian. Egy windowsos programfájl széles és egyszerű szövegei így egyetlen listán jelennek meg, ahelyett hogy mindegyik külön menetet kívánna. A Latin-1 szintén elérhető a **Kódolások** alatt, de kezdetben ki van kapcsolva, mert minden bájtérték háromnegyede nyomtatható Latin-1, és a lefordított kód tömegesen megfelel ennek az olvasatnak.
+- Ugyanazok a bájtok gyakran több kódolásban is olvashatók. Ha két olvasat ugyanarra a tartományra tart igényt, az nyer, amelyik leginkább szövegnek olvasható — a `Hello` tehát egyszer szerepel, és nem ráadásul annak a két írásjegynek a párjaként, amelyet ugyanezek a bájtok kettesével olvasva kiadnak.
+- A **Min. hossz** azt szabja meg, milyen rövid részlet számít még. A négy karakter a szokásos kiindulópont; nagy bináris fájlnál érdemes megemelni, hogy ritkuljon a lista.
+- A szűrőmező a fájl újraolvasása nélkül szűkíti a látottakat, ezért nagyon nagy fájlnál is azonnal reagál. A hossz vagy a kódolások módosítása viszont újraolvassa, mert ezek megváltoztatják, mi számít szövegnek.
+- A Kódolások alatti **Valószínűtlen szövegek megjelenítése** mindent hozzávesz, ami pusztán nyomtatható — beleértve a nem túlnyomóan latin betűs UTF-16 szöveget is, amelyet a szokásos lista kihagy, mert a bájtokban semmi nem különbözteti meg a kettesével olvasott közönséges szövegtől.
+
 ## Kép nagyítása
 
 A kép megjelenítésben a megjelenítő az ablakhoz igazítva nyitja meg a képet, egy kis képet pedig a saját méretében hagy, ahelyett hogy felfújná.

@@ -128,6 +128,14 @@ Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
 3. Skriv heksadesimale sifre for å overskrive bytes, eller bruk piltastene for å bevege deg gjennom filen. Backspace og Delete fjerner bytes.
 4. Trykk Cmd+S for å lagre. Som i tekstredigeringsprogrammet beholdes det forrige innholdet bare hvis du har slått på sikkerhetskopier.
 
+## Strengene i filen du redigerer
+
+Hekseditoren har det samme **Strenger**-panelet som fremviseren: hver lesbare tekststreng i filen, i fire kodinger samtidig, og et klikk setter markøren og merkingen på den.
+
+- Den leser bytene slik du har redigert dem, ikke slik de ligger på disken, så forskyvningene fortsetter å peke på riktig sted etter at en innsetting har flyttet alt under.
+- Listen følger endringene dine: endre en byte, og den bygges opp igjen like etter at du slutter å skrive.
+- Den er beskrevet i sin helhet under [Vise filer](viewing-files.md#read-the-strings-in-a-binary) og oppfører seg likedan her.
+
 ## Snarveier
 
 | Handling | Tast |

@@ -15,7 +15,7 @@ A Peach Commander csatlakozhat a helyi vagy vállalati hálózatában lévő fá
 3. A **Csatlakozás a kiszolgálóhoz** párbeszédben írja be a kiszolgáló címét. Megadhat:
    - egy SMB-címet, például `smb://fileserver/projects`
    - egy AFP-címet, például `afp://fileserver/projects`
-   - egy Windows-stílusú útvonalat, például `\\fileserver\projects`
+   - egy Windows-stílusú útvonalat, például `\\fileserver\projects\reports`
    - egy egyszerű `kiszolgáló/megosztás` nevet
 4. Kattintson a Csatlakozás-ra (vagy nyomja meg az Entert). Ha a kiszolgálónak névre és jelszóra van szüksége, a macOS megjeleníti a szokásos bejelentkező ablakát — adja meg ott az adatait.
 5. Ha a megosztás kész, az aktív panel automatikusan megnyitja. Böngésszen és dolgozzon vele, mint bármely más mappával.
@@ -36,3 +36,5 @@ Egy csatlakoztatott megosztás csatolt kötetként jelenik meg a Macjén. A lev�
 - Ha olyan címet ad meg, amely nem értelmezhető, a Peach Commander SMB/AFP-címet, Windows-stílusú útvonalat vagy `kiszolgáló/megosztás` nevet kér, és semmi sem csatolódik.
 - A megerősítés után a kapcsolat eltarthat egy pillanatig, míg a macOS csatolja a megosztást; a panel átvált rá, amint elérhetővé válik.
 - Ez hálózaton megosztott eszközökhöz csatlakozik. Ahhoz, hogy inkább egy FTP-, FTPS- vagy SFTP-kiszolgálót érjen el, lásd az alábbi kapcsolódó témát.
+- A Windows-stílusú útvonal az **Ugrás mappához** parancsban és a panel fölötti útvonalsávban is működik, nemcsak a „Kapcsolódás kiszolgálóhoz” ablakban. Írja be oda a `\\fileserver\projects\reports` útvonalat, és abban a mappában köt ki.
+- Ha a megosztás már csatlakoztatva van, egyenesen a mappába jut – bejelentkezési lap nélkül és a kiszolgáló újbóli megkeresése nélkül. Mindig csak maga a megosztás kerül csatolásra; az alatta lévő mappákat szokásos navigációval éri el, így a fölöttük lévő teljes fa elérhető marad.

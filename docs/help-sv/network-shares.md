@@ -15,7 +15,7 @@ Peach Commander kan ansluta till filservrar i ditt lokala nätverk eller företa
 3. Skriv serveradressen i dialogrutan **Anslut till server**. Du kan ange:
    - en SMB-adress, till exempel `smb://fileserver/projects`
    - en AFP-adress, till exempel `afp://fileserver/projects`
-   - en sökväg i Windows-stil, till exempel `\\fileserver\projects`
+   - en sökväg i Windows-stil, till exempel `\\fileserver\projects\reports`
    - ett enkelt `server/resurs`-namn
 4. Klicka på Anslut (eller tryck på Return). Om servern kräver namn och lösenord visar macOS sin vanliga inloggningsruta — ange dina uppgifter där.
 5. När resursen är klar öppnar den aktiva panelen den automatiskt. Bläddra och arbeta med den som med vilken annan mapp som helst.
@@ -36,3 +36,5 @@ En ansluten resurs visas som en monterad volym på din Mac. För att koppla frå
 - Om du anger en adress som inte kan tolkas ber Peach Commander dig om en SMB/AFP-adress, en sökväg i Windows-stil eller ett `server/resurs`-namn, och inget monteras.
 - Efter din bekräftelse kan anslutningen ta en stund medan macOS monterar resursen; panelen växlar till den så snart den blir tillgänglig.
 - Detta ansluter till delade enheter i ett nätverk. Se det relaterade ämnet nedan för att i stället nå en FTP-, FTPS- eller SFTP-server.
+- En sökväg i Windows-stil fungerar också i **Gå till mapp** och i sökvägsraden ovanför en panel, inte bara i "Anslut till server". Skriv `\\fileserver\projects\reports` där, så hamnar du i den mappen.
+- Är resursen redan ansluten går du direkt till mappen — utan inloggningsruta och utan en andra resa till servern. Bara själva resursen monteras; mapparna under den nås med vanlig navigering, så hela trädet ovanför dem förblir tillgängligt.

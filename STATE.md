@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **114 scenarios with reports** (`macro-confirm`, `macro-ask`, `macro-record` and `macro-manager` are new with F-478) (`side-panel-tabs` is new with F-476) (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 128 of 128 green (2026-08-28)** — after `plugin-context-menu` was found to be naming the wrong plugin and passing only by riding a one-time migration; see the F-478 review entry. Previously **122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-09-01 |
+| Last updated | 2026-09-03 |
 | Released | **0.8.2 (build 17), 2026-09-02** — a file inside an archive can be previewed and opened, which is what was reported, plus the thing working out why led into: three parts of the window read a file because the cursor landed on it and none of them had ever asked what that costs — only whether the path existed, which is the wrong question on a network share, on a cloud file that has not been downloaded, and inside an archive. Gallery view on a share used to read every file in the folder over the wire. It asks first now and answers in seconds rather than megabytes, measuring the connection as it goes; the limits are under Configuration ▸ Edit/View and there is a help topic in nineteen languages. Underneath, reading a member no longer needs it to fit in memory: 400 MB out of a ZIP cost 588 MB before and 151 MB now. Unsigned, as every build so far. Previously **0.8.1 (build 16), 2026-08-29** — macros worked through against the three things the first person to use them ran into: a recorder with two ends you press yourself instead of a list of the last thirty things; the "nothing has happened yet" it told somebody who had just made three folders, because what you do by hand is read out of a history that can be switched off; and one file per macro, since a macro is a thing people hand to each other and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs every macro in the file. Plus Export…/Import…, Run in the macro window, Shift+F4 recordable through a non-overwriting `create_file`, and a recording that survives a quit. Unsigned, as every build so far. Previously **0.8.0 (build 15), 2026-08-29** — the assistant split in two, AppleScript and JavaScript run *by* the app, the side panel's pages switch off, and macros: a named sequence of file actions built from what you just did — in the panels as well as through the assistant — that asks for a value when it needs one, is held to the most demanding thing in it, and is shown to you as rows in your own language before any of it runs. Eight worked examples ship with it. Unsigned, as every build so far. Previously **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1587 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1587 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,110 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-09-03 — a UNC path that was never a path, and a share that could not be let go
+
+Found already in the working tree at the start of the session and committed with it. Written up here
+from the diff and its tests rather than from having done it, which is worth saying: the reasoning
+below is the code's own, read back.
+
+**`\\server\share\dir` was understood in exactly one place.** The UNC parser had always existed and
+hung off ⌘K alone. Typed into Go to Folder it starts with no `/`, so it went down the *relative*
+branch and came back as `<current folder>/\\server\share\dir`; `//server/share` was worse, because
+`standardizingPath` collapses the double slash and returns `/server/share` — a plausible-looking
+local path that was never what anyone typed. `PathResolver` now refuses a network address instead of
+mangling it, and all three entry points (⌘K, Go to Folder, the path bar) route through one method.
+
+**The mount itself was doing two visible wrong things**, both traceable to `NSWorkspace.open`:
+
+* It asks *Finder* to mount, so Finder's window came up in front of the app the user had asked from.
+* Handed a URL with a path, it mounted the **subdirectory** as the volume. `\\srv\ablage\a\b\c`
+  became a volume whose root is `c` — no way up, and a drive chip named after a folder five levels
+  deep. `NetFSMountURLSync` on the share root, with `kNetFSAllowSubMountsKey: false`, and the subpath
+  walked afterwards.
+
+It also returns where the volume landed, which cannot be guessed: `/Volumes/<share>` is wrong the
+moment the same share is mounted twice and macOS appends `-1`.
+
+**Reverse-mapping is what makes the common case free.** A path pasted from a mail whose share is
+already up must navigate, not connect — so host and share are matched against the live `getmntinfo`
+table. Two subtleties are written down there because both were wrong first: the *shallowest*
+covering mount wins, not the first row whose share matches (with a submount also present, deepest
+sent the panel into the volume with no way up — the very fault above), and the whole remote path is
+compared, not just the share name.
+
+**And a share could not be let go.** The drive chip's ⏏ was dead and the command said "network shares
+and internal disks stay mounted". That was `isEjectable` read literally: the system reports false for
+smbfs, correctly, because there is no device. A share is *unmounted* — `unmountVolume`, which is what
+Finder's ⏏ does — and `VolumeKind.of` is what separates the two cases, not the flag.
+
+**One dialog fix underneath all of it.** `InputDialog` was a fixed 420 points and not resizable: an
+83-character UNC path measures 542 in that font, so the end of what it was asking about was
+off-screen with no way to widen it. Worse, a text field created in code is a *wrapping,
+non-scrolling* field by default (`usesSingleLineMode = false`, `cell.wraps = true`,
+`isScrollable = false`) — so the path laid itself out over three lines inside a 24-point field and
+had all but the first clipped away, unreachable even by the caret. Both lines are needed and the
+order matters: `lineBreakMode` and `isScrollable` overwrite each other. Every InputDialog gets the
+wider, resizable window; rename and mkdir ask about long names too.
+
+## 2026-09-03 — the strings in a binary, and two keys the terminal was eating
+
+Two reports in one session, and the second one was a default nobody had looked at.
+
+**The terminal could not type `@` or `~`.** On a German keyboard those are Option+L and Option+N.
+SwiftTerm defaults `optionAsMetaKey` to `true`, and that path reads
+`event.charactersIgnoringModifiers` and sends Esc plus *that* — so `@` reached the shell as `Esc l`
+and the dead-key `~` never reached the input context at all. Measured rather than argued: a probe
+built against the pinned SwiftTerm sources, feeding the emulator the real event shape (characters
+`@`, charactersIgnoringModifiers `l`, `.option`) and capturing what went to the pty.
+
+```
+optionAsMetaKey = true          optionAsMetaKey = false
+  Option+L        [ESC l]         [@]
+  Option+7        [ESC 7]         [|]
+  Option+Shift+7  [ESC 7]         [\]
+```
+
+So it was never only `@` and `~`: `|`, `\` and the brackets go the same way on the French, Spanish,
+Italian, Nordic and Swiss layouts. The default is now off — Terminal.app's default, and the only
+workable one outside a US layout — with **Wahltaste als Meta-Taste verwenden** under Configuration ▸
+Plugins ▸ Terminal for the people who want Alt+B and Alt+F. It applies to open terminals as well as
+new ones, unlike the scrollback size, which cannot.
+
+**A strings panel for the hex representation (F-489),** in the viewer and in the hex editor and
+offered nowhere else. `BinaryStrings` in PCFoundation runs every reading over the same bytes in one
+scan — ASCII, UTF-8, UTF-16 LE and BE at both alignments — and *reconciles* the results instead of
+concatenating them, because the same bytes are legitimately readable more than one way and emitting
+all of them is one finding plus two artefacts.
+
+**The part that took the work was that printable is not meaningful.** Three quarters of all byte
+values are printable Latin-1 and every non-surrogate byte pair is printable UTF-16, so the first
+working version reported this over `/bin/zsh`:
+
+| | runs found | of which strings |
+|---|---|---|
+| every reading, no filter | 65,405 | ~4,400 |
+| with `qualifies` | 11,630 | most |
+| default readings (no Latin-1) | 8,045 | nearly all |
+
+Latin-1 is the one reading no structural rule separates from machine code — `åAWAVAUATSH` is a
+function prologue, and length, symbol-content and word-shape tests all pass it — so it is offered and
+off. The filter also made the scan four times faster, because a rejected run never becomes a `String`.
+
+Two things could not be decided from the bytes and are written down as decisions rather than left to
+chance: a NUL-padded big-endian run at *n* and a little-endian run at *n+1* decode to identical text
+over identical bytes (little-endian wins, being what wide strings in real files are), and genuinely
+non-Latin UTF-16 is indistinguishable from ordinary ASCII read two bytes at a time (hidden by
+default, shown by **Show unlikely strings**).
+
+Verified in the running app rather than by eye: new `listerstrings` and `hexstrings` automation verbs
+open the panel, *wait for the background scan* — a dump taken as the panel opens reports zero
+findings over a file full of them, which reads as a broken feature and is the harness measuring
+itself — and report both the list and the byte range clicking a row actually selects. Over a fixture
+carrying all four readings, all four are found at the right offsets and a click on the UTF-8 row
+selects exactly `0x83…0x94`. Zero Auto Layout conflicts in both windows. The hex editor widens its
+window when the panel opens, because its fixed 760-point default would otherwise put the ASCII
+gutter — the column the grid is read by — off the right edge.
 
 ## 2026-09-02 — "the running instance is stuck", and it was the display
 

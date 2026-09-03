@@ -15,7 +15,7 @@ Peach Commander kann sich mit Dateiservern in Ihrem lokalen Netzwerk oder Firmen
 3. Geben Sie im Dialog **Mit Server verbinden** die Serveradresse ein. Sie können eingeben:
    - eine SMB-Adresse, zum Beispiel `smb://fileserver/projects`
    - eine AFP-Adresse, zum Beispiel `afp://fileserver/projects`
-   - einen Pfad im Windows-Stil, zum Beispiel `\\fileserver\projects`
+   - einen Pfad im Windows-Stil, zum Beispiel `\\fileserver\projects\reports`
    - einen einfachen `server/share`-Namen
 4. Klicken Sie auf Verbinden (oder drücken Sie die Eingabetaste). Wenn der Server einen Namen und ein Passwort benötigt, zeigt macOS seine Standard-Anmeldeaufforderung an — geben Sie dort Ihre Anmeldedaten ein.
 5. Sobald die Freigabe bereit ist, öffnet das aktive Panel sie automatisch. Durchsuchen und bearbeiten Sie sie wie jeden anderen Ordner.
@@ -36,3 +36,5 @@ Eine verbundene Freigabe erscheint als eingebundenes Volume auf Ihrem Mac. Um di
 - Wenn Sie eine Adresse eingeben, die nicht verstanden werden kann, bittet Peach Commander Sie, eine SMB/AFP-Adresse, einen Pfad im Windows-Stil oder einen `server/share`-Namen anzugeben, und es wird nichts eingebunden.
 - Nach der Bestätigung kann das Verbinden einen Moment dauern, während macOS die Freigabe einbindet; das Panel wechselt zu ihr, sobald sie verfügbar ist.
 - Dies stellt eine Verbindung zu freigegebenen Laufwerken in einem Netzwerk her. Um stattdessen einen FTP-, FTPS- oder SFTP-Server zu erreichen, lesen Sie das verwandte Thema unten.
+- Ein Pfad in Windows-Schreibweise funktioniert auch in **Gehe zu Ordner** und in der Pfadleiste über einem Panel, nicht nur unter „Mit Server verbinden“. Tippen Sie dort `\\fileserver\projects\reports` ein, und Sie landen in diesem Ordner.
+- Ist die Freigabe bereits verbunden, geht es direkt in den Ordner — ohne Anmeldefenster und ohne zweiten Gang zum Server. Eingebunden wird immer nur die Freigabe selbst; die Ordner darunter werden ganz normal angesteuert, sodass der ganze Baum darüber erreichbar bleibt.

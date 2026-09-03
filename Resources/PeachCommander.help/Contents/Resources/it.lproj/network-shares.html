@@ -18,7 +18,7 @@
 <li>Nella finestra <strong>Connetti al server</strong>, digita l'indirizzo del server. Puoi indicare:
    - un indirizzo SMB, per esempio <code>smb://fileserver/projects</code>
    - un indirizzo AFP, per esempio <code>afp://fileserver/projects</code>
-   - un percorso in stile Windows, per esempio <code>\\fileserver\projects</code>
+   - un percorso in stile Windows, per esempio <code>\\fileserver\projects\reports</code>
    - un semplice nome <code>server/condivisione</code></li>
 <li>Fai clic su Connetti (o premi Invio). Se il server richiede nome e password, macOS mostra la sua consueta finestra di accesso — inserisci lì le tue credenziali.</li>
 <li>Quando la condivisione è pronta, il pannello attivo la apre automaticamente. Sfogliala e lavoraci come con qualsiasi altra cartella.</li>
@@ -46,6 +46,8 @@
 <li>Se indichi un indirizzo che non può essere interpretato, Peach Commander chiede un indirizzo SMB/AFP, un percorso in stile Windows o un nome <code>server/condivisione</code>, e non viene montato nulla.</li>
 <li>Dopo la conferma, la connessione può richiedere un istante mentre macOS monta la condivisione; il pannello passa a essa non appena diventa disponibile.</li>
 <li>Questo si connette a dispositivi condivisi su una rete. Per raggiungere invece un server FTP, FTPS o SFTP, vedi l'argomento correlato sotto.</li>
+<li>Un percorso in stile Windows funziona anche in <strong>Vai alla cartella</strong> e nella barra del percorso sopra un pannello, non solo in «Connetti al server». Scrivetevi <code>\\fileserver\projects\reports</code> e arrivate in quella cartella.</li>
+<li>Se la condivisione è già connessa, si va direttamente alla cartella: nessun foglio di accesso e nessun secondo viaggio al server. Viene montata sempre e solo la condivisione stessa; alle cartelle sottostanti si arriva con una navigazione ordinaria, così l'intero albero sopra di esse resta raggiungibile.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li></ul></section>
 </main>

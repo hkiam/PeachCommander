@@ -15,7 +15,7 @@ Peach Commander kan oprette forbindelse til filservere på dit lokale netværk e
 3. I dialogen **Opret forbindelse til server** skal du indtaste serveradressen. Du kan angive:
    - en SMB-adresse, for eksempel `smb://fileserver/projects`
    - en AFP-adresse, for eksempel `afp://fileserver/projects`
-   - en sti i Windows-stil, for eksempel `\\fileserver\projects`
+   - en sti i Windows-stil, for eksempel `\\fileserver\projects\reports`
    - et simpelt `server/share`-navn
 4. Klik på Opret forbindelse (eller tryk på Retur). Hvis serveren har brug for navn og adgangskode, viser macOS sit sædvanlige loginvindue — indtast dine oplysninger der.
 5. Når sharet er klar, åbner det aktive panel det automatisk. Gennemse og arbejd med det som med enhver anden mappe.
@@ -36,3 +36,5 @@ Et forbundet share vises som et monteret diskområde på din Mac. For at afbryde
 - Hvis du angiver en adresse, der ikke kan tolkes, beder Peach Commander om en SMB/AFP-adresse, en sti i Windows-stil eller et `server/share`-navn, og intet monteres.
 - Efter du bekræfter, kan forbindelsen tage et øjeblik, mens macOS monterer sharet; panelet skifter til det, så snart det bliver tilgængeligt.
 - Dette opretter forbindelse til delte enheder på et netværk. For i stedet at nå en FTP-, FTPS- eller SFTP-server, se det relaterede emne nedenfor.
+- En sti i Windows-stil virker også i **Gå til mappe** og i stilinjen over et panel, ikke kun i "Opret forbindelse til server". Skriv `\\fileserver\projects\reports` der, og du lander i den mappe.
+- Er delingen allerede forbundet, går du direkte til mappen — uden login-ark og uden en tur mere til serveren. Kun selve delingen monteres; mapperne under den nås ved almindelig navigation, så hele træet over dem forbliver tilgængeligt.

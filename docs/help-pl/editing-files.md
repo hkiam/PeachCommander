@@ -128,6 +128,14 @@ Wtyczki też mogą dostarczać formatery — zobacz [Plugins](plugins.md).
 3. Wpisuj cyfry szesnastkowe, aby nadpisywać bajty, lub użyj strzałek, aby poruszać się po pliku. Backspace i Delete usuwają bajty.
 4. Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu poprzednia treść zostaje zachowana tylko wtedy, gdy włączyłeś kopie zapasowe.
 
+## Ciągi w edytowanym pliku
+
+Edytor szesnastkowy ma ten sam panel **Ciągi** co przeglądarka: każdą czytelną sekwencję tekstu w pliku, w czterech kodowaniach naraz, a kliknięcie ustawia na niej kursor i zaznaczenie.
+
+- Czyta bajty w postaci, w jakiej je zmieniono, a nie w takiej, w jakiej są na dysku, więc przesunięcia wskazują właściwe miejsce także po wstawieniu, które przesunęło wszystko poniżej.
+- Lista podąża za zmianami: po zmianie bajtu jest przebudowywana chwilę po tym, jak przestaniesz pisać.
+- Jest w pełni opisana w [Przeglądanie plików](viewing-files.md#read-the-strings-in-a-binary) i zachowuje się tu tak samo.
+
 ## Skróty
 
 | Akcja | Klawisz |

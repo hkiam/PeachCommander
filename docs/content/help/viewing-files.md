@@ -30,6 +30,16 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 - Press Ctrl+G to jump to a line, or to a byte offset in hex mode. It takes arithmetic across number bases, so `0x1000 + 15 + 1` goes to 4112 — hexadecimal with `0x`, `$` or a trailing `h`, binary with `0b`, octal with `0o`, and `+ - * /` with parentheses.
 - Open a hit from Find Files with **Find text** filled in and the viewer starts with that search: the text is already in the find bar and the first occurrence is on screen, so you land where the match is rather than at the top of the file. Change it or clear it there and yours is the one that stays. Switch it off under Settings ▸ Edit/View if you would rather every file opened at the beginning.
 
+## Read the strings in a binary
+
+In the hex representation the toolbar offers **Strings**: a panel listing every readable run of text in the file, with the offset it sits at and how it was decoded. Click a row and the hex view jumps to those bytes and selects them, so the next thing you do — Copy selection as…, or simply reading what is around it — applies to the string you clicked.
+
+- Four readings run at once: ASCII, UTF-8, UTF-16 little-endian and UTF-16 big-endian. A Windows executable's wide strings and its plain ones therefore appear in one list, rather than needing a separate pass for each. Latin-1 is offered under **Encodings** as well, but is off to begin with, because three quarters of all byte values are printable Latin-1 and compiled code passes that reading in bulk.
+- The same bytes are often readable in more than one encoding. Where two readings claim the same range, the one that reads most like text wins — so `Hello` is listed once, and not also as the pair of ideographs those bytes spell when read two at a time.
+- **Min. length** is how short a run may be and still count. Four characters is the usual starting point; raise it on a large binary to thin the list out.
+- The filter field narrows what is shown without re-reading the file, so it stays instant even on a very large one. Changing the length or the encodings does re-read it, because those change what counts as a string.
+- **Show unlikely strings**, under Encodings, adds everything that is merely printable — including UTF-16 text that is not mostly Latin, which the ordinary list leaves out because nothing in the bytes tells it apart from ordinary text read two bytes at a time.
+
 ## Zoom a picture
 
 In the image representation the viewer opens a picture fitted to the window, and leaves a small one at its own size instead of blowing it up.

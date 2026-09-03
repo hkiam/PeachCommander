@@ -128,6 +128,14 @@ Plugins kunnen ook opmakers aanleveren — zie [Plugins](plugins.md).
 3. Typ hex-cijfers om bytes te overschrijven, of gebruik de pijltoetsen om door het bestand te bewegen. Backspace en Delete verwijderen bytes.
 4. Druk op Cmd+S om te bewaren. Net als in de teksteditor wordt de vorige inhoud alleen bewaard als je back-ups hebt aangezet.
 
+## De reeksen in het bestand dat u bewerkt
+
+De hexadecimale editor heeft hetzelfde paneel **Reeksen** als de weergave: elke leesbare tekstreeks in het bestand, in vier coderingen tegelijk, en een klik zet cursor en selectie erop.
+
+- Hij leest de bytes zoals u ze bewerkt hebt, niet zoals ze op schijf staan, zodat de offsets naar de juiste plek blijven wijzen nadat een invoeging alles eronder verschoven heeft.
+- De lijst volgt uw bewerkingen: verander een byte en hij wordt kort nadat u ophoudt met typen opnieuw opgebouwd.
+- Hij wordt volledig beschreven onder [Bestanden bekijken](viewing-files.md#read-the-strings-in-a-binary) en gedraagt zich hier hetzelfde.
+
 ## Sneltoetsen
 
 | Actie | Toets |

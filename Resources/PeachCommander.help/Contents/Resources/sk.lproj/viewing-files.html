@@ -31,6 +31,15 @@
 <li>Stlačte Ctrl+G pre prechod na riadok, v hex režime na bajtovú pozíciu. Počítať sa dá aj medzi číselnými sústavami: <code>0x1000 + 15 + 1</code> vedie na 4112 — šestnástkovo s <code>0x</code>, <code>$</code> alebo koncovým <code>h</code>, dvojkovo s <code>0b</code>, osmičkovo s <code>0o</code>, a <code>+ - * /</code> so zátvorkami.</li>
 <li>Ak otvoríte nájdený súbor z Nájsť súbory, kde bolo vyplnené <strong>Nájsť text</strong>, prehliadač začne týmto hľadaním: text už je v hľadacom poli a prvý výskyt je vidieť, takže prídete priamo k zhode, nie na začiatok súboru. Keď ho tam zmeníte alebo vymažete, zostane vaša verzia. V Nastaveniach pod Úpravy/Zobrazenie sa to dá vypnúť, ak má každý súbor otvárať na začiatku.</li>
 </ul>
+<h2 id="citanie-retazcov-v-binarnom-subore">Čítanie reťazcov v binárnom súbore</h2>
+<p>V šestnástkovom zobrazení ponúka panel nástrojov <strong>Reťazce</strong>: zoznam každej čitateľnej postupnosti textu v súbore, s offsetom, na ktorom leží, a s tým, ako bola dekódovaná. Kliknutím na riadok skočí šestnástkový pohľad na tieto bajty a označí ich, takže ďalší krok — Kopírovať výber ako… alebo jednoducho prečítať, čo je okolo — sa týka práve toho reťazca.</p>
+<ul>
+<li>Štyri čítania bežia naraz: ASCII, UTF-8, UTF-16 little-endian a UTF-16 big-endian. Široké reťazce spustiteľného súboru Windows aj tie jednoduché sa tak objavia v jednom zozname namiesto toho, aby každý vyžadoval vlastný prechod. Latin-1 sa ponúka aj pod <strong>Kódovania</strong>, ale spočiatku je vypnuté, pretože tri štvrtiny všetkých hodnôt bajtov sú tlačiteľné Latin-1 a skompilovaný kód týmto čítaním prechádza vo veľkom.</li>
+<li>Tie isté bajty sú často čitateľné vo viac než jednom kódovaní. Ak si dve čítania nárokujú rovnaký rozsah, vyhráva to, ktoré sa najviac číta ako text — <code>Hello</code> je teda v zozname raz, a nie aj ako dvojica znakov, ktorú tie isté bajty tvoria po dvoch.</li>
+<li><strong>Min. dĺžka</strong> určuje, aká krátka postupnosť ešte počíta. Štyri znaky sú obvyklý východiskový bod; pri veľkom binárnom súbore ju zvýšte, aby sa zoznam preriedil.</li>
+<li>Pole filtra zužuje zobrazené bez opätovného čítania súboru, takže zostáva okamžité aj pri veľmi veľkom. Zmena dĺžky alebo kódovaní súbor prečíta znova, lebo mení, čo sa za reťazec považuje.</li>
+<li><strong>Zobraziť aj nepravdepodobné reťazce</strong> pod Kódovaniami pridá všetko, čo je iba tlačiteľné — vrátane textu UTF-16, ktorý nie je prevažne latinkový a ktorý bežný zoznam vynecháva, pretože nič v bajtoch ho neodlíši od bežného textu čítaného po dvoch bajtoch.</li>
+</ul>
 <h2 id="priblizenie-obrazka">Priblíženie obrázka</h2>
 <p>V obrazovej reprezentácii prehliadač otvorí obrázok prispôsobený oknu a malý obrázok nechá v jeho vlastnej veľkosti, namiesto toho aby ho nafúkol.</p>
 <table>

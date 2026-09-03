@@ -128,6 +128,14 @@ args = format -
 3. Tastați cifre hexazecimale pentru a suprascrie octeți, sau folosiți tastele săgeți pentru a vă deplasa prin fișier. Backspace și Delete elimină octeți.
 4. Apăsați Cmd+S pentru a salva. Ca în editorul de text, conținutul anterior este păstrat doar dacă ați activat copiile de rezervă.
 
+## Șirurile din fișierul pe care îl editați
+
+Editorul hexazecimal are același panou **Șiruri** ca vizualizatorul: fiecare secvență de text lizibilă din fișier, în patru codificări deodată, iar un clic așază pe ea cursorul și selecția.
+
+- Citește octeții așa cum i-ați editat, nu așa cum stau pe disc, deci decalajele arată în continuare locul potrivit după ce o inserare a deplasat tot ce se află dedesubt.
+- Lista urmează modificările: schimbați un octet și este reconstruită la scurt timp după ce încetați să tastați.
+- Este descrisă pe larg la [Vizualizarea fișierelor](viewing-files.md#read-the-strings-in-a-binary) și se comportă la fel și aici.
+
 ## Comenzi rapide
 
 | Acțiune | Tastă |

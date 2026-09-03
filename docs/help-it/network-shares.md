@@ -15,7 +15,7 @@ Peach Commander può connettersi ai file server della tua rete locale o aziendal
 3. Nella finestra **Connetti al server**, digita l'indirizzo del server. Puoi indicare:
    - un indirizzo SMB, per esempio `smb://fileserver/projects`
    - un indirizzo AFP, per esempio `afp://fileserver/projects`
-   - un percorso in stile Windows, per esempio `\\fileserver\projects`
+   - un percorso in stile Windows, per esempio `\\fileserver\projects\reports`
    - un semplice nome `server/condivisione`
 4. Fai clic su Connetti (o premi Invio). Se il server richiede nome e password, macOS mostra la sua consueta finestra di accesso — inserisci lì le tue credenziali.
 5. Quando la condivisione è pronta, il pannello attivo la apre automaticamente. Sfogliala e lavoraci come con qualsiasi altra cartella.
@@ -36,3 +36,5 @@ Una condivisione connessa compare come un volume montato sul tuo Mac. Per discon
 - Se indichi un indirizzo che non può essere interpretato, Peach Commander chiede un indirizzo SMB/AFP, un percorso in stile Windows o un nome `server/condivisione`, e non viene montato nulla.
 - Dopo la conferma, la connessione può richiedere un istante mentre macOS monta la condivisione; il pannello passa a essa non appena diventa disponibile.
 - Questo si connette a dispositivi condivisi su una rete. Per raggiungere invece un server FTP, FTPS o SFTP, vedi l'argomento correlato sotto.
+- Un percorso in stile Windows funziona anche in **Vai alla cartella** e nella barra del percorso sopra un pannello, non solo in «Connetti al server». Scrivetevi `\\fileserver\projects\reports` e arrivate in quella cartella.
+- Se la condivisione è già connessa, si va direttamente alla cartella: nessun foglio di accesso e nessun secondo viaggio al server. Viene montata sempre e solo la condivisione stessa; alle cartelle sottostanti si arriva con una navigazione ordinaria, così l'intero albero sopra di esse resta raggiungibile.

@@ -18,7 +18,7 @@
 <li>在 <strong>连接服务器</strong> 对话框中输入服务器地址。可以输入：
    - SMB 地址，例如 <code>smb://fileserver/projects</code>
    - AFP 地址，例如 <code>afp://fileserver/projects</code>
-   - Windows 风格路径，例如 <code>\\fileserver\projects</code>
+   - Windows 风格路径，例如 <code>\\fileserver\projects\reports</code>
    - 简单的 <code>server/share</code> 名称</li>
 <li>点按“连接”（或按 Return）。如果服务器需要用户名和密码，macOS 会显示其标准登录提示 —— 在那里输入你的凭据。</li>
 <li>共享就绪后，活动面板会自动打开它。像其他任何文件夹一样浏览和使用它。</li>
@@ -46,6 +46,8 @@
 <li>如果你输入的地址无法识别，Peach Commander 会要求你提供 SMB/AFP 地址、Windows 风格路径或 <code>server/share</code> 名称，且不会挂载任何内容。</li>
 <li>确认后，连接可能需要片刻，因为 macOS 正在挂载共享；共享可用后面板会立即切换到它。</li>
 <li>这是连接到网络上的共享驱动器。若要改为访问 FTP、FTPS 或 SFTP 服务器，请参阅下面的相关主题。</li>
+<li>Windows 风格的路径不只在“连接服务器”里可用，在<strong>前往文件夹</strong>和面板上方的路径栏里同样可用。在那里输入 <code>\\fileserver\projects\reports</code>，你就会落到那个文件夹里。</li>
+<li>如果共享已经连接，就直接进入该文件夹——没有登录面板，也不会再跑一趟服务器。挂载的始终只是共享本身；它下面的文件夹是用普通的导航到达的，因此它们上方的整棵树都仍然可用。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">连接到 FTP 与 SFTP</a></li></ul></section>
 </main>

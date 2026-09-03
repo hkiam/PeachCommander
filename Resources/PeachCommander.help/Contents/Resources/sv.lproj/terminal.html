@@ -61,6 +61,12 @@
 </tbody>
 </table>
 <p>Så länge terminalen har fokus går <strong>funktionstangenterna dit</strong>, inte till filpanelen — F5 i en textredigerare inuti terminalen måste nå redigeraren. Funktionstangentraden säger det, i stället för att visa tangenter som inte kommer att utlösa något.</p>
+<h2 id="att-skriva-och-klammerparenteser">Att skriva @, ~ och klammerparenteser</h2>
+<p>På de flesta tangentbord utanför USA skrivs <code>@</code>, <code>~</code>, <code>|</code>, <code>\</code> och klammerparenteserna med Alternativ-tangenten. De tangenttryckningarna når skalet som de tecken som står på tangenterna.</p>
+<ul>
+<li>Alternativet är att behandla Alternativ som Meta-tangent, vilket är vad Alt+B, Alt+F och Emacs-tangentbindningarna vill ha: terminalen skickar då Esc före tangenten i stället för tecknet. Slå på det under <strong>Konfiguration ▸ Tillägg ▸ Terminal</strong> med <strong>Använd Alternativ som Meta-tangent</strong>.</li>
+<li>Ändringen gäller genast, även för terminaler som redan är öppna och inte först för nya.</li>
+</ul>
 <h2 id="bron-tillbaka-till-panelen">Bron tillbaka till panelen</h2>
 <p><strong>Cmd-klicka på en sökväg</strong> i terminalens utdata så går panelen dit. En fil från <code>ls</code>, en sökväg i ett kompilatorfel, ett namn från <code>git status</code> — ett klick och du tittar på den.</p>
 <p>Det sker bara när ordet under pekaren verkligen motsvarar något som finns. Ett Cmd-klick på vanlig text gör ingenting i stället för att navigera någonstans godtyckligt, och ett vanligt klick markerar text som förut.</p>

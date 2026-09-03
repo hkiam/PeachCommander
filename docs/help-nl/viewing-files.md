@@ -29,6 +29,16 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 - Druk op Ctrl+G om naar een regel te gaan, of naar een byte-positie in hexmodus. Rekenen over talstelsels heen mag: `0x1000 + 15 + 1` leidt naar 4112 — hexadecimaal met `0x`, `$` of een `h` erachter, binair met `0b`, octaal met `0o`, en `+ - * /` met haakjes.
 - Open je een resultaat van Bestanden zoeken waarin **Tekst zoeken** was ingevuld, dan begint de weergave met die zoekopdracht: de tekst staat al in de zoekbalk en het eerste voorkomen is in beeld, dus je landt bij de overeenkomst en niet aan het begin van het bestand. Pas je het daar aan of wis je het, dan blijft jouw versie staan. In Instellingen ▸ Wijzigen/Weergeven kun je het uitzetten als je liever elk bestand vooraan opent.
 
+## De reeksen in een binair bestand lezen
+
+In de hexadecimale weergave biedt de werkbalk **Reeksen**: een paneel met elke leesbare tekstreeks in het bestand, met de offset waar hij staat en hoe hij is gedecodeerd. Klik op een rij en de hexweergave springt naar die bytes en selecteert ze, zodat het volgende wat u doet — Selectie kopiëren als…, of gewoon lezen wat eromheen staat — op de aangeklikte reeks slaat.
+
+- Vier lezingen lopen tegelijk: ASCII, UTF-8, UTF-16 little-endian en UTF-16 big-endian. De brede reeksen van een Windows-programma en de gewone staan daardoor in één lijst, in plaats van elk een eigen doorloop te vragen. Latin-1 wordt onder **Coderingen** ook aangeboden, maar staat aanvankelijk uit, want driekwart van alle bytewaarden is afdrukbaar Latin-1 en gecompileerde code doorstaat die lezing massaal.
+- Dezelfde bytes zijn vaak in meer dan één codering leesbaar. Claimen twee lezingen hetzelfde bereik, dan wint de lezing die het meest als tekst leest — `Hello` staat er dus één keer, en niet ook als het paar schrifttekens dat diezelfde bytes twee aan twee gelezen vormen.
+- **Min. lengte** bepaalt hoe kort een reeks mag zijn en nog meetelt. Vier tekens is het gebruikelijke uitgangspunt; verhoog hem bij een groot binair bestand om de lijst uit te dunnen.
+- Het filterveld beperkt wat te zien is zonder het bestand opnieuw te lezen, en blijft daarom ook bij een zeer groot bestand direct. De lengte of de coderingen wijzigen leest het wél opnieuw, want dat verandert wat als reeks telt.
+- **Ook onwaarschijnlijke reeksen tonen**, onder Coderingen, voegt alles toe wat enkel afdrukbaar is — ook UTF-16-tekst die niet overwegend Latijns is, en die de gewone lijst weglaat omdat niets in de bytes hem onderscheidt van gewone tekst die twee bytes tegelijk gelezen wordt.
+
 ## Een afbeelding zoomen
 
 In de afbeeldingsweergave opent de viewer een afbeelding passend in het venster en laat een kleine afbeelding op haar eigen grootte staan in plaats van haar op te blazen.

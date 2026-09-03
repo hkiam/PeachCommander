@@ -31,6 +31,15 @@
 <li>Naciśnij Ctrl+G, aby przejść do wiersza, a w trybie szesnastkowym do przesunięcia w bajtach. Można liczyć między systemami liczbowymi: <code>0x1000 + 15 + 1</code> prowadzi do 4112 — szesnastkowo z <code>0x</code>, <code>$</code> lub końcowym <code>h</code>, dwójkowo z <code>0b</code>, ósemkowo z <code>0o</code>, i <code>+ - * /</code> z nawiasami.</li>
 <li>Jeśli otworzysz trafienie z Znajdź pliki, w którym wypełnione było pole <strong>Znajdź tekst</strong>, przeglądarka zaczyna od tego wyszukiwania: tekst jest już w pasku wyszukiwania, a pierwsze wystąpienie widać na ekranie, więc trafiasz na dopasowanie, a nie na początek pliku. Jeśli go tam zmienisz lub wyczyścisz, zostaje twoja wersja. W Ustawieniach ▸ Edycja/Podgląd można to wyłączyć, jeśli wolisz, by każdy plik otwierał się od początku.</li>
 </ul>
+<h2 id="odczytanie-ciagow-w-pliku-binarnym">Odczytanie ciągów w pliku binarnym</h2>
+<p>W reprezentacji szesnastkowej pasek narzędzi udostępnia <strong>Ciągi</strong>: panel z listą każdej czytelnej sekwencji tekstu w pliku, wraz z przesunięciem, pod którym się znajduje, i sposobem jej zdekodowania. Kliknięcie wiersza przenosi widok szesnastkowy do tych bajtów i zaznacza je, więc kolejna czynność — Kopiuj zaznaczenie jako… albo po prostu odczytanie tego, co obok — dotyczy klikniętego ciągu.</p>
+<ul>
+<li>Cztery odczyty biegną naraz: ASCII, UTF-8, UTF-16 little-endian i UTF-16 big-endian. Szerokie ciągi pliku wykonywalnego Windows i zwykłe trafiają dzięki temu na jedną listę, zamiast wymagać osobnego przebiegu dla każdego. Latin-1 jest również dostępny w menu <strong>Kodowania</strong>, ale początkowo wyłączony, bo trzy czwarte wszystkich wartości bajtów to drukowalne Latin-1 i skompilowany kod masowo przechodzi ten odczyt.</li>
+<li>Te same bajty często dają się czytać w więcej niż jednym kodowaniu. Gdy dwa odczyty roszczą sobie ten sam zakres, wygrywa ten, który najbardziej czyta się jak tekst — <code>Hello</code> pojawia się więc raz, a nie dodatkowo jako para znaków, które te same bajty tworzą czytane po dwa.</li>
+<li><strong>Min. długość</strong> określa, jak krótka może być sekwencja, żeby jeszcze się liczyła. Cztery znaki to zwykły punkt wyjścia; przy dużym pliku binarnym warto ją podnieść, aby przerzedzić listę.</li>
+<li>Pole filtra zawęża to, co widać, bez ponownego czytania pliku, więc pozostaje natychmiastowe nawet przy bardzo dużym. Zmiana długości lub kodowań czyta plik ponownie, bo zmienia to, co liczy się jako ciąg.</li>
+<li><strong>Pokaż też mało prawdopodobne ciągi</strong> w menu Kodowania dodaje wszystko, co jest jedynie drukowalne — w tym tekst UTF-16, który nie jest głównie łaciński, a który zwykła lista pomija, bo nic w bajtach nie odróżnia go od zwykłego tekstu czytanego po dwa bajty.</li>
+</ul>
 <h2 id="powiekszanie-obrazu">Powiększanie obrazu</h2>
 <p>W reprezentacji obrazu przeglądarka otwiera obraz dopasowany do okna, a mały obraz zostawia w jego własnym rozmiarze, zamiast go rozdymać.</p>
 <table>

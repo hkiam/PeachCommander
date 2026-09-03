@@ -34,6 +34,13 @@ Tout le reste se trouve dans le menu **Terminal** :
 
 Tant que le terminal a le focus, les **touches de fonction lui reviennent**, pas au panneau de fichiers — F5 dans un éditeur de texte lancé dans le terminal doit atteindre l’éditeur. La barre des touches de fonction le dit, plutôt que d’afficher des touches qui ne déclencheront rien.
 
+## Taper @, ~ et les accolades
+
+Sur la plupart des claviers hors des États-Unis, `@`, `~`, `|`, `\` et les accolades se tapent avec la touche Option. Ces frappes atteignent le shell sous la forme des caractères imprimés sur les touches.
+
+- L'autre possibilité est de traiter Option comme la touche Méta, ce qu'attendent Alt+B, Alt+F et les raccourcis Emacs : le terminal envoie alors Échap avant la touche au lieu du caractère. Activez-la sous **Configuration ▸ Modules ▸ Terminal** avec **Utiliser Option comme touche Méta**.
+- Le changement s'applique aussitôt, aux terminaux déjà ouverts comme aux nouveaux.
+
 ## Le pont vers le panneau
 
 **Cmd-cliquez un chemin** dans la sortie du terminal et le panneau s’y rend. Un fichier issu de `ls`, un chemin dans une erreur de compilation, un nom dans `git status` — un clic et vous le regardez.

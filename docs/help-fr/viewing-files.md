@@ -29,6 +29,16 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 - Appuyez sur Ctrl+G pour aller à une ligne, ou à un décalage d'octet en mode hexadécimal. Le calcul entre bases est accepté : `0x1000 + 15 + 1` mène à 4112 — hexadécimal avec `0x`, `$` ou un `h` final, binaire avec `0b`, octal avec `0o`, et `+ - * /` avec des parenthèses.
 - Ouvrez un résultat de Rechercher des fichiers dont **Rechercher le texte** était rempli et la visionneuse démarre avec cette recherche : le texte est déjà dans la barre de recherche et la première occurrence est à l'écran, vous arrivez donc sur la correspondance plutôt qu'en début de fichier. Si vous le modifiez ou l'effacez là, c'est votre version qui reste. Désactivez-le dans Réglages ▸ Modifier/Afficher si vous préférez que chaque fichier s'ouvre au début.
 
+## Lire les chaînes d'un binaire
+
+Dans la représentation hexadécimale, la barre d'outils propose **Chaînes** : un panneau listant chaque suite de texte lisible du fichier, avec le décalage où elle se trouve et la façon dont elle a été décodée. Cliquez sur une ligne et la vue hexadécimale saute sur ces octets et les sélectionne, si bien que l'action suivante — Copier la sélection comme…, ou simplement lire ce qui l'entoure — porte sur la chaîne cliquée.
+
+- Quatre lectures s'exécutent en même temps : ASCII, UTF-8, UTF-16 petit-boutiste et UTF-16 gros-boutiste. Les chaînes larges d'un exécutable Windows et ses chaînes simples figurent donc dans une seule liste, au lieu d'exiger un passage distinct pour chacune. Latin-1 est également proposé sous **Encodages**, mais désactivé au départ, car trois quarts des valeurs d'octet sont du Latin-1 imprimable et le code compilé passe cette lecture en masse.
+- Les mêmes octets se lisent souvent dans plus d'un encodage. Lorsque deux lectures revendiquent la même plage, celle qui ressemble le plus à du texte l'emporte : `Hello` apparaît donc une fois, et non aussi sous la forme des deux idéogrammes que ces octets composent lus deux par deux.
+- **Longueur min.** fixe la longueur en dessous de laquelle une suite ne compte plus. Quatre caractères sont le point de départ habituel ; augmentez-la sur un gros binaire pour éclaircir la liste.
+- Le champ de filtre restreint l'affichage sans relire le fichier, et reste donc instantané même sur un très gros fichier. Changer la longueur ou les encodages le relit, car cela change ce qui compte comme une chaîne.
+- **Afficher aussi les chaînes improbables**, sous Encodages, ajoute tout ce qui est simplement imprimable — y compris du texte UTF-16 qui n'est pas majoritairement latin, que la liste ordinaire écarte parce que rien dans les octets ne le distingue d'un texte ordinaire lu deux octets à la fois.
+
 ## Zoomer une image
 
 Dans la représentation image, la visionneuse ouvre une image ajustée à la fenêtre et laisse une petite image à sa propre taille au lieu de l’agrandir.

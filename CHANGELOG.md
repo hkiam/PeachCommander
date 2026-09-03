@@ -16,12 +16,73 @@ does not have.
 
 ### Added
 
+- **A Windows path pasted into Go to Folder now goes there.** `\\server\share\folder` was only ever
+  understood by Connect to Server; typed into Go to Folder or the path bar it went down the
+  *relative* branch, came back as `<current folder>/\\server\share\folder`, and was reported as not
+  a folder — and `//server/share` was worse, because `standardizingPath` collapses the double slash
+  and produced `/server/share`, a plausible-looking local path nobody had asked for. All three entry
+  points now route a network address through the same code, and the path bar says which of the many
+  reasons applied instead of only beeping. If the share is already mounted it is a plain directory
+  change: the mount table is reverse-mapped first, so a path out of a mail does not raise a system
+  dialog for a volume already sitting in the drive bar.
+
+- **The strings in a binary, in four encodings at once.** The hex representation — in the viewer and
+  in the hex editor — has a Strings panel: every readable run of text in the file, with the offset it
+  sits at and how it was decoded, and a click puts the hex view on those bytes and selects them.
+  ASCII, UTF-8 and UTF-16 in both byte orders are read over the same bytes in the same pass, at both
+  alignments, so a Windows executable's wide strings and its plain ones are in one list instead of
+  needing a separate run each. Where two readings claim the same bytes they are reconciled rather
+  than both listed: `Hello` appears once, and not also as the pair of ideographs those bytes spell
+  read two at a time. The harder half was that *printable* and *meaningful* are not the same thing —
+  three quarters of all byte values are printable Latin-1, and every byte pair that is not a
+  surrogate is printable UTF-16, so the five readings find 65,000 runs in `/bin/zsh` of which 4,400
+  are strings. Runs that are printable without reading like text are dropped, which leaves 8,000 and
+  nearly all of them real; Latin-1, the one reading no rule separates from machine code, is offered
+  but off. A minimum length, a filter that does not re-read the file, and a switch to see what the
+  filter hides are all in the panel.
+
 - **Pictures inside an archive get real thumbnails.** Gallery view showed a generic document icon for
   everything inside a ZIP, because a thumbnail needs a file and a member of an archive is not one
   yet. Each visible one is now unpacked for it — which is affordable only because of the other half
   of this change.
 
 ### Fixed
+
+- **Mounting a share no longer opens Finder in front of you, and no longer mounts the wrong thing.**
+  Connecting went through `NSWorkspace.open`, which asks *Finder* to do the mount — so Finder's own
+  window came up over the app you had asked from. Worse, handed a URL with a path it mounted the
+  **subdirectory** as the volume: `\\srv\ablage\a\b\c` became a volume whose root is `c`, with no
+  way to go up out of it and a drive chip named after a folder five levels deep. The share alone is
+  mounted now, via `NetFSMountURLSync` — which still shows the system's own sign-in sheet, and hands
+  back where the volume actually landed instead of leaving it to be guessed as `/Volumes/<share>`,
+  which is wrong the moment macOS has to append `-1`. The rest of the path is an ordinary directory
+  change, so the whole tree above your folder is still there. The mount runs off the main thread,
+  because it blocks for as long as the server takes to answer — on an unreachable one, the full TCP
+  timeout.
+
+- **A mounted share can be detached from inside the app again.** The drive chip's ⏏ was greyed out
+  and the command answered that "network shares and internal disks stay mounted". They do not — that
+  was the ejectable flag being read literally: the system reports `isEjectable == false` for smbfs,
+  correctly, because there is no device to eject. A share is *unmounted*, which is what Finder's own
+  ⏏ does to it, and that is what happens now; the message no longer claims otherwise.
+
+- **A long path is visible in the dialog that asks for it.** Every InputDialog was a fixed 420 points
+  wide and not resizable, leaving 380 for the field — an 83-character UNC path measures 542, so the
+  interesting end of it was off-screen with no way to widen the window. It is 620 and resizable now.
+  Underneath that, a text field created in code is a *wrapping, non-scrolling* one by default, so the
+  same path laid itself out over three lines inside a 24-point field and had all but the first
+  clipped away, unreachable even by the caret. Rename and mkdir ask about long names too, and get
+  this as well.
+
+- **The terminal can type `@` and `~` again.** On a German keyboard `@` is Option+L and `~` is
+  Option+N, and neither reached the shell: the emulator defaults to treating Option as the Meta key,
+  which sends Esc followed by the *unmodified* key — so `@` arrived as `Esc l`. Measured rather than
+  guessed: with the old default Option+L sends `ESC l`, Option+7 sends `ESC 7` instead of `|`, and
+  Option+Shift+7 the same instead of `\`; with the new one each sends the character on the key. The
+  same applied to the brackets and braces on the French, Spanish, Italian, Nordic and Swiss layouts.
+  Option now types the character, as it does in Terminal, and Meta is a setting under Configuration ▸
+  Plugins ▸ Terminal for people who want Alt+B and Alt+F — it takes effect in terminals that are
+  already open, not only in new ones.
 
 - **A window sized for a larger display no longer hangs off the screen.** Change a monitor's
   resolution, or unplug it, and macOS leaves every window at the size it had — so the main window

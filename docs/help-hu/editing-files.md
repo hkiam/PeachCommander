@@ -128,6 +128,14 @@ Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
 3. Gépeljen hexadecimális számjegyeket a bájtok felülírásához, vagy használja a nyílbillentyűket a fájlon való mozgáshoz. A Backspace és a Delete eltávolít bájtokat.
 4. Nyomja meg a Cmd+S-t a mentéshez. Ahogy a szövegszerkesztőben, az előző tartalom csak akkor marad meg, ha bekapcsolta a biztonsági mentéseket.
 
+## A szerkesztett fájl szövegei
+
+A hexadecimális szerkesztőben ugyanaz a **Szövegek** panel van, mint a megjelenítőben: a fájl minden olvasható szövegrészlete, négy kódolásban egyszerre, és egy kattintás ráállítja a kurzort és a kijelölést.
+
+- A bájtokat úgy olvassa, ahogyan Ön szerkesztette őket, nem ahogyan a lemezen állnak, így az eltolások akkor is a helyes helyre mutatnak, ha egy beszúrás alatta mindent eltolt.
+- A lista követi a módosításokat: változtasson meg egy bájtot, és nem sokkal a gépelés abbahagyása után újraépül.
+- Teljes leírása a [Fájlok megtekintése](viewing-files.md#read-the-strings-in-a-binary) alatt található, és itt ugyanúgy működik.
+
 ## Billentyűparancsok
 
 | Művelet | Billentyű |

@@ -34,6 +34,13 @@ Alt annet ligger i menyen **Terminal**:
 
 Så lenge terminalen har fokus, går **funksjonstastene dit**, ikke til filpanelet — F5 i et tekstredigeringsprogram inne i terminalen må nå redigeringsprogrammet. Funksjonstastraden sier det, i stedet for å vise taster som ikke vil utløse noe.
 
+## Å skrive @, ~ og krøllparenteser
+
+På de fleste tastaturer utenfor USA skrives `@`, `~`, `|`, `\` og krøllparentesene med Tilvalg-tasten. Disse tastetrykkene når skallet som tegnene som står på tastene.
+
+- Alternativet er å behandle Tilvalg som Meta-tasten, som er det Alt+B, Alt+F og Emacs-tastebindingene vil ha: terminalen sender da Esc før tasten i stedet for tegnet. Slå det på under **Konfigurasjon ▸ Programtillegg ▸ Terminal** med **Bruk Tilvalg som Meta-tast**.
+- Endringen gjelder med én gang, også for terminaler som allerede er åpne, ikke først for nye.
+
 ## Broen tilbake til panelet
 
 **Cmd-klikk på en bane** i terminalens utdata, og panelet går dit. En fil fra `ls`, en bane i en kompilatorfeil, et navn fra `git status` — ett klikk og du ser på den.

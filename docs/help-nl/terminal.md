@@ -34,6 +34,13 @@ De rest staat in het menu **Terminal**:
 
 Zolang de terminal de focus heeft, gaan de **functietoetsen daarheen**, niet naar het bestandspaneel — F5 in een teksteditor binnen de terminal moet de editor bereiken. De functietoetsenbalk zegt dat, in plaats van toetsen te tonen die niets doen.
 
+## @, ~ en de accolades typen
+
+Op de meeste toetsenborden buiten de Verenigde Staten worden `@`, `~`, `|`, `\` en de accolades met de Option-toets getypt. Die aanslagen bereiken de shell als de tekens die op de toetsen staan.
+
+- Het alternatief is Option als Meta-toets te behandelen, wat Alt+B, Alt+F en de Emacs-toetsbindingen willen: de terminal stuurt dan Esc vóór de toets in plaats van het teken. Zet het aan onder **Configuratie ▸ Plug-ins ▸ Terminal** met **Option gebruiken als Meta-toets**.
+- De wijziging werkt meteen, ook voor terminals die al open staan en niet alleen voor nieuwe.
+
 ## De brug terug naar het paneel
 
 **Cmd-klik op een pad** in de uitvoer van de terminal en het paneel gaat erheen. Een bestand uit `ls`, een pad in een compilerfout, een naam uit `git status` — één klik en u kijkt ernaar.

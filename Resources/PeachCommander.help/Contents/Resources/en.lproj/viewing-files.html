@@ -31,6 +31,15 @@
 <li>Press Ctrl+G to jump to a line, or to a byte offset in hex mode. It takes arithmetic across number bases, so <code>0x1000 + 15 + 1</code> goes to 4112 — hexadecimal with <code>0x</code>, <code>$</code> or a trailing <code>h</code>, binary with <code>0b</code>, octal with <code>0o</code>, and <code>+ - * /</code> with parentheses.</li>
 <li>Open a hit from Find Files with <strong>Find text</strong> filled in and the viewer starts with that search: the text is already in the find bar and the first occurrence is on screen, so you land where the match is rather than at the top of the file. Change it or clear it there and yours is the one that stays. Switch it off under Settings ▸ Edit/View if you would rather every file opened at the beginning.</li>
 </ul>
+<h2 id="read-the-strings-in-a-binary">Read the strings in a binary</h2>
+<p>In the hex representation the toolbar offers <strong>Strings</strong>: a panel listing every readable run of text in the file, with the offset it sits at and how it was decoded. Click a row and the hex view jumps to those bytes and selects them, so the next thing you do — Copy selection as…, or simply reading what is around it — applies to the string you clicked.</p>
+<ul>
+<li>Four readings run at once: ASCII, UTF-8, UTF-16 little-endian and UTF-16 big-endian. A Windows executable's wide strings and its plain ones therefore appear in one list, rather than needing a separate pass for each. Latin-1 is offered under <strong>Encodings</strong> as well, but is off to begin with, because three quarters of all byte values are printable Latin-1 and compiled code passes that reading in bulk.</li>
+<li>The same bytes are often readable in more than one encoding. Where two readings claim the same range, the one that reads most like text wins — so <code>Hello</code> is listed once, and not also as the pair of ideographs those bytes spell when read two at a time.</li>
+<li><strong>Min. length</strong> is how short a run may be and still count. Four characters is the usual starting point; raise it on a large binary to thin the list out.</li>
+<li>The filter field narrows what is shown without re-reading the file, so it stays instant even on a very large one. Changing the length or the encodings does re-read it, because those change what counts as a string.</li>
+<li><strong>Show unlikely strings</strong>, under Encodings, adds everything that is merely printable — including UTF-16 text that is not mostly Latin, which the ordinary list leaves out because nothing in the bytes tells it apart from ordinary text read two bytes at a time.</li>
+</ul>
 <h2 id="zoom-a-picture">Zoom a picture</h2>
 <p>In the image representation the viewer opens a picture fitted to the window, and leaves a small one at its own size instead of blowing it up.</p>
 <table>

@@ -29,6 +29,16 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 - Naciśnij Ctrl+G, aby przejść do wiersza, a w trybie szesnastkowym do przesunięcia w bajtach. Można liczyć między systemami liczbowymi: `0x1000 + 15 + 1` prowadzi do 4112 — szesnastkowo z `0x`, `$` lub końcowym `h`, dwójkowo z `0b`, ósemkowo z `0o`, i `+ - * /` z nawiasami.
 - Jeśli otworzysz trafienie z Znajdź pliki, w którym wypełnione było pole **Znajdź tekst**, przeglądarka zaczyna od tego wyszukiwania: tekst jest już w pasku wyszukiwania, a pierwsze wystąpienie widać na ekranie, więc trafiasz na dopasowanie, a nie na początek pliku. Jeśli go tam zmienisz lub wyczyścisz, zostaje twoja wersja. W Ustawieniach ▸ Edycja/Podgląd można to wyłączyć, jeśli wolisz, by każdy plik otwierał się od początku.
 
+## Odczytanie ciągów w pliku binarnym
+
+W reprezentacji szesnastkowej pasek narzędzi udostępnia **Ciągi**: panel z listą każdej czytelnej sekwencji tekstu w pliku, wraz z przesunięciem, pod którym się znajduje, i sposobem jej zdekodowania. Kliknięcie wiersza przenosi widok szesnastkowy do tych bajtów i zaznacza je, więc kolejna czynność — Kopiuj zaznaczenie jako… albo po prostu odczytanie tego, co obok — dotyczy klikniętego ciągu.
+
+- Cztery odczyty biegną naraz: ASCII, UTF-8, UTF-16 little-endian i UTF-16 big-endian. Szerokie ciągi pliku wykonywalnego Windows i zwykłe trafiają dzięki temu na jedną listę, zamiast wymagać osobnego przebiegu dla każdego. Latin-1 jest również dostępny w menu **Kodowania**, ale początkowo wyłączony, bo trzy czwarte wszystkich wartości bajtów to drukowalne Latin-1 i skompilowany kod masowo przechodzi ten odczyt.
+- Te same bajty często dają się czytać w więcej niż jednym kodowaniu. Gdy dwa odczyty roszczą sobie ten sam zakres, wygrywa ten, który najbardziej czyta się jak tekst — `Hello` pojawia się więc raz, a nie dodatkowo jako para znaków, które te same bajty tworzą czytane po dwa.
+- **Min. długość** określa, jak krótka może być sekwencja, żeby jeszcze się liczyła. Cztery znaki to zwykły punkt wyjścia; przy dużym pliku binarnym warto ją podnieść, aby przerzedzić listę.
+- Pole filtra zawęża to, co widać, bez ponownego czytania pliku, więc pozostaje natychmiastowe nawet przy bardzo dużym. Zmiana długości lub kodowań czyta plik ponownie, bo zmienia to, co liczy się jako ciąg.
+- **Pokaż też mało prawdopodobne ciągi** w menu Kodowania dodaje wszystko, co jest jedynie drukowalne — w tym tekst UTF-16, który nie jest głównie łaciński, a który zwykła lista pomija, bo nic w bajtach nie odróżnia go od zwykłego tekstu czytanego po dwa bajty.
+
 ## Powiększanie obrazu
 
 W reprezentacji obrazu przeglądarka otwiera obraz dopasowany do okna, a mały obraz zostawia w jego własnym rozmiarze, zamiast go rozdymać.

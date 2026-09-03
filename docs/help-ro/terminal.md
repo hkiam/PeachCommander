@@ -34,6 +34,13 @@ Tot restul se află în meniul **Terminal**:
 
 Cât timp terminalul are focalizarea, **tastele funcționale merg acolo**, nu la panoul de fișiere — F5 într-un editor de text din terminal trebuie să ajungă la editor. Bara tastelor funcționale spune asta, în loc să arate taste care nu vor declanșa nimic.
 
+## Tastarea caracterelor @, ~ și a acoladelor
+
+Pe majoritatea tastaturilor din afara Statelor Unite, `@`, `~`, `|`, `\` și acoladele se tastează cu tasta Option. Aceste apăsări ajung la interpretorul de comenzi drept caracterele imprimate pe taste.
+
+- Alternativa este să tratați Option ca tastă Meta, ceea ce cer Alt+B, Alt+F și combinațiile Emacs: terminalul trimite atunci Esc înaintea tastei în loc de caracter. Activați-o la **Configurare ▸ Extensii ▸ Terminal** cu **Folosește Option ca tastă Meta**.
+- Schimbarea se aplică imediat, și terminalelor deja deschise, nu doar celor noi.
+
 ## Puntea înapoi spre panou
 
 **Cmd-clic pe o cale** din ieșirea terminalului și panoul merge acolo. Un fișier din `ls`, o cale dintr-o eroare de compilare, un nume din `git status` — un clic și îl priviți.

@@ -34,6 +34,13 @@ Todo lo demás está en el menú **Terminal**:
 
 Mientras la terminal tiene el foco, las **teclas de función van a ella**, no al panel de archivos: F5 en un editor de texto dentro de la terminal tiene que llegar al editor. La barra de teclas de función lo indica, en vez de mostrar teclas que no van a funcionar.
 
+## Escribir @, ~ y las llaves
+
+En la mayoría de los teclados fuera de los Estados Unidos, `@`, `~`, `|`, `\` y las llaves se escriben con la tecla Opción. Esas pulsaciones llegan al intérprete de órdenes como los caracteres impresos en las teclas.
+
+- La alternativa es tratar Opción como la tecla Meta, que es lo que quieren Alt+B, Alt+F y los atajos de Emacs: el terminal envía entonces Esc antes de la tecla en lugar del carácter. Actívela en **Configuración ▸ Complementos ▸ Terminal** con **Usar Opción como tecla Meta**.
+- El cambio se aplica de inmediato, tanto a los terminales ya abiertos como a los nuevos.
+
 ## El puente de vuelta al panel
 
 **Cmd-clic en una ruta** de la salida de la terminal y el panel va allí. Un archivo de `ls`, una ruta en un error del compilador, un nombre de `git status`: un clic y lo estás mirando.

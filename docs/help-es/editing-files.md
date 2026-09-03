@@ -128,6 +128,14 @@ Los plugins también pueden aportar formateadores — véase [Plugins](plugins.m
 3. Escriba dígitos hexadecimales para sobrescribir bytes, o use las teclas de flecha para desplazarse por el archivo. Backspace y Delete eliminan bytes.
 4. Pulse Cmd+S para guardar. Como en el editor de texto, el contenido anterior solo se conserva si activó las copias de seguridad.
 
+## Las cadenas del archivo que está editando
+
+El editor hexadecimal tiene el mismo panel **Cadenas** que el visor: cada secuencia de texto legible del archivo, en cuatro codificaciones a la vez, y un clic pone allí el cursor y la selección.
+
+- Lee los bytes tal como los ha editado, no como están en el disco, de modo que los desplazamientos siguen señalando el lugar correcto después de que una inserción haya desplazado todo lo que hay debajo.
+- La lista sigue sus ediciones: cambie un byte y se reconstruye un momento después de que deje de escribir.
+- Está descrito por completo en [Ver archivos](viewing-files.md#read-the-strings-in-a-binary) y se comporta aquí igual.
+
 ## Atajos
 
 | Acción | Tecla |

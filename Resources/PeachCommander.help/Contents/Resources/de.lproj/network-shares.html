@@ -18,7 +18,7 @@
 <li>Geben Sie im Dialog <strong>Mit Server verbinden</strong> die Serveradresse ein. Sie können eingeben:
    - eine SMB-Adresse, zum Beispiel <code>smb://fileserver/projects</code>
    - eine AFP-Adresse, zum Beispiel <code>afp://fileserver/projects</code>
-   - einen Pfad im Windows-Stil, zum Beispiel <code>\\fileserver\projects</code>
+   - einen Pfad im Windows-Stil, zum Beispiel <code>\\fileserver\projects\reports</code>
    - einen einfachen <code>server/share</code>-Namen</li>
 <li>Klicken Sie auf Verbinden (oder drücken Sie die Eingabetaste). Wenn der Server einen Namen und ein Passwort benötigt, zeigt macOS seine Standard-Anmeldeaufforderung an — geben Sie dort Ihre Anmeldedaten ein.</li>
 <li>Sobald die Freigabe bereit ist, öffnet das aktive Panel sie automatisch. Durchsuchen und bearbeiten Sie sie wie jeden anderen Ordner.</li>
@@ -46,6 +46,8 @@
 <li>Wenn Sie eine Adresse eingeben, die nicht verstanden werden kann, bittet Peach Commander Sie, eine SMB/AFP-Adresse, einen Pfad im Windows-Stil oder einen <code>server/share</code>-Namen anzugeben, und es wird nichts eingebunden.</li>
 <li>Nach der Bestätigung kann das Verbinden einen Moment dauern, während macOS die Freigabe einbindet; das Panel wechselt zu ihr, sobald sie verfügbar ist.</li>
 <li>Dies stellt eine Verbindung zu freigegebenen Laufwerken in einem Netzwerk her. Um stattdessen einen FTP-, FTPS- oder SFTP-Server zu erreichen, lesen Sie das verwandte Thema unten.</li>
+<li>Ein Pfad in Windows-Schreibweise funktioniert auch in <strong>Gehe zu Ordner</strong> und in der Pfadleiste über einem Panel, nicht nur unter „Mit Server verbinden“. Tippen Sie dort <code>\\fileserver\projects\reports</code> ein, und Sie landen in diesem Ordner.</li>
+<li>Ist die Freigabe bereits verbunden, geht es direkt in den Ordner — ohne Anmeldefenster und ohne zweiten Gang zum Server. Eingebunden wird immer nur die Freigabe selbst; die Ordner darunter werden ganz normal angesteuert, sodass der ganze Baum darüber erreichbar bleibt.</li>
 </ul>
 <section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li></ul></section>
 </main>

@@ -29,6 +29,16 @@ Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att
 - Tryck Ctrl+G för att gå till en rad, eller till en byteposition i hexläge. Räkning över talsystem är tillåten: `0x1000 + 15 + 1` leder till 4112 — hexadecimalt med `0x`, `$` eller ett avslutande `h`, binärt med `0b`, oktalt med `0o`, och `+ - * /` med parenteser.
 - Öppnar du en träff från Hitta filer där **Sök text** var ifyllt startar visaren med den sökningen: texten står redan i sökfältet och den första förekomsten syns, så du landar vid träffen i stället för högst upp i filen. Ändrar eller rensar du den där är det din version som står kvar. Det kan stängas av i Inställningar ▸ Redigera/Visa om du hellre vill att varje fil öppnas från början.
 
+## Läsa strängarna i en binärfil
+
+I den hexadecimala representationen erbjuder verktygsfältet **Strängar**: en panel med varje läsbar textsträng i filen, med den offset den står på och hur den avkodats. Klicka på en rad så hoppar hexvyn till de byten och markerar dem, så att nästa steg — Kopiera markering som … eller bara läsa det som står omkring — gäller den sträng du klickade på.
+
+- Fyra läsningar körs samtidigt: ASCII, UTF-8, UTF-16 little-endian och UTF-16 big-endian. En Windows-programfils breda strängar och dess enkla hamnar därför i en enda lista i stället för att kräva var sin genomgång. Latin-1 erbjuds också under **Kodningar**, men är av till att börja med, eftersom tre fjärdedelar av alla bytevärden är utskrivbar Latin-1 och kompilerad kod klarar den läsningen i mängd.
+- Samma byte går ofta att läsa i mer än en kodning. När två läsningar gör anspråk på samma område vinner den som mest läses som text — `Hello` står alltså en gång och inte dessutom som det par skrivtecken samma byte bildar lästa två i taget.
+- **Min. längd** avgör hur kort en sträng får vara och ändå räknas. Fyra tecken är den vanliga utgångspunkten; höj den på en stor binärfil för att glesa ut listan.
+- Filterfältet begränsar det som visas utan att läsa om filen och förblir därför omedelbart även på en mycket stor. Att ändra längden eller kodningarna läser däremot om den, eftersom det ändrar vad som räknas som en sträng.
+- **Visa även osannolika strängar** under Kodningar lägger till allt som bara är utskrivbart — inklusive UTF-16-text som inte huvudsakligen är latinsk och som den vanliga listan utelämnar, eftersom ingenting i byten skiljer den från vanlig text läst två byte i taget.
+
 ## Zooma en bild
 
 I bildrepresentationen öppnar visaren en bild anpassad till fönstret och låter en liten bild vara i sin egen storlek i stället för att blåsa upp den.

@@ -18,7 +18,7 @@
 <li>A <strong>Csatlakozás a kiszolgálóhoz</strong> párbeszédben írja be a kiszolgáló címét. Megadhat:
    - egy SMB-címet, például <code>smb://fileserver/projects</code>
    - egy AFP-címet, például <code>afp://fileserver/projects</code>
-   - egy Windows-stílusú útvonalat, például <code>\\fileserver\projects</code>
+   - egy Windows-stílusú útvonalat, például <code>\\fileserver\projects\reports</code>
    - egy egyszerű <code>kiszolgáló/megosztás</code> nevet</li>
 <li>Kattintson a Csatlakozás-ra (vagy nyomja meg az Entert). Ha a kiszolgálónak névre és jelszóra van szüksége, a macOS megjeleníti a szokásos bejelentkező ablakát — adja meg ott az adatait.</li>
 <li>Ha a megosztás kész, az aktív panel automatikusan megnyitja. Böngésszen és dolgozzon vele, mint bármely más mappával.</li>
@@ -46,6 +46,8 @@
 <li>Ha olyan címet ad meg, amely nem értelmezhető, a Peach Commander SMB/AFP-címet, Windows-stílusú útvonalat vagy <code>kiszolgáló/megosztás</code> nevet kér, és semmi sem csatolódik.</li>
 <li>A megerősítés után a kapcsolat eltarthat egy pillanatig, míg a macOS csatolja a megosztást; a panel átvált rá, amint elérhetővé válik.</li>
 <li>Ez hálózaton megosztott eszközökhöz csatlakozik. Ahhoz, hogy inkább egy FTP-, FTPS- vagy SFTP-kiszolgálót érjen el, lásd az alábbi kapcsolódó témát.</li>
+<li>A Windows-stílusú útvonal az <strong>Ugrás mappához</strong> parancsban és a panel fölötti útvonalsávban is működik, nemcsak a „Kapcsolódás kiszolgálóhoz” ablakban. Írja be oda a <code>\\fileserver\projects\reports</code> útvonalat, és abban a mappában köt ki.</li>
+<li>Ha a megosztás már csatlakoztatva van, egyenesen a mappába jut – bejelentkezési lap nélkül és a kiszolgáló újbóli megkeresése nélkül. Mindig csak maga a megosztás kerül csatolásra; az alatta lévő mappákat szokásos navigációval éri el, így a fölöttük lévő teljes fa elérhető marad.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li></ul></section>
 </main>

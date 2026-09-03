@@ -127,7 +127,14 @@
 <li>输入十六进制数字以覆盖字节，或使用方向键在文件中移动。Backspace 和 Delete 会移除字节。</li>
 <li>按 Cmd+S 保存。与文本编辑器一样，只有在你打开备份后才会保留先前的内容。</li>
 </ol>
-<h2 id="_7">快捷键</h2>
+<h2 id="_7">你正在编辑的文件中的字符串</h2>
+<p>十六进制编辑器有着与查看器相同的<strong>字符串</strong>面板：文件中每一段可读的文本，四种编码同时呈现，点击一下就把光标和选区放到它上面。</p>
+<ul>
+<li>它读取的是你编辑之后的字节，而不是磁盘上的字节，因此在一次插入把下方内容整体移位之后，偏移仍然指向正确的位置。</li>
+<li>列表会跟随你的编辑：改动一个字节，停下输入片刻后它便重新建立。</li>
+<li>完整说明见<a href="viewing-files.html#read-the-strings-in-a-binary">查看文件</a>，在这里的行为完全相同。</li>
+</ul>
+<h2 id="_8">快捷键</h2>
 <table>
 <thead>
 <tr>
@@ -206,7 +213,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_8">说明</h2>
+<h2 id="_9">说明</h2>
 <ul>
 <li>语法高亮涵盖 JSON、C、C#、Java、JavaScript、TypeScript、Python 和 Rust。其他文件类型仍可正常打开和编辑并带基本着色，但详细高亮仅适用于受支持的语言。</li>
 <li>大纲涵盖受支持的编程语言以及 JSON、YAML 和 XML — 包括基于 XML 的格式，如 <code>.plist</code>、<code>.svg</code>、<code>.csproj</code> 和 <code>.storyboard</code>。结构导航、路径和校验命令适用于 JSON、YAML 和 XML。</li>

@@ -15,7 +15,7 @@ Peach Commander sa dokáže pripojiť k súborovým serverom vo vašej lokálnej
 3. V dialógu **Pripojiť k serveru** zadajte adresu servera. Môžete uviesť:
    - adresu SMB, napríklad `smb://fileserver/projects`
    - adresu AFP, napríklad `afp://fileserver/projects`
-   - cestu v štýle Windows, napríklad `\\fileserver\projects`
+   - cestu v štýle Windows, napríklad `\\fileserver\projects\reports`
    - jednoduchý názov `server/zdieľanie`
 4. Kliknite na Pripojiť (alebo stlačte Enter). Ak server potrebuje meno a heslo, macOS zobrazí svoje obvyklé prihlasovacie okno — zadajte tam svoje údaje.
 5. Keď je zdieľanie pripravené, aktívny panel ho automaticky otvorí. Prehliadajte a pracujte s ním ako s ktorýmkoľvek iným priečinkom.
@@ -36,3 +36,5 @@ Pripojené zdieľanie sa objaví ako pripojený zväzok na vašom Macu. Na jeho 
 - Ak zadáte adresu, ktorú nemožno rozobrať, Peach Commander požiada o adresu SMB/AFP, cestu v štýle Windows alebo názov `server/zdieľanie`, a nič sa nepripojí.
 - Po potvrdení môže pripojenie chvíľu trvať, kým macOS pripojí zdieľanie; panel naň prepne, hneď ako bude dostupné.
 - Toto sa pripája k zdieľaným zariadeniam v sieti. Na dosiahnutie servera FTP, FTPS alebo SFTP namiesto toho pozri súvisiacu tému nižšie.
+- Cesta v štýle Windows funguje aj v **Prejsť do priečinka** a v pruhu cesty nad panelom, nielen v „Pripojiť k serveru“. Napíšte tam `\\fileserver\projects\reports` a ocitnete sa v tomto priečinku.
+- Ak je zdieľanie už pripojené, idete rovno do priečinka — bez prihlasovacieho okna a bez druhej cesty na server. Pripája sa vždy len samotné zdieľanie; do priečinkov pod ním sa dostanete bežnou navigáciou, takže celý strom nad nimi zostáva dosiahnuteľný.

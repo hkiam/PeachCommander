@@ -18,7 +18,7 @@
 <li>I dialogen <strong>Opret forbindelse til server</strong> skal du indtaste serveradressen. Du kan angive:
    - en SMB-adresse, for eksempel <code>smb://fileserver/projects</code>
    - en AFP-adresse, for eksempel <code>afp://fileserver/projects</code>
-   - en sti i Windows-stil, for eksempel <code>\\fileserver\projects</code>
+   - en sti i Windows-stil, for eksempel <code>\\fileserver\projects\reports</code>
    - et simpelt <code>server/share</code>-navn</li>
 <li>Klik på Opret forbindelse (eller tryk på Retur). Hvis serveren har brug for navn og adgangskode, viser macOS sit sædvanlige loginvindue — indtast dine oplysninger der.</li>
 <li>Når sharet er klar, åbner det aktive panel det automatisk. Gennemse og arbejd med det som med enhver anden mappe.</li>
@@ -46,6 +46,8 @@
 <li>Hvis du angiver en adresse, der ikke kan tolkes, beder Peach Commander om en SMB/AFP-adresse, en sti i Windows-stil eller et <code>server/share</code>-navn, og intet monteres.</li>
 <li>Efter du bekræfter, kan forbindelsen tage et øjeblik, mens macOS monterer sharet; panelet skifter til det, så snart det bliver tilgængeligt.</li>
 <li>Dette opretter forbindelse til delte enheder på et netværk. For i stedet at nå en FTP-, FTPS- eller SFTP-server, se det relaterede emne nedenfor.</li>
+<li>En sti i Windows-stil virker også i <strong>Gå til mappe</strong> og i stilinjen over et panel, ikke kun i "Opret forbindelse til server". Skriv <code>\\fileserver\projects\reports</code> der, og du lander i den mappe.</li>
+<li>Er delingen allerede forbundet, går du direkte til mappen — uden login-ark og uden en tur mere til serveren. Kun selve delingen monteres; mapperne under den nås ved almindelig navigation, så hele træet over dem forbliver tilgængeligt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li></ul></section>
 </main>

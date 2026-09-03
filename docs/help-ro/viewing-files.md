@@ -29,6 +29,16 @@ Peach Commander are un vizualizator integrat care vă permite să priviți în i
 - Apasă Ctrl+G pentru a sări la o linie, sau la un decalaj de octeți în modul hexazecimal. Calculul între baze este permis: `0x1000 + 15 + 1` duce la 4112 — hexazecimal cu `0x`, `$` sau un `h` final, binar cu `0b`, octal cu `0o`, și `+ - * /` cu paranteze.
 - Dacă deschideți un rezultat din Găsește fișiere în care **Găsește text** era completat, vizualizatorul pornește cu acea căutare: textul este deja în bara de căutare și prima apariție se vede, deci ajungeți la potrivire, nu la începutul fișierului. Dacă îl modificați sau îl ștergeți acolo, rămâne versiunea dumneavoastră. Se poate dezactiva în Configurări ▸ Editare/Vizualizare, dacă preferați ca fiecare fișier să se deschidă de la început.
 
+## Citirea șirurilor dintr-un fișier binar
+
+În reprezentarea hexazecimală, bara de instrumente oferă **Șiruri**: un panou care listează fiecare secvență de text lizibilă din fișier, cu decalajul la care se află și modul în care a fost decodificată. Un clic pe un rând duce vizualizarea hexazecimală la acei octeți și îi selectează, astfel încât pasul următor — Copiază selecția ca… sau pur și simplu citirea a ceea ce se află în jur — se referă la șirul pe care ați dat clic.
+
+- Patru lecturi rulează deodată: ASCII, UTF-8, UTF-16 little-endian și UTF-16 big-endian. Șirurile late ale unui executabil Windows și cele simple apar astfel într-o singură listă, în loc să ceară câte o trecere fiecare. Latin-1 este oferit tot sub **Codificări**, dar este dezactivat la început, fiindcă trei sferturi dintre valorile de octet sunt Latin-1 imprimabil, iar codul compilat trece acea lectură în masă.
+- Aceiași octeți sunt adesea lizibili în mai multe codificări. Când două lecturi revendică același interval, câștigă cea care se citește cel mai mult ca text — `Hello` apare deci o singură dată, și nu și ca perechea de ideograme pe care aceiași octeți o formează citiți doi câte doi.
+- **Lungime min.** stabilește cât de scurtă poate fi o secvență și să conteze totuși. Patru caractere este punctul de plecare obișnuit; măriți-o la un binar mare, ca să rărească lista.
+- Câmpul de filtrare restrânge ce se afișează fără a reciti fișierul, așa că rămâne instantaneu chiar și la unul foarte mare. Schimbarea lungimii sau a codificărilor îl recitește, fiindcă acestea schimbă ce contează drept șir.
+- **Afișează și șirurile improbabile**, sub Codificări, adaugă tot ce este doar imprimabil — inclusiv text UTF-16 care nu este preponderent latin și pe care lista obișnuită îl omite, pentru că nimic din octeți nu îl deosebește de un text obișnuit citit câte doi octeți.
+
 ## Mărirea unei imagini
 
 În reprezentarea imagine, vizualizatorul deschide imaginea încadrată în fereastră și lasă o imagine mică la dimensiunea ei, în loc să o umfle.

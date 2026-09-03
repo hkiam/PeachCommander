@@ -128,6 +128,14 @@ Anche i plugin possono fornire formattatori — vedi [Plugins](plugins.md).
 3. Digitate cifre esadecimali per sovrascrivere i byte, oppure usate i tasti freccia per muovervi nel file. Backspace e Delete rimuovono i byte.
 4. Premete Cmd+S per salvare. Come nell'editor di testo, il contenuto precedente viene conservato solo se avete attivato i backup.
 
+## Le stringhe del file che state modificando
+
+L'editor esadecimale ha lo stesso pannello **Stringhe** del visualizzatore: ogni sequenza di testo leggibile del file, in quattro codifiche insieme, e un clic vi porta cursore e selezione.
+
+- Legge i byte come li avete modificati, non come stanno sul disco, così gli offset continuano a indicare il punto giusto dopo che un inserimento ha spostato tutto ciò che segue.
+- L'elenco segue le vostre modifiche: cambiate un byte e viene ricostruito poco dopo che avete smesso di digitare.
+- È descritto per intero sotto [Visualizzare i file](viewing-files.md#read-the-strings-in-a-binary) e qui si comporta allo stesso modo.
+
 ## Scorciatoie
 
 | Azione | Tasto |
