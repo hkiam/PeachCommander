@@ -211,6 +211,14 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
 
+    /// Automation: click a column of the hex view and report which byte it selected.
+    func automationHexClick(_ kind: String, row: Int, byte index: Int) -> String {
+        guard mode == .hex, let hex = contentView as? HexListerView else {
+            return "ERROR: not in hex mode (mode=\(mode))\n"
+        }
+        return hex.automationClickColumn(kind, row: row, byte: index)
+    }
+
     /// Automation: open the strings panel, wait for the scan, and report what it holds (F-489).
     ///
     /// The wait is the point. The scan is off the main thread by design, so a dump taken the
@@ -1695,7 +1703,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         lastMatchOffset = -1
         findNext()
         let found = lastMatchOffset >= 0
-        return "regex=\(regex)\nfound=\(found)\nmatch=\(found ? String(lastMatchOffset) : "-")\n"
+        // …and whether the view *showed* it. Reporting only the offset is how a search that found
+        // the right byte and highlighted nothing passed for working: in hex every row looks like
+        // every other row, so "it scrolled somewhere" and "it found it" are indistinguishable
+        // without this line.
+        let shown = (contentView as? HexListerView)?.automationSelectionDescription ?? ""
+        return "regex=\(regex)\nfound=\(found)\nmatch=\(found ? String(lastMatchOffset) : "-")\n" + shown
     }
 
     /// Diagnostic: force word-wrap on (for automation screenshots).
@@ -2182,11 +2195,22 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if let match {
             searchOffset = match + 1
             lastMatchOffset = match
-            (contentView as? ListerScrollable)?.scroll(toByteOffset: match)
+            (contentView as? ListerScrollable)?.showMatch(byteRange: matchRange(at: match))
         } else {
             NSSound.beep()
             searchOffset = 0
         }
+    }
+
+    /// The bytes a match covers.
+    ///
+    /// For a literal needle that is its length. A regular expression is searched in chunks and the
+    /// searcher reports only where a match began, so the range is one byte — enough to put the view
+    /// on it without claiming a length nobody measured. Hex mode is unaffected either way: a regular
+    /// expression is not offered there, because the term is a byte sequence.
+    private func matchRange(at offset: Int64) -> Range<Int64> {
+        let length = Int64(lastRegex == nil ? max(1, lastNeedle.count) : 1)
+        return offset ..< (offset + length)
     }
 
     /// The encoding a pattern is matched against — the one the viewer is displaying, so what the
@@ -2219,7 +2243,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if let match = backMatch {
             lastMatchOffset = match
             searchOffset = match + 1
-            (contentView as? ListerScrollable)?.scroll(toByteOffset: match)
+            (contentView as? ListerScrollable)?.showMatch(byteRange: matchRange(at: match))
         } else {
             NSSound.beep()
         }
@@ -2257,6 +2281,21 @@ private final class ListerContainerView: NSView {
 /// A lister content view that can scroll a byte offset into view (for search).
 protocol ListerScrollable: AnyObject {
     func scroll(toByteOffset offset: Int64)
+    /// Show the bytes at `range` as the current search hit.
+    ///
+    /// Scrolling to a match is not showing it. In the hex representation there is nothing else to
+    /// go on — every row looks like every other row — so a reader was left to find the match by
+    /// eye at whatever line the view happened to stop on, while the hex *editor*, which selects its
+    /// hit, made the difference obvious.
+    ///
+    /// The default is the old behaviour on purpose: `TextListerView` and `CodeListerView` have
+    /// selection machinery of their own but reach it by line and column, not by byte, so wiring
+    /// them up is a change of its own rather than something to slip in here.
+    func showMatch(byteRange range: Range<Int64>)
+}
+
+extension ListerScrollable {
+    func showMatch(byteRange range: Range<Int64>) { scroll(toByteOffset: range.lowerBound) }
 }
 
 /// How the viewer reaches the note plugin (F-379).
@@ -2598,15 +2637,39 @@ final class HexListerView: NSView, ListerScrollable {
         return (Swift.min(a, b), Swift.max(a, b))
     }
 
-    private func hexOriginX(forOffset offset: Int64) -> CGFloat {
-        4 + CGFloat(Swift.max(8, String(offset, radix: 16).count) + 2) * cellW
+    /// Where the row starting at `offset` puts its columns. One description, shared with the
+    /// formatter that draws the row — see `HexFormatter.RowLayout`.
+    private func layout(forOffset offset: Int64) -> HexFormatter.RowLayout {
+        HexFormatter.layout(offset: offset, bytesPerRow: bytesPerRow)
     }
 
+    /// Left edge of the character at `column`, in the row's own coordinates.
+    private func x(ofColumn column: Int) -> CGFloat { 4 + CGFloat(column) * cellW }
+
+    private func hexOriginX(forOffset offset: Int64) -> CGFloat {
+        x(ofColumn: layout(forOffset: offset).hexColumn)
+    }
+
+    /// The byte under `point`, in the hex columns or in the ASCII gutter.
+    ///
+    /// Both, because the gutter is where a reader looks when they are after text rather than
+    /// bytes — it was the hex columns only, so the half of the row people actually read could not
+    /// be selected. The hex editor had answered for both all along, which is what made the
+    /// difference visible.
     private func byteIndex(at point: NSPoint) -> Int64? {
         let row = Int(point.y / rowHeight)
         guard row >= 0, row < rowCount else { return nil }
         let offset = Int64(row) * Int64(bytesPerRow)
-        let col = Int((point.x - hexOriginX(forOffset: offset)) / (cellW * 3))
+        let rowLayout = layout(forOffset: offset)
+        let asciiX = x(ofColumn: rowLayout.asciiColumn)
+        let col: Int
+        if point.x >= asciiX {
+            col = Int((point.x - asciiX) / cellW)
+        } else {
+            // A pair is two characters wide with one of space after it, so a third of the run
+            // belongs to the byte on its left — which is what the eye reads it as.
+            col = Int((point.x - hexOriginX(forOffset: offset)) / (cellW * 3))
+        }
         guard col >= 0, col < bytesPerRow else { return nil }
         let idx = offset + Int64(col)
         return idx < slice.count ? idx : nil
@@ -2625,13 +2688,19 @@ final class HexListerView: NSView, ListerScrollable {
             let offset = Int64(row) * Int64(bytesPerRow)
             // Highlight any selected byte cells in this row.
             if let sel {
-                let originX = hexOriginX(forOffset: offset)
+                let rowLayout = layout(forOffset: offset)
+                let originX = x(ofColumn: rowLayout.hexColumn)
+                let asciiX = x(ofColumn: rowLayout.asciiColumn)
                 for col in 0..<bytesPerRow {
                     let idx = offset + Int64(col)
                     if idx >= sel.lo, idx <= sel.hi, idx < slice.count {
                         NSColor.systemBlue.withAlphaComponent(0.30).setFill()
                         NSRect(x: originX + CGFloat(col * 3) * cellW - 1, y: CGFloat(row) * rowHeight,
                                width: cellW * 2 + 2, height: rowHeight).fill()
+                        // The gutter too: a selection dragged there was drawn nowhere, which reads
+                        // as the drag not having worked.
+                        NSRect(x: asciiX + CGFloat(col) * cellW, y: CGFloat(row) * rowHeight,
+                               width: cellW, height: rowHeight).fill()
                     }
                 }
             }
@@ -2646,9 +2715,13 @@ final class HexListerView: NSView, ListerScrollable {
         scrollToVisible(NSRect(x: 0, y: CGFloat(row) * rowHeight, width: 1, height: rowHeight * 3))
     }
 
+    /// The current search hit, shown the way the strings panel shows a row: selected, not merely
+    /// scrolled to.
+    func showMatch(byteRange range: Range<Int64>) { select(byteRange: range) }
+
     /// Highlight `range` (half-open) and bring it into view — what the strings panel does
-    /// when a row is chosen (F-489). The same selection the mouse makes, so "Copy selection
-    /// as…" in the context menu then works on the string that was clicked.
+    /// when a row is chosen (F-489), and what a search hit does now too. The same selection the
+    /// mouse makes, so "Copy selection as…" in the context menu then works on what was found.
     func select(byteRange range: Range<Int64>) {
         guard !range.isEmpty, range.lowerBound < slice.count else { return }
         selAnchor = range.lowerBound
@@ -2658,6 +2731,31 @@ final class HexListerView: NSView, ListerScrollable {
     }
 
     #if DEBUG
+    /// Diagnostic: click the centre of a rendered column and report which byte that selected.
+    ///
+    /// A round trip, and that is the point. The point clicked is computed from
+    /// `HexFormatter.RowLayout` — the formatter's own description of the row it draws — and mapped
+    /// back to a byte by the view. If the two ever disagree the reported byte is wrong, which is the
+    /// defect this exists for: the gutter half of every row could not be selected at all, and
+    /// nothing on screen said so, because a row that is drawn correctly looks correct however the
+    /// pointer is mapped. Goes through the real `mouseDown`, not around it.
+    func automationClickColumn(_ kind: String, row: Int, byte index: Int) -> String {
+        let offset = Int64(row) * Int64(bytesPerRow)
+        let rowLayout = layout(forOffset: offset)
+        let column = kind == "ascii" ? rowLayout.asciiColumn(forByte: index)
+                                     : rowLayout.hexColumn(forByte: index)
+        let point = NSPoint(x: x(ofColumn: column) + cellW / 2,
+                            y: (CGFloat(row) + 0.5) * rowHeight)
+        guard let event = NSEvent.mouseEvent(with: .leftMouseDown, location: convert(point, to: nil),
+                                             modifierFlags: [], timestamp: 0,
+                                             windowNumber: window?.windowNumber ?? 0, context: nil,
+                                             eventNumber: 0, clickCount: 1, pressure: 1) else {
+            return "clicked=noevent\n"
+        }
+        mouseDown(with: event)
+        return "clickedcolumn=\(kind)/\(index)\n" + automationSelectionDescription
+    }
+
     /// Diagnostic: the byte range currently highlighted, for the strings-panel scenarios.
     var automationSelectionDescription: String {
         guard let sel = selection else { return "hexselection=none\n" }

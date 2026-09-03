@@ -355,6 +355,25 @@ SCENARIOS = [
     #
     # The fitted percentage is deliberately not asserted: it depends on the window, which depends on the
     # screen. `docFrame` is the fixture's own 3000x2000 and does not.
+    # Reported: in the hex representation only the bytes could be selected, not the text beside
+    # them — while the hex *editor*, which has its own layout and its own mapping, answered for
+    # both. The view's column arithmetic was a second, silent copy of what `HexFormatter` draws,
+    # and the copy covered the hex half only. Each click is a round trip: the point is computed
+    # from the formatter's own `RowLayout` and mapped back by the view, so a disagreement between
+    # the two shows up as the wrong byte rather than as nothing at all.
+    ("hex-gutter-select", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "view /Users/admin/pc-demo/strings.bin", "wait 2000",
+                           "listermode hex|/Users/admin/gutter-mode.txt", "wait 1200",
+                           "listerhexclick hex|1|3|/Users/admin/gutter-hex.txt", "wait 600",
+                           "listerhexclick ascii|1|3|/Users/admin/gutter-ascii.txt", "wait 600"], 16),
+    # Reported alongside it: a search in the hex representation scrolled to its hit and highlighted
+    # nothing, so the reader was left to find it by eye on a screen where every row looks like every
+    # other row. `listerfind` now reports the *selection* as well as the offset — asserting only the
+    # offset is how a search that found the right byte and showed nothing passed for working.
+    ("hex-find-highlight", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "view /Users/admin/pc-demo/strings.bin", "wait 2000",
+                            "listermode hex|/Users/admin/hexfind-mode.txt", "wait 1200",
+                            "listerfind Commander|0|/Users/admin/hexfind.txt", "wait 800"], 16),
     # F-489. Both surfaces the strings panel appears on, over a fixture built to carry one string in
     # each reading. The list alone is not the claim — a correct list beside a jump that lands
     # somewhere else looks like a working feature — so each half also activates a row and reports the
@@ -2189,6 +2208,19 @@ REPORTS = {
     # palette for four commits, because nobody had asked the audit about a view that has to be opened
     # first), and the dock's terminal. `windows=` stays in the dump, where it is worth reading and
     # costs nothing when it moves.
+    # Row 1 is the row at offset 0x10, so byte 3 of it is 0x13 — from either half of the row. The
+    # negative expectation is the defect itself: with the gutter unmapped the report said
+    # `hexselection=none`, measured by putting the fault back in.
+    "hex-gutter-select": ("/Users/admin/gutter-ascii.txt",
+                          ["clickedcolumn=ascii/3", "hexselection=00000013-00000013",
+                           "!hexselection=none"]),
+    # "Commander" is nine bytes at 0x15 of the fixture. Both halves of the claim are here: the
+    # search found the right byte (`match=21`, decimal) and the view is showing it. With the fix
+    # reverted this same report reads `found=true` with `hexselection=none`, which is exactly the
+    # shape the old assertion could not see.
+    "hex-find-highlight": ("/Users/admin/hexfind.txt",
+                           ["found=true", "match=21", "hexselection=00000015-0000001d",
+                            "!hexselection=none"]),
     # F-489. Measured from a real run rather than computed: the offsets are what the scanner
     # reports over this fixture, and the selection is what clicking the second row produced.
     # `utf16be` is deliberately NOT asserted — a NUL-padded big-endian run and a little-endian

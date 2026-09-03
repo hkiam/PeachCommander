@@ -9,6 +9,43 @@ import Foundation
 public enum HexFormatter {
     private static let asciiPrintableRange: ClosedRange<UInt8> = 0x20...0x7e
 
+    /// Where each part of a rendered row begins, counted in characters.
+    ///
+    /// The row is drawn as one monospaced string, so a view that wants to know which byte the
+    /// pointer is over has to reconstruct the column positions. Doing that with its own arithmetic
+    /// makes it a second, silent copy of this file's layout — and the copy was wrong: the hex-mode
+    /// viewer mapped only the hex columns, so the ASCII gutter could not be selected at all while
+    /// the hex editor, which has its own layout and its own mapping, could. Naming the layout here
+    /// means one description, and `HexFormatterTests` holds it against what `row` actually renders.
+    public struct RowLayout: Equatable, Sendable {
+        /// Width of the offset field. At least 8, wider once offsets need more digits.
+        public let offsetDigits: Int
+        public let bytesPerRow: Int
+
+        /// First character of the hex columns — the offset, then the two spaces after it.
+        public var hexColumn: Int { offsetDigits + 2 }
+        /// First character of the ASCII gutter.
+        ///
+        /// `bytesPerRow` pairs joined by single spaces occupy `bytesPerRow * 3 - 1` characters, and
+        /// two more spaces follow them.
+        public var asciiColumn: Int { hexColumn + bytesPerRow * 3 + 1 }
+
+        /// First character of the hex pair for the byte at column `index`.
+        public func hexColumn(forByte index: Int) -> Int { hexColumn + index * 3 }
+        /// The gutter character for the byte at column `index`.
+        public func asciiColumn(forByte index: Int) -> Int { asciiColumn + index }
+    }
+
+    /// The layout a row starting at `offset` is rendered with.
+    public static func layout(offset: Int64, bytesPerRow: Int = 16) -> RowLayout {
+        RowLayout(offsetDigits: offsetDigits(for: offset), bytesPerRow: bytesPerRow)
+    }
+
+    /// The same rule `row` pads its offset with.
+    private static func offsetDigits(for offset: Int64) -> Int {
+        max(8, String(offset, radix: 16).count)
+    }
+
     /// Format a single hex row.
     ///
     /// The layout is: an 8-hex-digit (minimum width, lowercase) offset, two

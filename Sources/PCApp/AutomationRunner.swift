@@ -25,6 +25,7 @@
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
+//   listerhexclick <hex|ascii>|<row>|<byte>|<out>  click a column of the hex view, report the byte
 //   listerstrings <row|-1>|<out>  open the viewer's strings panel (hex only), wait for the scan,
 //                                 write what it holds; a row index also clicks that row and
 //                                 reports the byte range the hex view then highlights
@@ -347,6 +348,16 @@ extension MainWindowController {
                     let out = await currentLister()?.automationNavigateToSymbol(s[0])
                         ?? "ERROR: no lister window\n"
                     try? out.write(toFile: s[1], atomically: true, encoding: .utf8)
+                }
+            case "listerhexclick":                      // listerhexclick <hex|ascii>|<row>|<byte>|<out>
+                // Which byte a click in each half of a hex row selects. The gutter half answered
+                // "none" for the life of the feature, and no screenshot could say so.
+                let c = arg.split(separator: "|", maxSplits: 3).map(String.init)
+                if c.count == 4 {
+                    let out = currentLister()?.automationHexClick(c[0], row: Int(c[1]) ?? 0,
+                                                                  byte: Int(c[2]) ?? 0)
+                        ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: c[3], atomically: true, encoding: .utf8)
                 }
             case "listerstrings":                       // listerstrings <row|-1>|<out> (F-489)
                 // Open the strings panel over the file in the viewer, wait for the scan, and
