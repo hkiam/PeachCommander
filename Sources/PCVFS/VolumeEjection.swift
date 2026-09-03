@@ -22,8 +22,8 @@ public enum VolumeEjection {
         case noVolume
         /// The startup disk. Not offered, not attempted.
         case bootVolume
-        /// A real volume that the filesystem says cannot be ejected — a network share, a disk image
-        /// the system holds, an internal partition.
+        /// A real volume that the filesystem says cannot be ejected — a disk image the system
+        /// holds, an internal partition.
         case notEjectable(name: String)
     }
 
@@ -64,6 +64,15 @@ public enum VolumeEjection {
 
     private static func verdict(for volume: Volume) -> Result<Volume, Refusal> {
         if same(volume.path, "/") { return .failure(.bootVolume) }
+        // A mounted share, before `isEjectable` is consulted at all.
+        //
+        // The system reports `isEjectable == false` for smbfs — correctly, because there is no
+        // device to eject — and this read that as "cannot be detached", which left a share the
+        // user had mounted from inside the app with no way back out of it: no ⏏ on its chip, the
+        // context menu greyed, and the command answering that network shares stay mounted. They
+        // do not; they are unmounted, which is what Finder's own ⏏ does to them. `isLocal` is what
+        // separates the two (see `VolumeKind`), not the ejectable flag.
+        if VolumeKind.of(volume) == .networkShare { return .success(volume) }
         guard volume.isEjectable else { return .failure(.notEjectable(name: volume.name)) }
         return .success(volume)
     }

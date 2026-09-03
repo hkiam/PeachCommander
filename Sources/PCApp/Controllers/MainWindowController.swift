@@ -2898,18 +2898,60 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let dialog = InputDialog(title: String(localized: "Go to Folder"),
                                      prompt: String(localized: "Path:"), initialValue: current)
             dialog.onConfirm = { [weak self] text in
-                guard let self, let resolved = PathResolver.resolve(text, base: current) else { return }
+                guard let self else { return }
+                // A network address is not a local path, and `PathResolver` refuses it — the UNC
+                // parser has always existed but hung off ⌘K alone, so a typed
+                // `\\server\share\dir` was appended to the current folder and reported as "not a
+                // folder". Routed here it behaves the way it does on Windows.
+                if NetworkShare.isNetworkLocation(text) {
+                    self.goToNetworkLocation(text, title: String(localized: "Go to Folder"))
+                    return
+                }
+                guard let resolved = PathResolver.resolve(text, base: current) else { return }
                 var isDir: ObjCBool = false
                 if FileManager.default.fileExists(atPath: resolved, isDirectory: &isDir), isDir.boolValue {
                     Task { @MainActor in await self.activePanel?.loadDirectory(resolved) }
                 } else {
                     self.presentInfo(String(localized: "Go to Folder"),
-                                     String(format: NSLocalizedString("Not a folder: %@", comment: ""), resolved))
+                                     String(format: String(localized: "Not a folder: %@"), resolved))
                 }
             }
             self.pathDialog = dialog
             dialog.runModalDialog()
         }
+    }
+
+    /// Navigate to a typed network address: straight there when its share is already mounted,
+    /// otherwise mount it first.
+    ///
+    /// Checking the mount table before mounting is the whole point. `NSWorkspace.open` on a share
+    /// that is already up still goes out to the server and still opens a Finder window, so a path
+    /// pasted from a mail would raise a system dialog for a volume sitting in the panel's own
+    /// drive bar. Reverse-mapping first makes the common case a plain directory change.
+    func goToNetworkLocation(_ input: String, title: String) {
+        guard let location = NetworkShare.location(from: input) else {
+            presentInfo(title, String(localized: "Enter an SMB/AFP address, a UNC path or server/share."))
+            return
+        }
+        // A server with no share named is the one case Finder does better: there is nothing to
+        // mount yet, only a server to ask which shares it has, and its browser is that question's
+        // native answer. Everything with a share is mounted directly, below.
+        if location.share.isEmpty {
+            if let url = location.url { NSWorkspace.shared.open(url) }
+            return
+        }
+        if let local = NetworkShare.mountedPath(for: location) {
+            var isDir: ObjCBool = false
+            if FileManager.default.fileExists(atPath: local, isDirectory: &isDir), isDir.boolValue {
+                Task { @MainActor in await self.activePanel?.loadDirectory(local) }
+                return
+            }
+            // The share is mounted but the subfolder underneath it is not there. Saying so names
+            // the half that is wrong; mounting again would not find it either.
+            presentInfo(title, String(format: String(localized: "Not a folder: %@"), local))
+            return
+        }
+        mountAndOpen(location)
     }
 
     func showEditorForCursor() {
@@ -3018,44 +3060,67 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                  prompt: String(localized: "Address (smb://… or \\\\server\\share):"),
                                  initialValue: "smb://")
         dialog.onConfirm = { [weak self] input in
-            guard let url = NetworkShare.url(from: input) else {
-                self?.presentInfo(String(localized: "Connect to Server"),
-                                  String(localized: "Enter an SMB/AFP address, a UNC path or server/share."))
-                return
-            }
-            self?.mountAndOpen(url)
+            // The same router "Go to Folder" uses, so ⌘K on a share that is already mounted is a
+            // directory change too instead of a second trip to the server. It stays the more
+            // permissive of the two entry points: a bare `server/share` is a share here, where in
+            // a path field it has to keep meaning the relative folder.
+            self?.goToNetworkLocation(input, title: String(localized: "Connect to Server"))
         }
         pathDialog = dialog
         dialog.runModalDialog()
     }
 
-    /// Mount `url` via the system (which handles authentication UI), then navigate the
-    /// active panel to the mount point once it appears under /Volumes (best-effort poll).
-    private func mountAndOpen(_ url: URL) {
-        guard NSWorkspace.shared.open(url) else {
-            presentInfo(String(localized: "Connect to Server"),
-                        String(format: NSLocalizedString("Could not start mounting %@.", comment: ""), url.absoluteString))
-            return
+    /// Mount `location`'s share, then navigate the active panel to the folder inside it.
+    ///
+    /// Mount the share, navigate the rest — not "mount what was typed". `NSWorkspace.open` was
+    /// doing the latter and it produced two visible faults: Finder did the mount, so a window it
+    /// owns came up in front of the app the user had asked from, and the *subdirectory* became the
+    /// volume — `\\srv\ablage\a\b\c` mounted as a volume whose root is `c`, with no way to go
+    /// up out of it and a drive chip named after a folder five levels deep. `NetworkShare.mount`
+    /// mounts the share and hands back where it landed; the subpath is then an ordinary directory
+    /// change inside a volume whose whole tree is there.
+    private func mountAndOpen(_ location: NetworkShare.Location) {
+        Task { [weak self] in
+            do {
+                let mountPoint = try await Self.mountOffMainThread(location)
+                await self?.openMountedLocation(location, mountedAt: mountPoint)
+            } catch {
+                let name = location.shareRoot.url?.absoluteString ?? location.share
+                self?.presentInfo(String(localized: "Connect to Server"),
+                                  String(format: String(localized: "Could not mount %1$@: %2$@"),
+                                         name, error.localizedDescription))
+            }
         }
-        let parts = url.pathComponents.filter { $0 != "/" && !$0.isEmpty }
-        guard let share = parts.first else { return }
-        let mountBase = "/Volumes/" + share
-        let sub = parts.dropFirst().joined(separator: "/")
-        let target = sub.isEmpty ? mountBase : mountBase + "/" + sub
-        pollForMount(target: target, fallback: mountBase, attempts: 24)
     }
 
-    private func pollForMount(target: String, fallback: String, attempts: Int) {
-        guard attempts > 0 else { return }
-        let fm = FileManager.default
-        if fm.fileExists(atPath: target) {
-            Task { @MainActor in await self.activePanel?.loadDirectory(target) }
-        } else if fm.fileExists(atPath: fallback) {
-            Task { @MainActor in await self.activePanel?.loadDirectory(fallback) }
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-                self?.pollForMount(target: target, fallback: fallback, attempts: attempts - 1)
+    /// `NetworkShare.mount` on a background queue.
+    ///
+    /// It blocks until the share is up and may put the system's authentication sheet on screen
+    /// while it does — on the main thread that is a frozen application for as long as the server
+    /// takes to answer, which on a share that is not reachable is the full TCP timeout.
+    private static func mountOffMainThread(_ location: NetworkShare.Location) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do { continuation.resume(returning: try NetworkShare.mount(location)) }
+                catch { continuation.resume(throwing: error) }
             }
+        }
+    }
+
+    /// Open the folder `location` names inside a share that has just been mounted at `mountPoint`.
+    @MainActor
+    private func openMountedLocation(_ location: NetworkShare.Location, mountedAt mountPoint: String) async {
+        let target = location.subpath.reduce(mountPoint) {
+            ($0 as NSString).appendingPathComponent($1)
+        }
+        // The share is up either way; only the folder underneath it can still be a typo, and then
+        // the share root is somewhere useful to land rather than nowhere.
+        var isDir: ObjCBool = false
+        let reachable = FileManager.default.fileExists(atPath: target, isDirectory: &isDir) && isDir.boolValue
+        await activePanel?.loadDirectory(reachable ? target : mountPoint)
+        if !reachable {
+            presentInfo(String(localized: "Connect to Server"),
+                        String(format: String(localized: "Not a folder: %@"), target))
         }
     }
 
@@ -3238,7 +3303,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             reportEjectProblem(String(localized: "The startup disk cannot be ejected."), detail: nil)
         case .failure(.notEjectable(let name)):
             reportEjectProblem(String(localized: "“\(name)” cannot be ejected."),
-                               detail: String(localized: "Network shares and internal disks stay mounted."))
+                               detail: String(localized: "Internal disks stay mounted."))
         case .failure(.noVolume):
             reportEjectProblem(String(localized: "Nothing here is on a removable volume."), detail: nil)
         }
@@ -3298,15 +3363,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     private func eject(_ volume: Volume) {
+        // A share is unmounted, not ejected. `unmountAndEjectDevice` is about a *device* — there is
+        // none behind smbfs — while `unmountVolume` is the documented route for a network volume
+        // and is what actually detaches it.
+        if VolumeKind.of(volume) == .networkShare {
+            unmountShare(volume)
+            return
+        }
         do {
             try NSWorkspace.shared.unmountAndEjectDevice(at: URL(fileURLWithPath: volume.path))
-            // Leave before the panel is standing on a folder that no longer exists, which reads as
-            // the eject having failed. Both panels, because either may be inside it.
-            for panel in [leftPanelController, rightPanelController].compactMap({ $0 }) {
-                if VolumeEjection.contains(volume: volume.path, path: panel.view.currentPathValue) {
-                    Task { await panel.loadDirectory("/Volumes") }
-                }
-            }
+            leavePanels(of: volume)
         } catch {
             // The system's own words. It knows which application is holding the volume open and this
             // is the only place that information exists — replacing it with "could not eject" would
@@ -3314,6 +3380,39 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let ns = error as NSError
             reportEjectProblem(String(localized: "“\(volume.name)” could not be ejected."),
                                detail: ns.localizedRecoverySuggestion ?? ns.localizedDescription)
+        }
+    }
+
+    /// Detach a mounted network share.
+    private func unmountShare(_ volume: Volume) {
+        // `.withoutUI`, so the failure is reported in this app's words rather than by a system
+        // sheet the app then reports a second time. What the system knows and we do not — which
+        // application is holding the share open — comes back in the error and is passed on.
+        FileManager.default.unmountVolume(at: URL(fileURLWithPath: volume.path),
+                                          options: [.withoutUI]) { [weak self] error in
+            Task { @MainActor in
+                guard let self else { return }
+                guard let error else {
+                    self.leavePanels(of: volume)
+                    return
+                }
+                let ns = error as NSError
+                self.reportEjectProblem(String(format: String(localized: "“%@” could not be ejected."),
+                                               volume.name),
+                                        detail: ns.localizedRecoverySuggestion ?? ns.localizedDescription)
+            }
+        }
+    }
+
+    /// Take both panels out of `volume` before it disappears under them.
+    ///
+    /// A panel left standing on a folder that no longer exists reads as the eject having failed.
+    /// Both panels, because either may be inside it.
+    private func leavePanels(of volume: Volume) {
+        for panel in [leftPanelController, rightPanelController].compactMap({ $0 }) {
+            if VolumeEjection.contains(volume: volume.path, path: panel.view.currentPathValue) {
+                Task { await panel.loadDirectory("/Volumes") }
+            }
         }
     }
 
@@ -9447,6 +9546,15 @@ final class PanelView: NSView {
 
         pathBar.onPathClick = { [weak controller] path in
             Task { @MainActor in await controller?.loadDirectory(path) }
+        }
+        pathBar.onNetworkPath = { [weak self] text in
+            (self?.window?.windowController as? MainWindowController)?
+                .goToNetworkLocation(text, title: String(localized: "Go to Folder"))
+        }
+        pathBar.onInvalidPath = { [weak self] path in
+            (self?.window?.windowController as? MainWindowController)?
+                .presentInfo(String(localized: "Go to Folder"),
+                             String(format: String(localized: "Not a folder: %@"), path))
         }
         // Clicking a panel's path bar makes that panel the active one (F-444) — the same shape as
         // `tableView.onActivate` below. Without it the path editor could open on the panel that does

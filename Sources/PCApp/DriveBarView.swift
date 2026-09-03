@@ -303,7 +303,7 @@ final class DriveBarView: NSView {
             item.toolTip = String(localized: "The startup disk cannot be ejected.")
         case .some:
             item.isEnabled = false
-            item.toolTip = String(localized: "Network shares and internal disks stay mounted.")
+            item.toolTip = String(localized: "Internal disks stay mounted.")
         }
         menu.addItem(item)
         // Off, or the enabled state above is recomputed by the responder chain and every item goes

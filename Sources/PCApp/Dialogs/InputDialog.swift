@@ -60,13 +60,22 @@ final class InputDialog: ModalWindowController {
 
         let extra = (checkboxTitle == nil ? 0 : 32) + (secondCheckboxTitle == nil ? 0 : 26)
             + (thirdCheckboxTitle == nil ? 0 : 26)
+        // 620pt and resizable, because the old fixed 420 could not show what it was asking about.
+        // A path is the longest thing typed into this dialog and 420pt left 380pt for the field —
+        // 83 characters of `\\srv-ablage.pdv.lan\ablage\…` measure 542pt in this font, so the
+        // interesting end of the path was never on screen and the window could not be pulled
+        // wider either. Every InputDialog gets this: rename and mkdir ask about long names too.
         let window = NSWindow(
-            contentRect: NSMakeRect(0, 0, 420, 150 + CGFloat(extra)),
-            styleMask: [.titled, .closable],
+            contentRect: NSMakeRect(0, 0, 620, 150 + CGFloat(extra)),
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )
         window.title = title
+        // Vertically the dialog is exactly as tall as its contents; only the width is worth
+        // dragging, and an unbounded height would just stretch empty space.
+        window.minSize = NSSize(width: 420, height: 150 + CGFloat(extra))
+        window.maxSize = NSSize(width: 2400, height: 150 + CGFloat(extra))
         window.center()
         window.level = .modalPanel
         super.init(window: window)
@@ -159,6 +168,21 @@ final class InputDialog: ModalWindowController {
         textField.font = Fonts.monospacedDigit13
         textField.isBezeled = true
         textField.isEditable = true
+        // A programmatically created NSTextField is a WRAPPING, non-scrolling field: measured
+        // defaults are `usesSingleLineMode = false`, `cell.wraps = true`, `isScrollable = false`,
+        // `lineBreakMode = .byWordWrapping`. With the 24pt height constraint below, a long value
+        // therefore laid itself out over three lines (the cell asked for 56pt for the path that
+        // prompted this) and had all but the first clipped away — and could not be scrolled into
+        // view either, so the rest of it was simply unreachable. Interface Builder sets these;
+        // code has to.
+        //
+        // Both lines are needed and the order matters. `usesSingleLineMode` alone leaves
+        // `cell.wraps == true`, and `lineBreakMode` and `isScrollable` overwrite each other —
+        // whichever is assigned last wins, so a truncating line-break mode set afterwards turns
+        // scrolling back off. Scrolling is the one to keep: this field is *edited*, and an
+        // ellipsis the caret cannot travel past would look tidier while hiding the same text.
+        textField.usesSingleLineMode = true
+        textField.cell?.isScrollable = true
         textField.stringValue = initialValue
         content.addSubview(textField)
 

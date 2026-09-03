@@ -6,9 +6,11 @@ import XCTest
 
 final class VolumeEjectionTests: XCTestCase {
 
-    private func volume(_ name: String, _ path: String, ejectable: Bool = true) -> Volume {
+    private func volume(_ name: String, _ path: String, ejectable: Bool = true,
+                        local: Bool = true) -> Volume {
         Volume(id: path, name: name, path: path, isRemovable: ejectable, isEjectable: ejectable,
-               isHidden: false, capacity: 1000, freeSpace: 500, fsType: "apfs", icon: "", sortOrder: 0)
+               isHidden: false, capacity: 1000, freeSpace: 500, fsType: "apfs", icon: "", sortOrder: 0,
+               isLocal: local)
     }
 
     private var mounted: [Volume] {
@@ -96,10 +98,21 @@ final class VolumeEjectionTests: XCTestCase {
         XCTAssertEqual(VolumeEjection.refusal(for: volume("Macintosh HD", "/")), .bootVolume)
     }
 
-    func testANetworkShareIsRefusedAsNotEjectable() {
-        XCTAssertEqual(VolumeEjection.refusal(for: volume("sambashare", "/Volumes/sambashare",
-                                                          ejectable: false)),
-                       .notEjectable(name: "sambashare"))
+    /// A mounted share is detachable even though the system says it is not ejectable.
+    ///
+    /// It reports `isEjectable == false` — correctly, there is no device — and reading that as
+    /// "cannot be detached" left a share mounted from inside the app with no way back out: no ⏏ on
+    /// the chip, the menu greyed, and the command claiming network shares stay mounted. Finder's
+    /// own ⏏ unmounts them, and so does this now.
+    func testAMountedNetworkShareCanBeDetached() {
+        XCTAssertNil(VolumeEjection.refusal(for: volume("ablage", "/Volumes/ablage",
+                                                        ejectable: false, local: false)))
+    }
+
+    /// The flag still decides for LOCAL volumes — an internal partition stays put.
+    func testANonEjectableLocalVolumeIsStillRefused() {
+        XCTAssertEqual(VolumeEjection.refusal(for: volume("Data", "/Volumes/Data", ejectable: false)),
+                       .notEjectable(name: "Data"))
     }
 
     /// The rule the menu uses and the rule the command uses must be the same rule, not two that

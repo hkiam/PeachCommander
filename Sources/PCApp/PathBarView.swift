@@ -43,6 +43,14 @@ class PathBarView: NSView, NSTextFieldDelegate {
 
     /// Callback with an absolute directory path to navigate to.
     var onPathClick: ((String) -> Void)?
+    /// A typed network address (UNC, `smb://…`): mount it if needed, then navigate. The bar
+    /// cannot answer that itself — it would have to mount — so it hands the text on.
+    var onNetworkPath: ((String) -> Void)?
+    /// A typed path that is not a directory. Rejection used to be a bare `NSSound.beep()`, which
+    /// says something was refused but not which of the many reasons applied — and for a UNC path,
+    /// where the bar's own resolution never had a chance, the beep was the only thing the user
+    /// ever got.
+    var onInvalidPath: ((String) -> Void)?
     /// Make this panel the active one. A click here used to leave the focus where it was, so the path
     /// editor could belong to the panel the user was not looking at (F-444).
     var onActivate: (() -> Void)?
@@ -255,17 +263,30 @@ class PathBarView: NSView, NSTextFieldDelegate {
         needsDisplay = true
     }
 
-    /// Validate the typed path; navigate if it's a real directory, otherwise keep
-    /// the last valid value (a beep signals the rejected input).
+    /// Validate the typed path; navigate if it's a real directory, hand a network address to the
+    /// window, otherwise keep the last valid value and say why.
     private func commitEdit() {
         let text = editField?.stringValue ?? ""
+        // A network address before anything local is tried: `expandingTildeInPath` leaves
+        // `\\srv\share` untouched, so it was checked as a *file name* in the current folder,
+        // found missing, and beeped. Whether it needs mounting is not this view's question.
+        if NetworkShare.isNetworkLocation(text) {
+            endEditing()
+            onNetworkPath?(text.trimmingCharacters(in: .whitespaces))
+            return
+        }
         let expanded = (text as NSString).expandingTildeInPath
         var isDir: ObjCBool = false
         let valid = !expanded.isEmpty
             && FileManager.default.fileExists(atPath: expanded, isDirectory: &isDir)
             && isDir.boolValue
         endEditing()
-        if valid { onPathClick?(expanded) } else { NSSound.beep() }
+        if valid {
+            onPathClick?(expanded)
+        } else {
+            NSSound.beep()
+            if !expanded.isEmpty { onInvalidPath?(expanded) }
+        }
     }
 
     func control(_ control: NSControl, textView: NSTextView, doCommandBy selector: Selector) -> Bool {
