@@ -68,6 +68,24 @@ final class TerminalSettings {
         (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode(Stored.self, from: $0) }
     }
 
+    /// Does Option send Esc before the key (Meta), or type the character the key produces?
+    ///
+    /// **Off**, which is Terminal.app's default and the only workable one outside a US
+    /// layout. SwiftTerm's own default is the other way: with Option as Meta it reads
+    /// `charactersIgnoringModifiers` and sends Esc plus *that*, so on a German keyboard
+    /// Option+L sent Esc-l instead of `@` and Option+N sent Esc-n instead of `~` — the two
+    /// characters a shell needs most, unreachable in a terminal that has a shell in it.
+    /// The same holds for `|` (Option+7), `\` (Option+Shift+7), `[`, `]`, `{`, `}`, `~` and
+    /// `@` on the French, Spanish, Italian, Nordic and Swiss layouts.
+    ///
+    /// Switched on it is Meta again, for Alt+B / Alt+F word motion and Emacs bindings. That
+    /// is a real thing to want, which is why it is a setting rather than a decision; it is
+    /// not the default because losing `@` is not a trade most people would make knowingly.
+    var optionAsMeta: Bool {
+        get { stored()?.optionAsMeta ?? false }
+        set { write { $0.optionAsMeta = newValue } }
+    }
+
     /// How many lines of output a terminal keeps behind it.
     ///
     /// SwiftTerm's own default is 500, which is a scrollback you notice losing the moment a build
@@ -91,6 +109,7 @@ final class TerminalSettings {
         // Absent in a file written before this existed, which is why it is optional here and
         // defaulted where it is read.
         var scrollbackLines: Int?
+        var optionAsMeta: Bool?
     }
 
     private let url: URL = {
@@ -263,6 +282,9 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         super.init()
         view.processDelegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
+        // SwiftTerm defaults this to true, which makes Option a Meta key and takes `@`, `~`,
+        // `|` and the brackets away from every keyboard layout that puts them behind Option.
+        view.optionAsMetaKey = TerminalSettings.shared.optionAsMeta
         // Relative paths resolve against wherever the shell says it is — falling back to where it was
         // started, since OSC 7 is something the user has to arrange and most will not have.
         view.workingDirectory = { [weak self] in self?.directory }
@@ -442,6 +464,17 @@ enum TerminalPool {
         session.teardown()
         session.view.removeFromSuperview()
         sessions.removeAll { $0 === session }
+    }
+
+    /// Push the Option-as-Meta setting into every terminal that is already open.
+    ///
+    /// Unlike the scrollback size — which can only apply to terminals opened afterwards,
+    /// because changing it would mean deciding which lines to throw away — this one has no
+    /// reason to wait. Somebody who has just discovered that they cannot type `@` will change
+    /// the setting and go straight back to the prompt they were at.
+    static func applyOptionAsMeta() {
+        let meta = TerminalSettings.shared.optionAsMeta
+        for session in sessions { session.view.optionAsMetaKey = meta }
     }
 }
 
@@ -989,6 +1022,8 @@ final class TerminalSettingsView: NSView {
 
     private let followCheck = NSButton(checkboxWithTitle: L("Let the active panel follow the terminal"),
                                        target: nil, action: nil)
+    private let metaCheck = NSButton(checkboxWithTitle: L("Use Option as the Meta key"),
+                                     target: nil, action: nil)
     private let scrollbackField = NSTextField()
     private let snippet = NSTextView()
 
@@ -1015,6 +1050,16 @@ final class TerminalSettingsView: NSView {
         scrollbackField.action = #selector(scrollbackChanged)
         scrollbackField.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollbackField)
+
+        // Off by default: with Option as Meta, Option+L sends Esc-l rather than `@`, which is
+        // where `@` lives on a German keyboard — and `~`, `|` and the brackets are behind
+        // Option on most non-US layouts too.
+        metaCheck.state = TerminalSettings.shared.optionAsMeta ? .on : .off
+        metaCheck.target = self
+        metaCheck.action = #selector(metaChanged)
+        metaCheck.toolTip = L("Off: Option types the character on the key (@, ~, |, brackets). On: Option sends Esc first, for Alt+B / Alt+F and Emacs bindings.")
+        metaCheck.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(metaCheck)
 
         let explanation = NSTextField(wrappingLabelWithString: L(
             "The terminal can only follow your shell if the shell reports its folder (OSC 7). macOS "
@@ -1049,7 +1094,9 @@ final class TerminalSettingsView: NSView {
             scrollbackField.leadingAnchor.constraint(equalTo: scrollbackLabel.trailingAnchor, constant: 8),
             scrollbackField.centerYAnchor.constraint(equalTo: scrollbackLabel.centerYAnchor),
             scrollbackField.widthAnchor.constraint(equalToConstant: 80),
-            followCheck.topAnchor.constraint(equalTo: scrollbackLabel.bottomAnchor, constant: 16),
+            metaCheck.topAnchor.constraint(equalTo: scrollbackLabel.bottomAnchor, constant: 16),
+            metaCheck.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            followCheck.topAnchor.constraint(equalTo: metaCheck.bottomAnchor, constant: 10),
             followCheck.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             explanation.topAnchor.constraint(equalTo: followCheck.bottomAnchor, constant: 10),
             explanation.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -1076,6 +1123,11 @@ final class TerminalSettingsView: NSView {
         TerminalSettings.shared.panelFollowsTerminal = followCheck.state == .on
     }
 
+    @objc private func metaChanged() {
+        TerminalSettings.shared.optionAsMeta = metaCheck.state == .on
+        TerminalPool.applyOptionAsMeta()
+    }
+
     @objc private func copySnippet() {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(TerminalSettings.shellSnippet, forType: .string)
@@ -1084,6 +1136,7 @@ final class TerminalSettingsView: NSView {
     /// Diagnostic: everything this page is showing, so a scenario can read it (F-381).
     var automationSummary: String {
         "follow=\(TerminalSettings.shared.panelFollowsTerminal)\nsnippet=\(snippet.string.contains("]7;file://"))\n"
+        + "optionasmeta=\(TerminalSettings.shared.optionAsMeta)\n"
     }
 }
 
