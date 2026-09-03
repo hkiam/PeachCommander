@@ -48,6 +48,15 @@ does not have.
 
 ### Fixed
 
+- **A search after Format looks in what is on screen, not in the file.** Press Format and the view
+  shows the formatter's output; the search kept reading the file underneath it, so it reported hits
+  at offsets into bytes nobody was looking at any more. Harmless while a hit was only scrolled to
+  and approximately placed — and not harmless once hits are selected: searching a minified JSON for
+  a value after formatting it highlighted a fragment of a *different* value, having announced that
+  it had found the one asked for. The same applies to an XPath result list, which is likewise not
+  the file. Both are searched as what they are now: in memory, so there is no chunking and a
+  regular expression gets a real match length instead of an assumed one.
+
 - **A search hit is shown in the text and code views too, and shown in the right place.** The same
   gap as in hex, in the two representations that take over past 4 MB: the match was scrolled to and
   never highlighted. Underneath it there was a second, quieter fault — the code view worked out

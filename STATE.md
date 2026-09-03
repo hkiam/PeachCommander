@@ -26,6 +26,45 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-03 — searching a document the file no longer matches
+
+The item left open two entries above. Press Format and the content view is replaced with the
+formatter's output, but `findNext` went on searching `slice` — the file. So the offsets it reported
+pointed into bytes that are no longer on screen.
+
+That had been survivable while a hit was only *scrolled* to: the view landed somewhere plausible and
+nobody could tell. Selecting hits is what made it visible, and the reintroduced fault says it
+plainly — a search of a minified JSON for `FINDMEHERE`, after formatting:
+
+```
+found=true   match=7791   contentview=CodeListerView   selectedtext=e333",
+```
+
+Byte 7791 is where the needle sits in the *file*; in the formatted text it is the middle of
+`"value333"`. The search announced success and highlighted something else. With the fix, `match=9395`
+and `selectedtext=FINDMEHERE`.
+
+What is on screen is now held as `displayedText` — a retain of the string the formatter already
+produced, not a copy — and searched in memory. That path is simpler than the file's, not harder:
+no chunking, no maximum match length, and a regular expression therefore yields a real match
+*length* where `ChunkRegexSearcher` can only report where a match began. `setDisplayedText` also
+resets the search offset, which counted bytes into a document it was never measured against.
+
+An XPath result list goes through the same door, for the same reason: it is not the file either.
+
+**Checked rather than assumed, and it was nearly a fourth report:** the same probe showed
+`found=true` with no selection for an *unformatted* small text file. That one is not a defect —
+`documentFind` sends a text view to the native find bar (`finder(tv, .showFindInterface)`) and only
+reaches `findNext` when there is no `textContentView`, which is exactly the virtual views and hex.
+`automationFind` calls `findNext` directly and so measures a path the reader never takes there. Left
+alone; worth knowing before the next person reads that report and files it.
+
+`viewer-find-formatted` covers both branches, literal and pattern. The offset is deliberately not
+asserted: the formatter is jq where it is installed and the built-in `JSONSerialization` where it is
+not, and they indent differently — pinning a number would make the scenario a test of which tools
+the guest has. The selected text is formatter-independent and is the whole claim. 126 scenarios
+with reports.
+
 ## 2026-09-03 — the same gap in the text and code views, and two measurements that proved nothing
 
 Following the two hex reports: `findNext` never told any view what it had found, so `TextListerView`
@@ -62,10 +101,8 @@ that at 3.03 MiB and would have passed while testing the wrong thing.
 `viewer-find-highlight` holds it, 125 scenarios with reports. `LineIndexer.line(containing:in:)` is
 the binary search both views had written out for themselves, now in one place with tests.
 
-**Still open, found on the way and deliberately not fixed here:** a search over a *formatted*
-document (the Format button) matches against the file's bytes while the view shows text the
-formatter produced, so the offsets refer to something that is no longer on screen. Pre-existing, and
-a question about what search should mean after formatting rather than a mapping bug.
+**Was still open here, and is closed in the entry above:** a search over a *formatted* document
+matched against the file's bytes while the view showed the formatter's output.
 
 ## 2026-09-03 — two reports about the hex viewer, and a probe that could not see either
 
