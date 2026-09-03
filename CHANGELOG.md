@@ -48,6 +48,14 @@ does not have.
 
 ### Fixed
 
+- **A search hit is shown in the text and code views too, and shown in the right place.** The same
+  gap as in hex, in the two representations that take over past 4 MB: the match was scrolled to and
+  never highlighted. Underneath it there was a second, quieter fault — the code view worked out
+  where a byte offset falls by treating it as a character offset, which is right for ASCII and
+  drifts with every umlaut and every CRLF above the match. Scrolling made that look merely
+  approximate; a *selection* built on it points confidently at the wrong characters. Both views now
+  convert byte offsets to characters exactly, in the encoding the file was decoded with.
+
 - **In the hex viewer the text beside the bytes can be selected, and a search hit is shown.** Two
   reports, one cause each, both invisible to a screenshot. The gutter could not be selected at all:
   the view worked out its column positions with arithmetic of its own, a second silent copy of the

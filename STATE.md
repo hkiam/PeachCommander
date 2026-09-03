@@ -26,6 +26,47 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-03 — the same gap in the text and code views, and two measurements that proved nothing
+
+Following the two hex reports: `findNext` never told any view what it had found, so `TextListerView`
+and `CodeListerView` — the virtual views that take over past 4 MiB — scrolled to a match and
+highlighted nothing either. Both implement `showMatch(byteRange:)` now.
+
+**The second fault was underneath it.** `CodeListerView` is built from decoded *text* and had no way
+to know where a byte offset falls; its own comment said "best-effort: treat the search byte offset as
+a character offset". That is exact for ASCII and drifts with every multi-byte character above the
+target. Scrolling made it look approximate. A selection built on it points confidently at the wrong
+characters, which is worse than not highlighting at all — so the view now carries `lineByteStarts`,
+computed once at construction in the encoding the text was decoded with, and counts the column in
+characters. `TextListerView` has the bytes and the encoding already and converts directly.
+
+**Two measurements in this session proved nothing, and the house rule is what caught both.**
+
+The first: a fixture with umlauts on the lines *above* the needle. The line starts are exact either
+way, so byte and character columns only diverge *within* the matching line — the fixture exercised
+nothing, and it passed with the defect deliberately put back. Moved the umlauts onto the needle's own
+line and the divergence appeared (column 30 in bytes, 26 in characters).
+
+The second was mine and worse: I restored the source after a reintroduction and **did not rebuild**,
+so the next measurement ran against the defective binary and I read it as "the fix is broken". The
+repository already records this shape once — the harness copying a bundle while it was being rebuilt
+— and it cost half an hour again. Rebuilding between the two directions is not optional, and the
+`contentview=` line now in the probe is there because attribution by arithmetic is what failed here.
+
+With that sorted, both directions are measured: defect in, `selectedtext=MEHERE"` (four characters
+late, exactly the byte-versus-character difference); fix in, `selectedtext=FINDMEHERE`. Both runs
+name `contentview=CodeListerView`, because a fixture that slips under 4 MiB is answered by an
+NSTextView that highlights for entirely different reasons — the scenario's first fixture did exactly
+that at 3.03 MiB and would have passed while testing the wrong thing.
+
+`viewer-find-highlight` holds it, 125 scenarios with reports. `LineIndexer.line(containing:in:)` is
+the binary search both views had written out for themselves, now in one place with tests.
+
+**Still open, found on the way and deliberately not fixed here:** a search over a *formatted*
+document (the Format button) matches against the file's bytes while the view shows text the
+formatter produced, so the offsets refer to something that is no longer on screen. Pre-existing, and
+a question about what search should mean after formatting rather than a mapping bug.
+
 ## 2026-09-03 — two reports about the hex viewer, and a probe that could not see either
 
 Both reported by comparing the viewer against the hex *editor*, which is the useful shape of a bug
