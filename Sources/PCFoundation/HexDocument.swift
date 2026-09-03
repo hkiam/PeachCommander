@@ -24,6 +24,15 @@ public final class HexDocument {
 
     public var count: Int { bytes.count }
     public var isModified: Bool { bytes != original }
+
+    /// Bumped by every edit, including undo and redo.
+    ///
+    /// The editor's `onChange` fires for selection and caret movement too, so "did the
+    /// bytes change" is not answerable from it — and anything derived from the bytes (the
+    /// strings panel) would either recompute on every arrow key or go quietly stale. A
+    /// counter is the cheap honest answer; comparing buffers is not (they can be large, and
+    /// an edit that restores an earlier value is still an edit).
+    public private(set) var revision = 0
     public var canUndo: Bool { !undoStack.isEmpty }
     public var canRedo: Bool { !redoStack.isEmpty }
 
@@ -53,6 +62,7 @@ public final class HexDocument {
         bytes.replaceSubrange(clamped, with: new)
         undoStack.append(Edit(range: clamped, old: old, new: new))
         redoStack.removeAll()
+        revision += 1
     }
 
     /// Overwrite bytes starting at `offset`, extending the buffer if `new` runs past the end.
@@ -81,12 +91,14 @@ public final class HexDocument {
         let placed = edit.range.lowerBound ..< (edit.range.lowerBound + edit.new.count)
         bytes.replaceSubrange(placed, with: edit.old)
         redoStack.append(edit)
+        revision += 1
     }
 
     public func redo() {
         guard let edit = redoStack.popLast() else { return }
         bytes.replaceSubrange(edit.range, with: edit.new)
         undoStack.append(edit)
+        revision += 1
     }
 
     private func clamp(_ range: Range<Int>) -> Range<Int> {

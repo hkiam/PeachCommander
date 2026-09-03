@@ -330,6 +330,19 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
     private var didBackup = false
     private var lastFind: [UInt8] = []
     private var findDialog: InputDialog?
+    // Strings panel (F-489), collapsed until asked for. It scans the *edited* bytes rather
+    // than the file, which is the only reading that can be trusted here: an insert shifts
+    // every offset after it, and a list of offsets into the file as it was on disk would
+    // point at the wrong bytes the moment anything is typed.
+    private let stringsSidebar = StringsSidebar()
+    private var stringsWidth: NSLayoutConstraint!
+    private var stringsVisible = false
+    private let stringsToggle = NSButton()
+    private var rescanPending = false
+    private var scannedRevision = -1
+    /// How much the window was widened to make room for the panel, so exactly that much is
+    /// given back — the growth is bounded by the screen and is often less than the full width.
+    private var stringsGrewBy: CGFloat = 0
 
     init(path: String) {
         self.path = path
@@ -342,7 +355,7 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
         super.init(window: window)
         window.delegate = self
         buildUI()
-        editor.onChange = { [weak self] in self?.updateStatus() }
+        editor.onChange = { [weak self] in self?.updateStatus(); self?.scheduleStringsRescan() }
         editor.onRequestDeleteSelection = { [weak self] range in self?.promptDeleteSelection(range) }
         updateStatus()
     }
@@ -372,11 +385,21 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
         replace.bezelStyle = .rounded
         let goto = NSButton(title: String(localized: "Go to…"), target: self, action: #selector(gotoAddress))
         goto.bezelStyle = .rounded; goto.keyEquivalent = "g"; goto.keyEquivalentModifierMask = .command
+        stringsToggle.title = String(localized: "Strings")
+        stringsToggle.image = NSImage(systemSymbolName: "text.magnifyingglass",
+                                      accessibilityDescription: String(localized: "Strings"))
+        stringsToggle.imagePosition = .imageLeading
+        stringsToggle.bezelStyle = .rounded
+        stringsToggle.setButtonType(.pushOnPushOff)
+        stringsToggle.target = self
+        stringsToggle.action = #selector(toggleStrings)
+        stringsToggle.toolTip = String(localized: "Show/hide the readable strings in this file")
         toolbar.addArrangedSubview(save)
         toolbar.addArrangedSubview(mode)
         toolbar.addArrangedSubview(find)
         toolbar.addArrangedSubview(replace)
         toolbar.addArrangedSubview(goto)
+        toolbar.addArrangedSubview(stringsToggle)
         content.addSubview(toolbar)
 
         let scroll = NSScrollView()
@@ -385,6 +408,15 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
         scroll.hasHorizontalScroller = true
         scroll.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(scroll)
+
+        stringsSidebar.translatesAutoresizingMaskIntoConstraints = false
+        stringsSidebar.onSelect = { [weak self] hit in
+            guard let self else { return }
+            let lower = Int(hit.range.lowerBound), upper = Int(hit.range.upperBound)
+            self.editor.selectRange(lower..<upper)
+        }
+        content.addSubview(stringsSidebar)
+        stringsWidth = stringsSidebar.widthAnchor.constraint(equalToConstant: 0)
 
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.font = NSFont.systemFont(ofSize: 11)
@@ -397,7 +429,11 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
             toolbar.trailingAnchor.constraint(equalTo: content.trailingAnchor),
             scroll.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
             scroll.leadingAnchor.constraint(equalTo: content.leadingAnchor),
-            scroll.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: stringsSidebar.leadingAnchor),
+            stringsSidebar.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            stringsSidebar.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+            stringsSidebar.bottomAnchor.constraint(equalTo: scroll.bottomAnchor),
+            stringsWidth,
             statusLabel.topAnchor.constraint(equalTo: scroll.bottomAnchor, constant: 4),
             statusLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 10),
             statusLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -10),
@@ -406,6 +442,69 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
     }
 
     @objc private func toggleMode() { editor.toggleInsertMode() }
+
+    // MARK: - Strings panel (F-489)
+
+    /// How wide the panel is when open, and how much the window grows to make room for it.
+    private static let stringsPanelWidth: CGFloat = 340
+
+    @objc private func toggleStrings() {
+        stringsVisible.toggle()
+        stringsWidth.animator().constant = stringsVisible ? Self.stringsPanelWidth : 0
+        makeRoomForStringsPanel()
+        stringsToggle.state = stringsVisible ? .on : .off
+        if stringsVisible {
+            scannedRevision = doc.revision
+            stringsSidebar.load(.bytes(doc.bytes))
+            stringsSidebar.focusFilter()
+        } else {
+            stringsSidebar.clear()
+        }
+        KeyboardLoop.rebuild(for: window)
+    }
+
+    /// Widen the window for the panel, and give the width back when it closes.
+    ///
+    /// The viewer's sidebars do not do this and should not: that window is opened at whatever
+    /// size the reader left it, usually wide. This one has a fixed 760-point default, and 340
+    /// of it is most of the ASCII gutter — open the panel and the column the grid is *read*
+    /// by goes off the right edge. Growing is bounded by the screen, and a window the user has
+    /// already made wide enough is left where it is.
+    private func makeRoomForStringsPanel() {
+        guard let window, let screen = window.screen ?? NSScreen.main else { return }
+        var frame = window.frame
+        if stringsVisible {
+            let room = min(Self.stringsPanelWidth, screen.visibleFrame.maxX - frame.maxX)
+            guard room > 1 else { stringsGrewBy = 0; return }
+            frame.size.width += room
+            stringsGrewBy = room
+        } else {
+            guard stringsGrewBy > 0 else { return }
+            frame.size.width = max(480, frame.width - stringsGrewBy)
+            stringsGrewBy = 0
+        }
+        window.setFrame(frame, display: true, animate: false)
+    }
+
+    /// Re-scan after an edit, once the typing stops.
+    ///
+    /// Every keystroke in the grid changes a byte, and every changed byte can change what a
+    /// string is and where it starts — but re-scanning per keystroke would scan the whole
+    /// buffer for each nibble. Coalescing to the end of a short pause is what keeps the list
+    /// honest without making typing feel heavy. A list that is merely a moment out of date
+    /// is fine; one that is silently out of date is not, which is why it is not simply left
+    /// alone until the panel is next opened.
+    private func scheduleStringsRescan() {
+        guard stringsVisible, !rescanPending, doc.revision != scannedRevision else { return }
+        rescanPending = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            guard let self else { return }
+            self.rescanPending = false
+            guard self.stringsVisible, self.doc.revision != self.scannedRevision else { return }
+            self.scannedRevision = self.doc.revision
+            self.stringsSidebar.load(.bytes(self.doc.bytes))
+        }
+    }
 
     private func hexString(_ bytes: [UInt8]) -> String {
         bytes.map { String(format: "%02x", $0) }.joined(separator: " ")
@@ -552,6 +651,34 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
 // MARK: - Automation probes (F-400, F-401)
 
 extension HexEditorWindowController {
+
+    /// Open the strings panel over the *edited* buffer, wait for the scan, and report it (F-489).
+    ///
+    /// `row >= 0` also activates that row and reports the editor's resulting selection, which is the
+    /// half a list cannot show: a correct list beside a jump that lands somewhere else reads as working.
+    func automationStrings(selectRow row: Int) async -> String {
+        if !stringsVisible { toggleStrings() }
+        var waited = 0
+        while stringsSidebar.isScanning, waited < 200 {
+            try? await Task.sleep(nanoseconds: 50_000_000)
+            waited += 1
+        }
+        var out = "scanwaitms=\(waited * 50)\n" + stringsSidebar.automationSummary
+        if row >= 0 {
+            if let hit = stringsSidebar.automationSelectRow(row) {
+                out += "clicked=\(String(format: "%08llx", hit.offset)) \(hit.encoding.rawValue) \(hit.text)\n"
+                if let sel = editor.selectedRange {
+                    out += String(format: "hexselection=%08llx-%08llx\n",
+                                  Int64(sel.lowerBound), Int64(sel.upperBound - 1))
+                } else {
+                    out += "hexselection=none\n"
+                }
+            } else {
+                out += "clicked=none\n"
+            }
+        }
+        return out
+    }
 
     /// Run the real "Go to Address" command with `expression` answered from the script queue, and report
     /// where the caret ended up. Goes through `gotoAddress`, so the dialog's own parsing is what is

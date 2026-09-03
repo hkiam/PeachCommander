@@ -192,6 +192,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // the outline holds. A blank sidebar and a dead button look identical in a screenshot, and it was
         // the dead button that got reported for Swift (F-405).
         lines.append("symboltoggle=\(symbolToggle.isEnabled ? "enabled" : "disabled")")
+        // The strings panel is offered in hex and nowhere else (F-489), and a disabled toggle
+        // beside an empty panel looks the same in a screenshot as a scan that found nothing.
+        lines.append("stringstoggle=\(stringsToggle.isEnabled ? "enabled" : "disabled")")
+        lines.append("stringsvisible=\(stringsVisible)")
         for row in symbolSidebar.renderedCellStrings() { lines.append("symbolrow=\(row)") }
         // The marks panel's model, not its pixels: the notes group (F-379) is built from a plugin field,
         // and walking the view tree would only see it when the panel happens to be open and tall enough.
@@ -206,6 +210,33 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
+
+    /// Automation: open the strings panel, wait for the scan, and report what it holds (F-489).
+    ///
+    /// The wait is the point. The scan is off the main thread by design, so a dump taken the
+    /// moment the panel opens reports zero findings over a file full of them — which reads as
+    /// "the feature does not work" and is the harness measuring itself. `row >= 0` then
+    /// activates that row and reports where the hex view actually went, because a list that
+    /// is right and a jump that is wrong look identical in the list.
+    func automationStrings(selectRow row: Int) async -> String {
+        guard mode == .hex else { return "ERROR: not in hex mode (mode=\(mode))\n" }
+        setStringsSidebar(visible: true)
+        var waited = 0
+        while stringsSidebar.isScanning, waited < 200 {
+            try? await Task.sleep(nanoseconds: 50_000_000)
+            waited += 1
+        }
+        var out = "scanwaitms=\(waited * 50)\n" + stringsSidebar.automationSummary
+        if row >= 0 {
+            if let hit = stringsSidebar.automationSelectRow(row) {
+                out += "clicked=\(String(format: "%08llx", hit.offset)) \(hit.encoding.rawValue) \(hit.text)\n"
+                out += (contentView as? HexListerView)?.automationSelectionDescription ?? "hexselection=none\n"
+            } else {
+                out += "clicked=none\n"
+            }
+        }
+        return out
+    }
 
     /// Automation: format the current file and then *draw* it, reporting how long each took (F-414).
     ///
@@ -518,6 +549,13 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var symbolWidth: NSLayoutConstraint!
     private var symbolsVisible = false
     private let symbolToggle = NSButton()
+
+    // Collapsible strings panel — every readable run in the file, in every encoding at once
+    // (F-489). Hex only: see `refreshStrings`.
+    private let stringsSidebar = StringsSidebar()
+    private var stringsWidth: NSLayoutConstraint!
+    private var stringsVisible = false
+    private let stringsToggle = NSButton()
     private var bracketRanges: [NSRange] = []
     // Collapsible minimap on the right (for text/code content).
     private var minimap: MinimapView!
@@ -617,6 +655,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         statusBar.addSubview(statusLabel)
 
         let sidebar = buildSymbolSidebar()
+        let strings = buildStringsSidebar()
 
         minimap = MinimapView(textView: nil, scrollView: scrollView)
         minimap.translatesAutoresizingMaskIntoConstraints = false
@@ -624,9 +663,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         container.addSubview(toolbar)
         container.addSubview(sidebar)
         container.addSubview(splitView)
+        container.addSubview(strings)
         container.addSubview(minimap)
         container.addSubview(statusBar)
         symbolWidth = sidebar.widthAnchor.constraint(equalToConstant: 0)   // start collapsed
+        stringsWidth = strings.widthAnchor.constraint(equalToConstant: 0)  // start collapsed
         minimapWidth = minimap.widthAnchor.constraint(equalToConstant: 0)  // start collapsed
         NSLayoutConstraint.activate([
             toolbar.topAnchor.constraint(equalTo: container.topAnchor),
@@ -639,8 +680,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             symbolWidth,
             splitView.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
             splitView.leadingAnchor.constraint(equalTo: sidebar.trailingAnchor),
-            splitView.trailingAnchor.constraint(equalTo: minimap.leadingAnchor),
+            splitView.trailingAnchor.constraint(equalTo: strings.leadingAnchor),
             splitView.bottomAnchor.constraint(equalTo: statusBar.topAnchor),
+            strings.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            strings.trailingAnchor.constraint(equalTo: minimap.leadingAnchor),
+            strings.bottomAnchor.constraint(equalTo: statusBar.topAnchor),
+            stringsWidth,
             minimap.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
             minimap.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             minimap.bottomAnchor.constraint(equalTo: statusBar.topAnchor),
@@ -696,6 +741,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         symbolToggle.toolTip = String(localized: "Show/hide the symbol outline")
         bar.addArrangedSubview(symbolToggle)
 
+        // Strings panel toggle. Disabled outside the hex representation, where the question
+        // it answers does not arise — in text mode the text is the strings.
+        stringsToggle.bezelStyle = .rounded
+        stringsToggle.image = NSImage(systemSymbolName: "text.magnifyingglass",
+                                      accessibilityDescription: String(localized: "Strings"))
+        stringsToggle.imagePosition = .imageLeading
+        stringsToggle.title = String(localized: "Strings")
+        stringsToggle.setButtonType(.pushOnPushOff)
+        stringsToggle.target = self
+        stringsToggle.action = #selector(toggleStrings)
+        stringsToggle.isEnabled = false
+        stringsToggle.toolTip = String(localized: "Show/hide the readable strings in this file")
+        bar.addArrangedSubview(stringsToggle)
+
         bar.addArrangedSubview(NSTextField(labelWithString: String(localized: "View:")))
         bar.addArrangedSubview(reprPopup)
         bar.addArrangedSubview(button(String(localized: "Find"), DocumentAction.find))
@@ -736,6 +795,49 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         minimap.bind(textView: tv)
         if tv == nil, minimapVisible { setMinimap(visible: false) }
     }
+
+    // MARK: - Strings panel (F-489)
+
+    private func buildStringsSidebar() -> NSView {
+        stringsSidebar.translatesAutoresizingMaskIntoConstraints = false
+        stringsSidebar.onSelect = { [weak self] hit in
+            guard let self, let hex = self.contentView as? HexListerView else { return }
+            hex.select(byteRange: hit.range)
+            self.updateStatus()
+        }
+        return stringsSidebar
+    }
+
+    @objc private func toggleStrings() { setStringsSidebar(visible: !stringsVisible) }
+
+    private func setStringsSidebar(visible: Bool) {
+        stringsVisible = visible
+        stringsWidth.animator().constant = visible ? 340 : 0
+        stringsToggle.state = visible ? .on : .off
+        if visible, let file = currentFile {
+            // Scanning is what costs; do it when the panel is first opened rather than for
+            // every hex file somebody glances at.
+            stringsSidebar.load(.file(file))
+            stringsSidebar.focusFilter()
+        } else {
+            stringsSidebar.clear()
+        }
+        KeyboardLoop.rebuild(for: window)
+    }
+
+    /// Offer the panel in hex and nowhere else, and close it when the representation moves on.
+    private func refreshStrings() {
+        let available = (mode == .hex)
+        stringsToggle.isEnabled = available
+        if !available, stringsVisible {
+            setStringsSidebar(visible: false)
+        } else if available, stringsVisible, let file = currentFile {
+            stringsSidebar.load(.file(file))     // a different file, or a re-render
+        }
+    }
+
+    /// The file on screen, or nil while the window has none.
+    private var currentFile: String? { files.indices.contains(index) ? files[index] : nil }
 
     // MARK: - Symbol outline sidebar
 
@@ -1020,7 +1122,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // Recompute the symbol outline + minimap once the new content view is in
         // place (populate for code/text, clear for other modes), and re-validate the
         // toolbar: most actions only apply to some representations.
-        defer { refreshSymbols(); refreshMinimap(); refreshActionEnablement(); refreshAnnotations() }
+        defer { refreshSymbols(); refreshMinimap(); refreshStrings()
+                refreshActionEnablement(); refreshAnnotations() }
 
         // The content view (and its marks) is about to be replaced — collapse
         // the marks panel so it doesn't show stale entries for the old view.
@@ -2542,6 +2645,25 @@ final class HexListerView: NSView, ListerScrollable {
         let row = Int(offset / Int64(bytesPerRow))
         scrollToVisible(NSRect(x: 0, y: CGFloat(row) * rowHeight, width: 1, height: rowHeight * 3))
     }
+
+    /// Highlight `range` (half-open) and bring it into view — what the strings panel does
+    /// when a row is chosen (F-489). The same selection the mouse makes, so "Copy selection
+    /// as…" in the context menu then works on the string that was clicked.
+    func select(byteRange range: Range<Int64>) {
+        guard !range.isEmpty, range.lowerBound < slice.count else { return }
+        selAnchor = range.lowerBound
+        selEnd = Swift.min(range.upperBound, slice.count) - 1
+        scroll(toByteOffset: range.lowerBound)
+        needsDisplay = true
+    }
+
+    #if DEBUG
+    /// Diagnostic: the byte range currently highlighted, for the strings-panel scenarios.
+    var automationSelectionDescription: String {
+        guard let sel = selection else { return "hexselection=none\n" }
+        return String(format: "hexselection=%08llx-%08llx\n", sel.lo, sel.hi)
+    }
+    #endif
 
     // MARK: - Mouse selection
 

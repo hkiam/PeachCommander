@@ -25,6 +25,9 @@
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
+//   listerstrings <row|-1>|<out>  open the viewer's strings panel (hex only), wait for the scan,
+//                                 write what it holds; a row index also clicks that row and
+//                                 reports the byte range the hex view then highlights
 //   mainshot <out.png>    a PNG of the key window (the main one, a dialog, or Settings)
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
@@ -345,6 +348,15 @@ extension MainWindowController {
                         ?? "ERROR: no lister window\n"
                     try? out.write(toFile: s[1], atomically: true, encoding: .utf8)
                 }
+            case "listerstrings":                       // listerstrings <row|-1>|<out> (F-489)
+                // Open the strings panel over the file in the viewer, wait for the scan, and
+                // report the list — plus, for a row index, where clicking it put the hex view.
+                let s = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if s.count == 2 {
+                    let out = await currentLister()?.automationStrings(selectRow: Int(s[0]) ?? -1)
+                        ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: s[1], atomically: true, encoding: .utf8)
+                }
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
@@ -412,6 +424,14 @@ extension MainWindowController {
                 let h = arg.split(separator: "|", maxSplits: 2).map(String.init)
                 if h.count == 3 {
                     let out = openHexEditorForAutomation(path: h[0]).automationGoto(h[1])
+                    try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
+                }
+            case "hexstrings":                          // hexstrings <path>|<row|-1>|<out> (F-489)
+                // The editor's own strings panel, over the bytes as edited rather than as on disk.
+                let h = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if h.count == 3 {
+                    let out = await openHexEditorForAutomation(path: h[0])
+                        .automationStrings(selectRow: Int(h[1]) ?? -1)
                     try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
                 }
             case "hexclip":                             // hexclip <path>|<typed>|<out> (F-401)
