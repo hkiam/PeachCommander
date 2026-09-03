@@ -26,6 +26,50 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-03 — the colour audit found what the screenshots could not
+
+Closing out the strings panel. Two gaps were named at the end of the session; one of them was not a
+gap, and looking for it found a real defect instead.
+
+**The one that was not there.** `StringsSidebar` paints its background through its layer, and I said
+it needed `SelfPaintedBackground` conformance. It does not: `SurfaceColourAudit.background(of:)`
+already reads `view.layer?.backgroundColor` above 0.9 alpha. That protocol is for a fill drawn with
+`NSBezierPath`, which leaves nothing to read — `CursorRowView` is the only conformer for that reason.
+Written down because the wrong version of this is easy to repeat.
+
+**What was there, and only the audit could see it.** Run over the panel under Midnight, before any
+change:
+
+```
+windows=24 findings=40
+... StringsSidebar/.../NSTextField text=#000000 on=#101020 ratio=1.1   (×40)
+```
+
+Forty findings, every one of them the offset column, the encoding column, the length label or the
+status line — `.secondaryLabelColor`, which follows the *macOS* appearance rather than the app's
+palette. Under a dark theme in a light-appearance window it resolves to near-black on a near-black
+panel. `ColourContrast.quietened(listText, on: listBackground)` is the primitive that already existed
+for exactly this, and its own comment names the same mistake made once before ("Derived, not
+borrowed", after the terminal's status line came out black on blue). After: `findings=0` over 28
+windows, the hex editor's own window among them.
+
+Worth stating plainly: I had verified this panel with two screenshots and been satisfied. A white
+column of pale text is a perfectly well-laid-out white column — the reason `surface-colours` exists,
+and it caught me the first time I gave it something new to look at.
+
+**A scenario, so the harness knows about it.** `hex-strings` drives both surfaces over a fixture
+carrying one string per reading, generated on the guest from integers only (non-ASCII source through
+three layers of shell quoting tests the harness, not the app; verified byte-identical to the file the
+expectations were measured from). Each half also *activates* a row and reports the byte range the hex
+view then highlights, because a correct list beside a jump that lands elsewhere looks like a working
+feature. The expectations are measured from a real run, not computed.
+
+`utf16be` is deliberately not asserted there: a NUL-padded big-endian run and a little-endian one a
+byte later decode to identical text over identical bytes, so the label is a documented tie-break.
+That belongs in `BinaryStringsTests`, which pins it, and not in a screen test. 122 scenarios with
+reports now, `check-scenario-reports.py` green — the primary report is the last file the script
+writes, which is the rule that exists because five scenarios once got it wrong.
+
 ## 2026-09-03 — a UNC path that was never a path, and a share that could not be let go
 
 Found already in the working tree at the start of the session and committed with it. Written up here
