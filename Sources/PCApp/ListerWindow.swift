@@ -224,6 +224,70 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
 
+    /// Automation: the menus this window *offers*, whatever has the keyboard.
+    ///
+    /// `menudump` reads `NSApp.mainMenu`, which a document window only reaches by becoming key — and
+    /// in a scripted run it never does, so that probe always reported the main window's menus and
+    /// could say nothing about this one's. What the window offers is decided by `documentCaps`, and
+    /// that is what this reads, so a command whose flag was never set shows up as an item that is
+    /// simply not there.
+    func automationToolMenuDump() -> String {
+        var lines: [String] = []
+        for menu in toolMenus() {
+            lines.append("# \(menu.title)")
+            for item in menu.items {
+                if item.isSeparatorItem { lines.append("  ----"); continue }
+                // With the modifiers: ⌘G and ⇧⌘G are different keys, and a dump that prints only
+                // "g" for both makes a pair of distinct shortcuts look like a collision.
+                var key = ""
+                if !item.keyEquivalent.isEmpty {
+                    let mask = item.keyEquivalentModifierMask
+                    key = "  key="
+                        + (mask.contains(.control) ? "C+" : "")
+                        + (mask.contains(.option) ? "O+" : "")
+                        + (mask.contains(.shift) ? "S+" : "")
+                        + (mask.contains(.command) ? "W+" : "")
+                        + item.keyEquivalent
+                }
+                lines.append("  \(item.title)\(key)")
+            }
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Automation: Mark All `term`, then step `steps` times, and report where that landed.
+    ///
+    /// Both halves matter and only the second was new. Reporting the position rather than "it did not
+    /// beep" is the point: stepping to the wrong mark and stepping to no mark at all are the same
+    /// silence otherwise. The position is the caret in a text view and the topmost visible line in a
+    /// virtual one, which is the same stand-in `stepMark` itself uses.
+    func automationMarkStep(_ term: String, steps: Int) -> String {
+        let marked = backendMarkAll(term, colorIndex: nil)
+        for _ in 0..<abs(steps) { stepMark(forwards: steps >= 0) }
+        var position = "-"
+        if let textView = textContentView {
+            let caret = textView.selectedRange()
+            position = "\(caret.location)+\(caret.length)"
+        } else if let addressable = contentView as? ListerLineAddressable {
+            position = "line \(addressable.firstVisibleLine)"
+        }
+        return "term=\(term)\nmarked=\(marked)\nsteps=\(steps)\nat=\(position)\n"
+    }
+
+    /// Automation: run the viewer's own Go To with `expression` answered from the script queue, and
+    /// report where it landed (the mirror of the hex editor's `automationGoto`).
+    ///
+    /// Reports the *selection*, not the scroll position, because that is where this went wrong: in
+    /// hex, scrolling to a row of sixteen identical-looking bytes answers "somewhere on this line"
+    /// and a probe that checked only the scroll offset would have called it correct.
+    func automationGoto(_ expression: String) -> String {
+        InputDialog.queueScriptedAnswer(expression)
+        promptGoto()
+        let selection = (contentView as? HexListerView)?.automationSelectionDescription ?? ""
+        return "expr=\(expression)\nmode=\(mode)\n" + selection
+            + "answersleft=\(InputDialog.hasScriptedAnswers ? 1 : 0)\n"
+    }
+
     /// Automation: click a column of the hex view and report which byte it selected.
     func automationHexClick(_ kind: String, row: Int, byte index: Int) -> String {
         guard mode == .hex, let hex = contentView as? HexListerView else {
@@ -2097,7 +2161,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             guard let self else { return }
             if isHex {
                 if let offset = HexAddress.parse(text) {
-                    (self.contentView as? HexListerView)?.scroll(toByteOffset: offset)
+                    // Marked, not merely scrolled to. A row is sixteen bytes and they all look
+                    // alike, so scrolling alone answers "somewhere on this line" — the hex editor's
+                    // Go To has always put its caret on the byte, and this is the same question.
+                    (self.contentView as? HexListerView)?.select(byteRange: offset ..< (offset + 1))
                 }
             // Through the same evaluator as the offset, so a line number can be arithmetic too — and
             // so "120 + 10" does not mean one thing in hex mode and nothing in text mode.
@@ -2751,7 +2818,7 @@ final class TextListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
 }
 
 /// Virtual-scrolling hex view — renders only visible rows from the FileSlice.
-final class HexListerView: NSView, ListerScrollable {
+final class HexListerView: NSView, ListerScrollable, ViewerTextProviding {
     private let rowHeight: CGFloat = 15
     private let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
     private let cellW: CGFloat
@@ -2921,6 +2988,35 @@ final class HexListerView: NSView, ListerScrollable {
     }
     override func mouseDragged(with event: NSEvent) {
         if let idx = byteIndex(at: convert(event.locationInWindow, from: nil)) { selEnd = idx; needsDisplay = true }
+    }
+
+    // MARK: - Copy (⌘C)
+
+    /// The selection as spaced hex — the same thing ⌘C produces in the hex *editor*.
+    ///
+    /// Conforming at all is the point. `canCopyText` asks whether the content view is a
+    /// `ViewerTextProviding`, and this one was not, so ⌘C was greyed out in the hex representation
+    /// while the context menu offered four ways to copy the same selection. Selecting bytes and
+    /// finding the obvious key does nothing is a poor way to learn that the menu is the only route
+    /// — and it got worse once the gutter became selectable and search hits started being selected,
+    /// since both produce a selection whose natural next step is ⌘C.
+    var selectedText: String? {
+        guard let bytes = selectedBytes(), !bytes.isEmpty else { return nil }
+        return ByteFormatter.format(bytes, as: .hex)
+    }
+
+    /// The whole file as a hex dump, for ⌘C with nothing selected.
+    ///
+    /// Only ever reached below the viewer's copy-everything limit, which the caller checks against
+    /// the *file* size before asking for this — worth knowing here because a dump is about five
+    /// times the bytes it describes, so that limit is generous in this representation and stingy in
+    /// none of the others.
+    var copyText: String {
+        (0..<rowCount).map { row -> String in
+            let offset = Int64(row) * Int64(bytesPerRow)
+            return HexFormatter.row(bytes: slice.bytes(at: offset, length: bytesPerRow),
+                                    offset: offset, bytesPerRow: bytesPerRow)
+        }.joined(separator: "\n")
     }
 
     private func selectedBytes() -> [UInt8]? {
@@ -3250,7 +3346,12 @@ extension ListerWindowController: WindowContextMenuProviding {
             && pluginClaiming(path: files[index], slice: slice) != nil
         c.encoding = true; c.format = true; c.xmlTree = true; c.xpath = true
         c.goto = true
+        // Shift+F3 has always worked here — `docFindPrev` is implemented and the key handler
+        // calls it — but the flag was never set, so the menu did not say so and the command
+        // was reachable only by knowing it existed.
+        c.findPrev = true
         c.marks = true
+        c.markNav = true
         c.saveAs = true; c.printable = true   // F-121
         c.zoom = true                          // F-389 (enabled per representation below)
         c.multiFile = files.count > 1
@@ -3391,6 +3492,38 @@ extension ListerWindowController {
     @objc func docFind() { vmFind() }
     @objc func docFindNext() { vmFindNext() }
     @objc func docGoto() { vmGoto() }
+    /// Next / Previous Mark (F-121 parity): step through the highlights Mark All made.
+    ///
+    /// Two backends, because marks have two: the NSTextView path keeps them as character ranges and
+    /// the virtual views as (line, column) pairs. The editor has had this since it had marks; the
+    /// viewer could make them and then only reach them by clicking rows in the panel.
+    @objc func docNextMark() { stepMark(forwards: true) }
+    @objc func docPrevMark() { stepMark(forwards: false) }
+
+    private func stepMark(forwards: Bool) {
+        if let marks = textMarks, let textView = textContentView {
+            let caret = textView.selectedRange().location
+            guard let range = forwards ? marks.nextMark(after: caret)
+                                       : marks.previousMark(before: caret) else {
+                NSSound.beep(); return
+            }
+            textView.setSelectedRange(range)
+            textView.scrollRangeToVisible(range)
+            return
+        }
+        // A view that only scrolls has no caret, so the topmost visible line stands in for one —
+        // the same thing `firstVisibleLine` exists for elsewhere.
+        guard let markable, let addressable = contentView as? ListerLineAddressable else {
+            NSSound.beep(); return
+        }
+        let sorted = markable.sortedViewerMarks
+        let here = addressable.firstVisibleLine - 1          // firstVisibleLine is 1-based
+        let target = forwards ? sorted.first(where: { $0.line > here })
+                              : sorted.last(where: { $0.line < here })
+        guard let target else { NSSound.beep(); return }
+        markable.scrollMarkLineToVisible(target.line)
+    }
+
     @objc func docMarkAll() { vmMarkAll() }
     @objc func docCount() { vmCount() }
     @objc func docToggleMarksPanel() { vmMarksList() }

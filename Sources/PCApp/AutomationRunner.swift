@@ -25,6 +25,9 @@
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
+//   listermenudump <out>  the viewer's own document menus (menudump only sees the main bar)
+//   listermarkstep <term>|<steps>|<out>  Mark All, then step through the marks; reports where
+//   listergoto <expr>|<out>  the viewer's Ctrl+G, answered from the queue; reports the selection
 //   listerhexclick <hex|ascii>|<row>|<byte>|<out>  click a column of the hex view, report the byte
 //   listerstrings <row|-1>|<out>  open the viewer's strings panel (hex only), wait for the scan,
 //                                 write what it holds; a row index also clicks that row and
@@ -199,6 +202,8 @@ extension MainWindowController {
             case "editvalidate": await editValidate(arg) // editvalidate <src>|<out> (F-412)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
+            case "editsaveas":                          // editsaveas <src>|<text>|<dst>|<out>
+                await editSaveAs(arg)
             case "editsave":   await editSave(arg)      // editsave <src>|<text>|<out> (F-387)
             case "setstring":                           // setstring <Section.Key>|<value> (F-409)
                 // `setbool`'s counterpart, and needed for the same reason: a scenario that depends on a
@@ -348,6 +353,29 @@ extension MainWindowController {
                     let out = await currentLister()?.automationNavigateToSymbol(s[0])
                         ?? "ERROR: no lister window\n"
                     try? out.write(toFile: s[1], atomically: true, encoding: .utf8)
+                }
+            case "listermenudump":                      // listermenudump <out>
+                // The viewer's own document menus, which `menudump` cannot see: it reads the main
+                // menu bar, and a document window only installs itself there once it is key — which
+                // in a scripted run it never becomes.
+                let out = currentLister()?.automationToolMenuDump() ?? "ERROR: no lister window\n"
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listermarkstep":                      // listermarkstep <term>|<steps>|<out>
+                // Mark All, then Next/Previous Mark that many times. Negative steps go backwards.
+                let m = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if m.count == 3 {
+                    let out = currentLister()?.automationMarkStep(m[0], steps: Int(m[1]) ?? 1)
+                        ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: m[2], atomically: true, encoding: .utf8)
+                }
+            case "listergoto":                          // listergoto <expression>|<out>
+                // The viewer's Ctrl+G, answered from the script queue. The hex editor has had this
+                // probe since F-400; the viewer's own Go To had none, which is part of why its hex
+                // mode could scroll to a row and mark nothing for as long as it did.
+                let g = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if g.count == 2 {
+                    let out = currentLister()?.automationGoto(g[0]) ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: g[1], atomically: true, encoding: .utf8)
                 }
             case "listerhexclick":                      // listerhexclick <hex|ascii>|<row>|<byte>|<out>
                 // Which byte a click in each half of a hex row selects. The gutter half answered
@@ -2136,6 +2164,20 @@ extension MainWindowController {
         let report = win.automationSaveAfterTyping(a[1])
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] editsave → \(a[2])")
+    }
+
+    /// Open `src`, type, Save As to `dst`, and report that the document *moved* there.
+    private func editSaveAs(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 4 else { NSLog("[automation] editsaveas needs <src>|<text>|<dst>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 800_000_000)
+        let report = win.automationSaveAs(typing: a[1], to: a[2])
+        try? report.write(toFile: a[3], atomically: true, encoding: .utf8)
+        NSLog("[automation] editsaveas → \(a[3])")
     }
 
     /// Open `src`, put the caret on `needle`, and drive the Structure menu (F-369).

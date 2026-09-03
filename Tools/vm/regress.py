@@ -405,6 +405,26 @@ SCENARIOS = [
     # nothing, so the reader was left to find it by eye on a screen where every row looks like every
     # other row. `listerfind` now reports the *selection* as well as the offset — asserting only the
     # offset is how a search that found the right byte and showed nothing passed for working.
+    # Save As in the *editor*, which had neither Save As nor Print while the read-only viewer had
+    # both. It is a move, not an export: after it the window edits the new file, so the next ⌘S goes
+    # there — the opposite behaviour would be a trap, since you would save under a new name, keep
+    # typing, and quietly write to the file you thought you had left.
+    #
+    # The panel is skipped on purpose. It is a system sheet, and a run that reaches one stops there
+    # with nothing in a script able to dismiss it; the probe drives everything the command does once
+    # a destination is known, which is the half worth testing.
+    ("editor-save-as", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "editsaveas /Users/admin/pc-demo/notes.txt|MOVED-|"
+                        "/Users/admin/pc-demo/saved-elsewhere.txt|/Users/admin/editor-saveas.txt",
+                        "wait 1500"], 16),
+    # Go To in the hex representation. It scrolled to the row and marked nothing, so it answered
+    # "somewhere on these sixteen bytes" — the hex *editor* has always put its caret on the byte.
+    # The probe reports the selection rather than the scroll position, because a probe that checked
+    # only where the view had scrolled would have called the old behaviour correct.
+    ("hex-goto", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                  "view /Users/admin/pc-demo/strings.bin", "wait 2000",
+                  "listermode hex|/Users/admin/hexgoto-mode.txt", "wait 1200",
+                  "listergoto 0x2d|/Users/admin/hexgoto.txt", "wait 800"], 16),
     ("hex-find-highlight", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                             "view /Users/admin/pc-demo/strings.bin", "wait 2000",
                             "listermode hex|/Users/admin/hexfind-mode.txt", "wait 1200",
@@ -2265,9 +2285,27 @@ REPORTS = {
     # search found the right byte (`match=21`, decimal) and the view is showing it. With the fix
     # reverted this same report reads `found=true` with `hexselection=none`, which is exactly the
     # shape the old assertion could not see.
+    # `moved=1` is the whole claim: the window is editing the new file afterwards.
+    # `original-untouched=1` is its other half — the file it started on does not contain the typed
+    # text, so this really was a Save As and not a Save with an extra copy.
+    "editor-save-as": ("/Users/admin/editor-saveas.txt",
+                       ["error=-", "moved=1", "dirty=false", "original-untouched=1",
+                        "editing=/Users/admin/pc-demo/saved-elsewhere.txt", "MOVED-"]),
+    # 0x2d is where the little-endian wide string starts in the fixture. `answersleft=0` is the
+    # dialog having actually consumed the scripted answer — without it a Go To that never opened
+    # would report the selection from before and read as a pass.
+    "hex-goto": ("/Users/admin/hexgoto.txt",
+                 ["expr=0x2d", "mode=hex", "hexselection=0000002d-0000002d",
+                  "answersleft=0", "!hexselection=none"]),
     "hex-find-highlight": ("/Users/admin/hexfind.txt",
                            ["found=true", "match=21", "hexselection=00000015-0000001d",
-                            "!hexselection=none"]),
+                            "!hexselection=none",
+                            # The hex view provides `selectedText` at all, which is what decides
+                            # whether Copy is greyed out: `canCopyText` asks for a
+                            # `ViewerTextProviding` and this view was not one, so ⌘C did nothing in
+                            # the hex representation while the context menu offered four ways to
+                            # copy the same selection.
+                            "selectedtext=43 6F 6D 6D 61 6E 64 65 72"]),
     # F-489. Measured from a real run rather than computed: the offsets are what the scanner
     # reports over this fixture, and the selection is what clicking the second row produced.
     # `utf16be` is deliberately NOT asserted — a NUL-padded big-endian run and a little-endian

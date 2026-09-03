@@ -16,7 +16,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// its origin when it was downloaded from a writable network filesystem (F-214).
     var onSaved: (() -> Void)?
 
-    let path: String
+    /// The file being edited. A `var` because Save As moves the document to another file and goes on
+    /// editing *that* one — everything derived from it (the title, the writability lock, the shell
+    /// filter's working directory) is recomputed rather than cached, which is what makes that safe.
+    private(set) var path: String
     let textView = EditorCodeTextView()
     private lazy var markController = TextMarkController(textView: textView)
     private lazy var marks = DocumentMarksPanel(content: scrollView, host: self)
@@ -405,6 +408,30 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
             + "--- text ---\n" + onDisk
     }
 
+    /// Diagnostic: type `text`, then Save As to `destination`, and report where the document ended up.
+    ///
+    /// Goes through `completeSaveAs`, which is everything the command does once a destination is
+    /// known — the panel itself is a system sheet and would stop the run dead. What is reported is
+    /// the part that makes this a *move* rather than an export: the file on disk, and that the
+    /// window is now editing it, so the next ⌘S goes there and not to where it started.
+    func automationSaveAs(typing text: String, to destination: String) -> String {
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
+        textView.insertText(text, replacementRange: NSRange(location: 0, length: 0))
+        let started = path
+        let error = completeSaveAs(to: URL(fileURLWithPath: destination))
+        let written = (try? String(contentsOfFile: destination, encoding: .utf8)) ?? "<unreadable>"
+        let originalNow = (try? String(contentsOfFile: started, encoding: .utf8)) ?? "<unreadable>"
+        return """
+        error=\(error.map { "\($0)" } ?? "-")
+        editing=\(path)
+        moved=\(path == destination ? 1 : 0)
+        dirty=\(isDirty)
+        original-untouched=\(originalNow.contains(text) ? 0 : 1)
+        --- written ---
+        \(written)
+        """ + "\n"
+    }
+
     /// Diagnostic: run `command` over the whole document, then report what the editor now shows.
     ///
     /// Reads the text view back *and* leaves the window on screen: the text view is the thing that
@@ -551,6 +578,72 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         guard let r = markController.previousMark(before: textView.selectedRange().location) else { NSSound.beep(); return }
         textView.setSelectedRange(r)
         textView.scrollRangeToVisible(r)
+    }
+
+    /// Save As… — write the current text somewhere else and go on editing *there*.
+    ///
+    /// Deliberately not the viewer's meaning of the same command. There it is an export: the window is
+    /// read-only, so "write a copy" is the whole of it. In an editor an export would be a trap — you
+    /// would save under a new name, keep typing, and every later ⌘S would go to the file you thought
+    /// you had left behind. So this moves the document: the title, the lock and the next save all
+    /// follow the new file.
+    ///
+    /// Written in the document's own encoding, like `save`, and with the text exactly as the buffer
+    /// holds it, so a line-ending conversion made before saving is what lands on disk.
+    @objc private func saveAs() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = (path as NSString).lastPathComponent
+        panel.canCreateDirectories = true
+        panel.beginSheetModal(for: window ?? NSApp.keyWindow ?? NSWindow()) { [weak self] response in
+            guard let self, response == .OK, let url = panel.url else { return }
+            if let error = self.completeSaveAs(to: url) {
+                NSAlert(error: error).runModal()
+            }
+        }
+    }
+
+    /// Everything Save As does once a destination is known, split out from the panel.
+    ///
+    /// Split because a save panel is a system sheet: an automation run reaches it and stops there,
+    /// with nothing in a script able to dismiss it, so the half worth testing — the write, and the
+    /// document moving to the new file — would be unreachable. The same shape the assistant's plugins
+    /// use for their approval sheets. Returns the error, if any, rather than presenting it: the caller
+    /// on screen shows an alert and the harness reads it.
+    @discardableResult
+    private func completeSaveAs(to url: URL) -> Error? {
+        let text = textView.string
+        guard let data = text.data(using: encoding.encoding) ?? text.data(using: .utf8) else {
+            return CocoaError(.fileWriteInapplicableStringEncoding)
+        }
+        do {
+            try data.write(to: url)
+        } catch {
+            return error
+        }
+        path = url.path
+        // The new file has no backup of its own yet, so the next ⌘S makes one — the same thing that
+        // would happen had this file been opened directly.
+        didBackup = false
+        isDirty = false
+        writability = FileWritabilityCheck.check(path: path)
+        updateTitleAndStatus()
+        // Deliberately *not* `onSaved?()`. That callback means "the file you gave me was written",
+        // and after Save As it was not — the document moved somewhere else and the original is
+        // untouched. The host uses it to reload a menu file it owns and, in the rename-by-editor
+        // flow (F-174), to apply a temporary file's contents; telling either of them a save happened
+        // would make them act on a file this window has just stopped editing.
+        return nil
+    }
+
+    /// Print… — the text view itself, which is what the viewer prints for its text representation too.
+    @objc private func printDocument() {
+        let info = NSPrintInfo.shared
+        info.horizontalPagination = .fit
+        info.verticalPagination = .automatic
+        let operation = NSPrintOperation(view: textView, printInfo: info)
+        operation.jobTitle = (path as NSString).lastPathComponent
+        operation.runModal(for: window ?? NSApp.keyWindow ?? NSWindow(),
+                           delegate: nil, didRun: nil, contextInfo: nil)
     }
 
     @objc private func save() {
@@ -1017,6 +1110,11 @@ extension EditorWindowController: WindowContextMenuProviding {
     private var documentCaps: DocumentMenuCaps {
         var c = DocumentMenuCaps()
         c.editable = true
+        // The read-only window had both of these and the editable one had neither, which is the wrong
+        // way round: you could view a file and print it, but not print the one you were editing, nor
+        // put your changes under a different name.
+        c.saveAs = true
+        c.printable = true
         c.encoding = true
         c.format = true
         c.findPrev = true
@@ -1047,6 +1145,8 @@ extension EditorWindowController: WindowContextMenuProviding {
 @MainActor
 extension EditorWindowController {
     @objc func docSave() { save() }
+    @objc func docSaveAs() { saveAs() }
+    @objc func docPrint() { printDocument() }
     @objc func docReload() { reloadFromDisk() }
     @objc func docCycleEncoding() {
         let all = TextEncodingChoice.allCases
