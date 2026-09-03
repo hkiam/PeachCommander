@@ -48,6 +48,16 @@ does not have.
 
 ### Fixed
 
+- **In the hex viewer the text beside the bytes can be selected, and a search hit is shown.** Two
+  reports, one cause each, both invisible to a screenshot. The gutter could not be selected at all:
+  the view worked out its column positions with arithmetic of its own, a second silent copy of the
+  layout `HexFormatter` draws, and that copy covered the hex half only — every click in the ASCII
+  half mapped to no byte. The layout is now one description, held against the rendered row by tests.
+  And a search scrolled to its hit without highlighting it, which on a screen where every row looks
+  like every other row leaves the reader to find it by eye; the match is selected now, in both
+  halves of the row. The hex *editor* did both correctly all along, which is what made the
+  difference noticeable.
+
 - **Mounting a share no longer opens Finder in front of you, and no longer mounts the wrong thing.**
   Connecting went through `NSWorkspace.open`, which asks *Finder* to do the mount — so Finder's own
   window came up over the app you had asked from. Worse, handed a URL with a path it mounted the

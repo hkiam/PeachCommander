@@ -26,6 +26,47 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-03 — two reports about the hex viewer, and a probe that could not see either
+
+Both reported by comparing the viewer against the hex *editor*, which is the useful shape of a bug
+report: the same job done two ways, one of them right.
+
+**The ASCII gutter could not be selected.** `HexListerView.byteIndex(at:)` computed its column
+positions itself — a second, silent copy of the layout `HexFormatter.row` renders — and the copy
+covered the hex columns only. Any x in the gutter produced `col >= bytesPerRow` and the mapping
+returned nil, so the half of the row people actually *read* was inert. The selection highlight had
+the same hole: it filled the hex pair and never the gutter cell, so even a selection made in the hex
+half was invisible in the text half.
+
+The fix is not the branch, it is `HexFormatter.RowLayout`: one description of where the columns are,
+used by the view and held against the rendered string by `HexFormatterTests`. That test is the point
+— the two drifting apart is how this arrived, and a row that is drawn correctly looks correct however
+the pointer is mapped.
+
+**A search hit was scrolled to and never shown.** `findNext`/`findPrevious` called
+`scroll(toByteOffset:)` and nothing else. In hex that is indistinguishable from not having found
+anything, because every row looks like every other row. `ListerScrollable` gained `showMatch(byteRange:)`
+with the old behaviour as its default — `TextListerView` and `CodeListerView` have selection
+machinery but reach it by line and column rather than by byte, so wiring them up is a change of its
+own and deliberately not slipped in here.
+
+**Why nothing caught either.** `automationFind` reported `found` and the offset — and both defects
+leave those perfectly correct. Measured with the fault put back:
+
+```
+regex=false   found=true   match=21   hexselection=none
+```
+
+The search *worked*. It showed nothing. The probe now reports the selection too, which is the half
+that was missing, and the same reintroduction on the click path gives `hexselection=none` for the
+gutter and the right byte for the hex half — the reported asymmetry exactly.
+
+New: `listerhexclick`, which clicks the centre of a rendered column through the real `mouseDown` and
+reports which byte that selected. It is a round trip on purpose — the point comes from the
+formatter's layout, the byte comes back from the view's mapping — so a disagreement between them
+shows up as the wrong byte rather than as nothing at all. Scenarios `hex-gutter-select` and
+`hex-find-highlight` hold both, 124 with reports now.
+
 ## 2026-09-03 — the colour audit found what the screenshots could not
 
 Closing out the strings panel. Two gaps were named at the end of the session; one of them was not a
