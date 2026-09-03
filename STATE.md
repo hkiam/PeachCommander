@@ -12,8 +12,8 @@
 | Current iteration | **0.7.3 — released 2026-08-25** — formats leave the core. Markdown *and* HTML are now drawn by a plugin (F-464…F-470) on all four surfaces that show a file — F3, the preview panel, Quick View and the gallery — which needed the lister ABI to grow first: it could describe one surface and the host has four, so PLX gained `ListLoadEx` with the host's services table, `ListGetOutline`, `ListGotoAnchor` and `ListGetText`, all optional and append-only, tested on the sample lister before any real plugin used them. Inside the plugin the constraints that had kept diagrams and mathematics out of the core no longer bind: Mermaid and KaTeX ship *inside* the bundle and are injected as user scripts only when the document needs them, so nothing is ever fetched and an ordinary README loads no JavaScript at all, and `swift-markdown` replaced five hand-written renderers. The security posture is the part that had to survive the move and did: two WebView configurations, never one with a switch — scripting is on only for the page the plugin generated itself and stays off for a foreign `.html` — raw HTML inside a Markdown file is escaped rather than emitted, and the no-network rule list is installed inside the compile completion because a rule list that fails to compile fails *open*. Alongside it: searching inside archives now means every archive the app can open rather than the zip family only, says which ones it could not read instead of passing over them, leaves no extracted copies behind, and no longer reads a tar quadratically (F-463); Amazon S3 as a drive, signed against AWS's own test vectors (F-453…F-459); the assistant ships switched off, summarises a whole file however long, searches the whole disk for one, takes back what it did, and can have a plan agreed to a line at a time (F-446…F-451); and the documentation site stopped asking Google and GitHub who was reading it (F-471). Previously **0.7.2 — released 2026-08-19** — the Git plugin, assessed and then built out in six stages (F-415…F-423): the four defects the assessment found first (a subdirectory's file reported the parent repository's status, a rename shifted every status after it, a non-ASCII path came back blank, `push` could wait forever on a terminal this process does not have), then the panel with the host's compare window as its diff, the history with a lane graph and blame, branches/stashes/sync with a way out, `.gitignore` management, revert and cherry-pick, a column that follows a linked worktree and a submodule, a conflict resolver on the file's own markers, credential *diagnosis* that stores nothing, "open on the web" without an API, and a rebase bounded to the commits ahead of the upstream. Four things were argued down rather than built: a merge editor with base and result panes, credential storage of any kind, the GitHub/GitLab API, and status *icons* (a glyph instead, since the content ABI returns strings). The host gained asynchronous plugin commands with progress and cancel (F-422), where two traps sat one level apart: every host service asserted it was on the main actor — off-main `assumeIsolated` traps — and awaiting the command merely moved the block from the main thread to its caller. Previously **0.7.1 — released 2026-08-18** — a round of reported defects, four of them losing something rather than looking wrong: a Total Commander `.mnu` that could not be read at all (encoding + CRLF, the same fix for `.bar`/`usercmd.ini`/`wincmd.ini`), a CSV whose first record vanished into the column headers, every valid JSON Lines file reported as broken, and hardlinked files in a cpio/initramfs image listed as 0 bytes while opening with their full contents. Plus the freeze a reader hit while the work was in progress: formatting a 2 MB log with very long lines took 193,934 ms to draw thirty lines, now 126 ms. Previously **0.7.0 — released 2026-08-16** — a read-only plugin that opens filesystem images the way archives open (F-403): SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32, exFAT, NTFS, plus MBR and GPT partition tables. Router firmware with no partition table is carved — the filesystems are found by searching for them and confirmed by opening each one — and the bootloader, kernel and vendor header around them are listed and extractable. Every reader is written here from its published layout rather than vendored, for licence reasons; only zstd's own single-file decoder (BSD-3) is taken in. Reviewing it turned up three integer-overflow crashes reachable from a crafted image, one of them older than the plugin, and a mutation corpus that structurally could not reach the code it was meant to guard. That in turn exposed F-230: the crash guard caught the four faults C code raises and none of the ways Swift fails, so a trapping plugin took the whole app down. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **114 scenarios with reports** (`macro-confirm`, `macro-ask`, `macro-record` and `macro-manager` are new with F-478) (`side-panel-tabs` is new with F-476) (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 128 of 128 green (2026-08-28)** — after `plugin-context-menu` was found to be naming the wrong plugin and passing only by riding a one-time migration; see the F-478 review entry. Previously **122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
-| Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-09-03 |
+| Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. `Tools/check-inventory.py` reports **rows=241 evidence_ok=744 problems=0 done_without_evidence=0** (2026-09-03): the backlog this line used to track — 87 rows without a pointer, then 67 after the sweep of 2026-08-07/08 — is closed. Read the numbers from the gate rather than from here; this row said 67 for weeks after it had stopped being true, and a plan was nearly made from it. **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
+| Last updated | 2026-09-04 |
 | Released | **0.8.2 (build 17), 2026-09-02** — a file inside an archive can be previewed and opened, which is what was reported, plus the thing working out why led into: three parts of the window read a file because the cursor landed on it and none of them had ever asked what that costs — only whether the path existed, which is the wrong question on a network share, on a cloud file that has not been downloaded, and inside an archive. Gallery view on a share used to read every file in the folder over the wire. It asks first now and answers in seconds rather than megabytes, measuring the connection as it goes; the limits are under Configuration ▸ Edit/View and there is a help topic in nineteen languages. Underneath, reading a member no longer needs it to fit in memory: 400 MB out of a ZIP cost 588 MB before and 151 MB now. Unsigned, as every build so far. Previously **0.8.1 (build 16), 2026-08-29** — macros worked through against the three things the first person to use them ran into: a recorder with two ends you press yourself instead of a list of the last thirty things; the "nothing has happened yet" it told somebody who had just made three folders, because what you do by hand is read out of a history that can be switched off; and one file per macro, since a macro is a thing people hand to each other and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs every macro in the file. Plus Export…/Import…, Run in the macro window, Shift+F4 recordable through a non-overwriting `create_file`, and a recording that survives a quit. Unsigned, as every build so far. Previously **0.8.0 (build 15), 2026-08-29** — the assistant split in two, AppleScript and JavaScript run *by* the app, the side panel's pages switch off, and macros: a named sequence of file actions built from what you just did — in the panels as well as through the assistant — that asks for a value when it needs one, is held to the most demanding thing in it, and is shown to you as rows in your own language before any of it runs. Eight worked examples ship with it. Unsigned, as every build so far. Previously **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1587 keys × 19) + all shipping plugins + the **full in-app Help Book (54 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=54 · ui_strings=1587 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,99 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-09-04 — the full suite, and the rest of the viewer/editor seam
+
+**The full VM run is green with everything in it.** 141 measured views, **zero** Auto Layout
+conflicts anywhere, no wrong or empty report, `hotkeys problems=0`, exit 0 — the five scenarios added
+the day before now run in suite order, where settings persist between scenarios and the run catches
+what a single one cannot.
+
+Then the rest of the seam the three reports came from, walked deliberately. The comparison worth
+making is not a grep: both windows *declare* what they offer in `DocumentMenuCaps`, and the
+differences are readable there.
+
+* **The editor had neither Save As nor Print**, while the read-only viewer had both (F-121). Both
+  added. Save As is a **move**: the window goes on editing the new file. The viewer's meaning of the
+  same command is an export, which is right for a read-only window and would be a trap in an editor —
+  you would save under a new name, keep typing, and every later ⌘S would go back to the file you
+  thought you had left. `path` became a `var` for it; nothing derived from it is cached, which is
+  what made that safe.
+* **`onSaved?()` is deliberately not fired by Save As**, which I got wrong first. That callback means
+  "the file you gave me was written", and after a Save As it was not: the host uses it to reload a
+  menu file and, in the rename-by-editor flow (F-174), to apply a temporary file's contents. Telling
+  either of them a save happened would set them on a file this window has just stopped editing.
+* **Next / Previous Mark in the viewer.** Two backends, because marks have two: character ranges in
+  the NSTextView path, (line, column) in the virtual views, where the topmost visible line stands in
+  for a caret.
+* **Find Previous now appears in the viewer's menu.** The command was implemented and Shift+F3 wired;
+  only the flag was missing.
+
+**Two things the harness could not see, now it can.** A save panel is a system sheet and stops a
+scripted run dead, so Save As is split at the point where the destination is known and `editsaveas`
+drives the half worth testing — `moved=1` and `original-untouched=1` are the claim. And `menudump`
+reads `NSApp.mainMenu`, which a document window only reaches by becoming key, which in a scripted run
+it never does: it had always been reporting the *main window's* menus, so nothing had ever verified a
+document window's own. `listermenudump` reads what the window offers, and prints modifiers, because a
+dump that shows `key=g` for both ⌘G and ⇧⌘G invents a collision.
+
+`hex-goto` and `editor-save-as` are green in the VM, 0 conflicts.
+
+**Not done, and not mine to decide: line notes in the editor.** The editor is not wired to the Notes
+plugin at all — no display, no creation. Creating would be four lines; displaying collides, because
+`setAnnotations(_:title:)` *replaces* the gutter's annotations wholesale, with one title and one
+click handler, and the plugin annotations from F-426 (Git blame and the like) already hold that slot.
+Notes and blame cannot share it. The three ways out — the gutter learning several sources, notes
+taking the slot only when no plugin fills it, or notes living somewhere else in the editor — are a
+product decision about a shared control, and shipping only the creating half would let people make
+notes they cannot see in that window.
+
+## 2026-09-03 — the five scenarios actually run, and two more from the same seam
+
+**The scenarios added this session now have a VM run behind them.** They were verified locally
+against the same verbs and fixtures, which is not the same thing — the harness is where settle times,
+three levels of shell quoting on the guest and report timing are decided. All five green, no Auto
+Layout conflicts, `hotkeys` clean:
+
+```
+viewer-find-formatted   report ok (regex=true)      0 conflict(s)
+viewer-find-highlight   report ok (regex=false)     0 conflict(s)
+hex-gutter-select       report ok (clickedcolumn=ascii/3)  0 conflict(s)
+hex-find-highlight      report ok (regex=false)     0 conflict(s)
+hex-strings             report ok (scanwaitms=50)   0 conflict(s)
+```
+
+One thing to know about `--only`: it rewrites `report.md` with just the scenarios it ran, so that
+file must not be committed from a partial run. Restored, and the full suite regenerates it.
+
+**Two more asymmetries, from going through the pair on purpose.** The three reports that started this
+all came from the same observation — the viewer and the hex editor doing the same job, one of them
+right — so the seam was walked rather than waited on.
+
+* **⌘C was greyed out in the hex representation.** `canCopyText` asks whether the content view is a
+  `ViewerTextProviding` and `HexListerView` was not one, so the key did nothing while the context
+  menu offered four ways to copy the same selection. It conforms now: `selectedText` is the
+  selection as spaced hex, which is what ⌘C produces in the editor. Observable in the existing
+  probe, which reports `selectedtext=` for any view that provides one — every hex search report
+  earlier in this session lacked that line, which is the before-measurement without needing a
+  reintroduction.
+* **Go To scrolled without marking.** Sixteen identical-looking bytes to a row, so it answered
+  "somewhere on this line". The editor's Go To has always put its caret on the byte. Defect back:
+  `hexselection=none`; fixed: `hexselection=0000002d-0000002d`.
+
+`listergoto` is new, mirroring the editor's probe from F-400. That the viewer's own Go To had no
+probe at all is part of why it could half-work for this long.
+
+**Two things deliberately left, so they are decisions rather than oversights.** ⌘A stays greyed in
+the custom lister views — the Edit menu says so explicitly and it is the right call here, because
+selecting the whole file would route around the copy-everything size guard, which only applies when
+*nothing* is selected. And the viewer's hex view has no keyboard caret: it is a viewer, and the
+editor's caret exists because you type into it.
+
+**A recommendation of mine was out of date.** I proposed an evidence sweep over "67 `done` rows
+without a pointer", read from the Parity inventory row above. `Tools/check-inventory.py` reports
+`rows=241 evidence_ok=744 problems=0 done_without_evidence=0` — the backlog is closed and that row
+had been stale for weeks. Corrected, with a note to read the numbers from the gate.
 
 ## 2026-09-03 — searching a document the file no longer matches
 

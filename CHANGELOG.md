@@ -16,6 +16,17 @@ does not have.
 
 ### Added
 
+- **The editor can Save As and Print.** The read-only viewer had both and the editable window had
+  neither, which is the wrong way round: you could view a file and print it, but not print the one
+  you were editing, nor put your changes under a different name. Save As here is a *move*, not the
+  viewer's export — the window goes on editing the new file, so the next ⌘S lands there. The
+  alternative would be a trap: save under a new name, keep typing, and quietly write to the file you
+  thought you had left behind.
+
+- **Next and Previous Mark in the viewer.** Mark All has always highlighted every occurrence there;
+  reaching them meant clicking rows in the marks panel, because the two commands that step through
+  them existed only in the editor.
+
 - **A Windows path pasted into Go to Folder now goes there.** `\\server\share\folder` was only ever
   understood by Connect to Server; typed into Go to Folder or the path bar it went down the
   *relative* branch, came back as `<current folder>/\\server\share\folder`, and was reported as not
@@ -47,6 +58,19 @@ does not have.
   of this change.
 
 ### Fixed
+
+- **Find Previous is in the viewer's menu.** Shift+F3 had always worked — the command is
+  implemented and the key handler calls it — but the menu never listed it, so it was reachable only
+  by knowing it was there.
+
+- **Copy works on a hex selection, and Go To marks the byte it went to.** Two more of the same
+  asymmetry between the viewer and the hex editor, found by going through the pair deliberately
+  rather than waiting for them to be reported. ⌘C was greyed out in the hex representation
+  altogether — the context menu offered four ways to copy a selection and the obvious key did
+  nothing, which got worse once the gutter became selectable and search hits started being
+  selected, since both end in a selection whose natural next step is ⌘C. And Go To scrolled to the
+  row without marking anything, so asking for offset 0x1234 answered "somewhere on these sixteen
+  bytes"; the hex editor has always put its caret on the byte.
 
 - **A search after Format looks in what is on screen, not in the file.** Press Format and the view
   shows the formatter's output; the search kept reading the file underneath it, so it reported hits
