@@ -149,6 +149,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var textEncoding: TextEncodingChoice?
     /// True when the text view is showing pretty-printed JSON/XML.
     private var isFormatted = false
+    /// The text on screen when it is *not* the file: what the Format button produced, or an XPath
+    /// result list.
+    ///
+    /// Search has to run over this rather than over the file. It used to run over the file either
+    /// way, which was harmless while a hit was only scrolled to and approximately placed — and
+    /// stopped being harmless the moment hits started being selected: the offsets point into bytes
+    /// the reader is no longer looking at, so the highlight landed somewhere arbitrary, and a term
+    /// the formatter introduced (or removed) was reported found (or not) against the wrong text.
+    ///
+    /// Held as a `String` because that is what the formatter handed over — storing it is a retain
+    /// rather than a copy. The UTF-8 bytes the views index by are made once, on the first search.
+    private var displayedText: String?
+    private var displayedBytesCache: [UInt8]?
     /// Which formatter produced the current output, shown in the status line. Worth
     /// surfacing because the winning formatter depends on what is installed and
     /// configured — otherwise "formatted" would look inconsistent between machines.
@@ -1143,6 +1156,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         teardownMedia()
         isFormatted = false
         formatterUsed = nil
+        displayedText = nil
+        displayedBytesCache = nil
 
         if mode == .plugin {
             if embedPlugin(for: path, slice: slice) {
@@ -2012,6 +2027,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         contentView = view
         isFormatted = true
         formatterUsed = result.formatter
+        setDisplayedText(result.text)
         updateStatus()
     }
 
@@ -2043,6 +2059,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 self.scrollView.documentView = view
                 self.contentView = view
                 self.isFormatted = true
+                self.setDisplayedText(out)
                 self.statusLabel.stringValue = String(format:
                     NSLocalizedString("XPath: %@   %d match(es)", comment: ""), query, matches.count)
             } catch {
@@ -2201,6 +2218,21 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
             return
         }
+        // Formatted output, or an XPath result: what is on screen is not the file, so that is what
+        // gets searched. Searching the file here would report hits at offsets into bytes the reader
+        // cannot see.
+        if displayedText != nil {
+            guard let hit = searchDisplayed(from: Int(searchOffset), forward: true) else {
+                NSSound.beep()
+                searchOffset = 0
+                return
+            }
+            searchOffset = Int64(hit.offset) + 1
+            lastMatchOffset = Int64(hit.offset)
+            (contentView as? ListerScrollable)?
+                .showMatch(byteRange: Int64(hit.offset) ..< Int64(hit.offset + hit.length))
+            return
+        }
         guard let slice else { return }
         let match = lastRegex.map {
             ChunkRegexSearcher.search($0, in: slice, from: searchOffset, encoding: searchEncoding)
@@ -2214,6 +2246,73 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             NSSound.beep()
             searchOffset = 0
         }
+    }
+
+    /// Adopt text that replaced the file on screen, and start its search from the top.
+    ///
+    /// The offset is reset because it counted bytes into the *file*: carrying it over would start
+    /// the next search partway into a document it was never measured against.
+    private func setDisplayedText(_ text: String) {
+        displayedText = text
+        displayedBytesCache = nil
+        searchOffset = 0
+        lastMatchOffset = -1
+    }
+
+    /// The UTF-8 bytes of what is on screen — which is what both virtual text views index by.
+    private var displayedBytes: [UInt8] {
+        if let cached = displayedBytesCache { return cached }
+        let made = Array((displayedText ?? "").utf8)
+        displayedBytesCache = made
+        return made
+    }
+
+    /// Find `lastNeedle` (or `lastRegex`) in the text on screen rather than in the file.
+    ///
+    /// Bounded and already in memory, so there is no chunking here and no maximum match length —
+    /// the two things the file searchers exist to manage. A regular expression therefore also
+    /// yields a real match *length*, which the chunked path cannot report.
+    private func searchDisplayed(from: Int, forward: Bool) -> (offset: Int, length: Int)? {
+        guard let text = displayedText else { return nil }
+        guard let regex = lastRegex else {
+            let bytes = displayedBytes
+            if forward {
+                return ChunkSearcher.firstIndex(of: lastNeedle, in: bytes, from: from,
+                                                caseInsensitive: searchCaseInsensitive)
+                    .map { ($0, lastNeedle.count) }
+            }
+            return ChunkSearcher.lastIndex(of: lastNeedle, in: bytes, upTo: from,
+                                           caseInsensitive: searchCaseInsensitive)
+                .map { ($0, lastNeedle.count) }
+        }
+        // Compare in UTF-16, which is what NSRegularExpression reports, and convert only the match
+        // that wins. Converting every candidate would be a walk of the whole document per match.
+        guard let threshold = utf16Location(ofUTF8: from, in: text) else { return nil }
+        let ns = text as NSString
+        var chosen: NSRange?
+        regex.enumerateMatches(in: text, options: [],
+                               range: NSRange(location: 0, length: ns.length)) { match, _, stop in
+            guard let range = match?.range, range.location != NSNotFound else { return }
+            if forward {
+                if range.location >= threshold { chosen = range; stop.pointee = true }
+            } else if range.location < threshold {
+                chosen = range                     // keep the last one before the threshold
+            } else {
+                stop.pointee = true
+            }
+        }
+        guard let range = chosen, let swiftRange = Range(range, in: text) else { return nil }
+        let start = text.utf8.distance(from: text.startIndex, to: swiftRange.lowerBound)
+        let end = text.utf8.distance(from: text.startIndex, to: swiftRange.upperBound)
+        return (start, Swift.max(1, end - start))
+    }
+
+    /// The UTF-16 offset that a UTF-8 byte offset points at, or nil if it lands mid-character.
+    private func utf16Location(ofUTF8 offset: Int, in text: String) -> Int? {
+        guard let byteIndex = text.utf8.index(text.utf8.startIndex, offsetBy: offset,
+                                              limitedBy: text.utf8.endIndex),
+              let index = byteIndex.samePosition(in: text) else { return nil }
+        return text.utf16.distance(from: text.startIndex, to: index)
     }
 
     /// The bytes a match covers.
@@ -2246,6 +2345,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if mode == .plugin, let pv = pluginView {
             let needle = String(bytes: lastNeedle, encoding: .utf8) ?? ""
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
+            return
+        }
+        if displayedText != nil {
+            // `lastMatchOffset` starts at -1, which as a bound means "before the beginning" and
+            // would find nothing; from the end is what Shift+F3 means before anything was found.
+            let bound = lastMatchOffset >= 0 ? Int(lastMatchOffset) : displayedBytes.count
+            guard let hit = searchDisplayed(from: bound, forward: false) else {
+                NSSound.beep()
+                return
+            }
+            lastMatchOffset = Int64(hit.offset)
+            searchOffset = Int64(hit.offset) + 1
+            (contentView as? ListerScrollable)?
+                .showMatch(byteRange: Int64(hit.offset) ..< Int64(hit.offset + hit.length))
             return
         }
         guard let slice else { return }

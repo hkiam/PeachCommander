@@ -355,6 +355,25 @@ SCENARIOS = [
     #
     # The fitted percentage is deliberately not asserted: it depends on the window, which depends on the
     # screen. `docFrame` is the fixture's own 3000x2000 and does not.
+    # Search after the Format button. What is on screen is then the formatter's output, not the
+    # file — so searching the file reports a hit at an offset into bytes the reader cannot see, and
+    # the highlight lands on whatever occupies that offset in the formatted text. Measured with the
+    # fault put back: `selectedtext=e333",` for a search that said it had found FINDMEHERE.
+    #
+    # The offset is deliberately not asserted. The formatter is jq where it is installed and the
+    # built-in JSONSerialization where it is not, and the two indent differently — pinning a number
+    # would make this a test of which tools the guest has. The selected *text* is the claim, and it
+    # is the whole claim: if the search ran against the file, whatever gets highlighted is not the
+    # needle.
+    #
+    # Both branches of the in-memory search run, literal and regular expression, and the pattern one
+    # is gated because it is the newer path: over a document already in memory there is no chunking
+    # and no maximum match length, so it reports a real match length where the file path assumes one.
+    ("viewer-find-formatted", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                               "view /Users/admin/pc-demo/minified.json", "wait 2000",
+                               "listerformat /Users/admin/vff-format.txt", "wait 2500",
+                               "listerfind FINDMEHERE|0|/Users/admin/vff-literal.txt", "wait 800",
+                               "listerfind FIND.EHERE|1|/Users/admin/vff-regex.txt", "wait 800"], 20),
     # The same gap as the two hex reports, in the other two views that scroll by byte offset:
     # `findNext` scrolled to its hit and highlighted nothing. Both are exercised over one file,
     # because past 4 MiB the code representation is `CodeListerView` and the text representation is
@@ -2224,6 +2243,12 @@ REPORTS = {
     # palette for four commits, because nobody had asked the audit about a view that has to be opened
     # first), and the dock's terminal. `windows=` stays in the dump, where it is worth reading and
     # costs nothing when it moves.
+    # `selectedtext` is the whole claim: with the search running against the file instead of the
+    # formatted text this read `selectedtext=e333",` — a fragment of another value, for a search
+    # that reported success. `regex=true` confirms the pattern branch was the one taken.
+    "viewer-find-formatted": ("/Users/admin/vff-regex.txt",
+                              ["regex=true", "found=true", "contentview=CodeListerView",
+                               "selectedtext=FINDMEHERE"]),
     # `contentview=` names which view answered: the whole claim is about the virtual views, and a
     # file that slipped under the 4 MiB threshold would be answered by an NSTextView that highlights
     # for entirely different reasons. `!selectedtext=MEHERE` is the defect verbatim.
@@ -3029,6 +3054,13 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # Minified onto one line, so formatting moves every offset in it a long way:
+                  # the needle sits at byte 7791 in the file and around 9400 once expanded. A search
+                  # after Format that still reads the file therefore highlights whatever happens to
+                  # live at 7791 in the formatted text, which is a fragment of another value.
+                  "python3 -c \"import json; o={'key%d'%i:'value%d'%i for i in range(400)}; "
+                  "o['marker']='FINDMEHERE'; "
+                  "open('pc-demo/minified.json','w').write(json.dumps(o,separators=(',',':')))\" && "
                   # Past 4 MiB, so the viewer's *virtual* text views take over from the NSTextView
                   # — those are the ones that scroll by byte offset and had to learn to show a
                   # search hit. The needle sits behind umlauts ON ITS OWN LINE, which is the only
