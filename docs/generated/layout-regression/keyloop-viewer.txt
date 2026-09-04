@@ -3,8 +3,9 @@ fullKeyboardAccess: true
 focused: ListerContainerView
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: ListerContainerView
-focusRefused: 8
+focusRefused: 11
   REFUSES: NSButton | Symbols / Symbols accepts=false hidden=false enabled=false refuses=false
+  REFUSES: NSButton | Strings / Strings accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Minimap / Button accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
@@ -13,10 +14,12 @@ focusRefused: 8
 Name:     Archives
 Files:    3
 Folders:  0
-Size:     0.8 KB  (801 bytes) accepts=false hidden=false enabled=true refuses=false
+Size:     0.8 KB  (802 bytes) accepts=false hidden=false enabled=true refuses=false
   REFUSES: NSButton | Hide accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | Close accepts=true hidden=false enabled=true refuses=false
   REFUSES: MarksTableView accepts=true hidden=false enabled=true refuses=false
+  REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
   tab[1]: ListerContainerView
   tab[2]: NSPopUpButton | Auto
   tab[3]: NSButton | Find / Find
@@ -30,6 +33,12 @@ Size:     0.8 KB  (801 bytes) accepts=false hidden=false enabled=true refuses=fa
   tab[11]: NSScrollView
   tab[12]: NSClipView
   tab[13]: NSOutlineView | Symbols
+  tab[14]: NSSearchField | Filter strings
+  tab[15]: NSTextField | Minimum string length / 4
+  tab[16]: NSPopUpButton | Encodings / Encodings
+  tab[17]: NSScrollView
+  tab[18]: NSClipView
+  tab[19]: NSTableView | Strings
 loopClosed: true
 unreachable: 0
 unlabelled: 0
