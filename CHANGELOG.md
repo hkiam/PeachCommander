@@ -16,6 +16,13 @@ does not have.
 
 ### Added
 
+- **Per-line notes in the editor.** The viewer has had them since F-379; the editor could neither
+  show nor write one. They appear in its marks panel as their own group, with the line's text as the
+  row and a click that puts the caret there — which is where the viewer has always shown them, and
+  deliberately not in the gutter: that holds one set of annotations with one title and one click
+  handler, and a plugin's per-line annotations already occupy it, so a note and a blame line would
+  have had to evict each other.
+
 - **The editor can Save As and Print.** The read-only viewer had both and the editable window had
   neither, which is the wrong way round: you could view a file and print it, but not print the one
   you were editing, nor put your changes under a different name. Save As here is a *move*, not the

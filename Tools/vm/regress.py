@@ -405,6 +405,18 @@ SCENARIOS = [
     # nothing, so the reader was left to find it by eye on a screen where every row looks like every
     # other row. `listerfind` now reports the *selection* as well as the offset — asserting only the
     # offset is how a search that found the right byte and showed nothing passed for working.
+    # Per-line notes in the editor (F-379), which had none: not shown, not writable. They live in the
+    # marks panel, not in the gutter — the gutter holds one set of annotations with one title and one
+    # click handler, and a plugin's per-line annotations (F-426) already occupy it, so a note and a
+    # blame line would evict each other. The panel has groups, which is what two sources of per-line
+    # interest need, and it is where the *viewer* has always shown them.
+    #
+    # The fixture is the one `viewer-note-write` uses: `annotated.txt` with a note seeded against its
+    # third line. `notekey=` checks the other half — that the caret's line is the line a note would be
+    # bound to, where an off-by-one would tie every note to its neighbour.
+    ("editor-notes", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "editnotes /Users/admin/pc-demo/annotated.txt|2|"
+                      "/Users/admin/editor-notes.txt", "wait 1800"], 16),
     # Save As in the *editor*, which had neither Save As nor Print while the read-only viewer had
     # both. It is a move, not an export: after it the window edits the new file, so the next ⌘S goes
     # there — the opposite behaviour would be a trap, since you would save under a new name, keep
@@ -2285,6 +2297,12 @@ REPORTS = {
     # search found the right byte (`match=21`, decimal) and the view is showing it. With the fix
     # reverted this same report reads `found=true` with `hexselection=none`, which is exactly the
     # shape the old assertion could not see.
+    # The seeded note is on line 3 and reaches the panel as its own group, with the line's text as
+    # the row. `notekey` names line 2, which is where the caret was put.
+    "editor-notes": ("/Users/admin/editor-notes.txt",
+                     ["notesbridge=1", "file=annotated.txt",
+                      "notekey=/Users/admin/pc-demo/annotated.txt#L2",
+                      "marksgroup=Notes count=1", "mark line=3", "the annotated line"]),
     # `moved=1` is the whole claim: the window is editing the new file afterwards.
     # `original-untouched=1` is its other half — the file it started on does not contain the typed
     # text, so this really was a Save As and not a Save with an extra copy.

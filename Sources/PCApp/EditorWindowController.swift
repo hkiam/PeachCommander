@@ -58,6 +58,18 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private var language: SyntaxLanguage?
     private var isDirty = false
     private var didBackup = false
+    /// Lines of this file that carry a note (F-379), ascending.
+    ///
+    /// Shown in the marks panel, not in the gutter. That is the viewer's arrangement and it is the
+    /// right one here for a concrete reason: the gutter holds one set of annotations at a time — a
+    /// single title and a single click handler — and a plugin's per-line annotations (F-426, blame
+    /// and the like) already live there. A note and a blame line would have to evict each other. The
+    /// marks panel has groups, which is exactly what two sources of per-line interest need.
+    private var annotatedLines: [Int] = []
+    /// Set when the user asked for a note, so the panel opens once the note actually exists.
+    private var wantsAnnotationPanel = false
+    /// Group id for the annotations, outside the mark backend's range — the viewer uses the same.
+    private static let notesGroupID = -1
     private var highlightWork: DispatchWorkItem?
 
     // Collapsible symbol outline sidebar (classes/functions/methods via tree-sitter).
@@ -408,6 +420,37 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
             + "--- text ---\n" + onDisk
     }
 
+    /// Diagnostic: what the marks panel holds — the notes group included.
+    ///
+    /// Awaits the note lookup rather than sampling whatever happens to be cached: the bridge answers
+    /// asynchronously, so a dump taken straight after opening the window reports no notes over a file
+    /// that has them, which reads as the feature not working and is the harness measuring itself.
+    func automationMarksDump() async -> String {
+        if let bridge = ListerNoteBridge.shared {
+            annotatedLines = await bridge.annotatedLines(path)
+        }
+        var lines = ["notesbridge=\(ListerNoteBridge.shared != nil ? 1 : 0)",
+                     "file=\((path as NSString).lastPathComponent)"]
+        for group in marksPanelGroups() {
+            lines.append("marksgroup=\(group.term) count=\(group.occurrences.count)")
+            for occurrence in group.occurrences {
+                lines.append("  mark line=\(occurrence.line) text=\(occurrence.text.prefix(60))")
+            }
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Diagnostic: put the caret on `line` and report the key a note would be written under.
+    ///
+    /// The key rather than the note: the note editor is the plugin's own window and saves when the
+    /// user says so, so nothing is on disk to read straight afterwards. What is worth checking here
+    /// is the editor's half — that the caret's line is the line named — and an off-by-one there
+    /// would bind every note to its neighbour.
+    func automationNoteKey(forLine line: Int) -> String {
+        revealLine(line)
+        return "\(path)#L\(caretLine())"
+    }
+
     /// Diagnostic: type `text`, then Save As to `destination`, and report where the document ended up.
     ///
     /// Goes through `completeSaveAs`, which is everything the command does once a destination is
@@ -567,6 +610,67 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Toggle the docked marks panel (show at default height / collapse).
     @objc func menuMarksList() { marks.toggle() }
+
+    // MARK: - Per-line notes (F-379)
+
+    /// Write a note about the line the caret is on.
+    @objc func docNote() {
+        guard let bridge = ListerNoteBridge.shared else { NSSound.beep(); return }
+        bridge.editNote("\(path)#L\(caretLine())")
+        // The note editor is its own window, not a sheet, so there is nothing to wait for: the note
+        // appears when the user comes back here. Showing the panel now would show it empty.
+        wantsAnnotationPanel = true
+    }
+
+    /// The 1-based line the caret is on.
+    private func caretLine() -> Int {
+        EditorLineIndex(text: textView.string as NSString)
+            .line(containing: textView.selectedRange().location)
+    }
+
+    /// Re-read which lines carry a note. Cheap enough to do whenever this window comes forward,
+    /// which is the moment a note written in the other window can have appeared.
+    private func refreshAnnotations() {
+        guard let bridge = ListerNoteBridge.shared else {
+            annotatedLines = []
+            wantsAnnotationPanel = false
+            return
+        }
+        let file = path
+        Task { @MainActor [weak self] in
+            let lines = await bridge.annotatedLines(file)
+            guard let self, self.path == file,
+                  lines != self.annotatedLines || self.wantsAnnotationPanel else { return }
+            self.annotatedLines = lines
+            // Open the panel only when a note was asked for and one is now there; a file that merely
+            // happens to carry notes would otherwise rearrange the window every time it is opened.
+            let asked = self.wantsAnnotationPanel
+            self.wantsAnnotationPanel = false
+            if asked, !lines.isEmpty { self.marks.show() }
+            else if !self.marks.isHidden { self.marks.reload() }
+        }
+    }
+
+    /// A little of each annotated line, so the panel reads as text rather than as numbers.
+    private func lineSnippets(for lines: [Int]) -> [String] {
+        let ns = textView.string as NSString
+        let starts = EditorLineIndex(text: ns).starts
+        return lines.map { line in
+            guard starts.indices.contains(line - 1) else { return "" }
+            let range = ns.lineRange(for: NSRange(location: starts[line - 1], length: 0))
+            return ns.substring(with: range).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+    }
+
+    /// Put the caret on a 1-based line and show it.
+    private func revealLine(_ line: Int) {
+        let ns = textView.string as NSString
+        let starts = EditorLineIndex(text: ns).starts
+        guard starts.indices.contains(line - 1) else { return }
+        let selection = NSRange(location: starts[line - 1], length: 0)
+        textView.setSelectedRange(selection)
+        textView.scrollRangeToVisible(selection)
+    }
 
     @objc func menuNextMark() {
         guard let r = markController.nextMark(after: textView.selectedRange().location) else { NSSound.beep(); return }
@@ -1084,6 +1188,12 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     // MARK: - Close
 
+    /// Coming back to this window is the moment a note written in the note editor can have appeared —
+    /// that editor is a separate window, so there is nothing to await when the note is requested.
+    func windowDidBecomeKey(_ notification: Notification) {
+        refreshAnnotations()
+    }
+
     func windowShouldClose(_ sender: NSWindow) -> Bool {
         guard isDirty else { return true }
         switch DocumentFile.confirmClose(name: (path as NSString).lastPathComponent) {
@@ -1110,6 +1220,9 @@ extension EditorWindowController: WindowContextMenuProviding {
     private var documentCaps: DocumentMenuCaps {
         var c = DocumentMenuCaps()
         c.editable = true
+        // Only when the Notes plugin is installed: a menu item that can do nothing is worse than no
+        // menu item.
+        c.note = ListerNoteBridge.shared != nil
         // The read-only window had both of these and the editable one had neither, which is the wrong
         // way round: you could view a file and print it, but not print the one you were editing, nor
         // put your changes under a different name.
@@ -1362,13 +1475,42 @@ final class EditorCodeTextView: NSTextView {
 }
 
 extension EditorWindowController: MarksPanelHost {
-    func marksPanelGroups() -> [MarksGroupVM] { markController.panelGroups() }
+    /// Notes first, then the search marks. They were written on purpose and outlive the session,
+    /// unlike a search's highlights — the same order and the same group id the viewer uses.
+    func marksPanelGroups() -> [MarksGroupVM] {
+        let backend = markController.panelGroups()
+        guard !annotatedLines.isEmpty else { return backend }
+        let snippets = lineSnippets(for: annotatedLines)
+        let notes = MarksGroupVM(id: Self.notesGroupID, term: String(localized: "Notes"),
+                                 color: .systemYellow,
+                                 occurrences: zip(annotatedLines, snippets).map {
+                                     MarksOccurrenceVM(line: $0, text: $1)
+                                 })
+        return [notes] + backend
+    }
     func marksPanelReveal(groupID: Int, occurrenceIndex: Int) {
+        if groupID == Self.notesGroupID {
+            guard annotatedLines.indices.contains(occurrenceIndex) else { return }
+            revealLine(annotatedLines[occurrenceIndex])
+            return
+        }
         markController.reveal(groupID: groupID, occurrenceIndex: occurrenceIndex)
     }
     func marksPanelRemoveOccurrence(groupID: Int, occurrenceIndex: Int) {
+        // Removing a note's *row* only takes it out of this list. The note itself belongs to the
+        // Notes plugin and is deleted there — throwing away something written on purpose because a
+        // row was tidied away would be the wrong kind of helpful.
+        if groupID == Self.notesGroupID {
+            guard annotatedLines.indices.contains(occurrenceIndex) else { return }
+            annotatedLines.remove(at: occurrenceIndex)
+            marks.reload()
+            return
+        }
         markController.removeOccurrence(groupID: groupID, at: occurrenceIndex)
     }
-    func marksPanelRemoveGroup(groupID: Int) { markController.removeGroup(groupID) }
-    func marksPanelClearAll() { markController.clearAll() }
+    func marksPanelRemoveGroup(groupID: Int) {
+        if groupID == Self.notesGroupID { annotatedLines = []; marks.reload(); return }
+        markController.removeGroup(groupID)
+    }
+    func marksPanelClearAll() { annotatedLines = []; markController.clearAll() }
 }

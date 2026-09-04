@@ -26,6 +26,46 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-04 — line notes in the editor, and the blocker that was my own assumption
+
+Asked for a recommendation on the one point left open, I went to look properly and found the
+recommendation contradicted the reason I had stopped.
+
+**I had assumed notes belong in the gutter**, because the gutter is the editor's only per-line
+annotation mechanism, and `setAnnotations(_:title:)` replaces its contents wholesale — one title, one
+click handler — with the F-426 plugin annotations already in that slot. That much is true. What is
+also true, and I had not checked, is that **the viewer has never used a gutter for notes**: it shows
+them in the *marks panel*, as a group with its own id (−1), a colour, and the line's text as each
+row. The editor is already a `MarksPanelHost`. There was no product decision to take; there was a
+precedent to follow.
+
+So notes go where they go in the viewer: `[notes] + backend` in `marksPanelGroups()`, the notes group
+intercepted in reveal/remove, `docNote()` binding to the caret's line, and a refresh when the window
+comes forward — the note editor is a separate window, so that is the moment a new note can exist.
+Removing a note's *row* takes it out of the list only; the note belongs to the plugin and is deleted
+there. Throwing away something written on purpose because a row was tidied away would be the wrong
+kind of helpful.
+
+Measured in the VM, over the fixture `viewer-note-write` already seeds:
+
+```
+notekey=/Users/admin/pc-demo/annotated.txt#L2
+notesbridge=1   file=annotated.txt
+marksgroup=Notes count=1
+  mark line=3 text=the annotated line
+```
+
+`notekey` is the half a list cannot show: the caret's line is the line a note binds to, and an
+off-by-one there would tie every note to its neighbour. It reports the key rather than the note
+because the note editor is the plugin's own window and saves when the user says so — there is nothing
+on disk to read straight afterwards.
+
+**Verified in the VM rather than locally, on purpose.** `NotesStore` builds its path from
+`applicationSupportDirectory` and ignores `-ConfigRoot` entirely, so an isolated local run is not
+isolated for notes — checking it here would have meant writing into the user's real note store. The
+harness already seeds the standard path inside a throwaway guest, which is the isolation this needed.
+Worth knowing before someone reaches for `-ConfigRoot` and believes it.
+
 ## 2026-09-04 — the full suite, and the rest of the viewer/editor seam
 
 **The full VM run is green with everything in it.** 141 measured views, **zero** Auto Layout
@@ -63,7 +103,9 @@ dump that shows `key=g` for both ⌘G and ⇧⌘G invents a collision.
 
 `hex-goto` and `editor-save-as` are green in the VM, 0 conflicts.
 
-**Not done, and not mine to decide: line notes in the editor.** The editor is not wired to the Notes
+**Line notes in the editor — closed in the entry above, and the reasoning below was wrong.** I read
+the gutter's single slot as a blocker without checking where the viewer actually puts notes, which is
+the marks panel. Left standing as written because the mistake is the useful part: The editor is not wired to the Notes
 plugin at all — no display, no creation. Creating would be four lines; displaying collides, because
 `setAnnotations(_:title:)` *replaces* the gutter's annotations wholesale, with one title and one
 click handler, and the plugin annotations from F-426 (Git blame and the like) already hold that slot.

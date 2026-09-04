@@ -202,6 +202,24 @@ extension MainWindowController {
             case "editvalidate": await editValidate(arg) // editvalidate <src>|<out> (F-412)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
+            case "editnotes":                           // editnotes <src>|<line>|<out> (F-379)
+                // Open `src` in the editor, write a note about `line` (0 = none), and dump what the
+                // marks panel then holds. Notes live there rather than in the gutter — see the
+                // editor's `annotatedLines`.
+                let n = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if n.count == 3 {
+                    let win = EditorWindowController(path: n[0])
+                    automationEditors.append(win)
+                    win.showWindow(nil)
+                    win.window?.makeKeyAndOrderFront(nil)
+                    try? await Task.sleep(nanoseconds: 800_000_000)
+                    var out = ""
+                    if let line = Int(n[1]), line > 0 {
+                        out += "notekey=\(win.automationNoteKey(forLine: line))\n"
+                    }
+                    out += await win.automationMarksDump()
+                    try? out.write(toFile: n[2], atomically: true, encoding: .utf8)
+                }
             case "editsaveas":                          // editsaveas <src>|<text>|<dst>|<out>
                 await editSaveAs(arg)
             case "editsave":   await editSave(arg)      // editsave <src>|<text>|<out> (F-387)
