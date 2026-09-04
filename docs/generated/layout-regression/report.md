@@ -41,6 +41,7 @@ only go down.
 | viewer-find-formatted | 0 | — | — | `viewer-find-formatted.png` |
 | viewer-find-highlight | 0 | — | — | `viewer-find-highlight.png` |
 | hex-gutter-select | 0 | — | — | `hex-gutter-select.png` |
+| editor-notes | 0 | — | — | `editor-notes.png` |
 | editor-save-as | 0 | — | — | `editor-save-as.png` |
 | hex-goto | 0 | — | — | `hex-goto.png` |
 | hex-find-highlight | 0 | — | — | `hex-find-highlight.png` |
