@@ -91,6 +91,7 @@ only go down.
 | big-listing | 0 | — | — | `big-listing.png` |
 | rename-escape | 0 | — | — | `rename-escape.png` |
 | rename-replace | 0 | — | — | `rename-replace.png` |
+| rename-s3-refused | 0 | — | — | `rename-s3-refused.png` |
 | rename-mount | 0 | — | — | `rename-mount.png` |
 | goup-unreadable | 0 | — | — | `goup-unreadable.png` |
 | history-back-gone | 0 | — | — | `history-back-gone.png` |
