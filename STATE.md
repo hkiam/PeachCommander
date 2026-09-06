@@ -138,10 +138,22 @@ window is frontmost — the automation-launched app activates itself. Which is t
 harness exists, and the reason to distrust a *local* run whose subject is a modal. There is no defect
 here: a rename a mount refuses is reported.
 
-What the alert does not say is *why*. `renameThroughFileSystem` collects failures as bare names, while
-the local path reports `name: reason`, and a `VFSError` has no user-facing text anywhere in the app to
-put there — mapping the cases into nineteen languages is its own piece of work, not a footnote to this
-one.
+What the alert did not say was *why* — `renameThroughFileSystem` collected failures as bare names
+while the local path reports `name: reason`, and no `VFSError` had user-facing text anywhere in the
+app. **Closed the same day:** the eight cases are sentences now, in nineteen languages, and the two
+refusals (EACCES, EPERM) are one message on purpose — on a mount that difference is the server's and
+naming it points the reader at something they cannot act on. `rename-s3-refused` holds it: the fixture
+bucket is anonymous, so a write comes back 403, and `modaldump` reads back
+
+```
+modal=true
+text=Rename
+text=1 file(s) were not renamed: ⏎ hello.txt: Access denied.
+```
+
+which is also the scenario that would have caught the wrong reading above. The reasons on the *local*
+path are still plain English literals in `RenameBatchPlan` — PCFoundation has no catalogue — and that
+is a separate gap, not this one.
 
 One tidy-up fell out of the string catalogue. `Replace "%@"?` already existed for the copy-conflict
 dialog with **straight** quotes — the only key in the catalogue that had them, against 56 with

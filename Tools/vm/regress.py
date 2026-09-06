@@ -1196,6 +1196,28 @@ SCENARIOS = [
                         "cmd cm_RenameOnly", "wait 2000",
                         "replaceanswersleft /Users/admin/rename-replace-asked.txt", "wait 300",
                         "dump /Users/admin/rename-replace.txt"], 18),
+    # What a mount says when it REFUSES a rename (F-081). The S3 fixture is deliberately a public,
+    # anonymous bucket, so a write comes back 403 — which makes it the one mount in this suite that
+    # refuses reliably, and therefore the place to hold the reporting honest.
+    #
+    # This scenario exists because I got it wrong: measuring locally, on a Mac somebody was typing on,
+    # I concluded the refusal was swallowed in silence and wrote that down. It is not — the alert is
+    # raised and it stays. `modaldump` is what settles that without hanging the run: it reads the
+    # modal's text and then dismisses it. Queued BEFORE the command, because its timer fires 1.5 s
+    # later and the alert has to be up by then.
+    #
+    # The reason is asserted as well as the name. "1 file(s) were not renamed: hello.txt" was all a
+    # mount could say until this round; for the thing a server refuses most often it left the reader
+    # no idea whether to try again, log in differently, or stop.
+    ("rename-s3-refused", ["probe /Users/admin/rename-s3-seed.txt|"
+                           "if curl -fsS -o /dev/null http://127.0.0.1:9200/ 2>/dev/null; "
+                           "then echo fixture-up; else echo fixture-missing; fi",
+                           "active left", "pfxmount S3Fixture", "wait 3000",
+                           "focus demo-bucket", "enter", "wait 2500",
+                           "focus hello.txt", "wait 500",
+                           "answer renamed.txt",
+                           "modaldump /Users/admin/rename-s3-refused.txt",
+                           "cmd cm_RenameOnly", "wait 6000"], 16),
     # Shift+F6 on a plugin mount (F-081). It used to do nothing at all out there: `isInArchive` is
     # `!(fs is LocalFS)`, so every mount went down the archive branch, found no zip and returned in
     # silence — and a second gate of the same kind sat behind it in `cursorItemName()`.
@@ -2455,6 +2477,14 @@ REPORTS = {
                             ["a.txt b (2).txt b.txt c.txt"]),
     # The fixture built: four files in pc-rep.
     "rename-replace-seed": ("/Users/admin/rename-replace-seed.txt", ["4"]),
+    # The refusal reached the user, and said why. `modal=true` is the half that a "nothing happened"
+    # reading cannot have: something was standing there waiting to be dismissed.
+    "rename-s3-refused": ("/Users/admin/rename-s3-refused.txt",
+                          ["modal=true", "1 file(s) were not renamed",
+                           "hello.txt: Access denied."]),
+    # The fixture server answered before any of it, so "the rename was refused" cannot pass for
+    # "there was nothing to refuse".
+    "rename-s3-refused-seed": ("/Users/admin/rename-s3-seed.txt", ["fixture-up"]),
     # The rename dialog opened on a plugin mount: the queued name was consumed, so something asked for
     # it. On the broken build nothing does and this reads `true`.
     "rename-mount": ("/Users/admin/rename-mount.txt", ["false"]),

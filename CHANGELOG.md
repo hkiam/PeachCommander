@@ -83,6 +83,15 @@ does not have.
   rename is not a collision at all — and it is asked only on the local disk, because out on a mount
   the path names a place that exists nowhere on this Mac.
 
+- **A rename a server refuses now says why.** All a mount could report was the name — "1 file(s) were
+  not renamed: hello.txt" — while the local path has always said `name: reason`. For the thing a
+  server refuses most often, permission, that left the reader with no way to tell whether to try
+  again, log in with different credentials, or stop. A `VFSError` is a developer's value
+  (`permissionDenied(PCVFS.VFSError.Refusal.modeBits)` is what interpolating one gives you), so the
+  cases are turned into sentences — in all nineteen languages. The two refusals EACCES and EPERM are
+  deliberately one message out here: on a mount the difference is the server's business and naming it
+  would send the reader after a distinction they cannot act on.
+
 - **Shift+F6 did nothing whatsoever on a server or plugin mount.** `isInArchive` is defined as
   `!(fs is LocalFS)`, so every mount arrived in the archive branch, found no zip path and returned
   without a word — and `PfxRenMov`, the plugin rename operation, documented and tested, had no route

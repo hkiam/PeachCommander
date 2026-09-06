@@ -775,28 +775,74 @@ extension PanelController {
     /// remote rename that can fail on its own, and comments are a local-disk feature.
     private func renameThroughFileSystem(dir: String, pairs: [(old: String, new: String)]) async {
         let fs = currentFileSystem
-        var failed: [String] = []
+        // Name *and* reason. The names alone were what a mount could report — "1 file(s) were not
+        // renamed: hello.txt" and nothing about why — which for the one thing a server refuses most
+        // often, permission, left the user with no idea whether to try again, log in differently, or
+        // stop. The local path has always said `name: reason`.
+        var failed: [(name: String, reason: String)] = []
         var renamed = 0
         for pair in pairs {
-            guard RenameValidator.isValid(pair.new) else { failed.append(pair.old); continue }
+            guard RenameValidator.isValid(pair.new) else {
+                failed.append((pair.old, Self.reason(forInvalid: pair.new)))
+                continue
+            }
             let from = VFSPath(filesystemId: fs.scheme, path: (dir as NSString).appendingPathComponent(pair.old))
             let to = VFSPath(filesystemId: fs.scheme, path: (dir as NSString).appendingPathComponent(pair.new))
             do { try await fs.rename(from, to: to); renamed += 1 }
-            catch { failed.append(pair.old) }
+            catch { failed.append((pair.old, Self.reason(for: error))) }
         }
         if !failed.isEmpty {
-            let list = failed.prefix(10).joined(separator: "\n")
+            let list = failed.prefix(10).map { "\($0.name): \($0.reason)" }.joined(separator: "\n")
             let more = failed.count > 10
                 ? String(localized: "\n… and \(failed.count - 10) more.") : ""
             presentError(String(localized: "Rename"),
                          detail: String(localized: "\(failed.count) file(s) were not renamed:\n\(list)\(more)"))
         }
         if renamed > 0 {
+            let refused = Set(failed.map { $0.name })
             recordInHistory(label: String(localized: "Rename \(renamed) item(s)"), directory: dir,
                             payload: HistoryOperation.encodeRenames(
-                                pairs.filter { !failed.contains($0.old) }))
+                                pairs.filter { !refused.contains($0.old) }))
         }
         await reload()
+    }
+
+    /// What to tell the user about a refusal from a server or plugin mount.
+    ///
+    /// A `VFSError` is a developer's value — interpolated it reads
+    /// `permissionDenied(PCVFS.VFSError.Refusal.modeBits)` — so it needs turning into a sentence
+    /// before it goes in front of anyone. The two refusals are deliberately one message here: out on
+    /// a mount the difference between EACCES and EPERM is the server's business, and naming it would
+    /// send the reader after a distinction they cannot act on.
+    private static func reason(for error: Error) -> String {
+        guard let vfs = error as? VFSError else {
+            // Nothing else should reach here — every `VirtualFileSystem` throws `VFSError` — so this
+            // shows the raw value rather than inventing a sentence for a case that has no wording.
+            return "\(error)"
+        }
+        switch vfs {
+        case .notFound: return String(localized: "Not found.")
+        case .permissionDenied: return String(localized: "Access denied.")
+        case .exists: return String(localized: "A file of that name already exists.")
+        case .noSpace: return String(localized: "No space left on the server.")
+        case .connectionLost: return String(localized: "The connection was lost.")
+        case .cancelled: return String(localized: "Cancelled.")
+        case .unsupported: return String(localized: "This is not supported here.")
+        case .underlying(let code, let message):
+            // A plugin's own words when it left any, and never an empty line: `strerror` fills this
+            // for a POSIX failure, and a bare code is still better than a blank reason.
+            return message.isEmpty ? String(localized: "Error \(code)") : message
+        }
+    }
+
+    /// Why a name the user typed cannot be used.
+    private static func reason(forInvalid name: String) -> String {
+        switch RenameValidator.validate(name) {
+        case .empty: return String(localized: "The name is empty.")
+        case .reserved: return String(localized: "That name is reserved.")
+        case .containsSeparator: return String(localized: "A name cannot contain a slash.")
+        case .valid: return ""
+        }
     }
 
     /// Reverse a rename log. Staged in two phases for the same reason the forward direction is: undoing
