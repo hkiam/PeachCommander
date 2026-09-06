@@ -26,6 +26,24 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — the harness could not see what the scenarios did
+
+Every scenario log the harness saves — 146 of them under `docs/generated/layout-regression` — held no
+trace at all of which verbs had run. Not truncated: absent. Noticed while auditing the run time, and
+it had been true for as long as those artefacts have existed.
+
+`NSLog` does not reach the unified log on macOS 26. Measured on the same launch: four `[automation]`
+lines in the process's own output, **zero** in `log show`, while the app's `os.Logger` lines were all
+present. The harness captures nothing but `log show`, so the trace could not be there — and a failing
+scenario is exactly when someone wants to know which verb was the last to run.
+
+The runner now says it twice: `NSLog` for a local run, which every note in the verification memory
+leans on, and `PCFoundationLogger.logger` for the unified log. With `privacy: .public`, which is not a
+detail — `os.Logger` redacts interpolated strings by default, which is why so much of these logs reads
+`<private>`, and a trace of `> <private>` would have been worth no more than the silence. A guest log
+now carries 29 lines of trace for `rename-replace`, in the order the verbs ran.
+
+
 ## 2026-09-06 — the settle became the cap, and my estimate was 2× off
 
 With the launch freeze gone, the fixed `settle` sleeps were what was left: `regress-guest.sh` slept

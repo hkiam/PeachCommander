@@ -90,19 +90,35 @@ private var automationDiffWindows: [DiffWindowController] = []
 private var automationProgressDialogs: [ProgressDialog] = []
 
 extension MainWindowController {
+    /// Say it twice, on purpose.
+    ///
+    /// `NSLog` is what a local run reads back from the app's own output, and every note in the
+    /// verification memory leans on it. It does **not** reach the unified log on macOS 26 — measured:
+    /// four automation lines in the process's stdout, zero in `log show`, while the app's `os.Logger`
+    /// lines were all there. The VM harness captures nothing but `log show`, so every scenario log in
+    /// `docs/generated/layout-regression` had no trace at all of which verbs ran — missing exactly
+    /// where a failing scenario needs it, and it cost an afternoon of this round to notice.
+    ///
+    /// `.public` is not decoration either: `os.Logger` redacts interpolated strings by default, and a
+    /// trace of `> <private>` would be worth no more than the silence it replaces.
+    private func trace(_ message: String) {
+        NSLog("[automation] \(message)")
+        PCFoundationLogger.logger.info("[automation] \(message, privacy: .public)")
+    }
+
     func runAutomationScript(_ path: String) async {
         guard let text = try? String(contentsOfFile: path, encoding: .utf8) else {
-            NSLog("[automation] cannot read script: \(path)")
+            trace("cannot read script: \(path)")
             return
         }
-        NSLog("[automation] running \(path)")
+        trace("running \(path)")
         for rawLine in text.split(separator: "\n", omittingEmptySubsequences: false) {
             let line = rawLine.trimmingCharacters(in: .whitespaces)
             if line.isEmpty || line.hasPrefix("#") { continue }
             let parts = line.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
             let verb = parts[0].lowercased()
             let arg = parts.count > 1 ? parts[1].trimmingCharacters(in: .whitespaces) : ""
-            NSLog("[automation] > \(line)")
+            trace("> \(line)")
             switch verb {
             case "left":       await leftPanelController?.loadDirectory(arg)
             case "right":      await rightPanelController?.loadDirectory(arg)
@@ -1489,7 +1505,7 @@ extension MainWindowController {
             default:           NSLog("[automation] unknown verb: \(verb)")
             }
         }
-        NSLog("[automation] done")
+        trace("done")
     }
 
     /// Diagnostic: present the REAL interactive overwrite-conflict dialog with two
