@@ -83,6 +83,21 @@ does not have.
   rename is not a collision at all — and it is asked only on the local disk, because out on a mount
   the path names a place that exists nowhere on this Mac.
 
+- **An ACL that could not be read was silently replaced by an empty one.** The editor reads a path's
+  access-control list with `ls -led` and writes it back by clearing the list (`chmod -N`) and adding
+  each row. The read was `run(…) ?? ""`, so a command that did not answer parsed to *no entries* —
+  indistinguishable from a file that genuinely has none, and Apply then wrote exactly that over the
+  list nobody had been able to see. It now says which of the two happened and refuses to write when
+  the answer never came.
+
+- **And it could not hang the window while finding out.** `ls -led` and `chmod` are instant on a disk
+  and never return on a stalled network mount, and both ran on the main thread about a path picked in
+  a panel — so opening the ACL editor on a share that had gone away was a beachball with no way out.
+  Both are bounded now, by the same watchdog the editor's text filters have used since F-356, which
+  moved into `BoundedProcess` so that there is one of it rather than two, with its deadline under
+  test. A path goes in as an argument and never through a shell, which is also what keeps a file name
+  containing a quote from being a command.
+
 - **The terminal froze the window for half a minute whenever DNS was slow.** A shell reports its
   working directory with an OSC 7 escape sequence — `file://hostname/path` — and the plugin checks
   the host part, because an `ssh` session inside the terminal reports the *remote* directory and

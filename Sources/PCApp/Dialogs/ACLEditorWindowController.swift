@@ -11,41 +11,44 @@ import PCFoundation
 
 /// Runs `ls`/`chmod` to read and write a path's ACL.
 enum ACLStore {
-    /// Read the current ACL entries of `path`.
-    static func read(_ path: String) -> [ACLEntry] {
-        ACLEntry.parse(lsOutput: run("/bin/ls", ["-led", path]) ?? "")
+    /// Seconds `ls` or `chmod` may take before they are stopped.
+    ///
+    /// The deadline is the point of this file's rewrite. Both commands are instant on a disk and on a
+    /// stalled network mount they do not return at all — and both are called straight from the ACL
+    /// window, on the main thread, about a path the user picked in a panel. Without it, opening the
+    /// editor on a share that has gone away is a beachball with no way out. `TextPipe` bounds the
+    /// editor's filter commands for the same reason and with the same shape, which is the shape used
+    /// here.
+    private static let timeout = 20
+
+    /// Read the current ACL entries of `path`, or **nil** when they could not be read.
+    ///
+    /// Nil rather than an empty array, and that distinction is the whole point: `[]` is a valid
+    /// answer meaning "this file has no ACL", and Apply writes exactly that — `chmod -N` clears the
+    /// list and then there is nothing to add back. So a read that failed must not arrive as the same
+    /// value as a file without an ACL, or a stalled mount would silently wipe the very list nobody
+    /// could see. It used to be `run(…) ?? ""`, which conflated the two.
+    static func read(_ path: String) -> [ACLEntry]? {
+        guard let result = BoundedProcess.run("/bin/ls", ["-led", path], timeout: timeout) else { return nil }
+        return ACLEntry.parse(lsOutput: result.out)
     }
 
     /// Replace the ACL of `path` with `entries`. Returns nil on success or an error message.
     static func write(_ entries: [ACLEntry], to path: String) -> String? {
-        _ = run("/bin/chmod", ["-N", path])                 // clear existing ACL
+        guard BoundedProcess.run("/bin/chmod", ["-N", path], timeout: timeout) != nil else {   // clear existing ACL
+            return String(localized: "Timed out after \(timeout) seconds.")
+        }
         for e in entries {
             // chmod inserts each rule; canonical ordering may reorder allow/deny — acceptable.
-            if let err = runStderr("/bin/chmod", ["+a", e.ruleString, path]), !err.isEmpty {
-                return "\(e.ruleString): \(err)"
+            guard let result = BoundedProcess.run("/bin/chmod", ["+a", e.ruleString, path], timeout: timeout) else {
+                return "\(e.ruleString): " + String(localized: "Timed out after \(timeout) seconds.")
             }
+            let message = result.err.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !message.isEmpty { return "\(e.ruleString): \(message)" }
         }
         return nil
     }
 
-    private static func run(_ launch: String, _ args: [String]) -> String? {
-        let p = Process(); p.executableURL = URL(fileURLWithPath: launch); p.arguments = args
-        let out = Pipe(); p.standardOutput = out; p.standardError = Pipe()
-        do { try p.run() } catch { return nil }
-        let data = out.fileHandleForReading.readDataToEndOfFile()
-        p.waitUntilExit()
-        return String(data: data, encoding: .utf8)
-    }
-
-    /// Run and return stderr text (nil = launch failed → treated as error by caller).
-    private static func runStderr(_ launch: String, _ args: [String]) -> String? {
-        let p = Process(); p.executableURL = URL(fileURLWithPath: launch); p.arguments = args
-        let err = Pipe(); p.standardError = err; p.standardOutput = Pipe()
-        do { try p.run() } catch { return "cannot launch chmod" }
-        let data = err.fileHandleForReading.readDataToEndOfFile()
-        p.waitUntilExit()
-        return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
 }
 
 final class ACLEditorWindowController: NSWindowController {
@@ -53,6 +56,8 @@ final class ACLEditorWindowController: NSWindowController {
     private let rowsStack = FlippedStackView()   // documentView: must be top-origin
     private var rows: [(kind: NSPopUpButton, name: NSTextField, action: NSPopUpButton, perms: NSTextField)] = []
     private let statusLabel = NSTextField(labelWithString: "")
+    /// The file's ACL never arrived, so the rows on screen are not a picture of it (see `init`).
+    private var couldNotRead = false
 
     init(path: String) {
         self.path = path
@@ -61,7 +66,14 @@ final class ACLEditorWindowController: NSWindowController {
         window.title = String(localized: "Edit ACL")
         super.init(window: window)
         buildUI()
-        for e in ACLStore.read(path) { addRow(e) }
+        if let entries = ACLStore.read(path) {
+            for e in entries { addRow(e) }
+        } else {
+            // Say so, and remember it: an empty list here does not mean "no ACL", it means nobody
+            // could read one, and Apply must not write that over what is on the file.
+            couldNotRead = true
+            statusLabel.stringValue = String(localized: "The current ACL could not be read.")
+        }
         window.center()
     }
 
@@ -200,6 +212,13 @@ final class ACLEditorWindowController: NSWindowController {
 
     @objc private func applyTapped() {
         window?.makeFirstResponder(nil)
+        // Writing now would clear an ACL nobody was able to see: `chmod -N` empties the list and the
+        // rows on screen — none, or whatever was typed since — are all there would be to put back.
+        if couldNotRead {
+            statusLabel.stringValue = String(localized: "The current ACL could not be read.")
+            NSSound.beep()
+            return
+        }
         if let err = ACLStore.write(collectEntries(), to: path) {
             statusLabel.stringValue = err
             NSSound.beep()

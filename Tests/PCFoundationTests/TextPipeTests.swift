@@ -96,4 +96,34 @@ final class TextPipeTests: XCTestCase {
         }
         XCTAssertNotEqual(code, 0)
     }
+
+    // MARK: - BoundedProcess
+
+    /// The deadline actually fires, which is the whole reason this exists: `ls` and `chmod` on a
+    /// stalled network mount never return, and the ACL editor calls them on the main thread.
+    func testACommandThatOutlivesTheDeadlineComesBackAsNil() {
+        let started = Date()
+        XCTAssertNil(BoundedProcess.run("/bin/sleep", ["30"], timeout: 1))
+        // And it does not sit out the thirty seconds after giving up on them.
+        XCTAssertLessThan(-started.timeIntervalSinceNow, 10)
+    }
+
+    func testOutputAndErrorComeBackSeparately() {
+        let result = BoundedProcess.run("/bin/sh", ["-c", "echo out; echo err 1>&2"], timeout: 10)
+        XCTAssertEqual(result?.out.trimmingCharacters(in: .whitespacesAndNewlines), "out")
+        XCTAssertEqual(result?.err.trimmingCharacters(in: .whitespacesAndNewlines), "err")
+    }
+
+    /// Nil for "could not start" as well, so a caller cannot read a failure as an empty answer —
+    /// which is how an unreadable ACL came to look like a file that has none.
+    func testAnExecutableThatIsNotThereComesBackAsNil() {
+        XCTAssertNil(BoundedProcess.run("/nonexistent/command", [], timeout: 5))
+    }
+
+    /// A path is passed as an argument and never through a shell: this name would be an injection
+    /// if it were, and here it has to arrive intact.
+    func testAnArgumentWithQuotesArrivesWhole() {
+        let result = BoundedProcess.run("/bin/echo", ["a\"; rm -rf /; \"b"], timeout: 5)
+        XCTAssertEqual(result?.out.trimmingCharacters(in: .whitespacesAndNewlines), "a\"; rm -rf /; \"b")
+    }
 }

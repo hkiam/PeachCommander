@@ -26,6 +26,32 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — looking for the same defect class again, and what it was worth
+
+The DNS freeze was a blocking call on the main thread, found by accident. So: is there more of it?
+A scan for the pattern — `NSHost`, `DispatchSemaphore.wait`, `waitUntilExit()`, synchronous
+`Data(contentsOf:)` — over everything on the main actor. Said in advance that the yield was uncertain,
+because the project has already been through one such round (F-479, the reads the cursor triggered).
+
+**`NSHost` was singular.** Of the four `waitUntilExit()` sites on the main actor, three were already
+right and two of them deliberately so: `GitBranchesView` runs on a global queue with a cancel button
+and `GIT_TERMINAL_PROMPT=0`, the `EditorTextFilter` hit is the *comment* warning against exactly this,
+and `AutomationRunner`'s is DEBUG-only harness code that blocks on purpose.
+
+The fourth was `ACLStore`, and the timeout turned out to be the smaller half of what was wrong there.
+`read` was `run(…) ?? ""`: a command that did not answer parsed to **no entries**, which is also what
+a file without an ACL looks like — and Apply writes that, `chmod -N` then having nothing to add back.
+So an ACL that could not be read was replaced by an empty one, and on a stalled mount the window hung
+while it happened. Both halves fixed; the deadline is `TextPipe`'s watchdog, moved into
+`BoundedProcess` so the SIGTERM-then-SIGKILL machinery exists once and can be tested, which the copy
+in PCApp could not be.
+
+**Worth recording as calibration.** One real finding out of a scan of forty-odd sites — about what I
+guessed, and the finding was not the one I was looking for. The yield of "audit for the class of bug
+you just found" is low here precisely because someone has audited before; the value was in the two
+lines of `ACLStore` that nobody would have looked at otherwise.
+
+
 ## 2026-09-06 — the harness could not see what the scenarios did
 
 Every scenario log the harness saves — 146 of them under `docs/generated/layout-regression` — held no

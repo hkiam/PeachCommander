@@ -29,6 +29,66 @@ public enum TextPipeResult: Equatable, Sendable {
     case timedOut(seconds: Int)
 }
 
+/// Run a command with a deadline and hand back both streams.
+///
+/// Split out of `TextPipe` below rather than copied next to its one caller: a watchdog that has to
+/// SIGTERM, then SIGKILL, while two pipes are drained on their own queues is too much subtle
+/// machinery to have twice, and here it can be tested — which the copy in `ACLStore` could not be,
+/// PCApp having no test target.
+///
+/// `TextPipe` keeps its own loop and does not call this: it writes the selection to stdin, and needs
+/// `F_SETNOSIGPIPE` on that descriptor for a filter like `head -1` that stops reading. Nothing here
+/// has a stdin, so none of that applies — and no shell either, which matters for the callers that
+/// pass a *file path* as an argument: through `zsh -lc` a name with a quote in it is an injection.
+public enum BoundedProcess {
+    /// Launch `executable` with `arguments` and return its output, or nil when it could not be
+    /// started or outlived `timeout` seconds.
+    ///
+    /// Nil for both, deliberately: a caller that cannot tell "it failed" from "it said nothing" is
+    /// how an unreadable ACL came to look like a file without one.
+    public static func run(_ executable: String, _ arguments: [String],
+                           timeout: Int) -> (out: String, err: String)? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        let stdout = Pipe(), stderr = Pipe()
+        process.standardOutput = stdout
+        process.standardError = stderr
+        do { try process.run() } catch { return nil }
+
+        // Both streams on their own queue, not one after the other: reading stdout to EOF while the
+        // process fills stderr is a deadlock. The watchdog would turn that into a timeout, but it is
+        // cheaper not to have the shape at all.
+        var outData = Data(), errData = Data()
+        let group = DispatchGroup()
+        for (pipe, sink) in [(stdout, { outData.append($0) }), (stderr, { errData.append($0) })] {
+            group.enter()
+            DispatchQueue.global(qos: .userInitiated).async {
+                sink(pipe.fileHandleForReading.readDataToEndOfFile())
+                group.leave()
+            }
+        }
+
+        var timedOut = false
+        let watchdog = DispatchWorkItem {
+            guard process.isRunning else { return }
+            timedOut = true
+            process.terminate()
+            // SIGTERM first, then the backstop for something that ignores it.
+            DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+                if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+            }
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(timeout), execute: watchdog)
+        process.waitUntilExit()
+        watchdog.cancel()
+        group.wait()
+
+        if timedOut { return nil }
+        return (String(decoding: outData, as: UTF8.self), String(decoding: errData, as: UTF8.self))
+    }
+}
+
 public enum TextPipe {
     /// Seconds a command may take before it is stopped.
     ///
