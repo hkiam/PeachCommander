@@ -90,6 +90,7 @@ only go down.
 | drive-plugin | 0 | — | — | `drive-plugin.png` |
 | big-listing | 0 | — | — | `big-listing.png` |
 | rename-escape | 0 | — | — | `rename-escape.png` |
+| editor-unreadable | 0 | — | — | `editor-unreadable.png` |
 | rename-replace | 0 | — | — | `rename-replace.png` |
 | rename-s3-refused | 0 | — | — | `rename-s3-refused.png` |
 | rename-mount | 0 | — | — | `rename-mount.png` |
