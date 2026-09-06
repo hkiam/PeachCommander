@@ -1,2 +1,2 @@
-cat ~/pc-rep/b.txt 2>/dev/null; test -e ~/pc-rep/a.txt && echo ' a-survived' || echo ' a-gone'
-source a-gone
+cat ~/pc-rep/b.txt 2>/dev/null; test -e ~/pc-rep/a.txt && printf ' a-survived' || printf ' a-gone'; printf ' '; cat ~/pc-rep/"b (2).txt" 2>/dev/null
+source a-gone auto
