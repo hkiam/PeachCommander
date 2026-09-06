@@ -3219,8 +3219,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 Task { @MainActor in
                     // A name that is already taken is a question, not a refusal: the same one the
                     // in-cell editor asks, so the two ways into a rename cannot answer it differently.
-                    guard await panel.clearTargetForRename(dir: dir, old: name, new: trimmed) else { return }
-                    _ = self?.activePanel?.performRenames(dir: dir, pairs: [(old: name, new: trimmed)])
+                    // What comes back is the name to use — "Auto-Rename" answers with another one.
+                    guard let target = await panel.resolvedRenameTarget(dir: dir, old: name, new: trimmed)
+                    else { return }
+                    _ = self?.activePanel?.performRenames(dir: dir, pairs: [(old: name, new: target)])
                     await self?.activePanel?.reload()
                 }
             }

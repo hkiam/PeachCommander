@@ -610,77 +610,95 @@ extension PanelController {
         guard RenameValidator.isValid(new) else { NSSound.beep(); return }
         Task { @MainActor in
             let dir = await getCurrentPath()
-            guard await clearTargetForRename(dir: dir, old: old, new: new) else {
+            guard let target = await resolvedRenameTarget(dir: dir, old: old, new: new) else {
                 // The cell is still holding the name the user typed, so a rename that is not going to
                 // happen has to draw the old one back rather than leave the panel lying about the file.
                 await reload()
                 tableView.focusEntry(named: old)
                 return
             }
-            _ = performRenames(dir: dir, pairs: [(old: old, new: new)])
+            // `target`, not `new`: "Auto-Rename" answered the conflict with a different name.
+            _ = performRenames(dir: dir, pairs: [(old: old, new: target)])
             await reload()
-            tableView.focusEntry(named: new)
+            tableView.focusEntry(named: target)
         }
     }
 
-    /// Clear the way for renaming `old` to `new` in `dir`.
+    /// The name `old` will actually be renamed to in `dir`, or nil when the rename must not happen.
     ///
-    /// True when the rename may go ahead: nothing holds the name, the name is held by the very file
-    /// being renamed, or the user chose to replace what is there and it has been disposed of. False
-    /// when the rename must not happen — the user declined, or the replacement failed, which is
-    /// reported here. The caller repaints; only it knows what it was showing.
+    /// A name that is already taken is the question a *copy* has always asked, so it is asked with
+    /// the same dialog here (F-081): a rename is a move within one folder, and meeting a second,
+    /// unfamiliar alert for it would be the odd thing. What comes back is a *name* and not a yes:
+    /// "Auto-Rename" answers the conflict by choosing a different one, and the caller has to rename
+    /// to that rather than to what was typed.
     ///
-    /// Shared by both ways into a rename, the in-cell editor and the Shift+F6 dialog (F-081). Both
-    /// used to stop at an "already exists" alert whose only way out was retyping the name, so the one
-    /// thing the user was trying to do — put this file under that name — could not be done at all.
-    func clearTargetForRename(dir: String, old: String, new: String) async -> Bool {
+    /// Shared by both ways in, the in-cell editor and the Shift+F6 dialog, which used to stop at an
+    /// "already exists" alert whose only way out was retyping the name.
+    func resolvedRenameTarget(dir: String, old: String, new: String) async -> String? {
         // Only the local disk can be asked this. Out on a mount `dir` names a place that exists
         // nowhere on this Mac, so `lstat` would either say "free" about a name the server is holding
-        // or — worse, for a mount whose paths look like local ones — offer to trash a real local file
-        // that has nothing to do with the rename. The mount accepts or refuses on its own terms.
-        guard currentFileSystem is LocalFS else { return true }
+        // or — worse, for a mount whose paths look like local ones — offer to delete a real local
+        // file that has nothing to do with the rename. The mount accepts or refuses on its own terms.
+        guard currentFileSystem is LocalFS else { return new }
         let source = (dir as NSString).appendingPathComponent(old)
-        let target = (dir as NSString).appendingPathComponent(new)
-        guard let taken = entryStat(target), !isSameEntry(taken, entryStat(source)) else { return true }
-        let toTrash = await config.bool("Operation", "DeleteToTrash", default: true)
-        guard confirmReplace(name: new, isDirectory: (taken.st_mode & S_IFMT) == S_IFDIR,
-                             toTrash: toTrash) else { return false }
-        do {
-            let engine = DeleteEngine(control: OperationControl())
-            if toTrash { try await engine.moveToTrash(items: [target]) }
-            else { try await engine.permanentDelete(items: [target]) }
-            return true
-        } catch {
-            presentError(String(localized: "Rename"),
-                         detail: String(localized: "“\(new)” could not be replaced: \(error)"))
-            return false
+        var candidate = new
+        // A loop, because "Auto-Rename" only appends " (2)" and does not promise the result is free.
+        // Without asking again about the name it chose, the second collision would land back in the
+        // refusal this replaced. Bounded: each round either settles or moves to a new name.
+        for _ in 0..<32 {
+            let target = (dir as NSString).appendingPathComponent(candidate)
+            guard let taken = entryStat(target), !isSameEntry(taken, entryStat(source)) else {
+                return candidate
+            }
+            guard let sourceStat = entryStat(source) else { return nil }
+            let decision = await overwriteDecisionForRename(
+                source: Self.facts(source, old, sourceStat),
+                target: Self.facts(target, candidate, taken))
+            switch decision {
+            case .skip, .abort:
+                return nil
+            case .rename(let leaf):
+                candidate = leaf
+            case .overwrite, .append:
+                // Gone, the way an overwrite goes everywhere else in this app: F5 and F6 replace the
+                // target rather than putting it in the Trash, and a rename that quietly did something
+                // else would be the surprise. `.append` cannot be chosen here — the one-item dialog
+                // does not offer it — and merging two files is not a rename, so it replaces too.
+                do {
+                    try await DeleteEngine(control: OperationControl()).permanentDelete(items: [target])
+                    return candidate
+                } catch {
+                    presentError(String(localized: "Rename"),
+                                 detail: String(localized: "“\(candidate)” could not be replaced: \(error)"))
+                    return nil
+                }
+            }
         }
+        return nil
     }
 
-    /// Ask whether the item already holding `name` should make way for the rename.
+    /// What the conflict dialog needs about one side, out of the `lstat` already taken.
     ///
-    /// It disposes of the replaced item the way the panel's own delete does (`DeleteToTrash`) and
-    /// says which of the two it is: a file that is silently gone for good is the one outcome the
-    /// user cannot take back.
-    private func confirmReplace(name: String, isDirectory: Bool, toTrash: Bool) -> Bool {
+    /// Built here rather than asked of `FSLowLevel`, which is internal to PCOperations. Size and
+    /// modification date are not decoration: the dialog puts the two files side by side, and that
+    /// comparison is what the choice is made on.
+    private static func facts(_ path: String, _ name: String, _ st: stat) -> FileFacts {
+        FileFacts(path: path, name: name, size: Int64(st.st_size),
+                  modified: Date(timeIntervalSince1970: Double(st.st_mtimespec.tv_sec)
+                                 + Double(st.st_mtimespec.tv_nsec) / 1_000_000_000),
+                  isDirectory: (st.st_mode & S_IFMT) == S_IFDIR)
+    }
+
+    /// The conflict dialog, or the answer a scenario queued for it.
+    ///
+    /// The hook sits here rather than inside `InteractiveResolver`: an answer queued for a rename
+    /// must not be eaten by a copy that happens to hit a conflict first.
+    private func overwriteDecisionForRename(source: FileFacts, target: FileFacts) async -> OverwriteDecision {
         #if DEBUG
-        // Answered from a script, without ever showing the alert. `InputDialog` has had this since
-        // the harness existed; an `NSAlert` has no equivalent, and a modal one does not merely go
-        // unanswered — it hangs the whole run inside its nested runloop. So a question the user must
-        // be asked would have been the one thing no scenario could reach.
-        if let canned = ReplaceConfirmation.take() { return canned }
+        if let canned = ReplaceConfirmation.take(target: target.name) { return canned }
         #endif
-        let alert = NSAlert()
-        alert.alertStyle = toTrash ? .warning : .critical
-        alert.messageText = String(localized: "Replace “\(name)”?")
-        alert.informativeText = isDirectory
-            ? (toTrash ? String(localized: "The existing folder and everything in it is moved to the Trash.")
-                       : String(localized: "The existing folder and everything in it is deleted permanently."))
-            : (toTrash ? String(localized: "The existing file is moved to the Trash.")
-                       : String(localized: "The existing file is deleted permanently."))
-        alert.addButton(withTitle: String(localized: "Overwrite"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
-        return alert.runModal() == .alertFirstButtonReturn
+        return await InteractiveResolver(parentWindow: view.window)
+            .resolveSingleOverwrite(source: source, target: target)
     }
 
     /// `lstat` of `path`, or nil when no directory entry holds that name.
@@ -1288,22 +1306,37 @@ extension PanelController {
 
 
 #if DEBUG
-/// Scripted answers for the replace confirmation (automation only), oldest first.
+/// Scripted answers for the rename conflict dialog (automation only), oldest first.
 ///
 /// A queue rather than one slot for the same reason `InputDialog`'s is: a scenario that renames
 /// twice asks twice, and a single value would answer both the same way without saying so.
 @MainActor
 enum ReplaceConfirmation {
-    private static var queued: [Bool] = []
+    private static var queued: [OverwriteDecision] = []
 
-    /// Queue one answer for the next replace confirmation: `true` replaces, `false` cancels.
-    static func queueScriptedAnswer(_ replace: Bool) { queued.append(replace) }
+    /// Queue one answer for the next rename conflict, named the way the dialog's buttons are.
+    /// Unknown text cancels rather than guessing: a scenario with a typo must fail, not overwrite.
+    static func queueScriptedAnswer(_ text: String) {
+        switch text.lowercased() {
+        case "overwrite", "replace": queued.append(.overwrite)
+        case "autorename", "auto-rename": queued.append(.rename(""))   // resolved below
+        case "skip": queued.append(.skip)
+        default: queued.append(.abort)
+        }
+    }
 
     /// Whether anything is still waiting — a scenario can then assert that the question was really
     /// put, instead of passing because nothing asked and the rename simply went through.
     static var hasScriptedAnswers: Bool { !queued.isEmpty }
 
-    static func take() -> Bool? { queued.isEmpty ? nil : queued.removeFirst() }
+    /// The queued decision for a conflict over `target`. An auto-rename is filled in here rather
+    /// than when it was queued: the name it picks depends on the file the conflict is about.
+    static func take(target: String) -> OverwriteDecision? {
+        guard !queued.isEmpty else { return nil }
+        let decision = queued.removeFirst()
+        if case .rename = decision { return .rename(OverwriteRules.autoRenameName(target)) }
+        return decision
+    }
 }
 #endif
 

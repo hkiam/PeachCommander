@@ -26,13 +26,43 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — the dialog I built instead of the one that was already there
+
+Two mistakes, both mine, both found by the person who asked for the feature trying it.
+
+**I wrote a confirmation instead of using the app's own.** Asked for "the dialog you get when a copy
+hits a conflict, where I can overwrite", I built a two-button alert of my own and put the replaced
+file in the Trash. `InteractiveResolver.resolveOverwrite` has asked exactly that question since I04,
+and `MoveEngine.moveOne` already resolves this very conflict with it — a rename *is* a move within
+one folder. I had read both files during this work and still did not reach for them. What ships now
+is `resolveSingleOverwrite` on that same resolver: the same window, wording and side-by-side
+comparison, with the buttons that mean something for one item — Overwrite, Auto-Rename, Skip, Cancel
+— and no blanket. Overwrite replaces the target the way F5 and F6 do; the Trash detour is gone.
+Auto-Rename returns a *name*, so the call site had to stop asking a yes/no question: it now answers
+with the name the rename actually uses, and asks again if that one is taken too — `autoRenameName`
+only appends " (2)" and promises nothing.
+
+**And nobody could have seen any of it.** Every build in that session went to `-derivedDataPath
+build/dd`; the app that gets launched is `build/Build/Products/Debug`, which `Tools/build.sh` writes
+(and where the VM harness's `resolve_app` looks). It was four days old. So the report "genau wie
+davor" was exactly right, and my "measured, then measured again with the defect put back" was
+measured in a bundle nobody runs. **Build with `Tools/build.sh`.** A verification that never reaches
+the user's binary verifies nothing about their complaint.
+
+The third thing this exposed: the in-cell path — the one details view uses, and therefore the one
+most renames take — had no coverage at all, because a scenario cannot type into a field editor a
+character at a time. `inlinerename <name>` commits one from a script, which is how all four answers
+are now exercised over the path the report came from.
+
+
 ## 2026-09-05 — a rename that refuses, and the second gate behind the first
 
 Reported plainly: renaming a file onto a name that is taken puts up an error, and it should ask
 instead. It does now, in both places that rename — the in-cell editor and the Shift+F6 dialog, through
-one `clearTargetForRename` so the two cannot answer it differently. What is there is disposed of the
-way the panel's own delete disposes of things (`DeleteToTrash`), and the alert says which of the two it
-will be: a file silently gone for good is the one outcome nobody can take back.
+one `resolvedRenameTarget` so the two cannot answer it differently.
+
+*(Corrected 2026-09-06 — see the entry above this one. What follows described a confirmation I wrote
+myself; the conflict is now the copy dialog, which existed all along.)*
 
 Two mistakes came out of the old check on the way. It asked `fileExists`, which **follows** a symlink,
 so a dangling link read as absent while still holding the name a rename has to land on. And on a

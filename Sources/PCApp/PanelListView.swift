@@ -835,6 +835,17 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// non-empty, changed name; the caller performs the actual rename.
     func beginInlineRename(onCommit: @escaping (_ old: String, _ new: String) -> Void) -> Bool {
         guard !isInlineEditing, cursorRow >= 0, let entry = entry(atCursor: cursorRow) else { return false }
+        #if DEBUG
+        // Committed from a script, without opening the editor. The in-cell path is the one most
+        // renames actually take — details view is the default — and it had no coverage at all,
+        // because a scenario cannot type into a field editor a character at a time. This exercises
+        // everything the editor would hand on: the commit callback and all of the rename below it.
+        // What it does NOT cover is the editor widget itself; `rename-escape` is what watches that.
+        if let scripted = Self.takeScriptedInlineName() {
+            onCommit(entry.name, scripted)
+            return true
+        }
+        #endif
         guard let nameCol = visibleColumns.firstIndex(where: { $0.fieldID == PanelColumn.name.rawValue })
         else { return false }
         let tableRow = cursorRow + 1   // row 0 is `..`
@@ -869,6 +880,22 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         guard opened else { isInlineEditing = false; return false }
         return true
     }
+
+    #if DEBUG
+    /// Names queued for the next in-cell rename (automation only), oldest first.
+    private static var scriptedInlineNames: [String] = []
+
+    /// Queue the name the next in-cell rename commits with.
+    static func queueScriptedInlineName(_ name: String) { scriptedInlineNames.append(name) }
+
+    /// Whether one is still waiting — so a scenario can tell "the editor never opened" apart from
+    /// "it opened and the rename was refused".
+    static var hasScriptedInlineNames: Bool { !scriptedInlineNames.isEmpty }
+
+    private static func takeScriptedInlineName() -> String? {
+        scriptedInlineNames.isEmpty ? nil : scriptedInlineNames.removeFirst()
+    }
+    #endif
 
     /// How many leading characters to preselect: the name minus its extension for
     /// files (so ".txt" isn't selected), the whole name for directories/dotfiles.

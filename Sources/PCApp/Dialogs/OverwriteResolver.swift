@@ -86,12 +86,6 @@ final class InteractiveResolver: OperationResolver, @unchecked Sendable {
         }
 
         return await MainActor.run {
-            let alert = NSAlert()
-            alert.alertStyle = .warning
-            alert.messageText = String(localized: "Replace “\(target.name)”?")
-            alert.informativeText = Self.overwriteInfo(source: source, target: target)
-            alert.accessoryView = Self.previewAccessory(source: source, target: target)   // F-086
-
             // Build the button set dynamically so "Append" appears only when both
             // sides are regular files (F-086) — appending onto a folder is nonsense.
             var choices: [(title: String, make: () -> OverwriteDecision)] = [
@@ -116,11 +110,45 @@ final class InteractiveResolver: OperationResolver, @unchecked Sendable {
                 (String(localized: "Cancel"), { .abort }),
             ]
             choices.append(contentsOf: tail)
-
-            for choice in choices { alert.addButton(withTitle: choice.title) }
-            let idx = Self.buttonIndex(for: alert.runModal())
-            return choices.indices.contains(idx) ? choices[idx].make() : .abort
+            return Self.ask(source: source, target: target, choices: choices)
         }
+    }
+
+    /// The same conflict, asked about ONE item (F-081).
+    ///
+    /// A rename is a move within a folder, so a name that is taken is the question this dialog
+    /// already asks — deliberately the same window, the same wording and the same side-by-side
+    /// preview, because a user who has answered it once for a copy should not meet a second,
+    /// unfamiliar dialog for a rename.
+    ///
+    /// What it drops is everything that only means something for a *batch*: the "…All" buttons and
+    /// the blanket they set have nothing left to apply to, and "Append" would merge two files rather
+    /// than rename one. Not on the `OperationResolver` protocol for that reason — the engines resolve
+    /// item after item and need the blanket this one must not have.
+    func resolveSingleOverwrite(source: FileFacts, target: FileFacts) async -> OverwriteDecision {
+        await MainActor.run {
+            Self.ask(source: source, target: target, choices: [
+                (String(localized: "Overwrite"), { .overwrite }),
+                (String(localized: "Auto-Rename"), { .rename(OverwriteRules.autoRenameName(target.name)) }),
+                (String(localized: "Skip"), { .skip }),
+                (String(localized: "Cancel"), { .abort }),
+            ])
+        }
+    }
+
+    /// Put the conflict up and return what was chosen. Shared so the one-item dialog cannot drift
+    /// away from the batch one in wording, style or preview.
+    @MainActor
+    private static func ask(source: FileFacts, target: FileFacts,
+                            choices: [(title: String, make: () -> OverwriteDecision)]) -> OverwriteDecision {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(localized: "Replace “\(target.name)”?")
+        alert.informativeText = Self.overwriteInfo(source: source, target: target)
+        alert.accessoryView = Self.previewAccessory(source: source, target: target)   // F-086
+        for choice in choices { alert.addButton(withTitle: choice.title) }
+        let idx = Self.buttonIndex(for: alert.runModal())
+        return choices.indices.contains(idx) ? choices[idx].make() : .abort
     }
 
 

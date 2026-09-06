@@ -68,11 +68,16 @@ does not have.
 
 - **A rename onto a name that is already taken asks instead of refusing.** Both ways in — the in-cell
   editor and the Shift+F6 dialog — stopped at an "already exists" alert whose only way out was
-  retyping the name, so the one thing being attempted could not be done at all. They now offer to
-  replace what is there, and dispose of it the way the panel's own delete does (`DeleteToTrash`),
-  saying which of the two it will be: a file silently gone for good is the outcome nobody can take
-  back. Two mistakes in the old check went with it. It asked `fileExists`, which follows a symlink,
-  so a dangling link read as absent while still holding the name a rename has to land on; and on a
+  retyping the name, so the one thing being attempted could not be done at all. The question is now
+  the one a copy already asks: the same conflict dialog, the same wording, the same side-by-side
+  comparison of the two files — a rename is a move within one folder, and meeting a second,
+  unfamiliar alert for it would be the odd thing. Asked about a single item it offers **Overwrite**,
+  **Auto-Rename**, **Skip** and **Cancel**; the "…All" buttons and Append are left out, having
+  nothing to apply to. Auto-Rename answers the conflict by choosing another name and the rename goes
+  there, asking again if that one is taken too. An overwrite replaces the target, exactly as F5 and
+  F6 do — it does not go to the Trash. Two mistakes in the old check went with it. It asked
+  `fileExists`, which follows a symlink, so a dangling link read as absent while still holding the
+  name a rename has to land on; and on a
   case-insensitive volume `notes.txt` → `Notes.txt` found the file being renamed sitting on its own
   target and refused it. The question is now an `lstat` comparing device and inode, so a case-only
   rename is not a collision at all — and it is asked only on the local disk, because out on a mount

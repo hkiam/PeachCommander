@@ -15,7 +15,9 @@
 //   drivedisconnect <name>  hang up an open connection from its drive chip, as its ⏏ does
 //   typeahead <seq>|<out>   type into the active panel's quick search (\\b = Backspace, \\e = Esc)
 //   wait  <ms>            sleep (let an async connect/list settle)
-//   replaceanswer replace|cancel  answer the rename's "name is taken" alert (F-081)
+//   inlinerename <newname>        commit an in-cell rename (the details-view path)
+//   inlinerenamesleft <out>       whether that name went unused (i.e. no in-cell rename ran)
+//   replaceanswer <choice>        answer the rename conflict: overwrite|autorename|skip|cancel
 //   replaceanswersleft <out>      whether that answer went unused (i.e. nothing asked)
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
@@ -129,11 +131,21 @@ extension MainWindowController {
                 let format = pa.count == 2
                     ? PackFormat.allCases.first(where: { $0.fileExtension == pa[1] }) : nil
                 PackOptionsDialog.queueScriptedName(pa[0], format: format)
-            case "replaceanswer":                       // replaceanswer replace|cancel (F-081)
-                // The rename's "this name is taken" question. Its own verb rather than `answer`:
-                // that one feeds `InputDialog`, and this is an NSAlert — which a script cannot click
-                // and which hangs the run if it is ever really shown.
-                ReplaceConfirmation.queueScriptedAnswer(arg.lowercased().hasPrefix("r"))
+            case "inlinerename":                        // inlinerename <newname> (F-081)
+                // The in-cell rename, the one details view uses. `answer` cannot reach it: that feeds
+                // `InputDialog`, and this path builds none — which is exactly why it went untested.
+                PanelListView.queueScriptedInlineName(arg)
+                if activePanel?.beginInlineRename() != true {
+                    NSLog("[automation] inlinerename: the panel refused an in-cell rename")
+                }
+            case "inlinerenamesleft":                   // inlinerenamesleft <out>
+                try? "\(PanelListView.hasScriptedInlineNames)\n".write(toFile: arg, atomically: true,
+                                                                       encoding: .utf8)
+            case "replaceanswer":                       // replaceanswer overwrite|autorename|skip|cancel (F-081)
+                // The rename's "this name is taken" question — the copy conflict dialog, asked about
+                // one item. Its own verb rather than `answer`: that one feeds `InputDialog`, and this
+                // is an NSAlert, which a script cannot click and which hangs the run if really shown.
+                ReplaceConfirmation.queueScriptedAnswer(arg)
             case "replaceanswersleft":                  // replaceanswersleft <out>
                 // The other half, for the same reason `answersleft` exists: a build that replaced
                 // without asking would otherwise leave exactly the same files behind as one that
