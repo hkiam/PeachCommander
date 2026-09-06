@@ -26,6 +26,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — the settle became the cap, and my estimate was 2× off
+
+With the launch freeze gone, the fixed `settle` sleeps were what was left: `regress-guest.sh` slept
+the whole settle and looked for the scenario's report *afterwards*, so a scenario that had finished in
+four seconds still paid twelve. The report is the last file a scenario writes — the gate insists on
+that — so its arrival is the better completion signal, and the settle is now the **cap**: poll for it
+from the start, with a floor so nothing is photographed a second after launch and a small grace so the
+last repaint is still inside the window.
+
+**Measured, because the first guess was wrong twice.** I predicted 15–20 minutes; it is **33**, from
+43. The remainder is not the settle at all — it is the scenarios' own `wait` verbs, 962 s of them, plus
+launch and teardown per scenario. And the grace mattered more than it looks: at 3 s it ate the entire
+saving (ten typical scenarios: 101 s against 105 s before, a 4 % gain for a real change), so it is 1 s,
+which is defensible because the host does not photograph until after `killall`, `log show` and the
+accessibility dump — one to two seconds of natural grace on top.
+
+Reports arrive after **8.2 s** on average across the 134 scenarios that write one, against settle caps
+averaging 14.2 s. Full run green at 146 of 146, and the check that mattered: the saved logs are the same
+length as before (140 892 lines against 141 187, 100 %), so the shortened wait did not shorten the
+window in which an Auto Layout complaint could be seen. That check was necessary because comparing
+conflict *counts* proves nothing here — every count is zero, and zero cannot get smaller.
+
+**Not built, on purpose: sharding across several VMs.** It was the obvious answer at 101 minutes and
+would have hidden the DNS freeze behind a 4× speed-up. At 33 minutes it buys a convenience nobody is
+waiting for, against a real correctness risk — settings survive between scenarios in `peachcmd.ini`,
+and `plugin-context-menu` has already once been green as the first scenario and red anywhere else.
+
+
 ## 2026-09-06 — where the regression suite's 101 minutes went: a blocking DNS lookup
 
 Asked to speed the suite up, and told to measure before rebuilding. Which was the right order,

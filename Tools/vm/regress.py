@@ -3421,6 +3421,12 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     shot = out / f"{name}.png"
     sh([VNCDO, "-s", f"{host}::{port}", "-p", pw, "capture", str(shot)])
     log, _, a11y = text.partition("===A11Y===")
+    # The guest says how long it really waited (see regress-guest.sh). Reported here and kept out of
+    # the saved log: it is a fact about the run, not about the app.
+    waited = next((l for l in log.splitlines() if l.startswith("===WAITED===")), "")
+    if waited:
+        log = "\n".join(l for l in log.splitlines() if not l.startswith("===WAITED===")) + "\n"
+        say(f"{name}: waited {waited.replace('===WAITED=== ', '')}")
     (out / f"{name}.log").write_text(log)
     if a11y.strip():
         (out / f"{name}-a11y.txt").write_text(a11y.strip() + "\n")

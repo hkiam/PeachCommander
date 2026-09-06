@@ -62,15 +62,46 @@ START=$(date "+%Y-%m-%d %H:%M:%S")
 # from the unified log afterwards, so nothing needs redirecting.
 open "$APP" --args -ConfigRoot "$HOME/pc-cfg" -AppleLanguages '(en)' \
      -AutomationScript "$HOME/auto.txt" ${PCARGS[@]+"${PCARGS[@]}"}
-sleep "$SETTLE"
-# …and then wait for the report, if this scenario writes one. Up to 40 s more, checked twice a second:
-# a scenario that is simply slow gets to finish, and one that is broken still fails within a minute.
+# Wait for the report this scenario writes, rather than for a fixed time.
+#
+# The settle used to be slept in full *first* and the report looked for afterwards, so every scenario
+# paid its whole settle even when it had finished in two seconds. That was invisible while the app
+# took 36 s to launch — a blocking DNS lookup in the terminal plugin, fixed 2026-09-06 — because the
+# report never arrived before the settle expired anyway. With the launch back to a second, the
+# sleeping was 34 of the suite's 43 minutes.
+#
+# So the settle is the *cap* now, not an addition. The report's arrival is the completion signal,
+# which the comment above has always said is the better one: it is the LAST file a scenario writes
+# (`Tools/check-scenario-reports.py` insists on that), so its presence means finished rather than
+# "probably long enough". A scenario without a report has nothing to wait for and still sleeps.
+#
+# The floor and the grace are what keep the screenshots and the layout log worth having: without a
+# floor a trivial scenario would be photographed a second after launch, and without the grace the
+# last repaint — and any Auto Layout complaint it logs — would fall outside the window. Neither can
+# be checked by comparing conflict counts against the baseline, because every count is currently
+# zero and zero cannot get smaller; the log line counts are what to watch instead.
+# GRACE is 1 s and not more because it was measured: at 3 s it ate the whole saving — ten typical
+# scenarios came to 101 s against 105 s before, a 4 % gain for a real change. The screenshot is taken
+# by the host only after `killall`, `log show` and the accessibility dump, which is one to two
+# seconds of natural grace on top of this one.
+FLOOR=4
+GRACE=1
 if [ -n "$EXPECT" ]; then
-  for _ in $(seq 1 80); do
-    [ -s "$EXPECT" ] && break
-    sleep 0.5
+  DEADLINE=$(( SETTLE + 40 ))
+  WAITED=0
+  while [ "$WAITED" -lt "$DEADLINE" ]; do
+    if [ -s "$EXPECT" ] && [ "$WAITED" -ge "$FLOOR" ]; then break; fi
+    sleep 1
+    WAITED=$(( WAITED + 1 ))
   done
-  [ -s "$EXPECT" ] || echo "===REPORT-MISSING=== $EXPECT"
+  if [ -s "$EXPECT" ]; then
+    sleep "$GRACE"
+  else
+    echo "===REPORT-MISSING=== $EXPECT"
+  fi
+  echo "===WAITED=== ${WAITED}s+${GRACE}s of ${SETTLE}s"
+else
+  sleep "$SETTLE"
 fi
 killall Terminal 2>/dev/null
 # The whole process log, not a subsystem filter: AppKit's layout complaints are found reliably by
