@@ -82,6 +82,39 @@ done
 # A sample archive
 ( cd "$ROOT/Documents" && /usr/bin/zip -q -r "$ROOT/Archives/documents.zip" report.txt notes.md inventory.csv )
 
+# A plugin package, for the install prompt (F-482).
+#
+# Deliberately a stub: the prompt reads the manifest and never loads the binary, and the scenario
+# that uses this cancels the dialog rather than confirming it — so nothing is ever dlopen'd and the
+# guest ends the scenario with exactly the plugins it started with. What is under test is that
+# Enter on a `.pcplug` produces a dialog naming the plugin and what it will take over, which is the
+# part a user's decision rests on.
+PLUGSTAGE="$(mktemp -d)"
+mkdir -p "$PLUGSTAGE/DemoPacker.pcxplugin/Contents/MacOS"
+printf 'not a real dylib' > "$PLUGSTAGE/DemoPacker.pcxplugin/Contents/MacOS/DemoPacker"
+cat > "$PLUGSTAGE/DemoPacker.pcxplugin/Contents/Info.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>DemoPacker</string>
+  <key>CFBundleExecutable</key><string>DemoPacker</string>
+  <key>PCPluginType</key><string>pcx</string>
+  <key>PCPluginName</key><string>Demo Disc Images</string>
+  <key>PCPluginIdentifier</key><string>com.example.demopacker</string>
+  <key>PCPluginVersion</key><string>2.1.0</string>
+  <key>PCPluginAPIVersion</key><integer>1</integer>
+  <key>PCPluginExtensions</key><string>demo;iso</string>
+</dict></plist>
+PLIST
+cat > "$PLUGSTAGE/pluginst.inf" <<'INF'
+[plugininstall]
+type=pcx
+file=DemoPacker.pcxplugin
+description=A sample plugin package for the install prompt
+INF
+( cd "$PLUGSTAGE" && /usr/bin/zip -q -r "$ROOT/Archives/DemoPacker-2.1.0.pcplug" . )
+rm -rf "$PLUGSTAGE"
+
 # The archive-search case, as it was reported (F-463): a config file inside a .tar.gz whose
 # text is nowhere else in the tree, plus an archive nothing can read. The first proves the
 # search goes in; the second proves it says so when it cannot.

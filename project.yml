@@ -262,6 +262,25 @@ targets:
         NSRemovableVolumesUsageDescription: Peach Commander needs to access removable volumes.
         NSMicrophoneUsageDescription: Peach Commander uses the microphone for voice input in the AI assistant.
         NSSpeechRecognitionUsageDescription: Peach Commander transcribes your speech for voice input in the AI assistant.
+        # The plugin package type (F-482). A `.pcplug` is a zip with its own extension, so it
+        # conforms to public.zip-archive and every other tool can still open it; declaring it is
+        # what lets a double-click in the Finder — and Enter in our own panel — mean "install
+        # this plugin" instead of nothing at all. Exported, because this app defines the type.
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.peachcommander.plugin-package
+            UTTypeDescription: Peach Commander Plugin Package
+            UTTypeConformsTo:
+              - public.zip-archive
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - pcplug
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Peach Commander Plugin Package
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes:
+              - com.peachcommander.plugin-package
 
   # Golden tests on the default palettes. Compiles Sources/PCApp/Theme.swift directly instead
   # of hosting PCApp: Theme only imports AppKit, so this needs no test host and stays fast.

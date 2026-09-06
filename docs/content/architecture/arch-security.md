@@ -191,10 +191,39 @@ knowingly.
 
 **2. Version handshake at load.** `Sources/PCPluginHost/PluginLibrary.swift`
 resolves the plugin's exported symbols and runs an optional handshake: if the plugin
-exports `PcGetApiVersion`, its result must equal the host's `currentAPIVersion`
-(currently `1`, in `PluginManifest.swift`), otherwise loading fails with a
+exports `PcGetApiVersion`, its result must fall inside the supported window
+(`PC_API_MIN_SUPPORTED … PC_API_VERSION`, both currently `1`), otherwise loading fails with a
 structured `apiVersionMismatch`. Missing *required* symbols likewise fail fast, so
-an incompatible or malformed plugin is rejected up front rather than mid-call.
+an incompatible or malformed plugin is rejected up front rather than mid-call. A plugin declaring
+`PCPluginMinHostVersion` newer than the running app is refused earlier still, from the manifest,
+before its binary is opened.
+
+**2a. Consent before load (F-482).** A plugin arriving as a package — a `.pcplug` double-clicked in
+the Finder, opened with Enter in a panel, dropped on the plugin window, or chosen through
+Configuration ▸ Plugins — is *staged*, not installed: unpacked to a temporary tree, its manifest
+read **without loading its binary**, and its name, version, identifier, type and claimed file
+extensions shown to the user before anything is copied anywhere. The claimed extensions are on the
+dialog deliberately: a packer plugin becomes the app's reader for every name it claims, which is a
+consequence the user cannot otherwise see.
+
+Staging is also where a package is refused rather than repaired. Every unpacked item's *resolved*
+path must still be inside the staging directory, which covers a `../` entry and the subtler case of
+a symlink that the later copy would follow out of the tree; and a package holding more than one
+plugin bundle with no `pluginst.inf` naming which to install is an error rather than a silent pick
+of whichever the file system enumerated first.
+
+**2b. Quarantine.** `com.apple.quarantine` on a downloaded plugin is what Gatekeeper refuses to
+`dlopen` once the app itself is signed and notarized, with an error a user cannot act on.
+`Sources/PCPluginHost/Quarantine.swift` clears it recursively from the *installed* bundle — but
+only on the far side of the consent dialog above, and never as part of unpacking. That ordering is
+the point: removing the attribute is exactly the moment the user's judgement replaces Gatekeeper's,
+so it happens where the user said yes and nowhere else. SPEC-012 §8 asked for the flag to be
+respected; this is what respecting it looks like.
+
+There is deliberately **no signature check** on a plugin. It would contradict
+`disable-library-validation`, which exists so that unsigned third-party plugins load at all. The
+consent dialog is the honest substitute: the app cannot tell the user that a plugin is safe, so it
+tells them exactly what it is and what it will be allowed to do.
 
 **3. In-process crash guard + per-plugin quarantine (F-230).**
 `Sources/PCPluginHost/PluginGuard.swift` wraps each synchronous plugin C call. Its

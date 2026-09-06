@@ -107,7 +107,7 @@ final class PluginManifestTests: XCTestCase {
         case .success(let manifest):
             XCTAssertEqual(manifest.type, .plx)
             XCTAssertEqual(manifest.detectString, "EXT=\"TXT\"")
-            XCTAssertEqual(manifest.minHostVersion, 42)
+            XCTAssertEqual(manifest.minHostVersion, .apiLevel(42))
             XCTAssertEqual(manifest.extensions, [])
         case .failure(let error):
             XCTFail("expected success, got \(error)")
@@ -158,7 +158,7 @@ final class PluginManifestTests: XCTestCase {
         XCTAssertEqual(PluginManifestParser.parse(infoPlist: dict), .failure(.missingAPIVersion))
     }
 
-    func test_parse_wrongAPIVersion() {
+    func test_parse_apiVersionNewerThanTheHost() {
         let dict: [String: Any] = [
             "PCPluginType": "pcx",
             "PCPluginName": "MyPlugin",
@@ -166,8 +166,38 @@ final class PluginManifestTests: XCTestCase {
         ]
         XCTAssertEqual(
             PluginManifestParser.parse(infoPlist: dict),
-            .failure(.unsupportedAPIVersion(2, current: 1))
+            .failure(.apiVersionTooNew(2, current: 1))
         )
+    }
+
+    /// Below the window is a different failure from above it, and the two must not be one case.
+    ///
+    /// The distinction is the whole reason the window exists: "your Peach Commander is too old"
+    /// is a thing a user can fix, "this plugin is too old" is a thing the plugin's author must.
+    /// Reported as one `unsupported` case, the first bump of PC_API_VERSION would have told every
+    /// user of every existing plugin the same unhelpful nothing.
+    func test_parse_apiVersionOlderThanSupported() {
+        let dict: [String: Any] = [
+            "PCPluginType": "pcx",
+            "PCPluginName": "MyPlugin",
+            "PCPluginAPIVersion": 0
+        ]
+        XCTAssertEqual(
+            PluginManifestParser.parse(infoPlist: dict),
+            .failure(.apiVersionTooOld(0, minimumSupported: 1))
+        )
+    }
+
+    /// The window is inclusive at both ends, so today (min == current == 1) version 1 loads.
+    func test_parse_apiVersionAtBothEndsOfTheWindow() {
+        for version in PluginManifestParser.minimumSupportedAPIVersion...PluginManifestParser.currentAPIVersion {
+            let dict: [String: Any] = [
+                "PCPluginType": "pcx", "PCPluginName": "MyPlugin", "PCPluginAPIVersion": version
+            ]
+            guard case .success = PluginManifestParser.parse(infoPlist: dict) else {
+                return XCTFail("API version \(version) is inside the supported window and must load")
+            }
+        }
     }
 
     func test_parse_apiVersionAsNSNumber() {

@@ -45,17 +45,33 @@ Les autres extensions intégrées sont plus petites et n'ont pas besoin de leur 
 
 ## Installer une nouvelle extension
 
-1. Choisissez Configuration ▸ Extensions….
-2. Cliquez sur **Installer depuis un dossier…**.
-3. Choisissez un paquet d'extension ou un `.zip` qui en contient un, et confirmez. L'extension est ajoutée à la liste et activée.
+Une extension que vous téléchargez arrive sous forme de **paquet d'extension** — un fichier se terminant par `.pcplug`. Il y a quatre façons de l'installer, et toutes aboutissent à la même confirmation :
+
+- **Double-cliquez dessus** dans le Finder. Peach Commander s'ouvre et vous demande.
+- **Appuyez sur Entrée** dessus dans un panneau. Peach Commander est un gestionnaire de fichiers : c'est là que le fichier se trouve déjà, la plupart du temps.
+- **Faites-le glisser sur la fenêtre des extensions** (Configuration ▸ Extensions…).
+- Choisissez **Configuration ▸ Extensions… ▸ Installer…** et sélectionnez le paquet, un `.zip` contenant une extension, ou un bundle d'extension décompressé.
+
+Avant que quoi que ce soit ne soit chargé, une boîte de dialogue indique le nom, la version, l'identifiant et le type de l'extension, ainsi que les types de fichiers qu'elle prendra en charge — une extension qui revendique `.iso`, par exemple, devient le lecteur de l'application pour ces fichiers. Rien n'est installé tant que vous n'avez pas cliqué sur **Installer**.
+
+Si une extension portant le même identifiant est déjà installée, la boîte de dialogue le signale et affiche les deux versions : une mise à jour se lit comme une mise à jour (« 1.0.0 → 1.1.0 ») et un retour en arrière est annoncé comme tel.
+
+## Avant d'en installer une
+
+Une extension est un programme qui s'exécute dans Peach Commander, avec le même accès à vos fichiers que Peach Commander lui-même. Il n'y a pas de bac à sable autour. N'installez que des extensions provenant de sources auxquelles vous faites confiance, comme pour n'importe quelle autre application.
+
+Les extensions téléchargées depuis Internet arrivent en quarantaine sous macOS. L'installation indique à macOS d'autoriser leur chargement — c'est pourquoi la boîte de dialogue le dit, et pourquoi c'est une décision que vous prenez plutôt que quelque chose qui se produit en silence.
 
 ## Retirer une extension
 
-1. Dans la fenêtre des extensions, marquez l'extension dans la liste.
+1. Dans la fenêtre des extensions, sélectionnez l'extension dans la liste.
 2. Cliquez sur **Retirer**. Les fonctions intégrées ne sont pas affectées ; seule l'extension sélectionnée est retirée.
+
+Une extension livrée avec l'application ne peut pas être supprimée : « Retirer » la désactive à la place.
 
 ## Remarques
 
-- La liste des extensions affiche le type et la version d'interface de chaque extension à côté de son nom et de son emplacement, pour que vous puissiez confirmer ce qui est installé.
-- Si aucune extension n'est installée, la fenêtre affiche une brève invite vous dirigeant vers **Installer depuis un dossier…**.
-- Certaines extensions ajoutent leurs propres colonnes, éléments de menu ou emplacements de panneau uniquement lorsqu'elles sont activées. Si une fonction attendue manque, vérifiez que l'extension est activée ici.
+- La liste indique la version, le type et la version d'interface de chaque extension à côté de son nom et de son emplacement, pour que vous puissiez vérifier ce qui est installé.
+- Si une extension nécessite une version de Peach Commander plus récente que la vôtre, elle est refusée avec un message qui le dit, plutôt que d'échouer obscurément. L'inverse est vrai aussi : une extension conçue pour une interface plus ancienne continue de fonctionner tant que cette interface est prise en charge.
+- Certaines extensions n'ajoutent leurs colonnes, entrées de menu ou emplacements de panneau que lorsqu'elles sont activées. Si une fonctionnalité attendue manque, vérifiez ici que son extension est bien activée.
+- Écrire ou publier votre propre extension est traité dans la documentation destinée aux développeurs, pas ici.

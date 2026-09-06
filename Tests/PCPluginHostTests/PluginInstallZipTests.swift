@@ -147,4 +147,95 @@ final class PluginInstallZipTests: XCTestCase {
         let afterFailed = await manager.discovered.map(\.manifest.name)
         XCTAssertTrue(afterFailed.contains("Upgrade"), "…and it is no longer discovered either")
     }
+
+    // MARK: - What a package is not allowed to do (F-482)
+
+    /// Two plugins and nothing saying which: refuse, rather than install whichever the file system
+    /// happened to enumerate first and drop the other without a word.
+    func test_ambiguousPackageIsRefusedRatherThanGuessed() throws {
+        try makeBundle("Alpha.pcxplugin", in: tempDir)
+        try makeBundle("Beta.pcxplugin", in: tempDir)
+        XCTAssertThrowsError(try PluginManager.locateSingleBundle(in: tempDir)) { error in
+            guard case PluginInstallError.ambiguousPackage(let names) = error else {
+                return XCTFail("expected ambiguousPackage, got \(error)")
+            }
+            XCTAssertEqual(names, ["Alpha.pcxplugin", "Beta.pcxplugin"])
+        }
+    }
+
+    /// …unless a pluginst.inf says which, which is exactly what the descriptor is for.
+    func test_pluginstInfResolvesTheAmbiguity() throws {
+        try makeBundle("Alpha.pcxplugin", in: tempDir)
+        try makeBundle("Beta.pcxplugin", in: tempDir)
+        try Data("[plugininstall]\ntype=wcx\nfile=Beta.pcxplugin\n".utf8)
+            .write(to: tempDir.appendingPathComponent("pluginst.inf"))
+        XCTAssertEqual(try PluginManager.locateSingleBundle(in: tempDir).lastPathComponent,
+                       "Beta.pcxplugin")
+    }
+
+    /// A symlink pointing out of the package is refused, not followed.
+    ///
+    /// `unzip` declines an absolute path on its own, but a symlink is the subtler shape: it lands
+    /// inside the staging directory quite legally, and only the *copy* into the plugins folder
+    /// later would follow it out. The containment check is therefore on the resolved path of every
+    /// unpacked item, not on the archive's entry names.
+    func test_aSymlinkEscapingThePackageIsRefused() async throws {
+        guard FileManager.default.fileExists(atPath: "/usr/bin/zip") else {
+            throw XCTSkip("/usr/bin/zip not available")
+        }
+        let src = tempDir.appendingPathComponent("src", isDirectory: true)
+        let contents = src.appendingPathComponent("Escape.pcxplugin/Contents")
+        try FileManager.default.createDirectory(at: contents.appendingPathComponent("MacOS"),
+                                                withIntermediateDirectories: true)
+        let plist: [String: Any] = ["PCPluginType": "pcx", "PCPluginAPIVersion": 1,
+                                    "PCPluginName": "Escape"]
+        try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
+            .write(to: contents.appendingPathComponent("Info.plist"))
+        try Data("stub".utf8).write(to: contents.appendingPathComponent("MacOS/Escape"))
+        // A symlink out of the tree, stored as a symlink by `zip -y`.
+        try FileManager.default.createSymbolicLink(
+            at: src.appendingPathComponent("Escape.pcxplugin/outside"),
+            withDestinationURL: URL(fileURLWithPath: "/tmp"))
+
+        let zipURL = tempDir.appendingPathComponent("Escape.zip")
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+        p.arguments = ["-q", "-r", "-y", zipURL.path, "Escape.pcxplugin"]
+        p.currentDirectoryURL = src
+        p.standardOutput = FileHandle.nullDevice; p.standardError = FileHandle.nullDevice
+        try p.run(); p.waitUntilExit()
+
+        let manager = PluginManager(pluginsDir: tempDir.appendingPathComponent("installed"),
+                                    configURL: tempDir.appendingPathComponent("plugins.ini"))
+        do {
+            _ = try await manager.installFromZip(zipURL: zipURL)
+            XCTFail("a package with a symlink leading out of it must not install")
+        } catch PluginInstallError.escapesPackage {
+            // expected
+        }
+    }
+
+    /// Staging reads the manifest and leaves the plugins directory alone.
+    func test_stagingDescribesThePluginWithoutInstallingIt() async throws {
+        let bundle = try makeValidBundle("Peek", in: tempDir.appendingPathComponent("v1", isDirectory: true))
+        let pluginsDir = tempDir.appendingPathComponent("installed")
+        let manager = PluginManager(pluginsDir: pluginsDir,
+                                    configURL: tempDir.appendingPathComponent("plugins.ini"))
+
+        let staged = try await manager.stage(packageURL: bundle)
+        XCTAssertEqual(staged.manifest.name, "Peek")
+        XCTAssertNil(staged.installedVersion, "nothing is installed yet")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: pluginsDir.appendingPathComponent("Peek.pcxplugin").path),
+                       "staging must not copy anything into the plugins directory")
+
+        _ = try await manager.commit(staged, clearQuarantine: false)
+        await manager.discard(staged)
+        let discovered = await manager.discovered.map(\.manifest.name)
+        XCTAssertTrue(discovered.contains("Peek"))
+
+        // Staging the same bundle again now knows what it would replace.
+        let again = try await manager.stage(packageURL: bundle)
+        XCTAssertEqual(again.installedVersion, staged.manifest.version)
+        await manager.discard(again)
+    }
 }

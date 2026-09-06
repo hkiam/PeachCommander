@@ -232,8 +232,51 @@ int DeleteFiles(char *packedFile, char *deleteList) {
     return rc;
 }
 
+/*
+ * ReadEntryData — the optional random-access read (pcx.h).
+ *
+ * Reference implementation as much as test fixture: this is the shape a format that is an index
+ * plus a seek should take. Walk the entry table looking only at names and lengths, then read the
+ * requested slice of the one that matches. No temporary file, no reading past the entries in
+ * front of it, and the archive handle the host already has stays open across calls.
+ */
+int ReadEntryData(PC_HANDLE hArc, const char *entryPath, int64_t offset, int64_t length,
+                  void *buf, int64_t *outRead) {
+    SPArc *a = (SPArc *)hArc;
+    if (!a || !a->fp || !entryPath || !buf || !outRead) return PC_E_BAD_DATA;
+    *outRead = 0;
+    if (offset < 0 || length <= 0) return PC_E_BAD_DATA;
+
+    if (fseek(a->fp, 4, SEEK_SET) != 0) return PC_E_EREAD;   /* past "PAK1" */
+    for (;;) {
+        uint32_t nameLen;
+        if (!read_u32(a->fp, &nameLen)) return PC_E_END_ARCHIVE;   /* no such entry */
+        if (nameLen >= 1024) return PC_E_BAD_DATA;
+        char name[1024];
+        if (fread(name, 1, nameLen, a->fp) != nameLen) return PC_E_EREAD;
+        name[nameLen] = '\0';
+        int64_t dataLen;
+        if (!read_i64(a->fp, &dataLen) || dataLen < 0) return PC_E_BAD_DATA;
+        long dataStart = ftell(a->fp);
+        if (dataStart < 0) return PC_E_EREAD;
+
+        if (strcmp(name, entryPath) == 0) {
+            if (offset >= dataLen) return PC_OK;               /* at or past the end: zero bytes */
+            int64_t want = dataLen - offset;
+            if (want > length) want = length;
+            if (fseek(a->fp, dataStart + (long)offset, SEEK_SET) != 0) return PC_E_EREAD;
+            size_t got = fread(buf, 1, (size_t)want, a->fp);
+            *outRead = (int64_t)got;
+            return got == (size_t)want ? PC_OK : PC_E_EREAD;
+        }
+        if (fseek(a->fp, dataStart + (long)dataLen, SEEK_SET) != 0) return PC_E_EREAD;
+    }
+}
+
 int GetPackerCaps(void) {
-    return PC_CAP_NEW | PC_CAP_MODIFY | PC_CAP_MULTIPLE | PC_CAP_DELETE;
+    /* PC_CAP_RANDOM_ACCESS is only honest alongside ReadEntryData above; the host checks for
+       both before it believes either. */
+    return PC_CAP_NEW | PC_CAP_MODIFY | PC_CAP_MULTIPLE | PC_CAP_DELETE | PC_CAP_RANDOM_ACCESS;
 }
 
 int PcGetApiVersion(void) { return PC_API_VERSION; }

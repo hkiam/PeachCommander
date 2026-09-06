@@ -43,19 +43,35 @@ Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:
 ![Okno wtyczek wymieniające zainstalowane wtyczki z polami wyboru i przyciskami Zainstaluj i Usuń](screenshots/plugins-window.png)
 *(Rysunek: okno wtyczek, w którym włączasz, wyłączasz, instalujesz lub usuwasz wtyczki.)*
 
-## Zainstaluj nową wtyczkę
+## Instalowanie nowej wtyczki
 
-1. Wybierz Konfiguracja ▸ Wtyczki….
-2. Kliknij **Zainstaluj z folderu…**.
-3. Wybierz pakiet wtyczki lub `.zip`, który go zawiera, i potwierdź. Wtyczka zostaje dodana do listy i włączona.
+Pobrana wtyczka przychodzi jako **pakiet wtyczki** — plik z rozszerzeniem `.pcplug`. Są cztery sposoby, by ją zainstalować, i wszystkie kończą się tym samym potwierdzeniem:
 
-## Usuń wtyczkę
+- **Kliknij go dwukrotnie** w Finderze. Peach Commander otworzy się i zapyta.
+- **Naciśnij na nim Enter** w panelu. Peach Commander to menedżer plików — plik zwykle i tak już tam jest.
+- **Przeciągnij go na okno wtyczek** (Konfiguracja ▸ Wtyczki…).
+- Wybierz **Konfiguracja ▸ Wtyczki… ▸ Zainstaluj…** i wskaż pakiet, `.zip` zawierający wtyczkę albo rozpakowany pakunek wtyczki.
 
-1. W oknie wtyczek oznacz wtyczkę na liście.
-2. Kliknij **Usuń**. Funkcje wbudowane nie są naruszone; usuwana jest tylko wybrana wtyczka.
+Zanim cokolwiek zostanie wczytane, okno dialogowe podaje nazwę, wersję, identyfikator i typ wtyczki oraz to, jakie typy plików przejmie — wtyczka roszcząca sobie prawo do `.iso` staje się czytnikiem aplikacji dla tych plików. Nic nie zostanie zainstalowane, dopóki nie klikniesz **Zainstaluj**.
+
+Jeśli wtyczka o tym samym identyfikatorze jest już zainstalowana, okno to zaznacza i pokazuje obie wersje, dzięki czemu aktualizacja czyta się jak aktualizacja („1.0.0 → 1.1.0"), a krok wstecz zostaje wyraźnie nazwany.
+
+## Zanim zainstalujesz wtyczkę
+
+Wtyczka to program działający wewnątrz Peach Commandera, z takim samym dostępem do Twoich plików, jaki ma Peach Commander. Nie ma wokół niej piaskownicy. Instaluj wtyczki tylko ze źródeł, którym ufasz — tak samo jak w przypadku każdej innej aplikacji.
+
+Wtyczki pobrane z internetu trafiają do kwarantanny macOS. Zainstalowanie wtyczki mówi systemowi macOS, by zezwolił na jej wczytanie — dlatego okno potwierdzenia o tym informuje i dlatego jest to decyzja, którą podejmujesz Ty, a nie coś, co dzieje się po cichu.
+
+## Usuwanie wtyczki
+
+1. W oknie wtyczek zaznacz wtyczkę na liście.
+2. Kliknij **Usuń**. Funkcje wbudowane pozostają nietknięte; usuwana jest tylko zaznaczona wtyczka.
+
+Wtyczki dostarczonej z aplikacją nie da się skasować — „Usuń" wyłącza ją zamiast tego.
 
 ## Uwagi
 
-- Lista wtyczek pokazuje typ i wersję interfejsu każdej wtyczki obok nazwy i lokalizacji, więc możesz potwierdzić, co jest zainstalowane.
-- Jeśli żadna wtyczka nie jest zainstalowana, okno pokazuje krótką zachętę kierującą Cię do **Zainstaluj z folderu…**.
-- Niektóre wtyczki dodają własne kolumny, pozycje menu lub miejsca panelu tylko wtedy, gdy są włączone. Jeśli oczekiwana funkcja jest nieobecna, sprawdź, czy wtyczka jest tutaj włączona.
+- Lista pokazuje obok nazwy i lokalizacji także wersję, typ i wersję interfejsu każdej wtyczki, więc możesz sprawdzić, co jest zainstalowane.
+- Jeśli wtyczka wymaga nowszej wersji Peach Commandera niż Twoja, zostaje odrzucona z komunikatem, który to wyjaśnia, zamiast zawieść w niezrozumiały sposób. To samo w drugą stronę: wtyczka zbudowana dla starszego interfejsu działa dalej, dopóki ten interfejs jest obsługiwany.
+- Niektóre wtyczki dodają swoje kolumny, pozycje menu czy miejsca w panelu tylko wtedy, gdy są włączone. Jeśli brakuje oczekiwanej funkcji, sprawdź tutaj, czy jej wtyczka jest włączona.
+- Pisanie i publikowanie własnej wtyczki opisuje dokumentacja dla programistów, a nie ta strona.

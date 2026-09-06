@@ -46,17 +46,33 @@ The remaining built-in plugins are smaller and don't need a page of their own:
 
 ## Install a new plugin
 
-1. Choose Configuration ▸ Plugins….
-2. Click **Install from Folder…**.
-3. Choose a plugin bundle or a `.zip` containing one, then confirm. The plugin is added to the list and enabled.
+A plugin you download arrives as a **plugin package** — a file ending in `.pcplug`. There are four ways to install one, and they all end at the same confirmation:
+
+- **Double-click it** in the Finder. Peach Commander opens and asks.
+- **Press Enter on it** in a panel. Peach Commander is a file manager, so this is usually where the file already is.
+- **Drag it onto the plugin window** (Configuration ▸ Plugins…).
+- **Choose Configuration ▸ Plugins… ▸ Install…** and pick the package, a `.zip` containing a plugin, or an unpacked plugin bundle.
+
+Before anything is loaded, a dialog tells you the plugin's name, version, identifier and type, and which file types it will take over — a plugin that claims `.iso`, for example, becomes the app's reader for those files. Nothing is installed until you click **Install**.
+
+If a plugin of the same identifier is already installed, the dialog says so and shows both versions, so an update reads as an update ("1.0.0 → 1.1.0") and going backwards is called out as such.
+
+## Before you install one
+
+A plugin is a program that runs inside Peach Commander, with the same access to your files that Peach Commander has. There is no sandbox around it. Install plugins only from sources you trust, the same way you would with any other application.
+
+Plugins downloaded from the internet arrive quarantined by macOS. Installing one tells macOS to allow it to load — which is why the confirmation dialog says so, and why it is a decision you make rather than something that happens quietly.
 
 ## Remove a plugin
 
 1. In the plugin window, select the plugin in the list.
 2. Click **Remove**. Built-in features are unaffected; only the selected plugin is removed.
 
+A plugin that came with the app cannot be deleted, so removing it switches it off instead.
+
 ## Notes
 
-- The plugin list shows each plugin's type and interface version alongside its name and location, so you can confirm what is installed.
-- If no plugins are installed, the window shows a short prompt pointing you to **Install from Folder…**.
+- The plugin list shows each plugin's version, type and interface version alongside its name and location, so you can confirm what is installed.
+- If a plugin needs a newer version of Peach Commander than you have, it is refused with a message saying so rather than failing obscurely. The same is true in the other direction: a plugin built for an older interface keeps working for as long as that interface is supported.
 - Some plugins add their own columns, menu items, or panel places only while they are enabled. If a feature you expected is missing, check that its plugin is turned on here.
+- Writing your own plugin, or publishing one, is covered in the developer documentation rather than here.

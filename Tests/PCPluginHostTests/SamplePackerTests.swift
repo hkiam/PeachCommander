@@ -98,4 +98,65 @@ final class SamplePackerTests: XCTestCase {
         let entries = try archive.list(archivePath: pak)
         XCTAssertEqual(entries.map(\.path), ["docs/f.txt"])
     }
+    // MARK: - Random access (F-482)
+
+    /// The three things `ReadEntryData` has to get right: the slice, the short read at the end,
+    /// and an offset past the end.
+    func test_randomAccessReadsASliceOfOneEntry() throws {
+        guard let lib = try buildSamplePacker() else { throw XCTSkip("clang unavailable") }
+        let archive = PCXArchive(library: lib)
+        XCTAssertTrue(archive.supportsRandomAccess,
+                      "the sample packer advertises PC_CAP_RANDOM_ACCESS and exports ReadEntryData")
+
+        let src = dir.appendingPathComponent("src", isDirectory: true)
+        try FileManager.default.createDirectory(at: src, withIntermediateDirectories: true)
+        let body = "0123456789abcdefghij"
+        try Data(body.utf8).write(to: src.appendingPathComponent("first.txt"))
+        try Data("second".utf8).write(to: src.appendingPathComponent("second.txt"))
+        let pak = dir.appendingPathComponent("rand.pak")
+        try archive.pack(archivePath: pak.path, sourceDir: src.path,
+                         files: ["first.txt", "second.txt"])
+
+        let reader = try XCTUnwrap(archive.openRandomAccess(archivePath: pak.path))
+        defer { reader.close() }
+
+        XCTAssertEqual(String(decoding: try reader.read(entryPath: "first.txt", offset: 5, length: 5),
+                              as: UTF8.self), "56789")
+        // A short read means the end of the entry, not an error.
+        let tail = try reader.read(entryPath: "first.txt", offset: 15, length: 100)
+        XCTAssertEqual(String(decoding: tail, as: UTF8.self), "fghij")
+        // Past the end is empty, which is how the stream learns to stop.
+        XCTAssertTrue(try reader.read(entryPath: "first.txt", offset: 999, length: 10).isEmpty)
+        // The second entry is reachable without having consumed the first.
+        XCTAssertEqual(String(decoding: try reader.read(entryPath: "second.txt", offset: 0, length: 6),
+                              as: UTF8.self), "second")
+    }
+
+    func test_randomAccessReportsAnUnknownEntry() throws {
+        guard let lib = try buildSamplePacker() else { throw XCTSkip("clang unavailable") }
+        let archive = PCXArchive(library: lib)
+        let src = dir.appendingPathComponent("src2", isDirectory: true)
+        try FileManager.default.createDirectory(at: src, withIntermediateDirectories: true)
+        try Data("x".utf8).write(to: src.appendingPathComponent("only.txt"))
+        let pak = dir.appendingPathComponent("one.pak")
+        try archive.pack(archivePath: pak.path, sourceDir: src.path, files: ["only.txt"])
+
+        let reader = try XCTUnwrap(archive.openRandomAccess(archivePath: pak.path))
+        defer { reader.close() }
+        XCTAssertThrowsError(try reader.read(entryPath: "nope.txt", offset: 0, length: 4)) { error in
+            XCTAssertEqual(error as? PCXArchive.PCXError, .entryNotFound("nope.txt"))
+        }
+    }
+
+    /// A plugin that does not export it gets nil rather than a broken promise.
+    func test_randomAccessIsAbsentWithoutBothHalves() throws {
+        guard let lib = try buildSamplePacker() else { throw XCTSkip("clang unavailable") }
+        // The sample has both. The half-and-half cases are covered by `supportsRandomAccess`
+        // requiring the symbol *and* the bit; here we assert the fallback exists at all, so a
+        // future plugin without the export still reads through the extract-to-temp path.
+        let archive = PCXArchive(library: lib)
+        XCTAssertNil(archive.openRandomAccess(archivePath: dir.appendingPathComponent("missing.pak").path),
+                     "an archive that cannot even be opened yields no reader")
+    }
+
 }

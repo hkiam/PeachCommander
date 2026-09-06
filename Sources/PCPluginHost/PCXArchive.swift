@@ -42,6 +42,15 @@ private let pcxChangeVolTrampoline: @convention(c) (UnsafeMutablePointer<CChar>?
     return PCXCallbackRouter.shared.changeVol(name, mode) ? 1 : 0
 }
 
+/// `ReadEntryData` (pcx.h, optional): one entry's bytes at an offset, without walking to it.
+///
+/// At file scope rather than nested in `PCXArchive` like its siblings, because the nested
+/// `RandomAccessReader` holds one and Swift will not let a fileprivate initializer take a
+/// private type.
+typealias PCXReadEntryDataFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?,
+                                               Int64, Int64, UnsafeMutableRawPointer?,
+                                               UnsafeMutablePointer<Int64>?) -> Int32
+
 public final class PCXArchive {
     public struct Entry: Equatable, Sendable {
         public let path: String
@@ -160,6 +169,18 @@ public final class PCXArchive {
         return caps & Int(PC_CAP_BY_CONTENT) != 0
     }
 
+    /// Whether one entry can be reached without walking the archive to it (F-482).
+    ///
+    /// Both halves are required: the capability bit *and* the export. A plugin that advertises
+    /// cheap access without providing a way to take it up would have the host promise the search
+    /// engine something it then cannot deliver — and the search picks its whole strategy from
+    /// this answer.
+    public var supportsRandomAccess: Bool {
+        guard lib.symbol("ReadEntryData") != nil else { return false }
+        guard let caps = packerCaps() else { return false }
+        return caps & Int(PC_CAP_RANDOM_ACCESS) != 0
+    }
+
     /// Whether the loaded plugin can delete entries (PC_CAP_DELETE, else DeleteFiles).
     public var canDelete: Bool {
         if let caps = packerCaps() { return caps & Int(PC_CAP_DELETE) != 0 }
@@ -225,6 +246,75 @@ public final class PCXArchive {
         }
         if !extracted { throw PCXError.entryNotFound(entryPath) }
       }
+    }
+
+    /// A handle held open across many `read` calls on one archive (F-482).
+    ///
+    /// The point of `ReadEntryData` is not only that the plugin can seek — it is that the archive
+    /// stays open between reads. Opening and closing it per chunk would put back most of the cost
+    /// the export exists to remove.
+    public final class RandomAccessReader {
+        private let owner: PCXArchive
+        private let handle: UnsafeMutableRawPointer
+        private let read: PCXReadEntryDataFn
+        private var closed = false
+
+        fileprivate init(owner: PCXArchive, handle: UnsafeMutableRawPointer, read: @escaping PCXReadEntryDataFn) {
+            self.owner = owner
+            self.handle = handle
+            self.read = read
+        }
+
+        /// Up to `length` bytes of `entryPath` from `offset`. A short result means the end.
+        public func read(entryPath: String, offset: Int64, length: Int64) throws -> Data {
+            guard !closed, length > 0 else { return Data() }
+            return try owner.guarded { [handle, read] in
+                var buffer = Data(count: Int(length))
+                var produced: Int64 = 0
+                let rc: Int32 = entryPath.withCString { name in
+                    buffer.withUnsafeMutableBytes { raw -> Int32 in
+                        read(handle, name, offset, length, raw.baseAddress, &produced)
+                    }
+                }
+                if Int(rc) == Int(PC_E_END_ARCHIVE) { throw PCXError.entryNotFound(entryPath) }
+                guard rc == Int32(PC_OK) else { throw PCXError.readFailed(Int(rc)) }
+                guard produced > 0 else { return Data() }
+                return buffer.prefix(Int(produced))
+            }
+        }
+
+        public func close() {
+            guard !closed else { return }
+            closed = true
+            owner.closeHandle(handle)
+        }
+
+        deinit { close() }
+    }
+
+    /// Open `archivePath` for random access, or nil when this plugin does not offer it.
+    public func openRandomAccess(archivePath: String) -> RandomAccessReader? {
+        guard supportsRandomAccess,
+              let readPtr = lib.symbol("ReadEntryData"),
+              let openPtr = lib.symbol("OpenArchive") else { return nil }
+        let outcome: UnsafeMutableRawPointer?? = callGuard.guarded(pluginID) { () -> UnsafeMutableRawPointer? in
+            let open = unsafeBitCast(openPtr, to: OpenFn.self)
+            return archivePath.withCString { arc -> UnsafeMutableRawPointer? in
+                var data = PcOpenArchiveData()
+                data.arcName = UnsafeMutablePointer(mutating: arc)
+                data.openMode = Int32(PC_OM_EXTRACT)
+                return open(&data)
+            }
+        }
+        guard let handle = outcome ?? nil else { return nil }
+        return RandomAccessReader(owner: self, handle: handle,
+                                  read: unsafeBitCast(readPtr, to: PCXReadEntryDataFn.self))
+    }
+
+    /// Close a handle opened by `openRandomAccess`, under the crash guard.
+    fileprivate func closeHandle(_ handle: UnsafeMutableRawPointer) {
+        guard let closePtr = lib.symbol("CloseArchive") else { return }
+        _ = callGuard.guarded(pluginID) { unsafeBitCast(closePtr, to: CloseFn.self)(handle) }
     }
 
     /// Pack `files` (relative to `sourceDir`) into `archivePath`, creating it if

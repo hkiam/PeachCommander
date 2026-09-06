@@ -9,6 +9,13 @@ import PCVFS
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var mainWindow: MainWindowController?
     private let crashReports = CrashReportCollector()
+    /// Files handed to us before there was a window to handle them in (F-482).
+    ///
+    /// Launching by double-clicking a document delivers `application(_:open:)` *before*
+    /// `applicationDidFinishLaunching` on a cold start, so acting on the URL immediately would
+    /// mean acting with no main window, no plugin manager and no place to put a dialog. They
+    /// wait here for the length of one launch.
+    private var pendingOpenURLs: [URL] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Before any window exists: every window this app shows is built in code, and AppKit does not
@@ -44,6 +51,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         // Per-window menu swapping lives in MainWindowController (it owns the command
         // target + the cached full menu bar).
+        drainPendingOpenURLs()
+    }
+
+    /// A file opened through the Finder, the Dock or `open(1)`.
+    ///
+    /// Only one type is declared in Info.plist — the `.pcplug` plugin package — and only that one
+    /// is acted on here. Anything else is ignored rather than guessed at: this is a file manager,
+    /// and "opened a file" is a much bigger promise than it needs to make.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard mainWindow != nil else {
+            pendingOpenURLs.append(contentsOf: urls)
+            return
+        }
+        handle(urls)
+    }
+
+    private func drainPendingOpenURLs() {
+        let urls = pendingOpenURLs
+        pendingOpenURLs.removeAll()
+        guard !urls.isEmpty else { return }
+        handle(urls)
+    }
+
+    private func handle(_ urls: [URL]) {
+        guard let controller = mainWindow else { return }
+        for url in urls where PluginPackage.isPackage(url) {
+            Task { @MainActor in await controller.installPluginPackage(at: url) }
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

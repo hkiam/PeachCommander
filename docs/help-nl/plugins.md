@@ -45,17 +45,33 @@ De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:
 
 ## Een nieuwe plug-in installeren
 
-1. Kies Configuratie ▸ Plug-ins….
-2. Klik op **Installeren vanuit map…**.
-3. Kies een plug-inbundel of een `.zip` die er een bevat en bevestig. De plug-in wordt toegevoegd aan de lijst en ingeschakeld.
+Een plug-in die je downloadt komt als **plug-inpakket** — een bestand dat eindigt op `.pcplug`. Er zijn vier manieren om er een te installeren, en ze eindigen alle vier bij dezelfde bevestiging:
+
+- **Dubbelklik erop** in de Finder. Peach Commander opent en vraagt het je.
+- **Druk op Enter** erop in een paneel. Peach Commander is een bestandsbeheerder: daar staat het bestand meestal toch al.
+- **Sleep het naar het plug-invenster** (Configuratie ▸ Plug-ins…).
+- Kies **Configuratie ▸ Plug-ins… ▸ Installeren…** en kies het pakket, een `.zip` met een plug-in erin, of een uitgepakte plug-inbundel.
+
+Voordat er iets wordt geladen, noemt een venster de naam, versie, identificatie en het type van de plug-in, en welke bestandstypen ze overneemt — een plug-in die `.iso` opeist, wordt de lezer van de app voor die bestanden. Er wordt niets geïnstalleerd tot je op **Installeren** klikt.
+
+Is er al een plug-in met dezelfde identificatie geïnstalleerd, dan zegt het venster dat en toont het beide versies: een update leest als een update ("1.0.0 → 1.1.0") en een stap terug wordt als zodanig benoemd.
+
+## Voordat je er een installeert
+
+Een plug-in is een programma dat binnen Peach Commander draait, met dezelfde toegang tot je bestanden als Peach Commander zelf. Er zit geen sandbox omheen. Installeer alleen plug-ins uit bronnen die je vertrouwt, net als bij elke andere toepassing.
+
+Van internet gedownloade plug-ins komen door macOS in quarantaine. Door er een te installeren geef je macOS toestemming om die te laden — daarom zegt het bevestigingsvenster dat, en daarom is het jouw beslissing en niet iets wat stilletjes gebeurt.
 
 ## Een plug-in verwijderen
 
-1. Selecteer in het plug-invenster de plug-in in de lijst.
+1. Selecteer de plug-in in de lijst in het plug-invenster.
 2. Klik op **Verwijderen**. Ingebouwde functies blijven ongemoeid; alleen de geselecteerde plug-in wordt verwijderd.
+
+Een meegeleverde plug-in kan niet worden gewist — "Verwijderen" schakelt haar dan uit.
 
 ## Opmerkingen
 
-- De plug-inlijst toont naast naam en locatie ook het type en de interfaceversie van elke plug-in, zodat je kunt controleren wat er is geïnstalleerd.
-- Als er geen plug-ins zijn geïnstalleerd, toont het venster een korte aanwijzing naar **Installeren vanuit map…**.
-- Sommige plug-ins voegen hun eigen kolommen, menu-items of paneelplekken alleen toe zolang ze zijn ingeschakeld. Ontbreekt een functie die je verwachtte, controleer dan hier of de bijbehorende plug-in aanstaat.
+- De lijst toont naast naam en locatie ook de versie, het type en de interfaceversie van elke plug-in, zodat je kunt nagaan wat er is geïnstalleerd.
+- Heeft een plug-in een nieuwere versie van Peach Commander nodig dan je hebt, dan wordt ze geweigerd met een bericht dat dat zegt, in plaats van onnavolgbaar te mislukken. Andersom geldt hetzelfde: een plug-in voor een oudere interface blijft werken zolang die interface wordt ondersteund.
+- Sommige plug-ins voegen hun kolommen, menu-items of paneelplekken alleen toe zolang ze zijn ingeschakeld. Ontbreekt een functie die je verwachtte, controleer dan hier of de plug-in aanstaat.
+- Hoe je zelf een plug-in schrijft of publiceert, staat in de ontwikkelaarsdocumentatie, niet hier.

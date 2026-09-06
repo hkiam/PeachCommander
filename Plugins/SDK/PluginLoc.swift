@@ -14,9 +14,9 @@ import Foundation
 
 /// Anchor whose bundle is the plugin bundle: `Bundle(for:)` on a class compiled into
 /// the plugin resolves to that plugin's `.­plugin` wrapper even when it is dlopen'd.
-final class PluginBundleAnchor {}
+public final class PluginBundleAnchor {}
 
 /// A localized string from the plugin's own bundle (Localizable.strings), or `key`.
-func L(_ key: String, _ comment: String = "") -> String {
+public func L(_ key: String, _ comment: String = "") -> String {
     Bundle(for: PluginBundleAnchor.self).localizedString(forKey: key, value: key, table: nil)
 }

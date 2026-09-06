@@ -51,8 +51,22 @@ public struct PCXArchiveBackend: ArchiveBackend {
             return .notAnArchive
         }
         return .opened(OpenedArchive(fs: fs, localURL: localFile, isTemporary: false,
-                                     memberAccessCost: .processPerMember, backendID: backendID),
+                                     memberAccessCost: Self.accessCost(lib, plugin),
+                                     backendID: backendID),
                        dispose: {})
+    }
+
+    /// What one member costs to read, as the plugin itself reports it (F-482).
+    ///
+    /// This used to be `.processPerMember` for every plugin, unconditionally — the right guess
+    /// when the only way to reach a member was to walk to it, and a costly one for a plugin that
+    /// can seek: a background search demotes a process-per-member backend to fallback
+    /// (`ArchiveOpening`), so an image reader that answers in microseconds was passed over in
+    /// favour of whatever else could open the file. The ABI now lets the plugin say, and the two
+    /// conditions inside `supportsRandomAccess` mean it has to mean it.
+    private static func accessCost(_ lib: PluginLibrary, _ plugin: DiscoveredPlugin) -> MemberAccessCost {
+        PCXArchive(library: lib, pluginID: plugin.manifest.identifier).supportsRandomAccess
+            ? .cheapRandomAccess : .processPerMember
     }
 
     /// Whether any enabled packer offered to decide by content.
@@ -64,7 +78,7 @@ public struct PCXArchiveBackend: ArchiveBackend {
         get async {
             for plugin in await pluginManager.packerPlugins() {
                 guard case .success(let lib) = PluginHost.openLibrary(plugin) else { continue }
-                if PCXArchive(library: lib, pluginID: plugin.manifest.name).detectsByContent { return true }
+                if PCXArchive(library: lib, pluginID: plugin.manifest.identifier).detectsByContent { return true }
             }
             return false
         }
@@ -80,7 +94,7 @@ public struct PCXArchiveBackend: ArchiveBackend {
         let path = localFile.path
         for plugin in await pluginManager.packerPlugins() {
             guard case .success(let lib) = PluginHost.openLibrary(plugin) else { continue }
-            let archive = PCXArchive(library: lib, pluginID: plugin.manifest.name)
+            let archive = PCXArchive(library: lib, pluginID: plugin.manifest.identifier)
             guard archive.detectsByContent, archive.canHandle(fileName: path) == true else { continue }
             if let fs = PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)") {
                 return OpenedArchive(fs: fs, localURL: localFile, isTemporary: false,

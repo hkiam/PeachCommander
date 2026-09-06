@@ -26,6 +26,85 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 (F-482) — the plugin API had no way out of its own first version
+
+The task was an example plugin in its own repository plus a description of how to publish and
+install one. Reading the ground first turned that into three pieces of work, because the ground had
+holes in it that only a third party would ever have fallen into.
+
+**The SDK could not be depended on.** `PluginSDK/Package.swift` sits in a subdirectory, and SwiftPM
+resolves a `.package(url:)` by cloning a repository and looking for the manifest **at its root**. So
+the dependency line that `PluginSDK/README.md` and `sdk-overview.md` have both documented from the
+start has never resolved for anybody, and nobody noticed because nobody outside this repository had
+tried. Fixed by publishing the mirror outward (`Tools/publish-plugin-sdk.sh`), with the two Swift
+helpers that had also only ever existed in-tree — which is why localising a Swift plugin from
+outside was not possible either.
+
+**The API version was checked with `==`.** In two places: the manifest, and the runtime handshake.
+The first bump of `PC_API_VERSION` would therefore have invalidated every third-party plugin in
+existence in the same instant, in both checks at once, with no release in between where both worked.
+It is a window now, `PC_API_MIN_SUPPORTED … PC_API_VERSION`, and the two ends report differently
+because they need different actions: below it the plugin is too old, above it the *app* is, and only
+one of those is something the user can fix.
+
+**`PCPluginMinHostVersion` had been parsed and compared against nothing** since it was added,
+because there was no host version at runtime to compare it *to* — the number lives in `project.yml`
+and reaches the built app only as a string in Info.plist. `SemanticVersion` and `HostVersion` are
+the other half of `Tools/check-version.sh`, and the field means something now.
+
+**Identity was the display name.** `plugins.ini`, the discovery dedupe and the packer associations
+all keyed on `PCPluginName`. Renaming a plugin silently lost the user's setting; two plugins sharing
+a title shared one switch; a name containing a `;` was written to the INI as two entries and read
+back as neither. `PCPluginIdentifier` is the key now, with the name as the fallback so nothing
+already installed loses its state, and a one-time migration for files written before it. The
+migration is guarded on a non-empty discovery, which is the whole of its safety: on a first launch
+the map would be empty and there would be nothing to rewrite *toward*, so it could only misread a
+good config. That is the shape `plugin-context-menu` was bitten by in August.
+
+**Installing was code execution presented as a file copy.** `installFromZip` unpacked and loaded,
+and the user was never told the name, the version, or — the part with a consequence they cannot
+otherwise see — which file extensions the plugin was about to take over. There is a staging step
+now: unpack, read the manifest **without loading the binary**, show it, and only then commit.
+Quarantine is cleared on the far side of that yes and nowhere else, which is the moment the user's
+judgement replaces Gatekeeper's. Two things the same step refuses rather than repairs: a package
+whose entries resolve outside it, and one holding two plugins with no `pluginst.inf` saying which —
+previously whichever the file system listed first was installed and the rest dropped silently.
+
+**And a double-click could not reach the app at all.** No `CFBundleDocumentTypes`, no UTI, no
+open-file handler anywhere in the project. `.pcplug` is a zip with its own extension — nothing new
+to parse — and it now arrives four ways: the Finder, Enter in a panel, a drop on the plugin window,
+and the file chooser. All four end at the same dialog.
+
+**The example.** ISO 9660 / Joliet / Rock Ridge / UDF / El Torito, in its own repository. It earns
+its place rather than demonstrating one: `.iso` is already browsable here through `bsdtar` in the
+core — one subprocess per member, each re-scanning from the start, every modification time dropped,
+no UDF at all, and not one test. Nothing on the host's side changed to let the plugin take over,
+because a packer plugin that claims `iso` is already consulted before the built-in readers.
+
+Two things the writing of it found, both by comparing against `bsdtar` rather than by reading the
+code. **SUSP payloads begin four bytes into an entry, not five** — one byte out and PX reads the
+version byte as the top of the mode, so every symlink on every Rock Ridge disc reads as a plain
+file. And **Rock Ridge and Joliet answer different questions**: `hdiutil` writes Rock Ridge
+permissions with plain ISO 9660 names while Joliet holds the real ones, so a reader that lets Rock
+Ridge decide both lists such a disc entirely in upper case. Attributes from one, names from the
+other, merged on the extent each entry points at.
+
+**One ABI addition, and it is the shape additions should take.** A packer plugin could only serve a
+file by being wound forward to it, so the host hard-coded "one full pass per member" for every
+plugin-backed archive — and during a background search demoted it to a fallback behind whatever else
+could open the file. `ReadEntryData` plus `PC_CAP_RANDOM_ACCESS` let a plugin that can seek say so.
+Both optional, both requiring each other before the host believes either, and a plugin exporting
+neither behaves exactly as before. That is what "additive does not bump the version" has to look
+like in practice, and the sample packer implements it so the claim is tested rather than asserted.
+
+**What is verified and what is not.** Build green, the whole suite green, every static gate green,
+and an end-to-end run through the host's own modules: the `.pcplug` staged, its manifest reported,
+installed, enabled under its identifier, and a UDF-only image opened by the `pcx` backend at
+`cheapRandomAccess` and read — a file `bsdtar` cannot list at all. The new VM scenario
+`plugin-install-prompt` is written but **has not been run**: it needs the guest, and the guest was
+not available. It asserts the dialog and cancels it, so it installs nothing and leaves the plugin
+set unchanged for whatever runs after it.
+
 ## 2026-09-06 — pass two, and the defect was the same sentence three times
 
 The second half of the audit: the synchronous reads on the main actor, sorted by where the path comes

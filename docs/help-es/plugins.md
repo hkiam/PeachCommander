@@ -43,19 +43,35 @@ Los demás complementos integrados son más pequeños y no necesitan una página
 ![La ventana de complementos con la lista de complementos instalados, casillas de activación y los botones Instalar y Eliminar](screenshots/plugins-window.png)
 *(Figura: La ventana de complementos, donde activas, desactivas, instalas o eliminas complementos.)*
 
-## Instalar un nuevo complemento
+## Instalar un plugin nuevo
 
-1. Elige Configuración ▸ Complementos….
-2. Haz clic en **Instalar desde carpeta…**.
-3. Elige un paquete de complemento o un `.zip` que contenga uno, y confirma. El complemento se añade a la lista y se activa.
+Un plugin que descargue llega como un **paquete de plugin**: un archivo terminado en `.pcplug`. Hay cuatro maneras de instalarlo, y todas terminan en la misma confirmación:
 
-## Eliminar un complemento
+- **Haga doble clic** en el Finder. Peach Commander se abre y le pregunta.
+- **Pulse Intro** sobre él en un panel. Peach Commander es un gestor de archivos: normalmente el archivo ya está ahí.
+- **Arrástrelo a la ventana de plugins** (Configuración ▸ Plugins…).
+- Elija **Configuración ▸ Plugins… ▸ Instalar…** y seleccione el paquete, un `.zip` que contenga un plugin o un bundle de plugin descomprimido.
 
-1. En la ventana de complementos, selecciona el complemento de la lista.
-2. Haz clic en **Eliminar**. Las funciones integradas no se ven afectadas; solo se elimina el complemento seleccionado.
+Antes de cargar nada, un diálogo indica el nombre, la versión, el identificador y el tipo del plugin, y qué tipos de archivo va a asumir: un plugin que reclama `.iso`, por ejemplo, pasa a ser el lector de la aplicación para esos archivos. No se instala nada hasta que pulse **Instalar**.
+
+Si ya hay instalado un plugin con el mismo identificador, el diálogo lo indica y muestra ambas versiones, de modo que una actualización se lee como tal («1.0.0 → 1.1.0») y un paso atrás se señala como tal.
+
+## Antes de instalar uno
+
+Un plugin es un programa que se ejecuta dentro de Peach Commander, con el mismo acceso a sus archivos que Peach Commander. No hay ningún aislamiento alrededor. Instale plugins solo de fuentes en las que confíe, igual que haría con cualquier otra aplicación.
+
+Los plugins descargados de Internet llegan en cuarentena de macOS. Instalar uno indica a macOS que permita su carga, y por eso el diálogo de confirmación lo dice y por eso es una decisión suya y no algo que ocurra en silencio.
+
+## Quitar un plugin
+
+1. En la ventana de plugins, seleccione el plugin en la lista.
+2. Pulse **Quitar**. Las funciones integradas no se ven afectadas; solo se quita el plugin seleccionado.
+
+Un plugin que viene con la aplicación no se puede borrar, así que «Quitar» lo desactiva en su lugar.
 
 ## Notas
 
-- La lista de complementos muestra el tipo y la versión de interfaz de cada complemento junto a su nombre y ubicación, para que puedas confirmar qué hay instalado.
-- Si no hay complementos instalados, la ventana muestra un breve mensaje que te dirige a **Instalar desde carpeta…**.
-- Algunos complementos añaden sus propias columnas, elementos de menú o lugares del panel solo mientras están activados. Si falta una función que esperabas, comprueba aquí que su complemento esté activado.
+- La lista muestra la versión, el tipo y la versión de interfaz de cada plugin junto a su nombre y ubicación, para que pueda confirmar qué hay instalado.
+- Si un plugin necesita una versión de Peach Commander más reciente que la suya, se rechaza con un mensaje que lo explica en lugar de fallar de forma incomprensible. Lo mismo al revés: un plugin creado para una interfaz anterior sigue funcionando mientras esa interfaz esté admitida.
+- Algunos plugins añaden sus columnas, entradas de menú o lugares del panel solo mientras están activados. Si falta una función que esperaba, compruebe aquí que su plugin está encendido.
+- Escribir o publicar un plugin propio se trata en la documentación para desarrolladores, no aquí.

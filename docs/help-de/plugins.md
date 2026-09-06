@@ -45,17 +45,33 @@ Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:
 
 ## Ein neues Plugin installieren
 
-1. Wählen Sie Konfiguration ▸ Plugins….
-2. Klicken Sie auf **Aus Ordner installieren…**.
-3. Wählen Sie ein Plugin-Bundle oder eine `.zip`-Datei, die eines enthält, und bestätigen Sie. Das Plugin wird zur Liste hinzugefügt und aktiviert.
+Ein heruntergeladenes Plugin kommt als **Plugin-Paket** — eine Datei mit der Endung `.pcplug`. Es gibt vier Wege, eines zu installieren, und alle enden beim selben Bestätigungsdialog:
+
+- **Doppelklicken Sie es** im Finder. Peach Commander öffnet sich und fragt nach.
+- **Drücken Sie Enter darauf** in einem Panel. Peach Commander ist ein Dateimanager — dort liegt die Datei ohnehin meistens schon.
+- **Ziehen Sie es auf das Plugin-Fenster** (Konfiguration ▸ Plugins…).
+- Wählen Sie **Konfiguration ▸ Plugins… ▸ Installieren…** und wählen Sie das Paket, eine `.zip` mit einem Plugin darin oder ein entpacktes Plugin-Bundle.
+
+Bevor irgendetwas geladen wird, nennt ein Dialog Name, Version, Bezeichner und Typ des Plugins sowie die Dateitypen, die es übernehmen wird — ein Plugin, das etwa `.iso` beansprucht, wird zum Leseprogramm der App für diese Dateien. Nichts wird installiert, bevor Sie auf **Installieren** klicken.
+
+Ist bereits ein Plugin mit demselben Bezeichner installiert, sagt der Dialog das und zeigt beide Versionen. Eine Aktualisierung liest sich damit als Aktualisierung („1.0.0 → 1.1.0"), und ein Schritt zurück wird als solcher benannt.
+
+## Bevor Sie eines installieren
+
+Ein Plugin ist ein Programm, das innerhalb von Peach Commander läuft — mit demselben Zugriff auf Ihre Dateien, den Peach Commander hat. Es gibt keine Sandbox darum herum. Installieren Sie Plugins nur aus Quellen, denen Sie vertrauen, so wie Sie es bei jedem anderen Programm täten.
+
+Aus dem Internet geladene Plugins kommen von macOS in Quarantäne. Mit der Installation erlauben Sie macOS, das Plugin zu laden — deshalb sagt der Bestätigungsdialog das ausdrücklich, und deshalb ist es Ihre Entscheidung und nichts, was still im Hintergrund geschieht.
 
 ## Ein Plugin entfernen
 
-1. Wählen Sie im Plugin-Fenster das Plugin in der Liste aus.
+1. Wählen Sie das Plugin im Plugin-Fenster in der Liste aus.
 2. Klicken Sie auf **Entfernen**. Eingebaute Funktionen bleiben unberührt; nur das ausgewählte Plugin wird entfernt.
+
+Ein mitgeliefertes Plugin kann nicht gelöscht werden — „Entfernen" schaltet es stattdessen aus.
 
 ## Hinweise
 
-- Die Plugin-Liste zeigt neben dem Namen und dem Speicherort jedes Plugins auch seinen Typ und seine Schnittstellenversion an, sodass Sie bestätigen können, was installiert ist.
-- Wenn keine Plugins installiert sind, zeigt das Fenster eine kurze Aufforderung, die Sie zu **Aus Ordner installieren…** weist.
-- Einige Plugins fügen ihre eigenen Spalten, Menüpunkte oder Panel-Orte nur hinzu, solange sie aktiviert sind. Wenn eine erwartete Funktion fehlt, prüfen Sie, ob ihr Plugin hier eingeschaltet ist.
+- Die Plugin-Liste zeigt neben Name und Speicherort auch Version, Typ und Schnittstellenversion, sodass Sie sehen können, was installiert ist.
+- Braucht ein Plugin eine neuere Version von Peach Commander als Ihre, wird es mit einer entsprechenden Meldung abgelehnt statt undurchschaubar zu scheitern. Umgekehrt gilt dasselbe: Ein Plugin für eine ältere Schnittstelle funktioniert weiter, solange diese Schnittstelle unterstützt wird.
+- Manche Plugins fügen ihre Spalten, Menüpunkte oder Panel-Orte nur hinzu, solange sie eingeschaltet sind. Fehlt eine erwartete Funktion, prüfen Sie hier, ob ihr Plugin aktiviert ist.
+- Wie man selbst ein Plugin schreibt oder veröffentlicht, steht in der Entwicklerdokumentation, nicht hier.

@@ -26,6 +26,11 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
         let entryPath: String?   // the plugin's original entry path (files only)
     }
 
+    /// The plugin's random-access handle for this archive, when it offers one (F-482).
+    private let readerLock = NSLock()
+    private var randomAccessChecked = false
+    private var randomAccess: PCXArchive.RandomAccessReader?
+
     /// Everything this mount extracted, removed when the mount goes away.
     private let tempLock = NSLock()
     private var tempRoot: URL?
@@ -105,9 +110,37 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
     }
 
     public func openRead(_ path: VFSPath) async throws -> VFSReadStream {
+        // The cheap route first, when the plugin offers one (F-482). Without it, showing the
+        // first line of a file inside a 4 GB image means extracting the whole member to a
+        // temporary file — and reaching that member means reading past every member before it,
+        // because ProcessFile can only act on whatever ReadHeaderEx last returned.
+        if let entryPath = entryPath(for: path), let reader = randomAccessReader() {
+            return PCXRandomAccessStream(reader: reader, entryPath: entryPath)
+        }
         let url = try extractToTemp(path)
         let data = (try? Data(contentsOf: url)) ?? Data()
         return PCXReadStream(data: data)
+    }
+
+    /// The plugin's entry path for a VFS path, or nil for a directory or a path we do not hold.
+    private func entryPath(for path: VFSPath) -> String? {
+        guard let node = nodes[Self.key(for: path.path)], !node.isDirectory else { return nil }
+        return node.entryPath
+    }
+
+    /// One random-access handle for this mount, opened on first use.
+    ///
+    /// Shared rather than per read: the archive staying open between reads is half of what the
+    /// export buys. Guarded by a lock because `openRead` can be reached from more than one task,
+    /// and by `nil` twice over — a plugin that does not offer random access must not be asked
+    /// again on every single read.
+    private func randomAccessReader() -> PCXArchive.RandomAccessReader? {
+        readerLock.lock()
+        defer { readerLock.unlock() }
+        if randomAccessChecked { return randomAccess }
+        randomAccessChecked = true
+        randomAccess = archive.openRandomAccess(archivePath: archivePath)
+        return randomAccess
     }
 
     public func openWrite(_ path: VFSPath, options: WriteOptions) async throws -> VFSWriteStream { throw VFSError.unsupported }
@@ -163,6 +196,9 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
 
     deinit {
         if let tempRoot { try? FileManager.default.removeItem(at: tempRoot) }
+        // The mount owns the archive handle, so this is where it is given back — the plugin was
+        // promised a CloseArchive for every OpenArchive.
+        randomAccess?.close()
     }
 
     private static func key(for path: String) -> String {
@@ -184,6 +220,49 @@ public final class PCXArchiveFS: VirtualFileSystem, @unchecked Sendable {
 
 /// Chunked in-memory read stream (mirrors PCArchive.ArchiveReadStream, including its slicing:
 /// building the chunks up front held the whole member a second time for the life of the stream).
+/// Reads one archive entry through the plugin's `ReadEntryData`, a chunk at a time (F-482).
+///
+/// Nothing is extracted and nothing is held in memory beyond the chunk in hand, which is the
+/// whole difference: `PCXReadStream` below has to be handed the member's entire contents first.
+final class PCXRandomAccessStream: VFSReadStream, @unchecked Sendable {
+    typealias Element = Data
+    private let reader: PCXArchive.RandomAccessReader
+    private let entryPath: String
+    private let chunkSize: Int64
+    private var offset: Int64 = 0
+    private var finished = false
+
+    init(reader: PCXArchive.RandomAccessReader, entryPath: String, chunkSize: Int64 = 1 << 20) {
+        self.reader = reader
+        self.entryPath = entryPath
+        self.chunkSize = Swift.max(1, chunkSize)
+    }
+
+    // The handle belongs to the mount and outlives any one stream, so closing a stream must not
+    // close it — the next read on this archive still needs it.
+    func close() async throws { finished = true }
+
+    func makeAsyncIterator() -> AsyncIterator { AsyncIterator(stream: self) }
+
+    fileprivate func readChunk() -> Data? {
+        guard !finished else { return nil }
+        guard let chunk = try? reader.read(entryPath: entryPath, offset: offset, length: chunkSize),
+              !chunk.isEmpty else {
+            finished = true
+            return nil
+        }
+        offset += Int64(chunk.count)
+        // A short chunk is the end of the entry; the next call would only confirm it.
+        if Int64(chunk.count) < chunkSize { finished = true }
+        return chunk
+    }
+
+    struct AsyncIterator: AsyncIteratorProtocol {
+        let stream: PCXRandomAccessStream
+        func next() async -> Data? { stream.readChunk() }
+    }
+}
+
 final class PCXReadStream: VFSReadStream, @unchecked Sendable {
     typealias Element = Data
     private let data: Data

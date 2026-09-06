@@ -8,6 +8,7 @@
 // DiscoveredPlugin values this produces.
 
 import Foundation
+import PCFoundation
 
 /// A bundle that passed manifest validation and has a binary to load.
 public struct DiscoveredPlugin: Sendable, Equatable {
@@ -29,6 +30,14 @@ public enum PluginLoadError: Error, Equatable {
     case unreadableInfoPlist
     case manifest(PluginManifestError)
     case missingBinary(String)   // expected path
+    /// The plugin asks for a newer app than this one — `PCPluginMinHostVersion` (F-482).
+    ///
+    /// Reported here rather than from the manifest parser because the requirement is about the
+    /// *host*, not about the file: the same bundle is perfectly valid on a newer build, and the
+    /// message a user needs is "update Peach Commander", not "this plugin is broken".
+    case hostTooOld(required: SemanticVersion, current: SemanticVersion)
+    /// The plugin needs a newer plugin API than this host implements.
+    case hostAPITooOld(required: Int, current: Int)
 }
 
 public struct PluginDiscoveryResult: Sendable {
@@ -79,6 +88,15 @@ public enum PluginHost {
         case .failure(let e):
             return .failure(.manifest(e))
         case .success(let manifest):
+            switch manifest.minHostVersion {
+            case .hostVersion(let required) where required > HostVersion.current:
+                return .failure(.hostTooOld(required: required, current: HostVersion.current))
+            case .apiLevel(let required) where required > PluginManifestParser.currentAPIVersion:
+                return .failure(.hostAPITooOld(required: required,
+                                               current: PluginManifestParser.currentAPIVersion))
+            case .hostVersion, .apiLevel, .none:
+                break
+            }
             let base = url.deletingPathExtension().lastPathComponent
             let binary = url.appendingPathComponent("Contents/MacOS/\(base)")
             guard fm.fileExists(atPath: binary.path) else {

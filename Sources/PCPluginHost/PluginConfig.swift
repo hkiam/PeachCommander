@@ -5,10 +5,17 @@
 //   [Plugins]                 ; most plugins are on unless listed here…
 //   Disabled=OldPacker;Broken
 //   Enabled=JavaDecompiler    ; …and opt-in ones are off until listed here (F-345)
-//   [PackerAssoc]             ; extension -> plugin name; consulted before built-ins
+//   [PackerAssoc]             ; extension -> plugin identifier; consulted before built-ins
 //   pak=SamplePacker
 //   cbz=SamplePacker
 // Extension keys are stored lowercased without a leading dot.
+//
+// The strings in the two sets and on the right of [PackerAssoc] are plugin *identifiers*
+// (`PCPluginIdentifier`, falling back to the display name) — not display names (F-482). They
+// used to be names, which meant a rename silently orphaned the user's setting, two plugins
+// sharing a name shared one on/off switch, and a name carrying a `;` was written out as two
+// entries and read back as neither. `migratedKeys(nameToIdentifier:)` rewrites a file from
+// before that change, once.
 
 import Foundation
 import PCFoundation
@@ -105,6 +112,41 @@ public struct PluginConfig: Equatable, Sendable {
     public mutating func setAssociation(ext: String, plugin: String?) {
         let key = Self.normalizeExt(ext)
         if let plugin, !plugin.isEmpty { packerAssoc[key] = plugin } else { packerAssoc[key] = nil }
+    }
+
+    // MARK: - Migration
+
+    /// This config with every name-keyed entry rewritten to the plugin's identifier, or nil when
+    /// nothing needed rewriting.
+    ///
+    /// Returning nil rather than an unchanged copy is the point: the caller writes the file back
+    /// only when there was something to write, so an already-migrated installation is not
+    /// rewritten on every launch, and a config that never had a stale entry keeps its mtime.
+    ///
+    /// An entry is only rewritten when the old name is present *and* the new identifier is not.
+    /// Without that, a second pass over a half-migrated file — or a plugin whose identifier
+    /// happens to equal another plugin's name — would move an entry that already meant the right
+    /// thing.
+    public func migratedKeys(nameToIdentifier: [String: String]) -> PluginConfig? {
+        guard !nameToIdentifier.isEmpty else { return nil }
+        func rewrite(_ set: Set<String>) -> Set<String> {
+            var out = set
+            for (name, identifier) in nameToIdentifier where out.contains(name) && !out.contains(identifier) {
+                out.remove(name)
+                out.insert(identifier)
+            }
+            return out
+        }
+        let newDisabled = rewrite(disabled)
+        let newEnabled = rewrite(enabled)
+        var newAssoc = packerAssoc
+        for (ext, value) in packerAssoc {
+            if let identifier = nameToIdentifier[value] { newAssoc[ext] = identifier }
+        }
+        guard newDisabled != disabled || newEnabled != enabled || newAssoc != packerAssoc else {
+            return nil
+        }
+        return PluginConfig(disabled: newDisabled, enabled: newEnabled, packerAssoc: newAssoc)
     }
 
     private static func normalizeExt(_ ext: String) -> String {
