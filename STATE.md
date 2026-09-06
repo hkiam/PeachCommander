@@ -115,14 +115,33 @@ because `regress-guest.sh` can deliver only `-KEY value` **arguments** and `S3En
 `sftp*` verbs work below that level — and quick-connect without a password risks the modal that hangs
 a run. So this is fixture work, not a scenario.
 
-**What the attempt did find, measured against a local copy of the fixture: an S3 rename the server
-refuses leaves no trace at all.** The server logs `PUT /demo-bucket/renamed.txt → 403`, the object
-keeps its old name, the panel keeps showing it — and four seconds later `keysend` reports
-`keyWindow=/demo-bucket`, `responder=PanelListView`. No alert, nothing said. Where the error is lost
-is **not** established: `moveObject`, `pcError` (403 → `PC_E_ECREATE`), `PFXFileSystem.rename` and
-`renameThroughFileSystem` all read correctly, and the loaded bundle is built from these sources
-(binary 26 Aug, sources 23 Aug). It is a pre-existing defect in a path this change made reachable —
-before it, Shift+F6 on a mount did nothing at all — and it is open.
+**What the attempt seemed to find — and what it actually was.** Measured against a local copy of the
+fixture, an S3 rename the server refuses looked as though it left no trace: the server logged
+`PUT … → 403`, the object kept its name, and four seconds later `keysend` reported
+`keyWindow=/demo-bucket`, `responder=PanelListView`. No alert. Instrumenting the path then showed
+`presentError` *was* reached and `runModal` returned on its own after 2.2 s and 5.2 s, which no alert
+does.
+
+**It was the measurement.** Re-run on 2026-09-06 the alert stays up: three runs on the current build
+and two on the *same old binary* that had shown the early return, all five killed by the harness's own
+timeout with the modal still standing, and `modaldump` reads it —
+
+```
+modal=true
+text=Umbenennen
+text=1 Datei(en) wurden nicht umbenannt: ⏎ hello.txt
+```
+
+The likeliest explanation is the plainest one: those measurements were taken on this Mac while
+somebody was at the keyboard testing the app, and a stray Return or Escape closes an alert in whatever
+window is frontmost — the automation-launched app activates itself. Which is the whole reason the VM
+harness exists, and the reason to distrust a *local* run whose subject is a modal. There is no defect
+here: a rename a mount refuses is reported.
+
+What the alert does not say is *why*. `renameThroughFileSystem` collects failures as bare names, while
+the local path reports `name: reason`, and a `VFSError` has no user-facing text anywhere in the app to
+put there — mapping the cases into nineteen languages is its own piece of work, not a footnote to this
+one.
 
 One tidy-up fell out of the string catalogue. `Replace "%@"?` already existed for the copy-conflict
 dialog with **straight** quotes — the only key in the catalogue that had them, against 56 with
