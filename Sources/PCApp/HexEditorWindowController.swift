@@ -328,6 +328,8 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
     private let editor: HexEditorView
     private let statusLabel = NSTextField(labelWithString: "")
     private var didBackup = false
+    /// The file's bytes never arrived, so the grid is not the file (see `init`).
+    private var readFailed = false
     private var lastFind: [UInt8] = []
     private var findDialog: InputDialog?
     // Strings panel (F-489), collapsed until asked for. It scans the *edited* bytes rather
@@ -346,7 +348,12 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
 
     init(path: String) {
         self.path = path
-        let bytes = (try? Data(contentsOf: URL(fileURLWithPath: path))).map { Array($0) } ?? []
+        // `?? []` used to stand alone here, and an empty document is what an empty *file* looks like —
+        // so a read that failed opened as one and Save wrote that over the content. A write-only file
+        // (`chmod 222`) is the plain case: unreadable, writable, and nothing on screen said so.
+        let read = try? Data(contentsOf: URL(fileURLWithPath: path))
+        self.readFailed = read == nil
+        let bytes = read.map { Array($0) } ?? []
         self.doc = HexDocument(bytes)
         self.editor = HexEditorView(doc: doc)
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 760, height: 560),
@@ -613,6 +620,13 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
     }
 
     @objc private func save() {
+        // The bytes never arrived, so the grid is not the file: writing it would empty what nobody
+        // could read.
+        if readFailed {
+            window?.subtitle = String(localized: "The file could not be read, so it will not be overwritten.")
+            NSSound.beep()
+            return
+        }
         if DocumentFile.writeWithBackup(Data(doc.bytes), toPath: path, didBackup: &didBackup) {
             doc.markSaved()
             editor.needsDisplay = true

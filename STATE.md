@@ -26,6 +26,40 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — pass two, and the defect was the same sentence three times
+
+The second half of the audit: the synchronous reads on the main actor, sorted by where the path comes
+from. Most are a theme, a keymap, a plugin's config — local, small, nobody's problem. The ones that
+matter take a path the user picked in a panel, and there the same line kept appearing:
+
+```
+let data = (try? Data(contentsOf: …)) ?? Data()     // EditorWindowController
+let bytes = (try? Data(contentsOf: …)).map { … } ?? []   // HexEditorWindowController
+ACLEntry.parse(lsOutput: run(…) ?? "")              // ACLStore, fixed earlier today
+```
+
+Three places, one mistake: **a read that failed is written down as a result that is empty**, and empty
+is a legitimate answer, so nothing downstream can tell them apart. In all three the next step writes
+that answer back.
+
+**Demonstrated rather than argued**, because the first attempt looked harmless: opening an unreadable
+file (`chmod 000`) shows the read-only lock, so the window does say *something* and Save is blocked
+anyway. The case that matters is `chmod 222` — write-only: unreadable by anyone, writable by its
+owner. Measured before the fix, the editor's status line read `Einfach   UTF-8` and nothing else, over
+an empty view, for a file with three lines in it. Saving was allowed. A stalled mount and an evicted
+cloud file arrive at the same place.
+
+Both editors now separate the two, say which happened, and refuse to overwrite what they could not
+read — Save As stays open, since writing it elsewhere loses nothing. `editor-unreadable` holds it, and
+asserts the *sentence* rather than the emptiness: `count=0` is true of an empty file too and would
+pass on the broken build. Its seed reports whether the file really was unreadable, because as root, or
+on a volume mounted without permissions, `chmod 222` does not stop a read and the scenario would go
+green having tested the ordinary path.
+
+The one left alone: `DiffWindowController` checks its size limit *after* `Data(contentsOf:)`, which
+maps rather than copies, so locally it costs nothing. Noted, not touched.
+
+
 ## 2026-09-06 — looking for the same defect class again, and what it was worth
 
 The DNS freeze was a blocking call on the main thread, found by accident. So: is there more of it?

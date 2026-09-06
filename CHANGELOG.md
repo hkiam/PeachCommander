@@ -83,6 +83,15 @@ does not have.
   rename is not a collision at all — and it is asked only on the local disk, because out on a mount
   the path names a place that exists nowhere on this Mac.
 
+- **A file the editor could not read opened as an empty one — and saving wrote that over it.** Both
+  the text editor and the hex editor loaded with `?? Data()` / `?? []`, and an empty document is
+  exactly what an empty *file* looks like, so a read that failed was indistinguishable from one that
+  succeeded on nothing. Nothing on the window said otherwise, and ⌘S then replaced the content with
+  what was on screen. The plain case is a write-only file (`chmod 222`): unreadable by anyone,
+  writable by its owner, so not even the read-only lock appeared — a stalled network mount and an
+  evicted cloud file end the same way. The status line now says `could not be read — this is not the
+  file's content`, and Save refuses. Save As still works: writing this somewhere else loses nothing.
+
 - **An ACL that could not be read was silently replaced by an empty one.** The editor reads a path's
   access-control list with `ls -led` and writes it back by clearing the list (`chmod -N`) and adding
   each row. The read was `run(…) ?? ""`, so a command that did not answer parsed to *no entries* —

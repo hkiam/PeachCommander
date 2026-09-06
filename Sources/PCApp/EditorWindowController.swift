@@ -53,6 +53,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private var encoding: TextEncodingChoice = .utf8
     /// Whether this file can be written, determined at load (F-357).
     private var writability: FileWritability = .writable
+    /// The file's bytes never arrived, so what is on screen is not the file (see `loadFile`).
+    private var readFailed = false
     /// Which line terminators the document contains (F-358).
     private var lineEndingSurvey = LineEndingSurvey(lf: 0, crlf: 0, cr: 0)
     private var language: SyntaxLanguage?
@@ -548,7 +550,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         // Ask at load, not at save (F-357). Finding out after ten minutes of editing that the file
         // cannot be written is the part that wastes the ten minutes.
         writability = FileWritabilityCheck.check(path: path)
-        let data = (try? Data(contentsOf: URL(fileURLWithPath: path))) ?? Data()
+        // `?? Data()` used to stand here, and an empty document is what a file that *is* empty looks
+        // like — so a read that failed opened as one, silently, and ⌘S then wrote that over the
+        // content. Not hypothetical: a write-only file (`chmod 222`) is readable by nobody and
+        // writable by its owner, so nothing about the window said anything was wrong. A stalled
+        // mount and an evicted cloud file end the same way.
+        let read = try? Data(contentsOf: URL(fileURLWithPath: path))
+        readFailed = read == nil
+        let data = read ?? Data()
         // Through `EncodingDetector.decode`, which strips the byte-order mark: `String(data:encoding:)`
         // keeps it for UTF-16, so a UTF-16 file used to open with an invisible U+FEFF as its first
         // character — the caret's column was off by one on line 1, and saving wrote the marker into the
@@ -751,6 +760,13 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     @objc private func save() {
+        // The bytes never arrived, so the view is not the file and writing it would replace content
+        // nobody could read. Save As stays open: putting this somewhere else loses nothing.
+        if readFailed {
+            window?.subtitle = String(localized: "The file could not be read, so it will not be overwritten.")
+            NSSound.beep()
+            return
+        }
         let text = textView.string
         guard let data = text.data(using: encoding.encoding) ?? text.data(using: .utf8) else {
             NSSound.beep(); return
@@ -1158,9 +1174,12 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
             ?? String(localized: "Plain")
         let crumb = symbolPathText.isEmpty ? "" : "   ▸ \(symbolPathText)"
         let readOnly = writabilityNote.isEmpty ? "" : "   —   \(writabilityNote)"
+        // Before anything about writing: that the view is not the file outranks how it may be saved.
+        let unreadable = readFailed
+            ? "   —   " + String(localized: "could not be read — this is not the file's content") : ""
         // Only when there is something to say: a one-line file has no terminator to report.
         let endings = lineEndingSurvey.isEmpty ? "" : "   \(lineEndingSurvey.displayName)"
-        statusLabel.stringValue = "\(langName)   \(encoding.displayName)\(endings)\(isDirty ? "   —   \(String(localized: "modified"))" : "")\(readOnly)\(crumb)"
+        statusLabel.stringValue = "\(langName)   \(encoding.displayName)\(endings)\(isDirty ? "   —   \(String(localized: "modified"))" : "")\(unreadable)\(readOnly)\(crumb)"
     }
 
     /// What the status line says about writing this file, and what the user can do about it.

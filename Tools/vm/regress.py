@@ -1167,6 +1167,21 @@ SCENARIOS = [
                        "keysend ESC|asis|/Users/admin/rename-escape-key.txt", "wait 900",
                        "left /Users/admin/pc-esc/inner", "wait 1500",
                        "dump /Users/admin/rename-escape.txt"], 12),
+    # A file the editor cannot READ (F-357). `chmod 222` is the plain case — unreadable by anyone,
+    # writable by its owner — and it used to open as an empty document with nothing on the window to
+    # say so, because `?? Data()` makes a failed read look exactly like a file that is empty. ⌘S then
+    # wrote that over the content. The status line has to say which of the two it is; the scenario
+    # asserts the sentence, because "the document is empty" is true in both cases and proves nothing.
+    #
+    # The seed reports whether the file really is unreadable: run as root, or on a volume mounted
+    # without permissions, `chmod 222` does not stop a read and the scenario would pass having tested
+    # the readable path.
+    ("editor-unreadable", ["probe /Users/admin/editor-unreadable-seed.txt|"
+                           "mkdir -p ~/pc-unread && printf 'eins\\nzwei\\ndrei\\n' > ~/pc-unread/wo.txt && "
+                           "chmod 222 ~/pc-unread/wo.txt && "
+                           "(cat ~/pc-unread/wo.txt >/dev/null 2>&1 && echo readable || echo unreadable)",
+                           "wait 600",
+                           "editdump /Users/admin/pc-unread/wo.txt /Users/admin/editor-unreadable.txt"], 14),
     # A rename onto a name that is already taken (F-081). The conflict is the copy dialog, asked
     # about one item, so all three answers that can change the outcome are exercised here.
     #
@@ -2460,6 +2475,12 @@ REPORTS = {
     "rename-escape-key": ("/Users/admin/rename-escape-key.txt",
                           ["keyWindow=~/pc-esc",
                            "responder=NSTextView(editing NSTextField)"]),
+    # The window says the bytes never arrived. `count=0` would be true for an empty file too, so the
+    # sentence is the assertion and the emptiness is not.
+    "editor-unreadable": ("/Users/admin/editor-unreadable.txt",
+                          ["could not be read — this is not the file's content"]),
+    # …and that the file really was unreadable, or the line above tested nothing.
+    "editor-unreadable-seed": ("/Users/admin/editor-unreadable-seed.txt", ["unreadable"]),
     # After the overwrite: `a.txt` is gone into `b.txt`, and the two bystanders are still there.
     # `!a.txt` is the claim that the rename happened at all — a build that refused would leave it —
     # and `c.txt` is the bystander, so "the folder was emptied" cannot pass for "the file replaced".
