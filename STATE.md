@@ -41,7 +41,10 @@ The runner now says it twice: `NSLog` for a local run, which every note in the v
 leans on, and `PCFoundationLogger.logger` for the unified log. With `privacy: .public`, which is not a
 detail — `os.Logger` redacts interpolated strings by default, which is why so much of these logs reads
 `<private>`, and a trace of `> <private>` would have been worth no more than the silence. A guest log
-now carries 29 lines of trace for `rename-replace`, in the order the verbs ran.
+now carries 29 lines of trace for `rename-replace`, in the order the verbs ran, and after a full run
+**146 of the 149 saved logs** have one — the three that do not (`editor-filter-dialog`,
+`settings-search`, `terminal-skeleton`) belong to scenarios that no longer exist and are stale
+artefacts nothing rewrites.
 
 
 ## 2026-09-06 — the settle became the cap, and my estimate was 2× off
