@@ -26,6 +26,50 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-06 — where the regression suite's 101 minutes went: a blocking DNS lookup
+
+Asked to speed the suite up, and told to measure before rebuilding. Which was the right order,
+because every guess I had was wrong.
+
+**What I expected:** the fixed `settle` sleeps (2028 s over 146 scenarios) and `log show` on the
+guest. **What the measurement said:** `log show` costs 0.6–2.5 s, ssh and the screenshot 0.8 s, and
+the settles are *absorbed* — they run before the wait for the scenario's report, and the report
+arrives later anyway, so shortening them would have bought nothing. What dominated was one number:
+**36 s of app launch, 146 times over — 87 of the 101 minutes.**
+
+That number is not a VM artefact. The app starts locally in **0.6 s**; `open` and running the binary
+directly took the same 36 s in the guest, so it was not LaunchServices either. `/usr/bin/sample`
+mid-stall gave the main thread:
+
+```
+EscapeSequenceParser.dispatchOsc → Terminal.oscSetCurrentDirectory
+  → TerminalSession.localPath(fromOSC7:) → ProcessInfo.hostName.getter
+    → -[NSHost blockingResolveUntil:] → semaphore_wait_trap
+```
+
+`ProcessInfo.processInfo.hostName` is `NSHost.name`, and that is a **blocking reverse DNS lookup on
+the main thread**, inside the handler a shell triggers on every directory change. In the guest no
+resolver answers, so it waited out the timeout twice: 10.6 s, then 24.4 s. `gethostname(2)` replaces
+it — read once, no resolver, and the name the shell itself writes into the OSC 7 payload, so the
+comparison is also more nearly right than it was.
+
+`reportwait` per scenario went from 27–30 s to **0.0 s** across the board, and the full suite from
+101 minutes to **43**, still 146 of 146 green — `terminal-follow`, which is the scenario over this
+exact path, included. And the freeze was never only ours: a VPN, a captive portal, or being offline with a
+search domain set puts a real user in the same wait.
+
+**Two lessons, both about measuring.** The log gaps pointed at IconServices and LaunchServices —
+`ISImage reported a placeholder`, `LSExceptions … invalidated for timeout` sat exactly at the two
+stalls — and following that reading would have been an afternoon in the wrong subsystem. Only the
+sampled *stack* named the caller. And the profitable question was not "how do I make the harness
+parallel" but "what is it waiting for": parallelism across four VMs would have hidden this bug behind
+a 4× speed-up and shipped the freeze to every user.
+
+**Still open from the same audit:** the guest logs the harness saves
+(`docs/generated/layout-regression/*.log`) contain no `[automation]` lines at all — not truncated,
+absent — so the trace of which verbs ran is missing exactly where a failing scenario needs it.
+
+
 ## 2026-09-06 — the dialog I built instead of the one that was already there
 
 Two mistakes, both mine, both found by the person who asked for the feature trying it.

@@ -83,6 +83,19 @@ does not have.
   rename is not a collision at all — and it is asked only on the local disk, because out on a mount
   the path names a place that exists nowhere on this Mac.
 
+- **The terminal froze the window for half a minute whenever DNS was slow.** A shell reports its
+  working directory with an OSC 7 escape sequence — `file://hostname/path` — and the plugin checks
+  the host part, because an `ssh` session inside the terminal reports the *remote* directory and
+  steering the local panel there would be quietly wrong. That check asked
+  `ProcessInfo.processInfo.hostName`, which is `NSHost.name`, which does a **blocking reverse DNS
+  lookup** — on the main thread, on every directory change. Where nothing answers it waits out the
+  resolver: measured at 10.6 s and then 24.4 s, **36 seconds of dead window**. Anyone on a VPN,
+  behind a captive portal, or offline with a search domain set was in the same wait; it stayed
+  invisible in normal use because a warm resolver answers instantly. It now asks the kernel with
+  `gethostname(2)`, once, which is also the more correct comparison: that is the name the shell
+  itself puts in the payload. Found while auditing why the regression suite took 101 minutes — the
+  same freeze was 87 of them, and the suite now runs in about 40.
+
 - **A rename a server refuses now says why.** All a mount could report was the name — "1 file(s) were
   not renamed: hello.txt" — while the local path has always said `name: reason`. For the thing a
   server refuses most often, permission, that left the reader with no way to tell whether to try

@@ -367,6 +367,27 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         onChange?()
     }
 
+    /// This machine's name, asked of the kernel rather than of a resolver.
+    ///
+    /// `ProcessInfo.processInfo.hostName` — which stood here — is `NSHost.name`, and that does a
+    /// **blocking reverse DNS lookup**. On the main thread, inside the handler a shell triggers on
+    /// every directory change. Where nothing answers, it waits out the resolver's timeout: measured
+    /// in the test VM at 10.6 s and then 24.4 s, so **36 seconds of frozen window per launch** —
+    /// which turned out to be 87 of the regression suite's 101 minutes. The same freeze is waiting
+    /// for anyone on a VPN, behind a captive portal, or simply offline with a search domain set; it
+    /// stays invisible here only because a warm resolver answers instantly.
+    ///
+    /// `gethostname(2)` is also the *better* comparison, not merely the faster one: it returns the
+    /// name the kernel holds, which is the name the shell itself puts into the OSC 7 payload.
+    /// Read once — the name does not change under a running session — and empty if the call fails,
+    /// which refuses the path. Refusing is the safe direction: accepting a remote one would steer
+    /// the local panel somewhere it should not go, which is the whole point of this check.
+    private static let machineName: String = {
+        var buffer = [CChar](repeating: 0, count: 256)
+        guard gethostname(&buffer, buffer.count - 1) == 0 else { return "" }
+        return String(cString: buffer)
+    }()
+
     /// Turn an OSC 7 payload into a local directory path, or nil if it is not one.
     ///
     /// The emulator hands the sequence's contents over verbatim — `file://host/path`, percent-encoded
@@ -383,7 +404,7 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         let host = url.host ?? ""
         if !host.isEmpty, host.lowercased() != "localhost" {
             let short = { (name: String) in name.split(separator: ".").first.map(String.init)?.lowercased() ?? "" }
-            guard short(host) == short(ProcessInfo.processInfo.hostName) else { return nil }
+            guard short(host) == short(machineName) else { return nil }
         }
         let path = url.path
         return path.isEmpty ? nil : path
