@@ -66,6 +66,27 @@ does not have.
 
 ### Fixed
 
+- **A rename onto a name that is already taken asks instead of refusing.** Both ways in — the in-cell
+  editor and the Shift+F6 dialog — stopped at an "already exists" alert whose only way out was
+  retyping the name, so the one thing being attempted could not be done at all. They now offer to
+  replace what is there, and dispose of it the way the panel's own delete does (`DeleteToTrash`),
+  saying which of the two it will be: a file silently gone for good is the outcome nobody can take
+  back. Two mistakes in the old check went with it. It asked `fileExists`, which follows a symlink,
+  so a dangling link read as absent while still holding the name a rename has to land on; and on a
+  case-insensitive volume `notes.txt` → `Notes.txt` found the file being renamed sitting on its own
+  target and refused it. The question is now an `lstat` comparing device and inode, so a case-only
+  rename is not a collision at all — and it is asked only on the local disk, because out on a mount
+  the path names a place that exists nowhere on this Mac.
+
+- **Shift+F6 did nothing whatsoever on a server or plugin mount.** `isInArchive` is defined as
+  `!(fs is LocalFS)`, so every mount arrived in the archive branch, found no zip path and returned
+  without a word — and `PfxRenMov`, the plugin rename operation, documented and tested, had no route
+  from the keyboard at all. The rename itself had been waiting in `performRenames`, which sends a
+  non-local pair through the panel's own filesystem; only that gate kept it from ever being reached.
+  A second, identical gate sat behind it and outlived the first fix silently: `cursorItemName()`
+  carries its own `guard fs is LocalFS`, rightly so — it exists for link creation, and a symlink has
+  to be made on a disk — so the rename now asks a question that is about the name, not the volume.
+
 - **Find Previous is in the viewer's menu.** Shift+F3 had always worked — the command is
   implemented and the key handler calls it — but the menu never listed it, so it was reachable only
   by knowing it was there.

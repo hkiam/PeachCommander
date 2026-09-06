@@ -3177,11 +3177,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Prefer in-cell editing (F-081); falls back to the dialog for archives,
         // remote mounts, and the grid view modes.
         if panel.beginInlineRename() { return }
-        // Inside a non-rewritable mount (plugin/network) renaming is unsupported.
-        let inArchive = panel.isInArchive
+        // A *real* archive, not merely "not the local disk". `isInArchive` is defined as
+        // `!(fs is LocalFS)`, so every server and every plugin mount arrived here, found no zip path
+        // and returned without a word: out there Shift+F6 did nothing at all, and `PfxRenMov` — the
+        // plugin rename operation, documented and tested — had no route from the keyboard. The rename
+        // itself has been waiting in `performRenames`, which sends a non-local pair through the
+        // panel's own filesystem; only this gate kept it from ever being reached.
+        let inArchive = panel.currentFileSystem is ArchiveFS
         if inArchive, panel.currentArchiveZipPath == nil { return }
         Task { @MainActor in
-            guard let name = await panel.cursorItemName() else { return }
+            guard let name = panel.cursorEntryName() else { return }
             let dir = await panel.getCurrentPath()
             let dialog = InputDialog(title: String(localized: "Rename"),
                                      prompt: String(localized: "New name:"), initialValue: name)
@@ -3211,13 +3216,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     }
                     return
                 }
-                let target = (dir as NSString).appendingPathComponent(trimmed)
-                if FileManager.default.fileExists(atPath: target) {
-                    self?.presentInfo(String(localized: "Rename"),
-                                      String(format: NSLocalizedString("An item named “%@” already exists.", comment: ""), trimmed))
-                    return
-                }
                 Task { @MainActor in
+                    // A name that is already taken is a question, not a refusal: the same one the
+                    // in-cell editor asks, so the two ways into a rename cannot answer it differently.
+                    guard await panel.clearTargetForRename(dir: dir, old: name, new: trimmed) else { return }
                     _ = self?.activePanel?.performRenames(dir: dir, pairs: [(old: name, new: trimmed)])
                     await self?.activePanel?.reload()
                 }
@@ -9036,6 +9038,18 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// The cursor item's leaf name (local FS only), for link creation.
     func cursorItemName() async -> String? {
         guard fs is LocalFS, let p = cursorFilePath() else { return nil }
+        return (p as NSString).lastPathComponent
+    }
+
+    /// The cursor item's leaf name on whatever this panel is showing, a server or plugin mount
+    /// included.
+    ///
+    /// `cursorItemName` above is deliberately local-only, and rightly so: it exists for link
+    /// creation, and a symlink has to be made on a disk. A rename does not — the mount performs its
+    /// own — so asking it that question was the second thing that left Shift+F6 dead out there, and
+    /// it silently outlived the fix to the gate in `showRenameFile`.
+    func cursorEntryName() -> String? {
+        guard let p = cursorFilePath() else { return nil }
         return (p as NSString).lastPathComponent
     }
 

@@ -1167,6 +1167,53 @@ SCENARIOS = [
                        "keysend ESC|asis|/Users/admin/rename-escape-key.txt", "wait 900",
                        "left /Users/admin/pc-esc/inner", "wait 1500",
                        "dump /Users/admin/rename-escape.txt"], 12),
+    # A rename onto a name that is already taken (F-081). The panel is put in BRIEF view first, and
+    # that is the whole reason this scenario can test anything: in details view `cm_RenameOnly` takes
+    # the in-cell path, no `InputDialog` is ever built, and the queued name would sit unused while the
+    # run went green. Brief view is the fallback branch, which is the one that asks with a dialog.
+    #
+    # Both answers in one run, cancel first: the confirmation is a *queue*, and a single-slot
+    # implementation would answer the second question with the first reply and look identical here.
+    # The cancel evidence has to be taken while it still exists — `-kept` is probed between the two
+    # renames, because by the end `a.txt` is gone on purpose and "all three files are there" would be
+    # false for the right reason.
+    ("rename-replace", ["probe /Users/admin/rename-replace-seed.txt|"
+                        "mkdir -p ~/pc-rep && printf 'source' > ~/pc-rep/a.txt && "
+                        "printf 'target' > ~/pc-rep/b.txt && printf 'keep' > ~/pc-rep/c.txt && "
+                        "ls ~/pc-rep | wc -l | tr -d ' '",
+                        "active left", "left /Users/admin/pc-rep", "wait 1500",
+                        "cmd cm_SrcShort", "wait 900",
+                        "focus a.txt", "wait 400",
+                        "replaceanswer cancel", "answer b.txt",
+                        "cmd cm_RenameOnly", "wait 1500",
+                        "probe /Users/admin/rename-replace-kept.txt|ls ~/pc-rep | tr '\\n' ' '",
+                        "focus a.txt", "wait 400",
+                        "replaceanswer replace", "answer b.txt",
+                        "cmd cm_RenameOnly", "wait 2000",
+                        "replaceanswersleft /Users/admin/rename-replace-asked.txt", "wait 300",
+                        "dump /Users/admin/rename-replace.txt"], 16),
+    # Shift+F6 on a plugin mount (F-081). It used to do nothing at all out there: `isInArchive` is
+    # `!(fs is LocalFS)`, so every mount went down the archive branch, found no zip and returned in
+    # silence — and a second gate of the same kind sat behind it in `cursorItemName()`.
+    #
+    # `procfile` rather than `focus`: a process row is named with its pid, which no expectation can
+    # know in advance, and the search leaves the cursor on the holder it found. Without it the cursor
+    # sits on `..`, where a rename is correctly refused — and this would pass for the old reason.
+    #
+    # The queued name is `..` ON PURPOSE, and must stay invalid. It is enough to prove the claim: the
+    # answer is consumed only if the dialog was built, which is the gate. A valid name would go on to
+    # `PfxRenMov`, which the Task Manager does not implement, and the failure is reported with
+    # `runModal` — the run would hang on an alert nothing can click.
+    ("rename-mount", ["mkfile /Users/admin/rn-target.txt",
+                      "probe /Users/admin/rename-mount-holder.txt|"
+                      "nohup tail -f /Users/admin/rn-target.txt >/dev/null 2>&1 & sleep 1; "
+                      "pgrep -x tail >/dev/null && echo holder-running || echo holder-missing",
+                      "active left", "pfxmount TaskManager", "wait 3000",
+                      "procfile /Users/admin/rn-target.txt", "wait 900",
+                      "viewdump /Users/admin/rename-mount-cursor.txt", "wait 300",
+                      "answer ..",
+                      "cmd cm_RenameOnly", "wait 1500",
+                      "answersleft /Users/admin/rename-mount.txt"], 14),
     # Going up to a parent that cannot be listed must not move the tab (F-445). `goUp` was the one
     # navigation that updated the tab without waiting to hear whether the listing arrived — the two
     # `loadDirectory` overloads have guarded it since F-445 — so the panel stayed on the child while
@@ -1839,6 +1886,11 @@ EXTERNAL_CHECKS = {
     # the session restored the startup disk's root and called it the same tab. One line, in the left
     # panel: the right one writes the key empty, which is what makes counting the answer here.
     "drive-plugin": ("grep -c '^Tab0Drive=pfxmount:' ~/pc-cfg/session.ini 2>/dev/null || echo 0", "1"),
+    # The replaced file holds the source's bytes and the source name is gone — asked of the disk,
+    # because the panel drawing "b.txt" says nothing about which file is behind that name.
+    "rename-replace": ("cat ~/pc-rep/b.txt 2>/dev/null; "
+                       "test -e ~/pc-rep/a.txt && echo ' a-survived' || echo ' a-gone'",
+                       "source a-gone"),
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
     # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
     # not working, "server-not-running" means the witness died and the run proves nothing, and only
@@ -2380,6 +2432,26 @@ REPORTS = {
     "rename-escape-key": ("/Users/admin/rename-escape-key.txt",
                           ["keyWindow=~/pc-esc",
                            "responder=NSTextView(editing NSTextField)"]),
+    # After the replace: two files, and the one that was renamed onto is the survivor. `!a.txt` is the
+    # claim that the rename happened at all — a build that refused would leave three names here — and
+    # `c.txt` is the bystander, so "the folder was emptied" cannot pass for "the file was replaced".
+    "rename-replace": ("/Users/admin/rename-replace.txt",
+                       ["path=/Users/admin/pc-rep", "count=2", "b.txt", "c.txt", "!a.txt"]),
+    # Both questions were really put. Without this a build that replaced silently — no confirmation at
+    # all, which is the behaviour being guarded against — leaves exactly the files this expects.
+    "rename-replace-asked": ("/Users/admin/rename-replace-asked.txt", ["false"]),
+    # Cancel changed nothing, asked between the two renames.
+    "rename-replace-kept": ("/Users/admin/rename-replace-kept.txt", ["a.txt b.txt c.txt"]),
+    # The fixture built: three files in pc-rep.
+    "rename-replace-seed": ("/Users/admin/rename-replace-seed.txt", ["3"]),
+    # The rename dialog opened on a plugin mount: the queued name was consumed, so something asked for
+    # it. On the broken build nothing does and this reads `true`.
+    "rename-mount": ("/Users/admin/rename-mount.txt", ["false"]),
+    # And it was asked about a real row. `!cursor=..` is what rules out the vacuous pass: on `..` the
+    # rename is refused for a reason that has nothing to do with the mount.
+    "rename-mount-cursor": ("/Users/admin/rename-mount-cursor.txt", ["cursor=tail (", "!cursor=.."]),
+    # The holder started; without it the file search answers "nobody" correctly and proves nothing.
+    "rename-mount-holder": ("/Users/admin/rename-mount-holder.txt", ["holder-running"]),
     # The fixture built: three entries in pc-esc (two files and inner).
     "rename-escape-seed": ("/Users/admin/rename-escape-seed.txt", ["3"]),
     # The panel after Ctrl+PageUp into a parent it may not read. `tabs=*child` is the assertion and

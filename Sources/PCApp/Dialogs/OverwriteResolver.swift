@@ -88,7 +88,7 @@ final class InteractiveResolver: OperationResolver, @unchecked Sendable {
         return await MainActor.run {
             let alert = NSAlert()
             alert.alertStyle = .warning
-            alert.messageText = String(localized: "Replace \"\(target.name)\"?")
+            alert.messageText = String(localized: "Replace “\(target.name)”?")
             alert.informativeText = Self.overwriteInfo(source: source, target: target)
             alert.accessoryView = Self.previewAccessory(source: source, target: target)   // F-086
 

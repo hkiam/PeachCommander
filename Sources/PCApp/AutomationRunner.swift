@@ -15,6 +15,8 @@
 //   drivedisconnect <name>  hang up an open connection from its drive chip, as its ⏏ does
 //   typeahead <seq>|<out>   type into the active panel's quick search (\\b = Backspace, \\e = Esc)
 //   wait  <ms>            sleep (let an async connect/list settle)
+//   replaceanswer replace|cancel  answer the rename's "name is taken" alert (F-081)
+//   replaceanswersleft <out>      whether that answer went unused (i.e. nothing asked)
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
 //   drivebardump <file>   write the active panel's path + the drive chip shown as current
@@ -127,6 +129,17 @@ extension MainWindowController {
                 let format = pa.count == 2
                     ? PackFormat.allCases.first(where: { $0.fileExtension == pa[1] }) : nil
                 PackOptionsDialog.queueScriptedName(pa[0], format: format)
+            case "replaceanswer":                       // replaceanswer replace|cancel (F-081)
+                // The rename's "this name is taken" question. Its own verb rather than `answer`:
+                // that one feeds `InputDialog`, and this is an NSAlert — which a script cannot click
+                // and which hangs the run if it is ever really shown.
+                ReplaceConfirmation.queueScriptedAnswer(arg.lowercased().hasPrefix("r"))
+            case "replaceanswersleft":                  // replaceanswersleft <out>
+                // The other half, for the same reason `answersleft` exists: a build that replaced
+                // without asking would otherwise leave exactly the same files behind as one that
+                // asked and was told to go ahead.
+                try? "\(ReplaceConfirmation.hasScriptedAnswers)\n".write(toFile: arg, atomically: true,
+                                                                        encoding: .utf8)
             case "answersleft":                         // answersleft <out>: how many queued answers were NOT used
                 // The other half of `answer`: a scenario that expected a prompt and got none would
                 // otherwise pass quietly, having tested nothing at all.

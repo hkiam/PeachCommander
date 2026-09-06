@@ -610,19 +610,95 @@ extension PanelController {
         guard RenameValidator.isValid(new) else { NSSound.beep(); return }
         Task { @MainActor in
             let dir = await getCurrentPath()
-            let target = (dir as NSString).appendingPathComponent(new)
-            if FileManager.default.fileExists(atPath: target) {
-                let alert = NSAlert()
-                alert.messageText = String(localized: "Rename")
-                alert.informativeText = String(
-                    format: NSLocalizedString("An item named “%@” already exists.", comment: ""), new)
-                alert.runModal()
+            guard await clearTargetForRename(dir: dir, old: old, new: new) else {
+                // The cell is still holding the name the user typed, so a rename that is not going to
+                // happen has to draw the old one back rather than leave the panel lying about the file.
+                await reload()
+                tableView.focusEntry(named: old)
                 return
             }
             _ = performRenames(dir: dir, pairs: [(old: old, new: new)])
             await reload()
             tableView.focusEntry(named: new)
         }
+    }
+
+    /// Clear the way for renaming `old` to `new` in `dir`.
+    ///
+    /// True when the rename may go ahead: nothing holds the name, the name is held by the very file
+    /// being renamed, or the user chose to replace what is there and it has been disposed of. False
+    /// when the rename must not happen — the user declined, or the replacement failed, which is
+    /// reported here. The caller repaints; only it knows what it was showing.
+    ///
+    /// Shared by both ways into a rename, the in-cell editor and the Shift+F6 dialog (F-081). Both
+    /// used to stop at an "already exists" alert whose only way out was retyping the name, so the one
+    /// thing the user was trying to do — put this file under that name — could not be done at all.
+    func clearTargetForRename(dir: String, old: String, new: String) async -> Bool {
+        // Only the local disk can be asked this. Out on a mount `dir` names a place that exists
+        // nowhere on this Mac, so `lstat` would either say "free" about a name the server is holding
+        // or — worse, for a mount whose paths look like local ones — offer to trash a real local file
+        // that has nothing to do with the rename. The mount accepts or refuses on its own terms.
+        guard currentFileSystem is LocalFS else { return true }
+        let source = (dir as NSString).appendingPathComponent(old)
+        let target = (dir as NSString).appendingPathComponent(new)
+        guard let taken = entryStat(target), !isSameEntry(taken, entryStat(source)) else { return true }
+        let toTrash = await config.bool("Operation", "DeleteToTrash", default: true)
+        guard confirmReplace(name: new, isDirectory: (taken.st_mode & S_IFMT) == S_IFDIR,
+                             toTrash: toTrash) else { return false }
+        do {
+            let engine = DeleteEngine(control: OperationControl())
+            if toTrash { try await engine.moveToTrash(items: [target]) }
+            else { try await engine.permanentDelete(items: [target]) }
+            return true
+        } catch {
+            presentError(String(localized: "Rename"),
+                         detail: String(localized: "“\(new)” could not be replaced: \(error)"))
+            return false
+        }
+    }
+
+    /// Ask whether the item already holding `name` should make way for the rename.
+    ///
+    /// It disposes of the replaced item the way the panel's own delete does (`DeleteToTrash`) and
+    /// says which of the two it is: a file that is silently gone for good is the one outcome the
+    /// user cannot take back.
+    private func confirmReplace(name: String, isDirectory: Bool, toTrash: Bool) -> Bool {
+        #if DEBUG
+        // Answered from a script, without ever showing the alert. `InputDialog` has had this since
+        // the harness existed; an `NSAlert` has no equivalent, and a modal one does not merely go
+        // unanswered — it hangs the whole run inside its nested runloop. So a question the user must
+        // be asked would have been the one thing no scenario could reach.
+        if let canned = ReplaceConfirmation.take() { return canned }
+        #endif
+        let alert = NSAlert()
+        alert.alertStyle = toTrash ? .warning : .critical
+        alert.messageText = String(localized: "Replace “\(name)”?")
+        alert.informativeText = isDirectory
+            ? (toTrash ? String(localized: "The existing folder and everything in it is moved to the Trash.")
+                       : String(localized: "The existing folder and everything in it is deleted permanently."))
+            : (toTrash ? String(localized: "The existing file is moved to the Trash.")
+                       : String(localized: "The existing file is deleted permanently."))
+        alert.addButton(withTitle: String(localized: "Overwrite"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    /// `lstat` of `path`, or nil when no directory entry holds that name.
+    ///
+    /// Not `FileManager.fileExists`, which follows the link: a dangling symlink reads as absent
+    /// there while still holding the name the rename would have to land on.
+    private func entryStat(_ path: String) -> stat? {
+        var st = stat()
+        guard lstat(path, &st) == 0 else { return nil }
+        return st
+    }
+
+    /// Whether two entries are one and the same file. A case-only rename on a case-insensitive
+    /// volume ("notes.txt" → "Notes.txt") finds the file being renamed sitting on its own target;
+    /// that is not a collision, and asking about it would offer to delete the file itself.
+    private func isSameEntry(_ a: stat, _ b: stat?) -> Bool {
+        guard let b else { return false }
+        return a.st_dev == b.st_dev && a.st_ino == b.st_ino
     }
 
     /// Rename files in `dir` (old→new) and return an undo log.
@@ -1209,6 +1285,27 @@ extension PanelController {
         alert.runModal()
     }
 }
+
+
+#if DEBUG
+/// Scripted answers for the replace confirmation (automation only), oldest first.
+///
+/// A queue rather than one slot for the same reason `InputDialog`'s is: a scenario that renames
+/// twice asks twice, and a single value would answer both the same way without saying so.
+@MainActor
+enum ReplaceConfirmation {
+    private static var queued: [Bool] = []
+
+    /// Queue one answer for the next replace confirmation: `true` replaces, `false` cancels.
+    static func queueScriptedAnswer(_ replace: Bool) { queued.append(replace) }
+
+    /// Whether anything is still waiting — a scenario can then assert that the question was really
+    /// put, instead of passing because nothing asked and the rename simply went through.
+    static var hasScriptedAnswers: Bool { !queued.isEmpty }
+
+    static func take() -> Bool? { queued.isEmpty ? nil : queued.removeFirst() }
+}
+#endif
 
 /// Upload tallies, counted from inside a `@Sendable` transfer closure.
 ///
