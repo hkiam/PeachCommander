@@ -90,6 +90,8 @@ only go down.
 | drive-plugin | 0 | — | — | `drive-plugin.png` |
 | big-listing | 0 | — | — | `big-listing.png` |
 | rename-escape | 0 | — | — | `rename-escape.png` |
+| rename-replace | 0 | — | — | `rename-replace.png` |
+| rename-mount | 0 | — | — | `rename-mount.png` |
 | goup-unreadable | 0 | — | — | `goup-unreadable.png` |
 | history-back-gone | 0 | — | — | `history-back-gone.png` |
 | tab-path-gone | 0 | — | — | `tab-path-gone.png` |

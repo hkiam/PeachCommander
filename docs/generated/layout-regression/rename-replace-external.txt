@@ -1,0 +1,2 @@
+cat ~/pc-rep/b.txt 2>/dev/null; test -e ~/pc-rep/a.txt && echo ' a-survived' || echo ' a-gone'
+source a-gone
