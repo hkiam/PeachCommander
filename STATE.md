@@ -105,10 +105,14 @@ installed, enabled under its identifier, and a UDF-only image opened by the `pcx
 The install dialog is verified in the real app rather than only in the abstract: the debug build
 driven with `-AutomationScript`, Enter on a `.pcplug` in a panel, `modaldump` reading what came up.
 It named the plugin, its version, its identifier, its type and the extensions it would take over,
-and cancelling left the plugins directory as it was. Run again under `-AppleLanguages "(en)"` and
-every string `plugin-install-prompt` asserts was present, so what is outstanding is the guest run
-itself and not whether the scenario's expectations match reality. In German the same dump came back
-translated, which is the only end-to-end evidence that the 33 new strings reach the surface at all.
+and cancelling left the plugins directory as it was. In German the same dump came back translated,
+which is the only end-to-end evidence that the 33 new strings reach the surface at all.
+
+**And then the guest ran it.** `plugin-install-prompt` is green on the VM — report written, every
+asserted string present, zero Auto Layout conflicts — so nothing about this is outstanding any more.
+Worth noting how it got there: the assertions were checked against the real app on the host first,
+under `-AppleLanguages "(en)"`, because a scenario whose expectations are guesses fails on the guest
+for reasons that look like the feature and are not.
 
 **The review pass afterwards found two real defects in the above**, both in what had just been
 written, and neither by re-reading it. Concurrent reads on one random-access handle were not
