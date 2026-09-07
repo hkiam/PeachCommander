@@ -114,6 +114,15 @@ Worth noting how it got there: the assertions were checked against the real app 
 under `-AppleLanguages "(en)"`, because a scenario whose expectations are guesses fails on the guest
 for reasons that look like the feature and are not.
 
+**The quarantine path was the last claim with no evidence behind it**, and it is the one that
+matters most, since it is the step where the user's judgement replaces Gatekeeper's. Checked against
+the published release rather than a local build: the `.pcplug` downloaded from GitHub, the flag a
+browser would set written onto it by hand (`curl` does not set one), then the real app driven at it.
+The dialog gained the sentence about the file coming from the internet; installing it left the
+bundle with no quarantine attribute; and it `dlopen`s afterwards, which is the whole point — a
+quarantined dylib is what Gatekeeper refuses to load once the app is signed, with an error nobody
+can act on.
+
 **The review pass afterwards found two real defects in the above**, both in what had just been
 written, and neither by re-reading it. Concurrent reads on one random-access handle were not
 serialised — the ABI promises that per handle, and every other path had got it for free by opening
