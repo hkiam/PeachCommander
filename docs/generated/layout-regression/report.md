@@ -133,6 +133,7 @@ only go down.
 | viewer-note-write | 0 | — | — | `viewer-note-write.png` |
 | tc-comment-sidebar | 0 | — | — | `tc-comment-sidebar.png` |
 | plugin-context-menu | 0 | — | — | `plugin-context-menu.png` |
+| plugin-install-prompt | 0 | — | — | `plugin-install-prompt.png` |
 | bg-copy-verify | 0 | — | — | `bg-copy-verify.png` |
 | viewer-crlf-lines | 0 | — | — | `viewer-crlf-lines.png` |
 | selection-restore | 0 | — | — | `selection-restore.png` |
