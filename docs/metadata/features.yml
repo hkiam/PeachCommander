@@ -346,7 +346,11 @@ features:
     source: { modules: [PCApp, PCFoundation], types: [SyncWindowController, DiffWindowController, BinaryCompareWindowController] }
     documentation: { integrated_help: true, website: true }
     screenshots: [sync-dialog, diff-window]
-    notes: "Directory sync (content/date/size, subdirs, zip-sync, presets), text diff (Myers), hex compare."
+    notes: "Directory sync (content/date/size, subdirs, zip-sync, presets, case-insensitive matching,
+      1-hour/DST tolerance, live progress with a Stop button for both halves, a result filter by
+      direction that hides identical rows and drives the selection, dates and sorting in the grid,
+      conflicts resolvable by hand, swap sides, per-item error list), text diff (Myers), hex
+      compare."
 
   - id: links-comments
     name: Links, Aliase & Kommentare

@@ -273,7 +273,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// The global history palette (F-402); one at a time.
     private var historyPalette: HistoryPaletteWindowController?
     private var typeColorsEditor: TypeColorsWindowController?
-    private var syncWindow: SyncWindowController?
+    /// Every open Synchronize window, not just the last one.
+    ///
+    /// A single optional meant the second `cm_SyncDirs` overwrote the only strong reference the app
+    /// had to the first: `NSWindow` does not retain its controller, so the window stayed on screen
+    /// with the object behind it gone. A list keeps each one alive until it closes, and two folder
+    /// pairs can be compared side by side, which is a reasonable thing to want.
+    private var syncWindows: [SyncWindowController] = []
     private var userCommands = UserCommands()
     private var startMenuObserver: NSObjectProtocol?
     private var keymap = Keymap(builtin: KeymapScheme())
@@ -3657,8 +3663,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             let win = SyncWindowController(left: leftSide, right: rightSide,
                                            presetsURL: self.configPaths.syncPresets)
-            self.syncWindow = win
-            win.onClose = { [weak self] in self?.syncWindow = nil }
+            self.syncWindows.append(win)
+            win.onClose = { [weak self, weak win] in self?.syncWindows.removeAll { $0 === win } }
             win.reload = { [weak self] in
                 // Re-parse a zip side from disk (its bytes changed); reload listings.
                 if leftSide.isZip { await self?.leftPanelController?.reloadCurrentArchive() }

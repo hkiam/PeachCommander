@@ -121,15 +121,31 @@ final class SyncModelTests: XCTestCase {
         XCTAssertEqual(SyncModel.classify([item], options: asymmetric).map(\.action), [.none])
     }
 
-    func testSymmetric_OnlyLeftDir_None() {
-        // Unlike asymmetric mode, symmetric mode never assigns a directory
-        // an action of its own -- execution derives mkdir/rmdir from the
-        // files that need moving.
+    /// A folder that exists on one side only is copied, in symmetric mode too.
+    ///
+    /// This used to be `.none`, on the reasoning that execution derives the mkdir from the files
+    /// that need moving. That holds for every folder except an empty one, which has no files to be
+    /// created by — so an empty folder was silently never synchronized, and the two trees kept that
+    /// difference for ever. Changed deliberately; this test is the old one turned round.
+    func testSymmetric_OnlyOneSideDir_IsCopiedSoAnEmptyFolderSurvives() {
+        let onLeft = SyncItem(relativePath: "sub", isDirectory: true,
+                              leftSize: 0, leftModified: t0,
+                              rightSize: nil, rightModified: nil)
+        XCTAssertEqual(SyncModel.classify([onLeft], options: symmetric).map(\.action), [.copyToRight])
+
+        let onRight = SyncItem(relativePath: "sub", isDirectory: true,
+                               leftSize: nil, leftModified: nil,
+                               rightSize: 0, rightModified: t0)
+        XCTAssertEqual(SyncModel.classify([onRight], options: symmetric).map(\.action), [.copyToLeft])
+    }
+
+    /// And a folder on *both* sides still has nothing to do — that part was right.
+    func testADirectoryPresentOnBothSidesStillHasNoActionOfItsOwn() {
         let item = SyncItem(relativePath: "sub", isDirectory: true,
-                             leftSize: 0, leftModified: t0,
-                             rightSize: nil, rightModified: nil)
-        let results = SyncModel.classify([item], options: symmetric)
-        XCTAssertEqual(results.map(\.action), [.none])
+                            leftSize: 0, leftModified: t0,
+                            rightSize: 0, rightModified: t0)
+        XCTAssertEqual(SyncModel.classify([item], options: symmetric).map(\.action), [.none])
+        XCTAssertEqual(SyncModel.classify([item], options: asymmetric).map(\.action), [.none])
     }
 
     // MARK: - Content-based comparison
@@ -245,6 +261,68 @@ final class SyncModelTests: XCTestCase {
         XCTAssertEqual(results.map(\.item.relativePath), items.map(\.relativePath))
         for (result, original) in zip(results, items) {
             XCTAssertEqual(result.item, original)
+        }
+    }
+
+    // MARK: - The result filter (F-192 follow-up)
+
+    /// Every action the grid can hold, in a fixed order, so each test below can say exactly which
+    /// indices it expects back.
+    private let everyAction: [SyncAction] = [
+        .copyToRight,   // 0
+        .copyToLeft,    // 1
+        .equal,         // 2
+        .conflict,      // 3
+        .deleteRight,   // 4
+        .deleteLeft     // 5
+    ]
+
+    func testTheUnfilteredGridShowsEveryRowInOrder() {
+        XCTAssertEqual(SyncModel.visibleRows(actions: everyAction, direction: .all, hideEqual: false),
+                       [0, 1, 2, 3, 4, 5])
+    }
+
+    /// A delete on the right is a change that lands on the right, so it belongs to the same
+    /// direction as a copy to the right — the filter is about which side is written, not read.
+    func testFilteringToTheRightKeepsTheCopyAndTheDeleteThatLandThere() {
+        XCTAssertEqual(SyncModel.visibleRows(actions: everyAction, direction: .toRight, hideEqual: false),
+                       [0, 4])
+    }
+
+    func testFilteringToTheLeftKeepsTheCopyAndTheDeleteThatLandThere() {
+        XCTAssertEqual(SyncModel.visibleRows(actions: everyAction, direction: .toLeft, hideEqual: false),
+                       [1, 5])
+    }
+
+    /// The rows that change neither side are what a direction filter is asking to be rid of, so
+    /// neither the identical files nor the conflicts survive one — including when "hide identical"
+    /// is off, which only ever *adds* a reason to drop a row.
+    func testADirectionFilterAlsoDropsTheIdenticalAndConflictingRows() {
+        for direction in [SyncDirectionFilter.toRight, .toLeft] {
+            let rows = SyncModel.visibleRows(actions: everyAction, direction: direction, hideEqual: false)
+            XCTAssertFalse(rows.contains(2), "identical row survived \(direction)")
+            XCTAssertFalse(rows.contains(3), "conflict row survived \(direction)")
+        }
+    }
+
+    func testHidingIdenticalRowsLeavesTheConflictsAlone() {
+        XCTAssertEqual(SyncModel.visibleRows(actions: everyAction, direction: .all, hideEqual: true),
+                       [0, 1, 3, 4, 5])
+    }
+
+    /// The window lets a row's direction be reversed by hand, and the filter has to follow what the
+    /// row says now: the same list, one action flipped, moves that row between the two filters.
+    func testAReversedRowMovesToTheOtherDirectionsFilter() {
+        var actions = everyAction
+        XCTAssertEqual(SyncModel.visibleRows(actions: actions, direction: .toRight, hideEqual: false), [0, 4])
+        actions[0] = .copyToLeft
+        XCTAssertEqual(SyncModel.visibleRows(actions: actions, direction: .toRight, hideEqual: false), [4])
+        XCTAssertEqual(SyncModel.visibleRows(actions: actions, direction: .toLeft, hideEqual: false), [0, 1, 5])
+    }
+
+    func testAnEmptyGridFiltersToNothingRatherThanFailing() {
+        for direction in SyncDirectionFilter.allCases {
+            XCTAssertEqual(SyncModel.visibleRows(actions: [], direction: direction, hideEqual: true), [])
         }
     }
 }

@@ -36,7 +36,21 @@
 //   listerstrings <row|-1>|<out>  open the viewer's strings panel (hex only), wait for the scan,
 //                                 write what it holds; a row index also clicks that row and
 //                                 reports the byte range the hex view then highlights
-//   mainshot <out.png>    a PNG of the key window (the main one, a dialog, or Settings)
+//   mainshot <out.png>[|<title>]  a PNG of the key window, or of the window whose title contains
+//                                 <title> — the key window is not reliably the one you opened
+//   windowlayout <title|key>[|<W>x<H>]|<out>  resize a window and report the frame of every view
+//                                            under its content view (a layout that does not scale)
+//   syncopen <left>|<right>   open the sync window WITHOUT comparing (syncdemo races the scan)
+//   synccompare               press its Compare button
+//   syncbusy <out>[|stop]     whether it shows that it is working; `stop` then cancels the scan
+//   syncfilter <all|right|left>|<0|1>|<out>  set the result filter (+ hide identical), dump the grid
+//   syncselect <all|none>|<out>  include/exclude every VISIBLE row, dump the grid
+//   syncrow <visible row>|<out>  click that row's arrow (reverse, or give a conflict a direction)
+//   syncsort <column id>|<0|1>|<out>  sort the grid as clicking a header does
+//   syncswap <out>            press "Swap sides"
+//   syncrun                   synchronize the ticked rows, skipping the confirmation a script
+//                             cannot answer
+//   syncwarning <out>         whether that confirmation would warn about permanent server deletes
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
@@ -391,6 +405,12 @@ extension MainWindowController {
                 currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
             case "listernote":                          // listernote: write a note about the caret's line
                 currentLister()?.automationNoteForCurrentLine()
+            case "windowlayout":                        // windowlayout <title-fragment|key>[|<W>x<H>]|<out>
+                // A window that grows while its content stays the size it was built at is a defect
+                // no screenshot count can name and no constraint conflict is logged for: the layout
+                // is satisfiable and merely wrong. `mainshot` reports the *content view's* size,
+                // which such a layout gets right. This reports the frame of everything under it.
+                windowLayoutReport(arg)
             case "windowdump":                          // windowdump <outfile>: titles of the open windows
                 // The note editor belongs to the plugin and is its own window, so the only thing the host
                 // can honestly check about the write path is that the right window came up (F-379).
@@ -584,12 +604,21 @@ extension MainWindowController {
                 // verification run has no business asking a machine for.
                 // The key window rather than the main one, so a dialog or the Settings window can be
                 // photographed too — which is the only way to see a plugin's own settings pane.
-                if let view = (NSApp.keyWindow ?? window)?.contentView,
+                // An optional title fragment after the path. The key window is the right default and
+                // the wrong one on a machine somebody is using: an automation-launched app does not
+                // always get activation, and the shot then silently comes back as the main window —
+                // which looks exactly like a dialog that did not open.
+                let shot = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                let target: NSWindow? = shot.count == 2
+                    ? NSApp.windows.first { $0.isVisible && $0.title.lowercased().contains(shot[1].lowercased()) }
+                    : (NSApp.keyWindow ?? window)
+                if let view = target?.contentView,
                    let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
                     view.cacheDisplay(in: view.bounds, to: rep)
                     if let png = rep.representation(using: .png, properties: [:]) {
-                        try? png.write(to: URL(fileURLWithPath: arg))
-                        NSLog("[automation] mainshot: %.0fx%.0f", view.bounds.width, view.bounds.height)
+                        try? png.write(to: URL(fileURLWithPath: shot[0]))
+                        NSLog("[automation] mainshot: %@ %.0fx%.0f", target?.title ?? "?",
+                              view.bounds.width, view.bounds.height)
                     } else {
                         NSLog("[automation] mainshot: no png")
                     }
@@ -1180,6 +1209,64 @@ extension MainWindowController {
                     win.showWindow()
                     if a.count >= 3, a[2] == "hidden" { win.automationSetIgnoreHidden(true) }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { win.compareNow() }
+                }
+            case "syncfilter":                             // syncfilter <all|right|left>|<0|1>|<out>
+                // The result filter, read back from the grid itself. A filter that computes the
+                // right rows and a table still showing the old ones cannot be told apart from
+                // inside the controller, so the report walks the data source.
+                let f = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if f.count == 3, let win = automationSyncWindows.last {
+                    let out = win.automationSetFilter(f[0], hideEqual: f[1] == "1")
+                    try? out.write(toFile: f[2], atomically: true, encoding: .utf8)
+                }
+            case "syncselect":                             // syncselect <all|none>|<out>
+                let sel = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if sel.count == 2, let win = automationSyncWindows.last {
+                    let out = win.automationSelectVisible(sel[0].lowercased() == "all")
+                    try? out.write(toFile: sel[1], atomically: true, encoding: .utf8)
+                }
+            case "syncbusy":                               // syncbusy <out>[|stop]
+                // Whether the window shows that it is working — the spinner, the Stop button and the
+                // counted status line — which is only answerable while a scan is in flight. `stop`
+                // then cancels it, as the button does.
+                let b = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if let win = automationSyncWindows.last, let out = b.first {
+                    try? win.automationBusyReport().write(toFile: out, atomically: true, encoding: .utf8)
+                    if b.count > 1, b[1] == "stop" { win.automationStopCompare() }
+                }
+            case "syncopen":                               // syncopen <left>|<right> (F-192): no compare
+                // `syncdemo` compares 0.4 s after opening, which is a race against any script that
+                // wants to watch the comparison start.
+                let o = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if o.count >= 2 {
+                    let win = SyncWindowController(leftDir: o[0], rightDir: o[1])
+                    automationSyncWindows.append(win)
+                    win.showWindow()
+                }
+            case "synccompare":                            // synccompare (F-192): press Compare
+                automationSyncWindows.last?.compareNow()
+            case "syncrow":                                // syncrow <visible row>|<out>
+                // Clicking a row's arrow: reverses a copy, and cycles a conflict through the two
+                // directions and back — the only way a conflict can join a run at all.
+                let rw = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if rw.count == 2, let win = automationSyncWindows.last, let row = Int(rw[0]) {
+                    try? win.automationFlipRow(row).write(toFile: rw[1], atomically: true, encoding: .utf8)
+                }
+            case "syncsort":                               // syncsort <column id>|<0|1 ascending>|<out>
+                let so = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if so.count == 3, let win = automationSyncWindows.last {
+                    try? win.automationSort(so[0], ascending: so[1] == "1")
+                        .write(toFile: so[2], atomically: true, encoding: .utf8)
+                }
+            case "syncswap":                               // syncswap <out>
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationSwapSides().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncrun":                                // syncrun (F-192): synchronize, no confirmation
+                automationSyncWindows.last?.automationSynchronize()
+            case "syncwarning":                            // syncwarning <out>
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationDeleteWarning().write(toFile: arg, atomically: true, encoding: .utf8)
                 }
             case "settingspage":                           // open Settings + select a page (F-274)
                 // Waits for the window rather than guessing how long it takes. A fixed 0.6 s was
@@ -2113,7 +2200,8 @@ extension MainWindowController {
                 .sorted().joined(separator: ",") + "\n"
             let errors = await SyncExecutor.execute(actionable, left: .localDir(localDir),
                                                     right: right, toTrash: false)
-            report += "errors=" + (errors.isEmpty ? "none" : errors.joined(separator: "; ")) + "\n"
+            report += "errors=" + (errors.isEmpty ? "none"
+                : errors.map { "\($0.path): \($0.message)" }.joined(separator: "; ")) + "\n"
         } catch {
             report += "error=\(error)\n"
         }
@@ -2413,6 +2501,46 @@ extension MainWindowController {
 
     /// Write the active panel's current path and visible entry names to `file`, so a
     /// driver can assert on what the panel actually shows (local or remote).
+    /// Resize a named window and write the frame of every view beneath its content view.
+    ///
+    /// `<title-fragment>` is matched case-insensitively against the visible windows' titles, so a
+    /// localized build can be driven with the word it actually shows; `key` picks the key window,
+    /// which is the form that works whatever the app's language.
+    private func windowLayoutReport(_ spec: String) {
+        var parts = spec.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+        guard parts.count >= 2 else { return }
+        let out = parts.removeLast()
+        let fragment = parts.removeFirst()
+        let found: NSWindow? = fragment.lowercased() == "key"
+            ? (NSApp.keyWindow ?? NSApp.mainWindow)
+            : NSApp.windows.first { $0.isVisible && $0.title.lowercased().contains(fragment.lowercased()) }
+        guard let window = found, let content = window.contentView else {
+            let titles = NSApp.windows.filter { $0.isVisible }.map { $0.title }.joined(separator: ", ")
+            try? "ERROR: no visible window matching \(fragment) (visible: \(titles))\n"
+                .write(toFile: out, atomically: true, encoding: .utf8)
+            return
+        }
+        if let size = parts.first {
+            let wh = size.split(separator: "x").compactMap { Double($0) }
+            if wh.count == 2 { window.setContentSize(NSSize(width: wh[0], height: wh[1])) }
+        }
+        content.layoutSubtreeIfNeeded()
+        var text = "window=\(window.title)\n"
+            + "frame=\(Int(window.frame.width))x\(Int(window.frame.height))\n"
+            + "content=\(Int(content.bounds.width))x\(Int(content.bounds.height))\n"
+        func walk(_ view: NSView, _ depth: Int) {
+            for sub in view.subviews {
+                let f = sub.frame
+                text += String(repeating: "  ", count: depth)
+                    + "\(type(of: sub))=\(Int(f.width))x\(Int(f.height))@\(Int(f.minX)),\(Int(f.minY))\n"
+                if depth < 2 { walk(sub, depth + 1) }
+            }
+        }
+        walk(content, 0)
+        try? text.write(toFile: out, atomically: true, encoding: .utf8)
+        NSLog("[automation] windowlayout \(window.title) → \(out)")
+    }
+
     /// Drive the screen-change clamp and report both halves of it (F-479 follow-up).
     private func screenClampReport(_ spec: String) async {
         let parts = spec.split(separator: "|", maxSplits: 1).map(String.init)

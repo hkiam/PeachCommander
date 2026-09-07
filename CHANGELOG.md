@@ -14,7 +14,115 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Synchronize Directories says what it is doing while it does it.** Comparing two large trees took
+  minutes during which the window showed the word "Comparing…" and nothing else — no count, no
+  spinner, no way to call it off; the only signal that the app was alive rather than wedged was that
+  it had not been force-quit yet. The scan now reports as it goes: the entries walked on each side,
+  then the files compared as `done/total`, with a spinner beside the count. The Compare button reads
+  **Stop** for as long as the scan runs and cancels it, and a cancelled scan leaves the previous
+  result standing rather than showing the half of the tree it had reached — a partial tree would have
+  classified every file it never saw as "only on the other side" and offered it for copying.
+
+- **The result grid now shows the dates, and can be ordered and asked about.** It showed two sizes
+  and an arrow, so the one thing that decides that arrow in the default mode — which side is newer —
+  could not be seen at all. Both timestamps are columns now; every column sorts by clicking its
+  header; a double-click (or **Compare** in the row's menu) opens the two sides in the text
+  comparison, and **Reveal in Finder** shows the file the row is about.
+
+- **A conflict can be given a direction.** When two files are the same age and differ anyway, the
+  classifier refuses to guess — and until now that refusal was final: the row could not be ticked, so
+  the pair could never be synchronized from this window at all. Clicking the **≠** now cycles it
+  through **→**, **←** and back, ticking the row when it points somewhere and unticking it when it
+  goes back to being a conflict. The counts under the grid follow what the row says now rather than
+  what the scan first decided, so a resolved conflict is counted in the direction it was given.
+
+- **Synchronizing reports its progress and can be stopped**, the way comparing already does: the
+  Synchronize button reads **Stop** while it runs, the status line counts the items, and stopping
+  between items leaves what was copied copied. Closing the window stops whichever of the two is
+  running instead of leaving it to finish into a window nobody can see.
+
+- **Swap sides**, which is also how the right-hand tree becomes the master: mirroring only ever runs
+  left → right, so "the right side is the one that wins" previously had no way to be said. It is
+  worth having on its own — the panels decide which folder lands on which side, and they are often
+  the wrong way round.
+
+- **Two comparison options that existed in the model and nowhere on screen.** *Ignore a 1-hour
+  difference* absorbs the FAT/daylight-saving offset that makes an unchanged file look an hour old;
+  *Case sensitive* decides whether two names differing only in case are the same file. The options
+  now sit on two rows rather than one, so the window's minimum width does not grow with them.
+
+- **A direction filter over the compared result, and it drives the selection.** **Show** narrows the
+  grid to everything, to the rows whose change lands on the right (**→**), or to those that land on
+  the left (**←**); **Hide identical** leaves out the files that are already the same on both sides,
+  which until now could not be got out of the way at all. **Select All** then ticks exactly what is
+  on screen and unticks everything the filter hides, so choosing a direction and pressing it is a
+  one-way run in two clicks; **Deselect All** clears every row, shown or not, for picking by hand.
+  Reversing a row's direction moves it out of a filter it no longer belongs to instead of sitting
+  there pointing the wrong way, and the status line — which counts what Synchronize will actually do,
+  filtered or not — says how many rows the filter is holding back.
+
 ### Fixed
+
+- **`Case sensitive` was declared, saved in presets, and never read.** Matching was always exact, so
+  on a case-insensitive volume — which is what macOS formats by default — `README.md` and `readme.md`
+  showed up as two rows, each "only on one side", and synchronizing them copied each onto the other:
+  on such a volume, the same file twice. The option is now honoured, each side is read by the name
+  that side actually has, and the row is named after the left side's spelling.
+
+- **An empty folder on one side was never synchronized.** Directories were left to be created by the
+  files moving into them, which works for every folder except one with nothing in it — so an empty
+  folder was a difference the two trees kept for ever. A folder that exists on one side only is now
+  copied like a file.
+
+- **The list of what went wrong is shown, not just how many.** A failed run reported "Completed with
+  N error(s)" and threw away the per-item reasons the executor had produced. They now open in the
+  Operation Errors window, which already existed for exactly this. It opens as its own window rather
+  than as a sheet on the sync window: as a sheet it sat on the application's terminate path, and a
+  run that ended with it up would not quit.
+
+- **The confirmation warns before deleting on a server.** Deleting locally goes to the Trash;
+  a server has no Trash, and the code that deletes has claimed since it was written that "the dialog
+  says so before the actions run" — of no dialog that existed.
+
+- **A second Synchronize window no longer orphans the first.** The app kept exactly one strong
+  reference, so opening a second window released the first one's controller while its window stayed
+  on screen. Each window is now held until it closes.
+
+- **A file extracted from an archive keeps the entry's timestamp** rather than the moment of
+  extraction, which the next comparison read as "newer than the archive" and offered to put back.
+
+- **“By content” compared the wrong bytes when one side was a server.** The branch that reads the two
+  files asked "is either side a zip?" instead of "are both sides local folders", so an FTP or SFTP
+  side went down the local path: `SyncSide.path` is the path *on the server*, and it was opened as a
+  file on this machine. Nothing was found, so every same-sized file was reported as different and
+  offered for re-upload — and where such a path did happen to exist here, it silently compared that
+  file instead. Measured on two byte-identical files with a server side: `contentEqual = false`,
+  classified `copyToRight`. It now reads the server's own bytes, and the test that pins it uses a
+  filesystem whose base path exists nowhere on disk — the `LocalFS` stand-in the other remote tests
+  use cannot catch this class, because its paths *are* local paths, so the wrong branch read the
+  right bytes by accident.
+
+- **Synchronizing onto a server no longer asks to undo itself on the next run.** The upload wrote
+  bytes and left the timestamp behind, so the copy on the far side was newer than the file it came
+  from; the very next comparison answered `copyToLeft` for the file just uploaded, and the one after
+  that `copyToRight` again — one round of pointless traffic per run, for ever. The source's own
+  timestamp now travels with the bytes in both directions. Where the protocol cannot carry it — plain
+  FTP has no standard way to set a timestamp and refuses — the write is still counted as the success
+  it was rather than reported as an error, and “Ignore date” or “By content” remains the way to sync
+  such a server without churn.
+
+- **The Synchronize Directories window follows its own size again.** Dragging it larger, or
+  maximizing it, moved the frame and nothing inside it: the result grid stayed the 780×300 points it
+  had been built with and the two path fields the 700 they had been built with, so the space a bigger
+  window buys — the whole reason to make this window bigger — went into an empty band under the
+  status line. Measured at a content size of 1400×900 the grid was still 780×300; it is now
+  1376×706, the paths span the window, and the extra width goes to the **Name** column, which is the
+  column whose content does not fit. The window also has a floor now, measured from the row of option
+  checkboxes rather than typed in, so it holds in every language rather than only in English. Nothing
+  was logged while this was wrong — the layout was satisfiable and merely wrong, which is the class
+  of layout defect a constraint-conflict count cannot see.
 
 - **The stray magnifier on the viewer's scroll bar is gone.** A small magnifying glass sat on the
   vertical scroll bar of the viewer and of the hex editor, doing nothing when clicked and covering

@@ -18,6 +18,10 @@
 <li>Nastavte, jak důkladné má porovnání být: zahrnout podsložky, porovnat <strong>podle obsahu</strong> (nejen podle data a velikosti) nebo ignorovat datum úpravy.</li>
 <li>Přidejte masku filtru (například <code>*.jpg;*.png</code>), pokud chcete synchronizovat jen určité soubory.</li>
 <li>Prohlédněte si výslednou mřížku. Každý řádek zobrazuje soubor vlevo, směrovou šipku uprostřed a odpovídající soubor vpravo. Šipky vám říkají, co se stane: <strong>→</strong> kopíruje zleva doprava, <strong>←</strong> kopíruje zprava doleva a <strong>=</strong> znamená, že jsou oba shodné.</li>
+<li>Pomocí <strong>Zobrazit</strong> zúžíte, co mřížka ukazuje: vše, jen řádky mířící <strong>&#8594;</strong> doprava, nebo jen ty mířící <strong>&#8592;</strong> doleva. <strong>Skrýt shodné</strong> vynechá soubory, které jsou na obou stranách už stejné; řádek pod mřížkou uvádí, kolik řádků filtr zadržuje.</li>
+<li><strong>Vybrat vše</strong> zaškrtne přesně to, co je vidět, a odškrtne vše, co filtr skrývá &mdash; zvolte směr, klikněte, a běh půjde jen tímto směrem. <strong>Zrušit výběr všeho</strong> vyprázdní každý řádek, zobrazený i ne, pokud raději vybíráte ručně.</li>
+<li>Každý řádek ukazuje vedle obou velikostí i obě data, takže je vidět, <em>proč</em> šipka míří právě tak. Kliknutím na záhlaví sloupce se podle něj seřadí, dvojklikem na řádek se oba soubory otevřou vedle sebe.</li>
+<li><strong>&#8800;</strong> značí konflikt: dva stejně staré soubory, které se přesto liší, kde Peach Commander odmítá hádat. Klikněte na značku a zvolte sami <strong>&#8594;</strong> nebo <strong>&#8592;</strong>; dalším klikáním se řádek zase stane konfliktem a zůstane mimo běh.</li>
 <li>Upravte jednotlivé řádky, pokud s navrženým směrem nesouhlasíte, a poté kliknutím na tlačítko synchronizace změny proveďte.</li>
 </ol>
 <p><img alt="Okno synchronizace adresářů se dvěma cestami ke složkám a výslednou mřížkou souborů se šipkami vlevo, rovná se a vpravo" src="images/sync-dialog.png" />
@@ -63,6 +67,10 @@
 <li><strong>Podle obsahu vs. podle data/velikosti.</strong> Rychlé porovnání srovnává soubory podle velikosti a data úpravy, což je rychlé, ale dá se oklamat, když se u shodných souborů liší časové značky. Zapněte <strong>podle obsahu</strong> pro spolehlivý výsledek za cenu čtení každého souboru.</li>
 <li><strong>Podsložky a filtry.</strong> Okno synchronizace umí sestoupit do podsložek a lze jej omezit maskou filtru, takže můžete synchronizovat jen typy souborů, na kterých vám záleží.</li>
 <li><strong>Máte vše pod kontrolou.</strong> Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit.</li>
+<li><strong>Porovnání, které je vidět a lze zastavit.</strong> Projít dva velké stromy trvá, a tak okno během práce počítá nejprve projité položky a poté porovnané soubory, s animací vedle počtu. Tlačítko Porovnat se po dobu prohledávání jmenuje <strong>Zastavit</strong>; zastavení nechá předchozí výsledek být, místo aby ukázalo půl stromu.</li>
+<li><strong>Která strana je předloha.</strong> Zrcadlení jde zleva doprava. <strong>Prohodit strany</strong> vymění obě složky: tak se pravý strom stane tím, který vyhrává &mdash; a tak se napraví, že je panely daly obráceně.</li>
+<li><strong>Data, která nejsou tak docela stejná.</strong> <strong>Ignorovat rozdíl 1 hodiny</strong> pohltí posun, který svazek FAT nebo změna času vnutí jinak nezměněnému souboru. <strong>Rozlišovat velikost písmen</strong> rozhoduje, zda dva názvy lišící se jen velikostí písmen jsou týž soubor; vypnuto jím jsou &mdash; což svazek na Macu obvykle tvrdí také.</li>
+<li><strong>Když se něco nepovede.</strong> Synchronizace hlásí svůj postup a tlačítko se po dobu běhu jmenuje <strong>Zastavit</strong>; zastavení mezi položkami nechá zkopírované zkopírovaným. Co selhalo, je vypsáno se souborem a důvodem v okně chyb operace, místo aby bylo jen spočítáno. Smazání na serveru je trvalé &mdash; koš tam není &mdash; a potvrzení to řekne předem.</li>
 <li><strong>Předvolby.</strong> Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Přejmenování mnoha souborů</a></li></ul></section>

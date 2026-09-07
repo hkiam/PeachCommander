@@ -115,6 +115,21 @@ public struct SyncResult: Sendable, Equatable {
     }
 }
 
+/// Which direction of change the compared result list shows (F-192 follow-up).
+///
+/// "Direction" is the side a row *changes*, not the side it reads from: a copy to the right and a
+/// delete on the right both land on the right, so both belong to `.toRight`. Rows that change
+/// neither side — the identical ones and the conflicts — are what a direction filter is asking to be
+/// rid of, so neither survives one.
+public enum SyncDirectionFilter: Sendable, CaseIterable {
+    /// Every row the comparison produced.
+    case all
+    /// Only rows whose change lands on the right.
+    case toRight
+    /// Only rows whose change lands on the left.
+    case toLeft
+}
+
 /// Computes Total-Commander-style "Synchronize Directories" actions.
 ///
 /// This is the pure decision function only: it takes already-walked
@@ -184,6 +199,7 @@ public enum SyncModel {
 
     private static func classifyDirectory(onLeft: Bool, onRight: Bool, options: SyncOptions) -> SyncAction {
         if onLeft && onRight {
+            // Present on both sides: nothing to do about the folder itself.
             return .none
         }
         if options.asymmetric {
@@ -191,15 +207,42 @@ public enum SyncModel {
             // right-only directories are stray and get removed.
             return onLeft ? .copyToRight : .deleteRight
         }
-        // Symmetric mode: directories are purely structural; execution
-        // handles mkdir/rmdir based on the files that need moving.
-        return .none
+        // Symmetric mode: a folder that exists on one side only is copied, like a file.
+        //
+        // This used to be `.none`, on the reasoning that folders are structural and get created on
+        // the way by the files that need moving. True — except for a folder with nothing in it,
+        // which has no files to be created by, and so was silently never synchronized at all. An
+        // empty folder is content: it is how people reserve a name, and losing it is a difference
+        // the two trees keep for ever.
+        return onLeft ? .copyToRight : .copyToLeft
     }
 
     /// Effective time tolerance: widened to at least one hour when
     /// `ignoreDaylightHour` is set, to absorb FAT/DST discrepancies.
     private static func effectiveTolerance(_ options: SyncOptions) -> TimeInterval {
         options.ignoreDaylightHour ? max(3600, options.toleranceSeconds) : options.toleranceSeconds
+    }
+
+    /// The rows a direction filter and the "hide identical" switch leave visible, as indices into
+    /// the list they were given.
+    ///
+    /// Takes the *actions* rather than the results because the sync window lets a row's direction be
+    /// reversed by hand: the filter has to follow what a row says now, not what the scan first
+    /// decided about it. Indices rather than a filtered copy for the same reason — the window keeps
+    /// one row of state (included, direction) per compared item, and a filtered copy would leave it
+    /// with two lists to keep in step.
+    public static func visibleRows(actions: [SyncAction],
+                                   direction: SyncDirectionFilter,
+                                   hideEqual: Bool) -> [Int] {
+        actions.indices.filter { i in
+            let action = actions[i]
+            if hideEqual, action == .equal { return false }
+            switch direction {
+            case .all:     return true
+            case .toRight: return action == .copyToRight || action == .deleteRight
+            case .toLeft:  return action == .copyToLeft || action == .deleteLeft
+            }
+        }
     }
 
     /// Whether a both-present file counts as "equal", per the active
