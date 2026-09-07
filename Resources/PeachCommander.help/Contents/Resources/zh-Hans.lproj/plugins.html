@@ -44,21 +44,30 @@
 <p><img alt="列出已安装插件、带启用复选框以及“安装”和“移除”按钮的插件窗口" src="images/plugins-window.png" />
 <em>（图：插件窗口，你可在此启用、停用、安装或移除插件。）</em></p>
 <h2 id="_3">安装新插件</h2>
-<ol>
-<li>选择 配置 ▸ 插件…。</li>
-<li>点按 <strong>从文件夹安装…</strong>。</li>
-<li>选择一个插件包或包含它的 <code>.zip</code>，然后确认。插件会被添加到列表并启用。</li>
-</ol>
-<h2 id="_4">移除插件</h2>
-<ol>
-<li>在插件窗口中，选择列表里的插件。</li>
-<li>点按 <strong>移除</strong>。内置功能不受影响；只移除所选插件。</li>
-</ol>
-<h2 id="_5">备注</h2>
+<p>下载的插件是一个<strong>插件包</strong>——扩展名为 <code>.pcplug</code> 的文件。安装方式有四种，且都会走到同一个确认对话框：</p>
 <ul>
-<li>插件列表会在名称和位置旁显示每个插件的类型和接口版本，便于你确认已安装的内容。</li>
-<li>如果没有安装任何插件，窗口会显示一段简短提示，指引你使用 <strong>从文件夹安装…</strong>。</li>
-<li>某些插件只在启用时才添加自己的列、菜单项或面板位置。如果你期望的功能缺失，请检查其插件是否已在此处开启。</li>
+<li>在访达中<strong>双击它</strong>。Peach Commander 会打开并询问。</li>
+<li>在面板中选中它并<strong>按回车</strong>。Peach Commander 是文件管理器，文件通常本来就在那里。</li>
+<li>把它<strong>拖到插件窗口上</strong>（配置 ▸ 插件…）。</li>
+<li>选择<strong>配置 ▸ 插件… ▸ 安装…</strong>，然后选择该插件包、包含插件的 <code>.zip</code>，或已解压的插件束。</li>
+</ul>
+<p>在载入任何内容之前，对话框会说明插件的名称、版本、标识符和类型，以及它将接管哪些文件类型——例如声明 <code>.iso</code> 的插件会成为本应用读取这些文件的程序。在你点击<strong>安装</strong>之前，什么都不会安装。</p>
+<p>如果已经安装了相同标识符的插件，对话框会指出这一点并显示两个版本，于是升级读起来就是升级（“1.0.0 → 1.1.0”），而退回旧版本也会被明确指出。</p>
+<h2 id="_4">安装之前</h2>
+<p>插件是运行在 Peach Commander 内部的程序，对文件的访问权限与 Peach Commander 相同，外面没有沙盒。请只安装来自你信任来源的插件，就像对待任何其他应用程序一样。</p>
+<p>从互联网下载的插件会被 macOS 标记为隔离。安装它相当于告诉 macOS 允许其载入——这正是确认对话框会说明此事的原因，也是为什么这是由你做出的决定，而不是悄悄发生的事情。</p>
+<h2 id="_5">移除插件</h2>
+<ol>
+<li>在插件窗口的列表中选择该插件。</li>
+<li>点击<strong>移除</strong>。内置功能不受影响，只移除所选插件。</li>
+</ol>
+<p>随应用附带的插件无法删除——“移除”会改为将其关闭。</p>
+<h2 id="_6">说明</h2>
+<ul>
+<li>列表中除名称和位置外，还会显示每个插件的版本、类型和接口版本，方便你确认已安装的内容。</li>
+<li>如果插件需要比你当前更新的 Peach Commander 版本，程序会给出说明并拒绝加载，而不是莫名其妙地失败。反过来也一样：为较早接口构建的插件，只要该接口仍受支持就会继续工作。</li>
+<li>有些插件只在启用时才添加自己的列、菜单项或面板位置。如果缺少你预期的功能，请在这里确认对应插件已打开。</li>
+<li>如何自己编写或发布插件，请参阅开发者文档，而不是本页。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">磁盘地图</a></li><li><a href="ai-assistant.html">AI 助手</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">系统监视器</a></li><li><a href="task-manager.html">任务管理器</a></li><li><a href="uninstaller.html">卸载器</a></li><li><a href="filesystem-images.html">文件系统映像</a></li><li><a href="archives.html">使用压缩包</a></li><li><a href="ftp-and-sftp.html">连接到 FTP 与 SFTP</a></li></ul></section>
 </main>

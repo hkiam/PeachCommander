@@ -43,22 +43,31 @@
 </ol>
 <p><img alt="Okno wtyczek wymieniające zainstalowane wtyczki z polami wyboru i przyciskami Zainstaluj i Usuń" src="images/plugins-window.png" />
 <em>(Rysunek: okno wtyczek, w którym włączasz, wyłączasz, instalujesz lub usuwasz wtyczki.)</em></p>
-<h2 id="zainstaluj-nowa-wtyczke">Zainstaluj nową wtyczkę</h2>
+<h2 id="instalowanie-nowej-wtyczki">Instalowanie nowej wtyczki</h2>
+<p>Pobrana wtyczka przychodzi jako <strong>pakiet wtyczki</strong> — plik z rozszerzeniem <code>.pcplug</code>. Są cztery sposoby, by ją zainstalować, i wszystkie kończą się tym samym potwierdzeniem:</p>
+<ul>
+<li><strong>Kliknij go dwukrotnie</strong> w Finderze. Peach Commander otworzy się i zapyta.</li>
+<li><strong>Naciśnij na nim Enter</strong> w panelu. Peach Commander to menedżer plików — plik zwykle i tak już tam jest.</li>
+<li><strong>Przeciągnij go na okno wtyczek</strong> (Konfiguracja ▸ Wtyczki…).</li>
+<li>Wybierz <strong>Konfiguracja ▸ Wtyczki… ▸ Zainstaluj…</strong> i wskaż pakiet, <code>.zip</code> zawierający wtyczkę albo rozpakowany pakunek wtyczki.</li>
+</ul>
+<p>Zanim cokolwiek zostanie wczytane, okno dialogowe podaje nazwę, wersję, identyfikator i typ wtyczki oraz to, jakie typy plików przejmie — wtyczka roszcząca sobie prawo do <code>.iso</code> staje się czytnikiem aplikacji dla tych plików. Nic nie zostanie zainstalowane, dopóki nie klikniesz <strong>Zainstaluj</strong>.</p>
+<p>Jeśli wtyczka o tym samym identyfikatorze jest już zainstalowana, okno to zaznacza i pokazuje obie wersje, dzięki czemu aktualizacja czyta się jak aktualizacja („1.0.0 → 1.1.0"), a krok wstecz zostaje wyraźnie nazwany.</p>
+<h2 id="zanim-zainstalujesz-wtyczke">Zanim zainstalujesz wtyczkę</h2>
+<p>Wtyczka to program działający wewnątrz Peach Commandera, z takim samym dostępem do Twoich plików, jaki ma Peach Commander. Nie ma wokół niej piaskownicy. Instaluj wtyczki tylko ze źródeł, którym ufasz — tak samo jak w przypadku każdej innej aplikacji.</p>
+<p>Wtyczki pobrane z internetu trafiają do kwarantanny macOS. Zainstalowanie wtyczki mówi systemowi macOS, by zezwolił na jej wczytanie — dlatego okno potwierdzenia o tym informuje i dlatego jest to decyzja, którą podejmujesz Ty, a nie coś, co dzieje się po cichu.</p>
+<h2 id="usuwanie-wtyczki">Usuwanie wtyczki</h2>
 <ol>
-<li>Wybierz Konfiguracja ▸ Wtyczki….</li>
-<li>Kliknij <strong>Zainstaluj z folderu…</strong>.</li>
-<li>Wybierz pakiet wtyczki lub <code>.zip</code>, który go zawiera, i potwierdź. Wtyczka zostaje dodana do listy i włączona.</li>
+<li>W oknie wtyczek zaznacz wtyczkę na liście.</li>
+<li>Kliknij <strong>Usuń</strong>. Funkcje wbudowane pozostają nietknięte; usuwana jest tylko zaznaczona wtyczka.</li>
 </ol>
-<h2 id="usun-wtyczke">Usuń wtyczkę</h2>
-<ol>
-<li>W oknie wtyczek oznacz wtyczkę na liście.</li>
-<li>Kliknij <strong>Usuń</strong>. Funkcje wbudowane nie są naruszone; usuwana jest tylko wybrana wtyczka.</li>
-</ol>
+<p>Wtyczki dostarczonej z aplikacją nie da się skasować — „Usuń" wyłącza ją zamiast tego.</p>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
-<li>Lista wtyczek pokazuje typ i wersję interfejsu każdej wtyczki obok nazwy i lokalizacji, więc możesz potwierdzić, co jest zainstalowane.</li>
-<li>Jeśli żadna wtyczka nie jest zainstalowana, okno pokazuje krótką zachętę kierującą Cię do <strong>Zainstaluj z folderu…</strong>.</li>
-<li>Niektóre wtyczki dodają własne kolumny, pozycje menu lub miejsca panelu tylko wtedy, gdy są włączone. Jeśli oczekiwana funkcja jest nieobecna, sprawdź, czy wtyczka jest tutaj włączona.</li>
+<li>Lista pokazuje obok nazwy i lokalizacji także wersję, typ i wersję interfejsu każdej wtyczki, więc możesz sprawdzić, co jest zainstalowane.</li>
+<li>Jeśli wtyczka wymaga nowszej wersji Peach Commandera niż Twoja, zostaje odrzucona z komunikatem, który to wyjaśnia, zamiast zawieść w niezrozumiały sposób. To samo w drugą stronę: wtyczka zbudowana dla starszego interfejsu działa dalej, dopóki ten interfejs jest obsługiwany.</li>
+<li>Niektóre wtyczki dodają swoje kolumny, pozycje menu czy miejsca w panelu tylko wtedy, gdy są włączone. Jeśli brakuje oczekiwanej funkcji, sprawdź tutaj, czy jej wtyczka jest włączona.</li>
+<li>Pisanie i publikowanie własnej wtyczki opisuje dokumentacja dla programistów, a nie ta strona.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa dysku</a></li><li><a href="ai-assistant.html">Asystent AI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Obrazy systemów plików</a></li><li><a href="archives.html">Praca z archiwami</a></li><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li></ul></section>
 </main>

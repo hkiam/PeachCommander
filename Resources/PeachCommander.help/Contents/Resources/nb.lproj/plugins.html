@@ -43,22 +43,31 @@
 </ol>
 <p><img alt="Programtilleggsvinduet som lister installerte programtillegg med avkrysningsruter og knappene Installer og Fjern" src="images/plugins-window.png" />
 <em>(Figur: Programtilleggsvinduet, der du aktiverer, deaktiverer, installerer eller fjerner programtillegg.)</em></p>
-<h2 id="installer-et-nytt-programtillegg">Installer et nytt programtillegg</h2>
+<h2 id="installere-et-nytt-programtillegg">Installere et nytt programtillegg</h2>
+<p>Et programtillegg du laster ned, kommer som en <strong>programtilleggspakke</strong> — en fil som ender på <code>.pcplug</code>. Det er fire måter å installere et på, og alle ender ved den samme bekreftelsen:</p>
+<ul>
+<li><strong>Dobbeltklikk på den</strong> i Finder. Peach Commander åpner seg og spør.</li>
+<li><strong>Trykk Enter på den</strong> i et panel. Peach Commander er en filbehandler — filen ligger som regel allerede der.</li>
+<li><strong>Dra den til programtilleggsvinduet</strong> (Innstillinger ▸ Programtillegg…).</li>
+<li>Velg <strong>Innstillinger ▸ Programtillegg… ▸ Installer…</strong> og velg pakken, en <code>.zip</code> med et programtillegg i, eller en utpakket programtilleggsbunt.</li>
+</ul>
+<p>Før noe som helst lastes inn, viser en dialog navnet, versjonen, identifikatoren og typen til programtillegget, og hvilke filtyper det overtar — et programtillegg som krever <code>.iso</code>, blir appens leser for de filene. Ingenting installeres før du klikker <strong>Installer</strong>.</p>
+<p>Er det allerede installert et programtillegg med samme identifikator, sier dialogen fra og viser begge versjonene, slik at en oppdatering leses som en oppdatering («1.0.0 → 1.1.0») og et skritt tilbake blir nevnt som nettopp det.</p>
+<h2 id="fr-du-installerer-et">Før du installerer et</h2>
+<p>Et programtillegg er et program som kjører inne i Peach Commander, med samme tilgang til filene dine som Peach Commander har. Det er ingen sandkasse rundt det. Installer bare programtillegg fra kilder du stoler på, på samme måte som med ethvert annet program.</p>
+<p>Programtillegg lastet ned fra internett kommer i karantene hos macOS. Ved å installere et ber du macOS om å tillate at det lastes — derfor sier bekreftelsesdialogen det, og derfor er det en avgjørelse du tar og ikke noe som skjer i det stille.</p>
+<h2 id="fjerne-et-programtillegg">Fjerne et programtillegg</h2>
 <ol>
-<li>Velg Konfigurasjon ▸ Programtillegg….</li>
-<li>Klikk på <strong>Installer fra mappe…</strong>.</li>
-<li>Velg en programtilleggspakke eller en <code>.zip</code> som inneholder en, og bekreft. Programtillegget legges til i listen og aktiveres.</li>
+<li>Velg programtillegget i listen i programtilleggsvinduet.</li>
+<li>Klikk <strong>Fjern</strong>. Innebygde funksjoner er upåvirket; bare det valgte programtillegget fjernes.</li>
 </ol>
-<h2 id="fjern-et-programtillegg">Fjern et programtillegg</h2>
-<ol>
-<li>I programtilleggsvinduet, merk programtillegget i listen.</li>
-<li>Klikk på <strong>Fjern</strong>. Innebygde funksjoner påvirkes ikke; bare det valgte programtillegget fjernes.</li>
-</ol>
+<p>Et programtillegg som følger med appen, kan ikke slettes — «Fjern» slår det av i stedet.</p>
 <h2 id="merknader">Merknader</h2>
 <ul>
-<li>Programtilleggslisten viser hvert programtilleggs type og grensesnittsversjon ved siden av navn og plassering, så du kan bekrefte hva som er installert.</li>
-<li>Hvis ingen programtillegg er installert, viser vinduet en kort oppfordring som peker deg mot <strong>Installer fra mappe…</strong>.</li>
-<li>Noen programtillegg legger til sine egne kolonner, menyvalg eller panelsteder bare mens de er aktivert. Om en funksjon du forventet mangler, sjekk at programtillegget er slått på her.</li>
+<li>Listen viser hvert programtilleggs versjon, type og grensesnittversjon ved siden av navn og plassering, så du kan se hva som er installert.</li>
+<li>Krever et programtillegg en nyere versjon av Peach Commander enn din, blir det avvist med en melding som sier det, i stedet for å feile uforståelig. Det samme gjelder motsatt vei: et programtillegg bygd for et eldre grensesnitt fortsetter å virke så lenge det grensesnittet støttes.</li>
+<li>Noen programtillegg legger bare til kolonner, menyvalg eller panelsteder mens de er slått på. Mangler en funksjon du ventet deg, sjekk her at programtillegget er på.</li>
+<li>Hvordan du selv skriver eller publiserer et programtillegg, står i utviklerdokumentasjonen, ikke her.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Diskkart</a></li><li><a href="ai-assistant.html">AI Assistant</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Filsystemavbilder</a></li><li><a href="archives.html">Arbeide med arkiver</a></li><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li></ul></section>
 </main>

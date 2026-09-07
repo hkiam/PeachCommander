@@ -44,21 +44,30 @@
 <p><img alt="Okno zásuvných modulov uvádzajúce nainštalované zásuvné moduly so zaškrtávacími poľami a tlačidlami Nainštalovať a Odstrániť" src="images/plugins-window.png" />
 <em>(Obrázok: okno zásuvných modulov, kde povoľujete, zakazujete, inštalujete alebo odstraňujete zásuvné moduly.)</em></p>
 <h2 id="instalacia-noveho-zasuvneho-modulu">Inštalácia nového zásuvného modulu</h2>
-<ol>
-<li>Vyberte Konfigurácia ▸ Zásuvné moduly….</li>
-<li>Kliknite na <strong>Nainštalovať z priečinka…</strong>.</li>
-<li>Vyberte balík zásuvného modulu alebo <code>.zip</code>, ktorý ho obsahuje, a potvrďte. Zásuvný modul sa pridá do zoznamu a povolí.</li>
-</ol>
+<p>Stiahnutý zásuvný modul prichádza ako <strong>balík zásuvného modulu</strong> — súbor s príponou <code>.pcplug</code>. Nainštalovať ho možno štyrmi spôsobmi a všetky končia pri tom istom potvrdení:</p>
+<ul>
+<li><strong>Dvakrát naň kliknite</strong> vo Finderi. Peach Commander sa otvorí a spýta sa.</li>
+<li><strong>Stlačte naň Enter</strong> v paneli. Peach Commander je správca súborov — súbor tam obvykle aj tak už je.</li>
+<li><strong>Presuňte ho na okno zásuvných modulov</strong> (Konfigurácia ▸ Zásuvné moduly…).</li>
+<li>Zvoľte <strong>Konfigurácia ▸ Zásuvné moduly… ▸ Inštalovať…</strong> a vyberte balík, <code>.zip</code> so zásuvným modulom alebo rozbalený balíček zásuvného modulu.</li>
+</ul>
+<p>Skôr než sa čokoľvek načíta, dialóg uvedie názov, verziu, identifikátor a typ zásuvného modulu aj to, ktoré typy súborov prevezme — modul, ktorý si nárokuje <code>.iso</code>, sa pre tieto súbory stane čítačkou aplikácie. Nič sa nenainštaluje, kým nekliknete na <strong>Inštalovať</strong>.</p>
+<p>Ak je už nainštalovaný modul s rovnakým identifikátorom, dialóg to povie a ukáže obe verzie: aktualizácia sa tak číta ako aktualizácia („1.0.0 → 1.1.0") a krok späť je výslovne pomenovaný.</p>
+<h2 id="skor-nez-nejaky-nainstalujete">Skôr než nejaký nainštalujete</h2>
+<p>Zásuvný modul je program bežiaci vnútri Peach Commandera s rovnakým prístupom k vašim súborom, aký má Peach Commander. Nie je okolo neho žiadny izolovaný priestor. Inštalujte len moduly zo zdrojov, ktorým dôverujete — rovnako ako pri ktorejkoľvek inej aplikácii.</p>
+<p>Moduly stiahnuté z internetu macOS uvedie do karantény. Inštaláciou poviete macOS, aby povolil ich načítanie — preto to potvrdzovací dialóg hovorí a preto je to vaše rozhodnutie, a nie niečo, čo sa stane potichu.</p>
 <h2 id="odstranenie-zasuvneho-modulu">Odstránenie zásuvného modulu</h2>
 <ol>
-<li>V okne zásuvných modulov označte zásuvný modul v zozname.</li>
-<li>Kliknite na <strong>Odstrániť</strong>. Vstavané funkcie nie sú ovplyvnené; odstráni sa iba vybraný zásuvný modul.</li>
+<li>V okne zásuvných modulov vyberte modul v zozname.</li>
+<li>Kliknite na <strong>Odstrániť</strong>. Vstavané funkcie zostanú nedotknuté; odstráni sa len vybraný modul.</li>
 </ol>
+<p>Modul dodávaný s aplikáciou sa nedá zmazať — „Odstrániť" ho namiesto toho vypne.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Zoznam zásuvných modulov zobrazuje typ a verziu rozhrania každého zásuvného modulu vedľa názvu a umiestnenia, takže môžete potvrdiť, čo je nainštalované.</li>
-<li>Ak nie je nainštalovaný žiadny zásuvný modul, okno zobrazí krátku výzvu, ktorá vás nasmeruje k <strong>Nainštalovať z priečinka…</strong>.</li>
-<li>Niektoré zásuvné moduly pridávajú vlastné stĺpce, položky ponuky alebo miesta panela iba počas toho, čo sú povolené. Ak očakávaná funkcia chýba, skontrolujte, či je zásuvný modul tu zapnutý.</li>
+<li>Zoznam popri názve a umiestnení ukazuje pri každom module verziu, typ a verziu rozhrania, takže si viete overiť, čo je nainštalované.</li>
+<li>Ak modul vyžaduje novšiu verziu Peach Commandera, než máte, je odmietnutý so zrozumiteľnou správou namiesto nepochopiteľného zlyhania. To isté platí opačne: modul zostavený pre staršie rozhranie funguje ďalej, kým je toto rozhranie podporované.</li>
+<li>Niektoré moduly pridávajú svoje stĺpce, položky ponuky alebo miesta v paneli len vtedy, keď sú zapnuté. Ak chýba očakávaná funkcia, overte tu, či je jej modul zapnutý.</li>
+<li>Ako napísať alebo zverejniť vlastný zásuvný modul, opisuje dokumentácia pre vývojárov, nie táto stránka.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa disku</a></li><li><a href="ai-assistant.html">Asistent AI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Obrazy súborových systémov</a></li><li><a href="archives.html">Práca s archívmi</a></li><li><a href="ftp-and-sftp.html">Pripojenie k FTP a SFTP</a></li></ul></section>
 </main>

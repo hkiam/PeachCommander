@@ -44,21 +44,30 @@
 <p><img alt="Das Plugin-Fenster mit einer Liste installierter Plugins, Aktivierungs-Kontrollkästchen sowie den Schaltflächen Installieren und Entfernen" src="images/plugins-window.png" />
 <em>(Abbildung: Das Plugin-Fenster, in dem Sie Plugins aktivieren, deaktivieren, installieren oder entfernen.)</em></p>
 <h2 id="ein-neues-plugin-installieren">Ein neues Plugin installieren</h2>
-<ol>
-<li>Wählen Sie Konfiguration ▸ Plugins….</li>
-<li>Klicken Sie auf <strong>Aus Ordner installieren…</strong>.</li>
-<li>Wählen Sie ein Plugin-Bundle oder eine <code>.zip</code>-Datei, die eines enthält, und bestätigen Sie. Das Plugin wird zur Liste hinzugefügt und aktiviert.</li>
-</ol>
+<p>Ein heruntergeladenes Plugin kommt als <strong>Plugin-Paket</strong> — eine Datei mit der Endung <code>.pcplug</code>. Es gibt vier Wege, eines zu installieren, und alle enden beim selben Bestätigungsdialog:</p>
+<ul>
+<li><strong>Doppelklicken Sie es</strong> im Finder. Peach Commander öffnet sich und fragt nach.</li>
+<li><strong>Drücken Sie Enter darauf</strong> in einem Panel. Peach Commander ist ein Dateimanager — dort liegt die Datei ohnehin meistens schon.</li>
+<li><strong>Ziehen Sie es auf das Plugin-Fenster</strong> (Konfiguration ▸ Plugins…).</li>
+<li>Wählen Sie <strong>Konfiguration ▸ Plugins… ▸ Installieren…</strong> und wählen Sie das Paket, eine <code>.zip</code> mit einem Plugin darin oder ein entpacktes Plugin-Bundle.</li>
+</ul>
+<p>Bevor irgendetwas geladen wird, nennt ein Dialog Name, Version, Bezeichner und Typ des Plugins sowie die Dateitypen, die es übernehmen wird — ein Plugin, das etwa <code>.iso</code> beansprucht, wird zum Leseprogramm der App für diese Dateien. Nichts wird installiert, bevor Sie auf <strong>Installieren</strong> klicken.</p>
+<p>Ist bereits ein Plugin mit demselben Bezeichner installiert, sagt der Dialog das und zeigt beide Versionen. Eine Aktualisierung liest sich damit als Aktualisierung („1.0.0 → 1.1.0"), und ein Schritt zurück wird als solcher benannt.</p>
+<h2 id="bevor-sie-eines-installieren">Bevor Sie eines installieren</h2>
+<p>Ein Plugin ist ein Programm, das innerhalb von Peach Commander läuft — mit demselben Zugriff auf Ihre Dateien, den Peach Commander hat. Es gibt keine Sandbox darum herum. Installieren Sie Plugins nur aus Quellen, denen Sie vertrauen, so wie Sie es bei jedem anderen Programm täten.</p>
+<p>Aus dem Internet geladene Plugins kommen von macOS in Quarantäne. Mit der Installation erlauben Sie macOS, das Plugin zu laden — deshalb sagt der Bestätigungsdialog das ausdrücklich, und deshalb ist es Ihre Entscheidung und nichts, was still im Hintergrund geschieht.</p>
 <h2 id="ein-plugin-entfernen">Ein Plugin entfernen</h2>
 <ol>
-<li>Wählen Sie im Plugin-Fenster das Plugin in der Liste aus.</li>
+<li>Wählen Sie das Plugin im Plugin-Fenster in der Liste aus.</li>
 <li>Klicken Sie auf <strong>Entfernen</strong>. Eingebaute Funktionen bleiben unberührt; nur das ausgewählte Plugin wird entfernt.</li>
 </ol>
+<p>Ein mitgeliefertes Plugin kann nicht gelöscht werden — „Entfernen" schaltet es stattdessen aus.</p>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
-<li>Die Plugin-Liste zeigt neben dem Namen und dem Speicherort jedes Plugins auch seinen Typ und seine Schnittstellenversion an, sodass Sie bestätigen können, was installiert ist.</li>
-<li>Wenn keine Plugins installiert sind, zeigt das Fenster eine kurze Aufforderung, die Sie zu <strong>Aus Ordner installieren…</strong> weist.</li>
-<li>Einige Plugins fügen ihre eigenen Spalten, Menüpunkte oder Panel-Orte nur hinzu, solange sie aktiviert sind. Wenn eine erwartete Funktion fehlt, prüfen Sie, ob ihr Plugin hier eingeschaltet ist.</li>
+<li>Die Plugin-Liste zeigt neben Name und Speicherort auch Version, Typ und Schnittstellenversion, sodass Sie sehen können, was installiert ist.</li>
+<li>Braucht ein Plugin eine neuere Version von Peach Commander als Ihre, wird es mit einer entsprechenden Meldung abgelehnt statt undurchschaubar zu scheitern. Umgekehrt gilt dasselbe: Ein Plugin für eine ältere Schnittstelle funktioniert weiter, solange diese Schnittstelle unterstützt wird.</li>
+<li>Manche Plugins fügen ihre Spalten, Menüpunkte oder Panel-Orte nur hinzu, solange sie eingeschaltet sind. Fehlt eine erwartete Funktion, prüfen Sie hier, ob ihr Plugin aktiviert ist.</li>
+<li>Wie man selbst ein Plugin schreibt oder veröffentlicht, steht in der Entwicklerdokumentation, nicht hier.</li>
 </ul>
 <section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">KI-Assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Dateisystem-Images</a></li><li><a href="archives.html">Mit Archiven arbeiten</a></li><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li></ul></section>
 </main>

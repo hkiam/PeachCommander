@@ -44,21 +44,30 @@
 <p><img alt="A bővítmények ablak felsorolja a telepített bővítményeket jelölőnégyzetekkel és a Telepítés és Eltávolítás gombokkal" src="images/plugins-window.png" />
 <em>(Ábra: a bővítmények ablak, ahol engedélyez, letilt, telepít vagy eltávolít bővítményeket.)</em></p>
 <h2 id="uj-bovitmeny-telepitese">Új bővítmény telepítése</h2>
-<ol>
-<li>Válassza a Konfiguráció ▸ Bővítmények… lehetőséget.</li>
-<li>Kattintson a <strong>Telepítés mappából…</strong> lehetőségre.</li>
-<li>Válasszon egy bővítménycsomagot vagy egy <code>.zip</code>-et, amely egyet tartalmaz, és erősítse meg. A bővítmény hozzáadódik a listához és engedélyeződik.</li>
-</ol>
+<p>A letöltött bővítmény <strong>bővítménycsomagként</strong> érkezik — egy <code>.pcplug</code> végződésű fájlként. Négyféleképpen telepíthető, és mind ugyanahhoz a megerősítéshez vezet:</p>
+<ul>
+<li><strong>Kattintson rá duplán</strong> a Finderben. A Peach Commander megnyílik és rákérdez.</li>
+<li><strong>Nyomjon Entert rajta</strong> egy panelben. A Peach Commander fájlkezelő — a fájl általában amúgy is ott van.</li>
+<li><strong>Húzza a bővítményablakra</strong> (Beállítások ▸ Bővítmények…).</li>
+<li>Válassza a <strong>Beállítások ▸ Bővítmények… ▸ Telepítés…</strong> parancsot, majd a csomagot, egy bővítményt tartalmazó <code>.zip</code>-et vagy egy kicsomagolt bővítménykötegt.</li>
+</ul>
+<p>Mielőtt bármi betöltődne, egy párbeszédablak megnevezi a bővítmény nevét, verzióját, azonosítóját és típusát, valamint azt, mely fájltípusokat veszi át — egy <code>.iso</code>-t igénylő bővítmény például az alkalmazás olvasója lesz azokhoz a fájlokhoz. Semmi sem települ, amíg rá nem kattint a <strong>Telepítés</strong> gombra.</p>
+<p>Ha már telepítve van azonos azonosítójú bővítmény, a párbeszédablak ezt jelzi, és mindkét verziót mutatja: így a frissítés frissítésként olvasható („1.0.0 → 1.1.0"), a visszalépést pedig külön megnevezi.</p>
+<h2 id="mielott-telepitene-egyet">Mielőtt telepítene egyet</h2>
+<p>A bővítmény olyan program, amely a Peach Commanderen belül fut, ugyanazzal a hozzáféréssel a fájljaihoz, mint maga a Peach Commander. Nincs körülötte homokozó. Csak olyan forrásból telepítsen bővítményt, amelyben megbízik — ahogy bármely más alkalmazás esetén tenné.</p>
+<p>Az internetről letöltött bővítményeket a macOS karanténba helyezi. A telepítéssel engedélyezi a macOS-nek a betöltésüket — ezért mondja ezt ki a megerősítő párbeszédablak, és ezért az Ön döntése, nem pedig valami, ami csendben megtörténik.</p>
 <h2 id="bovitmeny-eltavolitasa">Bővítmény eltávolítása</h2>
 <ol>
-<li>A bővítmények ablakban jelölje meg a bővítményt a listában.</li>
-<li>Kattintson az <strong>Eltávolítás</strong>-ra. A beépített funkciók nem érintettek; csak a kiválasztott bővítmény távolodik el.</li>
+<li>A bővítményablakban válassza ki a bővítményt a listából.</li>
+<li>Kattintson az <strong>Eltávolítás</strong> gombra. A beépített funkciók érintetlenek maradnak; csak a kijelölt bővítmény kerül eltávolításra.</li>
 </ol>
+<p>Az alkalmazással érkező bővítmény nem törölhető — az „Eltávolítás" ilyenkor kikapcsolja.</p>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>A bővítménylista minden bővítmény típusát és felületverzióját mutatja a neve és helye mellett, így megerősítheti, mi van telepítve.</li>
-<li>Ha nincs bővítmény telepítve, az ablak egy rövid felszólítást mutat, amely a <strong>Telepítés mappából…</strong> felé irányítja.</li>
-<li>Egyes bővítmények csak akkor adnak hozzá saját oszlopokat, menüelemeket vagy panelhelyeket, amíg engedélyezve vannak. Ha egy várt funkció hiányzik, ellenőrizze, hogy a bővítmény itt be van-e kapcsolva.</li>
+<li>A lista a név és a hely mellett minden bővítmény verzióját, típusát és felületverzióját is mutatja, így ellenőrizhető, mi van telepítve.</li>
+<li>Ha egy bővítménynek az Önénél újabb Peach Commander kell, azt egy erről szóló üzenettel utasítja el a program, ahelyett hogy érthetetlenül hibázna. Fordítva ugyanez igaz: egy régebbi felülethez készült bővítmény addig működik, amíg az a felület támogatott.</li>
+<li>Egyes bővítmények csak bekapcsolt állapotban adják hozzá oszlopaikat, menüpontjaikat vagy panelhelyeiket. Ha hiányzik egy várt funkció, ellenőrizze itt, hogy a bővítménye be van-e kapcsolva.</li>
+<li>Saját bővítmény írása vagy közzététele a fejlesztői dokumentációban szerepel, nem itt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Lemeztérkép</a></li><li><a href="ai-assistant.html">MI-asszisztens</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Fájlrendszerképek</a></li><li><a href="archives.html">Munka az archívumokkal</a></li><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li></ul></section>
 </main>

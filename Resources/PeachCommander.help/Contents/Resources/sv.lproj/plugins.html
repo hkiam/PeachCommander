@@ -43,22 +43,31 @@
 </ol>
 <p><img alt="Insticksfönstret som listar installerade insticksprogram med kryssrutor och knapparna Installera och Ta bort" src="images/plugins-window.png" />
 <em>(Bild: Insticksfönstret, där du aktiverar, inaktiverar, installerar eller tar bort insticksprogram.)</em></p>
-<h2 id="installera-ett-nytt-insticksprogram">Installera ett nytt insticksprogram</h2>
+<h2 id="installera-ett-nytt-tillagg">Installera ett nytt tillägg</h2>
+<p>Ett tillägg du hämtar kommer som ett <strong>tilläggspaket</strong> — en fil som slutar på <code>.pcplug</code>. Det finns fyra sätt att installera ett, och alla slutar vid samma bekräftelse:</p>
+<ul>
+<li><strong>Dubbelklicka på det</strong> i Finder. Peach Commander öppnas och frågar.</li>
+<li><strong>Tryck på Retur</strong> på det i en panel. Peach Commander är en filhanterare — filen ligger oftast redan där.</li>
+<li><strong>Dra det till tilläggsfönstret</strong> (Inställningar ▸ Tillägg…).</li>
+<li>Välj <strong>Inställningar ▸ Tillägg… ▸ Installera…</strong> och välj paketet, en <code>.zip</code> med ett tillägg i, eller ett uppackat tilläggsbunt.</li>
+</ul>
+<p>Innan något laddas visar en dialogruta tilläggets namn, version, identifierare och typ, samt vilka filtyper det tar över — ett tillägg som gör anspråk på <code>.iso</code> blir appens läsare för de filerna. Ingenting installeras förrän du klickar på <strong>Installera</strong>.</p>
+<p>Finns redan ett tillägg med samma identifierare installerat säger dialogrutan det och visar båda versionerna, så att en uppdatering läses som en uppdatering ("1.0.0 → 1.1.0") och ett steg bakåt påpekas som just det.</p>
+<h2 id="innan-du-installerar-ett">Innan du installerar ett</h2>
+<p>Ett tillägg är ett program som körs inuti Peach Commander, med samma åtkomst till dina filer som Peach Commander har. Det finns ingen sandlåda runt det. Installera bara tillägg från källor du litar på, precis som med vilket annat program som helst.</p>
+<p>Tillägg som hämtats från internet sätts i karantän av macOS. Att installera ett säger åt macOS att tillåta att det läses in — därför säger bekräftelserutan det, och därför är det ett beslut du fattar och inte något som sker i tysthet.</p>
+<h2 id="ta-bort-ett-tillagg">Ta bort ett tillägg</h2>
 <ol>
-<li>Välj Konfiguration ▸ Insticksprogram….</li>
-<li>Klicka på <strong>Installera från mapp…</strong>.</li>
-<li>Välj ett insticksprogrampaket eller en <code>.zip</code> som innehåller ett, och bekräfta. Insticksprogrammet läggs till i listan och aktiveras.</li>
+<li>Markera tillägget i listan i tilläggsfönstret.</li>
+<li>Klicka på <strong>Ta bort</strong>. Inbyggda funktioner påverkas inte; bara det markerade tillägget tas bort.</li>
 </ol>
-<h2 id="ta-bort-ett-insticksprogram">Ta bort ett insticksprogram</h2>
-<ol>
-<li>Markera insticksprogrammet i listan i insticksfönstret.</li>
-<li>Klicka på <strong>Ta bort</strong>. Inbyggda funktioner påverkas inte; endast det valda insticksprogrammet tas bort.</li>
-</ol>
+<p>Ett tillägg som följer med appen går inte att radera — "Ta bort" stänger av det i stället.</p>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Insticksprogramlistan visar varje insticksprograms typ och gränssnittsversion bredvid namn och plats, så att du kan bekräfta vad som är installerat.</li>
-<li>Om inga insticksprogram är installerade visar fönstret en kort uppmaning som pekar dig mot <strong>Installera från mapp…</strong>.</li>
-<li>Vissa insticksprogram lägger till sina egna kolumner, menyalternativ eller panelplatser endast medan de är aktiverade. Om en funktion du förväntade dig saknas, kontrollera att dess insticksprogram är påslaget här.</li>
+<li>Listan visar varje tilläggs version, typ och gränssnittsversion bredvid namn och plats, så att du kan se vad som är installerat.</li>
+<li>Kräver ett tillägg en nyare version av Peach Commander än din avvisas det med ett meddelande som säger det, i stället för att misslyckas obegripligt. Detsamma gäller åt andra hållet: ett tillägg byggt för ett äldre gränssnitt fortsätter fungera så länge det gränssnittet stöds.</li>
+<li>Vissa tillägg lägger bara till sina kolumner, menyalternativ eller panelplatser medan de är påslagna. Saknas en funktion du väntade dig, kontrollera här att dess tillägg är på.</li>
+<li>Hur du själv skriver eller publicerar ett tillägg står i utvecklardokumentationen, inte här.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">AI-assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Filsystemsavbilder</a></li><li><a href="archives.html">Arbeta med arkiv</a></li><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li></ul></section>
 </main>

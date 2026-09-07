@@ -43,22 +43,31 @@
 </ol>
 <p><img alt="La ventana de complementos con la lista de complementos instalados, casillas de activación y los botones Instalar y Eliminar" src="images/plugins-window.png" />
 <em>(Figura: La ventana de complementos, donde activas, desactivas, instalas o eliminas complementos.)</em></p>
-<h2 id="instalar-un-nuevo-complemento">Instalar un nuevo complemento</h2>
+<h2 id="instalar-un-plugin-nuevo">Instalar un plugin nuevo</h2>
+<p>Un plugin que descargue llega como un <strong>paquete de plugin</strong>: un archivo terminado en <code>.pcplug</code>. Hay cuatro maneras de instalarlo, y todas terminan en la misma confirmación:</p>
+<ul>
+<li><strong>Haga doble clic</strong> en el Finder. Peach Commander se abre y le pregunta.</li>
+<li><strong>Pulse Intro</strong> sobre él en un panel. Peach Commander es un gestor de archivos: normalmente el archivo ya está ahí.</li>
+<li><strong>Arrástrelo a la ventana de plugins</strong> (Configuración ▸ Plugins…).</li>
+<li>Elija <strong>Configuración ▸ Plugins… ▸ Instalar…</strong> y seleccione el paquete, un <code>.zip</code> que contenga un plugin o un bundle de plugin descomprimido.</li>
+</ul>
+<p>Antes de cargar nada, un diálogo indica el nombre, la versión, el identificador y el tipo del plugin, y qué tipos de archivo va a asumir: un plugin que reclama <code>.iso</code>, por ejemplo, pasa a ser el lector de la aplicación para esos archivos. No se instala nada hasta que pulse <strong>Instalar</strong>.</p>
+<p>Si ya hay instalado un plugin con el mismo identificador, el diálogo lo indica y muestra ambas versiones, de modo que una actualización se lee como tal («1.0.0 → 1.1.0») y un paso atrás se señala como tal.</p>
+<h2 id="antes-de-instalar-uno">Antes de instalar uno</h2>
+<p>Un plugin es un programa que se ejecuta dentro de Peach Commander, con el mismo acceso a sus archivos que Peach Commander. No hay ningún aislamiento alrededor. Instale plugins solo de fuentes en las que confíe, igual que haría con cualquier otra aplicación.</p>
+<p>Los plugins descargados de Internet llegan en cuarentena de macOS. Instalar uno indica a macOS que permita su carga, y por eso el diálogo de confirmación lo dice y por eso es una decisión suya y no algo que ocurra en silencio.</p>
+<h2 id="quitar-un-plugin">Quitar un plugin</h2>
 <ol>
-<li>Elige Configuración ▸ Complementos….</li>
-<li>Haz clic en <strong>Instalar desde carpeta…</strong>.</li>
-<li>Elige un paquete de complemento o un <code>.zip</code> que contenga uno, y confirma. El complemento se añade a la lista y se activa.</li>
+<li>En la ventana de plugins, seleccione el plugin en la lista.</li>
+<li>Pulse <strong>Quitar</strong>. Las funciones integradas no se ven afectadas; solo se quita el plugin seleccionado.</li>
 </ol>
-<h2 id="eliminar-un-complemento">Eliminar un complemento</h2>
-<ol>
-<li>En la ventana de complementos, selecciona el complemento de la lista.</li>
-<li>Haz clic en <strong>Eliminar</strong>. Las funciones integradas no se ven afectadas; solo se elimina el complemento seleccionado.</li>
-</ol>
+<p>Un plugin que viene con la aplicación no se puede borrar, así que «Quitar» lo desactiva en su lugar.</p>
 <h2 id="notas">Notas</h2>
 <ul>
-<li>La lista de complementos muestra el tipo y la versión de interfaz de cada complemento junto a su nombre y ubicación, para que puedas confirmar qué hay instalado.</li>
-<li>Si no hay complementos instalados, la ventana muestra un breve mensaje que te dirige a <strong>Instalar desde carpeta…</strong>.</li>
-<li>Algunos complementos añaden sus propias columnas, elementos de menú o lugares del panel solo mientras están activados. Si falta una función que esperabas, comprueba aquí que su complemento esté activado.</li>
+<li>La lista muestra la versión, el tipo y la versión de interfaz de cada plugin junto a su nombre y ubicación, para que pueda confirmar qué hay instalado.</li>
+<li>Si un plugin necesita una versión de Peach Commander más reciente que la suya, se rechaza con un mensaje que lo explica en lugar de fallar de forma incomprensible. Lo mismo al revés: un plugin creado para una interfaz anterior sigue funcionando mientras esa interfaz esté admitida.</li>
+<li>Algunos plugins añaden sus columnas, entradas de menú o lugares del panel solo mientras están activados. Si falta una función que esperaba, compruebe aquí que su plugin está encendido.</li>
+<li>Escribir o publicar un plugin propio se trata en la documentación para desarrolladores, no aquí.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa de disco</a></li><li><a href="ai-assistant.html">Asistente de IA</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Imágenes de sistemas de archivos</a></li><li><a href="archives.html">Trabajar con archivos comprimidos</a></li><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li></ul></section>
 </main>
