@@ -77,7 +77,9 @@ and the file chooser. All four end at the same dialog.
 
 **The example.** ISO 9660 / Joliet / Rock Ridge / UDF / El Torito, in its own repository. It earns
 its place rather than demonstrating one: `.iso` is already browsable here through `bsdtar` in the
-core — one subprocess per member, each re-scanning from the start, every modification time dropped,
+core — one subprocess per member, each re-scanning from the start, every member reporting the ISO
+file's own timestamp instead of its own (measured: touch the container to 2000-01-01 and every file
+inside claims that date, which is worse than reporting none because it looks like data),
 no UDF at all, and not one test. Nothing on the host's side changed to let the plugin take over,
 because a packer plugin that claims `iso` is already consulted before the built-in readers.
 
@@ -113,6 +115,26 @@ asserted string present, zero Auto Layout conflicts — so nothing about this is
 Worth noting how it got there: the assertions were checked against the real app on the host first,
 under `-AppleLanguages "(en)"`, because a scenario whose expectations are guesses fails on the guest
 for reasons that look like the feature and are not.
+
+**Asked afterwards whether the plugin really displaces bsdtar, and the honest answer was "half".**
+The backend switch had been measured on `udf.iso` — which bsdtar cannot open at all, so it proves
+nothing about precedence. Measured properly, on `iso9660.iso`, which both can read: no plugin →
+`backendID` `native`, `processPerMember`; plugin enabled → `pcx`, `cheapRandomAccess`, and
+`.disc-info.txt` in the listing, which only the plugin synthesises; plugin switched off → `native`
+again. Then the same three states through the real app: Enter on the `.iso`, dump the panel,
+`.disc-info.txt` present only with the plugin installed.
+
+That measurement also **disproved a claim this entry and three other places were making**. The
+built-in path does not drop modification times — `ShellArchiveSource` reports `modified: nil` and
+`ArchiveFS` then falls back to the *archive file's* date, so every member reports the container's
+timestamp. Demonstrated by touching the ISO to 2000-01-01: every file inside claimed that date under
+`native`, and its own under `pcx`. That is worse than reporting nothing, because it looks like data.
+Corrected in the CHANGELOG, the plugin's README and its test.
+
+The one property none of this covered was the *new* half of the ABI: a plugin declaring
+`PC_CAP_RANDOM_ACCESS` must no longer be demoted for a background search. `SearchInArchiveTests`
+covered the demotion and the interactive order but not that, so it has a stub pair now differing in
+nothing but the declared cost — and the test fails with the demotion condition reverted.
 
 **The quarantine path was the last claim with no evidence behind it**, and it is the one that
 matters most, since it is the step where the user's judgement replaces Gatekeeper's. Checked against
