@@ -289,13 +289,13 @@ public actor PluginManager {
         return installed
     }
 
-    /// Delete a staging tree. Safe to call twice, and safe when the bundle was staged by
-    /// reference (an unpacked folder the user chose — that one is theirs, not ours to delete).
+    /// Delete a staging tree. Safe to call twice.
+    ///
+    /// Only ever the staging root, which is why a bundle staged *by reference* — an unpacked folder
+    /// the user picked — is safe: that one sits outside the root and is theirs, not ours to delete.
+    /// (This used to branch on exactly that distinction and then do the same thing in both arms,
+    /// which read as a safeguard while being none.)
     public func discard(_ staged: StagedPlugin) {
-        guard staged.bundleURL.path.hasPrefix(staged.stagingRoot.path + "/") else {
-            try? FileManager.default.removeItem(at: staged.stagingRoot)
-            return
-        }
         try? FileManager.default.removeItem(at: staged.stagingRoot)
     }
 

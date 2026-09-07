@@ -253,11 +253,21 @@ public final class PCXArchive {
     /// The point of `ReadEntryData` is not only that the plugin can seek — it is that the archive
     /// stays open between reads. Opening and closing it per chunk would put back most of the cost
     /// the export exists to remove.
-    public final class RandomAccessReader {
+    public final class RandomAccessReader: @unchecked Sendable {
         private let owner: PCXArchive
         private let handle: UnsafeMutableRawPointer
         private let read: PCXReadEntryDataFn
         private var closed = false
+        /// Serialises calls on this handle, which is a promise the ABI makes and the host has to keep.
+        ///
+        /// `pcx.h`: *the host serialises calls per open archive HANDLE unless GetPackerCaps reports
+        /// PC_CAP_MULTITHREAD.* Every other path in this file kept that for free by opening a fresh
+        /// handle per operation. This one deliberately does not — holding the archive open between
+        /// reads is half of what `ReadEntryData` buys — so one mount's handle is now shared by every
+        /// stream reading out of it, and two panels reading two files at once would have reached the
+        /// plugin concurrently. The sample packer seeks and reads a `FILE *`; interleaving those is
+        /// not a crash, it is the wrong bytes in the right file.
+        private let callLock = NSLock()
 
         fileprivate init(owner: PCXArchive, handle: UnsafeMutableRawPointer, read: @escaping PCXReadEntryDataFn) {
             self.owner = owner
@@ -267,6 +277,8 @@ public final class PCXArchive {
 
         /// Up to `length` bytes of `entryPath` from `offset`. A short result means the end.
         public func read(entryPath: String, offset: Int64, length: Int64) throws -> Data {
+            callLock.lock()
+            defer { callLock.unlock() }
             guard !closed, length > 0 else { return Data() }
             return try owner.guarded { [handle, read] in
                 var buffer = Data(count: Int(length))
@@ -284,8 +296,12 @@ public final class PCXArchive {
         }
 
         public func close() {
-            guard !closed else { return }
+            callLock.lock()
+            guard !closed else { callLock.unlock(); return }
             closed = true
+            callLock.unlock()
+            // Outside the lock: CloseArchive is a plugin call like any other, and a read in flight
+            // holds the lock until it returns — waiting for it is the point, deadlocking on it is not.
             owner.closeHandle(handle)
         }
 

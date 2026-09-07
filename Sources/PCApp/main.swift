@@ -76,8 +76,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func handle(_ urls: [URL]) {
         guard let controller = mainWindow else { return }
-        for url in urls where PluginPackage.isPackage(url) {
-            Task { @MainActor in await controller.installPluginPackage(at: url) }
+        let packages = urls.filter(PluginPackage.isPackage)
+        guard !packages.isEmpty else { return }
+        // One task for all of them, awaiting each in turn. A task per URL would put every
+        // confirmation up at once — selecting two packages in the Finder and pressing Return is
+        // enough to do it — and each one runs a nested modal session on top of the last, so the
+        // user answers them inside out.
+        Task { @MainActor in
+            for url in packages {
+                await controller.installPluginPackage(at: url)
+            }
         }
     }
 

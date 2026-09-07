@@ -29,14 +29,13 @@ enum PluginInstallPrompt {
         alert.informativeText = informativeText(for: staged)
         alert.addButton(withTitle: String(localized: "Install"))
         alert.addButton(withTitle: String(localized: "Cancel"))
-        // Cancel is the safe answer, so it is the one Return must not reach by accident.
+        // Cancel is the safe answer, so it is the one Escape reaches and Return does not.
         alert.buttons.last?.keyEquivalent = "\u{1b}"
-        if let window {
-            // A sheet would be better still, but every caller here is a synchronous decision
-            // point in a command handler; `beginSheetModal` would return before the answer.
-            alert.window.setFrameOrigin(NSPoint(x: window.frame.midX - alert.window.frame.width / 2,
-                                                y: window.frame.midY))
-        }
+        // Application-modal rather than a sheet: every caller is a decision point that has to have
+        // an answer before it continues, and `beginSheetModal` returns before the user has given
+        // one. `runModal` centres the alert itself, so there is nothing useful to do with the
+        // window here — an earlier version positioned it over `window` and that had no effect.
+        _ = window
         return alert.runModal() == .alertFirstButtonReturn
     }
 

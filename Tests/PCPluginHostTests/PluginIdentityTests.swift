@@ -129,6 +129,25 @@ final class PluginIdentityTests: XCTestCase {
         XCTAssertNil(config.migratedKeys(nameToIdentifier: ["Old Name": "com.example.iso"]))
     }
 
+    /// The migration must not depend on the order a Dictionary happens to hand back its pairs.
+    ///
+    /// The shape that broke it: one plugin named "X" whose identifier is "Y", and a second actually
+    /// named "Y". The first version rewrote a set while iterating the map and so read its own
+    /// writes — "X" became "Y", and then the "Y" pair fired on the entry that had just been created
+    /// and turned it into "Z". Which of the two answers came out depended on iteration order, and a
+    /// migration that runs once and writes the result back is the last place to leave that.
+    func test_migrationIsIndependentOfDictionaryOrder() {
+        let map = ["X": "Y", "Y": "Z"]
+        let config = PluginConfig(disabled: ["X"], enabled: [], packerAssoc: [:])
+        // Repeated because the hash seed — and so the iteration order — differs per process, but
+        // not within one: the loop guards against a rewrite that is order-dependent *and* against
+        // one that is merely unstable.
+        for _ in 0..<50 {
+            XCTAssertEqual(config.migratedKeys(nameToIdentifier: map)?.disabled, ["Y"],
+                           "“X” is named by the map and must become exactly its identifier")
+        }
+    }
+
     func test_migrationDoesNothingWithNoMapping() {
         let config = PluginConfig(disabled: ["Something"], enabled: [], packerAssoc: [:])
         XCTAssertNil(config.migratedKeys(nameToIdentifier: [:]))

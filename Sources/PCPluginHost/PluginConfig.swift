@@ -129,11 +129,21 @@ public struct PluginConfig: Equatable, Sendable {
     /// thing.
     public func migratedKeys(nameToIdentifier: [String: String]) -> PluginConfig? {
         guard !nameToIdentifier.isEmpty else { return nil }
+        // Decided against the *original* set, one entry at a time, rather than by mutating a set
+        // while iterating the map. The mutating version read its own writes, and a Dictionary has
+        // no iteration order: given a plugin named "X" whose identifier is "Y" and a second named
+        // "Y", the same file migrated to two different results depending on which pair came out
+        // first. A migration that runs once and writes the answer back is the last place to leave
+        // something order-dependent.
         func rewrite(_ set: Set<String>) -> Set<String> {
-            var out = set
-            for (name, identifier) in nameToIdentifier where out.contains(name) && !out.contains(identifier) {
-                out.remove(name)
-                out.insert(identifier)
+            var out = Set<String>()
+            out.reserveCapacity(set.count)
+            for entry in set {
+                if let identifier = nameToIdentifier[entry], !set.contains(identifier) {
+                    out.insert(identifier)
+                } else {
+                    out.insert(entry)
+                }
             }
             return out
         }

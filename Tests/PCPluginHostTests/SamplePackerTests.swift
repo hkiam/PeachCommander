@@ -159,4 +159,47 @@ final class SamplePackerTests: XCTestCase {
                      "an archive that cannot even be opened yields no reader")
     }
 
+    /// Concurrent reads on one random-access handle must not interleave inside the plugin.
+    ///
+    /// `pcx.h` promises the host serialises calls per open archive HANDLE, and every other path
+    /// keeps that for free by opening a fresh handle per operation. The random-access reader does
+    /// not — holding the archive open between reads is half of what the export buys — so the
+    /// serialisation has to be put back by hand. The sample packer seeks and reads a `FILE *`;
+    /// interleaving those is not a crash, it is one entry's bytes returned for another's, which is
+    /// why this asserts the contents rather than merely surviving.
+    func test_concurrentReadsOnOneHandleDoNotInterleave() async throws {
+        guard let lib = try buildSamplePacker() else { throw XCTSkip("clang unavailable") }
+        let archive = PCXArchive(library: lib)
+
+        let src = dir.appendingPathComponent("concurrent", isDirectory: true)
+        try FileManager.default.createDirectory(at: src, withIntermediateDirectories: true)
+        var expected: [String: String] = [:]
+        for i in 0..<8 {
+            // Distinct lengths as well as contents, so a read that lands in the wrong entry is
+            // visible even if the two happen to start with the same byte.
+            let body = String(repeating: "\(i)", count: 500 + i * 97)
+            expected["f\(i).txt"] = body
+            try Data(body.utf8).write(to: src.appendingPathComponent("f\(i).txt"))
+        }
+        let pak = dir.appendingPathComponent("concurrent.pak")
+        try archive.pack(archivePath: pak.path, sourceDir: src.path, files: expected.keys.sorted())
+
+        let reader = try XCTUnwrap(archive.openRandomAccess(archivePath: pak.path))
+        defer { reader.close() }
+
+        try await withThrowingTaskGroup(of: (String, String).self) { group in
+            for _ in 0..<40 {
+                for name in expected.keys.sorted() {
+                    group.addTask {
+                        let data = try reader.read(entryPath: name, offset: 0, length: 4096)
+                        return (name, String(decoding: data, as: UTF8.self))
+                    }
+                }
+            }
+            for try await (name, got) in group {
+                XCTAssertEqual(got, expected[name], "\(name) came back as another entry's contents")
+            }
+        }
+    }
+
 }
