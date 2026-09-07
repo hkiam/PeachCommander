@@ -100,10 +100,29 @@ like in practice, and the sample packer implements it so the claim is tested rat
 **What is verified and what is not.** Build green, the whole suite green, every static gate green,
 and an end-to-end run through the host's own modules: the `.pcplug` staged, its manifest reported,
 installed, enabled under its identifier, and a UDF-only image opened by the `pcx` backend at
-`cheapRandomAccess` and read — a file `bsdtar` cannot list at all. The new VM scenario
-`plugin-install-prompt` is written but **has not been run**: it needs the guest, and the guest was
-not available. It asserts the dialog and cancels it, so it installs nothing and leaves the plugin
-set unchanged for whatever runs after it.
+`cheapRandomAccess` and read — a file `bsdtar` cannot list at all.
+
+The install dialog is verified in the real app rather than only in the abstract: the debug build
+driven with `-AutomationScript`, Enter on a `.pcplug` in a panel, `modaldump` reading what came up.
+It named the plugin, its version, its identifier, its type and the extensions it would take over,
+and cancelling left the plugins directory as it was. Run again under `-AppleLanguages "(en)"` and
+every string `plugin-install-prompt` asserts was present, so what is outstanding is the guest run
+itself and not whether the scenario's expectations match reality. In German the same dump came back
+translated, which is the only end-to-end evidence that the 33 new strings reach the surface at all.
+
+**The review pass afterwards found two real defects in the above**, both in what had just been
+written, and neither by re-reading it. Concurrent reads on one random-access handle were not
+serialised — the ABI promises that per handle, and every other path had got it for free by opening
+a fresh handle per operation. And the `plugins.ini` migration mutated the set it was iterating the
+map against, so its result depended on Dictionary order, in a migration that runs once and writes
+the answer back. Both now have a test that was checked the only way worth checking one: it fails
+with its fix reverted.
+
+The ISO reader was fuzzed rather than only read — 438 corrupted images across all three format
+paths, listing *and* reading every entry, no crash and no hang. And CI caught what the local gates
+could not: `Resources/PeachCommander.help` is generated *and committed*, so editing nineteen
+`plugins.md` and stopping there shipped a Help Book describing the old install flow. The staleness
+check lives in the Docs workflow and in none of the scripts I had been running.
 
 ## 2026-09-06 — pass two, and the defect was the same sentence three times
 
