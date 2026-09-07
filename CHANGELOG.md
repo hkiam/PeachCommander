@@ -14,6 +14,16 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The stray magnifier on the viewer's scroll bar is gone.** A small magnifying glass sat on the
+  vertical scroll bar of the viewer and of the hex editor, doing nothing when clicked and covering
+  the bar it sat on. It was the filter field of the *closed* strings panel: closed means zero points
+  wide, not gone, and the field is inset six points from both edges, so AppKit went on painting the
+  field's own magnifier glyph outside a panel of no width — which in these two windows is pinned to
+  the right edge, exactly where the scroll bar is. Both side panels now clip to themselves, so a
+  closed one draws nothing.
+
 ## [0.9.0] — 2026-09-07
 
 Plugins stopped being something only this repository can write.

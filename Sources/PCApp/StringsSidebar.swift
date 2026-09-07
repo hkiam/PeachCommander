@@ -55,6 +55,13 @@ final class StringsSidebar: NSView {
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.backgroundColor = Theme.current.listBackground.cgColor
+        // Closed means zero *wide*, not gone: the filter field is inset 6 points from both edges, so
+        // at a width of 0 its frame starts at x = -6 and AppKit still paints the field's magnifier
+        // glyph. In the viewer this panel is pinned to the right edge of the window, so that glyph
+        // landed on the vertical scroller — a small magnifier sitting on the scroll bar, doing
+        // nothing, because the control it belongs to is a panel nobody opened. Clip to our own
+        // bounds and a closed panel draws nothing at all.
+        layer?.masksToBounds = true
 
         search.placeholderString = String(localized: "Filter strings")
         search.controlSize = .small
