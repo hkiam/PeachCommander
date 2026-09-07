@@ -64,15 +64,23 @@ mkdir -p "$DEST/Tools"
 cp Tools/lib/pc-universal.sh "$DEST/Tools/pc-universal.sh"
 
 cd "$DEST"
+changed=0
 if git diff --quiet && git diff --cached --quiet; then
     echo "==> Nothing changed."
 else
     git add -A
     git commit -q -m "Sync the plugin ABI from PeachCommander ($(cd "$ROOT" && git rev-parse --short HEAD))"
+    changed=1
     echo "==> Committed."
 fi
 
-if [ -n "$TAG" ]; then
+# The tag follows the commit, not the invocation. It used to be created whenever one was passed,
+# which meant a release that touched nothing in the ABI still minted an SDK version — a tag that
+# says "something changed" over a tree where nothing did. A caller wanting to re-tag an unchanged
+# tree can still do it by hand; automation should not.
+if [ -n "$TAG" ] && [ "$changed" -eq 1 ]; then
     git tag -a "$TAG" -m "Plugin SDK $TAG (PC_API_VERSION $API)"
     echo "==> Tagged $TAG. Push with: git -C $DEST push && git -C $DEST push --tags"
+elif [ -n "$TAG" ]; then
+    echo "==> Not tagging $TAG: the mirror is already up to date."
 fi
