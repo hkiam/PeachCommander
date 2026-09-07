@@ -44,21 +44,30 @@
 <p><img alt="The plugin window listing installed plugins with enable checkboxes and Install and Remove buttons" src="images/plugins-window.png" />
 <em>(Figure: The plugin window, where you enable, disable, install, or remove plugins.)</em></p>
 <h2 id="install-a-new-plugin">Install a new plugin</h2>
-<ol>
-<li>Choose Configuration ▸ Plugins….</li>
-<li>Click <strong>Install from Folder…</strong>.</li>
-<li>Choose a plugin bundle or a <code>.zip</code> containing one, then confirm. The plugin is added to the list and enabled.</li>
-</ol>
+<p>A plugin you download arrives as a <strong>plugin package</strong> — a file ending in <code>.pcplug</code>. There are four ways to install one, and they all end at the same confirmation:</p>
+<ul>
+<li><strong>Double-click it</strong> in the Finder. Peach Commander opens and asks.</li>
+<li><strong>Press Enter on it</strong> in a panel. Peach Commander is a file manager, so this is usually where the file already is.</li>
+<li><strong>Drag it onto the plugin window</strong> (Configuration ▸ Plugins…).</li>
+<li><strong>Choose Configuration ▸ Plugins… ▸ Install…</strong> and pick the package, a <code>.zip</code> containing a plugin, or an unpacked plugin bundle.</li>
+</ul>
+<p>Before anything is loaded, a dialog tells you the plugin's name, version, identifier and type, and which file types it will take over — a plugin that claims <code>.iso</code>, for example, becomes the app's reader for those files. Nothing is installed until you click <strong>Install</strong>.</p>
+<p>If a plugin of the same identifier is already installed, the dialog says so and shows both versions, so an update reads as an update ("1.0.0 → 1.1.0") and going backwards is called out as such.</p>
+<h2 id="before-you-install-one">Before you install one</h2>
+<p>A plugin is a program that runs inside Peach Commander, with the same access to your files that Peach Commander has. There is no sandbox around it. Install plugins only from sources you trust, the same way you would with any other application.</p>
+<p>Plugins downloaded from the internet arrive quarantined by macOS. Installing one tells macOS to allow it to load — which is why the confirmation dialog says so, and why it is a decision you make rather than something that happens quietly.</p>
 <h2 id="remove-a-plugin">Remove a plugin</h2>
 <ol>
 <li>In the plugin window, select the plugin in the list.</li>
 <li>Click <strong>Remove</strong>. Built-in features are unaffected; only the selected plugin is removed.</li>
 </ol>
+<p>A plugin that came with the app cannot be deleted, so removing it switches it off instead.</p>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>The plugin list shows each plugin's type and interface version alongside its name and location, so you can confirm what is installed.</li>
-<li>If no plugins are installed, the window shows a short prompt pointing you to <strong>Install from Folder…</strong>.</li>
+<li>The plugin list shows each plugin's version, type and interface version alongside its name and location, so you can confirm what is installed.</li>
+<li>If a plugin needs a newer version of Peach Commander than you have, it is refused with a message saying so rather than failing obscurely. The same is true in the other direction: a plugin built for an older interface keeps working for as long as that interface is supported.</li>
 <li>Some plugins add their own columns, menu items, or panel places only while they are enabled. If a feature you expected is missing, check that its plugin is turned on here.</li>
+<li>Writing your own plugin, or publishing one, is covered in the developer documentation rather than here.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">AI Assistant</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Filesystem Images</a></li><li><a href="archives.html">Working with archives</a></li><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li></ul></section>
 </main>

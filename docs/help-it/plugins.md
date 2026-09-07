@@ -43,19 +43,35 @@ I restanti plugin integrati sono più piccoli e non necessitano di una pagina pr
 ![La finestra dei plugin che elenca i plugin installati con caselle di selezione e i pulsanti Installa e Rimuovi](screenshots/plugins-window.png)
 *(Figura: la finestra dei plugin, dove abiliti, disabiliti, installi o rimuovi i plugin.)*
 
-## Installa un nuovo plugin
+## Installare un nuovo plugin
 
-1. Scegli Configurazione ▸ Plugin….
-2. Fai clic su **Installa da cartella…**.
-3. Scegli un pacchetto di plugin o un `.zip` che ne contiene uno, e conferma. Il plugin viene aggiunto all'elenco e abilitato.
+Un plugin scaricato arriva come **pacchetto di plugin**: un file con estensione `.pcplug`. Ci sono quattro modi per installarlo, e tutti finiscono alla stessa conferma:
 
-## Rimuovi un plugin
+- **Fai doppio clic** nel Finder. Peach Commander si apre e chiede.
+- **Premi Invio** su di esso in un pannello. Peach Commander è un gestore di file: di solito il file è già lì.
+- **Trascinalo sulla finestra dei plugin** (Configurazione ▸ Plugin…).
+- Scegli **Configurazione ▸ Plugin… ▸ Installa…** e seleziona il pacchetto, un `.zip` che contiene un plugin, oppure un bundle di plugin già estratto.
+
+Prima che venga caricato qualsiasi cosa, una finestra indica nome, versione, identificatore e tipo del plugin, e quali tipi di file prenderà in carico: un plugin che rivendica `.iso`, per esempio, diventa il lettore dell'app per quei file. Non viene installato nulla finché non fai clic su **Installa**.
+
+Se è già installato un plugin con lo stesso identificatore, la finestra lo dice e mostra entrambe le versioni: un aggiornamento si legge come tale («1.0.0 → 1.1.0») e un passo indietro viene segnalato.
+
+## Prima di installarne uno
+
+Un plugin è un programma che gira dentro Peach Commander, con lo stesso accesso ai tuoi file che ha Peach Commander. Non c'è alcuna sandbox intorno. Installa plugin solo da fonti di cui ti fidi, come faresti con qualsiasi altra applicazione.
+
+I plugin scaricati da Internet arrivano in quarantena da macOS. Installarne uno dice a macOS di consentirne il caricamento — per questo la finestra di conferma lo dice, e per questo è una decisione che prendi tu e non qualcosa che avviene in silenzio.
+
+## Rimuovere un plugin
 
 1. Nella finestra dei plugin, seleziona il plugin nell'elenco.
-2. Fai clic su **Rimuovi**. Le funzioni integrate non sono interessate; viene rimosso solo il plugin selezionato.
+2. Fai clic su **Rimuovi**. Le funzioni integrate non vengono toccate; viene rimosso solo il plugin selezionato.
+
+Un plugin fornito con l'app non può essere cancellato: «Rimuovi» lo disattiva.
 
 ## Note
 
-- L'elenco dei plugin mostra il tipo e la versione dell'interfaccia di ciascun plugin accanto al nome e alla posizione, così puoi confermare cosa è installato.
-- Se non è installato alcun plugin, la finestra mostra un breve invito che ti indirizza verso **Installa da cartella…**.
-- Alcuni plugin aggiungono le proprie colonne, voci di menu o luoghi del pannello solo mentre sono abilitati. Se una funzione che ti aspettavi manca, controlla che il plugin sia attivato qui.
+- L'elenco mostra versione, tipo e versione dell'interfaccia di ogni plugin accanto al nome e al percorso, così puoi verificare che cosa è installato.
+- Se un plugin richiede una versione di Peach Commander più recente della tua, viene rifiutato con un messaggio che lo dice, invece di fallire in modo incomprensibile. Vale anche il contrario: un plugin creato per un'interfaccia più vecchia continua a funzionare finché quell'interfaccia è supportata.
+- Alcuni plugin aggiungono colonne, voci di menu o luoghi nel pannello solo mentre sono attivi. Se manca una funzione che ti aspettavi, controlla qui che il suo plugin sia acceso.
+- Scrivere o pubblicare un proprio plugin è trattato nella documentazione per sviluppatori, non qui.

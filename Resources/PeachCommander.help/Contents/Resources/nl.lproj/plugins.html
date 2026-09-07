@@ -44,21 +44,30 @@
 <p><img alt="Het plug-invenster met een lijst van geïnstalleerde plug-ins, aankruisvakken en knoppen Installeren en Verwijderen" src="images/plugins-window.png" />
 <em>(Afbeelding: Het plug-invenster, waar je plug-ins in- en uitschakelt, installeert of verwijdert.)</em></p>
 <h2 id="een-nieuwe-plug-in-installeren">Een nieuwe plug-in installeren</h2>
-<ol>
-<li>Kies Configuratie ▸ Plug-ins….</li>
-<li>Klik op <strong>Installeren vanuit map…</strong>.</li>
-<li>Kies een plug-inbundel of een <code>.zip</code> die er een bevat en bevestig. De plug-in wordt toegevoegd aan de lijst en ingeschakeld.</li>
-</ol>
+<p>Een plug-in die je downloadt komt als <strong>plug-inpakket</strong> — een bestand dat eindigt op <code>.pcplug</code>. Er zijn vier manieren om er een te installeren, en ze eindigen alle vier bij dezelfde bevestiging:</p>
+<ul>
+<li><strong>Dubbelklik erop</strong> in de Finder. Peach Commander opent en vraagt het je.</li>
+<li><strong>Druk op Enter</strong> erop in een paneel. Peach Commander is een bestandsbeheerder: daar staat het bestand meestal toch al.</li>
+<li><strong>Sleep het naar het plug-invenster</strong> (Configuratie ▸ Plug-ins…).</li>
+<li>Kies <strong>Configuratie ▸ Plug-ins… ▸ Installeren…</strong> en kies het pakket, een <code>.zip</code> met een plug-in erin, of een uitgepakte plug-inbundel.</li>
+</ul>
+<p>Voordat er iets wordt geladen, noemt een venster de naam, versie, identificatie en het type van de plug-in, en welke bestandstypen ze overneemt — een plug-in die <code>.iso</code> opeist, wordt de lezer van de app voor die bestanden. Er wordt niets geïnstalleerd tot je op <strong>Installeren</strong> klikt.</p>
+<p>Is er al een plug-in met dezelfde identificatie geïnstalleerd, dan zegt het venster dat en toont het beide versies: een update leest als een update ("1.0.0 → 1.1.0") en een stap terug wordt als zodanig benoemd.</p>
+<h2 id="voordat-je-er-een-installeert">Voordat je er een installeert</h2>
+<p>Een plug-in is een programma dat binnen Peach Commander draait, met dezelfde toegang tot je bestanden als Peach Commander zelf. Er zit geen sandbox omheen. Installeer alleen plug-ins uit bronnen die je vertrouwt, net als bij elke andere toepassing.</p>
+<p>Van internet gedownloade plug-ins komen door macOS in quarantaine. Door er een te installeren geef je macOS toestemming om die te laden — daarom zegt het bevestigingsvenster dat, en daarom is het jouw beslissing en niet iets wat stilletjes gebeurt.</p>
 <h2 id="een-plug-in-verwijderen">Een plug-in verwijderen</h2>
 <ol>
-<li>Selecteer in het plug-invenster de plug-in in de lijst.</li>
+<li>Selecteer de plug-in in de lijst in het plug-invenster.</li>
 <li>Klik op <strong>Verwijderen</strong>. Ingebouwde functies blijven ongemoeid; alleen de geselecteerde plug-in wordt verwijderd.</li>
 </ol>
+<p>Een meegeleverde plug-in kan niet worden gewist — "Verwijderen" schakelt haar dan uit.</p>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
-<li>De plug-inlijst toont naast naam en locatie ook het type en de interfaceversie van elke plug-in, zodat je kunt controleren wat er is geïnstalleerd.</li>
-<li>Als er geen plug-ins zijn geïnstalleerd, toont het venster een korte aanwijzing naar <strong>Installeren vanuit map…</strong>.</li>
-<li>Sommige plug-ins voegen hun eigen kolommen, menu-items of paneelplekken alleen toe zolang ze zijn ingeschakeld. Ontbreekt een functie die je verwachtte, controleer dan hier of de bijbehorende plug-in aanstaat.</li>
+<li>De lijst toont naast naam en locatie ook de versie, het type en de interfaceversie van elke plug-in, zodat je kunt nagaan wat er is geïnstalleerd.</li>
+<li>Heeft een plug-in een nieuwere versie van Peach Commander nodig dan je hebt, dan wordt ze geweigerd met een bericht dat dat zegt, in plaats van onnavolgbaar te mislukken. Andersom geldt hetzelfde: een plug-in voor een oudere interface blijft werken zolang die interface wordt ondersteund.</li>
+<li>Sommige plug-ins voegen hun kolommen, menu-items of paneelplekken alleen toe zolang ze zijn ingeschakeld. Ontbreekt een functie die je verwachtte, controleer dan hier of de plug-in aanstaat.</li>
+<li>Hoe je zelf een plug-in schrijft of publiceert, staat in de ontwikkelaarsdocumentatie, niet hier.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">AI-assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Bestandssysteemimages</a></li><li><a href="archives.html">Werken met archieven</a></li><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li></ul></section>
 </main>

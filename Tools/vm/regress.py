@@ -1647,6 +1647,20 @@ SCENARIOS = [
     # agree on the same command id.
     ("plugin-context-menu", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                              "ctxdump table.csv|/Users/admin/ctxmenu.txt", "wait 800"], 11),
+    # Installing a plugin is running somebody else's code with the whole disk in reach, and the only
+    # thing standing between a downloaded file and that is a dialog. So the dialog is what this
+    # asserts: Enter on a `.pcplug` in a panel — the same path a double-click in the Finder takes —
+    # must produce a modal naming the plugin, its version, its identifier, and the file types it will
+    # take over. That last one is the part a user cannot otherwise see: a packer plugin becomes the
+    # app's reader for every extension it claims.
+    #
+    # `modaldump` is scheduled *before* the action, because `runModal` never returns to the script,
+    # and it aborts the modal after reading it — which here is the Cancel answer. That is deliberate
+    # twice over: the scenario asserts the decision point rather than the install, and the guest ends
+    # with exactly the plugins it began with, so nothing after it sees an extra column or menu.
+    ("plugin-install-prompt", ["active left", "left /Users/admin/pc-demo/Archives", "wait 1500",
+                               "modaldump /Users/admin/pluginstall.txt",
+                               "focus DemoPacker-2.1.0.pcplug", "openunder", "wait 2500"], 11),
     # "Verify files after copy" applied to foreground copies only (F-090) — and the background queue is
     # exactly what one picks for the large copies where verifying is worth the time. The dump is
     # scheduled first: the report is a modal alert, and `runModal` never returns to the script.
@@ -2705,6 +2719,12 @@ REPORTS = {
     # plugin's entry beside them so the check is about the surface and not about one plugin.
     "plugin-context-menu": ("/Users/admin/ctxmenu.txt",
                             ["Suggest a comment", "Suggest a name", "Summarize", "!ERROR"]),
+    # The four facts the decision rests on, plus the warning. "!Install failed" guards the other
+    # direction: an error alert would also be a modal with the word "plugin" in it.
+    "plugin-install-prompt": ("/Users/admin/pluginstall.txt",
+                              ["modal=true", "Demo Disc Images", "2.1.0", "com.example.demopacker",
+                               ".demo", ".iso", "same access to your files",
+                               "!Install failed", "!ERROR"]),
     # The alert must be there, must be the verification one, and must say the file matched. "!did not
     # match" guards the other direction: an alert that fires but reports a mismatch for a good copy would
     # be just as wrong and would still contain the word "verified".

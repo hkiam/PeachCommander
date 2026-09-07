@@ -4624,9 +4624,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // Plugins page (F-274): installed plugins + enable checkboxes.
             var pluginRows: [PluginRow] = []
             for p in await self.pluginManager.discovered {
-                pluginRows.append(PluginRow(name: p.manifest.name, type: p.manifest.type.rawValue,
+                pluginRows.append(PluginRow(name: p.manifest.name,
+                                            identifier: p.manifest.identifier,
+                                            version: p.manifest.version.description,
+                                            type: p.manifest.type.rawValue,
                                             apiVersion: p.manifest.apiVersion,
-                                            enabled: await self.pluginManager.isEnabled(p.manifest.name),
+                                            enabled: await self.pluginManager.isEnabled(p.manifest.identifier),
                                             path: p.bundlePath))
             }
             win.setPluginRows(pluginRows)
@@ -6433,7 +6436,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             guard let plugin = await self.pluginManager.packerPlugin(forExtension: ext),
                   case .success(let lib) = PluginHost.openLibrary(plugin) else { return false }
             // pluginID scopes the crash guard's quarantine to this specific plugin (F-230).
-            do { try PCXArchive(library: lib, pluginID: plugin.manifest.name)
+            do { try PCXArchive(library: lib, pluginID: plugin.manifest.identifier)
                     .pack(archivePath: archivePath, sourceDir: sourceDir, files: files); return true }
             catch { self.logger.error("Plugin pack failed: \(error)"); return false }
         }
@@ -6456,7 +6459,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // should pay for that — or have their files read speculatively at all.
             let detectsByContent = await self.pluginManager.packerPlugins().contains { plugin in
                 guard case .success(let lib) = PluginHost.openLibrary(plugin) else { return false }
-                return PCXArchive(library: lib, pluginID: plugin.manifest.name).detectsByContent
+                return PCXArchive(library: lib, pluginID: plugin.manifest.identifier).detectsByContent
             }
             for pc in [self.leftPanelController, self.rightPanelController] {
                 pc?.tableView.onProbeThenEnterArchive = detectsByContent
@@ -6519,39 +6522,106 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 await self?.refreshPluginsWindow()
             }
         }
-        win.onInstallFolder = { [weak self] in
+        win.onInstall = { [weak self] in
             guard let self, let window = win.window else { return }
             let panel = NSOpenPanel()
             panel.canChooseDirectories = true
             panel.canChooseFiles = true
-            panel.allowedContentTypes = [.zip]
-            panel.message = String(localized: "Choose a plugin bundle or a .zip to install")
+            panel.allowedContentTypes = [PluginPackage.contentType, .zip]
+            panel.message = String(localized: "Choose a plugin package or bundle to install")
             panel.beginSheetModal(for: window) { response in
                 guard response == .OK, let url = panel.url else { return }
-                Task { @MainActor in
-                    do {
-                        if url.pathExtension.lowercased() == "zip" {
-                            _ = try await self.pluginManager.installFromZip(zipURL: url)
-                        } else {
-                            _ = try await self.pluginManager.install(bundleURL: url)
-                        }
-                    } catch { self.presentInfo(String(localized: "Install failed"), "\(error)") }
-                    self.loadExternalPlugins()
-                    await self.refreshPluginsWindow()
-                }
+                Task { @MainActor in await self.installPluginPackage(at: url) }
             }
+        }
+        win.onInstallFile = { [weak self] url in
+            Task { @MainActor in await self?.installPluginPackage(at: url) }
         }
         win.onClose = { [weak self] in self?.pluginsWindow = nil }
         win.showWindow()
         Task { @MainActor in await refreshPluginsWindow() }
     }
 
+    /// Install the plugin package at `url`, after telling the user what it is (F-482).
+    ///
+    /// The one door. Double-clicking a `.pcplug` in the Finder, pressing Enter on one in a panel,
+    /// dropping it on the plugins window and picking one from the file chooser all arrive here,
+    /// so the confirmation and the quarantine handling cannot be skipped by taking another route
+    /// in — which is how the file chooser came to be the only path that existed.
+    @MainActor
+    func installPluginPackage(at url: URL) async {
+        let window = pluginsWindow?.window ?? self.window
+        let staged: StagedPlugin
+        do {
+            staged = try await pluginManager.stage(packageURL: url)
+        } catch {
+            presentInfo(String(localized: "Could not read the plugin package"),
+                        Self.installErrorDetail(error, url: url))
+            return
+        }
+        guard PluginInstallPrompt.confirm(staged, over: window) else {
+            await pluginManager.discard(staged)
+            return
+        }
+        do {
+            // Quarantine is cleared only here, on the far side of the user's yes.
+            _ = try await pluginManager.commit(staged, clearQuarantine: staged.isQuarantined)
+        } catch {
+            presentInfo(String(localized: "Install failed"), Self.installErrorDetail(error, url: url))
+        }
+        await pluginManager.discard(staged)
+        loadExternalPlugins()
+        loadPlugins()
+        await refreshPluginsWindow()
+    }
+
+    /// A sentence about why a package could not be installed, rather than a Swift enum case.
+    private static func installErrorDetail(_ error: Error, url: URL) -> String {
+        switch error {
+        case PluginInstallError.unzipFailed:
+            return String(localized: "“\(url.lastPathComponent)” could not be unpacked. It may be damaged or not a plugin package.")
+        case PluginInstallError.noPluginFound:
+            return String(localized: "“\(url.lastPathComponent)” contains no plugin bundle.")
+        case PluginInstallError.ambiguousPackage(let names):
+            return String(localized: "“\(url.lastPathComponent)” contains more than one plugin (\(names.joined(separator: ", "))) and no pluginst.inf saying which one to install.")
+        case PluginInstallError.escapesPackage(let name):
+            return String(localized: "“\(url.lastPathComponent)” contains an entry (\(name)) that would be written outside the package. It was not installed.")
+        case PluginLoadError.hostTooOld(let required, let current):
+            return String(localized: "This plugin needs Peach Commander \(required.description) or later; this is \(current.description).")
+        case PluginLoadError.hostAPITooOld(let required, _):
+            return String(localized: "This plugin needs plugin API version \(required), which this version of Peach Commander does not implement yet.")
+        case PluginLoadError.manifest(let manifestError):
+            return Self.manifestErrorDetail(manifestError)
+        case PluginLoadError.missingBinary(let path):
+            return String(localized: "The plugin bundle has no executable at \(path).")
+        default:
+            return "\(error)"
+        }
+    }
+
+    private static func manifestErrorDetail(_ error: PluginManifestError) -> String {
+        switch error {
+        case .missingType:      return String(localized: "The plugin declares no PCPluginType.")
+        case .invalidType(let raw): return String(localized: "“\(raw)” is not a plugin type Peach Commander knows.")
+        case .missingName:      return String(localized: "The plugin declares no PCPluginName.")
+        case .missingAPIVersion: return String(localized: "The plugin declares no PCPluginAPIVersion.")
+        case .apiVersionTooOld(let found, let minimum):
+            return String(localized: "This plugin was built for plugin API version \(found); the oldest still supported is \(minimum).")
+        case .apiVersionTooNew(let found, let current):
+            return String(localized: "This plugin needs plugin API version \(found); this version of Peach Commander implements \(current). Updating Peach Commander should help.")
+        case .invalidIdentifier(let raw):
+            return String(localized: "“\(raw)” is not a usable plugin identifier.")
+        }
+    }
+
     private func refreshPluginsWindow() async {
         let discovered = await pluginManager.discovered
         var rows: [PluginRow] = []
         for p in discovered {
-            let enabled = await pluginManager.isEnabled(p.manifest.name)
-            rows.append(PluginRow(name: p.manifest.name, type: p.manifest.type.rawValue,
+            let enabled = await pluginManager.isEnabled(p.manifest.identifier)
+            rows.append(PluginRow(name: p.manifest.name, identifier: p.manifest.identifier,
+                                  version: p.manifest.version.description,
+                                  type: p.manifest.type.rawValue,
                                   apiVersion: p.manifest.apiVersion, enabled: enabled, path: p.bundlePath))
         }
         pluginsWindow?.setRows(rows)
@@ -7690,6 +7760,16 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// ordinary answer rather than a failure, so the file opens the way Enter would
     /// have opened it anyway instead of beeping at somebody who pressed Enter on a
     /// text file.
+    /// Hand a `.pcplug` the cursor is sitting on to the host's installer (F-482).
+    ///
+    /// The panel does not install anything itself: the prompt, the quarantine decision and the
+    /// reload of every plugin consumer belong to the window that owns the plugin manager. This is
+    /// the same hop `panelDidLeaveContentMount` and `presentConnectionLost` make.
+    func installPluginPackage(at path: String) async {
+        guard let wc = view.window?.windowController as? MainWindowController else { return }
+        await wc.installPluginPackage(at: URL(fileURLWithPath: path))
+    }
+
     func enterArchive(_ pathToOpen: String, speculative: Bool = false) async {
         guard let opening = archiveOpening else { NSSound.beep(); return }
 
@@ -9605,6 +9685,9 @@ final class PanelView: NSView {
         }
         tableView.onEnterArchive = { [weak controller] path in
             Task { @MainActor in await controller?.enterArchive(path) }
+        }
+        tableView.onInstallPluginPackage = { [weak controller] path in
+            Task { @MainActor in await controller?.installPluginPackage(at: path) }
         }
         tableView.onOpenExternally = { [weak controller] path, app in
             Task { @MainActor in await controller?.openExternally(path, with: app) }

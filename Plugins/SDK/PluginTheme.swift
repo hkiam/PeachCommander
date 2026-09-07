@@ -35,51 +35,51 @@ import CContrib
 ///
 /// A snapshot, not a live view: colours cannot change under you mid-draw, and re-reading is one
 /// cheap call when the host says the theme changed.
-struct PluginTheme {
+public struct PluginTheme {
     /// Whether the host's UI is dark right now — a named theme decides this itself, so it is not
     /// the same as the macOS appearance. Use it to pick between two of your own assets.
-    let isDark: Bool
+    public let isDark: Bool
     /// The selected theme's id ("system" when the user picked none).
-    let id: String
+    public let id: String
 
     /// Background of a list or content area.
-    let background: NSColor
+    public let background: NSColor
     /// Background of the window as a whole (chrome around the content).
-    let windowBackground: NSColor
+    public let windowBackground: NSColor
     /// Primary text.
-    let text: NSColor
+    public let text: NSColor
     /// Dimmed text: captions, units, secondary detail.
-    let secondaryText: NSColor
+    public let secondaryText: NSColor
     /// The theme's accent — a focus ring, an active bar, a highlighted series.
-    let accent: NSColor
+    public let accent: NSColor
     /// Hairlines between columns, rows and sections.
-    let separator: NSColor
+    public let separator: NSColor
     /// Fill behind a selected row, and the text colour to use on top of it.
-    let selectionBackground: NSColor
-    let selectionText: NSColor
+    public let selectionBackground: NSColor
+    public let selectionText: NSColor
     /// The colour the host marks files with — use it for "flagged" state, not for selection.
-    let markedText: NSColor
+    public let markedText: NSColor
     /// Buttons and bars, and their labels.
-    let controlBackground: NSColor
-    let controlText: NSColor
+    public let controlBackground: NSColor
+    public let controlText: NSColor
 
     // Syntax colours, for a plugin that renders code (F-346). Separate from the panel colours
     // because they answer a different question — a code view needs a comment colour, not a
     // drive-bar colour — and because a plugin inventing its own would look un-themed.
-    let syntaxComment: NSColor
-    let syntaxString: NSColor
-    let syntaxNumber: NSColor
-    let syntaxKeyword: NSColor
-    let syntaxType: NSColor
-    let syntaxProperty: NSColor
+    public let syntaxComment: NSColor
+    public let syntaxString: NSColor
+    public let syntaxNumber: NSColor
+    public let syntaxKeyword: NSColor
+    public let syntaxType: NSColor
+    public let syntaxProperty: NSColor
 
     /// All system colours, for a property's initial value before services arrive. Spelled out
     /// rather than `PluginTheme(nil)`, which is ambiguous between the two initialisers below.
-    static var systemFallback: PluginTheme { PluginTheme(nil as PcHostServices?) }
+    public static var systemFallback: PluginTheme { PluginTheme(nil as PcHostServices?) }
 
     /// Read the theme from the host. Falls back to system colours for any key the host does not
     /// answer, which is how an older host (or a future host that drops a key) behaves.
-    init(_ services: UnsafePointer<PcHostServices>?) {
+    public init(_ services: UnsafePointer<PcHostServices>?) {
         self.init(services?.pointee)
     }
 
@@ -88,7 +88,7 @@ struct PluginTheme {
     /// The struct is copied deliberately: it is a plain table of function pointers plus the opaque
     /// `host` token, so a copy stays valid exactly as long as the original does — and holding a
     /// copy removes any question about the caller's pointer outliving this object.
-    init(_ services: PcHostServices?) {
+    public init(_ services: PcHostServices?) {
         func string(_ key: String) -> String? {
             guard let services, let get = services.getContext else { return nil }
             var buf = [CChar](repeating: 0, count: 128)
@@ -135,7 +135,7 @@ struct PluginTheme {
     /// One of the host's raw panel colours by name (e.g. "statusBarBackground") — the same names a
     /// user theme file uses. For the rare case where a plugin wants to match one specific host
     /// element rather than a semantic role.
-    func hostColor(_ name: String, fallback: NSColor) -> NSColor {
+    public func hostColor(_ name: String, fallback: NSColor) -> NSColor {
         guard let services = rawServices, let get = services.getContext else { return fallback }
         var buf = [CChar](repeating: 0, count: 128)
         let ok = "theme.color.\(name)".withCString { k in get(services.host, k, &buf, Int32(buf.count)) }

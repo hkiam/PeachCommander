@@ -290,6 +290,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     var onGoUp: (() -> Void)?
     /// Enter the archive file at the given local path (Enter on a .zip etc.).
     var onEnterArchive: ((String) -> Void)?
+    /// Install the plugin package at the given local path (Enter on a `.pcplug`, F-482).
+    var onInstallPluginPackage: ((String) -> Void)?
 
     /// Open a panel item with another application — the system's choice, or `app` when the user
     /// picked one. Enter, a double-click, "Open in Default App" and the Open With submenu all end
@@ -1889,7 +1891,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         case .appBundle:
             openExternally(path)
         case .file, .symlinkFile:
-            if isArchiveName?(entry.name) == true {
+            if PluginPackage.isPackage(name: entry.name), let install = onInstallPluginPackage {
+                // Before the archive gate on purpose: a `.pcplug` *is* a zip, and the moment
+                // someone adds `pcplug` to an extra-extensions list it would otherwise be walked
+                // into like a folder. A file manager is where people keep the thing they just
+                // downloaded, so Enter on it should mean what double-clicking it means.
+                install(path)
+            } else if isArchiveName?(entry.name) == true {
                 onEnterArchive?(path)
             } else if let probe = onProbeThenEnterArchive {
                 // A content-detecting packer plugin is enabled: let it look before the file

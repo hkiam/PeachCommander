@@ -45,17 +45,33 @@ A többi beépített bővítmény kisebb, és nincs szüksége saját oldalra:
 
 ## Új bővítmény telepítése
 
-1. Válassza a Konfiguráció ▸ Bővítmények… lehetőséget.
-2. Kattintson a **Telepítés mappából…** lehetőségre.
-3. Válasszon egy bővítménycsomagot vagy egy `.zip`-et, amely egyet tartalmaz, és erősítse meg. A bővítmény hozzáadódik a listához és engedélyeződik.
+A letöltött bővítmény **bővítménycsomagként** érkezik — egy `.pcplug` végződésű fájlként. Négyféleképpen telepíthető, és mind ugyanahhoz a megerősítéshez vezet:
+
+- **Kattintson rá duplán** a Finderben. A Peach Commander megnyílik és rákérdez.
+- **Nyomjon Entert rajta** egy panelben. A Peach Commander fájlkezelő — a fájl általában amúgy is ott van.
+- **Húzza a bővítményablakra** (Beállítások ▸ Bővítmények…).
+- Válassza a **Beállítások ▸ Bővítmények… ▸ Telepítés…** parancsot, majd a csomagot, egy bővítményt tartalmazó `.zip`-et vagy egy kicsomagolt bővítménykötegt.
+
+Mielőtt bármi betöltődne, egy párbeszédablak megnevezi a bővítmény nevét, verzióját, azonosítóját és típusát, valamint azt, mely fájltípusokat veszi át — egy `.iso`-t igénylő bővítmény például az alkalmazás olvasója lesz azokhoz a fájlokhoz. Semmi sem települ, amíg rá nem kattint a **Telepítés** gombra.
+
+Ha már telepítve van azonos azonosítójú bővítmény, a párbeszédablak ezt jelzi, és mindkét verziót mutatja: így a frissítés frissítésként olvasható („1.0.0 → 1.1.0"), a visszalépést pedig külön megnevezi.
+
+## Mielőtt telepítene egyet
+
+A bővítmény olyan program, amely a Peach Commanderen belül fut, ugyanazzal a hozzáféréssel a fájljaihoz, mint maga a Peach Commander. Nincs körülötte homokozó. Csak olyan forrásból telepítsen bővítményt, amelyben megbízik — ahogy bármely más alkalmazás esetén tenné.
+
+Az internetről letöltött bővítményeket a macOS karanténba helyezi. A telepítéssel engedélyezi a macOS-nek a betöltésüket — ezért mondja ezt ki a megerősítő párbeszédablak, és ezért az Ön döntése, nem pedig valami, ami csendben megtörténik.
 
 ## Bővítmény eltávolítása
 
-1. A bővítmények ablakban jelölje meg a bővítményt a listában.
-2. Kattintson az **Eltávolítás**-ra. A beépített funkciók nem érintettek; csak a kiválasztott bővítmény távolodik el.
+1. A bővítményablakban válassza ki a bővítményt a listából.
+2. Kattintson az **Eltávolítás** gombra. A beépített funkciók érintetlenek maradnak; csak a kijelölt bővítmény kerül eltávolításra.
+
+Az alkalmazással érkező bővítmény nem törölhető — az „Eltávolítás" ilyenkor kikapcsolja.
 
 ## Megjegyzések
 
-- A bővítménylista minden bővítmény típusát és felületverzióját mutatja a neve és helye mellett, így megerősítheti, mi van telepítve.
-- Ha nincs bővítmény telepítve, az ablak egy rövid felszólítást mutat, amely a **Telepítés mappából…** felé irányítja.
-- Egyes bővítmények csak akkor adnak hozzá saját oszlopokat, menüelemeket vagy panelhelyeket, amíg engedélyezve vannak. Ha egy várt funkció hiányzik, ellenőrizze, hogy a bővítmény itt be van-e kapcsolva.
+- A lista a név és a hely mellett minden bővítmény verzióját, típusát és felületverzióját is mutatja, így ellenőrizhető, mi van telepítve.
+- Ha egy bővítménynek az Önénél újabb Peach Commander kell, azt egy erről szóló üzenettel utasítja el a program, ahelyett hogy érthetetlenül hibázna. Fordítva ugyanez igaz: egy régebbi felülethez készült bővítmény addig működik, amíg az a felület támogatott.
+- Egyes bővítmények csak bekapcsolt állapotban adják hozzá oszlopaikat, menüpontjaikat vagy panelhelyeiket. Ha hiányzik egy várt funkció, ellenőrizze itt, hogy a bővítménye be van-e kapcsolva.
+- Saját bővítmény írása vagy közzététele a fejlesztői dokumentációban szerepel, nem itt.

@@ -140,6 +140,26 @@ void PkSetCryptCallback(PcCryptProc proc, int cryptoNr, int flags);
 /* Return background-processing flags (bit 0: unpack in background allowed, …). */
 int GetBackgroundFlags(void);
 
+/*
+ * Read `length` bytes at `offset` from the entry named `entryPath`, into `buf`.
+ *
+ * Optional, and the reason it is worth implementing: without it the only way the host can get at
+ * one entry is ProcessFile, which acts on whatever ReadHeaderEx last returned — so reaching the
+ * five-thousandth member means reading past the first four thousand nine hundred and ninety-nine,
+ * every time, and the whole member must land in a temporary file before a single byte of it can
+ * be shown. A format that is an index plus a seek can do far better, and this is where it says so.
+ *
+ * `entryPath` is a path exactly as ReadHeaderEx reported it. Write the number of bytes actually
+ * produced to *outRead: fewer than `length` means the end of the entry was reached, and zero
+ * means `offset` was at or past the end. Return PC_OK, PC_E_END_ARCHIVE for an unknown
+ * `entryPath`, or another PC_E_* on error.
+ *
+ * A plugin exporting this should also advertise PC_CAP_RANDOM_ACCESS from GetPackerCaps; the host
+ * requires both before it will treat this archive's members as cheap to reach.
+ */
+int ReadEntryData(PC_HANDLE hArc, const char *entryPath, int64_t offset, int64_t length,
+                  void *buf, int64_t *outRead);
+
 /* Optional API version export checked by the host during load. */
 int PcGetApiVersion(void);
 

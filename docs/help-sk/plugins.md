@@ -45,17 +45,33 @@ Zvyšné vstavané zásuvné moduly sú menšie a nepotrebujú vlastnú stránku
 
 ## Inštalácia nového zásuvného modulu
 
-1. Vyberte Konfigurácia ▸ Zásuvné moduly….
-2. Kliknite na **Nainštalovať z priečinka…**.
-3. Vyberte balík zásuvného modulu alebo `.zip`, ktorý ho obsahuje, a potvrďte. Zásuvný modul sa pridá do zoznamu a povolí.
+Stiahnutý zásuvný modul prichádza ako **balík zásuvného modulu** — súbor s príponou `.pcplug`. Nainštalovať ho možno štyrmi spôsobmi a všetky končia pri tom istom potvrdení:
+
+- **Dvakrát naň kliknite** vo Finderi. Peach Commander sa otvorí a spýta sa.
+- **Stlačte naň Enter** v paneli. Peach Commander je správca súborov — súbor tam obvykle aj tak už je.
+- **Presuňte ho na okno zásuvných modulov** (Konfigurácia ▸ Zásuvné moduly…).
+- Zvoľte **Konfigurácia ▸ Zásuvné moduly… ▸ Inštalovať…** a vyberte balík, `.zip` so zásuvným modulom alebo rozbalený balíček zásuvného modulu.
+
+Skôr než sa čokoľvek načíta, dialóg uvedie názov, verziu, identifikátor a typ zásuvného modulu aj to, ktoré typy súborov prevezme — modul, ktorý si nárokuje `.iso`, sa pre tieto súbory stane čítačkou aplikácie. Nič sa nenainštaluje, kým nekliknete na **Inštalovať**.
+
+Ak je už nainštalovaný modul s rovnakým identifikátorom, dialóg to povie a ukáže obe verzie: aktualizácia sa tak číta ako aktualizácia („1.0.0 → 1.1.0") a krok späť je výslovne pomenovaný.
+
+## Skôr než nejaký nainštalujete
+
+Zásuvný modul je program bežiaci vnútri Peach Commandera s rovnakým prístupom k vašim súborom, aký má Peach Commander. Nie je okolo neho žiadny izolovaný priestor. Inštalujte len moduly zo zdrojov, ktorým dôverujete — rovnako ako pri ktorejkoľvek inej aplikácii.
+
+Moduly stiahnuté z internetu macOS uvedie do karantény. Inštaláciou poviete macOS, aby povolil ich načítanie — preto to potvrdzovací dialóg hovorí a preto je to vaše rozhodnutie, a nie niečo, čo sa stane potichu.
 
 ## Odstránenie zásuvného modulu
 
-1. V okne zásuvných modulov označte zásuvný modul v zozname.
-2. Kliknite na **Odstrániť**. Vstavané funkcie nie sú ovplyvnené; odstráni sa iba vybraný zásuvný modul.
+1. V okne zásuvných modulov vyberte modul v zozname.
+2. Kliknite na **Odstrániť**. Vstavané funkcie zostanú nedotknuté; odstráni sa len vybraný modul.
+
+Modul dodávaný s aplikáciou sa nedá zmazať — „Odstrániť" ho namiesto toho vypne.
 
 ## Poznámky
 
-- Zoznam zásuvných modulov zobrazuje typ a verziu rozhrania každého zásuvného modulu vedľa názvu a umiestnenia, takže môžete potvrdiť, čo je nainštalované.
-- Ak nie je nainštalovaný žiadny zásuvný modul, okno zobrazí krátku výzvu, ktorá vás nasmeruje k **Nainštalovať z priečinka…**.
-- Niektoré zásuvné moduly pridávajú vlastné stĺpce, položky ponuky alebo miesta panela iba počas toho, čo sú povolené. Ak očakávaná funkcia chýba, skontrolujte, či je zásuvný modul tu zapnutý.
+- Zoznam popri názve a umiestnení ukazuje pri každom module verziu, typ a verziu rozhrania, takže si viete overiť, čo je nainštalované.
+- Ak modul vyžaduje novšiu verziu Peach Commandera, než máte, je odmietnutý so zrozumiteľnou správou namiesto nepochopiteľného zlyhania. To isté platí opačne: modul zostavený pre staršie rozhranie funguje ďalej, kým je toto rozhranie podporované.
+- Niektoré moduly pridávajú svoje stĺpce, položky ponuky alebo miesta v paneli len vtedy, keď sú zapnuté. Ak chýba očakávaná funkcia, overte tu, či je jej modul zapnutý.
+- Ako napísať alebo zverejniť vlastný zásuvný modul, opisuje dokumentácia pre vývojárov, nie táto stránka.

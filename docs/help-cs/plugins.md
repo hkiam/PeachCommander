@@ -45,17 +45,33 @@ Zbývající vestavěné zásuvné moduly jsou menší a nepotřebují vlastní 
 
 ## Instalace nového zásuvného modulu
 
-1. Zvolte Konfigurace ▸ Zásuvné moduly….
-2. Klepněte na **Nainstalovat ze složky…**.
-3. Vyberte balíček zásuvného modulu nebo `.zip`, který jej obsahuje, a potvrďte. Zásuvný modul se přidá do seznamu a povolí.
+Stažený zásuvný modul přichází jako **balíček zásuvného modulu** — soubor s příponou `.pcplug`. Nainstalovat jej lze čtyřmi způsoby a všechny končí u téhož potvrzení:
+
+- **Poklepejte na něj** ve Finderu. Peach Commander se otevře a zeptá se.
+- **Stiskněte na něm Enter** v panelu. Peach Commander je správce souborů — soubor tam obvykle beztak už je.
+- **Přetáhněte jej na okno zásuvných modulů** (Konfigurace ▸ Zásuvné moduly…).
+- Zvolte **Konfigurace ▸ Zásuvné moduly… ▸ Instalovat…** a vyberte balíček, `.zip` se zásuvným modulem nebo rozbalený balík zásuvného modulu.
+
+Než se cokoli načte, dialog uvede název, verzi, identifikátor a typ zásuvného modulu i to, které typy souborů převezme — modul, který si nárokuje `.iso`, se pro tyto soubory stane čtečkou aplikace. Nic se nenainstaluje, dokud nekliknete na **Instalovat**.
+
+Je-li už nainstalován modul se stejným identifikátorem, dialog to řekne a ukáže obě verze: aktualizace se tak čte jako aktualizace („1.0.0 → 1.1.0") a krok zpět je výslovně pojmenován.
+
+## Než nějaký nainstalujete
+
+Zásuvný modul je program běžící uvnitř Peach Commanderu se stejným přístupem k vašim souborům, jaký má Peach Commander. Není kolem něj žádný izolovaný prostor. Instalujte jen moduly ze zdrojů, kterým důvěřujete — stejně jako u jakékoli jiné aplikace.
+
+Moduly stažené z internetu jsou macOS uvedeny do karantény. Instalací sdělíte macOS, že je má povolit načíst — proto to potvrzovací dialog říká a proto je to vaše rozhodnutí, a ne něco, co se stane potichu.
 
 ## Odebrání zásuvného modulu
 
-1. V okně zásuvných modulů označte zásuvný modul v seznamu.
-2. Klepněte na **Odebrat**. Vestavěné funkce nejsou ovlivněny; odebere se jen vybraný zásuvný modul.
+1. V okně zásuvných modulů vyberte modul v seznamu.
+2. Klikněte na **Odebrat**. Vestavěné funkce zůstanou nedotčeny; odebere se jen vybraný modul.
+
+Modul dodávaný s aplikací nelze smazat — „Odebrat" jej místo toho vypne.
 
 ## Poznámky
 
-- Seznam zásuvných modulů zobrazuje typ a verzi rozhraní každého zásuvného modulu vedle názvu a umístění, takže si můžete ověřit, co je nainstalováno.
-- Pokud není nainstalován žádný zásuvný modul, okno zobrazí krátkou výzvu směřující vás k **Nainstalovat ze složky…**.
-- Některé zásuvné moduly přidávají vlastní sloupce, položky nabídek nebo místa panelu jen, když jsou povolené. Pokud očekávaná funkce chybí, zkontrolujte, že je zásuvný modul zde zapnutý.
+- Seznam vedle názvu a umístění ukazuje u každého modulu verzi, typ a verzi rozhraní, takže si můžete ověřit, co je nainstalováno.
+- Vyžaduje-li modul novější verzi Peach Commanderu, než máte, je odmítnut se srozumitelnou zprávou místo nepochopitelného selhání. Totéž platí obráceně: modul sestavený pro starší rozhraní funguje dál, dokud je toto rozhraní podporováno.
+- Některé moduly přidávají své sloupce, položky nabídky nebo místa v panelu jen tehdy, jsou-li zapnuty. Chybí-li očekávaná funkce, ověřte zde, zda je její modul zapnutý.
+- Jak napsat nebo zveřejnit vlastní zásuvný modul, popisuje dokumentace pro vývojáře, nikoli tato stránka.

@@ -45,17 +45,33 @@ Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină pro
 
 ## Instalarea unui plugin nou
 
-1. Alegeți Configurare ▸ Pluginuri….
-2. Faceți clic pe **Instalează din folder…**.
-3. Alegeți un pachet de plugin sau un `.zip` care conține unul, și confirmați. Pluginul este adăugat în listă și activat.
+Un plugin descărcat vine ca **pachet de plugin** — un fișier cu extensia `.pcplug`. Există patru moduri de a-l instala, iar toate se termină la aceeași confirmare:
+
+- **Faceți dublu clic pe el** în Finder. Peach Commander se deschide și întreabă.
+- **Apăsați Enter pe el** într-un panou. Peach Commander este un manager de fișiere — fișierul este de obicei deja acolo.
+- **Trageți-l pe fereastra de pluginuri** (Configurare ▸ Pluginuri…).
+- Alegeți **Configurare ▸ Pluginuri… ▸ Instalează…** și selectați pachetul, un `.zip` care conține un plugin sau un bundle de plugin dezarhivat.
+
+Înainte să se încarce ceva, o fereastră de dialog indică numele, versiunea, identificatorul și tipul pluginului, precum și tipurile de fișiere pe care le va prelua — un plugin care revendică `.iso`, de exemplu, devine cititorul aplicației pentru acele fișiere. Nu se instalează nimic până nu apăsați **Instalează**.
+
+Dacă un plugin cu același identificator este deja instalat, fereastra o spune și arată ambele versiuni, astfel încât o actualizare se citește ca o actualizare („1.0.0 → 1.1.0"), iar un pas înapoi este numit ca atare.
+
+## Înainte de a instala unul
+
+Un plugin este un program care rulează în interiorul Peach Commander, cu același acces la fișierele dumneavoastră pe care îl are Peach Commander. Nu există niciun sandbox în jurul lui. Instalați pluginuri doar din surse în care aveți încredere, la fel ca pentru orice altă aplicație.
+
+Pluginurile descărcate de pe internet ajung în carantină la macOS. Instalarea unuia îi spune macOS să permită încărcarea lui — de aceea fereastra de confirmare o menționează și de aceea este o decizie pe care o luați dumneavoastră, nu ceva ce se întâmplă în tăcere.
 
 ## Eliminarea unui plugin
 
-1. În fereastra de pluginuri, marcați pluginul din listă.
-2. Faceți clic pe **Elimină**. Funcțiile încorporate nu sunt afectate; doar pluginul selectat este eliminat.
+1. În fereastra de pluginuri, selectați pluginul din listă.
+2. Apăsați **Elimină**. Funcțiile integrate nu sunt afectate; se elimină doar pluginul selectat.
+
+Un plugin livrat împreună cu aplicația nu poate fi șters — „Elimină" îl dezactivează în schimb.
 
 ## Note
 
-- Lista de pluginuri arată tipul și versiunea de interfață a fiecărui plugin lângă numele și locația sa, astfel încât să puteți confirma ce este instalat.
-- Dacă niciun plugin nu este instalat, fereastra arată un scurt îndemn care vă îndreaptă spre **Instalează din folder…**.
-- Unele pluginuri adaugă propriile coloane, elemente de meniu sau locuri de panou doar cât timp sunt activate. Dacă o funcție așteptată lipsește, verificați dacă pluginul este activat aici.
+- Lista arată, pe lângă nume și locație, versiunea, tipul și versiunea de interfață a fiecărui plugin, ca să puteți confirma ce este instalat.
+- Dacă un plugin are nevoie de o versiune de Peach Commander mai nouă decât a dumneavoastră, este refuzat cu un mesaj care spune asta, în loc să eșueze de neînțeles. Este valabil și invers: un plugin construit pentru o interfață mai veche continuă să funcționeze cât timp acea interfață este acceptată.
+- Unele pluginuri își adaugă coloanele, elementele de meniu sau locurile din panou doar cât timp sunt activate. Dacă lipsește o funcție așteptată, verificați aici dacă pluginul ei este pornit.
+- Cum scrieți sau publicați propriul plugin este descris în documentația pentru dezvoltatori, nu aici.

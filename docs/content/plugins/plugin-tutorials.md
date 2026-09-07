@@ -4,7 +4,7 @@ slug: plugin-tutorials
 group: Develop
 section: SDK & plugins
 order: 30
-related: [sdk-overview, plugin-architecture-guide, api-overview]
+related: [sdk-overview, plugin-architecture-guide, plugin-publishing, api-overview]
 ---
 
 Hands-on walkthroughs for building a Peach Commander plugin. They assume you have
@@ -151,11 +151,23 @@ Do **not** call `NSLocalizedString` — it resolves in the host bundle, not your
 
 ## 7. Package the plugin
 
-Build a `.<type>plugin` bundle whose `Contents/MacOS/<name>` matches the bundle
-name. The `Tools/build-*-plugin.sh` scripts show the exact `swiftc`/`clang`
-invocations, Info.plist, and `.lproj` copying used for the bundled plugins — copy
-one as a template. Ship the bundle as-is, or zip it with a `pluginst.inf` so users
-can install it from **Configuration ▸ Plugins**.
+Build a `.<type>plugin` bundle whose `Contents/MacOS/<name>` matches the bundle name — the host
+derives that name from the bundle's, so the two must agree — and make it **universal**, because a
+single-architecture plugin cannot be loaded at all on the other kind of Mac.
+
+```
+Tools/make-pcplug.sh MyPlugin.pcxplugin dist/
+→ dist/MyPlugin-1.0.0.pcplug
+```
+
+`make-pcplug.sh` and `pc-universal.sh` are in the
+[SDK repository](https://github.com/hkiam/PeachCommanderPluginSDK); in this repository the
+`Tools/build-*-plugin.sh` scripts and `Tools/lib/pc-universal.sh` do the same thing for the bundled
+plugins, and any of them works as a template.
+
+A `.pcplug` is a zip with its own extension, holding the bundle and a `pluginst.inf`. Users install
+it by double-clicking it, pressing Enter on it in a panel, dropping it on the plugin window, or
+through Configuration ▸ Plugins ▸ Install… — see [publishing a plugin](plugin-publishing.md).
 
 ## 8. Test the plugin
 
@@ -170,9 +182,20 @@ can install it from **Configuration ▸ Plugins**.
 
 ## 9. Publish
 
-Distribute the `.zip` (bundle + optional `pluginst.inf`) however you like — there
-is no central registry yet. Users install it via Configuration ▸ Plugins. State
-your required `PCPluginAPIVersion` so users on an older host get a clear message.
+Check it first — `pcplug-validate` runs the host's own admission checks, so a missing export or a
+half-universal binary is caught by you rather than by a user:
+
+```
+swift run pcplug-validate MyPlugin.pcxplugin --open some-test-file
+```
+
+Then attach the `.pcplug` to a release page, or distribute it however you like; there is no
+registry and nothing to register with. Give your plugin a reverse-DNS `PCPluginIdentifier` and a
+semver `PCPluginVersion` before the first release — the identifier is what the user's settings are
+stored under, and changing it later loses them.
+
+[Publishing a plugin](plugin-publishing.md) covers the package format, the four install routes, the
+quarantine and signing situation, and what the version numbers mean.
 
 ## Porting a Total Commander plugin
 

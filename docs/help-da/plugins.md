@@ -45,17 +45,33 @@ De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv
 
 ## Installer et nyt plugin
 
-1. Vælg Konfiguration ▸ Plugins….
-2. Klik på **Installer fra mappe…**.
-3. Vælg en pluginpakke eller en `.zip`, der indeholder en, og bekræft. Pluginet tilføjes til listen og aktiveres.
+Et plugin, du henter, kommer som en **pluginpakke** — en fil, der ender på `.pcplug`. Der er fire måder at installere et på, og de ender alle ved den samme bekræftelse:
+
+- **Dobbeltklik på den** i Finder. Peach Commander åbner og spørger.
+- **Tryk Enter på den** i et panel. Peach Commander er en filhåndtering — filen ligger som regel allerede dér.
+- **Træk den til pluginvinduet** (Konfiguration ▸ Plugins…).
+- Vælg **Konfiguration ▸ Plugins… ▸ Installer…** og vælg pakken, en `.zip` med et plugin i, eller et udpakket pluginbundle.
+
+Før noget som helst indlæses, viser en dialog pluginets navn, version, identifikator og type samt hvilke filtyper det overtager — et plugin, der kræver `.iso`, bliver appens læser for de filer. Intet installeres, før du klikker **Installer**.
+
+Er der allerede installeret et plugin med samme identifikator, siger dialogen det og viser begge versioner, så en opdatering læses som en opdatering („1.0.0 → 1.1.0"), og et skridt tilbage bliver nævnt som netop det.
+
+## Før du installerer et
+
+Et plugin er et program, der kører inde i Peach Commander med samme adgang til dine filer, som Peach Commander har. Der er ingen sandkasse omkring det. Installer kun plugins fra kilder, du stoler på — ligesom med ethvert andet program.
+
+Plugins hentet fra internettet kommer i karantæne hos macOS. Ved at installere et beder du macOS om at tillade, at det indlæses — derfor siger bekræftelsesdialogen det, og derfor er det en beslutning, du træffer, og ikke noget, der sker i stilhed.
 
 ## Fjern et plugin
 
-1. I pluginvinduet skal du markere pluginet på listen.
-2. Klik på **Fjern**. Indbyggede funktioner påvirkes ikke; kun det valgte plugin fjernes.
+1. Vælg pluginet på listen i pluginvinduet.
+2. Klik **Fjern**. Indbyggede funktioner berøres ikke; kun det valgte plugin fjernes.
+
+Et plugin, der følger med appen, kan ikke slettes — „Fjern" slår det fra i stedet.
 
 ## Bemærkninger
 
-- Pluginlisten viser hvert plugins type og grænsefladeversion ved siden af navn og placering, så du kan bekræfte, hvad der er installeret.
-- Hvis der ikke er installeret nogen plugins, viser vinduet en kort opfordring, der peger dig mod **Installer fra mappe…**.
-- Nogle plugins tilføjer deres egne kolonner, menupunkter eller panelsteder kun mens de er aktiveret. Hvis en funktion, du forventede, mangler, tjek at pluginet er slået til her.
+- Listen viser hvert plugins version, type og grænsefladeversion ved siden af navn og placering, så du kan se, hvad der er installeret.
+- Kræver et plugin en nyere version af Peach Commander end din, afvises det med en besked, der siger det, i stedet for at fejle uforståeligt. Det samme gælder den anden vej: et plugin bygget til en ældre grænseflade bliver ved med at virke, så længe den grænseflade understøttes.
+- Nogle plugins tilføjer kun deres kolonner, menupunkter eller panelsteder, mens de er slået til. Mangler en funktion, du forventede, så tjek her, om dens plugin er tændt.
+- Hvordan man selv skriver eller udgiver et plugin står i udviklerdokumentationen, ikke her.

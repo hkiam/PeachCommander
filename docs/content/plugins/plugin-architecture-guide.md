@@ -4,7 +4,7 @@ slug: plugin-architecture-guide
 group: Develop
 section: SDK & plugins
 order: 20
-related: [sdk-overview, plugin-tutorials, api-overview]
+related: [sdk-overview, plugin-tutorials, plugin-publishing, api-overview]
 ---
 
 This guide explains how Peach Commander loads and talks to plugins, and every
@@ -27,8 +27,11 @@ Loading is two-phase:
    plugins contribute nothing and no plugin code runs to decide menu placement.
 2. **Bind & handshake** — when the plugin is actually used, the host `dlopen`s it
    (`RTLD_NOW | RTLD_LOCAL`), resolves the required symbols for its type, and runs
-   the version handshake: if `PcGetApiVersion` disagrees with the host, the load
-   fails with an API-version mismatch.
+   the version handshake: if `PcGetApiVersion` falls outside the supported window
+   (`PC_API_MIN_SUPPORTED … PC_API_VERSION`) the load fails with an API-version mismatch.
+
+The manifest is also where `PCPluginMinHostVersion` is enforced, in phase 1 — a plugin that needs a
+newer app than this one is refused with a message saying so, before any of its code runs.
 
 The library is `dlclose`d on release **only if** the plugin exports
 `PcSafeToUnload` and returns true; otherwise it stays resident (avoids unload
@@ -50,10 +53,13 @@ MyPlugin.<type>plugin/
 |-----|----------|---------|
 | `PCPluginType` | yes | `pcx` / `pfx` / `plx` / `pdx` / `ptx` (TC `wcx/wfx/wlx/wdx` are accepted and mapped) |
 | `PCPluginName` | yes | display name |
-| `PCPluginAPIVersion` | yes | must match the host (`1`) |
+| `PCPluginAPIVersion` | yes | the ABI built against; must fall inside the host's supported window (currently `1`) |
+| `PCPluginIdentifier` | no, but strongly recommended | reverse-DNS. The **stable key** the host stores the enabled/disabled state and file associations under. Absent, the display name is used — so renaming the plugin loses the user's setting, and two plugins sharing a title share one switch. May not contain `;` `,` `=` `[` `]` or whitespace. |
+| `PCPluginVersion` | no | the plugin's own `major.minor.patch`. Read at install time to tell an update from a downgrade; falls back to `CFBundleShortVersionString`, then `0.0.0`. |
 | `PCPluginExtensions` | no | default file-extension associations (list or `;`-separated) |
 | `PCPluginDetectString` | no | a [detect string](#detect-strings) for claim dispatch |
-| `PCPluginMinHostVersion` | no | minimum host version |
+| `PCPluginMinHostVersion` | no | a `"1.2.3"` string is the minimum **app** version, checked against the running app; a bare integer is the older meaning, a minimum plugin-API level |
+| `PCPluginEnabledByDefault` | no | `false` for a plugin that stays off until the user asks for it |
 | `PCContributions` | no | declarative commands / menus / views (below) |
 
 A TC-style `pluginst.inf` (`[plugininstall]` with `type` / `file` / `description` /

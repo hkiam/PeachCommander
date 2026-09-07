@@ -75,8 +75,8 @@ final class PluginHostTests: XCTestCase {
     func testWrongApiVersionSurfaced() throws {
         var p = validPlist(); p["PCPluginAPIVersion"] = 99
         let url = try makeBundle("OldApi", plist: p)
-        guard case .failure(.manifest(.unsupportedAPIVersion(99, current: 1))) = PluginHost.load(bundle: url) else {
-            return XCTFail("expected unsupportedAPIVersion")
+        guard case .failure(.manifest(.apiVersionTooNew(99, current: 1))) = PluginHost.load(bundle: url) else {
+            return XCTFail("expected apiVersionTooNew")
         }
     }
 

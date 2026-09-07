@@ -418,6 +418,28 @@ final class SearchInArchiveTests: XCTestCase {
         XCTAssertEqual(opened.memberAccessCost, .cheapRandomAccess)
     }
 
+    /// A plugin that says it can seek is NOT demoted for a background search (F-482).
+    ///
+    /// The demotion above exists because reading one member through a helper process re-scans the
+    /// whole archive, so a content search over a few thousand members becomes a few thousand full
+    /// passes. That reasoning does not apply to a format that is an index and a seek — and until
+    /// the ABI grew a way to say so, the host assumed the worst of *every* plugin and handed such
+    /// an archive to whatever lesser reader could also open it. The two stubs differ in nothing but
+    /// the cost they declare, so this asserts the cost is what decides.
+    func test_backgroundOpen_keepsABackendThatCanSeek() async throws {
+        try makeTar(named: "some.tar.gz", content: "needle\n")
+        let registry = ArchiveRegistry(backends: [RandomAccessBackend(), NativeArchiveBackend()])
+        await registry.refresh()
+
+        let outcome = await registry.open(fs: LocalFS(),
+                                          path: dir.appendingPathComponent("some.tar.gz").path,
+                                          intent: .background)
+        guard case .opened(let opened, _) = outcome else { return XCTFail("did not open") }
+        XCTAssertEqual(opened.backendID, "fast-stand-in",
+                       "a backend declaring cheap random access must not be passed over for a walk")
+        XCTAssertEqual(opened.memberAccessCost, .cheapRandomAccess)
+    }
+
     /// Interactive keeps the declared order: a plugin the user installed for a format wins.
     func test_interactiveOpen_keepsBackendOrder() async throws {
         try makeTar(named: "some.tar.gz", content: "needle\n")
@@ -429,6 +451,24 @@ final class SearchInArchiveTests: XCTestCase {
                                           intent: .interactive)
         guard case .opened(let opened, _) = outcome else { return XCTFail("did not open") }
         XCTAssertEqual(opened.backendID, "slow-stand-in")
+    }
+}
+
+/// Stands in for a plugin that can seek — the shape `PC_CAP_RANDOM_ACCESS` plus `ReadEntryData`
+/// buys a packer plugin (F-482). The point of the pair is that the *only* difference from
+/// `ProcessPerMemberBackend` below is the declared cost, so a test can attribute the outcome to
+/// that and nothing else.
+private struct RandomAccessBackend: ArchiveBackend {
+    let backendID = "fast-stand-in"
+    func nameSet() async -> ArchiveNameSet { NativeArchiveBackend.nameSet }
+    var staticNameSet: ArchiveNameSet { NativeArchiveBackend.nameSet }
+    func open(localFile: URL, intent: ArchiveOpenIntent) async -> ArchiveOpenOutcome {
+        guard let fs = ArchiveFS(archiveFileURL: localFile, fsID: "fast:\(localFile.path)") else {
+            return .notAnArchive
+        }
+        return .opened(OpenedArchive(fs: fs, localURL: localFile, isTemporary: false,
+                                     memberAccessCost: .cheapRandomAccess, backendID: backendID),
+                       dispose: {})
     }
 }
 

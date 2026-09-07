@@ -172,3 +172,64 @@ jobs:
           files: build/PeachCommander.dmg
           draft: true
           body_path: build/release-notes.md
+
+  # The plugin ABI, mirrored out to the package third parties depend on (F-482).
+  #
+  # A separate job because it has nothing to do with the DMG and must not be able to fail it: the
+  # release is the app, and a mirror that could not be pushed is a thing to fix afterwards, not a
+  # reason to withhold a build. `needs:` all the same, so a release whose packaging failed does not
+  # publish an ABI nobody can get an app for.
+  #
+  # Skips itself, loudly, when PLUGIN_SDK_TOKEN is absent — the same shape signing and notarization
+  # already have here, and for the same reason: this repository holds no secrets, so every optional
+  # step has to be a no-op rather than a failure. `github.token` cannot do this job: it is scoped to
+  # this repository and the push goes to another one.
+  publish-plugin-sdk:
+    name: Publish the plugin SDK package
+    needs: build-dmg
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: macos-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Publish
+        env:
+          PLUGIN_SDK_TOKEN: ${{ secrets.PLUGIN_SDK_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PLUGIN_SDK_TOKEN:-}" ]; then
+            echo "::notice::PLUGIN_SDK_TOKEN is not set — skipping the SDK mirror."
+            echo "Create a fine-grained token with Contents:write on hkiam/PeachCommanderPluginSDK"
+            echo "and add it as the repository secret PLUGIN_SDK_TOKEN to automate this."
+            echo "Until then, mirror by hand:"
+            echo "  Tools/publish-plugin-sdk.sh <path-to-sdk-checkout> <sdk-version>"
+            exit 0
+          fi
+          # The SDK's own version, not the app's: its major tracks PC_API_VERSION and its patch
+          # level moves when the tooling changes, neither of which follows the app's tag. Taken from
+          # the newest tag already on the SDK repository and bumped in the patch position, so a
+          # release that changed nothing in the ABI does not invent a version.
+          git clone --quiet \
+            "https://x-access-token:${PLUGIN_SDK_TOKEN}@github.com/hkiam/PeachCommanderPluginSDK.git" \
+            /tmp/plugin-sdk
+          git -C /tmp/plugin-sdk config user.name  "${GITHUB_ACTOR}"
+          git -C /tmp/plugin-sdk config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+          api="$(sed -n 's/^#define PC_API_VERSION  *\([0-9][0-9]*\).*/\1/p' Plugins/SDK/pc_common.h)"
+          latest="$(git -C /tmp/plugin-sdk tag --list "${api}.*" --sort=-v:refname | head -1)"
+          if [ -z "$latest" ]; then next="${api}.0.0"; else
+            next="${latest%.*}.$(( ${latest##*.} + 1 ))"
+          fi
+          echo "SDK: latest=${latest:-<none>} next=$next (PC_API_VERSION $api)"
+
+          # The script is the authority on *what* gets copied and refuses to publish drifted
+          # headers; it commits only when something changed, so a release with no ABI change makes
+          # no commit and the tag below is skipped.
+          Tools/publish-plugin-sdk.sh /tmp/plugin-sdk "$next"
+          if git -C /tmp/plugin-sdk rev-parse "$next" >/dev/null 2>&1; then
+            git -C /tmp/plugin-sdk push origin main --tags
+            echo "::notice::Published plugin SDK $next"
+          else
+            echo "::notice::The plugin ABI is unchanged — nothing to publish."
+          fi

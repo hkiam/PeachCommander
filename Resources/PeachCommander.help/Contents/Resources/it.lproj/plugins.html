@@ -43,22 +43,31 @@
 </ol>
 <p><img alt="La finestra dei plugin che elenca i plugin installati con caselle di selezione e i pulsanti Installa e Rimuovi" src="images/plugins-window.png" />
 <em>(Figura: la finestra dei plugin, dove abiliti, disabiliti, installi o rimuovi i plugin.)</em></p>
-<h2 id="installa-un-nuovo-plugin">Installa un nuovo plugin</h2>
-<ol>
-<li>Scegli Configurazione ▸ Plugin….</li>
-<li>Fai clic su <strong>Installa da cartella…</strong>.</li>
-<li>Scegli un pacchetto di plugin o un <code>.zip</code> che ne contiene uno, e conferma. Il plugin viene aggiunto all'elenco e abilitato.</li>
-</ol>
-<h2 id="rimuovi-un-plugin">Rimuovi un plugin</h2>
+<h2 id="installare-un-nuovo-plugin">Installare un nuovo plugin</h2>
+<p>Un plugin scaricato arriva come <strong>pacchetto di plugin</strong>: un file con estensione <code>.pcplug</code>. Ci sono quattro modi per installarlo, e tutti finiscono alla stessa conferma:</p>
+<ul>
+<li><strong>Fai doppio clic</strong> nel Finder. Peach Commander si apre e chiede.</li>
+<li><strong>Premi Invio</strong> su di esso in un pannello. Peach Commander è un gestore di file: di solito il file è già lì.</li>
+<li><strong>Trascinalo sulla finestra dei plugin</strong> (Configurazione ▸ Plugin…).</li>
+<li>Scegli <strong>Configurazione ▸ Plugin… ▸ Installa…</strong> e seleziona il pacchetto, un <code>.zip</code> che contiene un plugin, oppure un bundle di plugin già estratto.</li>
+</ul>
+<p>Prima che venga caricato qualsiasi cosa, una finestra indica nome, versione, identificatore e tipo del plugin, e quali tipi di file prenderà in carico: un plugin che rivendica <code>.iso</code>, per esempio, diventa il lettore dell'app per quei file. Non viene installato nulla finché non fai clic su <strong>Installa</strong>.</p>
+<p>Se è già installato un plugin con lo stesso identificatore, la finestra lo dice e mostra entrambe le versioni: un aggiornamento si legge come tale («1.0.0 → 1.1.0») e un passo indietro viene segnalato.</p>
+<h2 id="prima-di-installarne-uno">Prima di installarne uno</h2>
+<p>Un plugin è un programma che gira dentro Peach Commander, con lo stesso accesso ai tuoi file che ha Peach Commander. Non c'è alcuna sandbox intorno. Installa plugin solo da fonti di cui ti fidi, come faresti con qualsiasi altra applicazione.</p>
+<p>I plugin scaricati da Internet arrivano in quarantena da macOS. Installarne uno dice a macOS di consentirne il caricamento — per questo la finestra di conferma lo dice, e per questo è una decisione che prendi tu e non qualcosa che avviene in silenzio.</p>
+<h2 id="rimuovere-un-plugin">Rimuovere un plugin</h2>
 <ol>
 <li>Nella finestra dei plugin, seleziona il plugin nell'elenco.</li>
-<li>Fai clic su <strong>Rimuovi</strong>. Le funzioni integrate non sono interessate; viene rimosso solo il plugin selezionato.</li>
+<li>Fai clic su <strong>Rimuovi</strong>. Le funzioni integrate non vengono toccate; viene rimosso solo il plugin selezionato.</li>
 </ol>
+<p>Un plugin fornito con l'app non può essere cancellato: «Rimuovi» lo disattiva.</p>
 <h2 id="note">Note</h2>
 <ul>
-<li>L'elenco dei plugin mostra il tipo e la versione dell'interfaccia di ciascun plugin accanto al nome e alla posizione, così puoi confermare cosa è installato.</li>
-<li>Se non è installato alcun plugin, la finestra mostra un breve invito che ti indirizza verso <strong>Installa da cartella…</strong>.</li>
-<li>Alcuni plugin aggiungono le proprie colonne, voci di menu o luoghi del pannello solo mentre sono abilitati. Se una funzione che ti aspettavi manca, controlla che il plugin sia attivato qui.</li>
+<li>L'elenco mostra versione, tipo e versione dell'interfaccia di ogni plugin accanto al nome e al percorso, così puoi verificare che cosa è installato.</li>
+<li>Se un plugin richiede una versione di Peach Commander più recente della tua, viene rifiutato con un messaggio che lo dice, invece di fallire in modo incomprensibile. Vale anche il contrario: un plugin creato per un'interfaccia più vecchia continua a funzionare finché quell'interfaccia è supportata.</li>
+<li>Alcuni plugin aggiungono colonne, voci di menu o luoghi nel pannello solo mentre sono attivi. Se manca una funzione che ti aspettavi, controlla qui che il suo plugin sia acceso.</li>
+<li>Scrivere o pubblicare un proprio plugin è trattato nella documentazione per sviluppatori, non qui.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mappa del disco</a></li><li><a href="ai-assistant.html">Assistente AI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Immagini di file system</a></li><li><a href="archives.html">Lavorare con gli archivi</a></li><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li></ul></section>
 </main>

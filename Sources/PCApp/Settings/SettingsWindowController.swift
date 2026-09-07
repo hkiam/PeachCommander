@@ -284,7 +284,7 @@ public final class SettingsWindowController: NSWindowController {
 
     // Plugins page (F-274): installed plugins with enable checkboxes.
     private var pluginRows: [PluginRow] = []
-    var onTogglePlugin: ((_ name: String, _ enabled: Bool) -> Void)?
+    var onTogglePlugin: ((_ identifier: String, _ enabled: Bool) -> Void)?
     var onOpenPluginsManager: (() -> Void)?
 
     /// Supply the installed-plugin rows for the Plugins page (before `showModalless`).
@@ -1385,7 +1385,11 @@ public final class SettingsWindowController: NSWindowController {
             rows.append(empty)
         } else {
             for (i, p) in pluginRows.enumerated() {
-                let box = NSButton(checkboxWithTitle: "\(p.name) — \(p.type.uppercased()) v\(p.apiVersion)",
+                // The plugin's own version, not the ABI version this once showed as "v1": every
+                // plugin reports the same number for that, so the column said nothing, while the
+                // one thing a user wants to check — which version of this plugin is installed —
+                // was not shown anywhere until the manager grew a column for it.
+                let box = NSButton(checkboxWithTitle: "\(p.name) \(p.version) — \(p.type.uppercased())",
                                    target: self, action: #selector(pluginToggled(_:)))
                 box.state = p.enabled ? .on : .off
                 box.tag = i
@@ -1401,7 +1405,8 @@ public final class SettingsWindowController: NSWindowController {
 
     @objc private func pluginToggled(_ sender: NSButton) {
         guard pluginRows.indices.contains(sender.tag) else { return }
-        onTogglePlugin?(pluginRows[sender.tag].name, sender.state == .on)
+        // The identifier, because that is the key the setting is persisted under.
+        onTogglePlugin?(pluginRows[sender.tag].identifier, sender.state == .on)
     }
 
     @objc private func openPluginsManager() { onOpenPluginsManager?() }

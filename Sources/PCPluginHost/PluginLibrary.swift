@@ -12,6 +12,9 @@ import Foundation
 public enum PluginLibraryError: Error, Equatable {
     case dlopenFailed(String)
     case missingRequiredSymbols([String])
+    /// `PcGetApiVersion` returned a version outside the window this host serves
+    /// (`PC_API_MIN_SUPPORTED ... PC_API_VERSION`). `expected` is the current version, kept in
+    /// the payload because that is what every existing caller reports.
     case apiVersionMismatch(found: Int, expected: Int)
 }
 
@@ -24,7 +27,13 @@ public enum PCXSymbols {
     public static let optional = [
         "PackFiles", "DeleteFiles", "GetPackerCaps", "ConfigurePacker",
         "CanYouHandleThisFile", "PackSetDefaultParams", "PkSetCryptCallback",
-        "GetBackgroundFlags", "PcGetApiVersion", "PcSafeToUnload",
+        "GetBackgroundFlags",
+        // Random access to one entry (F-482). Listed here because this array is an allow-list —
+        // a symbol missing from it is invisible to `lib.symbol` however faithfully the plugin
+        // exports it, which is exactly how ListLoadEx and ContentGetSupportedFieldTitle were each
+        // silently ignored on their first day.
+        "ReadEntryData",
+        "PcGetApiVersion", "PcSafeToUnload",
     ]
 }
 
@@ -82,7 +91,8 @@ public final class PluginLibrary {
     public static func open(path: String,
                             required: [String],
                             optional: [String] = [],
-                            expectedAPIVersion: Int = PluginManifestParser.currentAPIVersion)
+                            expectedAPIVersion: Int = PluginManifestParser.currentAPIVersion,
+                            minimumAPIVersion: Int = PluginManifestParser.minimumSupportedAPIVersion)
         -> Result<PluginLibrary, PluginLibraryError> {
         guard let handle = dlopen(path, RTLD_NOW | RTLD_LOCAL) else {
             let msg = dlerror().map { String(cString: $0) } ?? "unknown dlopen error"
@@ -101,10 +111,14 @@ public final class PluginLibrary {
             if let s = dlsym(handle, name) { syms[name] = s }
         }
         // Version handshake (optional export).
+        //
+        // A window, not equality: the same reason the manifest check is one. A plugin built
+        // against an older-but-still-served header set must keep loading, or the first bump of
+        // PC_API_VERSION breaks every plugin anyone has ever shipped, in the same instant.
         if let vptr = syms["PcGetApiVersion"] {
             typealias VersionFn = @convention(c) () -> Int32
             let version = Int(unsafeBitCast(vptr, to: VersionFn.self)())
-            if version != expectedAPIVersion {
+            if version < minimumAPIVersion || version > expectedAPIVersion {
                 dlclose(handle)
                 return .failure(.apiVersionMismatch(found: version, expected: expectedAPIVersion))
             }

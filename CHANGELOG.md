@@ -14,7 +14,72 @@ does not have.
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-09-07
+
+Plugins stopped being something only this repository can write.
+
+A plugin now arrives as a file you double-click. That sounds small and was not: a third party could
+not depend on the SDK at all, because its package manifest sits in a subdirectory and SwiftPM looks
+for one at a repository root — so the dependency line this project's own documentation had shown
+from the start had never resolved for anybody. The API version was checked for *equality*, in two
+places, so the first time that number moved every existing plugin would have stopped loading in the
+same instant. A plugin's identity was its display name, so renaming one lost the user's setting and
+two sharing a title shared one switch. `PCPluginMinHostVersion` had been read and compared against
+nothing since the day it was added. And installing meant picking a `.zip` from a file chooser, after
+which somebody else's code was running in this process with your whole disk in reach, having told
+you neither its name nor what it was about to take over.
+
+All of that is answered, and two companion repositories now exist to prove it rather than describe
+it: the [SDK](https://github.com/hkiam/PeachCommanderPluginSDK) as a package you can actually depend
+on — with `pcplug-validate`, which runs this app's own admission checks against a built plugin
+before a user is the one who finds out — and a
+[worked example](https://github.com/hkiam/PeachCommanderPluginISO) that reads ISO 9660, Joliet, Rock
+Ridge, UDF and El Torito disc images. That example is not a demo: `.iso` was already browsable here
+through `bsdtar`, one subprocess per file, every file showing the *container's* timestamp rather
+than its own, and UDF unreadable altogether. Nothing on this side changed to let a plugin take that over.
+
+The rest of the release is the editor and the viewer catching up with each other — per-line notes,
+Save As, Print, Next/Previous Mark, the strings in a binary in four encodings at once — and
+seventeen fixes, several of which were things quietly losing data or hanging the window: a file the
+editor could not read opened as an empty one and saving wrote that over it, an unreadable ACL was
+replaced by an empty one, and a slow DNS lookup froze the window for half a minute whenever a
+terminal reported where it was.
+
 ### Added
+
+
+- **Plugins are installable from a package, and you are told what is in it first.** A plugin now
+  arrives as a `.pcplug` — a zip with its own extension — and there are four ways to install one,
+  all ending at the same confirmation: double-click it in the Finder, press Enter on it in a panel
+  (this is a file manager; the file is usually already in front of you), drop it on the plugin
+  window, or use Configuration ▸ Plugins ▸ Install…. Until now the only route was a file chooser
+  behind a button, and the next thing that happened after picking a file was somebody else's code
+  running in this process with your whole disk in reach. The dialog names the plugin, its version,
+  its identifier, its type and **which file types it will take over** — a packer plugin becomes the
+  app's reader for every extension it claims, and that was invisible.
+
+  Two things the install refuses rather than repairs: a package whose entries resolve outside it (a
+  `../` entry, or a symlink the later copy would follow out of the tree), and a package holding more
+  than one plugin with no `pluginst.inf` saying which — previously whichever the file system listed
+  first was installed and the rest dropped without a word. And one it does on your say-so:
+  `com.apple.quarantine` is cleared from the installed bundle after you confirm, which is what
+  Gatekeeper otherwise refuses to load once the app is signed, with an error nobody could act on.
+
+- **Plugins have a stable identity and a version.** `PCPluginIdentifier` (reverse-DNS) is now the
+  key everything about a plugin is stored under — the on/off switch, the file associations, the
+  crash guard's quarantine. It used to be the *display name*, which meant renaming a plugin
+  silently lost the user's setting, two plugins sharing a title shared one switch, and a name with
+  a `;` in it was written to `plugins.ini` as two entries and read back as neither. An existing
+  `plugins.ini` is rewritten once, and only when there are plugins to rewrite it *toward* — an
+  empty discovery leaves it alone. `PCPluginVersion` is read too, so the plugin manager shows it
+  and an install can say "1.0.0 → 1.1.0" instead of nothing.
+
+- **`ReadEntryData` and `PC_CAP_RANDOM_ACCESS`, both optional.** A packer plugin could only ever
+  serve a file by being wound forward to it — `ProcessFile` acts on whatever `ReadHeaderEx` last
+  returned — so reaching the five-thousandth member meant reading past the four thousand nine
+  hundred and ninety-nine in front of it, and the whole member had to land in a temporary file
+  before one byte of it could be shown. A plugin that can seek now says so and is asked directly.
+  Both are additive: a plugin that exports neither behaves exactly as before.
 
 - **Per-line notes in the editor.** The viewer has had them since F-379; the editor could neither
   show nor write one. They appear in its marks panel as their own group, with the line's text as the
@@ -63,6 +128,44 @@ does not have.
   everything inside a ZIP, because a thumbnail needs a file and a member of an archive is not one
   yet. Each visible one is now unpacked for it — which is affordable only because of the other half
   of this change.
+
+### Changed
+
+- **The plugin API version is a window, not an equality.** `PCPluginAPIVersion` and
+  `PcGetApiVersion` are checked against `PC_API_MIN_SUPPORTED … PC_API_VERSION` rather than against
+  one number. The old check meant the first time that number moved, every third-party plugin in
+  existence would stop loading in the same instant, in the manifest check and the runtime handshake
+  at once, with no release in between where both worked. The two ends are reported differently
+  because they need different actions: below the window the plugin is too old, above it the app is,
+  and the message says which.
+
+- **`PCPluginMinHostVersion` does something.** It has been parsed and then compared against nothing
+  since it was added — there was no host version at runtime to compare it *to*. A `"1.2.3"` string
+  is now the minimum app version and is enforced before the plugin's binary is opened; a bare
+  integer keeps its old meaning as a minimum API level, so every shipped manifest is unaffected.
+
+- **`PCPluginType` accepts `wcx`/`wfx`/`wlx`/`wdx`.** The architecture guide has said so since it
+  was written; only the `pluginst.inf` path honoured it, and a ported Total Commander plugin
+  declaring its original type in the manifest was rejected as an unknown type.
+
+- **A packer plugin is no longer assumed to be slow.** The host hard-coded "one full pass per
+  member" for every plugin-backed archive, which is right for a format read through a helper
+  process and wrong for one that is an index and a seek — and during a background search it demoted
+  such a plugin to a fallback behind whatever else could open the file. The plugin now reports it.
+
+- **The SDK is a package you can actually depend on.** `PluginSDK/` had its `Package.swift` in a
+  subdirectory of this repository, so the `.package(url: …)` its own README documented has never
+  resolved for anyone; a third party had to clone the whole application. It is now published to
+  its own repository, along with the two Swift helpers (`PluginLoc`, `PluginTheme`) that shipped
+  only in-tree — which is why localising a Swift plugin from outside was not possible either.
+
+
+- **Gallery view stopped reading the whole folder.** It asked the system for a thumbnail of *every*
+  file in the directory, and it did so again for every batch of a listing as it arrived — up to ten
+  times a second. A folder of two thousand files therefore cost two thousand thumbnail requests, over
+  and over. Only the cells actually on screen are made now, and the results are kept, so scrolling
+  back costs nothing and returning to a folder costs nothing. Measured on 300 images: twelve requests
+  on the first visit, none at all on the second.
 
 ### Fixed
 
@@ -222,15 +325,6 @@ does not have.
   before is put back as soon as there is room for it again, so unplugging a monitor for a minute does
   not cost you your layout — and it is that size, not the shrunken one, that is remembered for the
   next launch.
-
-### Changed
-
-- **Gallery view stopped reading the whole folder.** It asked the system for a thumbnail of *every*
-  file in the directory, and it did so again for every batch of a listing as it arrived — up to ten
-  times a second. A folder of two thousand files therefore cost two thousand thumbnail requests, over
-  and over. Only the cells actually on screen are made now, and the results are kept, so scrolling
-  back costs nothing and returning to a folder costs nothing. Measured on 300 images: twelve requests
-  on the first visit, none at all on the second.
 
 ## [0.8.2] — 2026-09-02
 

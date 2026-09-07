@@ -30,8 +30,27 @@
 extern "C" {
 #endif
 
-/* Current plugin API version. Bump on any incompatible ABI change. */
-#define PC_API_VERSION 1
+/*
+ * Plugin API version, and the compatibility window around it.
+ *
+ * PC_API_VERSION is what a plugin built against *these* headers declares, in its
+ * Info.plist (PCPluginAPIVersion) and from PcGetApiVersion(). PC_API_MIN_SUPPORTED
+ * is the oldest declaration this host still loads.
+ *
+ * The rule the two constants exist to express: an *additive* change — a new
+ * optional export, a new capability bit, a field appended to the end of a service
+ * table — does NOT bump PC_API_VERSION. Old plugins keep working untouched, and a
+ * plugin that wants the new thing tests for it (an absent symbol, an unset bit)
+ * rather than demanding a version. Only a change that breaks an existing plugin
+ * bumps PC_API_VERSION, and PC_API_MIN_SUPPORTED stays where it is for as long as
+ * the host can still serve the older shape.
+ *
+ * The host therefore accepts PC_API_MIN_SUPPORTED..PC_API_VERSION and tells the two
+ * failures apart: below the window the plugin is too old for this host, above it the
+ * host is too old for the plugin — which is the message a user can act on.
+ */
+#define PC_API_VERSION       1
+#define PC_API_MIN_SUPPORTED 1
 
 /* ---- Common callback return / operation codes -------------------------- */
 
@@ -83,6 +102,21 @@ extern "C" {
 #define PC_CAP_HIDE       0x0100  /* do not show as a separate packer         */
 #define PC_CAP_ENCRYPT    0x0200  /* supports encryption                      */
 #define PC_CAP_MULTITHREAD 0x0400 /* host need not serialise calls            */
+/*
+ * The plugin can serve one entry without walking the archive to reach it, and exports
+ * ReadEntryData (pcx.h) to do so.
+ *
+ * Without this, the host has to assume the worst about every packer plugin, and it did: the cost
+ * of reading a member was hard-coded as "one full pass per member", because the ABI gave a plugin
+ * no way to say otherwise. That assumption is right for a format read through a helper process
+ * and wrong for one that is an index and a seek — an ISO 9660 image, say — and being wrong about
+ * it turns a content search over a few thousand members into a few thousand full passes, or else
+ * hands the file to a lesser reader that was only ever the fallback.
+ *
+ * Advertise it only alongside a working ReadEntryData: the host checks for both, since a promise
+ * of cheap access with no way to take it up is worse than no promise.
+ */
+#define PC_CAP_RANDOM_ACCESS 0x0800
 
 /* ---- Common callback typedefs ------------------------------------------ */
 

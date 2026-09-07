@@ -4,7 +4,7 @@ slug: sdk-overview
 group: Develop
 section: SDK & plugins
 order: 10
-related: [plugin-architecture-guide, api-overview, plugin-tutorials]
+related: [plugin-architecture-guide, api-overview, plugin-tutorials, plugin-publishing]
 ---
 
 Peach Commander is extensible through **native plugin bundles** loaded in-process.
@@ -31,13 +31,20 @@ preview, bottom bar, titlebar) — via the [contributions ABI](api-contrib.md).
 
 ## Stability & versioning
 
-- The ABI is **C11, UTF-8, self-contained**, and versioned by a single integer,
-  `PC_API_VERSION` (currently **1**). A plugin exports `PcGetApiVersion`; the host
-  refuses to load a plugin whose version it does not support.
-- New fields are only ever **appended** to service tables, so older plugins keep
-  working. Treat the headers in `Plugins/SDK/` as the contract.
-- Status: the ABI is usable today but **pre-1.0** — expect additive change before
-  1.0. Pin the header version you built against and check `PcGetApiVersion`.
+- The ABI is **C11, UTF-8, self-contained**, and versioned by `PC_API_VERSION`
+  (currently **1**). A plugin declares it in `PCPluginAPIVersion` and exports
+  `PcGetApiVersion`; the host checks both.
+- The host accepts a **window**, `PC_API_MIN_SUPPORTED … PC_API_VERSION`, and distinguishes its
+  two ends: below it, the plugin is too old; above it, the *app* is too old and the user is told
+  to update. An equality check would have invalidated every third-party plugin the first time the
+  version moved.
+- **Additive changes do not bump the version.** A new optional export, a new capability bit, a
+  field appended to a service table — plugins built before the addition keep working, and a plugin
+  that wants the new thing tests for it (an absent symbol, an unset bit). Treat the headers in
+  `Plugins/SDK/` as the contract.
+- Status: the ABI is usable today but **pre-1.0** — expect additive change before 1.0.
+- A plugin's *own* version is `PCPluginVersion`, and its stable identity is `PCPluginIdentifier`.
+  Both are read at install time; see [publishing a plugin](plugin-publishing.md).
 
 ## Prerequisites
 
@@ -61,22 +68,27 @@ The canonical headers live in `Plugins/SDK/`:
 
 Two ways to consume them:
 
-- **Swift** — depend on the distributable package `PluginSDK/` and
-  `import CPeachCommanderPlugin`, then export your entry points with `@_cdecl`:
+- **Swift** — depend on the published SDK package and `import CPeachCommanderPlugin`, then export
+  your entry points with `@_cdecl`:
 
   ```swift
   import CPeachCommanderPlugin
 
   @_cdecl("PcGetApiVersion")
-  public func PcGetApiVersion() -> Int32 { 1 }
+  public func PcGetApiVersion() -> Int32 { PC_API_VERSION }
   ```
 
   ```swift
   // Package.swift
-  dependencies: [ .package(path: "…/PeachCommander/PluginSDK") ],
+  dependencies: [
+      .package(url: "https://github.com/hkiam/PeachCommanderPluginSDK.git", from: "1.0.0"),
+  ],
   targets: [ .target(name: "MyPlugin", dependencies: [
-      .product(name: "CPeachCommanderPlugin", package: "PluginSDK") ]) ]
+      .product(name: "CPeachCommanderPlugin", package: "PeachCommanderPluginSDK") ]) ]
   ```
+
+  That package also carries `PeachCommanderPluginKit` — the `L()` localisation helper and
+  `PluginTheme` — and `pcplug-validate`, which checks a built plugin the way the host will.
 
 - **C/Objective-C** — add `Plugins/SDK` to your header search path and
   `#include "pcx.h"` (or the header for your type).
@@ -86,9 +98,14 @@ the in-app copies by `Tools/sync-plugin-sdk.sh` after any ABI change.
 
 ## Package structure
 
+`Plugins/SDK/` in this repository is canonical. `PluginSDK/` mirrors it as a SwiftPM package, and
+that package is published to its own repository on each release — which is what makes the
+`.package(url:)` above resolve. `Tools/sync-plugin-sdk.sh` refreshes the copies and
+`Tools/check-sdk-headers.sh` fails the build if any of them drifts.
+
 ```
-PluginSDK/
-├── Package.swift                       # one C-library product: CPeachCommanderPlugin
+PluginSDK/                              # mirrored to github.com/hkiam/PeachCommanderPluginSDK
+├── Package.swift
 └── Sources/CPeachCommanderPlugin/
     ├── include/                        # the six ABI headers + module.modulemap
     └── shim.c                          # empty TU so SwiftPM builds a C library
@@ -112,5 +129,9 @@ PluginSDK/
 - [Plugin architecture guide](plugin-architecture-guide.md) — manifest, lifecycle,
   contributions, host services, `when` expressions, detect strings.
 - [Plugin tutorials](plugin-tutorials.md) — build, package, test, and publish a plugin.
+- [Publishing a plugin](plugin-publishing.md) — the `.pcplug` package, how users install one, and
+  what the version numbers mean.
+- [PeachCommanderPluginISO](https://github.com/hkiam/PeachCommanderPluginISO) — a complete
+  third-party plugin to copy, with its own build, tests, CI and release.
 - [API reference](api-overview.md) — every ABI symbol, generated from the headers.
 - `Plugins/SDK/PORTING.md` — port a Total Commander WCX/WFX/WLX/WDX plugin.

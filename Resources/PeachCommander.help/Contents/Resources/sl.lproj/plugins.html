@@ -44,21 +44,30 @@
 <p><img alt="Okno vtičnikov, ki našteva nameščene vtičnike s potrditvenimi polji ter gumboma Namesti in Odstrani" src="images/plugins-window.png" />
 <em>(Slika: okno vtičnikov, kjer omogočate, onemogočate, nameščate ali odstranjujete vtičnike.)</em></p>
 <h2 id="namestitev-novega-vticnika">Namestitev novega vtičnika</h2>
-<ol>
-<li>Izberite Konfiguracija ▸ Vtičniki….</li>
-<li>Kliknite <strong>Namesti iz mape…</strong>.</li>
-<li>Izberite paket vtičnika ali <code>.zip</code>, ki ga vsebuje, in potrdite. Vtičnik se doda na seznam in omogoči.</li>
-</ol>
+<p>Prenesen vtičnik pride kot <strong>paket vtičnika</strong> — datoteka s končnico <code>.pcplug</code>. Namestiti ga je mogoče na štiri načine in vsi se končajo pri isti potrditvi:</p>
+<ul>
+<li><strong>Dvokliknite ga</strong> v Finderju. Peach Commander se odpre in vpraša.</li>
+<li><strong>Pritisnite Enter</strong> nanj v pultu. Peach Commander je upravitelj datotek — datoteka je običajno tako ali tako že tam.</li>
+<li><strong>Povlecite ga na okno vtičnikov</strong> (Nastavitve ▸ Vtičniki…).</li>
+<li>Izberite <strong>Nastavitve ▸ Vtičniki… ▸ Namesti…</strong> in izberite paket, <code>.zip</code> z vtičnikom ali razpakiran sveženj vtičnika.</li>
+</ul>
+<p>Preden se karkoli naloži, pogovorno okno navede ime, različico, določilnik in vrsto vtičnika ter to, katere vrste datotek bo prevzel — vtičnik, ki si lasti <code>.iso</code>, postane bralnik programa za te datoteke. Nič se ne namesti, dokler ne kliknete <strong>Namesti</strong>.</p>
+<p>Če je vtičnik z istim določilnikom že nameščen, okno to pove in prikaže obe različici, tako da se posodobitev bere kot posodobitev (»1.0.0 → 1.1.0«), korak nazaj pa je izrecno poimenovan.</p>
+<h2 id="preden-katerega-namestite">Preden katerega namestite</h2>
+<p>Vtičnik je program, ki teče znotraj Peach Commanderja z enakim dostopom do vaših datotek, kot ga ima Peach Commander. Okoli njega ni peskovnika. Nameščajte samo vtičnike iz virov, ki jim zaupate — enako kot pri katerem koli drugem programu.</p>
+<p>Vtičnike, prenesene iz interneta, macOS postavi v karanteno. Namestitev pove macOS-u, naj dovoli njihovo nalaganje — zato potrditveno okno to pove in zato je to odločitev, ki jo sprejmete vi, in ne nekaj, kar se zgodi tiho.</p>
 <h2 id="odstranitev-vticnika">Odstranitev vtičnika</h2>
 <ol>
-<li>V oknu vtičnikov označite vtičnik na seznamu.</li>
-<li>Kliknite <strong>Odstrani</strong>. Vgrajene funkcije niso prizadete; odstrani se le izbrani vtičnik.</li>
+<li>V oknu vtičnikov izberite vtičnik na seznamu.</li>
+<li>Kliknite <strong>Odstrani</strong>. Vgrajene funkcije ostanejo nedotaknjene; odstrani se le izbrani vtičnik.</li>
 </ol>
+<p>Vtičnika, ki je priložen programu, ni mogoče izbrisati — »Odstrani« ga namesto tega izklopi.</p>
 <h2 id="opombe">Opombe</h2>
 <ul>
-<li>Seznam vtičnikov prikazuje vrsto in različico vmesnika vsakega vtičnika poleg imena in lokacije, tako da lahko potrdite, kaj je nameščeno.</li>
-<li>Če ni nameščen noben vtičnik, okno prikaže kratko vabilo, ki vas usmeri k <strong>Namesti iz mape…</strong>.</li>
-<li>Nekateri vtičniki dodajo svoje stolpce, elemente menija ali mesta podokna le, medtem ko so omogočeni. Če pričakovana funkcija manjka, preverite, ali je vtičnik tu vklopljen.</li>
+<li>Seznam poleg imena in mesta prikazuje različico, vrsto in različico vmesnika vsakega vtičnika, tako da lahko preverite, kaj je nameščeno.</li>
+<li>Če vtičnik potrebuje novejšo različico Peach Commanderja od vaše, je zavrnjen s sporočilom, ki to pove, namesto da bi spodletel nerazumljivo. Enako velja v drugo smer: vtičnik, zgrajen za starejši vmesnik, deluje naprej, dokler je ta vmesnik podprt.</li>
+<li>Nekateri vtičniki dodajo svoje stolpce, menijske vnose ali mesta v pultu samo, dokler so vklopljeni. Če manjka pričakovana funkcija, tukaj preverite, ali je njen vtičnik vklopljen.</li>
+<li>Kako napisati ali objaviti lasten vtičnik, opisuje dokumentacija za razvijalce, ne ta stran.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Zemljevid diska</a></li><li><a href="ai-assistant.html">Pomočnik UI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Slike datotečnih sistemov</a></li><li><a href="archives.html">Delo z arhivi</a></li><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li></ul></section>
 </main>

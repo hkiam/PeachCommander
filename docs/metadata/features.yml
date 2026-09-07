@@ -1301,7 +1301,16 @@ features:
     source: { modules: [PCPluginHost, PCApp], types: [PluginManager, PluginsWindowController] }
     documentation: { integrated_help: true, website: true }
     screenshots: [plugins-window]
-    notes: "Enable/disable, install from .zip, per-extension association. Bundled: AIAssistant, AILocal, AIColumn, Archive, CSVLister, Git, iCloud, LogViewer, Notes, SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV."
+    notes: >-
+      Enable/disable, per-extension association, and a Version column beside name/type/API. Install
+      from a `.pcplug` package (a zip with its own extension) four ways, all ending at one
+      confirmation: double-click in the Finder, Enter on it in a panel, a drop on the plugin window,
+      or Install… — which also still takes a `.zip` or an unpacked bundle (F-482). The dialog names
+      the plugin, its version, its identifier and **the file extensions it will take over**, since a
+      packer plugin is consulted before the built-in readers for every name it claims; and it says
+      when the file came from the internet, because installing clears its quarantine flag. Bundled:
+      AIAssistant, AILocal, AIColumn, Archive, CSVLister, Git, iCloud, LogViewer, Notes,
+      SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV.
 
   - id: disk-map
     name: Disk Map (Speicher-Visualisierung)
@@ -1348,7 +1357,18 @@ features:
     status: stable
     source: { modules: [PCPluginHost], types: [PluginHost, PluginLibrary, PluginManifest, PluginGuard] }
     documentation: { developer_docs: true, sdk_docs: true, integrated_help: false }
-    notes: "In-process dlopen bundles; 5 types (pcx/pfx/plx/pdx/ptx) + contrib ABI; manifest in Info.plist; crash guard + quarantine (F-230); version handshake; when-expressions; detect-strings."
+    notes: >-
+      In-process dlopen bundles; 5 types (pcx/pfx/plx/pdx/ptx) + contrib ABI; manifest in Info.plist,
+      read WITHOUT loading the binary; crash guard + quarantine (F-230); when-expressions;
+      detect-strings. Identity is `PCPluginIdentifier` (reverse-DNS), which is what plugins.ini, the
+      discovery dedupe and the packer associations key on — it was the display name until F-482, so a
+      rename lost the user's setting and two plugins sharing a title shared one switch; the name
+      remains the fallback and an old plugins.ini is migrated once. `PCPluginVersion` is read at
+      install time to tell an update from a downgrade. The API check is a WINDOW
+      (`PC_API_MIN_SUPPORTED … PC_API_VERSION`), in the manifest and in the `PcGetApiVersion`
+      handshake, and its two ends are reported differently: below it the plugin is too old, above it
+      the app is. `PCPluginMinHostVersion` is enforced — a semver string against the running app, a
+      bare integer against the API level.
 
   - id: plugin-abis
     name: Plugin-ABIs (PCX/PDX/PFX/PLX/contrib)
@@ -1358,7 +1378,15 @@ features:
     status: stable
     source: { modules: [CPCX, CPDX, CPFX, CPLX, CContrib], types: [pcx.h, pdx.h, pfx.h, plx.h, contrib.h, pc_common.h] }
     documentation: { sdk_docs: true, developer_docs: true }
-    notes: "PCX=packer, PDX=content fields, PFX=virtual FS, PLX=lister, contrib=commands/menus/views. UTF-8 C11, PC_API_VERSION=1."
+    notes: >-
+      PCX=packer, PDX=content fields, PFX=virtual FS, PLX=lister, contrib=commands/menus/views.
+      UTF-8 C11, PC_API_VERSION=1 with PC_API_MIN_SUPPORTED=1 as the other end of the supported
+      window. Additive changes do not bump the version: a new optional export or capability bit
+      leaves older plugins untouched, and a plugin wanting the new thing tests for it rather than
+      demanding a version. PCX gained `ReadEntryData` + `PC_CAP_RANDOM_ACCESS` that way (F-482) —
+      one entry served without walking the archive to it, both optional and each required before the
+      host believes either, which is also what lets a plugin-backed archive stop being assumed
+      process-per-member.
 
   - id: plugin-sdk
     name: PluginSDK-Paket
@@ -1366,9 +1394,20 @@ features:
     category: sdk
     audiences: [sdk, plugin]
     status: stable
-    source: { modules: [PluginSDK], types: [CPeachCommanderPlugin] }
+    source: { modules: [PluginSDK], types: [CPeachCommanderPlugin, PeachCommanderPluginKit] }
     documentation: { sdk_docs: true }
-    notes: "Distributable SwiftPM package re-exporting all six headers; sync via Tools/sync-plugin-sdk.sh; PORTING.md (WCX/WFX/WLX/WDX -> PCX/PFX/PLX/PDX), LOCALIZATION.md, PluginLoc.swift/L()."
+    notes: >-
+      SwiftPM package re-exporting all six headers, PUBLISHED to its own repository
+      (github.com/hkiam/PeachCommanderPluginSDK) so `.package(url:)` resolves — its manifest lives in
+      a subdirectory here, and SwiftPM looks for one at a repo root, so the dependency line this
+      project's own docs had always shown never worked for anybody until F-482. Plugins/SDK stays
+      canonical: `Tools/sync-plugin-sdk.sh` refreshes the copies, `Tools/check-sdk-headers.sh` fails
+      on drift, `Tools/publish-plugin-sdk.sh` mirrors it outward on a release. The package also
+      carries the Swift helpers that used to exist only in-tree (PluginLoc/L(), PluginTheme — without
+      which a third party could not localise a Swift plugin) and `pcplug-validate`, which runs the
+      host's admission checks against a built bundle: manifest, API window, both architecture slices,
+      dlopen, required exports, handshake. PORTING.md (WCX/WFX/WLX/WDX -> PCX/PFX/PLX/PDX),
+      LOCALIZATION.md. Worked example: github.com/hkiam/PeachCommanderPluginISO.
 
   # ───────────────────────── Automation ─────────────────────────
   - id: automation-script

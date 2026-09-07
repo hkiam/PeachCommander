@@ -44,21 +44,30 @@
 <p><img alt="Pluginvinduet der viser installerede plugins med afkrydsningsfelter og knapperne Installer og Fjern" src="images/plugins-window.png" />
 <em>(Figur: pluginvinduet, hvor du aktiverer, deaktiverer, installerer eller fjerner plugins.)</em></p>
 <h2 id="installer-et-nyt-plugin">Installer et nyt plugin</h2>
-<ol>
-<li>Vælg Konfiguration ▸ Plugins….</li>
-<li>Klik på <strong>Installer fra mappe…</strong>.</li>
-<li>Vælg en pluginpakke eller en <code>.zip</code>, der indeholder en, og bekræft. Pluginet tilføjes til listen og aktiveres.</li>
-</ol>
+<p>Et plugin, du henter, kommer som en <strong>pluginpakke</strong> — en fil, der ender på <code>.pcplug</code>. Der er fire måder at installere et på, og de ender alle ved den samme bekræftelse:</p>
+<ul>
+<li><strong>Dobbeltklik på den</strong> i Finder. Peach Commander åbner og spørger.</li>
+<li><strong>Tryk Enter på den</strong> i et panel. Peach Commander er en filhåndtering — filen ligger som regel allerede dér.</li>
+<li><strong>Træk den til pluginvinduet</strong> (Konfiguration ▸ Plugins…).</li>
+<li>Vælg <strong>Konfiguration ▸ Plugins… ▸ Installer…</strong> og vælg pakken, en <code>.zip</code> med et plugin i, eller et udpakket pluginbundle.</li>
+</ul>
+<p>Før noget som helst indlæses, viser en dialog pluginets navn, version, identifikator og type samt hvilke filtyper det overtager — et plugin, der kræver <code>.iso</code>, bliver appens læser for de filer. Intet installeres, før du klikker <strong>Installer</strong>.</p>
+<p>Er der allerede installeret et plugin med samme identifikator, siger dialogen det og viser begge versioner, så en opdatering læses som en opdatering („1.0.0 → 1.1.0"), og et skridt tilbage bliver nævnt som netop det.</p>
+<h2 id="fr-du-installerer-et">Før du installerer et</h2>
+<p>Et plugin er et program, der kører inde i Peach Commander med samme adgang til dine filer, som Peach Commander har. Der er ingen sandkasse omkring det. Installer kun plugins fra kilder, du stoler på — ligesom med ethvert andet program.</p>
+<p>Plugins hentet fra internettet kommer i karantæne hos macOS. Ved at installere et beder du macOS om at tillade, at det indlæses — derfor siger bekræftelsesdialogen det, og derfor er det en beslutning, du træffer, og ikke noget, der sker i stilhed.</p>
 <h2 id="fjern-et-plugin">Fjern et plugin</h2>
 <ol>
-<li>I pluginvinduet skal du markere pluginet på listen.</li>
-<li>Klik på <strong>Fjern</strong>. Indbyggede funktioner påvirkes ikke; kun det valgte plugin fjernes.</li>
+<li>Vælg pluginet på listen i pluginvinduet.</li>
+<li>Klik <strong>Fjern</strong>. Indbyggede funktioner berøres ikke; kun det valgte plugin fjernes.</li>
 </ol>
+<p>Et plugin, der følger med appen, kan ikke slettes — „Fjern" slår det fra i stedet.</p>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
-<li>Pluginlisten viser hvert plugins type og grænsefladeversion ved siden af navn og placering, så du kan bekræfte, hvad der er installeret.</li>
-<li>Hvis der ikke er installeret nogen plugins, viser vinduet en kort opfordring, der peger dig mod <strong>Installer fra mappe…</strong>.</li>
-<li>Nogle plugins tilføjer deres egne kolonner, menupunkter eller panelsteder kun mens de er aktiveret. Hvis en funktion, du forventede, mangler, tjek at pluginet er slået til her.</li>
+<li>Listen viser hvert plugins version, type og grænsefladeversion ved siden af navn og placering, så du kan se, hvad der er installeret.</li>
+<li>Kræver et plugin en nyere version af Peach Commander end din, afvises det med en besked, der siger det, i stedet for at fejle uforståeligt. Det samme gælder den anden vej: et plugin bygget til en ældre grænseflade bliver ved med at virke, så længe den grænseflade understøttes.</li>
+<li>Nogle plugins tilføjer kun deres kolonner, menupunkter eller panelsteder, mens de er slået til. Mangler en funktion, du forventede, så tjek her, om dens plugin er tændt.</li>
+<li>Hvordan man selv skriver eller udgiver et plugin står i udviklerdokumentationen, ikke her.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Diskkort</a></li><li><a href="ai-assistant.html">AI-assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">Systemovervågning</a></li><li><a href="task-manager.html">Opgavehåndtering</a></li><li><a href="uninstaller.html">Afinstallering</a></li><li><a href="filesystem-images.html">Filsystemsbilleder</a></li><li><a href="archives.html">Arbejde med arkiver</a></li><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li></ul></section>
 </main>

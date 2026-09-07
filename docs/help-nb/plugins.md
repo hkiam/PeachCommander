@@ -43,19 +43,35 @@ De resterende innebygde programtilleggene er mindre og trenger ikke en egen side
 ![Programtilleggsvinduet som lister installerte programtillegg med avkrysningsruter og knappene Installer og Fjern](screenshots/plugins-window.png)
 *(Figur: Programtilleggsvinduet, der du aktiverer, deaktiverer, installerer eller fjerner programtillegg.)*
 
-## Installer et nytt programtillegg
+## Installere et nytt programtillegg
 
-1. Velg Konfigurasjon ▸ Programtillegg….
-2. Klikk på **Installer fra mappe…**.
-3. Velg en programtilleggspakke eller en `.zip` som inneholder en, og bekreft. Programtillegget legges til i listen og aktiveres.
+Et programtillegg du laster ned, kommer som en **programtilleggspakke** — en fil som ender på `.pcplug`. Det er fire måter å installere et på, og alle ender ved den samme bekreftelsen:
 
-## Fjern et programtillegg
+- **Dobbeltklikk på den** i Finder. Peach Commander åpner seg og spør.
+- **Trykk Enter på den** i et panel. Peach Commander er en filbehandler — filen ligger som regel allerede der.
+- **Dra den til programtilleggsvinduet** (Innstillinger ▸ Programtillegg…).
+- Velg **Innstillinger ▸ Programtillegg… ▸ Installer…** og velg pakken, en `.zip` med et programtillegg i, eller en utpakket programtilleggsbunt.
 
-1. I programtilleggsvinduet, merk programtillegget i listen.
-2. Klikk på **Fjern**. Innebygde funksjoner påvirkes ikke; bare det valgte programtillegget fjernes.
+Før noe som helst lastes inn, viser en dialog navnet, versjonen, identifikatoren og typen til programtillegget, og hvilke filtyper det overtar — et programtillegg som krever `.iso`, blir appens leser for de filene. Ingenting installeres før du klikker **Installer**.
+
+Er det allerede installert et programtillegg med samme identifikator, sier dialogen fra og viser begge versjonene, slik at en oppdatering leses som en oppdatering («1.0.0 → 1.1.0») og et skritt tilbake blir nevnt som nettopp det.
+
+## Før du installerer et
+
+Et programtillegg er et program som kjører inne i Peach Commander, med samme tilgang til filene dine som Peach Commander har. Det er ingen sandkasse rundt det. Installer bare programtillegg fra kilder du stoler på, på samme måte som med ethvert annet program.
+
+Programtillegg lastet ned fra internett kommer i karantene hos macOS. Ved å installere et ber du macOS om å tillate at det lastes — derfor sier bekreftelsesdialogen det, og derfor er det en avgjørelse du tar og ikke noe som skjer i det stille.
+
+## Fjerne et programtillegg
+
+1. Velg programtillegget i listen i programtilleggsvinduet.
+2. Klikk **Fjern**. Innebygde funksjoner er upåvirket; bare det valgte programtillegget fjernes.
+
+Et programtillegg som følger med appen, kan ikke slettes — «Fjern» slår det av i stedet.
 
 ## Merknader
 
-- Programtilleggslisten viser hvert programtilleggs type og grensesnittsversjon ved siden av navn og plassering, så du kan bekrefte hva som er installert.
-- Hvis ingen programtillegg er installert, viser vinduet en kort oppfordring som peker deg mot **Installer fra mappe…**.
-- Noen programtillegg legger til sine egne kolonner, menyvalg eller panelsteder bare mens de er aktivert. Om en funksjon du forventet mangler, sjekk at programtillegget er slått på her.
+- Listen viser hvert programtilleggs versjon, type og grensesnittversjon ved siden av navn og plassering, så du kan se hva som er installert.
+- Krever et programtillegg en nyere versjon av Peach Commander enn din, blir det avvist med en melding som sier det, i stedet for å feile uforståelig. Det samme gjelder motsatt vei: et programtillegg bygd for et eldre grensesnitt fortsetter å virke så lenge det grensesnittet støttes.
+- Noen programtillegg legger bare til kolonner, menyvalg eller panelsteder mens de er slått på. Mangler en funksjon du ventet deg, sjekk her at programtillegget er på.
+- Hvordan du selv skriver eller publiserer et programtillegg, står i utviklerdokumentasjonen, ikke her.

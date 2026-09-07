@@ -44,21 +44,30 @@
 <p><img alt="Okno zásuvných modulů uvádějící nainstalované zásuvné moduly se zaškrtávacími poli a tlačítky Nainstalovat a Odebrat" src="images/plugins-window.png" />
 <em>(Obrázek: okno zásuvných modulů, kde povolujete, zakazujete, instalujete nebo odebíráte zásuvné moduly.)</em></p>
 <h2 id="instalace-noveho-zasuvneho-modulu">Instalace nového zásuvného modulu</h2>
-<ol>
-<li>Zvolte Konfigurace ▸ Zásuvné moduly….</li>
-<li>Klepněte na <strong>Nainstalovat ze složky…</strong>.</li>
-<li>Vyberte balíček zásuvného modulu nebo <code>.zip</code>, který jej obsahuje, a potvrďte. Zásuvný modul se přidá do seznamu a povolí.</li>
-</ol>
+<p>Stažený zásuvný modul přichází jako <strong>balíček zásuvného modulu</strong> — soubor s příponou <code>.pcplug</code>. Nainstalovat jej lze čtyřmi způsoby a všechny končí u téhož potvrzení:</p>
+<ul>
+<li><strong>Poklepejte na něj</strong> ve Finderu. Peach Commander se otevře a zeptá se.</li>
+<li><strong>Stiskněte na něm Enter</strong> v panelu. Peach Commander je správce souborů — soubor tam obvykle beztak už je.</li>
+<li><strong>Přetáhněte jej na okno zásuvných modulů</strong> (Konfigurace ▸ Zásuvné moduly…).</li>
+<li>Zvolte <strong>Konfigurace ▸ Zásuvné moduly… ▸ Instalovat…</strong> a vyberte balíček, <code>.zip</code> se zásuvným modulem nebo rozbalený balík zásuvného modulu.</li>
+</ul>
+<p>Než se cokoli načte, dialog uvede název, verzi, identifikátor a typ zásuvného modulu i to, které typy souborů převezme — modul, který si nárokuje <code>.iso</code>, se pro tyto soubory stane čtečkou aplikace. Nic se nenainstaluje, dokud nekliknete na <strong>Instalovat</strong>.</p>
+<p>Je-li už nainstalován modul se stejným identifikátorem, dialog to řekne a ukáže obě verze: aktualizace se tak čte jako aktualizace („1.0.0 → 1.1.0") a krok zpět je výslovně pojmenován.</p>
+<h2 id="nez-nejaky-nainstalujete">Než nějaký nainstalujete</h2>
+<p>Zásuvný modul je program běžící uvnitř Peach Commanderu se stejným přístupem k vašim souborům, jaký má Peach Commander. Není kolem něj žádný izolovaný prostor. Instalujte jen moduly ze zdrojů, kterým důvěřujete — stejně jako u jakékoli jiné aplikace.</p>
+<p>Moduly stažené z internetu jsou macOS uvedeny do karantény. Instalací sdělíte macOS, že je má povolit načíst — proto to potvrzovací dialog říká a proto je to vaše rozhodnutí, a ne něco, co se stane potichu.</p>
 <h2 id="odebrani-zasuvneho-modulu">Odebrání zásuvného modulu</h2>
 <ol>
-<li>V okně zásuvných modulů označte zásuvný modul v seznamu.</li>
-<li>Klepněte na <strong>Odebrat</strong>. Vestavěné funkce nejsou ovlivněny; odebere se jen vybraný zásuvný modul.</li>
+<li>V okně zásuvných modulů vyberte modul v seznamu.</li>
+<li>Klikněte na <strong>Odebrat</strong>. Vestavěné funkce zůstanou nedotčeny; odebere se jen vybraný modul.</li>
 </ol>
+<p>Modul dodávaný s aplikací nelze smazat — „Odebrat" jej místo toho vypne.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Seznam zásuvných modulů zobrazuje typ a verzi rozhraní každého zásuvného modulu vedle názvu a umístění, takže si můžete ověřit, co je nainstalováno.</li>
-<li>Pokud není nainstalován žádný zásuvný modul, okno zobrazí krátkou výzvu směřující vás k <strong>Nainstalovat ze složky…</strong>.</li>
-<li>Některé zásuvné moduly přidávají vlastní sloupce, položky nabídek nebo místa panelu jen, když jsou povolené. Pokud očekávaná funkce chybí, zkontrolujte, že je zásuvný modul zde zapnutý.</li>
+<li>Seznam vedle názvu a umístění ukazuje u každého modulu verzi, typ a verzi rozhraní, takže si můžete ověřit, co je nainstalováno.</li>
+<li>Vyžaduje-li modul novější verzi Peach Commanderu, než máte, je odmítnut se srozumitelnou zprávou místo nepochopitelného selhání. Totéž platí obráceně: modul sestavený pro starší rozhraní funguje dál, dokud je toto rozhraní podporováno.</li>
+<li>Některé moduly přidávají své sloupce, položky nabídky nebo místa v panelu jen tehdy, jsou-li zapnuty. Chybí-li očekávaná funkce, ověřte zde, zda je její modul zapnutý.</li>
+<li>Jak napsat nebo zveřejnit vlastní zásuvný modul, popisuje dokumentace pro vývojáře, nikoli tato stránka.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa disku</a></li><li><a href="ai-assistant.html">AI asistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="filesystem-images.html">Obrazy souborových systémů</a></li><li><a href="archives.html">Práce s archivy</a></li><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li></ul></section>
 </main>

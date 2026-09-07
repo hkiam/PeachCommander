@@ -45,17 +45,33 @@ Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:
 
 ## Namestitev novega vtičnika
 
-1. Izberite Konfiguracija ▸ Vtičniki….
-2. Kliknite **Namesti iz mape…**.
-3. Izberite paket vtičnika ali `.zip`, ki ga vsebuje, in potrdite. Vtičnik se doda na seznam in omogoči.
+Prenesen vtičnik pride kot **paket vtičnika** — datoteka s končnico `.pcplug`. Namestiti ga je mogoče na štiri načine in vsi se končajo pri isti potrditvi:
+
+- **Dvokliknite ga** v Finderju. Peach Commander se odpre in vpraša.
+- **Pritisnite Enter** nanj v pultu. Peach Commander je upravitelj datotek — datoteka je običajno tako ali tako že tam.
+- **Povlecite ga na okno vtičnikov** (Nastavitve ▸ Vtičniki…).
+- Izberite **Nastavitve ▸ Vtičniki… ▸ Namesti…** in izberite paket, `.zip` z vtičnikom ali razpakiran sveženj vtičnika.
+
+Preden se karkoli naloži, pogovorno okno navede ime, različico, določilnik in vrsto vtičnika ter to, katere vrste datotek bo prevzel — vtičnik, ki si lasti `.iso`, postane bralnik programa za te datoteke. Nič se ne namesti, dokler ne kliknete **Namesti**.
+
+Če je vtičnik z istim določilnikom že nameščen, okno to pove in prikaže obe različici, tako da se posodobitev bere kot posodobitev (»1.0.0 → 1.1.0«), korak nazaj pa je izrecno poimenovan.
+
+## Preden katerega namestite
+
+Vtičnik je program, ki teče znotraj Peach Commanderja z enakim dostopom do vaših datotek, kot ga ima Peach Commander. Okoli njega ni peskovnika. Nameščajte samo vtičnike iz virov, ki jim zaupate — enako kot pri katerem koli drugem programu.
+
+Vtičnike, prenesene iz interneta, macOS postavi v karanteno. Namestitev pove macOS-u, naj dovoli njihovo nalaganje — zato potrditveno okno to pove in zato je to odločitev, ki jo sprejmete vi, in ne nekaj, kar se zgodi tiho.
 
 ## Odstranitev vtičnika
 
-1. V oknu vtičnikov označite vtičnik na seznamu.
-2. Kliknite **Odstrani**. Vgrajene funkcije niso prizadete; odstrani se le izbrani vtičnik.
+1. V oknu vtičnikov izberite vtičnik na seznamu.
+2. Kliknite **Odstrani**. Vgrajene funkcije ostanejo nedotaknjene; odstrani se le izbrani vtičnik.
+
+Vtičnika, ki je priložen programu, ni mogoče izbrisati — »Odstrani« ga namesto tega izklopi.
 
 ## Opombe
 
-- Seznam vtičnikov prikazuje vrsto in različico vmesnika vsakega vtičnika poleg imena in lokacije, tako da lahko potrdite, kaj je nameščeno.
-- Če ni nameščen noben vtičnik, okno prikaže kratko vabilo, ki vas usmeri k **Namesti iz mape…**.
-- Nekateri vtičniki dodajo svoje stolpce, elemente menija ali mesta podokna le, medtem ko so omogočeni. Če pričakovana funkcija manjka, preverite, ali je vtičnik tu vklopljen.
+- Seznam poleg imena in mesta prikazuje različico, vrsto in različico vmesnika vsakega vtičnika, tako da lahko preverite, kaj je nameščeno.
+- Če vtičnik potrebuje novejšo različico Peach Commanderja od vaše, je zavrnjen s sporočilom, ki to pove, namesto da bi spodletel nerazumljivo. Enako velja v drugo smer: vtičnik, zgrajen za starejši vmesnik, deluje naprej, dokler je ta vmesnik podprt.
+- Nekateri vtičniki dodajo svoje stolpce, menijske vnose ali mesta v pultu samo, dokler so vklopljeni. Če manjka pričakovana funkcija, tukaj preverite, ali je njen vtičnik vklopljen.
+- Kako napisati ali objaviti lasten vtičnik, opisuje dokumentacija za razvijalce, ne ta stran.
