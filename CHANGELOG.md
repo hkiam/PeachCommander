@@ -62,6 +62,15 @@ does not have.
 
 ### Fixed
 
+- **uuencode and xxencode no longer read the whole file.** They were the last two of the four
+  encodings still doing so, on the reasoning that the frame carries a length byte per line and these
+  are legacy formats used on small payloads. True, and not a size limit — the app offers them on
+  whatever is selected in the panel, with one keystroke. Both formats fix 45 payload bytes per line,
+  so whole lines can be written and forgotten; the output is byte-identical to what the whole-buffer
+  codec produced, which is still checked against the system `uuencode`. Decoding is line-oriented for
+  the same reason, and now buffers only up to the next newline.
+
+
 - **“By content” across a server or an archive held both files in memory, and read them to the end
   even when the first byte already differed.** Two local folders were compared in 64 KB blocks all
   along, stopping at the first difference; a server or a zip side was not — both files were read whole

@@ -148,4 +148,131 @@ final class EncodeDecodeEngineTests: XCTestCase {
             XCTAssertEqual(error as? EncodeDecodeError, .notValidBase64)
         }
     }
+
+    // MARK: - uu/xx goes through the same streaming path as the rest
+
+    /// The format is the contract: what the streaming encoder writes to a file has to be exactly
+    /// what the whole-buffer codec would have produced, and `test_uu_matchesSystemUuencode` pins
+    /// that against the system tool.
+    func test_aLargeFileUUEncodesThroughTheStreamingPath() async throws {
+        let count = 300 * 1024 + 7
+        var original = Data(capacity: count)
+        for i in 0..<count { original.append(UInt8((i * 31 + 17) % 251)) }
+        try original.write(to: dir.appendingPathComponent("big.bin"))
+
+        try await EncodeDecodeEngine.encodeUUXX(vpath("big.bin"), to: vpath("big.uue"),
+                                                on: fs, variant: .uu)
+        XCTAssertEqual(try Data(contentsOf: dir.appendingPathComponent("big.uue")),
+                       Data(UUCodec.encode(original, variant: .uu, filename: "big.bin").utf8))
+
+        try await EncodeDecodeEngine.decodeAuto(vpath("big.uue"), to: vpath("big.out"), on: fs)
+        XCTAssertEqual(try Data(contentsOf: dir.appendingPathComponent("big.out")), original)
+    }
+
+    /// The two variants share the `begin` frame and differ only in the alphabet, so the streaming
+    /// decoder has to settle which one it is *before* it starts — it cannot try one and fall back
+    /// halfway through a file the way the whole-text version did. Decided from the head; both
+    /// answers have to be right.
+    func test_decodeAutoTellsUUFromXX() async throws {
+        let payload = Data((0..<4000).map { UInt8(($0 * 13 + 5) & 0xFF) })
+        for (variant, name) in [(UUCodec.Variant.uu, "p.uue"), (.xx, "p.xxe")] {
+            try Data(UUCodec.encode(payload, variant: variant, filename: "p.bin").utf8)
+                .write(to: dir.appendingPathComponent(name))
+            try await EncodeDecodeEngine.decodeAuto(vpath(name), to: vpath(name + ".out"), on: fs)
+            XCTAssertEqual(try Data(contentsOf: dir.appendingPathComponent(name + ".out")), payload,
+                           "\(variant) was decoded with the wrong alphabet")
+        }
+    }
+
+    /// And a `begin` frame whose payload is neither is refused rather than written out empty.
+    func test_aBeginFrameWithAnUnreadablePayloadIsRefused() async throws {
+        try Data("begin 644 f.bin\n\u{7f}\u{7f}\u{7f}\u{7f}\u{7f}\n`\nend\n".utf8)
+            .write(to: dir.appendingPathComponent("bad.uue"))
+        do {
+            try await EncodeDecodeEngine.decodeAuto(vpath("bad.uue"), to: vpath("bad.out"), on: fs)
+            XCTFail("an unreadable uu/xx payload was accepted")
+        } catch {
+            XCTAssertFalse(FileManager.default.fileExists(atPath: dir.appendingPathComponent("bad.out").path),
+                           "a target was left behind for a payload that could not be decoded")
+        }
+    }
+
+    /// "Streamed" is not shown by the output — the bytes are identical either way, which is the
+    /// point. What shows it is how the output arrived: a filesystem that tallies every write sees
+    /// several bounded ones from a streaming encoder and one big one from an encoder that built the
+    /// whole text first. This guards all four schemes against quietly going back to reading whole
+    /// files.
+    ///
+    /// Three megabytes, and the size is the measurement rather than a round number:
+    /// `LocalReadStream` reads in 1 MiB chunks, so anything smaller than that arrives in one piece
+    /// and is written in one piece by a perfectly streaming encoder. Measured — at 300 KB this test
+    /// failed while the code was doing exactly what it should.
+    func test_everySchemeWritesItsOutputInPieces() async throws {
+        let count = 3 * 1024 * 1024 + 7
+        var original = Data(capacity: count)
+        for i in 0..<count { original.append(UInt8((i * 31 + 17) % 251)) }
+        try original.write(to: dir.appendingPathComponent("big.bin"))
+
+        for (name, encode) in [
+            ("big.b64", { (t: TallyFS) in
+                try await EncodeDecodeEngine.encodeBase64(self.vpath("big.bin"),
+                                                          to: self.vpath("big.b64"), on: t) }),
+            ("big.uue", { (t: TallyFS) in
+                try await EncodeDecodeEngine.encodeUUXX(self.vpath("big.bin"),
+                                                        to: self.vpath("big.uue"), on: t,
+                                                        variant: .uu) }),
+        ] {
+            let tally = TallyFS()
+            try await encode(tally)
+            XCTAssertGreaterThan(tally.writes, 3, "\(name) was written in one piece")
+            XCTAssertLessThan(tally.largestWrite, count,
+                              "\(name) held the whole encoding in one write")
+        }
+    }
+}
+
+
+/// Forwards everything to the real filesystem and counts how the writes arrived.
+///
+/// The tally is the measurement: an encoder that reads its input whole produces one write, and one
+/// that streams produces many. Nothing about the resulting file can tell those apart.
+private final class TallyFS: VirtualFileSystem, @unchecked Sendable {
+    private let inner = LocalFS()
+    private let lock = NSLock()
+    private var _writes = 0
+    private var _largest = 0
+    var writes: Int { lock.lock(); defer { lock.unlock() }; return _writes }
+    var largestWrite: Int { lock.lock(); defer { lock.unlock() }; return _largest }
+
+    var scheme: String { inner.scheme }
+    var capabilities: VFSCapabilities { inner.capabilities }
+
+    private func note(_ n: Int) {
+        lock.lock(); _writes += 1; _largest = Swift.max(_largest, n); lock.unlock()
+    }
+
+    private struct Counting: VFSWriteStream {
+        let inner: VFSWriteStream
+        let note: @Sendable (Int) -> Void
+        func write(_ data: Data) async throws { note(data.count); try await inner.write(data) }
+        func close() async throws { try await inner.close() }
+    }
+
+    func list(_ dir: VFSPath) -> AsyncThrowingStream<VFSEntryBatch, Error> { inner.list(dir) }
+    func stat(_ path: VFSPath) async throws -> VFSEntry { try await inner.stat(path) }
+    func openRead(_ path: VFSPath) async throws -> VFSReadStream { try await inner.openRead(path) }
+    func openWrite(_ path: VFSPath, options: WriteOptions) async throws -> VFSWriteStream {
+        Counting(inner: try await inner.openWrite(path, options: options),
+                 note: { [weak self] in self?.note($0) })
+    }
+    func mkdir(_ path: VFSPath) async throws { try await inner.mkdir(path) }
+    func delete(_ path: VFSPath) async throws { try await inner.delete(path) }
+    func rename(_ from: VFSPath, to: VFSPath) async throws { try await inner.rename(from, to: to) }
+    func setAttributes(_ path: VFSPath, attributes: VFSAttributes) async throws {
+        try await inner.setAttributes(path, attributes: attributes)
+    }
+    func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? { inner.watch(dir) }
+    func localFileIfAvailable(_ path: VFSPath) async throws -> URL? {
+        try await inner.localFileIfAvailable(path)
+    }
 }

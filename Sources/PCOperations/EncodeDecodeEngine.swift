@@ -58,15 +58,21 @@ public enum EncodeDecodeEngine {
 
     /// uuencode/xxencode `src` into `dst` (F-096).
     ///
-    /// Read whole, deliberately: the frame carries a length byte per line inside a `begin`/`end`
-    /// envelope, so a streaming version is new parsing code, and these are legacy formats used on
-    /// small payloads — the large-file case people reach is Base64, which streams.
+    /// Streamed, like the other three. It was read whole with the reasoning that the frame carries a
+    /// length byte per line and these are legacy formats used on small payloads — true, and not a
+    /// size limit: the app offers this on whatever is selected in the panel. The format turns out to
+    /// make it easy, because both variants fix 45 payload bytes per line, so whole lines can be
+    /// emitted and forgotten.
     public static func encodeUUXX(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
                                   variant: UUCodec.Variant, overwrite: Bool = false) async throws {
-        let data = try await readAll(src, on: fs)
+        try await guardTarget(dst, on: fs, overwrite: overwrite)
         let name = (src.path as NSString).lastPathComponent
-        let text = UUCodec.encode(data, variant: variant, filename: name.isEmpty ? "file" : name)
-        try await write(Data(text.utf8), to: dst, on: fs, overwrite: overwrite)
+        var encoder = UUStreamEncoder(variant: variant, filename: name.isEmpty ? "file" : name)
+        try await stream(src, to: dst, on: fs) { chunk in
+            Data(encoder.encode(chunk).utf8)
+        } finish: {
+            Data(encoder.finish().utf8)
+        }
     }
 
     /// Decode an encoded file, auto-detecting the scheme: a `begin ` frame → uu/xx
@@ -101,20 +107,31 @@ public enum EncodeDecodeEngine {
             return
         }
 
-        // uu/xx: read whole. See `encodeUUXX` for why.
-        let raw = try await readAll(src, on: fs)
-        let text = String(decoding: raw, as: UTF8.self)
-        if text.hasPrefix("begin ") || text.contains("\nbegin ") {
-            // uu and xx share the frame; try uu first, then xx.
-            if let d = UUCodec.decode(text, variant: .uu), !d.isEmpty {
-                try await write(d, to: dst, on: fs, overwrite: true); return
-            }
-            if let d = UUCodec.decode(text, variant: .xx), !d.isEmpty {
-                try await write(d, to: dst, on: fs, overwrite: true); return
-            }
+        // uu/xx. The two share the frame and differ only in the alphabet, so the variant has to be
+        // settled before a streaming decoder can start — it cannot try one and fall back to the
+        // other halfway through a file. Decided from the head that was already read, cut at its last
+        // newline so every line in it is whole: uu first, then xx, which is the precedence the
+        // whole-text version had.
+        let whole = headText.hasSuffix("\n") ? headText : String(headText[..<(headText.lastIndex(of: "\n") ?? headText.startIndex)])
+        let variant: UUCodec.Variant
+        if let probe = UUCodec.decode(whole, variant: .uu), !probe.isEmpty {
+            variant = .uu
+        } else if let probe = UUCodec.decode(whole, variant: .xx), !probe.isEmpty {
+            variant = .xx
+        } else {
             throw EncodeDecodeError.notValidUUXX
         }
-        throw EncodeDecodeError.notValidUUXX
+        var decoder = UUStreamDecoder(variant: variant)
+        var invalid = false
+        try await stream(src, to: dst, on: fs) { chunk in
+            guard let out = decoder.decode(String(decoding: chunk, as: UTF8.self)) else {
+                invalid = true; return Data()
+            }
+            return out
+        } finish: {
+            decoder.finish() ?? { invalid = true; return Data() }()
+        }
+        if invalid { throw EncodeDecodeError.notValidUUXX }
     }
 
     /// Whether a payload is nothing but hex digits — the test that used to be `decodeHex` returning
