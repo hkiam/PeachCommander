@@ -245,7 +245,16 @@ public struct WildcardMask {
     ///
     /// Internal rather than private so the translation can be tested directly; what a mask *means* is
     /// worth pinning independently of whether a particular file matches.
-    static func regexPattern(for mask: String) -> String {
+    ///
+    /// `anySequence` and `anyCharacter` are what `*` and `?` expand to. The defaults are what a mask
+    /// over a *file name* means, where there are no separators to worry about. A caller matching a
+    /// *path* passes `[^/]*` and `[^/]` instead, so that `src/*/generated` cannot reach across a
+    /// separator into `src/a/b/generated` — with `.*` it does, which is the whole reason this is a
+    /// parameter rather than a second copy of the translation. The escaping is the part worth having
+    /// once: `/` is not a metacharacter, so a separator in the mask survives `escapedPattern` as
+    /// itself and the whole path can be translated in one pass.
+    static func regexPattern(for mask: String,
+                             anySequence: String = ".*", anyCharacter: String = ".") -> String {
         var out = "^"
         var literal = ""
         func flush() {
@@ -256,8 +265,8 @@ public struct WildcardMask {
         }
         for character in mask {
             switch character {
-            case "*": flush(); out += ".*"
-            case "?": flush(); out += "."
+            case "*": flush(); out += anySequence
+            case "?": flush(); out += anyCharacter
             default: literal.append(character)
             }
         }

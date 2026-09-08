@@ -54,11 +54,21 @@ public struct SyncItem: Sendable, Equatable {
     /// equality for items present on both sides. `nil` means "not compared
     /// by content" -- classification falls back to size + date in that case.
     public let contentEqual: Bool?
+    /// For a directory: something inside it was left out of this comparison.
+    ///
+    /// Set by the scanner for a folder holding an entry the mask, "ignore hidden" or the filter held
+    /// back — and for one whose inside was never looked at at all, which is what "without subdirs"
+    /// means. It exists for one decision: a mirror must not delete such a folder, because deleting a
+    /// folder is recursive and would take the held-back entries with it. The executor refuses that
+    /// as a last line of defence and reports it; this is what keeps an ordinary `node_modules/`
+    /// exclusion from producing that report on every single run.
+    public let hasHeldBackContent: Bool
 
     public init(relativePath: String, isDirectory: Bool,
                 leftSize: Int64?, leftModified: Date?,
                 rightSize: Int64?, rightModified: Date?,
-                contentEqual: Bool? = nil) {
+                contentEqual: Bool? = nil,
+                hasHeldBackContent: Bool = false) {
         self.relativePath = relativePath
         self.isDirectory = isDirectory
         self.leftSize = leftSize
@@ -66,6 +76,7 @@ public struct SyncItem: Sendable, Equatable {
         self.rightSize = rightSize
         self.rightModified = rightModified
         self.contentEqual = contentEqual
+        self.hasHeldBackContent = hasHeldBackContent
     }
 }
 
@@ -180,7 +191,8 @@ public enum SyncModel {
         let onRight = item.rightSize != nil
 
         if item.isDirectory {
-            return classifyDirectory(onLeft: onLeft, onRight: onRight, options: options)
+            return classifyDirectory(onLeft: onLeft, onRight: onRight, options: options,
+                                     hasHeldBackContent: item.hasHeldBackContent)
         }
 
         // Files.
@@ -220,7 +232,8 @@ public enum SyncModel {
         }
     }
 
-    private static func classifyDirectory(onLeft: Bool, onRight: Bool, options: SyncOptions) -> SyncAction {
+    private static func classifyDirectory(onLeft: Bool, onRight: Bool, options: SyncOptions,
+                                          hasHeldBackContent: Bool = false) -> SyncAction {
         if onLeft && onRight {
             // Present on both sides: nothing to do about the folder itself.
             return .none
@@ -228,6 +241,12 @@ public enum SyncModel {
         if options.asymmetric {
             // Mirror mode: left-only directories need creating on right;
             // right-only directories are stray and get removed.
+            //
+            // Except one that still holds something this comparison left out. Removing a folder is
+            // recursive, so that removal would take the held-back entries with it — the mirror would
+            // delete what it had declined to look at. Only the delete is withdrawn: a left-only
+            // folder is still created on the right, which creates a folder and takes nothing away.
+            if !onLeft, hasHeldBackContent { return .none }
             return onLeft ? .copyToRight : .deleteRight
         }
         // Symmetric mode: a folder that exists on one side only is copied, like a file.

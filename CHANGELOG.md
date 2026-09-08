@@ -50,9 +50,12 @@ does not have.
   a row in the plan, so it went too, after the window had shown the user that it was not part of the
   comparison. Measured on all three kinds of side: mask `*.txt`, mirror mode, a target-only folder
   holding one `.txt` and one `.jpg`, and the `.jpg` was in the Trash; the same with a dotfile and
-  *Ignore hidden*; the same inside a zip. A mirror may now delete only what it actually compared —
-  a folder still holding something the comparison declined to look at is kept and reported instead.
-  A folder whose whole content was compared is still removed, so an ordinary mirror run is unchanged.
+  *Ignore hidden*; the same inside a zip. A mirror may now delete only what it actually compared: the
+  scan marks a folder that still holds something it left out — by the mask, by *Ignore hidden*, or
+  because *With subdirs* was off and it never looked inside — and such a folder is not planned for
+  deletion at all. The executor refuses one anyway as a last line of defence, for a folder that
+  gained a file between the comparison and the run, and reports what it kept. A folder whose whole
+  content was compared is still removed, so an ordinary mirror run is unchanged.
 
 - **A saved sync preset could take every other preset with it.** `SyncPreset` and `SyncOptions` used
   the synthesized `Codable`, which does not fall back to a property's default for a missing key — it

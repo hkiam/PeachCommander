@@ -602,7 +602,29 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old/listed.txt").path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old").path),
                       "the folder went even though something inside it survived")
-        XCTAssertEqual(errors.map(\.path), ["Old"], "the kept folder was not reported")
+        // And silently: the scanner marks the folder as holding something the comparison left out,
+        // so it is never classified as a delete in the first place and the executor's guard — which
+        // does report — is not reached. Without that marking an ordinary `node_modules/` exclusion
+        // would put a line in the error list on every single run.
+        XCTAssertEqual(errors, [], "the kept folder was reported as a problem")
+        XCTAssertFalse(results.contains { $0.item.relativePath == "Old" && $0.action == .deleteRight },
+                       "the folder was still planned for deletion")
+    }
+
+    /// The executor's guard on its own, reached by handing it a delete the model would not have
+    /// produced. It is the last line of defence — for a folder that gained a file between the scan
+    /// and the run, or a caller that classified elsewhere — and it does report what it kept.
+    func test_theExecutorRefusesADirectoryDeleteThatWouldTakeUncomparedContent() async throws {
+        try write("never compared", to: right, "Stray/inside.txt")
+        let item = SyncItem(relativePath: "Stray", isDirectory: true,
+                            leftSize: nil, leftModified: nil,
+                            rightSize: nil, rightModified: nil)
+        let errors = await SyncExecutor.execute([SyncResult(action: .deleteRight, item: item)],
+                                                left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Stray/inside.txt").path),
+                      "a file that was never compared was deleted with its folder")
+        XCTAssertEqual(errors.map(\.path), ["Stray"], "the kept folder was not reported")
     }
 
     /// The same for "ignore hidden", which holds entries back by a different rule but leaves them in
@@ -656,6 +678,159 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertTrue(remaining.contains("Old/kept.jpg"),
                       "an entry the mask excluded was dropped along with its folder: \(remaining)")
         XCTAssertFalse(remaining.contains("Old/listed.txt"))
+    }
+
+
+    // MARK: - The filter decides what is part of the comparison
+
+    /// The case the two-place design exists for, and the one that would be a silent data loss if it
+    /// were got wrong. Applied per side inside the walk, "nothing over this size" drops the large
+    /// half of a mismatched pair; the pair then reads as "only on the right" and the small file is
+    /// copied over the large one. The sizes stand in for 3 GB and 1 KB — the arithmetic is the same
+    /// and the test does not have to write three gigabytes to make the point.
+    func test_anExclusionBySizeNeverTurnsIntoACopy() async throws {
+        try write(String(repeating: "x", count: 500), to: left, "report.dat")
+        try write("tiny", to: right, "report.dat")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false, filter: SyncFilter(maxSize: 100))
+
+        XCTAssertFalse(outcome.items.contains { $0.relativePath == "report.dat" },
+                       "a pair excluded by size produced a row, and that row would be a copy")
+        // Specifically not this, which is what the per-side version produces:
+        let results = SyncModel.classify(outcome.items, options: SyncOptions())
+        XCTAssertFalse(results.contains { $0.item.relativePath == "report.dat" && $0.action == .copyToLeft },
+                       "an exclusion turned into a copy onto the excluded side")
+        XCTAssertEqual(outcome.heldBack, 1)
+    }
+
+    func test_anExcludedFolderIsNotWalkedOnEitherSide() async throws {
+        try write("a", to: left, "src/main.swift")
+        try write("b", to: left, "node_modules/left-pad/index.js")
+        try write("c", to: right, "node_modules/right-pad/index.js")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false,
+            filter: SyncFilter(excludePatterns: "node_modules/"))
+        XCTAssertEqual(outcome.items.map(\.relativePath).sorted(), ["src", "src/main.swift"])
+    }
+
+    /// Cutting off the descent must be a speed-up and nothing else. A zip walk cannot prune at all —
+    /// its entry list is flat — so the same tree, once as folders and once as an archive, is the
+    /// measurement: same rule, one walk pruning and one not, same answer.
+    func test_notPruningReachesTheSameAnswerAsPruning() async throws {
+        try write("a", to: left, "keep.txt")
+        try write("b", to: left, "build/app.o")
+        try write("c", to: left, "build/deep/more.o")
+        let zip = root.appendingPathComponent("same.zip")
+        try ZipWriter.create(at: zip, files: [(path: "keep.txt", data: Data("a".utf8)),
+                                              (path: "build/", data: Data()),
+                                              (path: "build/app.o", data: Data("b".utf8)),
+                                              (path: "build/deep/", data: Data()),
+                                              (path: "build/deep/more.o", data: Data("c".utf8))])
+        let filter = SyncFilter(excludePatterns: "build/")
+        let pruned = await SyncScanner.scanDetailed(left: .localDir(left.path), right: .localDir(right.path),
+                                                    mask: "*.*", withSubdirs: true, byContent: false,
+                                                    filter: filter)
+        let unpruned = await SyncScanner.scanDetailed(left: .zip(zip.path), right: .localDir(right.path),
+                                                      mask: "*.*", withSubdirs: true, byContent: false,
+                                                      filter: filter)
+        XCTAssertEqual(pruned.items.map(\.relativePath).sorted(),
+                       unpruned.items.map(\.relativePath).sorted(),
+                       "the walk that prunes and the walk that cannot disagreed")
+        XCTAssertEqual(pruned.items.map(\.relativePath), ["keep.txt"])
+    }
+
+    /// Distinct paths, so an excluded folder is one entry and not one per file inside it — both to
+    /// bound what the scan has to remember and because "held back: 1" is the honest report for one
+    /// folder somebody excluded on purpose.
+    func test_theScanReportsHowManyEntriesTheFilterHeldBack() async throws {
+        try write("a", to: left, "keep.txt")
+        try write("b", to: left, "build/one.o")
+        try write("c", to: left, "build/two.o")
+        try write("d", to: left, "notes.tmp")
+        try write("e", to: right, "notes.tmp")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false,
+            filter: SyncFilter(excludePatterns: "build/;*.tmp"))
+        // `build` counts once, and `notes.tmp` once even though both sides dropped it.
+        XCTAssertEqual(outcome.heldBack, 2)
+        XCTAssertEqual(outcome.items.map(\.relativePath), ["keep.txt"])
+    }
+
+    /// The mask's exclusions stay out of that number: the mask is on screen and always has been,
+    /// while the filter lives behind a button, and a count that moved for every masked file would
+    /// say nothing about the thing worth noticing.
+    func test_theMaskDoesNotCountTowardsTheHeldBackNumber() async throws {
+        try write("a", to: left, "keep.txt")
+        try write("b", to: left, "one.jpg")
+        try write("c", to: left, "two.jpg")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.txt",
+            withSubdirs: true, byContent: false)
+        XCTAssertEqual(outcome.heldBack, 0)
+        XCTAssertEqual(outcome.items.map(\.relativePath), ["keep.txt"])
+    }
+
+    func test_theMaskAndTheFilterBothApply() async throws {
+        try write("a", to: left, "keep.txt")
+        try write("b", to: left, "draft.txt")
+        try write("c", to: left, "photo.jpg")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.txt",
+            withSubdirs: true, byContent: false, filter: SyncFilter(excludePatterns: "draft.*"))
+        XCTAssertEqual(outcome.items.map(\.relativePath), ["keep.txt"],
+                       "the mask kept the jpg out and the filter the draft")
+    }
+
+    /// The quiet half of the mirror fix, at the level the scanner works on: a folder holding an
+    /// entry the filter excluded is marked, and the model then declines to delete it.
+    func test_aMirrorDoesNotPlanToDeleteAFolderHoldingFilteredContent() async throws {
+        try write("compared", to: right, "Old/listed.txt")
+        try write("excluded", to: right, "Old/notes.tmp")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false, filter: SyncFilter(excludePatterns: "*.tmp"))
+        let folder = outcome.items.first { $0.relativePath == "Old" }
+        XCTAssertEqual(folder?.hasHeldBackContent, true, "the folder was not marked as incomplete")
+        let results = SyncModel.classify(outcome.items, options: SyncOptions(asymmetric: true))
+        XCTAssertEqual(results.first { $0.item.relativePath == "Old" }?.action, SyncAction.none)
+        // The file inside it that *was* compared is still planned for deletion.
+        XCTAssertEqual(results.first { $0.item.relativePath == "Old/listed.txt" }?.action,
+                       SyncAction.deleteRight)
+    }
+
+    /// And with subdirectories switched off, where nothing below the top level was looked at at all.
+    func test_aMirrorDoesNotPlanToDeleteAFolderItNeverLookedInside() async throws {
+        try write("never seen", to: right, "Stray/inside.txt")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: false, byContent: false)
+        XCTAssertEqual(outcome.items.first { $0.relativePath == "Stray" }?.hasHeldBackContent, true)
+        let results = SyncModel.classify(outcome.items, options: SyncOptions(asymmetric: true))
+        XCTAssertEqual(results.first { $0.item.relativePath == "Stray" }?.action, SyncAction.none)
+    }
+
+    /// A relative date window is resolved against the run, which is what makes a saved filter a
+    /// repeatable job rather than a snapshot of the day it was saved.
+    func test_theDateWindowIsMeasuredFromTheRun() async throws {
+        let file = try write("x", to: left, "old.txt")
+        let stamp = Date(timeIntervalSince1970: 1_000_000_000)
+        try FileManager.default.setAttributes([.modificationDate: stamp], ofItemAtPath: file.path)
+
+        let soon = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false, filter: SyncFilter(modifiedWithinDays: 30),
+            now: stamp.addingTimeInterval(10 * 86_400))
+        XCTAssertEqual(soon.items.map(\.relativePath), ["old.txt"])
+
+        let later = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false, filter: SyncFilter(modifiedWithinDays: 30),
+            now: stamp.addingTimeInterval(400 * 86_400))
+        XCTAssertEqual(later.items, [], "the same filter kept the file at a later run")
+        XCTAssertEqual(later.heldBack, 1)
     }
 
 }

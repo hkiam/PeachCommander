@@ -89,8 +89,49 @@ public enum SyncScanPhase: Sendable, Equatable {
 }
 
 /// Recursive scanner producing SyncItems for two sides (local dirs and/or a zip).
+/// What a scan found, and how much of the two trees it deliberately did not look at.
+///
+/// `heldBack` counts only what the *filter* excluded — distinct relative paths, so an excluded
+/// folder counts once rather than once per file inside it. The file mask's own exclusions are not in
+/// it: the mask is on screen and always has been, while a filter lives behind a button and a
+/// forgotten one is how a backup ends up incomplete without anybody being told.
+public struct SyncScanOutcome: Sendable {
+    public let items: [SyncItem]
+    public let heldBack: Int
+
+    public init(items: [SyncItem], heldBack: Int) {
+        self.items = items
+        self.heldBack = heldBack
+    }
+}
+
 public enum SyncScanner {
     private struct Meta { var size: Int64; var modified: Date; var isDir: Bool }
+
+    /// What one side's walk found, and what it left behind.
+    private struct Walk {
+        var entries: [String: Meta] = [:]
+        /// Paths the filter excluded. Reported to the user as a count.
+        var filtered: Set<String> = []
+        /// Folders that still hold something this walk did not record — by *any* rule, the mask and
+        /// "ignore hidden" included. This is the set a mirror needs, because what makes deleting a
+        /// folder unsafe is that something is in it, not which rule kept it out of the comparison.
+        var incompleteDirs: Set<String> = []
+
+        /// Record that `rel` was left out, and that every folder above it is therefore incomplete.
+        mutating func heldBack(_ rel: String, byFilter: Bool) {
+            if byFilter { filtered.insert(rel) }
+            var prefix = ""
+            for part in rel.split(separator: "/", omittingEmptySubsequences: true).dropLast() {
+                prefix = prefix.isEmpty ? String(part) : prefix + "/" + part
+                incompleteDirs.insert(prefix)
+            }
+        }
+
+        /// Record a folder that was recorded but never looked inside — "without subdirs", or a
+        /// listing that failed. Nothing under it was compared, so a mirror must leave it alone.
+        mutating func notDescended(_ rel: String) { incompleteDirs.insert(rel) }
+    }
 
     /// How many entries pass before the walk reports again. A scan of a large tree finds thousands
     /// of entries in the time it takes to draw one frame, and a report per entry would spend the
@@ -105,19 +146,44 @@ public enum SyncScanner {
     /// Honours `Task.isCancelled` at the same points it reports progress, so a comparison of a large
     /// tree can be called off; a cancelled scan returns what it had rather than throwing, and the
     /// caller is expected to check `Task.isCancelled` before believing the result.
+    /// The items alone, for the callers that want nothing else. One line over `scanDetailed`, so
+    /// there is one implementation and the twenty-odd existing call sites did not have to change.
     public static func scan(left: SyncSide, right: SyncSide, mask: String,
                             withSubdirs: Bool, byContent: Bool,
                             ignoreHidden: Bool = false, caseSensitive: Bool = true,
+                            filter: SyncFilter = SyncFilter(),
                             progress: (@Sendable (SyncScanPhase) -> Void)? = nil) async -> [SyncItem] {
+        await scanDetailed(left: left, right: right, mask: mask, withSubdirs: withSubdirs,
+                           byContent: byContent, ignoreHidden: ignoreHidden,
+                           caseSensitive: caseSensitive, filter: filter, progress: progress).items
+    }
+
+    /// The same scan, plus how much the filter held back.
+    ///
+    /// - Parameter filter: Name and path rules act inside each walk, where they are safe because the
+    ///   relative path is the same on both sides. Size and date rules act on the pair below, where
+    ///   they have to: per side, "nothing over 2 GB" would drop the large half of a mismatched pair,
+    ///   the pair would read as one-sided, and the small file would be copied over the large one.
+    /// - Parameter now: What "modified within the last N days" is measured against. A parameter so a
+    ///   test can put the run at a chosen moment; a preset stores the window, not a date.
+    public static func scanDetailed(left: SyncSide, right: SyncSide, mask: String,
+                                    withSubdirs: Bool, byContent: Bool,
+                                    ignoreHidden: Bool = false, caseSensitive: Bool = true,
+                                    filter: SyncFilter = SyncFilter(), now: Date = Date(),
+                                    progress: (@Sendable (SyncScanPhase) -> Void)? = nil) async -> SyncScanOutcome {
         let wildcard = WildcardMask(mask.isEmpty ? "*.*" : mask)
-        let leftMeta = await enumerate(left, withSubdirs: withSubdirs, wildcard: wildcard,
-                                       ignoreHidden: ignoreHidden,
+        let exclusions = filter.exclusions()
+        let leftWalk = await enumerate(left, withSubdirs: withSubdirs, wildcard: wildcard,
+                                       ignoreHidden: ignoreHidden, exclusions: exclusions,
                                        found: progress.map { p in { p(.scanningLeft(count: $0)) } })
-        if Task.isCancelled { return [] }
-        let rightMeta = await enumerate(right, withSubdirs: withSubdirs, wildcard: wildcard,
-                                        ignoreHidden: ignoreHidden,
+        if Task.isCancelled { return SyncScanOutcome(items: [], heldBack: 0) }
+        let rightWalk = await enumerate(right, withSubdirs: withSubdirs, wildcard: wildcard,
+                                        ignoreHidden: ignoreHidden, exclusions: exclusions,
                                         found: progress.map { p in { p(.scanningRight(count: $0)) } })
-        if Task.isCancelled { return [] }
+        if Task.isCancelled { return SyncScanOutcome(items: [], heldBack: 0) }
+        let leftMeta = leftWalk.entries, rightMeta = rightWalk.entries
+        let incomplete = leftWalk.incompleteDirs.union(rightWalk.incompleteDirs)
+        var heldBack = leftWalk.filtered.union(rightWalk.filtered)
         // Open each zip once for the content-comparison reads below.
         let leftZip = zipReader(left), rightZip = zipReader(right)
 
@@ -126,12 +192,21 @@ public enum SyncScanner {
         progress?(.comparing(done: 0, total: sorted.count))
         for (index, entry) in sorted.enumerated() {
             if index > 0, index % progressStride == 0 {
-                if Task.isCancelled { return items }
+                if Task.isCancelled { return SyncScanOutcome(items: items, heldBack: heldBack.count) }
                 progress?(.comparing(done: index, total: sorted.count))
             }
             let key = entry.key
             let l = entry.left?.meta, r = entry.right?.meta
             let isDir = (l?.isDir ?? false) || (r?.isDir ?? false)
+            // Before the byte comparison, not after: reading both files is the most expensive thing
+            // in this loop, and a pair that is not in the comparison should not pay for it.
+            if filter.hasPairCriteria,
+               !filter.keepsPair(leftSize: l?.size, leftModified: l?.modified,
+                                 rightSize: r?.size, rightModified: r?.modified,
+                                 isDirectory: isDir, now: now) {
+                heldBack.insert(key)
+                continue
+            }
             var contentEqual: Bool? = nil
             if byContent, !isDir, let l, let r {
                 if l.size != r.size {
@@ -154,13 +229,20 @@ public enum SyncScanner {
                     contentEqual = leftData == rightData
                 }
             }
+            // Each side's own spelling as well as the row's: under case-insensitive matching the
+            // folder can be `Build` on one side and `build` on the other, and the walk recorded
+            // whichever it saw.
+            let held = isDir && (incomplete.contains(key)
+                                 || entry.left.map { incomplete.contains($0.key) } == true
+                                 || entry.right.map { incomplete.contains($0.key) } == true)
             items.append(SyncItem(relativePath: key, isDirectory: isDir,
                                   leftSize: l?.size, leftModified: l?.modified,
                                   rightSize: r?.size, rightModified: r?.modified,
-                                  contentEqual: contentEqual))
+                                  contentEqual: contentEqual,
+                                  hasHeldBackContent: held))
         }
         progress?(.comparing(done: sorted.count, total: sorted.count))
-        return items
+        return SyncScanOutcome(items: items, heldBack: heldBack.count)
     }
 
     /// One relative path as it appears on each side, with the metadata found there.
@@ -208,14 +290,17 @@ public enum SyncScanner {
     }
 
     private static func enumerate(_ side: SyncSide, withSubdirs: Bool, wildcard: WildcardMask,
-                                  ignoreHidden: Bool,
-                                  found: (@Sendable (Int) -> Void)? = nil) async -> [String: Meta] {
+                                  ignoreHidden: Bool, exclusions: SyncFilter.Exclusions,
+                                  found: (@Sendable (Int) -> Void)? = nil) async -> Walk {
         switch side {
         case .localDir(let dir): return walk(dir, withSubdirs: withSubdirs, wildcard: wildcard,
-                                             ignoreHidden: ignoreHidden, found: found)
-        case .zip(let url): return walkZip(url, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
+                                             ignoreHidden: ignoreHidden, exclusions: exclusions,
+                                             found: found)
+        case .zip(let url): return walkZip(url, withSubdirs: withSubdirs, wildcard: wildcard,
+                                           ignoreHidden: ignoreHidden, exclusions: exclusions)
         case .remote(let r): return await walkRemote(r, withSubdirs: withSubdirs, wildcard: wildcard,
-                                                     ignoreHidden: ignoreHidden, found: found)
+                                                     ignoreHidden: ignoreHidden, exclusions: exclusions,
+                                                     found: found)
         }
     }
 
@@ -227,8 +312,9 @@ public enum SyncScanner {
     /// with no reason given — the failure is visible as the missing rows.
     private static func walkRemote(_ source: RemoteSyncSource, withSubdirs: Bool,
                                    wildcard: WildcardMask, ignoreHidden: Bool,
-                                   found: (@Sendable (Int) -> Void)? = nil) async -> [String: Meta] {
-        var out: [String: Meta] = [:]
+                                   exclusions: SyncFilter.Exclusions,
+                                   found: (@Sendable (Int) -> Void)? = nil) async -> Walk {
+        var w = Walk()
         var queue: [String] = [""]
         while let prefix = queue.popLast() {
             do {
@@ -239,23 +325,34 @@ public enum SyncScanner {
                         // else. See PathContainment.
                         guard PathContainment.isSafeComponent(entry.name) else { continue }
                         let rel = prefix.isEmpty ? entry.name : "\(prefix)/\(entry.name)"
-                        if ignoreHidden, isHiddenRel(rel) { continue }
                         let isDir = entry.kind == .directory || entry.kind == .appBundle
                                  || entry.kind == .package
-                        if !isDir, !wildcard.matches(entry.name) { continue }
-                        out[rel] = Meta(size: max(0, entry.size), modified: entry.modified, isDir: isDir)
-                        if isDir, withSubdirs { queue.append(rel) }
+                        // Not enqueueing an excluded folder is the only pruning a server walk can
+                        // do, and like the local one it is a speed-up: `excludes` answers for every
+                        // entry beneath it as well.
+                        if exclusions.excludes(relativePath: rel, isDirectory: isDir) {
+                            w.heldBack(rel, byFilter: true); continue
+                        }
+                        if ignoreHidden, isHiddenRel(rel) { w.heldBack(rel, byFilter: false); continue }
+                        if !isDir, !wildcard.matches(entry.name) { w.heldBack(rel, byFilter: false); continue }
+                        w.entries[rel] = Meta(size: max(0, entry.size), modified: entry.modified, isDir: isDir)
+                        if isDir {
+                            if withSubdirs { queue.append(rel) } else { w.notDescended(rel) }
+                        }
                     }
                     // Reported per listing batch rather than per stride: a server hands out entries
                     // in batches with a round trip between them, so the batch is the unit that takes
                     // time here — and this is the walk a user waits on longest.
-                    found?(out.count)
+                    found?(w.entries.count)
                 }
             } catch {
-                return out
+                // A listing that failed part-way leaves its folder incomplete, and a mirror may not
+                // delete a folder it could not read to the end.
+                if !prefix.isEmpty { w.notDescended(prefix) }
+                return w
             }
         }
-        return out
+        return w
     }
 
     /// True when any path component is a dotfile — used to skip hidden items (F-192).
@@ -269,22 +366,29 @@ public enum SyncScanner {
     }
 
     /// Enumerate a zip's entries as sync metadata, keyed by POSIX relative path.
-    private static func walkZip(_ url: String, withSubdirs: Bool, wildcard: WildcardMask, ignoreHidden: Bool) -> [String: Meta] {
-        guard let reader = ZipReader(fileURL: URL(fileURLWithPath: url)) else { return [:] }
-        var out: [String: Meta] = [:]
+    private static func walkZip(_ url: String, withSubdirs: Bool, wildcard: WildcardMask,
+                                ignoreHidden: Bool, exclusions: SyncFilter.Exclusions) -> Walk {
+        guard let reader = ZipReader(fileURL: URL(fileURLWithPath: url)) else { return Walk() }
+        var w = Walk()
         for e in reader.entries {
             var rel = e.path
             while rel.hasSuffix("/") { rel.removeLast() }
             guard !rel.isEmpty else { continue }
-            if !withSubdirs && rel.contains("/") { continue }
-            if ignoreHidden, isHiddenRel(rel) { continue }   // F-192
+            // There is no descent to cut off here — the entry list is flat — which is exactly why
+            // `excludes` has to answer for every entry rather than for folders alone: an archive
+            // legitimately holds `node_modules/x/y.js` with no `node_modules/` entry to prune.
+            if exclusions.excludes(relativePath: rel, isDirectory: e.isDirectory) {
+                w.heldBack(rel, byFilter: true); continue
+            }
+            if !withSubdirs && rel.contains("/") { w.heldBack(rel, byFilter: false); continue }
+            if ignoreHidden, isHiddenRel(rel) { w.heldBack(rel, byFilter: false); continue }   // F-192
             let leaf = (rel as NSString).lastPathComponent
-            if !e.isDirectory, !wildcard.matches(leaf) { continue }
-            out[rel] = Meta(size: e.uncompressedSize,
-                            modified: e.modified ?? Date(timeIntervalSince1970: 0),
-                            isDir: e.isDirectory)
+            if !e.isDirectory, !wildcard.matches(leaf) { w.heldBack(rel, byFilter: false); continue }
+            w.entries[rel] = Meta(size: e.uncompressedSize,
+                                  modified: e.modified ?? Date(timeIntervalSince1970: 0),
+                                  isDir: e.isDirectory)
         }
-        return out
+        return w
     }
 
     /// Load one entry's bytes from a side (for content comparison across a zip).
@@ -321,36 +425,49 @@ public enum SyncScanner {
     }
 
     private static func walk(_ dir: String, withSubdirs: Bool, wildcard: WildcardMask,
-                             ignoreHidden: Bool, found: (@Sendable (Int) -> Void)? = nil) -> [String: Meta] {
+                             ignoreHidden: Bool, exclusions: SyncFilter.Exclusions,
+                             found: (@Sendable (Int) -> Void)? = nil) -> Walk {
         let fm = FileManager.default
         let base = (dir as NSString).standardizingPath
-        var out: [String: Meta] = [:]
+        var w = Walk()
         // Use the path-based enumerator: it yields paths RELATIVE to `base`, so there
         // is no prefix to strip. (The URL enumerator reports resolved paths like
         // /private/tmp/… that don't match a /tmp/… base, silently dropping everything
         // under a symlinked root.)
         let keys: [URLResourceKey] = [.isDirectoryKey, .fileSizeKey, .contentModificationDateKey]
-        guard let en = fm.enumerator(atPath: base) else { return out }
+        guard let en = fm.enumerator(atPath: base) else { return w }
         for case let rel as String in en {
             let full = (base as NSString).appendingPathComponent(rel)
             let vals = try? URL(fileURLWithPath: full).resourceValues(forKeys: Set(keys))
             let isDir = vals?.isDirectory ?? false
+            // An excluded folder is not descended into. That is a speed-up and nothing more:
+            // `excludes` answers the same for everything beneath it, so a walk that forgot to prune
+            // would be slow rather than wrong.
+            if exclusions.excludes(relativePath: rel, isDirectory: isDir) {
+                if isDir { en.skipDescendants() }
+                w.heldBack(rel, byFilter: true)
+                continue
+            }
             // Top-level-only mode: include the directory itself but don't descend.
-            if !withSubdirs && isDir { en.skipDescendants() }
+            if !withSubdirs && isDir { en.skipDescendants(); w.notDescended(rel) }
             // Ignore hidden items (any dotfile component), F-192.
-            if ignoreHidden, isHiddenRel(rel) { if isDir { en.skipDescendants() }; continue }
+            if ignoreHidden, isHiddenRel(rel) {
+                if isDir { en.skipDescendants() }
+                w.heldBack(rel, byFilter: false)
+                continue
+            }
             let leaf = (rel as NSString).lastPathComponent
-            if !isDir, !wildcard.matches(leaf) { continue }
-            out[rel] = Meta(size: Int64(vals?.fileSize ?? 0),
-                            modified: vals?.contentModificationDate ?? Date(timeIntervalSince1970: 0),
-                            isDir: isDir)
-            if out.count % progressStride == 0 {
-                if Task.isCancelled { return out }
-                found?(out.count)
+            if !isDir, !wildcard.matches(leaf) { w.heldBack(rel, byFilter: false); continue }
+            w.entries[rel] = Meta(size: Int64(vals?.fileSize ?? 0),
+                                  modified: vals?.contentModificationDate ?? Date(timeIntervalSince1970: 0),
+                                  isDir: isDir)
+            if w.entries.count % progressStride == 0 {
+                if Task.isCancelled { return w }
+                found?(w.entries.count)
             }
         }
-        found?(out.count)
-        return out
+        found?(w.entries.count)
+        return w
     }
 
     /// Byte-compare two files in chunks (sizes already known equal by the caller).

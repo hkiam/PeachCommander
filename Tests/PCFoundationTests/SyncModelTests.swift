@@ -350,4 +350,53 @@ final class SyncModelTests: XCTestCase {
         wider.toleranceSeconds = 10
         XCTAssertEqual(SyncModel.classify([item], options: wider).map(\.action), [.conflict])
     }
+
+    // MARK: - A mirror does not delete a folder it did not look into
+
+    // A folder "on a side" needs a size on that side: `classify` reads presence off
+    // `leftSize`/`rightSize`, not off the dates. Written with only a date, the first version of
+    // these described a folder that was on neither side — and two of them then passed for the wrong
+    // reason, which a third one caught by disagreeing.
+
+    /// Deleting a folder is recursive, so a mirror that removes a stray folder removes whatever the
+    /// comparison held back inside it — the mask's exclusions, hidden files, the filter's, or the
+    /// whole content when subdirectories were switched off. The scanner marks such a folder and the
+    /// answer here is "leave it alone".
+    func test_aMirrorDoesNotDeleteAFolderWithHeldBackContent() {
+        let folder = SyncItem(relativePath: "Old", isDirectory: true,
+                              leftSize: nil, leftModified: nil,
+                              rightSize: 0, rightModified: t0,
+                              contentEqual: nil, hasHeldBackContent: true)
+        XCTAssertEqual(SyncModel.classify([folder], options: asymmetric).map(\.action), [SyncAction.none])
+    }
+
+    /// Without the marking it is still a delete: this is the behaviour the flag turns off, and if
+    /// this test ever agreed with the one above, the flag would have stopped meaning anything.
+    func test_aMirrorStillDeletesAStrayFolderThatHeldNothingBack() {
+        let folder = SyncItem(relativePath: "Old", isDirectory: true,
+                              leftSize: nil, leftModified: nil,
+                              rightSize: 0, rightModified: t0)
+        XCTAssertEqual(SyncModel.classify([folder], options: asymmetric).map(\.action), [.deleteRight])
+    }
+
+    /// Only the delete is withdrawn. A left-only folder is still created on the right whatever it
+    /// holds back — creating a folder takes nothing away, and the alternative is a mirror that never
+    /// reproduces a folder with an excluded file in it.
+    func test_aLeftOnlyFolderIsStillCreatedOnTheRight() {
+        let folder = SyncItem(relativePath: "New", isDirectory: true,
+                              leftSize: 0, leftModified: t0,
+                              rightSize: nil, rightModified: nil,
+                              contentEqual: nil, hasHeldBackContent: true)
+        XCTAssertEqual(SyncModel.classify([folder], options: asymmetric).map(\.action), [.copyToRight])
+    }
+
+    /// And in symmetric mode the flag changes nothing, because nothing there deletes.
+    func test_theFlagChangesNothingWithoutAMirror() {
+        let folder = SyncItem(relativePath: "Old", isDirectory: true,
+                              leftSize: nil, leftModified: nil,
+                              rightSize: 0, rightModified: t0,
+                              contentEqual: nil, hasHeldBackContent: true)
+        XCTAssertEqual(SyncModel.classify([folder], options: symmetric).map(\.action), [.copyToLeft])
+    }
+
 }
