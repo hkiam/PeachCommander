@@ -2463,16 +2463,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                  String(localized: "Put the cursor on a checksum file (.sfv/.md5/.sha256…)."))
                 return
             }
-            var ok = 0, failed = 0, missing = 0
+            var ok = 0, failed = 0, missing = 0, refused = 0
             for r in out.results {
                 switch r.status {
                 case .ok: ok += 1
                 case .mismatch: failed += 1
                 case .unreadable: missing += 1
+                case .outsideFolder: refused += 1
                 }
             }
-            self.presentInfo(String(localized: "Verify Checksums"),
-                             String(localized: "\(out.fileName): \(ok) OK, \(failed) failed, \(missing) missing."))
+            var detail = String(localized: "\(out.fileName): \(ok) OK, \(failed) failed, \(missing) missing.")
+            // Counted apart and said out loud: a line naming something outside the folder is not a
+            // file that is missing, it is a line that was not checked — and reporting it as either OK
+            // or missing is how a download gets declared intact on the strength of another file.
+            if refused > 0 {
+                detail += "\n\n" + String(localized: "\(refused) line(s) named a file outside this folder and were not checked.")
+            }
+            self.presentInfo(String(localized: "Verify Checksums"), detail)
         }
     }
 
@@ -2838,11 +2845,30 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     func showDecodeFile() {
         guard let panel = activePanel else { return }
         Task { @MainActor in
-            if let name = await panel.decodeCursorBase64() {
-                self.presentInfo(String(localized: "Decode (Base64)"), String(localized: "Wrote \(name)."))
+            await self.runDecode(panel, overwrite: false)
+        }
+    }
+
+    /// Decode, and ask before replacing something.
+    ///
+    /// The command drops a known encoded extension, so `report.pdf.b64` targets `report.pdf` — the
+    /// file it was made from, still sitting next to it. That made replacing an existing file the
+    /// *ordinary* outcome of this command rather than an unlucky one, and it happened without a word.
+    /// The encode direction never had the problem: it goes through a save panel, which asks.
+    private func runDecode(_ panel: PanelController, overwrite: Bool) async {
+        do {
+            if let name = try await panel.decodeCursorBase64(overwrite: overwrite) {
+                presentInfo(String(localized: "Decode (Base64)"), String(localized: "Wrote \(name)."))
             } else {
-                self.presentInfo(String(localized: "Decode (Base64)"), String(localized: "Put the cursor on a valid Base64 file."))
+                presentInfo(String(localized: "Decode (Base64)"),
+                            String(localized: "Put the cursor on a valid Base64 file."))
             }
+        } catch EncodeDecodeError.targetExists(let name) {
+            guard confirmReplace(name) else { return }
+            await runDecode(panel, overwrite: true)
+        } catch {
+            presentInfo(String(localized: "Decode (Base64)"),
+                        String(localized: "Put the cursor on a valid Base64 file."))
         }
     }
 
@@ -9069,9 +9095,17 @@ final class PanelController: NSObject, PanelControllerProtocol {
         guard !names.isEmpty else { return nil }
         let dir = await model.getPath()
         let baseDir = VFSPath(filesystemId: fs.scheme, path: dir)
-        let entries = await ChecksumEngine.create(filenames: names, baseDir: baseDir, on: fs, algorithm: algorithm)
+        let (entries, unreadable) = await ChecksumEngine.create(filenames: names, baseDir: baseDir,
+                                                                 on: fs, algorithm: algorithm)
         guard !entries.isEmpty else { return nil }
-        let text = ChecksumFile.generate(entries, format: .for(algorithm))
+        // Named in the file itself, as a comment: a checksum list one line shorter than the selection
+        // with nothing to say which line went missing is the one kind of vagueness this format cannot
+        // afford. `#` is a comment in every one of these formats and `parse` already skips it.
+        var text = ChecksumFile.generate(entries, format: .for(algorithm))
+        if !unreadable.isEmpty {
+            text += unreadable.map { "# " + String(localized: "not read: \($0)") }
+                .joined(separator: "\n") + "\n"
+        }
         let suggested = names.count == 1
             ? "\(names[0]).\(algorithm.fileExtension)"
             : "checksums.\(algorithm.fileExtension)"
@@ -9121,7 +9155,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     /// Decode the cursor file, auto-detecting Base64 / uuencode / xxencode
     /// (F-096). Drops a known encoded extension, else appends ".decoded".
-    func decodeCursorBase64() async -> String? {
+    func decodeCursorBase64(overwrite: Bool = false) async throws -> String? {
         guard let path = cursorFilePath() else { return nil }
         let encodedExts = [".b64", ".uue", ".uu", ".xxe", ".hex"]
         let out: String
@@ -9132,7 +9166,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         let src = VFSPath(filesystemId: fs.scheme, path: path)
         let dst = VFSPath(filesystemId: fs.scheme, path: out)
-        do { try await EncodeDecodeEngine.decodeAuto(src, to: dst, on: fs) } catch { return nil }
+        try await EncodeDecodeEngine.decodeAuto(src, to: dst, on: fs, overwrite: overwrite)
         await reload()
         return (out as NSString).lastPathComponent
     }

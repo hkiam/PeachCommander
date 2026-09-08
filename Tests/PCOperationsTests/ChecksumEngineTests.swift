@@ -59,16 +59,22 @@ final class ChecksumEngineTests: XCTestCase {
     func testCreateThenVerifyOK() async throws {
         _ = try write("a.txt", "alpha")
         _ = try write("b.txt", "beta")
-        let entries = await ChecksumEngine.create(filenames: ["a.txt", "b.txt"], baseDir: baseDir,
-                                                  on: fs, algorithm: .sha256)
+        // `create` now also says which names it could not read, so a checksum file that comes out
+        // shorter than the selection can say which line is missing. Nothing was readable-but-skipped
+        // here, so the second half is empty.
+        let (entries, unreadable) = await ChecksumEngine.create(filenames: ["a.txt", "b.txt"],
+                                                                baseDir: baseDir, on: fs,
+                                                                algorithm: .sha256)
         XCTAssertEqual(entries.count, 2)
+        XCTAssertEqual(unreadable, [])
         let results = await ChecksumEngine.verify(entries, baseDir: baseDir, on: fs, algorithm: .sha256)
         XCTAssertEqual(results.map(\.status), [.ok, .ok])
     }
 
     func testVerifyDetectsMismatchAndMissing() async throws {
         _ = try write("a.txt", "alpha")
-        var entries = await ChecksumEngine.create(filenames: ["a.txt"], baseDir: baseDir, on: fs, algorithm: .crc32)
+        var entries = await ChecksumEngine.create(filenames: ["a.txt"], baseDir: baseDir, on: fs,
+                                                  algorithm: .crc32).entries
         // Tamper the file so the recomputed digest differs.
         _ = try write("a.txt", "ALPHA-changed")
         entries.append(ChecksumEntry(digest: "deadbeef", filename: "ghost.txt"))   // missing file
@@ -82,5 +88,55 @@ final class ChecksumEngineTests: XCTestCase {
         XCTAssertEqual(ChecksumEngine.algorithm(forExtension: "MD5"), .md5)
         XCTAssertEqual(ChecksumEngine.algorithm(forExtension: "sha256"), .sha256)
         XCTAssertEqual(ChecksumEngine.algorithm(forExtension: "unknown"), .sha256)
+    }
+
+    // MARK: - The names in a checksum file come from wherever the file came from
+
+    /// A `SHA256SUMS` line naming `../something` used to be hashed and reported **ok** — so a
+    /// download could be declared intact on the strength of a file that was never part of it.
+    /// Measured. It is refused now, and with its own status: "not checked" and "not there" mean
+    /// opposite things to whoever reads the report.
+    func test_aLineNamingAFileOutsideTheFolderIsRefusedRatherThanChecked() async throws {
+        let outside = dir.deletingLastPathComponent()
+            .appendingPathComponent("pc-outside-\(UUID().uuidString).txt")
+        try Data("not part of this download".utf8).write(to: outside)
+        defer { try? FileManager.default.removeItem(at: outside) }
+
+        let base = VFSPath(filesystemId: "file", path: dir.path)
+        let digest = try await ChecksumEngine.compute(
+            VFSPath(filesystemId: "file", path: outside.path), on: fs, algorithm: .sha256)
+        let entries = ChecksumFile.parse("\(digest)  ../\(outside.lastPathComponent)\n", format: .digestFirst)
+        let results = await ChecksumEngine.verify(entries, baseDir: base, on: fs, algorithm: .sha256)
+
+        XCTAssertEqual(results.map(\.status), [.outsideFolder],
+                       "a line pointing out of the folder was checked anyway")
+    }
+
+    /// Descending is still allowed: the format legitimately lists `sub/file.txt`, and refusing every
+    /// separator would refuse the foreign files it exists to read.
+    func test_aLineNamingAFileInASubfolderIsStillChecked() async throws {
+        let sub = dir.appendingPathComponent("sub")
+        try FileManager.default.createDirectory(at: sub, withIntermediateDirectories: true)
+        try Data("payload".utf8).write(to: sub.appendingPathComponent("file.txt"))
+        let base = VFSPath(filesystemId: "file", path: dir.path)
+        let digest = try await ChecksumEngine.compute(
+            VFSPath(filesystemId: "file", path: sub.appendingPathComponent("file.txt").path),
+            on: fs, algorithm: .sha256)
+        let entries = ChecksumFile.parse("\(digest)  sub/file.txt\n", format: .digestFirst)
+        let results = await ChecksumEngine.verify(entries, baseDir: base, on: fs, algorithm: .sha256)
+        XCTAssertEqual(results.map(\.status), [.ok])
+    }
+
+    /// A file that could not be read is named rather than dropped: a checksum list one line shorter
+    /// than the selection, with nothing to say which line went missing, is the one kind of vagueness
+    /// this format cannot afford.
+    func test_aFileThatCannotBeReadIsNamedRatherThanLeftOut() async throws {
+        try Data("readable".utf8).write(to: dir.appendingPathComponent("fine.txt"))
+        let base = VFSPath(filesystemId: "file", path: dir.path)
+        let (entries, unreadable) = await ChecksumEngine.create(
+            filenames: ["fine.txt", "not-there.txt", "../escape.txt"], baseDir: base,
+            on: fs, algorithm: .sha256)
+        XCTAssertEqual(entries.map(\.filename), ["fine.txt"])
+        XCTAssertEqual(unreadable, ["not-there.txt", "../escape.txt"])
     }
 }

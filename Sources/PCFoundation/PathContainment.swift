@@ -26,6 +26,20 @@ public enum PathContainment {
         !name.isEmpty && name != ".." && name != "." && !name.contains("/")
     }
 
+    /// Is `name` usable as a path *below* a folder — descending allowed, escaping not?
+    ///
+    /// `isSafeComponent` is the rule for a name that must be one component. A checksum file is the
+    /// case that needs the weaker one: `SHA256SUMS` legitimately lists `sub/file.txt`, so refusing
+    /// every slash would refuse the foreign files the format exists to read. What must still be
+    /// refused is anything that leaves the folder — a `..` component, an absolute path — because a
+    /// name in such a file comes from wherever the file came from.
+    public static func isSafeRelativePath(_ name: String) -> Bool {
+        guard !name.isEmpty, !name.hasPrefix("/"), !name.contains("\0") else { return false }
+        let parts = name.split(separator: "/", omittingEmptySubsequences: true)
+        guard !parts.isEmpty else { return false }
+        return !parts.contains { $0 == ".." }
+    }
+
     /// Is `candidate` really inside `root`?
     ///
     /// Resolved first, because the destination is usually reached through a symlink (`/var` →

@@ -16,6 +16,38 @@ does not have.
 
 ### Fixed
 
+The last of the paths that touch data: the attribute, checksum and encode/decode engines, plus
+`MkDirEngine`, which came out clean. Three measured, two read.
+
+- **A recursive permission change reaches what it says it reaches.** The attributes were applied to
+  the folder *first*, so a mode without its execute bit — `0400` is an ordinary thing to ask for —
+  made the listing that came next impossible and the descent found nothing. Measured over a folder
+  with a file in a subfolder: the top folder changed, everything below untouched, reported as "1
+  changed, 0 failed". Children first now, and a walk that could not be finished is counted as a
+  failure rather than swallowed by a `catch` whose comment claimed the counts reported it.
+
+- **A checksum file can no longer have a line checked against a file outside its folder.** The names
+  come out of the file, and a `SHA256SUMS` arrives with whatever it describes; a line naming
+  `../something` was hashed and reported **ok**, so a download could be declared intact on the
+  strength of a file that was never part of it. Descending is still allowed — the format legitimately
+  lists `sub/file.txt` — but leaving the folder is not, and such a line now has its own status in the
+  report rather than being counted as missing.
+
+- **Decoding asks before replacing.** The command drops a known encoded extension, so `report.pdf.b64`
+  targets `report.pdf` — the file it was made from, still sitting next to it. Replacing an existing
+  file was therefore the *ordinary* outcome of this command, and it happened without a word. The
+  encode direction never had the problem: it goes through a save panel, which asks.
+
+- **A name out of a listing cannot put a permission change outside the tree.** For a server or a
+  plugin mount the names are whatever the far side sent; only `.` and `..` were filtered, so a name
+  with a separator in it reached outside the selection. Covered by a filesystem whose listing offers
+  one, because `LocalFS` never will and an untested guard is a line nobody has run.
+
+- **A file that could not be read is named in the checksum list** — as a comment, which every one of
+  these formats skips — rather than silently left out of it. A checksum file one line shorter than
+  the selection, with nothing to say which line went missing, is the one kind of vagueness this
+  format cannot afford.
+
 - **A change that arrives while a dialog is open is no longer forgotten.** The directory watcher
   refuses to re-list the panel while a modal dialog or an in-cell rename is up, which is right — the
   question a dialog is asking is about the listing as it was when it opened. What it did with the
