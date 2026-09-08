@@ -1692,6 +1692,24 @@ SCENARIOS = [
                            "dump /Users/admin/watch-before.txt",
                            "mkfile /Users/admin/pc-demo/auto-appeared.txt", "wait 2500",
                            "dump /Users/admin/watch-after.txt"], 10),
+    # The other half of the same question: what happens to a change that arrives while the panel
+    # cannot be re-listed? It used to be dropped — `continue`, no note taken — so a file that landed
+    # in the folder while any dialog happened to be open stayed invisible until somebody reloaded by
+    # hand, and nothing on screen said so.
+    #
+    # `refreshblock` stands in for the dialog. A real modal cannot be used: its nested runloop does
+    # not drain the automation queue, so the script stops at the line that opens it (measured twice
+    # while investigating this). What is under test is the decision the watcher makes about an event
+    # it may not act on yet, and that decision reads the same property.
+    #
+    # Two dumps, and the first one matters as much as the second: absent while blocked proves the
+    # postponement is real rather than the whole guard having been dropped.
+    ("panel-refresh-deferred", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                                "refreshblock on",
+                                "mkfile /Users/admin/pc-demo/deferred-appeared.txt", "wait 2500",
+                                "dump /Users/admin/defer-blocked.txt",
+                                "refreshblock off", "wait 2500",
+                                "dump /Users/admin/defer-caught-up.txt"], 12),
     # Keyboard reachability and the menu's real shortcuts, per window (I19 T06). Each scenario opens
     # one window and asks it what Tab reaches and what a screen reader would find.
     # cm_SrcLong first: the view mode is persisted in peachcmd.ini and survives between scenarios, so
@@ -2097,6 +2115,8 @@ REPORTS = {
     # The file must be in the listing afterwards — and, so the check cannot pass for the wrong reason,
     # absent before it was created (an expectation starting with "!" must NOT appear).
     "panel-autorefresh": ("/Users/admin/watch-after.txt", ["auto-appeared.txt"]),
+    # Caught up once the way was clear — the file the panel was told about while it could not act.
+    "panel-refresh-deferred": ("/Users/admin/defer-caught-up.txt", ["deferred-appeared.txt"]),
     # Three claims, because two of them can pass for the wrong reason. `listed=` must contain ".." —
     # otherwise the fixture never held a traversal member and the rest proves nothing. `inside=` must
     # hold the honest member, so a walk that refuses *everything* does not count as a fix. And the
@@ -2645,6 +2665,9 @@ REPORTS = {
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
     "sftp-upload": ("/Users/admin/sftpput.txt", ["full=40960", "resumedAt=15000", "tail=25960"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
+    # And *not* there while the dialog stood: re-listing underneath a dialog is the thing the guard
+    # exists to prevent, so a fix that simply refreshed anyway would pass the report above.
+    "panel-refresh-deferred-blocked": ("/Users/admin/defer-blocked.txt", ["!deferred-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
     # The rows the outline rendered, not what the parser returned: mapping keys, a nested mapping, the
     # index label for a sequence entry — and no row that came out blank ("BLANK!" is what editdump marks

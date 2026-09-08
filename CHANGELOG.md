@@ -16,6 +16,16 @@ does not have.
 
 ### Fixed
 
+- **A change that arrives while a dialog is open is no longer forgotten.** The directory watcher
+  refuses to re-list the panel while a modal dialog or an in-cell rename is up, which is right — the
+  question a dialog is asking is about the listing as it was when it opened. What it did with the
+  event was to drop it: `continue`, no note taken, and nothing that ever looked again. A file that
+  landed in the panel's folder in the moment a dialog happened to be open therefore stayed invisible
+  until somebody reloaded by hand, and nothing on screen said so. The refresh is now kept and run as
+  soon as the way is clear. Measured both ways in the real app: with the old code the file never
+  appeared; with this one it appears the moment the dialog closes, and *not* before — the guard still
+  does its job. Covered by a VM scenario with both halves asserted.
+
 The next round of the same review, over the paths that run as administrator and the two engines that
 rename and split files. Eight findings; four measured, and one suspicion that turned out to be wrong
 and is recorded as such below.

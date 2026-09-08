@@ -38,6 +38,7 @@
 //                                 reports the byte range the hex view then highlights
 //   mainshot <out.png>[|<title>]  a PNG of the key window, or of the window whose title contains
 //                                 <title> — the key window is not reliably the one you opened
+//   refreshblock on|off   pretend a dialog is up, so the watcher has to postpone its refresh
 //   windowlayout <title|key>[|<W>x<H>]|<out>  resize a window and report the frame of every view
 //                                            under its content view (a layout that does not scale)
 //   syncopen <left>|<right>   open the sync window WITHOUT comparing (syncdemo races the scan)
@@ -405,6 +406,13 @@ extension MainWindowController {
                 currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
             case "listernote":                          // listernote: write a note about the caret's line
                 currentLister()?.automationNoteForCurrentLine()
+            case "refreshblock":                        // refreshblock on|off (F-361 follow-up)
+                // Stands in for "a dialog is up". A real modal cannot be used here: its nested
+                // runloop does not drain this queue, so a script that opens one stops at that line —
+                // measured, twice. What is under test is what the watcher does with an event it
+                // cannot act on yet, and that decision reads this same property.
+                PanelController.forceRefreshBlockedForAutomation = arg.lowercased() != "off"
+                NSLog("[automation] refreshblock: \(PanelController.forceRefreshBlockedForAutomation)")
             case "windowlayout":                        // windowlayout <title-fragment|key>[|<W>x<H>]|<out>
                 // A window that grows while its content stays the size it was built at is a defect
                 // no screenshot count can name and no constraint conflict is logged for: the layout

@@ -8924,6 +8924,63 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// mount or a folder something writes to constantly, a refresh per change is a nuisance.
     var watchDirectories = true
 
+    /// Whether a refresh can happen at all right now.
+    ///
+    /// Not while a dialog is up: a rename, an overwrite prompt or a properties sheet is about the
+    /// listing as it was when it opened, and re-listing underneath it changes what the user is
+    /// answering about. Not while an in-cell rename is open either — the field editor would be
+    /// destroyed.
+    var refreshIsBlocked: Bool {
+        #if DEBUG
+        if Self.forceRefreshBlockedForAutomation { return true }
+        #endif
+        return NSApp.modalWindow != nil || tableView.isInlineEditing
+    }
+
+    #if DEBUG
+    /// Stands in for "a dialog is up" in a scripted run. An actual modal cannot be used: its nested
+    /// runloop does not drain the automation queue, so the script stops at the line that opened it.
+    static var forceRefreshBlockedForAutomation = false
+    #endif
+
+    /// What the watcher wanted done while `refreshIsBlocked` said it could not be.
+    ///
+    /// The event used to be dropped here — `continue`, no note taken, nothing that ever looked again.
+    /// A file arriving in the panel's folder in the moment a dialog happened to be open was therefore
+    /// invisible until the user reloaded by hand, and nothing on screen said so. Keeping the work and
+    /// running it as soon as the way is clear is the whole fix; the reason for not running it *now*
+    /// was always right.
+    private var deferredWatchWork: (@MainActor () async -> Void)?
+    private var deferredWatchTask: Task<Void, Never>?
+
+    /// How often the deferred refresh looks to see whether the dialog has gone.
+    ///
+    /// Polled rather than driven by a notification because AppKit has none for "the modal session
+    /// ended" — `NSApplication` reports a sheet ending, not a modal, and the in-cell editor is this
+    /// app's own state. A fifth of a second is imperceptible next to closing a dialog by hand.
+    private static let deferredWatchPoll: UInt64 = 200_000_000
+
+    /// Remember `work` and run it once nothing is in the way. The newest replaces any older one:
+    /// re-listing the directory twice would answer the same question twice.
+    private func deferWatchWork(_ work: @escaping @MainActor () async -> Void) {
+        deferredWatchWork = work
+        guard deferredWatchTask == nil else { return }
+        deferredWatchTask = Task { @MainActor [weak self] in
+            while true {
+                guard let self, !Task.isCancelled else { return }
+                guard let pending = self.deferredWatchWork else { self.deferredWatchTask = nil; return }
+                if self.refreshIsBlocked {
+                    try? await Task.sleep(nanoseconds: Self.deferredWatchPoll)
+                    continue
+                }
+                self.deferredWatchWork = nil
+                self.deferredWatchTask = nil
+                await pending()
+                return
+            }
+        }
+    }
+
     /// Watch `path` and refresh this panel when its contents change.
     ///
     /// The filesystem decides whether it can be watched: `watch(_:)` yields a stream for a local
@@ -8938,12 +8995,12 @@ final class PanelController: NSObject, PanelControllerProtocol {
         watchTask = Task { @MainActor [weak self] in
             for await _ in stream {
                 guard let self, !Task.isCancelled else { return }
-                // Not while a dialog is up: a rename, an overwrite prompt or a properties sheet is
-                // about the listing as it was when it opened, and re-listing underneath it changes
-                // what the user is answering about.
-                guard NSApp.modalWindow == nil else { continue }
-                // Not while an in-cell rename is open — the field editor would be destroyed.
-                guard !self.tableView.isInlineEditing else { continue }
+                // Kept, not dropped, when a dialog or an in-cell rename is in the way — see
+                // `deferWatchWork` for why that distinction is the whole of this fix.
+                guard !self.refreshIsBlocked else {
+                    self.deferWatchWork { [weak self] in await self?.reloadPreservingCursor() }
+                    continue
+                }
                 await self.reloadPreservingCursor()
             }
         }
@@ -8965,22 +9022,36 @@ final class PanelController: NSObject, PanelControllerProtocol {
         watchTask = Task { @MainActor [weak self] in
             for await _ in stream {
                 guard let self, !Task.isCancelled else { return }
-                guard NSApp.modalWindow == nil, !self.tableView.isInlineEditing else { continue }
-                let now = FileStamp.of(archive)
-                guard now != self.watchedArchiveStamp else { continue }
-                self.watchedArchiveStamp = now
-                // Gone rather than rewritten: leave what is on screen. Re-parsing nothing would empty
-                // the panel, and the file may be a moment away from being renamed back into place.
-                guard now != nil else { continue }
-                await self.reloadCurrentArchive()
+                guard !self.refreshIsBlocked else {
+                    self.deferWatchWork { [weak self] in await self?.reparseArchiveIfChanged(archive) }
+                    continue
+                }
+                await self.reparseArchiveIfChanged(archive)
             }
         }
+    }
+
+    /// Re-read the archive on screen if its bytes moved. Split out so the deferred path runs exactly
+    /// what the immediate one would have — including the stamp, which must not be consumed by an
+    /// event that was postponed.
+    private func reparseArchiveIfChanged(_ archive: String) async {
+        let now = FileStamp.of(archive)
+        guard now != watchedArchiveStamp else { return }
+        watchedArchiveStamp = now
+        // Gone rather than rewritten: leave what is on screen. Re-parsing nothing would empty the
+        // panel, and the file may be a moment away from being renamed back into place.
+        guard now != nil else { return }
+        await reloadCurrentArchive()
     }
 
     func stopWatching() {
         watchTask?.cancel()
         watchTask = nil
         watchedArchiveStamp = nil
+        // A refresh kept for the directory this panel is leaving would re-list the wrong one.
+        deferredWatchTask?.cancel()
+        deferredWatchTask = nil
+        deferredWatchWork = nil
     }
 
     func getCurrentPath() async -> String { await model.getPath() }
