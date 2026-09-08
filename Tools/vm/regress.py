@@ -155,16 +155,26 @@ SCENARIOS = [
     #
     # The sheet is closed again before the script ends. Measured locally: an open sheet stops the app
     # from quitting, so the harness waits out its forty seconds and the scenario looks like a hang.
-    ("sync-filter", ["active left", "left /Users/admin/sync-src", "wait 1200",
-                     "syncopen /Users/admin/sync-src|/Users/admin/sync-dst|/Users/admin/pc-cfg/sync-presets.json",
+    ("sync-filter", ["active left", "left /Users/admin/filter-src", "wait 1200",
+                     "syncopen /Users/admin/filter-src|/Users/admin/filter-dst|/Users/admin/pc-cfg/sync-presets.json",
                      "wait 1200",
+                     # The sheet, opened the way a person opens it, and photographed. Closed again
+                     # before the script ends: measured locally, an open sheet stops the app from
+                     # quitting, so the harness waits out its forty seconds and this looks like a hang.
                      "syncfilteropen", "wait 900",
                      "syncfilterset exclude=node_modules/;*.tmp|/Users/admin/syncfilterset.txt",
                      "wait 500",
-                     "synccompare", "wait 1800",
                      "syncpreset save Projekt|/Users/admin/syncfilterpreset.txt", "wait 600",
-                     "syncfilterset exclude=|/Users/admin/syncfiltercleared.txt", "wait 500",
-                     "syncpreset load Projekt|/Users/admin/syncfilter.txt", "wait 600"], 11),
+                     # A *different* filter, not an empty one: the primary report below then proves
+                     # the load actually restored something, which it could not if the in-between
+                     # state had simply been "no filter".
+                     "syncfilterset exclude=*.zzz|/Users/admin/syncfilterother.txt", "wait 500",
+                     "syncpreset load Projekt|/Users/admin/syncfilterloaded.txt", "wait 600",
+                     # The comparison last, and the report after it. Confirming the sheet puts
+                     # "compare again to apply it" in the status line — correct for a person, and it
+                     # means a report taken before the comparison cannot carry what the run will do.
+                     "synccompare", "wait 1800",
+                     "syncfilterreport /Users/admin/syncfilter.txt"], 11),
     ("settings", ["active left", "left /Users/admin", "wait 1000",
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
@@ -2150,9 +2160,16 @@ REPORTS = {
     # next to what the run will do — and loading a preset that carries a filter puts it back on the
     # *button*. That last one is the specific defect the window has already had once, for two
     # options the preset store round-tripped while the window quietly dropped them.
+    # `filterexclude` is the preset's patterns and not the `*.zzz` that was set in between, so the
+    # load restored them. `heldback=2` is the excluded folder counted once plus the .tmp file — not
+    # once per file inside node_modules. And the status line carries that next to what the run would
+    # do, which is the whole safety claim: a filter has to be visible without opening it.
     "sync-filter": ("/Users/admin/syncfilter.txt",
-                    ["preset=Projekt", "filtercriteria=1", "filterexclude=node_modules/;*.tmp",
-                     "heldback=", "held back by the filter", "!ERROR"]),
+                    ["filtercriteria=1", "filterexclude=node_modules/;*.tmp",
+                     "heldback=2", "held back by the filter", "filterbutton=Filter",
+                     # And the copy that is left: a filter that excluded everything would also
+                     # report two held back and nothing to do.
+                     "\u2192 1", "!ERROR"]),
     # Equal to within a point: the two panels are laid out in float widths and an odd window cannot
     # split evenly. `!diff=` catches nothing on its own, so the before-picture is checked too — without
     # it, a run where `widenleft` silently did nothing would pass.
@@ -3228,6 +3245,20 @@ def boot(app: str, run: str):
                   "rm -rf ~/sync-src ~/sync-dst && mkdir -p ~/sync-src ~/sync-dst && "
                   "printf 'one\\n' > ~/sync-src/alpha.txt && "
                   "mkdir -p ~/sync-src/sub && printf 'two\\n' > ~/sync-src/sub/beta.txt && "
+                  # And a separate pair for the filter scenario, with things in it to exclude. Its
+                  # own tree rather than more files under sync-src: the SFTP scenario asserts
+                  # `compared=3` over that one, so adding to it would break a passing test to set up
+                  # this one.
+                  "rm -rf ~/filter-src ~/filter-dst && mkdir -p ~/filter-src ~/filter-dst && "
+                  "printf 'keep\\n' > ~/filter-src/keep.txt && "
+                  "printf 'keep\\n' > ~/filter-dst/keep.txt && "
+                  "printf 'draft\\n' > ~/filter-src/notes.tmp && "
+                  # One file that is *not* excluded and is not on the other side, so the run has
+                  # something to do. Without it the scenario asserted "0 copies, 2 held back", which
+                  # a filter that excluded everything would satisfy just as well.
+                  "printf 'new\\n' > ~/filter-src/report.txt && "
+                  "mkdir -p ~/filter-src/node_modules/pad && "
+                  "printf 'js\\n' > ~/filter-src/node_modules/pad/index.js && "
                   "chmod 644 ~/sftp-demo/perm.txt; "
                   # 40 KB of known content: more than one 64 KB read would be silly, less than one is
                   # what a single-chunk transfer looks like — enough to tell a tail from a whole file.
