@@ -81,6 +81,9 @@ public final class FindFilesWindowController: NSWindowController {
     private let maxDepthPopup = NSPopUpButton()
     /// The tabbed options area (F-150).
     private let optionsTabView = NSTabView()
+    /// The tabbed-form builder: rows, hints, tab pages, and the constraint priorities that were
+    /// measured rather than chosen. Shared with the sync filter sheet — see TabbedFormLayout.
+    private let form = TabbedFormLayout()
 
     /// Saved-template persistence + current list (populates the template popup).
     private var templateStore: SearchTemplateStore?
@@ -195,7 +198,7 @@ public final class FindFilesWindowController: NSWindowController {
         // whatever width it last had — measured, the Advanced tab's label sat at 91 pt while asking for
         // 114 — which says nothing about truncation in the dialog the reader is looking at.
         let page = optionsTabView.selectedTabViewItem?.view
-        let shown = rowLabels.filter { label in page.map(label.isDescendant(of:)) ?? false }
+        let shown = form.rowLabels.filter { label in page.map(label.isDescendant(of:)) ?? false }
         let fits = shown.allSatisfy { $0.frame.width + 0.5 >= $0.fittingSize.width }
         let measured = shown.map { "\($0.stringValue)=\(Int($0.frame.width))/\(Int($0.fittingSize.width))" }
         return "labelColumn=\(Int(shown.map(\.frame.width).max() ?? 0))\nlabelsFit=\(fits)\n"
@@ -344,7 +347,7 @@ public final class FindFilesWindowController: NSWindowController {
         // right there). The text is not lost by turning the search off either: it is in the field's own
         // history now, so clearing it is undoable in a way unticking a box never made it.
         findTextField.font = Fonts.system13
-        preferWidth(findTextField, atLeast: 280)
+        form.preferWidth(findTextField, atLeast: 280)
         // The options below the field follow what is typed, so they cannot lag behind it.
         findTextField.delegate = self
 
@@ -416,9 +419,9 @@ public final class FindFilesWindowController: NSWindowController {
         sizeMaxField.placeholderString = String(localized: "max (e.g. 5M)")
         for f in [sizeMinField, sizeMaxField] {
             f.font = Fonts.system13
-            preferWidth(f, exactly: 130)
+            form.preferWidth(f, exactly: 130)
         }
-        let sizeRow = hStack([sizeLabel, sizeMinField, toLabel, sizeMaxField], spacing: 8)
+        let sizeRow = form.hStack([sizeLabel, sizeMinField, toLabel, sizeMaxField], spacing: 8)
 
         // Modified-date range (each side gated by its checkbox).
         dateAfterCheckbox.title = String(localized: "Modified after:"); dateAfterCheckbox.font = Fonts.system13
@@ -433,10 +436,10 @@ public final class FindFilesWindowController: NSWindowController {
         }
         recentDaysField.placeholderString = String(localized: "N")
         recentDaysField.alignment = .right
-        preferWidth(recentDaysField, exactly: 44)
+        form.preferWidth(recentDaysField, exactly: 44)
         let recentLabel = NSTextField(labelWithString: String(localized: "or within last")); recentLabel.font = Fonts.system13
         let daysLabel = NSTextField(labelWithString: String(localized: "days")); daysLabel.font = Fonts.system13
-        let dateRow = hStack([dateAfterCheckbox, dateAfterPicker, dateBeforeCheckbox, dateBeforePicker,
+        let dateRow = form.hStack([dateAfterCheckbox, dateAfterPicker, dateBeforeCheckbox, dateBeforePicker,
                               recentLabel, recentDaysField, daysLabel], spacing: 8)
 
         // Content-field predicate (F-157): search by a plugin-provided field.
@@ -447,9 +450,9 @@ public final class FindFilesWindowController: NSWindowController {
         for op in ContentOperator.allCases { contentOpPopup.addItem(withTitle: op.rawValue) }
         contentValueField.placeholderString = String(localized: "value")
         contentValueField.font = Fonts.system13
-        preferWidth(contentValueField, exactly: 120)
-        preferWidth(contentFieldPopup, atLeast: 140)
-        let contentFieldRow = hStack([contentFieldCheckbox, contentFieldPopup, contentOpPopup, contentValueField], spacing: 8)
+        form.preferWidth(contentValueField, exactly: 120)
+        form.preferWidth(contentFieldPopup, atLeast: 140)
+        let contentFieldRow = form.hStack([contentFieldCheckbox, contentFieldPopup, contentOpPopup, contentValueField], spacing: 8)
 
         // Attribute filters (F-152): tri-state Any / Yes / No per attribute.
         let attrItems = [String(localized: "Any"), String(localized: "Yes"), String(localized: "No")]
@@ -457,18 +460,18 @@ public final class FindFilesWindowController: NSWindowController {
         let attrLabel = NSTextField(labelWithString: String(localized: "Attributes:")); attrLabel.font = Fonts.system13
         let hiddenLabel = NSTextField(labelWithString: String(localized: "Hidden:")); hiddenLabel.font = Fonts.system13
         let roLabel = NSTextField(labelWithString: String(localized: "Read-only:")); roLabel.font = Fonts.system13
-        let attrRow = hStack([attrLabel, hiddenLabel, hiddenAttrPopup, roLabel, readOnlyAttrPopup], spacing: 8)
+        let attrRow = form.hStack([attrLabel, hiddenLabel, hiddenAttrPopup, roLabel, readOnlyAttrPopup], spacing: 8)
 
         maxDepthPopup.addItems(withTitles: [String(localized: "All"), "1", "2", "3", "5", "10"])
 
         // Saved-template picker + save button (Load / Save tab).
         let tmplLabel = NSTextField(labelWithString: String(localized: "Template:")); tmplLabel.font = Fonts.system13
         templatePopup.action = #selector(applySelectedTemplate); templatePopup.target = self
-        preferWidth(templatePopup, atLeast: 200)
+        form.preferWidth(templatePopup, atLeast: 200)
         let saveTemplateButton = NSButton(title: String(localized: "Save as Template…"),
                                           target: self, action: #selector(saveTemplate))
         saveTemplateButton.bezelStyle = .rounded
-        let tmplRow = hStack([tmplLabel, templatePopup, saveTemplateButton], spacing: 8)
+        let tmplRow = form.hStack([tmplLabel, templatePopup, saveTemplateButton], spacing: 8)
 
         // Emptying the two field histories (F-406). Here rather than beside the fields themselves: it is
         // housekeeping, it is done rarely, and this tab is already where the dialog's stored things are
@@ -485,31 +488,31 @@ public final class FindFilesWindowController: NSWindowController {
         tabView.translatesAutoresizingMaskIntoConstraints = false
         // Otherwise a screen reader announces only "tab group" here (I19 T06).
         tabView.setAccessibilityLabel(String(localized: "Search options"))
-        tabView.addTabViewItem(makeTab(String(localized: "General"), rows: [
-            labeledField(String(localized: "Search for:"), nameMaskField),
-            labeledField(String(localized: "Search in:"), startDirField),
-            labeledField(String(localized: "Find text:"), findTextField),
-            hStack([caseSensitiveCheckbox, regexCheckbox, wholeWordCheckbox], spacing: 20),
-            hStack([hexCheckbox, encodingCheckbox, notContainingCheckbox], spacing: 20),
+        tabView.addTabViewItem(form.makeTab(String(localized: "General"), rows: [
+            form.labeledField(String(localized: "Search for:"), nameMaskField),
+            form.labeledField(String(localized: "Search in:"), startDirField),
+            form.labeledField(String(localized: "Find text:"), findTextField),
+            form.hStack([caseSensitiveCheckbox, regexCheckbox, wholeWordCheckbox], spacing: 20),
+            form.hStack([hexCheckbox, encodingCheckbox, notContainingCheckbox], spacing: 20),
             inSelectionCheckbox,
             spotlightCheckbox,
-            hStack([includeDirsCheckbox, searchArchivesCheckbox], spacing: 20),
+            form.hStack([includeDirsCheckbox, searchArchivesCheckbox], spacing: 20),
             emptyDirsCheckbox,
             pluginTextCheckbox,
             commentsCheckbox,
         ]))
-        tabView.addTabViewItem(makeTab(String(localized: "Advanced"), rows: [
+        tabView.addTabViewItem(form.makeTab(String(localized: "Advanced"), rows: [
             sizeRow, dateRow, attrRow,
-            labeledField(String(localized: "Max depth:"), maxDepthPopup, controlMinWidth: 100),
+            form.labeledField(String(localized: "Max depth:"), maxDepthPopup, controlMinWidth: 100),
         ]))
-        tabView.addTabViewItem(makeTab(String(localized: "Plugins"), rows: [
-            hintLabel(String(localized: "Require a content-plugin field to satisfy a condition (e.g. image width > 1000).")),
+        tabView.addTabViewItem(form.makeTab(String(localized: "Plugins"), rows: [
+            form.hintLabel(String(localized: "Require a content-plugin field to satisfy a condition (e.g. image width > 1000).")),
             contentFieldRow,
         ]))
-        tabView.addTabViewItem(makeTab(String(localized: "Load / Save"), rows: [
-            hintLabel(String(localized: "Load a saved search, or save the current settings as a reusable template.")),
+        tabView.addTabViewItem(form.makeTab(String(localized: "Load / Save"), rows: [
+            form.hintLabel(String(localized: "Load a saved search, or save the current settings as a reusable template.")),
             tmplRow,
-            hintLabel(String(localized: "“Search for” and “Find text” each offer the last 20 entries you searched with, most recently used first.")),
+            form.hintLabel(String(localized: "“Search for” and “Find text” each offer the last 20 entries you searched with, most recently used first.")),
             clearHistoryButton,
         ]))
         content.addSubview(tabView)
@@ -586,9 +589,8 @@ public final class FindFilesWindowController: NSWindowController {
         // strip and border. Nothing here is a chosen number: the stacks report what they need.
         // Measured, not chosen: the General tab's stack reports 250 pt and the others less, and 34 is
         // what NSTabView spends on its strip and border.
-        let tallest = tabStacks.map(\.fittingSize.height).max() ?? 300
         let tabHeightConstraint = tabView.heightAnchor.constraint(
-            greaterThanOrEqualToConstant: tallest + 34)
+            greaterThanOrEqualToConstant: form.measuredTabHeight())
         NSLayoutConstraint.activate([
             tabView.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             tabView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
@@ -618,99 +620,10 @@ public final class FindFilesWindowController: NSWindowController {
             buttons.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             buttons.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
         ])
-        alignRowLabels()
+        form.alignRowLabels()
         updateOptionAvailability()
     }
 
-    /// One width for every "label: control" row, measured from the longest label rather than chosen.
-    ///
-    /// 90 pt was enough for "Search for:" in English and is not enough for "Szöveg keresése:" — and a
-    /// truncated label in a dialog whose whole subject is text is the kind of thing only a Hungarian user
-    /// would ever report. The labels report what they need; the widest one sets the column, so the rows
-    /// stay aligned in all nineteen languages.
-    private func alignRowLabels() {
-        let widest = rowLabels.map(\.fittingSize.width).max() ?? 90
-        for label in rowLabels { preferWidth(label, exactly: max(90, widest.rounded(.up))) }
-    }
-
-    /// A horizontal stack row of leading-aligned controls.
-    private func hStack(_ views: [NSView], spacing: CGFloat) -> NSStackView {
-        let s = NSStackView(views: views)
-        s.orientation = .horizontal
-        s.alignment = .centerY
-        s.spacing = spacing
-        s.translatesAutoresizingMaskIntoConstraints = false
-        return s
-    }
-
-    /// A "label: control" row: a right-aligned label plus the control. The label's width is settled once
-    /// all of them exist, by `alignRowLabels`.
-    private func labeledField(_ title: String, _ control: NSView, controlMinWidth: CGFloat = 300) -> NSView {
-        let label = NSTextField(labelWithString: title)
-        label.font = Fonts.system13
-        label.alignment = .right
-        rowLabels.append(label)
-        preferWidth(control, atLeast: controlMinWidth)
-        return hStack([label, control], spacing: 8)
-    }
-
-    /// The labels of the "label: control" rows, so their column can be measured (see `alignRowLabels`).
-    private var rowLabels: [NSTextField] = []
-
-    /// A dimmed, wrapping explanatory label used at the top of a sparse tab.
-    private func hintLabel(_ text: String) -> NSTextField {
-        let l = NSTextField(wrappingLabelWithString: text)
-        l.font = NSFont.systemFont(ofSize: 11)
-        l.textColor = .secondaryLabelColor
-        l.widthAnchor.constraint(lessThanOrEqualToConstant: 560).isActive = true
-        return l
-    }
-
-    /// Build a tab page: a top-anchored vertical stack of `rows` inside a container.
-    /// The stacks inside the tabs, so the tab view's minimum height can be *measured* rather than
-    /// guessed. Two guesses in a row got it wrong: 250 clipped the content silently, and 320 turned
-    /// that into a reported conflict on every layout pass once the tab gained a bottom bound.
-    private var tabStacks: [NSStackView] = []
-
-    private func makeTab(_ title: String, rows: [NSView]) -> NSTabViewItem {
-        let item = NSTabViewItem(identifier: title)
-        item.label = title
-        let page = NSView()
-        let stack = NSStackView(views: rows)
-        stack.orientation = .vertical
-        stack.alignment = .leading
-        stack.spacing = 10
-        stack.edgeInsets = NSEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        page.addSubview(stack)
-        let stackBottom = stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor)
-        stackBottom.priority = .init(999)
-        // Same reasoning one dimension over: a page that is not the visible tab has no width either,
-        // and the rows inside carry the stack's own minimum spacings, which cannot be lowered from
-        // out here. Pinning the leading edge as a rule made those minimums the reported conflict.
-        let stackLeading = stack.leadingAnchor.constraint(equalTo: page.leadingAnchor)
-        stackLeading.priority = .init(999)
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: page.topAnchor),
-            stackLeading,
-            stack.trailingAnchor.constraint(lessThanOrEqualTo: page.trailingAnchor),
-            // An advisory bound, not a rule. Without it a tab whose rows outgrow its height drew over
-            // whatever was below and nothing reported it; required, it became the loudest conflict in
-            // the app, because a tab page that is not the visible one has height *zero* until it is
-            // shown, and no stack fits in nothing. Measured: the visible page was 380 pt with a stack
-            // needing 250, while the three hidden ones were 0 pt with stacks needing 154 and 76 —
-            // there was never a shortage of room, only a constraint applied to pages that had no size
-            // yet. Same shape as the preview panel's `width == 0`.
-            //
-            // At 999 it yields on a zero-height page and still shapes the layout everywhere else.
-            // Real overflow is caught by the regression harness's screenshots, which is where a human
-            // would notice it anyway.
-            stackBottom,
-        ])
-        tabStacks.append(stack)
-        item.view = page
-        return item
-    }
 
     /// Maps the max-depth popup's selected title to a depth value ("All" -> 0).
     private func depthValue() -> Int {
@@ -769,21 +682,6 @@ public final class FindFilesWindowController: NSWindowController {
         dateBeforePicker.isEnabled = !spotlight && dateBeforeCheckbox.state == .on
     }
 
-    /// Activate a width the layout should honour *if it can*.
-    ///
-    /// Every width in this dialog is a preference about how wide a control looks, not a fact about the
-    /// world — and during setup the page it sits in has no width at all, so as required rules they
-    /// cannot hold and AppKit reports the row. At 999 the rows still get the shape they ask for and a
-    /// zero-width page costs nothing. Measured: this and the tab pages' bottom bound together took the
-    /// dialog from 37 reported conflicts to 12.
-    private func preferWidth(_ view: NSView, exactly: CGFloat? = nil, atLeast: CGFloat? = nil) {
-        for constraint in [exactly.map { view.widthAnchor.constraint(equalToConstant: $0) },
-                           atLeast.map { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0) }]
-        .compactMap({ $0 }) {
-            constraint.priority = .init(999)
-            constraint.isActive = true
-        }
-    }
 
     @objc private func handleStartStop() {
         if isSearching {
