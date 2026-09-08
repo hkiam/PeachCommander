@@ -62,6 +62,23 @@ does not have.
 
 ### Fixed
 
+- **“Done — trees synchronized.” now means it.** The synchronisation run answered a list of errors
+  and nothing else, so a successful item left no trace and success was only inferable as “absent from
+  the error list”. That inference did not hold: a cancelled run returned the same list as a finished
+  one, a cancellation in the copy loop skipped the batched archive rewrite so files staged for a zip
+  were neither written nor mentioned, a failed rewrite was one error with an empty path however many
+  entries were in the batch, and the mirror's deliberate “kept it, something inside was not part of
+  this comparison” sat in the same list as an I/O failure — which made an ordinary `node_modules/`
+  exclusion turn a wholly successful run into “Completed with 3 error(s)”. Every planned item now
+  says what became of it, the archive rewrite always runs and names each entry it staged, a
+  cancelled run reports how much it managed, and a failure carries the relative path instead of just
+  the file's name.
+
+- **The run's verdict is readable.** A run is followed at once by an automatic re-comparison, and
+  that overwrote the status line before anybody could read what had happened. The verdict stays until
+  the next run.
+
+
 - **A mirror whose source cannot be read no longer offers to empty the target.** Point the left side
   at a folder that is not there — a typo in the path field, an unmounted volume, a permission failure
   — and the comparison came back empty, which in mirror mode means "delete every file on the right":

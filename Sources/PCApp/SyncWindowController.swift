@@ -51,6 +51,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private var rootRelation = SyncPlanGuard.RootRelation.distinct
     /// Why the plan as it stands must not be offered. Recomputed whenever the plan changes.
     private var refusals: [SyncPlanGuard.Refusal] = []
+    /// The last run's verdict, in one line, kept until the next run.
+    ///
+    /// Because a run is immediately followed by a forced re-comparison, and that overwrites the
+    /// status line within a moment: measured, "Done — trees synchronized." was set and then replaced
+    /// by the fresh comparison's counts before it could be read. The verdict is the one thing about a
+    /// run the user has to see, so it survives the re-comparison instead of racing it.
+    private var lastRunSummary = ""
+
+    /// What the last run actually did, item by item. Kept because the forced re-comparison right
+    /// after a run destroys the plan that produced it, and the outcomes are the only record of what
+    /// happened — a state file will be written from exactly this.
+    private var lastRunReport: SyncRunReport?
     /// Where a plugin criterion's fields come from. Nil when the host did not hand one over, and the
     /// filter sheet then says so instead of offering an empty popup.
     private let contentFields: ContentFieldRegistry?
@@ -970,6 +982,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 text += "   ·   \(refusals.count - 1) \(String(localized: "more"))"
             }
         }
+        // Appended last, so it is there whatever else the line says — including after the automatic
+        // re-comparison, which is the only reason it is kept at all.
+        if !lastRunSummary.isEmpty { text += "   ·   \(lastRunSummary)" }
         statusLabel.stringValue = text
         // Recomputed here rather than once after the scan: a conflict that has just been given a
         // direction is something to synchronize, and unticking the last row is not. Fixed at scan
@@ -1023,25 +1038,41 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// dismisses a modal, which here means cancelling the very thing under test.
     private func runSynchronize(_ actionable: [SyncResult]) {
         let (l, r) = (leftSide, rightSide)
+        lastRunSummary = ""
+        lastRunReport = nil
         setSynchronizing(true)
         statusLabel.stringValue = String(localized: "Synchronizing…")
         let report: @Sendable (Int, Int) -> Void = { done, total in
             Task { @MainActor in self.showSyncProgress(done: done, total: total) }
         }
         syncTask = Task.detached(priority: .userInitiated) {
-            let errors = await SyncExecutor.execute(actionable, left: l, right: r, toTrash: true,
-                                                    progress: report)
-            let stopped = Task.isCancelled
+            let runReport = await SyncExecutor.execute(actionable, left: l, right: r, toTrash: true,
+                                                       progress: report)
+            let errors = runReport.errors
+            let refusals = runReport.refusals
+            // From the report, not from re-reading `Task.isCancelled` here: the run knows whether it
+            // stopped, and asking afterwards was a second answer to a question already settled.
+            let stopped = runReport.stopped
             await self.reload?()
             await MainActor.run {
                 self.syncTask = nil
                 self.setSynchronizing(false)
                 if stopped {
-                    self.statusLabel.stringValue = String(localized: "Cancelled")
+                    // What was carried out before the stop, which used to be thrown away entirely:
+                    // the errors gathered until then went with it, and the line said only
+                    // "Cancelled".
+                    self.lastRunSummary =
+                        String(localized: "Cancelled — \(runReport.applied) of \(runReport.outcomes.count) item(s) done.")
+                } else if runReport.completedEverything {
+                    // Asserted from every item having actually happened, not from an empty error
+                    // list. An empty list also described a run that staged files into an archive and
+                    // never wrote them, and one whose only "errors" were deliberate refusals.
+                    self.lastRunSummary = String(localized: "Done — trees synchronized.")
                 } else if errors.isEmpty {
-                    self.statusLabel.stringValue = String(localized: "Done — trees synchronized.")
+                    self.lastRunSummary =
+                        String(localized: "Done — \(refusals.count) item(s) kept back.")
                 } else {
-                    self.statusLabel.stringValue = String(localized: "Completed with \(errors.count) error(s).")
+                    self.lastRunSummary = String(localized: "Completed with \(errors.count) error(s).")
                     // The list itself, not just how long it is. `SyncExecutor` says which item failed
                     // and why; a count told the user that something went wrong and nothing about
                     // what — with a window for exactly this already in the app (F-089).
@@ -1051,9 +1082,19 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                     // run with nothing to report quit at once. A report about a run that is over has
                     // no business holding the window it came from, either.
                     ErrorLogWindowController.present(over: nil,
-                                                     summary: self.statusLabel.stringValue,
+                                                     summary: self.lastRunSummary,
                                                      entries: errors.map { ($0.path, $0.message) })
                 }
+                // The refusals go in the same window, whatever else happened, and stay out of the
+                // error count: a folder the mirror declined to delete because it held something the
+                // comparison never looked at is a decision, not a fault, and an ordinary
+                // `node_modules/` exclusion produces one on every single run.
+                if !refusals.isEmpty, !errors.isEmpty || stopped == false {
+                    ErrorLogWindowController.present(over: nil,
+                                                     summary: String(localized: "Kept back"),
+                                                     entries: refusals.map { ($0.path, $0.message) })
+                }
+                self.lastRunReport = runReport
                 self.compare() // re-scan to reflect the new state
             }
         }

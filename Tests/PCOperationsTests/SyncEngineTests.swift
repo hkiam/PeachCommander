@@ -125,7 +125,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let results = item(items, "a.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                          right: .localDir(right.path), toTrash: false)
+                                          right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("a.txt"), encoding: .utf8),
                        "hello")
@@ -136,7 +136,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let results = item(items, "b.txt").map { [SyncResult(action: .copyToLeft, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                   right: .localDir(right.path), toTrash: false)
+                                                   right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: left.appendingPathComponent("b.txt"), encoding: .utf8),
                        "world")
@@ -147,7 +147,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let results = item(items, "c.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                   right: .localDir(right.path), toTrash: false)
+                                                   right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("c.txt").path))
     }
@@ -158,7 +158,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let results = item(items, "moved.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                   right: .localDir(right.path), toTrash: false)
+                                                   right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("untouched.txt"), encoding: .utf8),
                        "keep me", "a file no action named was changed")
@@ -191,7 +191,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let results = item(items, "up.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("up.txt"), encoding: .utf8),
                        "upload me")
@@ -203,7 +203,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let results = item(items, "down.txt").map { [SyncResult(action: .copyToLeft, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: left.appendingPathComponent("down.txt"), encoding: .utf8),
                        "download me")
@@ -215,7 +215,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let results = item(items, "del.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("del.txt").path))
     }
@@ -225,11 +225,16 @@ final class SyncEngineTests: XCTestCase {
         let items = await SyncScanner.scan(left: remoteSide(left), right: remoteSide(right),
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let results = item(items, "f.txt").map { [SyncResult(action: .copyToLeft, item: $0)] } ?? []
-        let errors = await SyncExecutor.execute(results, left: remoteSide(left),
+        let report = await SyncExecutor.execute(results, left: remoteSide(left),
                                                 right: remoteSide(right), toTrash: false)
-        XCTAssertEqual(errors.count, 1)
-        XCTAssertTrue(errors[0].message.contains("server to another"), errors[0].message)
-        XCTAssertEqual(errors[0].path, "f.txt", "the failing item's path travels separately now")
+        // A refusal, not a failure: nothing broke, the engine declines this pair of sides. Reported
+        // as an error it was indistinguishable from a copy that went wrong.
+        XCTAssertEqual(report.errors, [])
+        XCTAssertEqual(report.refusals.count, 1)
+        XCTAssertTrue(report.refusals[0].message.contains("server to another"),
+                      report.refusals[0].message)
+        XCTAssertEqual(report.refusals[0].path, "f.txt", "the refused item's path travels with it")
+        XCTAssertFalse(report.completedEverything, "a refused plan reported as fully done")
     }
 
     func testUploadingOnlyTheFileStillCreatesItsFolderOnTheServer() async throws {
@@ -243,7 +248,7 @@ final class SyncEngineTests: XCTestCase {
         let fileOnly = item(items, "newdir/inner.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
         XCTAssertEqual(fileOnly.count, 1, "the file itself must be in the comparison")
         let errors = await SyncExecutor.execute(fileOnly, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("newdir/inner.txt"),
                                   encoding: .utf8), "deep")
@@ -414,7 +419,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let plan = item(items, "p.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
 
         let afterwards = await compare()
@@ -432,7 +437,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let plan = item(items, "d.txt").map { [SyncResult(action: .copyToLeft, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                                right: remoteSide(right), toTrash: false)
+                                                right: remoteSide(right), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertEqual(try modified(left.appendingPathComponent("d.txt")).timeIntervalSince1970,
                        old.timeIntervalSince1970, accuracy: 1)
@@ -454,7 +459,7 @@ final class SyncEngineTests: XCTestCase {
         let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
         XCTAssertEqual(plan.map(\.action), [.copyToRight])
         let errors = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                                right: .localDir(right.path), toTrash: false)
+                                                right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         var isDir: ObjCBool = false
         XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("empty").path,
@@ -526,14 +531,20 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
         let paths = (left.path, right.path)
-        let task = Task.detached { () -> [SyncError] in
+        let task = Task.detached { () -> SyncRunReport in
             await SyncExecutor.execute(plan, left: .localDir(paths.0), right: .localDir(paths.1),
                                        toTrash: false)
         }
         task.cancel()
-        let errors = await task.value
-        XCTAssertEqual(errors, [])
+        let report = await task.value
+        XCTAssertEqual(report.errors, [])
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: right.path), [])
+        // The run says it stopped, rather than the caller having to ask `Task.isCancelled` a second
+        // time — and it still accounts for every planned row, as "not attempted".
+        XCTAssertTrue(report.stopped)
+        XCTAssertEqual(report.outcomes.count, plan.count)
+        XCTAssertEqual(report.applied, 0)
+        XCTAssertFalse(report.completedEverything)
     }
 
     /// A file extracted from an archive keeps the entry's own timestamp, not the moment it was
@@ -545,7 +556,7 @@ final class SyncEngineTests: XCTestCase {
                                            mask: "*.*", withSubdirs: true, byContent: false)
         let plan = item(items, "in-zip.txt").map { [SyncResult(action: .copyToLeft, item: $0)] } ?? []
         let errors = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                                right: .zip(zip.path), toTrash: false)
+                                                right: .zip(zip.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         let entryDate = try XCTUnwrap(item(items, "in-zip.txt")?.rightModified)
         XCTAssertEqual(try modified(left.appendingPathComponent("in-zip.txt")).timeIntervalSince1970,
@@ -600,7 +611,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs(mask: "*.txt")
         let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                right: .localDir(right.path), toTrash: false)
+                                                right: .localDir(right.path), toTrash: false).errors
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old/kept.jpg").path),
                       "a file the mask excluded was deleted along with its folder")
@@ -630,7 +641,11 @@ final class SyncEngineTests: XCTestCase {
                                                 right: .localDir(right.path), toTrash: false)
         XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Stray/inside.txt").path),
                       "a file that was never compared was deleted with its folder")
-        XCTAssertEqual(errors.map(\.path), ["Stray"], "the kept folder was not reported")
+        // Kept back on purpose, and said so as a refusal rather than as a fault: with an ordinary
+        // `node_modules/` exclusion this fires on every mirror run, and as an error it made a
+        // wholly successful run report failures.
+        XCTAssertEqual(errors.errors, [], "a deliberate refusal was reported as a failure")
+        XCTAssertEqual(errors.refusals.map(\.path), ["Stray"], "the kept folder was not reported")
     }
 
     /// The same for "ignore hidden", which holds entries back by a different rule but leaves them in
@@ -654,7 +669,7 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
         let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
-                                                right: .localDir(right.path), toTrash: false)
+                                                right: .localDir(right.path), toTrash: false).errors
         XCTAssertEqual(errors, [])
         XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old").path),
                        "a folder this comparison covered completely was left behind")
@@ -1072,6 +1087,161 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertFalse(outcome.leftScope.isReliable)
         XCTAssertFalse(outcome.leftScope.provesAbsence(of: "anything"))
         XCTAssertFalse(outcome.rightScope.provesAbsence(of: "anything"))
+    }
+
+
+    // MARK: - The run says what it did
+
+    /// The invariant the whole report rests on, and the one that kills every unsound case at once:
+    /// a planned row that produced no outcome is a row nobody can say anything about. "It is not in
+    /// the error list" was never the same as "it happened".
+    func test_everyPlannedItemProducesExactlyOneOutcome() async throws {
+        try write("a", to: left, "one.txt")
+        try write("b", to: left, "sub/two.txt")
+        try write("c", to: right, "stray.txt")
+        let items = await scanBothDirs()
+        let plan = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
+            .filter { $0.action != .none }
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        XCTAssertEqual(report.outcomes.count, plan.count)
+        XCTAssertEqual(Set(report.outcomes.map(\.relativePath)),
+                       Set(plan.map(\.item.relativePath)))
+        XCTAssertTrue(report.completedEverything)
+        XCTAssertFalse(report.stopped)
+        XCTAssertEqual(report.applied, plan.count)
+    }
+
+    /// A local failure is reported against the relative path. It used to arrive as the leaf name, so
+    /// a failure at `a/b/x.txt` came back as `x.txt` and could not be matched to its row at all.
+    ///
+    /// Structural now rather than a rule each helper has to remember: the path travels on the
+    /// outcome, and a helper only supplies the message. Measured — putting the leaf name back into
+    /// `copyLocalToLocal` does not make this fail, because it can only spoil the message. That is
+    /// the point of the change, and the reason this test cannot be a live control for it.
+    func test_aLocalFailureReportsTheRelativePathAndNotTheLeafName() async throws {
+        try write("payload", to: left, "deep/inner/file.txt")
+        // A file where the destination's parent folder has to go: the copy cannot create it.
+        try "blocker".write(to: right.appendingPathComponent("deep"), atomically: true, encoding: .utf8)
+        let items = await scanBothDirs()
+        let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        let failed = report.errors.map(\.path)
+        XCTAssertFalse(failed.isEmpty, "the blocked copy was not reported at all")
+        XCTAssertTrue(failed.allSatisfy { $0.contains("/") || $0 == "deep" },
+                      "a failure came back as a leaf name: \(failed)")
+    }
+
+    /// Cancelling used to skip the archive rewrite entirely, so every file staged for the zip was
+    /// neither written nor mentioned — the run reported nothing about them at all. The flush runs
+    /// whatever happens, and each staged entry gets its own outcome.
+    func test_cancellingStillFlushesTheArchiveAndAccountsForEveryStagedEntry() async throws {
+        for i in 0..<6 { try write("x\(i)", to: left, "f\(i).txt") }
+        let zip = root.appendingPathComponent("target.zip")
+        try ZipWriter.create(at: zip, files: [(path: "placeholder.txt", data: Data("p".utf8))])
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: .zip(zip.path),
+                                           mask: "*.*", withSubdirs: true, byContent: false)
+        let plan = items.filter { $0.leftSize != nil && $0.rightSize == nil }
+            .map { SyncResult(action: .copyToRight, item: $0) }
+        XCTAssertEqual(plan.count, 6)
+        let paths = (left.path, zip.path)
+        let task = Task.detached { () -> SyncRunReport in
+            await SyncExecutor.execute(plan, left: .localDir(paths.0), right: .zip(paths.1),
+                                       toTrash: false)
+        }
+        task.cancel()
+        let report = await task.value
+        XCTAssertEqual(report.outcomes.count, plan.count,
+                       "a cancelled run left planned rows unaccounted for")
+        // Whatever the cancellation caught, no row may be left saying it was staged: either it went
+        // into the archive or it is named as not attempted.
+        XCTAssertFalse(report.outcomes.contains {
+            if case .notAttempted(let reason) = $0.status { return reason.contains("staged") }
+            return false
+        }, "a staged entry was never resolved")
+    }
+
+    /// A failed archive rewrite names every entry in the batch. It used to be one error with an
+    /// empty path, however many files were in it.
+    func test_aFailedArchiveRewriteNamesEveryEntryInTheBatch() async throws {
+        for i in 0..<4 { try write("x\(i)", to: left, "f\(i).txt") }
+        // A "zip" that is a directory: ZipWriter cannot write over it, so the rewrite fails.
+        let notAZip = root.appendingPathComponent("target.zip", isDirectory: true)
+        try FileManager.default.createDirectory(at: notAZip, withIntermediateDirectories: true)
+        let plan = (0..<4).map { i in
+            SyncResult(action: .copyToRight,
+                       item: SyncItem(relativePath: "f\(i).txt", isDirectory: false,
+                                      leftSize: 2, leftModified: Date(),
+                                      rightSize: nil, rightModified: nil))
+        }
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .zip(notAZip.path), toTrash: false)
+        XCTAssertEqual(report.outcomes.count, 4)
+        XCTAssertEqual(Set(report.errors.map(\.path)),
+                       Set((0..<4).map { "f\($0).txt" }),
+                       "the batch failure did not name its entries: \(report.errors.map(\.path))")
+        XCTAssertFalse(report.errors.contains { $0.path.isEmpty },
+                       "an error came back with no path at all")
+    }
+
+    /// A folder "copied" into an archive is neither a success nor a failure — it is nothing to do,
+    /// and it used to be reported as neither, so a caller counting either was wrong.
+    func test_aFolderCopiedIntoAnArchiveIsReportedAsNothingToDo() async throws {
+        let zip = root.appendingPathComponent("t.zip")
+        try ZipWriter.create(at: zip, files: [(path: "p.txt", data: Data("p".utf8))])
+        let plan = [SyncResult(action: .copyToRight,
+                               item: SyncItem(relativePath: "Folder", isDirectory: true,
+                                              leftSize: 0, leftModified: Date(),
+                                              rightSize: nil, rightModified: nil))]
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .zip(zip.path), toTrash: false)
+        XCTAssertEqual(report.outcomes.count, 1)
+        guard case .noOp = report.outcomes[0].status else {
+            return XCTFail("expected nothing-to-do, got \(report.outcomes[0].status)")
+        }
+        XCTAssertTrue(report.completedEverything, "nothing to do is not a failure")
+    }
+
+    /// What a caller recording the two sides needs, and cannot take from the source:
+    /// `copyLocalToLocal` sets no timestamp at all, so the destination's date is the moment of the
+    /// write. Asked for explicitly, because on a server it is a round trip per file.
+    func test_theOutcomeCarriesTheDestinationsOwnSizeAndTimestampWhenAsked() async throws {
+        try write("hello there", to: left, "a.txt")
+        let items = await scanBothDirs()
+        let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
+
+        let quiet = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                               right: .localDir(right.path), toTrash: false)
+        guard case .copied(let s1, let m1) = quiet.outcomes[0].status else {
+            return XCTFail("expected a copy, got \(quiet.outcomes[0].status)")
+        }
+        XCTAssertNil(s1, "the destination was read back although nobody asked")
+        XCTAssertNil(m1)
+
+        try FileManager.default.removeItem(at: right.appendingPathComponent("a.txt"))
+        let observed = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                  right: .localDir(right.path), toTrash: false,
+                                                  observeDestinations: true)
+        guard case .copied(let s2, let m2) = observed.outcomes[0].status else {
+            return XCTFail("expected a copy, got \(observed.outcomes[0].status)")
+        }
+        XCTAssertEqual(s2, 11)
+        let onDisk = try FileManager.default
+            .attributesOfItem(atPath: right.appendingPathComponent("a.txt").path)[.modificationDate] as? Date
+        XCTAssertEqual(m2?.timeIntervalSince1970 ?? -1, onDisk?.timeIntervalSince1970 ?? -2,
+                       accuracy: 0.001, "the timestamp reported was not the destination's own")
+    }
+
+    /// A delete says whether it went to the Trash, which is the difference between recoverable and
+    /// not — and the only place the app can state it per item.
+    func test_aDeleteSaysWhetherItWentToTheTrash() async throws {
+        try write("gone", to: right, "c.txt")
+        let items = await scanBothDirs()
+        let plan = item(items, "c.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        XCTAssertEqual(report.outcomes.map(\.status), [.deleted(toTrash: false)])
     }
 
 }

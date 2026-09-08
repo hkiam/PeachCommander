@@ -664,6 +664,108 @@ public enum SyncScanner {
 
 }
 
+/// What became of one planned item.
+///
+/// The executor used to answer `[SyncError]` and nothing else, so a successful item left no trace at
+/// all and success was only inferable as "absent from the error list". That inference does not hold:
+/// a cancelled run returned the same list as a finished one, a cancelled copy loop skipped the
+/// batched archive rewrite so staged files were neither written nor reported, a failed rewrite was
+/// one error with an empty path however many entries were in it, and the mirror's deliberate
+/// "kept: …" refusal sat in the same list as an I/O failure. The window read an empty list as
+/// **"Done — trees synchronized."**
+///
+/// So every planned item now says what happened to it, and the invariant worth testing is that
+/// there is exactly one of these per row of the plan. `CopyEngine` is the precedent — it returns the
+/// paths it processed *and* keeps `skipped`, because `MoveEngine` once read `processed` alone as
+/// permission to delete the source tree.
+public enum SyncStatus: Sendable, Equatable {
+    /// The bytes arrived. The destination's own size and timestamp when the caller asked for them to
+    /// be read back — nil when it did not, and nil for an archive destination, where finding out
+    /// would mean re-reading the rewritten zip. Read back rather than assumed: `upload` sets the
+    /// remote timestamp with `try?` because plain FTP has no way to, `copyLocalToLocal` never sets
+    /// one, and a caller that recorded the *source's* date as the destination's would be wrong about
+    /// every file on such a side, on every run.
+    case copied(destinationSize: Int64?, destinationModified: Date?)
+    case deleted(toTrash: Bool)
+    /// Deliberately not done, and not a failure: the mirror's folder guard, a path that would be
+    /// written outside its root, a pair of sides this engine does not support.
+    case refused(reason: String)
+    case failed(message: String)
+    /// The run stopped before reaching this item, or reached it and could not finish the batch it
+    /// belonged to.
+    case notAttempted(reason: String)
+    /// Nothing to do, and nothing wrong — a directory "copied" into an archive, where the folder is
+    /// implicit in its members' paths.
+    case noOp(reason: String)
+}
+
+public struct SyncItemOutcome: Sendable, Equatable {
+    public let relativePath: String
+    public let action: SyncAction
+    public let status: SyncStatus
+
+    public init(relativePath: String, action: SyncAction, status: SyncStatus) {
+        self.relativePath = relativePath
+        self.action = action
+        self.status = status
+    }
+}
+
+/// What a run did, item by item.
+public struct SyncRunReport: Sendable {
+    /// One per row of the plan, in the order the plan was carried out.
+    public let outcomes: [SyncItemOutcome]
+    /// The run was called off. Answered by the run itself rather than left to the caller to guess
+    /// from `Task.isCancelled`, which it used to have to.
+    public let stopped: Bool
+
+    public init(outcomes: [SyncItemOutcome], stopped: Bool) {
+        self.outcomes = outcomes
+        self.stopped = stopped
+    }
+
+    /// The failures, in the shape the existing callers take.
+    ///
+    /// Only `.failed`. A refusal is not a failure — with an ordinary `node_modules/` exclusion in
+    /// play the mirror's folder guard fires on every run, and reporting that as an error made a
+    /// wholly successful run say "Completed with 3 error(s)".
+    public var errors: [SyncError] {
+        outcomes.compactMap { outcome in
+            guard case .failed(let message) = outcome.status else { return nil }
+            return SyncError(path: outcome.relativePath, message: message)
+        }
+    }
+
+    /// The refusals, separately, because they are worth telling the user about in different words.
+    public var refusals: [SyncError] {
+        outcomes.compactMap { outcome in
+            guard case .refused(let reason) = outcome.status else { return nil }
+            return SyncError(path: outcome.relativePath, message: reason)
+        }
+    }
+
+    /// Items that actually happened.
+    public var applied: Int {
+        outcomes.count { outcome in
+            switch outcome.status {
+            case .copied, .deleted: return true
+            default: return false
+            }
+        }
+    }
+
+    /// Whether every planned item was carried out. The only honest basis for saying a run finished
+    /// cleanly — an empty error list is not one.
+    public var completedEverything: Bool {
+        !stopped && outcomes.allSatisfy { outcome in
+            switch outcome.status {
+            case .copied, .deleted, .noOp: return true
+            case .refused, .failed, .notAttempted: return false
+            }
+        }
+    }
+}
+
 /// Executes classified sync actions against two sides (local dirs and/or a zip).
 /// Copies into a zip are batched into a single ArchiveEditor.add rewrite; extraction
 /// out of a zip writes files locally. Deleting inside a zip is not supported (F-193
@@ -689,11 +791,17 @@ public enum SyncExecutor {
     /// Honours `Task.isCancelled` between items, so a long run can be called off; what has already
     /// been copied stays copied — each item is finished before the next is started, so stopping
     /// leaves a partial sync rather than a partial file.
+    /// Carry out a classified plan and say, item by item, what became of each row.
+    ///
+    /// - Parameter observeDestinations: Read each destination's own size and timestamp back after
+    ///   writing it. Off by default because on a server it is a round trip per file; on for a caller
+    ///   that has to *record* what the two sides now look like, which cannot be taken from the
+    ///   source — `upload` sets the remote timestamp with `try?` because plain FTP has no way to,
+    ///   and `copyLocalToLocal` sets none at all.
     public static func execute(_ results: [SyncResult], left: SyncSide, right: SyncSide,
-                               toTrash: Bool,
-                               progress: (@Sendable (Int, Int) -> Void)? = nil) async -> [SyncError] {
+                               toTrash: Bool, observeDestinations: Bool = false,
+                               progress: (@Sendable (Int, Int) -> Void)? = nil) async -> SyncRunReport {
         let fm = FileManager.default
-        var errors: [SyncError] = []
         var zipAdds: [(localPath: String, arcPath: String)] = []   // local → zip, batched
         var zipDeletes: [String] = []                              // entries to delete from the zip (F-192)
 
@@ -727,43 +835,56 @@ public enum SyncExecutor {
         /// matches on size and date unless told otherwise — sees a file that is newer on the far
         /// side and offers to copy it back. Measured before this was passed: a sync onto a server
         /// answered `copyToLeft` for the file it had just uploaded, every run, for ever.
-        func copy(rel: String, isDir: Bool, src: SyncSide, dst: SyncSide, modified: Date?) async {
+        func copy(rel: String, isDir: Bool, src: SyncSide, dst: SyncSide,
+                  modified: Date?) async -> SyncStatus {
             switch (src, dst) {
             case (.localDir, .localDir):
-                copyLocalToLocal(local(src, rel), local(dst, rel), isDir: isDir)
+                return copyLocalToLocal(local(src, rel), local(dst, rel), isDir: isDir)
             case (.localDir, .zip):
-                if !isDir { zipAdds.append((localPath: local(src, rel), arcPath: rel)) }
-                // Empty-dir entries are implicit via child arc paths; skip standalone dirs.
+                guard !isDir else {
+                    // Empty-dir entries are implicit via child arc paths; a standalone directory has
+                    // nothing to write. Said out loud rather than left as a silent nothing, which is
+                    // what it was: neither success nor failure, so a caller counting either was wrong.
+                    return .noOp(reason: "a folder is implicit in its members' paths inside an archive")
+                }
+                zipAdds.append((localPath: local(src, rel), arcPath: rel))
+                // Provisional: nothing is in the archive until the one rewrite below, which resolves
+                // every staged entry to its own outcome.
+                return .notAttempted(reason: "staged for the archive rewrite")
             case (.zip(let url), .localDir):
-                extractFromZip(url, rel: rel, to: local(dst, rel), isDir: isDir)
+                return extractFromZip(url, rel: rel, to: local(dst, rel), isDir: isDir)
             case (.localDir(let dir), .remote(let r)):
-                await upload(from: (dir as NSString).appendingPathComponent(rel), rel: rel,
-                             to: r, isDir: isDir, modified: modified)
+                return await upload(from: (dir as NSString).appendingPathComponent(rel), rel: rel,
+                                    to: r, isDir: isDir, modified: modified)
             case (.remote(let r), .localDir(let dir)):
-                await download(rel: rel, from: r, toLocalRoot: dir, isDir: isDir, modified: modified)
+                return await download(rel: rel, from: r, toLocalRoot: dir, isDir: isDir,
+                                      modified: modified)
             case (.zip, .zip):
-                errors.append(SyncError(path: rel, message: "archive-to-archive sync not supported"))
+                return .refused(reason: "archive-to-archive sync not supported")
             case (.remote, .remote):
                 // Not a limitation worth hiding: the bytes would go down and up again through this
                 // machine, and neither FTP nor SFTP is asked to move them directly (that is FXP, F-216).
-                errors.append(SyncError(path: rel, message: "syncing one server to another is not supported"))
+                return .refused(reason: "syncing one server to another is not supported")
             case (.zip, .remote), (.remote, .zip):
-                errors.append(SyncError(path: rel, message: "syncing an archive with a server is not supported"))
+                return .refused(reason: "syncing an archive with a server is not supported")
             }
         }
 
         /// Local file → server. Written through the VFS write stream in chunks, so a large file does
         /// not have to fit in memory.
         func upload(from srcPath: String, rel: String, to r: RemoteSyncSource, isDir: Bool,
-                    modified: Date?) async {
+                    modified: Date?) async -> SyncStatus {
             do {
-                if isDir { try await r.fs.mkdir(r.vpath(rel)); return }
+                if isDir {
+                    try await r.fs.mkdir(r.vpath(rel))
+                    return .copied(destinationSize: nil, destinationModified: nil)
+                }
                 // The parent must exist: a server does not create it on the way, and a sync of a new
                 // subtree copies the folder before its files only because `creates` is ordered that way.
                 let parent = (rel as NSString).deletingLastPathComponent
                 if !parent.isEmpty { try? await r.fs.mkdir(r.vpath(parent)) }
                 guard let handle = FileHandle(forReadingAtPath: srcPath) else {
-                    errors.append(SyncError(path: rel, message: "cannot read")); return
+                    return .failed(message: "cannot read")
                 }
                 defer { try? handle.close() }
                 let stream = try await r.fs.openWrite(r.vpath(rel),
@@ -780,7 +901,14 @@ public enum SyncExecutor {
                 if let modified {
                     try? await r.fs.setAttributes(r.vpath(rel), attributes: VFSAttributes(modified: modified))
                 }
-            } catch { errors.append(SyncError(path: rel, message: error.localizedDescription)) }
+                // Asked of the server rather than assumed, and only when the caller wants it: it is a
+                // round trip per file. What it answers is the one thing a caller cannot work out —
+                // whether the timestamp above actually stuck.
+                if observeDestinations, let entry = try? await r.fs.stat(r.vpath(rel)) {
+                    return .copied(destinationSize: entry.size, destinationModified: entry.modified)
+                }
+                return .copied(destinationSize: nil, destinationModified: nil)
+            } catch { return .failed(message: error.localizedDescription) }
         }
 
         /// Server → local file.
@@ -790,14 +918,14 @@ public enum SyncExecutor {
         /// the folder the user picked. The scanner already refuses such a component, and this refuses
         /// it again — the two are far enough apart that one of them will be edited alone one day.
         func download(rel: String, from r: RemoteSyncSource, toLocalRoot root: String, isDir: Bool,
-                      modified: Date?) async {
+                      modified: Date?) async -> SyncStatus {
             guard let dst = safeLocalPath(rel, under: root) else {
-                errors.append(SyncError(path: rel, message: "refused — it would be written outside the folder")); return
+                return .refused(reason: "it would be written outside the folder")
             }
             do {
                 if isDir {
                     try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
-                    return
+                    return observed(dst)
                 }
                 let data = try await SyncScanner.readAll(r, rel)
                 try fm.createDirectory(atPath: (dst as NSString).deletingLastPathComponent,
@@ -808,7 +936,20 @@ public enum SyncExecutor {
                 if let modified {
                     try? fm.setAttributes([.modificationDate: modified], ofItemAtPath: dst)
                 }
-            } catch { errors.append(SyncError(path: rel, message: error.localizedDescription)) }
+                return observed(dst)
+            } catch { return .failed(message: error.localizedDescription) }
+        }
+
+        /// A local destination's own size and timestamp, when the caller asked to have them read
+        /// back. Not the source's: `copyLocalToLocal` sets no timestamp at all, so a caller that
+        /// recorded the source's date here would be wrong about every file it copied.
+        func observed(_ path: String) -> SyncStatus {
+            guard observeDestinations,
+                  let attrs = try? fm.attributesOfItem(atPath: path) else {
+                return .copied(destinationSize: nil, destinationModified: nil)
+            }
+            return .copied(destinationSize: (attrs[.size] as? NSNumber)?.int64Value,
+                           destinationModified: attrs[.modificationDate] as? Date)
         }
 
         /// `rel` under `root`, or nil if any component of it would leave `root`.
@@ -823,7 +964,7 @@ public enum SyncExecutor {
             return current == root ? nil : current
         }
 
-        func copyLocalToLocal(_ src: String, _ dst: String, isDir: Bool) {
+        func copyLocalToLocal(_ src: String, _ dst: String, isDir: Bool) -> SyncStatus {
             do {
                 if isDir {
                     try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
@@ -833,19 +974,23 @@ public enum SyncExecutor {
                     if fm.fileExists(atPath: dst) { try fm.removeItem(atPath: dst) }
                     try fm.copyItem(atPath: src, toPath: dst)
                 }
-            } catch { errors.append(SyncError(path: (src as NSString).lastPathComponent, message: error.localizedDescription)) }
+                return observed(dst)
+                // The failure used to be reported as the source's `lastPathComponent`, so a failure
+                // at `a/b/x.txt` arrived as `x.txt` and could not be matched back to its row. The
+                // caller supplies the relative path now, in one place for every helper.
+            } catch { return .failed(message: error.localizedDescription) }
         }
 
-        func extractFromZip(_ url: String, rel: String, to dst: String, isDir: Bool) {
+        func extractFromZip(_ url: String, rel: String, to dst: String, isDir: Bool) -> SyncStatus {
             do {
                 if isDir {
                     try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
-                    return
+                    return observed(dst)
                 }
                 guard let reader = ZipReader(fileURL: URL(fileURLWithPath: url)),
                       let entry = reader.entries.first(where: {
                           var s = $0.path; while s.hasSuffix("/") { s.removeLast() }; return s == rel }) else {
-                    errors.append(SyncError(path: rel, message: "not found in archive")); return
+                    return .failed(message: "not found in archive")
                 }
                 let data = try reader.data(for: entry)
                 try fm.createDirectory(atPath: (dst as NSString).deletingLastPathComponent,
@@ -858,7 +1003,8 @@ public enum SyncExecutor {
                 if let modified = entry.modified {
                     try? fm.setAttributes([.modificationDate: modified], ofItemAtPath: dst)
                 }
-            } catch { errors.append(SyncError(path: rel, message: error.localizedDescription)) }
+                return observed(dst)
+            } catch { return .failed(message: error.localizedDescription) }
         }
 
         /// Does this directory still hold something the comparison never looked at?
@@ -899,27 +1045,31 @@ public enum SyncExecutor {
             }
         }
 
-        func remove(_ side: SyncSide, _ rel: String, isDir: Bool) async {
+        func remove(_ side: SyncSide, _ rel: String, isDir: Bool) async -> SyncStatus {
             if isDir, await holdsUncomparedContent(side, rel) {
-                errors.append(SyncError(path: rel,
-                                        message: "kept: it holds something this comparison did not include"))
-                return
+                // A refusal, not a failure. With an ordinary `node_modules/` exclusion this fires on
+                // every mirror run, and reporting it as an error made a wholly successful run say
+                // "Completed with N error(s)".
+                return .refused(reason: "kept: it holds something this comparison did not include")
             }
             if case .zip = side {                         // batched into one rewrite below (F-192)
-                zipDeletes.append(rel); return
+                zipDeletes.append(rel)
+                return .notAttempted(reason: "staged for the archive rewrite")
             }
             if case .remote(let r) = side {
                 // `toTrash` cannot be honoured here: a server has no Trash, so this is permanent. The
                 // dialog says so before the actions run rather than reporting it afterwards.
-                do { try await r.fs.delete(r.vpath(rel)) }
-                catch { errors.append(SyncError(path: rel, message: error.localizedDescription)) }
-                return
+                do { try await r.fs.delete(r.vpath(rel)); return .deleted(toTrash: false) }
+                catch { return .failed(message: error.localizedDescription) }
             }
             let path = local(side, rel)
             do {
                 if toTrash { try fm.trashItem(at: URL(fileURLWithPath: path), resultingItemURL: nil) }
                 else { try fm.removeItem(atPath: path) }
-            } catch { errors.append(SyncError(path: (path as NSString).lastPathComponent, message: error.localizedDescription)) }
+                return .deleted(toTrash: toTrash)
+                // Reported as the relative path, not the leaf: a delete that failed at `a/b/x.txt`
+                // used to arrive as `x.txt`, which no caller could match back to its row.
+            } catch { return .failed(message: error.localizedDescription) }
         }
 
         // Create dirs (shallowest first), then copy files, then delete (deepest first).
@@ -932,39 +1082,91 @@ public enum SyncExecutor {
         let ordered = creates + fileCopies
         let total = ordered.count + deletes.count
         var done = 0
+        var stopped = false
+
+        // One outcome per row, in the order the plan is carried out, plus an index so the two
+        // archive rewrites below can resolve the entries they staged.
+        var outcomes: [SyncItemOutcome] = []
+        var indexOf: [String: Int] = [:]
+        func record(_ r: SyncResult, _ status: SyncStatus) {
+            indexOf[r.item.relativePath] = outcomes.count
+            outcomes.append(SyncItemOutcome(relativePath: r.item.relativePath,
+                                            action: r.action, status: status))
+        }
+
         for r in ordered {
-            if Task.isCancelled { return errors }
+            // `break`, not `return`. Returning here skipped the archive rewrite below entirely, so
+            // every file already staged for the zip was neither written nor mentioned — the run
+            // reported nothing about them at all.
+            if Task.isCancelled { stopped = true; break }
             progress?(done, total)
             done += 1
             let rel = r.item.relativePath
             // The timestamp travels with the direction: whichever side is being read from is the one
             // whose date the copy should end up carrying.
             if r.action == .copyToRight {
-                await copy(rel: rel, isDir: r.item.isDirectory, src: left, dst: right,
-                           modified: r.item.leftModified)
+                record(r, await copy(rel: rel, isDir: r.item.isDirectory, src: left, dst: right,
+                                     modified: r.item.leftModified))
             } else {
-                await copy(rel: rel, isDir: r.item.isDirectory, src: right, dst: left,
-                           modified: r.item.rightModified)
+                record(r, await copy(rel: rel, isDir: r.item.isDirectory, src: right, dst: left,
+                                     modified: r.item.rightModified))
             }
         }
-        // One rewrite for all files copied into the zip.
+        // One rewrite for all files copied into the zip — and it runs even after a cancellation, so
+        // that what was staged either lands or is named.
         if !zipAdds.isEmpty, let zipURL = (left.isZip ? left : right).path as String? {
-            do { try ArchiveEditor.add(to: URL(fileURLWithPath: zipURL), entries: zipAdds) }
-            catch { errors.append(SyncError(path: "", message: "archive update failed: \(error.localizedDescription)")) }
+            let staged = zipAdds.map(\.arcPath)
+            do {
+                try ArchiveEditor.add(to: URL(fileURLWithPath: zipURL), entries: zipAdds)
+                resolve(staged, in: &outcomes, indexOf,
+                        to: .copied(destinationSize: nil, destinationModified: nil))
+            } catch {
+                // Every entry by name. This used to be one error with an empty path, however many
+                // files were in the batch.
+                resolve(staged, in: &outcomes, indexOf,
+                        to: .failed(message: "archive update failed: \(error.localizedDescription)"))
+            }
         }
-        for r in deletes {
-            if Task.isCancelled { return errors }
-            progress?(done, total)
-            done += 1
-            await remove(r.action == .deleteRight ? right : left, r.item.relativePath,
-                         isDir: r.item.isDirectory)
+        if !stopped {
+            for r in deletes {
+                if Task.isCancelled { stopped = true; break }
+                progress?(done, total)
+                done += 1
+                record(r, await remove(r.action == .deleteRight ? right : left, r.item.relativePath,
+                                       isDir: r.item.isDirectory))
+            }
         }
         progress?(total, total)
         // One rewrite for all entries deleted from the zip (F-192).
         if !zipDeletes.isEmpty, let zipURL = (left.isZip ? left : right).path as String? {
-            do { try ArchiveEditor.remove(from: URL(fileURLWithPath: zipURL), paths: zipDeletes) }
-            catch { errors.append(SyncError(path: "", message: "archive delete failed: \(error.localizedDescription)")) }
+            do {
+                try ArchiveEditor.remove(from: URL(fileURLWithPath: zipURL), paths: zipDeletes)
+                resolve(zipDeletes, in: &outcomes, indexOf, to: .deleted(toTrash: false))
+            } catch {
+                resolve(zipDeletes, in: &outcomes, indexOf,
+                        to: .failed(message: "archive delete failed: \(error.localizedDescription)"))
+            }
         }
-        return errors
+
+        // Anything the plan named and the run never reached. The invariant this upholds — one
+        // outcome per planned row — is what makes the report answerable at all: "it is not in the
+        // error list" was never the same as "it happened".
+        let reached = Set(outcomes.map(\.relativePath))
+        for r in ordered + deletes where !reached.contains(r.item.relativePath) {
+            outcomes.append(SyncItemOutcome(relativePath: r.item.relativePath, action: r.action,
+                                            status: .notAttempted(reason: stopped ? "cancelled"
+                                                                                  : "not reached")))
+        }
+        return SyncRunReport(outcomes: outcomes, stopped: stopped)
+    }
+
+    /// Give every entry a batch staged its real outcome.
+    private static func resolve(_ paths: [String], in outcomes: inout [SyncItemOutcome],
+                                _ indexOf: [String: Int], to status: SyncStatus) {
+        for path in paths {
+            guard let i = indexOf[path], outcomes.indices.contains(i) else { continue }
+            outcomes[i] = SyncItemOutcome(relativePath: outcomes[i].relativePath,
+                                          action: outcomes[i].action, status: status)
+        }
     }
 }

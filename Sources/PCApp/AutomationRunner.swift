@@ -2252,10 +2252,14 @@ extension MainWindowController {
             let actionable = results.filter { $0.action != .none }
             report += "actions=" + actionable.map { "\($0.item.relativePath):\($0.action)" }
                 .sorted().joined(separator: ",") + "\n"
-            let errors = await SyncExecutor.execute(actionable, left: .localDir(localDir),
-                                                    right: right, toTrash: false)
+            let runReport = await SyncExecutor.execute(actionable, left: .localDir(localDir),
+                                                       right: right, toTrash: false)
+            let errors = runReport.errors
             report += "errors=" + (errors.isEmpty ? "none"
                 : errors.map { "\($0.path): \($0.message)" }.joined(separator: "; ")) + "\n"
+            // One outcome per planned row is the invariant the executor now upholds; a scenario that
+            // sees fewer has caught something no error list would have shown.
+            report += "outcomes=\(runReport.outcomes.count) applied=\(runReport.applied)\n"
         } catch {
             report += "error=\(error)\n"
         }
