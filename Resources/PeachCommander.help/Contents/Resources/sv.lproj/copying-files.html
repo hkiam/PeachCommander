@@ -76,6 +76,7 @@
 <li>Kopiering mellan två platser på samma disk använder en snabb klon när disken stöder det, så stora filer kopieras nästan omedelbart och använder lite extra utrymme.</li>
 <li>Mappar kopieras med allt som finns i dem.</li>
 <li>För att flytta filer istället för att kopiera dem, använd F6. För att titta på eller hantera köade jobb, öppna hanteraren för bakgrundsöverföringar med Cmd+Shift+B.</li>
+<li><strong>Det är riskfritt att avbryta.</strong> En kopiering som ersätter en fil skriver först vid sidan av och tar dess plats i ett steg på slutet: ett avbrott eller ett fel halvvägs lämnar filen som redan fanns orörd, i stället för varken den gamla eller den nya. En flytt mellan volymer, eller en som slår samman mappar, tar bort källan först när kopian är komplett; hoppades något över ligger källan kvar och du har båda att jämföra.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytta och byta namn</a></li><li><a href="background-transfers.html">Bakgrundsöverföringar</a></li></ul></section>
 </main>

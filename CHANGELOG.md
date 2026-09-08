@@ -14,6 +14,33 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **A recursive permission change can be watched and stopped.** Over a home folder that walk runs for
+  minutes, and it was the one operation in the app with nothing to see and no way out. It goes through
+  the transfer queue now — the same progress window, Stop button and pause the copies get — with the
+  total counted up front the way a delete counts one. Cancelling returns the counts as they stand
+  rather than unwinding: a chmod cannot be taken back.
+
+- **The comparison tolerance is on screen.** `SyncOptions` has carried it since the day it was
+  written and nothing could set it: two seconds, for everyone, for ever. Two is right for FAT, which
+  stores timestamps to that precision, and wrong for a share whose clock is a few seconds off its
+  client — an ordinary thing for a share to be, and there the whole tree reads as changed. Loading a
+  preset now also restores *Ignore a 1-hour difference* and *Case sensitive*, which the preset store
+  had been round-tripping all along while the window quietly dropped back to the defaults.
+
+### Changed
+
+- **Base64 encoding and decoding stream.** They read the file whole, built a string a third larger
+  again and copied that to bytes — several times the file's size in memory at once, one keystroke away
+  in the panel. Measured on a 200 MB file: 744 MB resident before, 207 MB after, and about 207 MB of
+  that is file cache in both runs, so the difference of roughly half a gigabyte is what was actually
+  being held. The output is byte-identical, which is what the new encoder's test is for: every length
+  from 0 to 400, in five chunk sizes, against the whole-buffer result. `decodeAuto` decides the scheme
+  from the first 8 KB and then streams; uuencode and xxencode still read whole, deliberately — their
+  frame carries a length byte per line inside a `begin`/`end` envelope, and they are legacy formats
+  used on small payloads.
+
 ### Fixed
 
 The last of the paths that touch data: the attribute, checksum and encode/decode engines, plus

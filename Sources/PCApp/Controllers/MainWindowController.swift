@@ -9227,11 +9227,35 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         guard !paths.isEmpty else { return nil }
         let vpaths = paths.map { VFSPath(filesystemId: fs.scheme, path: $0) }
-        let r = await AttributeEngine.apply(posixMode: mode, modified: modified, bsdFlags: bsdFlags,
-                                            ownerName: ownerName, groupName: groupName,
-                                            to: vpaths, on: fs, recursive: recursive)
+        guard recursive else {
+            // A handful of items is done where the dialog stands; a progress window for three files
+            // would be in the way.
+            let r = await AttributeEngine.apply(posixMode: mode, modified: modified, bsdFlags: bsdFlags,
+                                                ownerName: ownerName, groupName: groupName,
+                                                to: vpaths, on: fs, recursive: false)
+            await reload()
+            return r
+        }
+        // Recursive: through the transfer queue, which is what gives it a progress window with a
+        // Stop button and a pause. Over a home folder this walk runs for minutes, and it used to run
+        // with nothing to see and no way out — the one operation in the app that could not be
+        // stopped. `.custom` exists for exactly this: an operation the caller implements, run through
+        // the same queue so it reports like the others.
+        let counts = CountsBox()
+        let attrs = (mode: mode, modified: modified, flags: bsdFlags, owner: ownerName, group: groupName)
+        let filesystem = fs
+        await runTransfer(.custom(run: { control, progress in
+            let r = await AttributeEngine.apply(posixMode: attrs.mode, modified: attrs.modified,
+                                                bsdFlags: attrs.flags, ownerName: attrs.owner,
+                                                groupName: attrs.group, to: vpaths, on: filesystem,
+                                                recursive: true, control: control, progress: progress)
+            counts.record(changed: r.changed, failed: r.failed)
+            // The selection is unmarked only for a run that had nothing go wrong; a partial one
+            // leaves the marks where the user can act on them.
+            return r.failed == 0 ? paths : []
+        }), title: String(localized: "Change Attributes"))
         await reload()
-        return r
+        return counts.value
     }
 
     /// Rows for the file-list formatter. `namesFilter` nil = all entries (excluding "..").
@@ -11084,4 +11108,16 @@ private let archivePasswordService = "PeachCommander.archive"
         try? store.setPassword(result.password, service: archivePasswordService, account: localPath)
     }
     return result.password
+}
+
+/// Carries the counts back out of a queued operation's `@Sendable` closure.
+///
+/// The closure runs off the main actor and returns the processed paths, which is what the queue
+/// needs; the two numbers the summary is written from have nowhere else to go.
+final class CountsBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var changed = 0
+    private var failed = 0
+    func record(changed c: Int, failed f: Int) { lock.lock(); changed = c; failed = f; lock.unlock() }
+    var value: (changed: Int, failed: Int) { lock.lock(); defer { lock.unlock() }; return (changed, failed) }
 }

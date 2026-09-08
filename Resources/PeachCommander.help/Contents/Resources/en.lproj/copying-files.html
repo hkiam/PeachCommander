@@ -76,6 +76,7 @@
 <li>Copying between two locations on the same disk uses a fast clone when the disk supports it, so large files copy almost instantly and use little extra space.</li>
 <li>Folders are copied with everything inside them.</li>
 <li>To move files instead of copying them, use F6. To watch or manage queued jobs, open the background transfer manager with Cmd+Shift+B.</li>
+<li><strong>Stopping is safe.</strong> A copy that replaces a file writes beside it first and takes its place in one step at the end, so cancelling or a failure part-way leaves the file that was already there untouched rather than neither version. A move across volumes, or one that merges folders, only removes the source once the copy is complete — if anything was skipped, the source stays and you have both to compare.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Moving &amp; renaming</a></li><li><a href="background-transfers.html">Background transfers</a></li></ul></section>
 </main>

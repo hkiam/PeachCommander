@@ -173,6 +173,38 @@ final class AttributeEngineTests: XCTestCase {
         XCTAssertEqual(mode("outside.txt"), 0o644, "a listing name reached outside the tree")
         XCTAssertGreaterThan(result.failed, 0, "the refused name was not reported: \(result)")
     }
+
+    // MARK: - Watching it, and stopping it
+
+    /// Recursive over a home folder this walk runs for minutes, and it used to run with nothing to
+    /// see and no way out — the one operation in the app that could not be stopped.
+    func test_aRecursiveRunReportsItsProgressAgainstACountedTotal() async throws {
+        try write("watched/a.txt")
+        try write("watched/sub/b.txt")
+        let top = VFSPath(filesystemId: "file", path: dir.appendingPathComponent("watched").path)
+        let seen = ProgressBox()
+
+        let result = await AttributeEngine.apply(posixMode: 0o700, modified: nil, to: [top], on: fs,
+                                                 recursive: true, control: nil,
+                                                 progress: { seen.record($0) })
+        XCTAssertEqual(result.changed, 4)                 // watched, a.txt, sub, sub/b.txt
+        XCTAssertEqual(seen.total, 4, "the total was not counted up front")
+        XCTAssertEqual(seen.lastDone, 4, "the last report did not reach the total")
+        XCTAssertFalse(seen.names.isEmpty, "no item was ever named")
+    }
+
+    /// Cancelling returns the counts as they stand rather than throwing: a chmod cannot be taken back
+    /// by unwinding, so what is done is done and the caller is told how much that was.
+    func test_aCancelledRunStopsAndReportsWhatItDid() async throws {
+        for i in 0..<40 { try write("many/f\(i).txt") }
+        let top = VFSPath(filesystemId: "file", path: dir.appendingPathComponent("many").path)
+        let control = OperationControl()
+        await control.cancel()
+
+        let result = await AttributeEngine.apply(posixMode: 0o700, modified: nil, to: [top], on: fs,
+                                                 recursive: true, control: control)
+        XCTAssertEqual(result.changed, 0, "a cancelled run changed something: \(result)")
+    }
 }
 
 /// A filesystem whose listing offers a name with a separator in it — what a crafted server response
@@ -217,4 +249,18 @@ private final class HostileNameFS: VirtualFileSystem, @unchecked Sendable {
     }
     func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? { nil }
     func localFileIfAvailable(_ path: VFSPath) async throws -> URL? { nil }
+}
+
+
+/// Collects the progress reports off whatever context they arrive on.
+private final class ProgressBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var reports: [OpProgress] = []
+    func record(_ p: OpProgress) { lock.lock(); reports.append(p); lock.unlock() }
+    var total: Int { lock.lock(); defer { lock.unlock() }; return reports.last?.filesTotal ?? 0 }
+    var lastDone: Int { lock.lock(); defer { lock.unlock() }; return reports.last?.filesDone ?? 0 }
+    var names: [String] {
+        lock.lock(); defer { lock.unlock() }
+        return reports.map(\.currentItem).filter { !$0.isEmpty }
+    }
 }

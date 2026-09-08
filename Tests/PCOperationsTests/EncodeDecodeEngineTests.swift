@@ -97,4 +97,55 @@ final class EncodeDecodeEngineTests: XCTestCase {
                                                   to: VFSPath(filesystemId: "file", path: out.path), on: fs)
         XCTAssertEqual(try String(contentsOf: out, encoding: .utf8), "hello")
     }
+
+    // MARK: - Streamed, and still byte-for-byte the same
+
+    /// Bigger than one read chunk and not a multiple of anything, so the group and line boundaries
+    /// fall inside the stream rather than at its ends. The engine used to hold the whole file, a
+    /// string a third larger again, and a copy of that string as bytes.
+    func test_aFileLargerThanOneChunkRoundTripsThroughTheStreamingPath() async throws {
+        let count = 300 * 1024 + 7
+        var original = Data(capacity: count)
+        for i in 0..<count { original.append(UInt8((i * 31 + 17) % 251)) }
+        let src = dir.appendingPathComponent("big.bin")
+        try original.write(to: src)
+        let encoded = dir.appendingPathComponent("big.b64")
+        let back = dir.appendingPathComponent("big.out")
+
+        try await EncodeDecodeEngine.encodeBase64(vpath("big.bin"), to: vpath("big.b64"), on: fs)
+        // The same bytes the whole-buffer encoder would have produced — the format is the contract.
+        XCTAssertEqual(try Data(contentsOf: encoded),
+                       Data(Base64Codec.encode(original, wrap: true).utf8))
+
+        try await EncodeDecodeEngine.decodeBase64(vpath("big.b64"), to: vpath("big.out"), on: fs)
+        XCTAssertEqual(try Data(contentsOf: back), original)
+    }
+
+    /// The scheme is decided from the head of the file now, so each branch has to still be reached.
+    func test_decodeAutoStillPicksTheRightSchemeFromTheHead() async throws {
+        let cases: [(name: String, body: String, expected: String)] = [
+            ("a.b64", Base64Codec.encode(Data("hello base64".utf8), wrap: true), "hello base64"),
+            ("a.hex", "68656c6c6f20686578", "hello hex"),
+        ]
+        for c in cases {
+            let src = dir.appendingPathComponent(c.name)
+            try Data(c.body.utf8).write(to: src)
+            let out = dir.appendingPathComponent(c.name + ".out")
+            try await EncodeDecodeEngine.decodeAuto(vpath(c.name), to: vpath(c.name + ".out"), on: fs)
+            XCTAssertEqual(try String(contentsOf: out, encoding: .utf8), c.expected, c.name)
+        }
+    }
+
+    /// A hex payload with an odd number of digits is half a byte short, and refused — the same answer
+    /// the whole-buffer `decodeHex` gave.
+    func test_anOddNumberOfHexDigitsIsRefused() async throws {
+        let src = dir.appendingPathComponent("odd.hex")
+        try Data("68656c6c6".utf8).write(to: src)
+        do {
+            try await EncodeDecodeEngine.decodeAuto(vpath("odd.hex"), to: vpath("odd.out"), on: fs)
+            XCTFail("half a byte was accepted")
+        } catch {
+            XCTAssertEqual(error as? EncodeDecodeError, .notValidBase64)
+        }
+    }
 }

@@ -325,4 +325,29 @@ final class SyncModelTests: XCTestCase {
             XCTAssertEqual(SyncModel.visibleRows(actions: [], direction: direction, hideEqual: true), [])
         }
     }
+
+    /// The tolerance was carried by `SyncOptions` from the day it was written and nothing could set
+    /// it: two seconds, for everyone. Two is right for FAT, and wrong for a share whose clock is a
+    /// few seconds off its client — there the whole tree reads as changed. Now that the window has a
+    /// field for it, this pins that a raised value really is what decides.
+    func testARaisedToleranceMakesAClockSkewedPairEqual() {
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: 10, leftModified: t0,
+                            rightSize: 10, rightModified: t0.addingTimeInterval(8))
+        XCTAssertEqual(SyncModel.classify([item], options: SyncOptions()).map(\.action), [.copyToLeft])
+        var wider = SyncOptions()
+        wider.toleranceSeconds = 10
+        XCTAssertEqual(SyncModel.classify([item], options: wider).map(\.action), [.equal])
+    }
+
+    /// And it cannot swallow a real difference: raising the tolerance says "these timestamps are the
+    /// same moment", not "these files are the same".
+    func testARaisedToleranceStillComparesTheSizes() {
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: 10, leftModified: t0,
+                            rightSize: 20, rightModified: t0.addingTimeInterval(8))
+        var wider = SyncOptions()
+        wider.toleranceSeconds = 10
+        XCTAssertEqual(SyncModel.classify([item], options: wider).map(\.action), [.conflict])
+    }
 }

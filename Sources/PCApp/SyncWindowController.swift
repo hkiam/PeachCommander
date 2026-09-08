@@ -41,6 +41,13 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private let daylightButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     /// Off by default, which is what `SyncOptions` always declared and what a Mac volume usually is.
     private let caseButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    /// How far two timestamps may be apart and still count as the same moment.
+    ///
+    /// `SyncOptions` has carried this since it was written and nothing could set it: two seconds, for
+    /// everyone, for ever. Two is the right default — FAT stores timestamps to that precision — but
+    /// it is the wrong answer for a network share whose clock is a few seconds off its client, which
+    /// is an ordinary thing for a share to be, and there the whole tree reads as changed.
+    private let toleranceField = NSTextField()
     private let tableView = NSTableView()
     private let statusLabel = NSTextField(labelWithString: "")
     private let syncButton = NSButton(title: "", target: nil, action: nil)
@@ -179,6 +186,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         daylightButton.toolTip = String(localized: "For FAT volumes and daylight saving, where the same file can be exactly an hour out")
         caseButton.title = String(localized: "Case sensitive")
         caseButton.toolTip = String(localized: "Off, two names differing only in case are the same file — which is what a Mac volume usually says")
+        toleranceField.stringValue = "2"
+        toleranceField.alignment = .right
+        toleranceField.toolTip = String(localized: "How far two timestamps may be apart and still count as equal. Raise it for a share whose clock differs from this machine's.")
+        toleranceField.widthAnchor.constraint(equalToConstant: 44).isActive = true
         for b in [subdirsButton, byContentButton, ignoreDateButton, ignoreHiddenButton] {
             opts.addArrangedSubview(b)
         }
@@ -190,6 +201,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         opts2.orientation = .horizontal
         opts2.spacing = 14
         for b in [asymmetricButton, daylightButton, caseButton] { opts2.addArrangedSubview(b) }
+        opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "Tolerance:")))
+        opts2.addArrangedSubview(toleranceField)
+        opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "s")))
         root.addArrangedSubview(opts2)
 
         // Preset row (F-194): pick a saved comparison profile, or save/delete one.
@@ -370,7 +384,19 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                     ignoreDate: ignoreDateButton.state == .on,
                     asymmetric: asymmetricButton.state == .on,
                     ignoreDaylightHour: daylightButton.state == .on,
-                    caseSensitive: caseButton.state == .on)
+                    caseSensitive: caseButton.state == .on,
+                    toleranceSeconds: tolerance)
+    }
+
+    /// The typed tolerance, or the two seconds that were hardcoded before there was a field.
+    ///
+    /// Nonsense is not an error worth a dialog: an empty field or a word means "the default", and a
+    /// negative number means none. The comparison reads the number, so a bad one cannot do anything
+    /// worse than compare exactly.
+    private var tolerance: TimeInterval {
+        let text = toleranceField.stringValue.trimmingCharacters(in: .whitespaces)
+        guard let value = Double(text) else { return 2 }
+        return max(0, value)
     }
 
     // MARK: - Presets (F-194)
@@ -395,6 +421,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         byContentButton.state = preset.options.byContent ? .on : .off
         ignoreDateButton.state = preset.options.ignoreDate ? .on : .off
         asymmetricButton.state = preset.options.asymmetric ? .on : .off
+        // The preset store has round-tripped these three all along; only the window could not show
+        // them, so loading a preset used to quietly drop back to the defaults for two of them.
+        daylightButton.state = preset.options.ignoreDaylightHour ? .on : .off
+        caseButton.state = preset.options.caseSensitive ? .on : .off
+        toleranceField.stringValue = String(Int(preset.options.toleranceSeconds))
         maskField.stringValue = preset.fileMask
         subdirsButton.state = preset.withSubdirs ? .on : .off
     }

@@ -76,6 +76,7 @@
 <li>在同一磁盘上的两个位置之间复制时，若磁盘支持，则会使用快速克隆，因此大文件几乎瞬间完成复制，且几乎不占用额外空间。</li>
 <li>文件夹会连同其中的所有内容一起复制。</li>
 <li>若要移动文件而非复制，请使用 F6。若要查看或管理排队的任务，请用 Cmd+Shift+B 打开后台传输管理器。</li>
+<li><strong>中途停下是安全的。</strong>要替换某个文件的复制会先写在它旁边，最后一步才整体取代它：因此中途取消或出错时，原本就在那里的文件保持不动，而不是新旧两个都没有。跨卷的移动、以及合并文件夹的移动，只有在复制完整之后才删除源；若有任何项目被跳过，源会保留，两边都在，可供比对。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">移动与重命名</a></li><li><a href="background-transfers.html">后台传输</a></li></ul></section>
 </main>

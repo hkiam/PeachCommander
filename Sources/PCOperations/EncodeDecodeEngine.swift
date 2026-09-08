@@ -22,24 +22,45 @@ public enum EncodeDecodeError: Error, Equatable {
 
 public enum EncodeDecodeEngine {
     /// Base64-encode `src` into `dst` (76-char MIME wrapping by default).
+    /// Base64-encode `src` into `dst` (76-char MIME wrapping by default).
+    ///
+    /// Streamed. It used to read the file whole, build a string a third larger again and copy that to
+    /// bytes — several times the file's size in memory at once, on a path one keystroke away in the
+    /// panel. `Base64StreamEncoder` produces byte-identical output; that is what its test is for.
     public static func encodeBase64(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
                                     wrap: Bool = true, overwrite: Bool = false) async throws {
-        let data = try await readAll(src, on: fs)
-        let text = Base64Codec.encode(data, wrap: wrap)
-        try await write(Data(text.utf8), to: dst, on: fs, overwrite: overwrite)
+        try await guardTarget(dst, on: fs, overwrite: overwrite)
+        var encoder = Base64StreamEncoder(wrap: wrap)
+        try await stream(src, to: dst, on: fs) { chunk in
+            Data(encoder.encode(chunk).utf8)
+        } finish: {
+            Data(encoder.finish().utf8)
+        }
     }
 
     /// Decode Base64 file `src` into `dst`.
+    /// Decode Base64 file `src` into `dst`. Streamed, for the same reason as the encoder.
     public static func decodeBase64(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
                                     overwrite: Bool = false) async throws {
-        let raw = try await readAll(src, on: fs)
-        guard let decoded = Base64Codec.decode(String(decoding: raw, as: UTF8.self)) else {
-            throw EncodeDecodeError.notValidBase64
+        try await guardTarget(dst, on: fs, overwrite: overwrite)
+        var decoder = Base64StreamDecoder()
+        var invalid = false
+        try await stream(src, to: dst, on: fs) { chunk in
+            guard let out = decoder.decode(String(decoding: chunk, as: UTF8.self)) else {
+                invalid = true; return Data()
+            }
+            return out
+        } finish: {
+            decoder.finish() ?? { invalid = true; return Data() }()
         }
-        try await write(decoded, to: dst, on: fs, overwrite: overwrite)
+        if invalid { throw EncodeDecodeError.notValidBase64 }
     }
 
     /// uuencode/xxencode `src` into `dst` (F-096).
+    ///
+    /// Read whole, deliberately: the frame carries a length byte per line inside a `begin`/`end`
+    /// envelope, so a streaming version is new parsing code, and these are legacy formats used on
+    /// small payloads — the large-file case people reach is Base64, which streams.
     public static func encodeUUXX(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
                                   variant: UUCodec.Variant, overwrite: Bool = false) async throws {
         let data = try await readAll(src, on: fs)
@@ -52,11 +73,35 @@ public enum EncodeDecodeEngine {
     /// (by alphabet); a payload of only hex digits → hex; otherwise Base64.
     public static func decodeAuto(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
                                   overwrite: Bool = false) async throws {
-        // Asked once, up front: the checks below pick a scheme and each writes, and a question per
-        // branch would be four chances to forget one.
-        if !overwrite, (try? await fs.stat(dst)) != nil {
-            throw EncodeDecodeError.targetExists(dst.lastComponent())
+        // Asked once, up front: the branches below each write, and a question per branch would be
+        // four chances to forget one.
+        try await guardTarget(dst, on: fs, overwrite: overwrite)
+
+        // The scheme is decided from the head of the file, then the file is read again by whichever
+        // decoder that picked. Reading twice costs a second open; reading once cost the whole file in
+        // memory, which for the schemes that can stream is the thing worth avoiding.
+        let head = try await readPrefix(src, on: fs, bytes: 8 * 1024)
+        let headText = String(decoding: head, as: UTF8.self)
+        if !(headText.hasPrefix("begin ") || headText.contains("\nbegin ")) {
+            if isHexPayload(headText) {
+                var decoder = HexStreamDecoder()
+                var invalid = false
+                try await stream(src, to: dst, on: fs) { chunk in
+                    guard let out = decoder.decode(String(decoding: chunk, as: UTF8.self)) else {
+                        invalid = true; return Data()
+                    }
+                    return out
+                } finish: {
+                    decoder.finish() ?? { invalid = true; return Data() }()
+                }
+                if invalid { throw EncodeDecodeError.notValidBase64 }
+                return
+            }
+            try await decodeBase64(src, to: dst, on: fs, overwrite: true)
+            return
         }
+
+        // uu/xx: read whole. See `encodeUUXX` for why.
         let raw = try await readAll(src, on: fs)
         let text = String(decoding: raw, as: UTF8.self)
         if text.hasPrefix("begin ") || text.contains("\nbegin ") {
@@ -69,13 +114,35 @@ public enum EncodeDecodeEngine {
             }
             throw EncodeDecodeError.notValidUUXX
         }
-        // Hex before Base64: a pure-hex payload is unambiguous, whereas Base64
-        // would happily (wrongly) decode hex text as its own alphabet.
-        if let hex = decodeHex(text) {
-            try await write(hex, to: dst, on: fs, overwrite: true); return
+        throw EncodeDecodeError.notValidUUXX
+    }
+
+    /// Whether a payload is nothing but hex digits — the test that used to be `decodeHex` returning
+    /// non-nil over the whole file, asked of its head instead.
+    ///
+    /// Hex before Base64: a pure-hex payload is unambiguous, whereas Base64 would happily (wrongly)
+    /// decode hex text as its own alphabet.
+    static func isHexPayload(_ text: String) -> Bool {
+        var digits = 0
+        for ch in text.utf8 {
+            if ch == 0x20 || ch == 0x09 || ch == 0x0A || ch == 0x0D { continue }
+            switch ch {
+            case 0x30...0x39, 0x41...0x46, 0x61...0x66: digits += 1
+            default: return false
+            }
         }
-        guard let decoded = Base64Codec.decode(text) else { throw EncodeDecodeError.notValidBase64 }
-        try await write(decoded, to: dst, on: fs, overwrite: true)
+        return digits > 0
+    }
+
+    private static func readPrefix(_ path: VFSPath, on fs: VirtualFileSystem, bytes: Int) async throws -> Data {
+        let stream = try await fs.openRead(path)
+        var data = Data()
+        for try await chunk in stream {
+            if let d = chunk as? Data { data.append(d) }
+            if data.count >= bytes { break }
+        }
+        try? await stream.close()
+        return data.prefix(bytes)
     }
 
     /// Decode a hex string (whitespace ignored). Returns nil unless the whole
@@ -98,6 +165,40 @@ public enum EncodeDecodeEngine {
         }
         guard hi == nil, !bytes.isEmpty else { return nil }
         return Data(bytes)
+    }
+
+    /// Refuse a target that is already there, unless told otherwise. Pulled out because every entry
+    /// point has to ask the same question and the streaming ones ask it before opening anything.
+    private static func guardTarget(_ dst: VFSPath, on fs: VirtualFileSystem, overwrite: Bool) async throws {
+        if !overwrite, (try? await fs.stat(dst)) != nil {
+            throw EncodeDecodeError.targetExists(dst.lastComponent())
+        }
+    }
+
+    /// Read `src` chunk by chunk, transform each, write it out, then write whatever `finish` has left.
+    ///
+    /// The transform is synchronous and stateful — an encoder carrying a few bytes between calls — so
+    /// nothing here needs to hold more than one chunk of either side.
+    private static func stream(_ src: VFSPath, to dst: VFSPath, on fs: VirtualFileSystem,
+                               _ transform: (Data) -> Data,
+                               finish: () -> Data) async throws {
+        let reader = try await fs.openRead(src)
+        let writer = try await fs.openWrite(dst, options: WriteOptions())
+        do {
+            for try await chunk in reader {
+                guard let data = chunk as? Data else { continue }
+                let out = transform(data)
+                if !out.isEmpty { try await writer.write(out) }
+            }
+            let tail = finish()
+            if !tail.isEmpty { try await writer.write(tail) }
+        } catch {
+            try? await writer.close()
+            try? await reader.close()
+            throw error
+        }
+        try await writer.close()
+        try? await reader.close()
     }
 
     private static func readAll(_ path: VFSPath, on fs: VirtualFileSystem) async throws -> Data {
