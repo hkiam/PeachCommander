@@ -46,6 +46,12 @@ enum PrivilegedRunner {
     /// AppleScript literal itself reads: the backslash and the double quote. The backslash must be
     /// doubled *first*, or the escapes added for the quotes get escaped in turn.
     ///
+    /// A raw line feed inside the literal needs no escape either, which is not obvious and was
+    /// checked: `do shell script` hands the byte through unchanged. What it *does* convert is the
+    /// string it returns, where a line feed comes back as a carriage return — so a test that reads
+    /// the result to find out what the shell received measures the way back, not the way in.
+    /// `ShellQuoteTests` therefore has the shell write to a file and reads that.
+    ///
     /// This is its own function so the test can run the real rule rather than a copy of it. The
     /// escaping and the quoting were written apart from each other, and this is the one path in the
     /// app where getting their composition wrong hands a file name to a root shell.

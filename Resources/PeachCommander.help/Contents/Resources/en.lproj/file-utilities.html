@@ -62,6 +62,7 @@
 <li>Checksums, split/combine, and encode/decode are aimed at more advanced tasks, but each is a single dialog with sensible defaults.</li>
 <li>When a utility produces new files (split parts, an encoded file, a checksum list), they are written to the folder shown in the other panel — set that panel to your intended destination first.</li>
 <li>Deleting duplicates is permanent depending on your delete settings; review each group carefully and keep at least one copy of anything you still need.</li>
+<li><strong>Splitting and combining never write over anything unasked.</strong> If parts of that name are already there, or if a file with the original name is, you are asked first. And a set of parts that does not add up &mdash; one missing from the middle, or one that arrived truncated &mdash; is reported before anything is written, instead of producing a file of the right name and the wrong content.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Comparing &amp; synchronizing</a></li></ul></section>
 </main>

@@ -1038,16 +1038,18 @@ extension PanelController {
     /// matching on their text would work in English and quietly stop working in German. An item counts
     /// as failed when its destination is missing and its source is still there — a user who chose
     /// "skip" in the overwrite dialog leaves a destination that exists, which is how the two are told
-    /// apart. And the offer only appears when the destination folder is one this user cannot write to;
-    /// a copy that failed because the volume is full is not helped by doing it as root.
+    /// apart. And the offer only appears when privileges could actually change the outcome — the
+    /// destination folder is not writable, or a source cannot be read — so a copy that failed because
+    /// the volume is full does not ask for a password to no purpose.
     private func offerPrivilegedTransfer(_ items: [String], destDir: String, mask: String?,
                                          move: Bool) async {
         let fm = FileManager.default
         let failed = PrivilegedTransfer.missing(transferPairs(items, destDir: destDir, mask: mask),
                                                 exists: { fm.fileExists(atPath: $0) })
         guard !failed.isEmpty,
-              PrivilegedTransfer.wouldPrivilegeHelp(destinationDirectory: destDir,
-                                                    isWritable: { fm.isWritableFile(atPath: $0) }),
+              PrivilegedTransfer.wouldPrivilegeHelp(failed, destinationDirectory: destDir,
+                                                    isWritable: { fm.isWritableFile(atPath: $0) },
+                                                    isReadable: { fm.isReadableFile(atPath: $0) }),
               let command = PrivilegedTransfer.command(for: failed, move: move) else { return }
 
         let alert = NSAlert()

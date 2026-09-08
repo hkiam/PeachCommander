@@ -50,16 +50,38 @@ final class PrivilegedTransferTests: XCTestCase {
 
     // MARK: - When privileges are the answer
 
-    func testAWritableDestinationIsNotAPermissionProblem() {
+    func testAWritableDestinationAndReadableSourcesAreNotAPermissionProblem() {
         // A copy can also fail because the volume is full. Offering to redo that as root is a way to
         // fill it as root, and it teaches people to answer a password prompt to no purpose.
-        XCTAssertFalse(PrivilegedTransfer.wouldPrivilegeHelp(destinationDirectory: "/tmp",
-                                                             isWritable: { _ in true }))
+        XCTAssertFalse(PrivilegedTransfer.wouldPrivilegeHelp([item("/src/a.txt", "/tmp/a.txt")],
+                                                             destinationDirectory: "/tmp",
+                                                             isWritable: { _ in true },
+                                                             isReadable: { _ in true }))
     }
 
     func testAFolderThisUserCannotWriteToIs() {
-        XCTAssertTrue(PrivilegedTransfer.wouldPrivilegeHelp(destinationDirectory: "/usr/local",
-                                                            isWritable: { _ in false }))
+        XCTAssertTrue(PrivilegedTransfer.wouldPrivilegeHelp([item("/src/a.txt", "/usr/local/a.txt")],
+                                                            destinationDirectory: "/usr/local",
+                                                            isWritable: { _ in false },
+                                                            isReadable: { _ in true }))
+    }
+
+    /// The other half, which was ruled out by a comment saying root cannot help read an unreadable
+    /// file. Root reads anything: a 0600 root-owned file copied *out* of a system folder into your own
+    /// home is a permission failure with a perfectly writable destination, and no offer appeared.
+    func testASourceThisUserCannotReadIsAlso() {
+        XCTAssertTrue(PrivilegedTransfer.wouldPrivilegeHelp([item("/private/var/db/locked", "/Users/me/locked")],
+                                                            destinationDirectory: "/Users/me",
+                                                            isWritable: { _ in true },
+                                                            isReadable: { _ in false }))
+    }
+
+    /// And one unreadable source among readable ones is enough to offer it.
+    func testOneUnreadableSourceAmongReadableOnesStillOffersIt() {
+        let items = [item("/src/fine.txt", "/dst/fine.txt"), item("/src/locked", "/dst/locked")]
+        XCTAssertTrue(PrivilegedTransfer.wouldPrivilegeHelp(items, destinationDirectory: "/dst",
+                                                            isWritable: { _ in true },
+                                                            isReadable: { $0 != "/src/locked" }))
     }
 
     // MARK: - The command, which runs as root
@@ -71,9 +93,46 @@ final class PrivilegedTransferTests: XCTestCase {
     func testCopyAndMoveUseTheRightTool() throws {
         let one = [item("/src/a.txt", "/dst/a.txt")]
         let copy = try XCTUnwrap(PrivilegedTransfer.command(for: one, move: false))
-        XCTAssertTrue(copy.hasPrefix("/bin/cp -Rp "), copy)
+        XCTAssertTrue(copy.hasPrefix("/bin/cp -Rpn "), copy)
         let move = try XCTUnwrap(PrivilegedTransfer.command(for: one, move: true))
-        XCTAssertTrue(move.hasPrefix("/bin/mv -f "), move)
+        XCTAssertTrue(move.hasPrefix("/bin/mv -n "), move)
+    }
+
+    /// Neither tool may replace anything. `missing` establishes that the destinations do not exist,
+    /// but it does so *before* the password dialog, and what runs afterwards runs as root; `-n` moves
+    /// that guarantee to the tool at the moment it acts. `mv -f` was the opposite of it.
+    func testTheRootCommandCannotOverwriteAnything() throws {
+        for move in [false, true] {
+            let command = try XCTUnwrap(PrivilegedTransfer.command(for: [item("/s", "/d")], move: move))
+            let flags = command.split(separator: " ")[1]
+            XCTAssertTrue(flags.contains("n"), command)
+            XCTAssertFalse(flags.contains("f"), command)
+        }
+    }
+
+    /// And run for real: with the destination already there, the tool leaves it alone.
+    func testAnExistingDestinationSurvivesTheCommandThatWouldRunAsRoot() throws {
+        let fm = FileManager.default
+        let dir = fm.temporaryDirectory.appendingPathComponent("pc-priv-\(UUID().uuidString)")
+        try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: dir) }
+        let src = dir.appendingPathComponent("new.txt")
+        let dst = dir.appendingPathComponent("existing.txt")
+        try "incoming".write(to: src, atomically: true, encoding: .utf8)
+        try "already here".write(to: dst, atomically: true, encoding: .utf8)
+
+        for move in [false, true] {
+            let command = try XCTUnwrap(PrivilegedTransfer.command(for: [item(src.path, dst.path)],
+                                                                    move: move))
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/sh")
+            process.arguments = ["-c", command]
+            process.standardError = FileHandle.nullDevice
+            try process.run()
+            process.waitUntilExit()
+            XCTAssertEqual(try String(contentsOf: dst, encoding: .utf8), "already here",
+                           "the destination was replaced (move: \(move))")
+        }
     }
 
     func testSeveralItemsAreOneInvocationSoThePasswordIsAskedOnce() throws {
@@ -102,7 +161,7 @@ final class PrivilegedTransferTests: XCTestCase {
         // swapped for `printf`, handed to /bin/sh — and what the program received is the answer.
         let name = "/tmp/$(id) it's here.txt"
         let command = try XCTUnwrap(PrivilegedTransfer.command(for: [item(name, name)], move: false))
-        let printfLine = command.replacingOccurrences(of: "/bin/cp -Rp ", with: "printf '%s\\n' ")
+        let printfLine = command.replacingOccurrences(of: "/bin/cp -Rpn ", with: "printf '%s\\n' ")
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/sh")
         process.arguments = ["-c", printfLine]

@@ -52,10 +52,16 @@ public enum PrivilegedTransfer {
     ///
     /// `cp -R` and not `-a`: `-a` is not in POSIX cp and macOS's own is fine with `-R -p`, which keeps
     /// mode, timestamps and ownership flags without pulling in the rest of the archive semantics.
+    ///
+    /// And `-n` on both, which is the part that matters: with it neither tool will replace anything
+    /// that is already there. `missing` has established that the destinations do not exist — but it
+    /// established that *before* the password dialog, and what runs afterwards runs as root. `-n`
+    /// moves that guarantee from a check made earlier to the tool doing the work at the moment it
+    /// works. `mv -f` was the opposite: force, on the one command line in the app that is root.
     public static func command(for items: [Item], move: Bool) -> String? {
         guard !items.isEmpty else { return nil }
         let tool = move ? "/bin/mv" : "/bin/cp"
-        let flags = move ? "-f" : "-Rp"
+        let flags = move ? "-n" : "-Rpn"
         return items.map { item in
             "\(tool) \(flags) \(ShellQuoting.quote(item.source)) \(ShellQuoting.quote(item.destination))"
         }.joined(separator: "; ")
@@ -63,11 +69,19 @@ public enum PrivilegedTransfer {
 
     /// Is this a failure administrator privileges could actually fix?
     ///
-    /// Only when the destination folder is one this user cannot write to. A copy that failed because
-    /// the volume is full, or because the source is unreadable, is not helped by running it as root —
-    /// and offering it anyway teaches people to answer a password prompt to no purpose.
-    public static func wouldPrivilegeHelp(destinationDirectory: String,
-                                          isWritable: (String) -> Bool) -> Bool {
-        !isWritable(destinationDirectory)
+    /// Two ways it can be, and this used to ask about one of them: the destination folder is not
+    /// writable, *or* one of the sources cannot be read. The second was ruled out by a comment
+    /// claiming that "a copy that failed because the source is unreadable is not helped by running it
+    /// as root" — which is the wrong way round, root reads anything. Copying a root-owned 0600 file
+    /// out of a system folder into your own home is a permission failure with a writable destination,
+    /// so no offer appeared for the case where it would have worked.
+    ///
+    /// What is still ruled out is the failure privileges do not touch: a full volume, a read-only
+    /// device, a name too long. Offering the password prompt for those teaches people to answer it to
+    /// no purpose.
+    public static func wouldPrivilegeHelp(_ items: [Item], destinationDirectory: String,
+                                          isWritable: (String) -> Bool,
+                                          isReadable: (String) -> Bool) -> Bool {
+        !isWritable(destinationDirectory) || items.contains { !isReadable($0.source) }
     }
 }

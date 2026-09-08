@@ -157,4 +157,41 @@ final class RenameBatchEngineTests: XCTestCase {
         RenameBatchEngine.apply(dir: dir.path, pairs: [("readme.txt", "README.txt")])
         XCTAssertEqual(try names(), ["README.txt"])
     }
+
+    // MARK: - Nothing is left where the user cannot see it
+
+    /// `a → b` together with `b → c` where `c` is occupied: the first rename takes `b`'s old name, so
+    /// the recovery for the second — one attempt at the old name, with `try?` around it — failed, and
+    /// the file stayed parked under `.pcren-<uuid>`. Invisible in the panel and indistinguishable
+    /// from deleted, which is the one outcome the comment beside that line said must not happen.
+    func testAFailedRenameLeavesItsFileVisibleEvenWhenTheOldNameIsTaken() throws {
+        try write("a.txt", "A")
+        try write("b.txt", "B")
+        try write("c.txt", "C")        // outside the batch, so b → c must fail
+
+        let outcome = RenameBatchEngine.apply(dir: dir.path,
+                                              pairs: [("a.txt", "b.txt"), ("b.txt", "c.txt")])
+
+        let names = (try FileManager.default.contentsOfDirectory(atPath: dir.path)).sorted()
+        XCTAssertFalse(names.contains { $0.hasPrefix(".pcren-") },
+                       "a file was left parked under a temporary name: \(names)")
+        XCTAssertEqual(outcome.log.count, 1)
+        XCTAssertEqual(outcome.failed.count, 1)
+        // Every byte is still somewhere with a name: "A" under b.txt, "C" untouched, and "B" under
+        // whatever free name it could be given — reported, so the user is told where it went.
+        let contents = Set(names.compactMap { read($0) })
+        XCTAssertEqual(contents, Set(["A", "B", "C"]), "a file's content was lost: \(names)")
+        XCTAssertTrue(outcome.failed[0].reason.contains("left as"), outcome.failed[0].reason)
+    }
+
+    /// The ordinary failure still reports the old name and leaves the file under it.
+    func testAFailedRenameWhoseOldNameIsFreeKeepsThatName() throws {
+        try write("a.txt", "A")
+        try write("taken.txt", "T")
+        let outcome = RenameBatchEngine.apply(dir: dir.path, pairs: [("a.txt", "taken.txt")])
+        XCTAssertEqual(read("a.txt"), "A")
+        XCTAssertEqual(read("taken.txt"), "T")
+        XCTAssertEqual(outcome.failed.map(\.name), ["a.txt"])
+        XCTAssertFalse(outcome.failed[0].reason.contains("left as"), outcome.failed[0].reason)
+    }
 }

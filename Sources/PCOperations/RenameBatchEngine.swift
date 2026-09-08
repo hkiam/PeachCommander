@@ -68,13 +68,40 @@ public enum RenameBatchEngine {
                 try fm.moveItem(atPath: entry.temp, toPath: finalPath)
                 log.append(Step(from: finalPath, to: oldPath))
             } catch {
-                // Put it back under its own name; a file left parked under a dotted temporary name would
-                // be invisible in the panel and look deleted.
-                try? fm.moveItem(atPath: entry.temp, toPath: oldPath)
-                failed.append((entry.old, error.localizedDescription))
+                // Put it back under its own name — and if that name is taken, under one that is free.
+                //
+                // The old recovery was one attempt at the old name with `try?` around it, which is
+                // exactly the case that fails: `a → b` together with `b → c` where `c` is occupied
+                // leaves `b`'s old name taken by the first rename, so the second file stayed parked
+                // under `.pcren-<uuid>` — invisible in the panel and indistinguishable from deleted,
+                // which is the one outcome the comment here said must not happen. Measured.
+                let parked = Self.restore(entry.temp, preferring: entry.old, in: dir, fm: fm)
+                failed.append((entry.old, parked == entry.old
+                    ? error.localizedDescription
+                    : "\(error.localizedDescription) — left as \"\(parked)\""))
             }
         }
         return Outcome(log: log, failed: failed)
+    }
+
+    /// Move a staged file back out of its temporary name, and report the name it ended up with.
+    ///
+    /// `preferred` first, then whatever the app's own auto-rename rule offers, until one is free.
+    /// A name is invented only because the alternative is worse: the file has to be visible, and
+    /// every other name in the batch may legitimately be taken by a rename that did succeed.
+    private static func restore(_ temp: String, preferring preferred: String,
+                                in dir: String, fm: FileManager) -> String {
+        var candidate = preferred
+        for _ in 0..<64 {
+            let path = (dir as NSString).appendingPathComponent(candidate)
+            if !fm.fileExists(atPath: path), (try? fm.moveItem(atPath: temp, toPath: path)) != nil {
+                return candidate
+            }
+            candidate = OverwriteRules.autoRenameName(candidate)
+        }
+        // Nothing was free in sixty-four tries. The temporary name is all that is left, and saying so
+        // is better than reporting the original name as if the file were still under it.
+        return (temp as NSString).lastPathComponent
     }
 
     /// Reverse a log produced by `apply`, and return the moves that succeeded.
@@ -98,7 +125,11 @@ public enum RenameBatchEngine {
             if (try? fm.moveItem(atPath: temp, toPath: step.to)) != nil {
                 undone.append(step)
             } else {
-                try? fm.moveItem(atPath: temp, toPath: step.from)   // give it its name back
+                // The same ladder as `apply`, and for the same reason: `step.from` can be occupied by
+                // the other half of a swap this undo has already put back, and one failed attempt
+                // used to leave the file under its dotted temporary name.
+                _ = Self.restore(temp, preferring: (step.from as NSString).lastPathComponent,
+                                 in: (step.from as NSString).deletingLastPathComponent, fm: fm)
             }
         }
         return undone

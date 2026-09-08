@@ -2698,23 +2698,83 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             return
         }
         Task { @MainActor in
-            if let r = await panel.splitCursorFile(partSize: size) {
-                self.presentInfo(String(localized: "Split File"), String(localized: "Split \(r.name) into \(r.parts) part(s)."))
+            await self.runSplit(panel, partSize: size, overwrite: false)
+        }
+    }
+
+    /// Run the split, and turn the engine's refusals into something to answer.
+    ///
+    /// The engine cannot ask, so it reports: an existing first part or sidecar comes back as
+    /// `.targetExists` instead of being written over — which is what used to happen, silently, on the
+    /// one write path in the app with no conflict question at all.
+    private func runSplit(_ panel: PanelController, partSize: Int64, overwrite: Bool) async {
+        do {
+            if let r = try await panel.splitCursorFile(partSize: partSize, overwrite: overwrite) {
+                presentInfo(String(localized: "Split File"),
+                            String(localized: "Split \(r.name) into \(r.parts) part(s)."))
             } else {
-                self.presentInfo(String(localized: "Split File"), String(localized: "Put the cursor on a file to split."))
+                presentInfo(String(localized: "Split File"),
+                            String(localized: "Put the cursor on a file to split."))
             }
+        } catch SplitCombineError.targetExists(let name) {
+            guard confirmReplace(name) else { return }
+            await runSplit(panel, partSize: partSize, overwrite: true)
+        } catch {
+            presentInfo(String(localized: "Split File"), Self.explainSplit(error))
+        }
+    }
+
+    /// "<name> is already there. Replace it?" — the question the engines are not able to ask.
+    private func confirmReplace(_ name: String) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(localized: "Replace “\(name)”?")
+        alert.informativeText = String(localized: "Something with that name is already there. Replacing it cannot be undone.")
+        alert.addButton(withTitle: String(localized: "Overwrite"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    /// What went wrong, in words that say what to do about it.
+    static func explainSplit(_ error: Error) -> String {
+        switch error {
+        case SplitCombineError.badCRCFile:
+            return String(localized: "That .crc file cannot be read, or it names something other than a plain file name.")
+        case SplitCombineError.noParts:
+            return String(localized: "No numbered parts were found next to that .crc file.")
+        case SplitCombineError.missingPart(let index):
+            return String(localized: "Part \(index) is missing: the parts do not add up to the size the .crc file records. Nothing was written.")
+        case SplitCombineError.badPartSize:
+            return String(localized: "Invalid part size.")
+        case SplitCombineError.targetExists(let name):
+            return String(localized: "“\(name)” is already there.")
+        default:
+            return error.localizedDescription
         }
     }
 
     func showCombineFiles() {
         guard let panel = activePanel else { return }
         Task { @MainActor in
-            guard let r = await panel.combineFromCursor() else {
-                self.presentInfo(String(localized: "Combine Files"), String(localized: "Put the cursor on a .crc or .001 part file."))
+            await self.runCombine(panel, overwrite: false)
+        }
+    }
+
+    private func runCombine(_ panel: PanelController, overwrite: Bool) async {
+        do {
+            guard let r = try await panel.combineFromCursor(overwrite: overwrite) else {
+                presentInfo(String(localized: "Combine Files"),
+                            String(localized: "Put the cursor on a .crc or .001 part file."))
                 return
             }
             let status = r.crcOK ? String(localized: "CRC OK") : String(localized: "CRC MISMATCH")
-            self.presentInfo(String(localized: "Combine Files"), String(localized: "Rebuilt \(r.name) — \(status)."))
+            presentInfo(String(localized: "Combine Files"),
+                        String(localized: "Rebuilt \(r.name) — \(status)."))
+        } catch SplitCombineError.targetExists(let name) {
+            guard confirmReplace(name) else { return }
+            await runCombine(panel, overwrite: true)
+        } catch {
+            presentInfo(String(localized: "Combine Files"), Self.explainSplit(error))
         }
     }
 
@@ -9007,17 +9067,22 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     /// Split the cursor file into `partSize`-byte parts in the current directory.
-    func splitCursorFile(partSize: Int64) async -> (parts: Int, name: String)? {
+    ///
+    /// Throws rather than returning nil for an engine failure: nil used to mean both "no file under
+    /// the cursor" and "the split did not work", so a refusal to overwrite somebody's existing parts
+    /// would have been reported as "put the cursor on a file".
+    func splitCursorFile(partSize: Int64, overwrite: Bool = false) async throws -> (parts: Int, name: String)? {
         guard let path = cursorFilePath() else { return nil }
         let src = VFSPath(filesystemId: fs.scheme, path: path)
         let dir = VFSPath(filesystemId: fs.scheme, path: await model.getPath())
-        guard let info = try? await SplitCombineEngine.split(src, partSize: partSize, into: dir, on: fs) else { return nil }
+        let info = try await SplitCombineEngine.split(src, partSize: partSize, into: dir, on: fs,
+                                                      overwrite: overwrite)
         await reload()
         return (SplitInfo.partCount(size: info.size, partSize: partSize), info.filename)
     }
 
     /// Combine parts described by the cursor's .crc (or .NNN) file.
-    func combineFromCursor() async -> (name: String, crcOK: Bool)? {
+    func combineFromCursor(overwrite: Bool = false) async throws -> (name: String, crcOK: Bool)? {
         guard let path = cursorFilePath() else { return nil }
         let crcPath: String
         if path.hasSuffix(".crc") {
@@ -9028,8 +9093,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
             return nil
         }
         let dir = VFSPath(filesystemId: fs.scheme, path: await model.getPath())
-        guard let result = try? await SplitCombineEngine.combine(
-                crcPath: VFSPath(filesystemId: fs.scheme, path: crcPath), into: dir, on: fs) else { return nil }
+        let result = try await SplitCombineEngine.combine(
+            crcPath: VFSPath(filesystemId: fs.scheme, path: crcPath), into: dir, on: fs,
+            overwrite: overwrite)
         await reload()
         return (result.info.filename, result.crcOK)
     }

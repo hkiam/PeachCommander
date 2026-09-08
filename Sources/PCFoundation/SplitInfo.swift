@@ -42,7 +42,12 @@ public struct SplitInfo: Equatable, Sendable {
             let value = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)
             values[key] = value
         }
-        guard let filename = values["filename"], !filename.isEmpty,
+        // `filename` names the file `combine` writes, and this text arrives with the parts — from
+        // wherever they came from. A value of `../…` therefore put the reassembled file outside the
+        // folder the user chose: measured, it landed in the parent directory. So the same rule the
+        // archive and server paths already apply to a name that comes from elsewhere applies here —
+        // a sidecar naming anything but a plain component is not a sidecar this app will act on.
+        guard let filename = values["filename"], PathContainment.isSafeComponent(filename),
               let sizeStr = values["size"], let size = Int64(sizeStr),
               let crcStr = values["crc32"], let crc = UInt32(crcStr, radix: 16) else { return nil }
         return SplitInfo(filename: filename, size: size, crc32: crc)

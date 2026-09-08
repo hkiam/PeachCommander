@@ -88,4 +88,29 @@ final class ShellQuoteTests: XCTestCase {
             XCTAssertFalse(seen.contains("uid="), "\(path) executed a command on the way to root")
         }
     }
+
+    /// macOS allows a line break in a file name, so the two layers have to carry one.
+    ///
+    /// Read from a *file* the shell writes, not from the AppleScript result: `do shell script`
+    /// converts a line feed to a carriage return in the string it hands back, so reading the result
+    /// measures the way out and not the way in. Believing that reading once cost a "finding" that was
+    /// not one — the shell had the name right all along.
+    func testANameWithALineBreakInItReachesTheShellUnchanged() throws {
+        let fm = FileManager.default
+        let out = fm.temporaryDirectory.appendingPathComponent("pc-nl-\(UUID().uuidString).txt")
+        defer { try? fm.removeItem(at: out) }
+
+        for path in ["/tmp/two\nlines.txt", "/tmp/carriage\rreturn.txt", "/tmp/a\ttab.txt",
+                     "/tmp/all\n\r\tthree.txt"] {
+            let command = "printf %s " + PrivilegedRunner.shellQuote(path)
+                + " > " + PrivilegedRunner.shellQuote(out.path)
+            let escaped = PrivilegedRunner.appleScriptEscaped(command)
+            let script = try XCTUnwrap(NSAppleScript(source: "do shell script \"\(escaped)\""),
+                                       path.debugDescription)
+            var error: NSDictionary?
+            script.executeAndReturnError(&error)
+            XCTAssertNil(error?[NSAppleScript.errorMessage], path.debugDescription)
+            XCTAssertEqual(try String(contentsOf: out, encoding: .utf8), path, path.debugDescription)
+        }
+    }
 }

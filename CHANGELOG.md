@@ -16,6 +16,61 @@ does not have.
 
 ### Fixed
 
+The next round of the same review, over the paths that run as administrator and the two engines that
+rename and split files. Eight findings; four measured, and one suspicion that turned out to be wrong
+and is recorded as such below.
+
+- **A `.crc` sidecar can no longer name where the file is written.** `combine` took `filename` from
+  the sidecar's text and joined it to the output folder, and `.crc` is a Total Commander format —
+  these files arrive with the parts, from wherever the parts came from. A value of `../…` therefore
+  put the reassembled file outside the folder the user chose: measured, it landed in the parent
+  directory. The parser now applies the rule the archive and server paths already apply to a name
+  that comes from elsewhere: anything but a plain component is not a sidecar this app acts on.
+
+- **Splitting and combining ask before writing over something.** They were the one write path in the
+  app with no conflict question at all: combining onto a name that was taken destroyed the file that
+  had it — measured — and splitting wrote over parts of the same name. Both now report it and the
+  window asks, with the same Overwrite / Cancel choice as everywhere else.
+
+- **A set of parts that does not add up is refused before anything is written.** The old loop stopped
+  at the first part it could not open, so a missing `.003` with `.004` present became a file of the
+  right name and the wrong content, left on disk with only the CRC afterwards to say so. The sidecar
+  records the original size, so the question has an answer up front — which also catches a part that
+  arrived truncated.
+
+- **A failed batch rename no longer leaves a file where nobody can see it.** Every rename stages
+  through a temporary name; when the final move failed, the recovery was one attempt at the old name,
+  and that name can legitimately be taken by another rename in the same batch that did succeed. `a →
+  b` together with `b → c` over an occupied `c` therefore left the second file parked as
+  `.pcren-<uuid>` — invisible in the panel, indistinguishable from deleted, and exactly what the
+  comment beside that line said must not happen. It now walks the app's own auto-rename names until
+  one is free and reports where the file ended up. Undo had the same hole.
+
+- **"Retry as administrator" is offered when the *source* is the unreadable one.** The offer appeared
+  only for a destination folder this user cannot write to, ruled out for everything else by a comment
+  claiming root cannot help read an unreadable file — which is the wrong way round. Copying a
+  root-owned 0600 file out of a system folder into your own home is a permission failure with a
+  writable destination, and it was the case that would have worked.
+
+- **The privileged command cannot replace anything.** `mv -f` and `cp -Rp` became `mv -n` and
+  `cp -Rpn`. The destinations are established to be missing *before* the password dialog; `-n` moves
+  that guarantee to the tool at the moment it acts, on the one command line in this app that runs as
+  root.
+
+- **The parts are looked for next to the sidecar**, not in the output folder, which made combining
+  into any other directory impossible — it reported "no parts" — and is the wrong question anyway:
+  the sidecar describes the set it sits in.
+
+- **A part size of zero is an error, not a crash.** It was a `precondition`, which takes the process
+  down; the dialog checks first, so only a plugin or a script could reach it.
+
+Not a defect, recorded because the investigation of it was published as one: a file name containing a
+line break was suspected of being corrupted on its way through the AppleScript layer to the root
+shell. It is not — `do shell script` passes the byte through unchanged. What converts a line feed to a
+carriage return is the string AppleScript hands *back*, so the first measurement had read the way out
+and called it the way in. `ShellQuoteTests` now pins the real question by having the shell write to a
+file, and `PrivilegedRunner` is unchanged.
+
 Six of these were found by reading the copy, move and delete engines and then *measuring* the
 suspect rather than asserting it. Three lost data outright.
 
