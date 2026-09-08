@@ -49,6 +49,30 @@ Maskefeltet rummer én medtag-liste over filnavne. Til det, den ikke kan udtrykk
 
 En udeladt mappe slettes heller ikke i spejltilstand — et spejl fjerner kun det, det faktisk har sammenlignet. Statuslinjen siger, hvor mange punkter filteret holdt ude, ved siden af hvad kørslen vil gøre. Et filter gemmes og indlæses sammen med den synk-forudindstilling, det hører til.
 
+## Hold to mapper ens, begge veje
+
+De to oprindelige tilstande kan ikke skelne én ting: en fil, der kun findes på den ene side, er
+enten **ny her** eller **slettet der**, og det ser ens ud. Den symmetriske tilstand kopierer den
+derfor — slet noget på din bærbare, synkronisér, og den kommer tilbage fra sikkerhedskopien — og
+spejltilstanden sletter, men kun i én retning.
+
+**Tovejs (med hukommelse)** husker, hvordan begge mapper så ud, sidst de stemte. Med den optegnelse
+kan en sletning på den ene side føres over til den anden.
+
+- Den **første** kørsel for et par har ingen optegnelse: den opfører sig som før og sletter intet. Den
+  skriver optegnelsen. Fra anden kørsel virker tilstanden.
+- En overført sletning vises i sin egen farve med `⇒🗑` og er **ikke** markeret: det er den eneste
+  række, der kommer fra appens hukommelse. Et klik på pilen tilbyder de andre svar: kopiér filen
+  tilbage i stedet, eller lad begge sider være.
+- Ændret på den ene side og slettet på den anden er en **konflikt**, aldrig en sletning. Det samme
+  gælder en fil, der er ændret på begge sider.
+- Intet slettes på grundlag af et fravær, som sammenligningen ikke kunne bekræfte.
+- Kun to mapper på denne Mac, ikke en server og ikke et arkiv.
+
+**Der findes ingen fortryd for en sletning.** På denne Mac ryger filen i Papirkurven og kan hentes
+tilbage i Finder; det er hele nettet. Optegnelsen ligger sammen med indstillingerne: flytter du en af
+mapperne, har parret ingen historie mere — og en kørsel uden historie sletter intet.
+
 ## Genveje
 
 | Handling | Genvej |

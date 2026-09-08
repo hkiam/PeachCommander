@@ -16,6 +16,30 @@ does not have.
 
 ### Added
 
+- **A third synchronisation mode that can carry a deletion across.** The two existing modes cannot
+  tell one thing apart: a file present on one side only is either *new here* or *deleted there*, and
+  those look identical. So the symmetric mode copies it — delete something on your laptop,
+  synchronise, and it comes back from the backup — while the mirror mode deletes, but in one
+  direction only, so anything done on the target is lost. **Two-way (remember)** keeps a record of
+  what both folders looked like when they last agreed, and with that a deletion on one side can be
+  carried to the other.
+
+  The first run of a pair has no record, so it behaves exactly as before and deletes nothing; it
+  writes the record, and the mode works from the second run on. A deletion carried over has its own
+  colour and glyph and is **not ticked** — it is the only row that comes from the app's memory rather
+  than from anything visible in the two folders, so it is armed by hand, and clicking its arrow
+  offers the other answers: copy the file back instead, or leave both sides alone. Changed on one
+  side and deleted on the other is a conflict, never a deletion; so is a file changed on both.
+  Nothing is deleted on the strength of an absence the comparison could not confirm — an unreadable
+  folder, or one the filter held back, proves nothing about what is inside it. And a run that would
+  delete more than half of the paths the last run knew is refused rather than offered.
+
+  Two folders on this Mac only. A deletion inside an archive rewrites it and a deletion on a server
+  is permanent, and neither is something to try with a mode whose purpose is deleting on both sides.
+  There is no undo for a deletion anywhere in the app; on this Mac the Trash is the whole safety net,
+  and the help page says so.
+
+
 - **An advanced filter for the directory synchronisation.** The mask field takes one include list over
   file names, which cannot say `node_modules/`, cannot say "nothing over 2 GB", and cannot express an
   exclusion at all. A **Filter…** button beside it — the one control this adds to the window — opens a

@@ -49,6 +49,30 @@ Pole masky nese jeden seznam zahrnutí přes jména souborů. Pro to, co se tím
 
 Vynechaná složka se nemaže ani v režimu zrcadla — zrcadlo odstraňuje jen to, co skutečně srovnávalo. Stavový řádek říká, kolik položek filtr zadržel, vedle toho, co běh udělá. Filtr se ukládá a načítá spolu s předvolbou synchronizace, ke které patří.
 
+## Držet dvě složky shodné, oběma směry
+
+Dva původní režimy neumějí rozlišit jednu věc: soubor, který je jen na jedné straně, je buď **zde
+nový**, nebo **tam smazaný**, a obojí vypadá stejně. Symetrický režim jej proto zkopíruje — smažete
+něco na notebooku, synchronizujete, a vrátí se ze zálohy — a zrcadlový režim maže, ale jen v jednom
+směru.
+
+**Obousměrně (s pamětí)** si pamatuje, jak obě složky vypadaly, když se naposledy shodovaly. S tímto
+záznamem lze smazání na jedné straně přenést na druhou.
+
+- **První** běh páru žádný záznam nemá: chová se jako dřív a nic nemaže. Záznam zapíše. Od druhého
+  běhu režim funguje.
+- Přenesené smazání se zobrazí vlastní barvou s `⇒🗑` a **není** zaškrtnuté: je to jediný řádek, který
+  pochází z paměti aplikace. Kliknutí na šipku nabídne ostatní odpovědi: zkopírovat soubor zpět, nebo
+  ponechat obě strany být.
+- Změněno na jedné straně a smazáno na druhé je **konflikt**, nikdy smazání. Stejně tak soubor
+  změněný na obou stranách.
+- Nic se nemaže na základě nepřítomnosti, kterou srovnání nemohlo potvrdit.
+- Jen dvě složky na tomto Macu, ne server a ne archiv.
+
+**Smazání nelze vzít zpět.** Na tomto Macu jde soubor do Koše a lze jej vrátit ve Finderu; to je celá
+záchranná síť. Záznam leží u nastavení: přesunete-li jednu ze složek, pár už žádnou historii nemá — a
+běh bez historie nic nemaže.
+
 ## Klávesové zkratky
 
 | Akce | Zkratka |

@@ -49,6 +49,30 @@ A maszkmező egyetlen, fájlnevekre vonatkozó bevonási listát tartalmaz. Amit
 
 A kihagyott mappát tükör módban sem törli — a tükör csak azt távolítja el, amit valóban összehasonlított. Az állapotsor megmondja, hány bejegyzést tartott vissza a szűrő, amellett, hogy mit fog tenni a futás. A szűrő azzal a szinkronizálási előbeállítással együtt kerül mentésre és betöltésre, amelyhez tartozik.
 
+## Két mappát mindkét irányban egyben tartani
+
+A két eredeti mód egy dolgot nem tud megkülönböztetni: egy fájl, amely csak az egyik oldalon van,
+vagy **itt új**, vagy **ott törölték**, és a kettő ugyanúgy néz ki. A szimmetrikus mód ezért átmásolja
+— töröljön valamit a laptopon, szinkronizáljon, és visszatér a mentésből —, a tükör mód pedig töröl,
+de csak egy irányban.
+
+**Kétirányú (emlékezettel)** megjegyzi, hogyan állt a két mappa, amikor utoljára egyezett. Ezzel a
+feljegyzéssel az egyik oldalon történt törlés átvihető a másikra.
+
+- Egy pár **első** futásának nincs feljegyzése: úgy viselkedik, mint korábban, és nem töröl semmit.
+  Megírja a feljegyzést. A második futástól a mód működik.
+- Az átvitt törlés saját színnel, `⇒🗑` jellel jelenik meg, és **nincs** bejelölve: ez az egyetlen sor,
+  amely az alkalmazás emlékezetéből jön. A nyílra kattintva a többi válasz is elérhető: másolja vissza
+  a fájlt, vagy hagyja békén mindkét oldalt.
+- Az egyik oldalon módosítva, a másikon törölve **ütközés**, soha nem törlés. Ugyanígy a mindkét
+  oldalon módosított fájl.
+- Semmi nem törlődik olyan hiány alapján, amit az összehasonlítás nem tudott megerősíteni.
+- Csak a Mac két mappája, sem kiszolgáló, sem archívum.
+
+**A törlés nem vonható vissza.** Ezen a Macen a fájl a Kukába kerül, és a Finderből visszatehető; ez a
+teljes védőháló. A feljegyzés a beállítások mellett lakik: ha az egyik mappát elmozgatja, a párnak
+nincs többé előzménye — és előzmény nélküli futás semmit nem töröl.
+
 ## Billentyűparancsok
 
 | Művelet | Billentyűparancs |

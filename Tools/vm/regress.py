@@ -155,6 +155,26 @@ SCENARIOS = [
     #
     # The sheet is closed again before the script ends. Measured locally: an open sheet stops the app
     # from quitting, so the harness waits out its forty seconds and the scenario looks like a hang.
+    # Two-way: the mode that needs a memory. Two runs in one script, because the whole claim is
+    # about what the second one knows that the first could not. Run one has no record, so it falls
+    # back to the old rules — copies both files, deletes nothing — and writes the record. Then a file
+    # is deleted on the left over ssh, and run two has to work out that it was *deleted* rather than
+    # *new on the right*, which is the distinction a stateless comparison cannot make.
+    #
+    # The row is deliberately unticked, so carrying it out needs `syncselect all` first — and that
+    # sequencing is itself the proof that the default is off.
+    ("sync-twoway", ["active left", "left /Users/admin/twoway-a", "wait 1200",
+                     "syncopen /Users/admin/twoway-a|/Users/admin/twoway-b", "wait 1200",
+                     "synctwoway 1", "wait 400",
+                     "synccompare", "wait 1600",
+                     "syncstate /Users/admin/twowayfirst.txt", "wait 300",
+                     "syncrun", "wait 2200",
+                     "rmfile /Users/admin/twoway-a/gone.txt", "wait 600",
+                     "synccompare", "wait 1600",
+                     "syncbasis /Users/admin/twowayrows.txt", "wait 300",
+                     "syncselect all|/Users/admin/twowaysel.txt", "wait 500",
+                     "syncrun", "wait 2200",
+                     "syncstate /Users/admin/twoway.txt"], 12),
     # Mirror mode with a left root that cannot be read. Before the guard this produced a delete row
     # for *every* file on the right, pre-ticked, one confirmation click away — a typo in the path
     # field was enough. The claim here is not that the rows are gone (the comparison did produce
@@ -1979,6 +1999,7 @@ EXTERNAL_CHECKS = {
     # The app is gone by the time this runs, so it is the disk that answers: every one of the twelve
     # files the mirror proposed deleting is still there. A report saying "refused" and a target that
     # was emptied anyway would both pass the text check above; only this one cannot.
+    "sync-twoway": ("ls ~/twoway-b | tr '\\n' ' '", "keep.txt"),
     "sync-badroot": ("ls ~/guard-dst | wc -l | tr -d ' '", "12"),
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
                   "one two"),
@@ -2174,6 +2195,12 @@ REPORTS = {
     # next to what the run will do — and loading a preset that carries a filter puts it back on the
     # *button*. That last one is the specific defect the window has already had once, for two
     # options the preset store round-tripped while the window quietly dropped them.
+    # `state=known` is what the second run had and the first could not, and `entries=1` is the record
+    # after the propagated deletion: the path gone from both sides lost its entry. The external check
+    # is the one that cannot be satisfied by a report — the file is really gone from the other side,
+    # and its neighbour is really still there.
+    "sync-twoway": ("/Users/admin/twoway.txt",
+                    ["state=known", "mode=twoWay", "entries=1", "!ERROR"]),
     # `syncEnabled=false` is the load-bearing line: the plan is visible and cannot be run. The
     # reason has to name which side to look at, because "something was wrong" does not tell anybody
     # which path field they mistyped. And the shell check afterwards is the real proof — the twelve
@@ -3281,6 +3308,11 @@ def boot(app: str, run: str):
                   # A populated target for the bad-root scenario. Its source is never created: the
                   # scenario points the left side at a path that does not exist, which is what a
                   # typo or an unmounted volume looks like.
+                  # A pair for the two-way scenario: identical on both sides plus one file that
+                  # the scenario deletes between the two runs.
+                  "rm -rf ~/twoway-a ~/twoway-b && mkdir -p ~/twoway-a ~/twoway-b && "
+                  "printf 'keep\\n' > ~/twoway-a/keep.txt && "
+                  "printf 'gone\\n' > ~/twoway-a/gone.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "

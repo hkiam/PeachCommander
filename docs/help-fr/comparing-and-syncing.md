@@ -49,6 +49,30 @@ Le champ de masque contient une liste d’inclusion portant sur les noms de fich
 
 Un dossier exclu n’est pas non plus supprimé en mode miroir — un miroir ne retire que ce qu’il a réellement comparé. La ligne d’état indique combien d’entrées le filtre a écartées, à côté de ce que fera l’exécution. Un filtre est enregistré et chargé avec le préréglage de synchronisation auquel il appartient.
 
+## Garder deux dossiers identiques, dans les deux sens
+
+Les deux modes d’origine ne savent pas distinguer une chose : un fichier présent d’un seul côté est
+soit **nouveau ici**, soit **supprimé là-bas**, et les deux se ressemblent. Le mode symétrique le
+recopie donc — supprimez quelque chose sur votre portable, synchronisez, et il revient de la
+sauvegarde — et le mode miroir supprime, mais dans un seul sens.
+
+**Bidirectionnel (mémoire)** retient l’état des deux dossiers la dernière fois qu’ils concordaient.
+Avec cet enregistrement, une suppression d’un côté peut être reportée de l’autre.
+
+- La **première** exécution d’une paire n’a pas d’enregistrement : elle se comporte comme avant et ne
+  supprime rien. Elle écrit l’enregistrement. Le mode agit à partir de la deuxième.
+- Une suppression reportée s’affiche dans sa propre couleur avec `⇒🗑` et n’est **pas cochée** : c’est
+  la seule ligne qui vient de la mémoire de l’application. Un clic sur la flèche propose les autres
+  réponses : recopier le fichier, ou ne rien toucher.
+- Modifié d’un côté et supprimé de l’autre est un **conflit**, jamais une suppression. De même pour un
+  fichier modifié des deux côtés.
+- Rien n’est supprimé sur la foi d’une absence que la comparaison n’a pas pu confirmer.
+- Deux dossiers de ce Mac uniquement, ni serveur ni archive.
+
+**Une suppression ne s’annule pas.** Sur ce Mac le fichier va à la Corbeille et peut être remis depuis
+le Finder ; c’est tout le filet. L’enregistrement vit avec les réglages : déplacer un des dossiers
+laisse la paire sans historique — et une exécution sans historique ne supprime rien.
+
 ## Raccourcis
 
 | Action | Raccourci |

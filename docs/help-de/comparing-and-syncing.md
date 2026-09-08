@@ -49,6 +49,37 @@ Das Maskenfeld trägt eine Einschlussliste über Dateinamen. Für alles, was sic
 
 Ein ausgeschlossener Ordner wird auch im Spiegelmodus nicht gelöscht – ein Spiegel entfernt nur, was er wirklich verglichen hat. Die Statuszeile sagt, wie viele Einträge der Filter zurückgehalten hat, neben dem, was der Lauf tun wird. Ein Filter wird mit der Sync-Vorlage gespeichert und geladen, zu der er gehört.
 
+## Zwei Ordner beidseitig gleich halten
+
+Die zwei ursprünglichen Modi können eines nicht unterscheiden: eine Datei, die nur auf einer Seite
+liegt, ist entweder **hier neu** oder **dort gelöscht**, und beides sieht gleich aus. Der symmetrische
+Modus kopiert sie deshalb – wer auf dem Notebook etwas löscht und synchronisiert, bekommt es aus der
+Sicherung zurück – und der Spiegelmodus löscht, aber nur in eine Richtung, sodass alles verloren ist,
+was auf der Zielseite entstanden ist.
+
+**Beidseitig (mit Gedächtnis)** löst das, indem es sich merkt, wie beide Ordner aussahen, als sie
+zuletzt übereinstimmten. Mit diesem Datensatz kann eine Löschung auf einer Seite auf die andere
+übertragen werden.
+
+- Der **erste** Lauf eines Paares hat keinen Datensatz, verhält sich also genau wie vorher und löscht
+  nichts. Er schreibt den Datensatz. Ab dem zweiten Lauf wirkt der Modus.
+- Eine übertragene Löschung steht in eigener Farbe mit einem `⇒🗑` und ist **nicht angehakt**. Sie ist
+  die einzige Zeile, die aus dem Gedächtnis der App kommt und nicht aus etwas, das man in den beiden
+  Ordnern sehen kann – also haken Sie sie selbst an. Ein Klick auf den Pfeil bietet die anderen
+  Antworten: die Datei stattdessen zurückkopieren, oder beide Seiten lassen.
+- Auf einer Seite geändert und auf der anderen gelöscht ist ein **Konflikt**, nie eine Löschung.
+  Ebenso eine Datei, die auf beiden Seiten geändert wurde.
+- Nichts wird auf eine Abwesenheit hin gelöscht, die der Vergleich nicht bestätigen konnte – ein
+  unlesbarer Ordner oder einer, den der Filter zurückgehalten hat, beweist nichts über seinen Inhalt.
+- Nur zwei Ordner auf diesem Mac. Kein Server und kein Archiv: eine Löschung in einem Archiv schreibt
+  es neu, eine Löschung auf einem Server ist endgültig, und dieser Modus ist nicht der, mit dem man
+  das versucht.
+
+**Für eine Löschung gibt es kein Rückgängig.** Auf diesem Mac landet eine gelöschte Datei im
+Papierkorb und lässt sich im Finder zurückholen; das ist das ganze Netz. Der Datensatz liegt bei den
+Einstellungen der App – verschiebt man einen der Ordner, hat das Paar keine Vorgeschichte mehr, und
+ein Lauf ohne Vorgeschichte löscht nichts. In diese Richtung soll dieser Ausfall auch zeigen.
+
 ## Tastenkürzel
 
 | Aktion | Tastenkürzel |

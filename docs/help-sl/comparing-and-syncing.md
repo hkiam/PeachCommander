@@ -49,6 +49,29 @@ Polje maske vsebuje en seznam vključitev po imenih datotek. Za to, česar z nji
 
 Izpuščena mapa se ne izbriše niti v zrcalnem načinu — zrcalo odstrani samo tisto, kar je res primerjalo. Vrstica stanja pove, koliko vnosov je filter zadržal, poleg tega, kaj bo izvedba naredila. Filter se shrani in naloži skupaj s prednastavitvijo usklajevanja, ki ji pripada.
 
+## Dve mapi držati enaki, v obe smeri
+
+Prvotna načina ne moreta ločiti ene stvari: datoteka, ki je le na eni strani, je bodisi **tu nova**
+bodisi **tam izbrisana**, in oboje izgleda enako. Simetrični način jo zato kopira — izbrišete nekaj na
+prenosniku, uskladite, in se vrne iz varnostne kopije — zrcalni način pa briše, a le v eno smer.
+
+**Dvosmerno (s pomnjenjem)** si zapomni, kako sta mapi izgledali, ko sta se nazadnje ujemali. S tem
+zapisom je mogoče izbris na eni strani prenesti na drugo.
+
+- **Prvi** zagon para nima zapisa: obnaša se kot prej in ne izbriše ničesar. Zapis zapiše. Od drugega
+  zagona naprej način deluje.
+- Prenesen izbris je prikazan v svoji barvi z `⇒🗑` in **ni** označen: je edina vrstica, ki prihaja iz
+  spomina programa. Klik na puščico ponudi druge odgovore: datoteko kopirati nazaj ali pustiti obe
+  strani pri miru.
+- Spremenjeno na eni strani in izbrisano na drugi je **spor**, nikoli izbris. Enako datoteka,
+  spremenjena na obeh straneh.
+- Nič se ne izbriše na podlagi odsotnosti, ki je primerjava ni mogla potrditi.
+- Le dve mapi na tem Macu, ne strežnik in ne arhiv.
+
+**Izbrisa ni mogoče razveljaviti.** Na tem Macu gre datoteka v Koš in jo je mogoče vrniti v Finderju;
+to je vsa varnostna mreža. Zapis leži pri nastavitvah: če eno od map premaknete, par nima več
+zgodovine — in zagon brez zgodovine ne izbriše ničesar.
+
 ## Bližnjice
 
 | Dejanje | Bližnjica |

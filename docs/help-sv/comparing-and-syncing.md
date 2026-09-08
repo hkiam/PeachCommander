@@ -49,6 +49,30 @@ Maskfältet innehåller en ta-med-lista över filnamn. För det som inte går at
 
 En utesluten mapp tas inte bort i spegelläge heller — en spegel tar bara bort det den verkligen har jämfört. Statusraden säger hur många poster filtret undanhöll, intill vad körningen kommer att göra. Ett filter sparas och läses in med den synk-förinställning det hör till.
 
+## Håll två mappar lika, i båda riktningarna
+
+De två ursprungliga läggena kan inte skilja på en sak: en fil som bara finns på den ena sidan är
+antingen **ny här** eller **borttagen där**, och det ser likadant ut. Det symmetriska läget kopierar
+den därför — ta bort något på den bärbara, synkronisera, och den kommer tillbaka från säkerhets-
+kopian — och spegelläget tar bort, men bara i en riktning.
+
+**Tvåvägs (med minne)** minns hur båda mapparna såg ut senast de stämde. Med den uppgiften kan en
+borttagning på den ena sidan föras över till den andra.
+
+- Den **första** körningen för ett par har ingen uppgift: den beter sig som förut och tar inte bort
+  något. Den skriver uppgiften. Från andra körningen gör läget sitt arbete.
+- En överförd borttagning visas i egen färg med `⇒🗑` och är **inte** ikryssad: det är den enda raden
+  som kommer från appens minne. Ett klick på pilen erbjuder de andra svaren: kopiera tillbaka filen i
+  stället, eller låta båda sidor vara.
+- Ändrad på den ena sidan och borttagen på den andra är en **konflikt**, aldrig en borttagning. Samma
+  gäller en fil som ändrats på båda sidor.
+- Inget tas bort på grund av en frånvaro som jämförelsen inte kunde bekräfta.
+- Bara två mappar på den här Mac-datorn, inte en server och inte ett arkiv.
+
+**Det finns ingen ångra för en borttagning.** På den här datorn hamnar filen i Papperskorgen och kan
+hämtas tillbaka i Finder; det är hela skyddsnätet. Uppgiften ligger med inställningarna: flyttar du en
+av mapparna har paret ingen historia längre — och en körning utan historia tar inte bort något.
+
 ## Kortkommandon
 
 | Åtgärd | Kortkommando |

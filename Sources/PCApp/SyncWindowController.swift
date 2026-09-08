@@ -63,6 +63,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// after a run destroys the plan that produced it, and the outcomes are the only record of what
     /// happened — a state file will be written from exactly this.
     private var lastRunReport: SyncRunReport?
+    /// Where a pair's record of the last run lives. Nil when the host did not hand one over, and
+    /// two-way mode is then unavailable — the same shape as the preset store.
+    private let stateStore: SyncStateStore?
+    /// The record the last comparison read, kept so the run can write its successor.
+    private var loadedState = SyncStateLoad.unknown(reason: "no comparison yet")
+
     /// Where a plugin criterion's fields come from. Nil when the host did not hand one over, and the
     /// filter sheet then says so instead of offering an empty popup.
     private let contentFields: ContentFieldRegistry?
@@ -73,6 +79,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private let byContentButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let ignoreDateButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let asymmetricButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    /// Keep both sides the same, using a record of the last run (F-192). The only mode that can
+    /// delete on *either* side, and the only one that needs to remember anything.
+    private let twoWayButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let ignoreHiddenButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-192
     /// FAT/DST: absorb a whole-hour difference rather than calling it a change (F-192 follow-up).
     private let daylightButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -101,6 +110,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     // direction/action. Parallel to `results`.
     private var rowIncluded: [Bool] = []
     private var rowAction: [SyncAction] = []
+    /// Why each row says what it says, parallel to `rowAction`. Read for the glyph, the colour, the
+    /// tick default and whether the arrow can be clicked — never inferred from the action, because a
+    /// mirror deletion and a propagated one are the same `SyncAction` on purpose.
+    private var rowBasis: [SyncBasis] = []
     /// Which entries of `results` the filter leaves on screen, in table order. Every table callback
     /// goes through this, and a cell's `tag` carries the *`results`* index rather than the table row
     /// so a click keeps meaning the same row when the filter changes under it.
@@ -125,17 +138,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     convenience init(leftDir: String, rightDir: String, presetsURL: URL? = nil,
-                     contentFields: ContentFieldRegistry? = nil) {
+                     contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil) {
         self.init(left: .localDir(leftDir), right: .localDir(rightDir), presetsURL: presetsURL,
-                  contentFields: contentFields)
+                  contentFields: contentFields, stateDirectory: stateDirectory)
     }
 
     init(left: SyncSide, right: SyncSide, presetsURL: URL? = nil,
-         contentFields: ContentFieldRegistry? = nil) {
+         contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil) {
         self.leftSide = left
         self.rightSide = right
         self.presetStore = presetsURL.map { SyncPresetStore(url: $0) }
         self.contentFields = contentFields
+        self.stateStore = stateDirectory.map { SyncStateStore(directory: $0) }
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 560),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -247,7 +261,14 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let opts2 = NSStackView()
         opts2.orientation = .horizontal
         opts2.spacing = 14
-        for b in [asymmetricButton, daylightButton, caseButton] { opts2.addArrangedSubview(b) }
+        twoWayButton.title = String(localized: "Two-way (remember)")
+        for b in [asymmetricButton, twoWayButton, daylightButton, caseButton] {
+            opts2.addArrangedSubview(b)
+        }
+        // Exclusive, so the combination that means nothing cannot be produced here.
+        asymmetricButton.target = self; asymmetricButton.action = #selector(modeChanged(_:))
+        twoWayButton.target = self; twoWayButton.action = #selector(modeChanged(_:))
+        refreshTwoWayAvailability()
         opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "Tolerance:")))
         opts2.addArrangedSubview(toleranceField)
         opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "s")))
@@ -432,7 +453,39 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                     asymmetric: asymmetricButton.state == .on,
                     ignoreDaylightHour: daylightButton.state == .on,
                     caseSensitive: caseButton.state == .on,
-                    toleranceSeconds: tolerance)
+                    toleranceSeconds: tolerance,
+                    twoWay: twoWayButton.state == .on)
+    }
+
+    /// Whether keeping a record is possible for these two sides at all.
+    ///
+    /// Local folders only, in this version, and the reason is what the surrounding machinery cannot
+    /// yet do rather than anything about the record. A deletion inside an archive is an irreversible
+    /// rewrite and a deletion on a server is permanent — and `SyncExecutor.deletesPermanently` sees
+    /// neither, so the warning would not even mention them. Nothing anywhere pushes a synchronisation
+    /// onto the undo stack. A mode whose whole point is deleting on both sides is not the one to
+    /// switch on over that.
+    private var twoWayIsPossible: Bool {
+        guard stateStore != nil else { return false }
+        if case .localDir = leftSide, case .localDir = rightSide { return true }
+        return false
+    }
+
+    /// Keep the two deletion modes exclusive, so `asymmetric && twoWay` — which means nothing — is
+    /// not reachable from the window. `SyncOptions.mode` still settles it for a preset that arrives
+    /// with both, by reading it as the mode that deletes nothing.
+    @objc private func modeChanged(_ sender: NSButton) {
+        if sender === twoWayButton, sender.state == .on { asymmetricButton.state = .off }
+        if sender === asymmetricButton, sender.state == .on { twoWayButton.state = .off }
+        refreshTwoWayAvailability()
+    }
+
+    private func refreshTwoWayAvailability() {
+        twoWayButton.isEnabled = twoWayIsPossible
+        if !twoWayIsPossible { twoWayButton.state = .off }
+        twoWayButton.toolTip = twoWayIsPossible
+            ? String(localized: "Remembers what both folders looked like last time, so a deletion on one side is carried to the other. There is no undo for a deletion.")
+            : String(localized: "Only two folders on this Mac can be kept in step both ways — not a server or an archive.")
     }
 
     /// The typed tolerance, or the two seconds that were hardcoded before there was a field.
@@ -570,6 +623,31 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Set the "Ignore hidden" option before an automated compare (F-192).
     func automationSetIgnoreHidden(_ on: Bool) { ignoreHiddenButton.state = on ? .on : .off }
 
+    /// Switch two-way mode on before an automated compare. Exclusive with mirror, as the window
+    /// keeps them.
+    func automationSetTwoWay(_ on: Bool) {
+        twoWayButton.state = on ? .on : .off
+        modeChanged(twoWayButton)
+    }
+
+    /// What the window knows about the pair's record — the thing a two-run scenario has to be able
+    /// to see between the runs.
+    func automationStateReport() -> String {
+        var out = "twoWayEnabled=\(twoWayButton.isEnabled)\n"
+        out += "twoWayOn=\(twoWayButton.state == .on)\n"
+        out += "mode=\(options().mode)\n"
+        switch loadedState {
+        case .unknown(let reason):
+            out += "state=unknown\nreason=\(reason)\n"
+        case .known(let header, let entries):
+            out += "state=known\nentries=\(entries.count)\nrecordedAt=\(header.runAt.timeIntervalSince1970)\n"
+        }
+        out += "propagated=\(rowBasis.filter { $0 == .propagatedDeletion }.count)\n"
+        out += "stateConflicts=\(rowBasis.filter { $0 == .stateConflict }.count)\n"
+        out += "status=\(statusLabel.stringValue)\n"
+        return out
+    }
+
     /// Set mirror mode before an automated compare. It is the only mode that deletes today, so it
     /// is the one a guard scenario has to be able to switch on.
     func automationSetAsymmetric(_ on: Bool) { asymmetricButton.state = on ? .on : .off }
@@ -647,6 +725,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
 
     /// Set the result filter and report what the grid then shows.
     ///
+    /// One line per visible row with its basis and whether it is ticked — what a scenario needs to
+    /// tell a propagated deletion from a mirror one, which are the same action on purpose.
+    func automationBasisReport() -> String {
+        var out = "rows=\(visibleRows.count)\n"
+        for index in visibleRows {
+            guard results.indices.contains(index) else { continue }
+            out += "row=\(results[index].item.relativePath) action=\(rowAction[index])"
+                + " basis=\(basis(index)) included=\(rowIncluded[index])\n"
+        }
+        return out
+    }
+
     /// The rows are read back from the *table's* own data source rather than from `visibleRows`, so
     /// the report is what a user can see and not what the controller believes: a filter that
     /// computes the right set and a grid that shows the old one look identical from the inside.
@@ -792,6 +882,14 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
         let activeFilter = filter
         let registry = contentFields
+        // The record is read before the scan, on the main actor, so the detached work has a plain
+        // value and no store to reach into. Two-way only: the other two modes must behave exactly as
+        // they always have, whatever is on disk.
+        let state: SyncStateLoad = opts.mode == .twoWay
+            ? (stateStore?.load(leftRoot: l.path, rightRoot: r.path)
+                ?? .unknown(reason: "no place to keep a record"))
+            : .unknown(reason: "not two-way")
+        loadedState = state
         compareTask = Task.detached(priority: .userInitiated) {
             let outcome = await SyncScanner.scanDetailed(left: l, right: r, mask: mask,
                                          withSubdirs: withSubdirs, byContent: byContent,
@@ -810,7 +908,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 }
                 return
             }
-            var classified = SyncModel.classify(items, options: opts)
+            var classified = SyncTwoWay.classify(items, options: opts,
+                                                 state: state.entries,
+                                                 stateKnown: state.isKnown && opts.mode == .twoWay,
+                                                 leftScope: outcome.leftScope,
+                                                 rightScope: outcome.rightScope)
             var heldBack = outcome.heldBack
             let scopes = (outcome.leftScope, outcome.rightScope)
             // The plugin criterion runs here and not in the scan: it needs to know which side a row
@@ -829,7 +931,14 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 (self.leftScope, self.rightScope) = scopes
                 self.results = classified.filter { $0.action != .none }
                 self.rowAction = self.results.map(\.action)
-                self.rowIncluded = self.results.map { Self.isActionable($0.action) }   // include all actionable by default
+                self.rowBasis = self.results.map(\.basis)
+                // Everything actionable is ticked — except a deletion carried across from the other
+                // side. That row is the one where a wrong record costs data, and it is the only one
+                // the user did not ask for directly: it comes from the app's memory rather than from
+                // anything visible in the two folders. It has to be armed by hand.
+                self.rowIncluded = self.results.map {
+                    Self.isActionable($0.action) && $0.basis != .propagatedDeletion
+                }
                 self.reloadVisibleRows()   // which also decides whether Synchronize is enabled
             }
         }
@@ -898,7 +1007,8 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                               < (items[b].item.leftModified ?? .distantPast)
             case "rdate": return (items[a].item.rightModified ?? .distantPast)
                               < (items[b].item.rightModified ?? .distantPast)
-            case "act":   return Self.actionGlyph(actions[a]) < Self.actionGlyph(actions[b])
+            case "act":   return Self.actionGlyph(actions[a], basis(a))
+                              < Self.actionGlyph(actions[b], basis(b))
             default:      return items[a].item.relativePath.lowercased()
                               < items[b].item.relativePath.lowercased()
             }
@@ -968,11 +1078,28 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         if heldBack > 0 {
             text += "   ·   \(heldBack) \(String(localized: "held back by the filter"))"
         }
+        // A deletion carried across from the other side is deliberately unticked, so the counts
+        // above say nothing about it — and a grid showing a row nobody mentioned next to "delete 0"
+        // is exactly the kind of quiet the rest of this window exists to avoid. Counted separately
+        // *because* it is not counted above.
+        let waiting = rowBasis.indices.filter {
+            rowBasis[$0] == .propagatedDeletion && !(rowIncluded.indices.contains($0)
+                                                     && rowIncluded[$0])
+        }.count
+        if waiting > 0 {
+            text += "   ·   \(waiting) \(String(localized: "deleted on the other side — tick to carry over"))"
+        }
         // Recomputed on every change, because the plan changes with every tick and every flipped
         // arrow — a refusal computed once after the scan would still be shown for a row the user has
         // since unticked.
+        // The share is measured against what the *last run* knew, when there is a record. Against
+        // the plan's own length a run that also copies a thousand files would dilute the share until
+        // the guard stopped firing — and a plan built from a record that belongs to a different pair
+        // is exactly the case this net is for.
         refusals = SyncPlanGuard.refusals(plan: currentPlan(), leftScope: leftScope,
-                                          rightScope: rightScope, roots: rootRelation)
+                                          rightScope: rightScope, roots: rootRelation,
+                                          knownEntries: loadedState.isKnown
+                                              ? loadedState.entries.count : nil)
         if let first = refusals.first {
             // The refusal replaces the counts rather than being appended to them. It is the only
             // thing that matters about this plan, and a fourth clause after "→ 3 ← 0 delete 812" is
@@ -1040,6 +1167,13 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let (l, r) = (leftSide, rightSide)
         lastRunSummary = ""
         lastRunReport = nil
+        // Only two-way keeps a record, and only then is it worth reading each destination back —
+        // which on a server would be a round trip per file.
+        let opts = options()
+        let recording = opts.mode == .twoWay && stateStore != nil
+        let scanned = results.map(\.item)
+        let previous = loadedState.entries
+        let scopes = (leftScope, rightScope)
         setSynchronizing(true)
         statusLabel.stringValue = String(localized: "Synchronizing…")
         let report: @Sendable (Int, Int) -> Void = { done, total in
@@ -1047,6 +1181,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
         syncTask = Task.detached(priority: .userInitiated) {
             let runReport = await SyncExecutor.execute(actionable, left: l, right: r, toTrash: true,
+                                                       observeDestinations: recording,
                                                        progress: report)
             let errors = runReport.errors
             let refusals = runReport.refusals
@@ -1095,9 +1230,76 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                                                      entries: refusals.map { ($0.path, $0.message) })
                 }
                 self.lastRunReport = runReport
+                // Written before the re-comparison, because that destroys the plan this came from —
+                // the outcomes are the only record of what actually happened.
+                if recording {
+                    self.writeState(runReport, items: scanned, previous: previous,
+                                    options: opts, scopes: scopes, left: l, right: r)
+                }
                 self.compare() // re-scan to reflect the new state
             }
         }
+    }
+
+    /// Write the record the next comparison will read.
+    ///
+    /// From the run's outcomes and not from the plan: a propagated deletion that failed must leave
+    /// the previous record standing, or the next run reads the file as new on the surviving side and
+    /// copies it back — resurrecting exactly what the user deleted. `SyncState.next` holds that rule;
+    /// this only translates the executor's outcomes into the terms it takes, and the translation is
+    /// deliberately dumb.
+    private func writeState(_ report: SyncRunReport, items: [SyncItem],
+                            previous: [String: SyncStateEntry], options: SyncOptions,
+                            scopes: (SyncSideScope, SyncSideScope),
+                            left: SyncSide, right: SyncSide) {
+        guard let store = stateStore else { return }
+        let summaries: [SyncItemOutcomeSummary] = report.outcomes.map { outcome in
+            let change: SyncItemOutcomeSummary.Change
+            switch (outcome.action, outcome.status) {
+            case (.copyToRight, .copied(let size, let modified)):
+                change = .copiedToRight(observedSide(size, modified, outcome, items))
+            case (.copyToLeft, .copied(let size, let modified)):
+                change = .copiedToLeft(observedSide(size, modified, outcome, items))
+            case (.deleteRight, .deleted): change = .deletedRight
+            case (.deleteLeft, .deleted): change = .deletedLeft
+            default: change = .nothingHappened
+            }
+            return SyncItemOutcomeSummary(relativePath: outcome.relativePath, change: change)
+        }
+        // A path is only droppable from the record when *both* walks could account for it — a run
+        // with a narrower mask must not erase the history of the files it did not consider.
+        let (leftScope, rightScope) = scopes
+        let entries = SyncState.next(items: items, outcomes: summaries, previous: previous,
+                                     caseSensitive: options.caseSensitive,
+                                     inScope: { path in
+                                         leftScope.provesAbsence(of: path)
+                                             && rightScope.provesAbsence(of: path)
+                                     })
+        let header = SyncStateHeader(leftRoot: (left.path as NSString).standardizingPath
+                                        .precomposedStringWithCanonicalMapping,
+                                     rightRoot: (right.path as NSString).standardizingPath
+                                        .precomposedStringWithCanonicalMapping,
+                                     runAt: Date(), options: options,
+                                     fileMask: maskField.stringValue,
+                                     withSubdirs: subdirsButton.state == .on,
+                                     ignoreHidden: ignoreHiddenButton.state == .on,
+                                     filter: filter.isActive ? filter : nil,
+                                     leftRootInode: FileStamp.of(left.path)?.inode,
+                                     rightRootInode: FileStamp.of(right.path)?.inode)
+        if case .refused(let reason) = store.save(header: header, entries: entries) {
+            // Said out loud: keeping no record silently turns the mode off at the next run, with
+            // nothing to explain why it stopped propagating deletions.
+            lastRunSummary += "   ·   \(String(localized: "no record kept")): \(reason)"
+        }
+    }
+
+    /// The destination side as the run observed it, or nil when it did not — in which case
+    /// `SyncState.next` deliberately does not record the copy, so the next run offers it again.
+    private func observedSide(_ size: Int64?, _ modified: Date?, _ outcome: SyncItemOutcome,
+                              _ items: [SyncItem]) -> SyncStateSide? {
+        guard let size, let modified else { return nil }
+        let isDirectory = items.first { $0.relativePath == outcome.relativePath }?.isDirectory ?? false
+        return SyncStateSide(size: size, modified: modified, isDirectory: isDirectory)
     }
 
     /// Swap the Synchronize button for a Stop button and run the spinner, or back.
@@ -1143,17 +1345,26 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
         // Action cell: a clickable glyph that flips direction on copy rows (F-192).
         if tableColumn?.identifier.rawValue == "act" {
-            let btn = NSButton(title: Self.actionGlyph(action), target: self, action: #selector(flipDirection(_:)))
+            let rowKind = basis(index)
+            let btn = NSButton(title: Self.actionGlyph(action, rowKind), target: self,
+                               action: #selector(flipDirection(_:)))
             btn.tag = index
             btn.isBordered = false
-            btn.contentTintColor = Self.actionColor(action)
+            btn.contentTintColor = Self.actionColor(action, rowKind)
             // A conflict is clickable too, and that is the whole of finding it a way out: the
             // classifier refuses to guess between two files of the same age and different content,
             // and until now that refusal was final — the row could never be included in a run at
             // all. Clicking cycles ≠ → → → ← → ≠, so the guess the program will not make is made by
             // the person who can.
+            // A propagated deletion is clickable too, and it is the row that most needs to be: when
+            // the record is wrong, what the user wants is not "skip this" but "no, it was not
+            // deleted — put it back", and that is one click away now. Until this, a delete row's
+            // glyph could not be clicked at all.
             btn.isEnabled = action == .copyToRight || action == .copyToLeft || action == .conflict
-            btn.toolTip = action == .conflict
+                || rowKind == .propagatedDeletion
+            btn.toolTip = rowKind == .propagatedDeletion
+                ? String(localized: "Deleted on the other side since the last run. Click to copy it back instead, or to leave both sides alone.")
+                : action == .conflict
                 ? String(localized: "Click to pick a direction for this conflict")
                 : String(localized: "Click to reverse the copy direction")
             return btn
@@ -1171,7 +1382,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
         // Excluded rows are dimmed; otherwise use the action's colour.
         field.textColor = rowIncluded[index] || !Self.isActionable(action)
-            ? Self.actionColor(action) : .disabledControlTextColor
+            ? Self.actionColor(action, basis(index)) : .disabledControlTextColor
         return field
     }
 
@@ -1259,6 +1470,31 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         // whole point of the click — and going back to ≠ unticks it again, since a conflict is not
         // something the run can carry out.
         let wasConflict = results[index].action == .conflict
+
+        // A deletion carried across from the other side has its own cycle, and it is the answer to
+        // the only question a wrong record raises: *delete it here → no, copy it back → leave both
+        // alone → delete it here*. "Copy it back" is what somebody actually wants when the record is
+        // wrong, and until now a delete row could not be clicked at all.
+        if basis(index) == .propagatedDeletion {
+            let original = results[index].action
+            let back: SyncAction = original == .deleteRight ? .copyToLeft : .copyToRight
+            switch rowAction[index] {
+            case .deleteRight, .deleteLeft:
+                rowAction[index] = back
+                rowIncluded[index] = true
+            case .copyToRight, .copyToLeft:
+                rowAction[index] = SyncAction.none      // leave both sides as they are
+                rowIncluded[index] = false
+            default:
+                rowAction[index] = original
+                // Back to the deletion, and *still* unticked: coming full circle must not arm the
+                // one row in the grid whose default is deliberately off.
+                rowIncluded[index] = false
+            }
+            reloadVisibleRows()
+            return
+        }
+
         switch rowAction[index] {
         case .copyToRight: rowAction[index] = .copyToLeft
         case .copyToLeft:  rowAction[index] = wasConflict ? .conflict : .copyToRight
@@ -1272,7 +1508,14 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         reloadVisibleRows()
     }
 
-    private static func actionGlyph(_ a: SyncAction) -> String {
+    /// The glyph, which has to distinguish a deletion the mirror decided from one carried across
+    /// from the other side — they are the same `SyncAction` on purpose, and telling them apart is
+    /// what the basis is for. A propagated deletion gets a second arrow, because that is what it is:
+    /// something that happened over there arriving here.
+    private static func actionGlyph(_ a: SyncAction, _ basis: SyncBasis = .comparison) -> String {
+        if basis == .propagatedDeletion {
+            return a == .deleteRight ? "⇒🗑" : "🗑⇐"
+        }
         switch a {
         case .copyToRight: return "→"
         case .copyToLeft: return "←"
@@ -1284,7 +1527,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
     }
 
-    private static func actionColor(_ a: SyncAction) -> NSColor {
+    private static func actionColor(_ a: SyncAction, _ basis: SyncBasis = .comparison) -> NSColor {
+        // A propagated deletion is not orange like the mirror's: it is the row a wrong record turns
+        // into lost data, and it is unticked by default, so it needs to stand out from the rows that
+        // will run.
+        if basis == .propagatedDeletion { return .systemPurple }
         switch a {
         case .copyToRight, .copyToLeft: return .systemBlue
         case .equal: return .secondaryLabelColor
@@ -1292,6 +1539,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         case .deleteRight, .deleteLeft: return .systemOrange
         case .none: return .labelColor
         }
+    }
+
+    /// The basis of one row, or `.comparison` for a caller that has none — never inferred from the
+    /// action.
+    private func basis(_ index: Int) -> SyncBasis {
+        rowBasis.indices.contains(index) ? rowBasis[index] : .comparison
     }
 }
 

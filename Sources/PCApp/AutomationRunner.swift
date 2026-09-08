@@ -1150,6 +1150,12 @@ extension MainWindowController {
                 // another program would — not through a panel operation, so nothing asks the panel to
                 // reload. If the file shows up, the watcher is what put it there.
                 try? "auto\n".write(toFile: arg, atomically: true, encoding: .utf8)
+            case "rmfile":                              // rmfile <path>
+                // `mkfile`'s counterpart, and for the same reason: something changes on disk the way
+                // another program or a person would change it, without the app being asked to do it.
+                // A synchronisation that has to tell "deleted since last time" from "new over there"
+                // can only be tested by *something else* doing the deleting between two runs.
+                try? FileManager.default.removeItem(atPath: arg)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
             case "menuclick":  clickMenuItem(arg)      // menuclick <cm_/em_ name>|<out> (F-257)
@@ -1254,7 +1260,8 @@ extension MainWindowController {
                     let win = SyncWindowController(leftDir: o[0], rightDir: o[1],
                                                    presetsURL: o.count >= 3 && !o[2].isEmpty
                                                        ? URL(fileURLWithPath: o[2]) : nil,
-                                                   contentFields: contentFieldRegistry)
+                                                   contentFields: contentFieldRegistry,
+                                                   stateDirectory: configPaths.syncStateDirectory)
                     automationSyncWindows.append(win)
                     win.showWindow()
                 }
@@ -1278,6 +1285,17 @@ extension MainWindowController {
                 }
             case "syncasym":                               // syncasym <0|1> (F-192): mirror mode
                 automationSyncWindows.last?.automationSetAsymmetric(arg.trimmingCharacters(in: .whitespaces) == "1")
+            case "synctwoway":                             // synctwoway <0|1> (F-192): remember mode
+                automationSyncWindows.last?.automationSetTwoWay(
+                    arg.trimmingCharacters(in: .whitespaces) == "1")
+            case "syncstate":                              // syncstate <out> (F-192)
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationStateReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncbasis":                              // syncbasis <out> (F-192): row + basis
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationBasisReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "syncguard":                              // syncguard <out> (F-192)
                 // What the window refuses about the plan it is showing. Readable without pressing
                 // Synchronize, because that is the claim: a plan that cannot run is not offered.

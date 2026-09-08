@@ -153,6 +153,19 @@ screenshots:
       - syncdemo /Users/admin/pc-demo/Documents|/Users/admin/pc-demo/Archives
       - wait 1000
 
+  - id: sync-twoway
+    feature: compare-sync
+    alt: "The synchronize window in two-way mode, with a deletion carried over from the other side"
+    caption: "Two-way: a deletion on one side is carried to the other, and has to be ticked first."
+    pages: [comparing-and-syncing]
+    script:
+      - syncopen /Users/admin/twoway-a|/Users/admin/twoway-b
+      - wait 1000
+      - synctwoway 1
+      - wait 400
+      - synccompare
+      - wait 1500
+
   - id: sync-filter
     feature: compare-sync
     alt: "The sync filter sheet, showing exclusion patterns, a size range and a date range"

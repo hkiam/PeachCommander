@@ -49,6 +49,30 @@ Il campo maschera contiene un elenco di inclusione sui nomi dei file. Per ciò c
 
 Una cartella esclusa non viene eliminata nemmeno in modalità specchio: uno specchio rimuove solo ciò che ha effettivamente confrontato. La riga di stato indica quante voci il filtro ha trattenuto, accanto a ciò che l’esecuzione farà. Un filtro viene salvato e caricato con il preset di sincronizzazione a cui appartiene.
 
+## Tenere due cartelle uguali, in entrambi i sensi
+
+Le due modalità originarie non distinguono una cosa: un file presente su un solo lato è **nuovo qui**
+oppure **eliminato là**, e i due casi sembrano identici. La modalità simmetrica lo ricopia — elimini
+qualcosa sul portatile, sincronizzi, e torna dal backup — e la modalità specchio elimina, ma in un
+solo senso.
+
+**Bidirezionale (con memoria)** ricorda come erano le due cartelle l’ultima volta che concordavano.
+Con quel registro un’eliminazione su un lato può essere riportata sull’altro.
+
+- La **prima** esecuzione di una coppia non ha registro: si comporta come prima e non elimina nulla.
+  Scrive il registro. La modalità agisce dalla seconda.
+- Un’eliminazione riportata è mostrata con un colore proprio e `⇒🗑`, e **non** è spuntata: è l’unica
+  riga che viene dalla memoria dell’app. Un clic sulla freccia offre le altre risposte: ricopiare il
+  file, oppure lasciare entrambi i lati come sono.
+- Modificato su un lato ed eliminato sull’altro è un **conflitto**, mai un’eliminazione. Così anche
+  un file modificato su entrambi i lati.
+- Nulla viene eliminato in base a un’assenza che il confronto non ha potuto confermare.
+- Solo due cartelle di questo Mac, né un server né un archivio.
+
+**Un’eliminazione non si annulla.** Su questo Mac il file va nel Cestino e si può rimettere dal
+Finder; è tutta la rete di sicurezza. Il registro sta con le impostazioni: spostare una delle cartelle
+lascia la coppia senza storia — e un’esecuzione senza storia non elimina nulla.
+
 ## Scorciatoie
 
 | Azione | Scorciatoia |

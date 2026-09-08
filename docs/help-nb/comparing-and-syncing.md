@@ -49,6 +49,30 @@ Maskefeltet inneholder én ta-med-liste over filnavn. For det den ikke får sagt
 
 En utelatt mappe slettes heller ikke i speilmodus — et speil fjerner bare det det faktisk har sammenlignet. Statuslinjen sier hvor mange oppføringer filteret holdt utenfor, ved siden av hva kjøringen vil gjøre. Et filter lagres og hentes sammen med synk-oppsettet det hører til.
 
+## Hold to mapper like, begge veier
+
+De to opprinnelige modusene kan ikke skille én ting: en fil som bare finnes på den ene siden, er
+enten **ny her** eller **slettet der**, og det ser likt ut. Den symmetriske modusen kopierer den
+derfor — slett noe på den bærbare, synkronisér, og den kommer tilbake fra sikkerhetskopien — og
+speilmodusen sletter, men bare i én retning.
+
+**Toveis (med hukommelse)** husker hvordan begge mappene så ut sist de stemte. Med den oppføringen kan
+en sletting på den ene siden føres over til den andre.
+
+- Den **første** kjøringen for et par har ingen oppføring: den oppfører seg som før og sletter
+  ingenting. Den skriver oppføringen. Fra andre kjøring virker modusen.
+- En overført sletting vises i sin egen farge med `⇒🗑` og er **ikke** avkrysset: det er den eneste
+  raden som kommer fra appens hukommelse. Et klikk på pilen tilbyr de andre svarene: kopiér filen
+  tilbake i stedet, eller la begge sider være.
+- Endret på den ene siden og slettet på den andre er en **konflikt**, aldri en sletting. Det samme
+  gjelder en fil som er endret på begge sider.
+- Ingenting slettes på grunnlag av et fravær sammenligningen ikke kunne bekrefte.
+- Bare to mapper på denne Mac-en, ikke en tjener og ikke et arkiv.
+
+**Det finnes ingen angre for en sletting.** På denne Mac-en havner filen i Papirkurven og kan hentes
+tilbake i Finder; det er hele nettet. Oppføringen ligger sammen med innstillingene: flytter du en av
+mappene, har paret ingen historie lenger — og en kjøring uten historie sletter ingenting.
+
 ## Snarveier
 
 | Handling | Snarvei |

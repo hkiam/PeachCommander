@@ -49,6 +49,31 @@ Het maskerveld bevat één insluitlijst over bestandsnamen. Voor wat daarmee nie
 
 Een uitgesloten map wordt ook in spiegelmodus niet verwijderd — een spiegel haalt alleen weg wat hij werkelijk heeft vergeleken. De statusregel zegt hoeveel items het filter heeft weggehouden, naast wat de uitvoering gaat doen. Een filter wordt bewaard en geladen met de sync-voorinstelling waar het bij hoort.
 
+## Twee mappen aan beide kanten gelijk houden
+
+De twee oorspronkelijke modi kunnen één ding niet onderscheiden: een bestand dat maar aan één kant
+staat is óf **hier nieuw** óf **daar verwijderd**, en dat ziet er hetzelfde uit. De symmetrische modus
+kopieert het dus — verwijder iets op je laptop, synchroniseer, en het komt terug uit de back-up — en de
+spiegelmodus verwijdert, maar maar in één richting.
+
+**Tweezijdig (met geheugen)** onthoudt hoe beide mappen eruitzagen toen ze voor het laatst
+overeenkwamen. Met die gegevens kan een verwijdering aan de ene kant naar de andere worden gebracht.
+
+- De **eerste** keer voor een paar is er niets bewaard: het gedraagt zich als voorheen en verwijdert
+  niets. Het bewaart de gegevens. Vanaf de tweede keer doet de modus zijn werk.
+- Een overgenomen verwijdering staat in een eigen kleur met `⇒🗑` en is **niet** aangevinkt: het is de
+  enige regel die uit het geheugen van de app komt. Klikken op de pijl biedt de andere antwoorden:
+  het bestand terugkopiëren, of beide kanten laten.
+- Aan de ene kant gewijzigd en aan de andere verwijderd is een **conflict**, nooit een verwijdering.
+  Net als een bestand dat aan beide kanten is gewijzigd.
+- Er wordt niets verwijderd op grond van een afwezigheid die de vergelijking niet kon bevestigen.
+- Alleen twee mappen op deze Mac, geen server en geen archief.
+
+**Voor een verwijdering is er geen ongedaan maken.** Op deze Mac gaat het bestand naar de Prullenmand
+en kan het via de Finder terug; dat is het hele net. De gegevens staan bij de instellingen: verplaats
+je een van de mappen, dan heeft het paar geen geschiedenis meer — en zonder geschiedenis verwijdert
+een run niets.
+
 ## Sneltoetsen
 
 | Actie | Sneltoets |

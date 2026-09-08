@@ -11,10 +11,14 @@ import XCTest
 final class SyncTwoWayTests: XCTestCase {
 
     private let t0 = Date(timeIntervalSince1970: 1_700_000_000)
+    /// Two-way is a mode, not a way of reading any options: `classify` defers to the stateless rules
+    /// unless it is switched on, so the tests have to switch it on. `test_theModeMustBeOnForTheRecord`
+    /// below is the assertion for that gate.
     private var options: SyncOptions {
         var o = SyncOptions()
         o.toleranceSeconds = 2
         o.caseSensitive = true
+        o.twoWay = true
         return o
     }
 
@@ -57,7 +61,9 @@ final class SyncTwoWayTests: XCTestCase {
         let onlyRight = SyncItem(relativePath: "b.txt", isDirectory: false,
                                  leftSize: nil, leftModified: nil, rightSize: 10, rightModified: t0)
         for asymmetric in [false, true] {
-            var o = options
+            var o = SyncOptions()
+            o.toleranceSeconds = 2
+            o.caseSensitive = true
             o.asymmetric = asymmetric
             let results = SyncTwoWay.classify([onlyRight], options: o, state: [:], stateKnown: false,
                                               leftScope: reliable(), rightScope: reliable())
@@ -204,7 +210,9 @@ final class SyncTwoWayTests: XCTestCase {
         let propagated = decide(leftNow: nil, rightNow: (10, t0),
                                 record: SyncStateEntry(relativePath: "a.txt",
                                                        left: side(10), right: side(10)))
-        var mirror = options
+        var mirror = SyncOptions()
+        mirror.toleranceSeconds = 2
+        mirror.caseSensitive = true
         mirror.asymmetric = true
         let stateless = SyncModel.classify(
             [SyncItem(relativePath: "a.txt", isDirectory: false, leftSize: nil, leftModified: nil,
@@ -315,5 +323,60 @@ final class SyncTwoWayTests: XCTestCase {
         let next = SyncState.next(items: [item], outcomes: [], previous: [:],
                                   caseSensitive: false, inScope: { _ in true })
         XCTAssertEqual(next.map(\.relativePath), ["readme.md"])
+    }
+
+    // MARK: - The mode, and the combination that means nothing
+
+    /// A record is only consulted in two-way mode. The other two must behave exactly as they always
+    /// have, whatever happens to be on disk for the pair.
+    func test_theModeMustBeOnForTheRecordToBeUsedAtAll() {
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: 10, leftModified: t0, rightSize: nil, rightModified: nil)
+        let record = ["a.txt": SyncStateEntry(relativePath: "a.txt",
+                                              left: side(10), right: side(10))]
+        var off = SyncOptions()
+        off.toleranceSeconds = 2
+        off.caseSensitive = true
+        let results = SyncTwoWay.classify([item], options: off, state: record, stateKnown: true,
+                                          leftScope: reliable(), rightScope: reliable())
+        // With the record it would be `deleteLeft`; without the mode it is the old rule.
+        XCTAssertEqual(results[0].action, .copyToRight)
+        XCTAssertEqual(results[0].basis, .comparison)
+    }
+
+    /// `asymmetric && twoWay` is not a mode. It can only arrive from a hand-edited preset — the
+    /// window keeps the two switches exclusive — and it reads as the one mode of the three that
+    /// deletes nothing. A malformed input has to fall towards the harmless reading rather than
+    /// towards whichever deletion is checked first.
+    func test_bothDeletionModesAtOnceReadsAsTheOneThatDeletesNothing() {
+        var both = SyncOptions()
+        both.asymmetric = true
+        both.twoWay = true
+        XCTAssertEqual(both.mode, .symmetric)
+
+        let onlyRight = SyncItem(relativePath: "b.txt", isDirectory: false,
+                                 leftSize: nil, leftModified: nil, rightSize: 10, rightModified: t0)
+        let record = ["b.txt": SyncStateEntry(relativePath: "b.txt",
+                                              left: side(10), right: side(10))]
+        let results = SyncTwoWay.classify([onlyRight], options: both, state: record,
+                                          stateKnown: true,
+                                          leftScope: reliable(), rightScope: reliable())
+        XCTAssertEqual(results[0].action, .copyToLeft, "a meaningless mode deleted something")
+    }
+
+    func test_eachModeIsWhatItSays() {
+        XCTAssertEqual(SyncOptions().mode, .symmetric)
+        XCTAssertEqual(SyncOptions(asymmetric: true).mode, .mirror)
+        XCTAssertEqual(SyncOptions(twoWay: true).mode, .twoWay)
+    }
+
+    /// A preset written before the mode existed loads as not two-way, rather than throwing and
+    /// taking every other preset in the file with it.
+    func test_aPresetFromBeforeTwoWayExistedLoadsWithItOff() throws {
+        let json = Data(#"{"byContent":true,"toleranceSeconds":5}"#.utf8)
+        let options = try JSONDecoder().decode(SyncOptions.self, from: json)
+        XCTAssertFalse(options.twoWay)
+        XCTAssertEqual(options.mode, .symmetric)
+        XCTAssertEqual(options.toleranceSeconds, 5)
     }
 }

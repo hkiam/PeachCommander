@@ -103,15 +103,49 @@ public struct SyncOptions: Sendable, Equatable, Codable {
     /// Base granularity tolerance for time comparisons, in seconds.
     /// Defaults to 2, absorbing FAT's 2-second timestamp resolution.
     public var toleranceSeconds: TimeInterval
+    /// Compare against a record of the last run, so that a one-sided file can be told apart as
+    /// **new here** or **deleted there** — and a deletion carried across.
+    ///
+    /// A second flag beside `asymmetric` rather than the two of them replaced by an enum, and that
+    /// is not laziness: `SyncPreset` decodes field by field precisely so a preset written by an
+    /// older build still loads, and an enum arriving as an absent key would have to default to
+    /// something. Two booleans have one combination that means nothing, and `mode` below settles it
+    /// in one place instead of leaving it to whichever branch reads them first.
+    public var twoWay: Bool
 
     public init(byContent: Bool = false, ignoreDate: Bool = false, asymmetric: Bool = false,
-                ignoreDaylightHour: Bool = false, caseSensitive: Bool = false, toleranceSeconds: TimeInterval = 2) {
+                ignoreDaylightHour: Bool = false, caseSensitive: Bool = false,
+                toleranceSeconds: TimeInterval = 2, twoWay: Bool = false) {
         self.byContent = byContent
         self.ignoreDate = ignoreDate
         self.asymmetric = asymmetric
         self.ignoreDaylightHour = ignoreDaylightHour
         self.caseSensitive = caseSensitive
         self.toleranceSeconds = toleranceSeconds
+        self.twoWay = twoWay
+    }
+
+    /// Which of the three modes this actually is.
+    ///
+    /// The one place the two flags are resolved. `asymmetric && twoWay` is not a mode — it can only
+    /// arrive from a hand-edited preset or a future version, and the window keeps the two switches
+    /// exclusive — so it reads as **symmetric**: the one of the three that never deletes anything.
+    /// A malformed input has to fall towards the harmless reading, not towards whichever deletion
+    /// happens to be checked first.
+    public var mode: Mode {
+        if asymmetric && twoWay { return .symmetric }
+        if twoWay { return .twoWay }
+        if asymmetric { return .mirror }
+        return .symmetric
+    }
+
+    public enum Mode: Sendable, Equatable {
+        /// Differences are copied to whichever side is older. Never deletes.
+        case symmetric
+        /// The right side is made a copy of the left. Deletes on the right only.
+        case mirror
+        /// Both sides are kept the same, using a record of the last run. Can delete on either.
+        case twoWay
     }
 
     /// Decode field by field, every one optional, falling back to this type's own defaults.
@@ -135,6 +169,7 @@ public struct SyncOptions: Sendable, Equatable, Codable {
         ignoreDaylightHour = try c.decodeIfPresent(Bool.self, forKey: .ignoreDaylightHour) ?? d.ignoreDaylightHour
         caseSensitive = try c.decodeIfPresent(Bool.self, forKey: .caseSensitive) ?? d.caseSensitive
         toleranceSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .toleranceSeconds) ?? d.toleranceSeconds
+        twoWay = try c.decodeIfPresent(Bool.self, forKey: .twoWay) ?? d.twoWay
     }
 }
 
@@ -231,7 +266,7 @@ public enum SyncModel {
         }
         if !onLeft && onRight {
             // Present only on right.
-            return options.asymmetric ? .deleteRight : .copyToLeft
+            return options.mode == .mirror ? .deleteRight : .copyToLeft
         }
 
         // Present on both sides: decide equality, then a winner if unequal.
@@ -242,7 +277,10 @@ public enum SyncModel {
             return .equal
         }
 
-        if options.asymmetric {
+        // `mode`, not the flag: two flags have one combination that means nothing, and reading the
+        // raw `asymmetric` here let that combination delete — measured, it produced `.deleteRight`
+        // for a mode that is defined as the one which deletes nothing.
+        if options.mode == .mirror {
             // Mirror mode: any difference means left wins, unconditionally.
             return .copyToRight
         }
@@ -267,7 +305,7 @@ public enum SyncModel {
             // Present on both sides: nothing to do about the folder itself.
             return .none
         }
-        if options.asymmetric {
+        if options.mode == .mirror {
             // Mirror mode: left-only directories need creating on right;
             // right-only directories are stray and get removed.
             //

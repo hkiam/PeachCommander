@@ -49,6 +49,30 @@ El campo de máscara contiene una lista de inclusión sobre los nombres de archi
 
 Una carpeta excluida tampoco se elimina en modo espejo: un espejo solo retira lo que realmente ha comparado. La línea de estado indica cuántas entradas ha retenido el filtro, junto a lo que hará la ejecución. Un filtro se guarda y se carga con el ajuste de sincronización al que pertenece.
 
+## Mantener dos carpetas iguales, en ambos sentidos
+
+Los dos modos originales no distinguen una cosa: un archivo que está en un solo lado es **nuevo aquí**
+o **eliminado allí**, y ambos casos se ven igual. El modo simétrico lo copia —elimine algo en el
+portátil, sincronice, y vuelve desde la copia de seguridad— y el modo espejo elimina, pero solo en un
+sentido.
+
+**Ambos sentidos (con memoria)** recuerda cómo estaban las dos carpetas la última vez que coincidían.
+Con ese registro, una eliminación en un lado puede trasladarse al otro.
+
+- La **primera** ejecución de un par no tiene registro: se comporta como antes y no elimina nada.
+  Escribe el registro. El modo actúa a partir de la segunda.
+- Una eliminación trasladada se muestra en su propio color con `⇒🗑` y **no** está marcada: es la única
+  fila que proviene de la memoria de la aplicación. Al hacer clic en la flecha se ofrecen las otras
+  respuestas: copiar el archivo de vuelta, o dejar ambos lados como están.
+- Modificado en un lado y eliminado en el otro es un **conflicto**, nunca una eliminación. Igual que
+  un archivo modificado en ambos lados.
+- Nada se elimina por una ausencia que la comparación no pudo confirmar.
+- Solo dos carpetas de este Mac, ni un servidor ni un archivo comprimido.
+
+**Una eliminación no se puede deshacer.** En este Mac el archivo va a la Papelera y puede recuperarse
+desde el Finder; eso es toda la red. El registro vive con los ajustes: mover una de las carpetas deja
+al par sin historial — y una ejecución sin historial no elimina nada.
+
 ## Atajos
 
 | Acción | Atajo |

@@ -3751,7 +3751,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             let win = SyncWindowController(left: leftSide, right: rightSide,
                                            presetsURL: self.configPaths.syncPresets,
-                                           contentFields: self.contentFieldRegistry)
+                                           contentFields: self.contentFieldRegistry,
+                                           stateDirectory: self.configPaths.syncStateDirectory)
             self.syncWindows.append(win)
             win.onClose = { [weak self, weak win] in self?.syncWindows.removeAll { $0 === win } }
             win.reload = { [weak self] in

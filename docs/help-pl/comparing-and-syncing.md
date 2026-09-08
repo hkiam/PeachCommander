@@ -49,6 +49,30 @@ Pole maski zawiera jedną listę włączeń dotyczącą nazw plików. Dla tego, 
 
 Pominięty folder nie jest usuwany także w trybie lustra — lustro usuwa tylko to, co rzeczywiście porównało. Wiersz stanu mówi, ile pozycji wstrzymał filtr, obok tego, co zrobi przebieg. Filtr jest zapisywany i wczytywany razem z ustawieniem synchronizacji, do którego należy.
 
+## Utrzymywać dwa foldery jednakowe, w obie strony
+
+Dwa pierwotne tryby nie potrafią odróżnić jednej rzeczy: plik, który jest tylko po jednej stronie,
+jest albo **tu nowy**, albo **tam usunięty**, a wygląda to tak samo. Tryb symetryczny go więc kopiuje
+— usuń coś na laptopie, zsynchronizuj, i wraca z kopii zapasowej — a tryb lustra usuwa, ale tylko w
+jedną stronę.
+
+**W obie strony (z pamięcią)** pamięta, jak oba foldery wyglądały, gdy ostatnio się zgadzały. Z tym
+zapisem usunięcie po jednej stronie może zostać przeniesione na drugą.
+
+- **Pierwszy** przebieg pary nie ma zapisu: zachowuje się jak dawniej i nic nie usuwa. Zapisuje dane.
+  Od drugiego przebiegu tryb działa.
+- Przeniesione usunięcie pokazuje się we własnym kolorze z `⇒🗑` i **nie** jest zaznaczone: to jedyny
+  wiersz pochodzący z pamięci programu. Klik na strzałkę proponuje pozostałe odpowiedzi: skopiować
+  plik z powrotem albo zostawić obie strony.
+- Zmienione po jednej stronie i usunięte po drugiej to **konflikt**, nigdy usunięcie. Tak samo plik
+  zmieniony po obu stronach.
+- Nic nie jest usuwane na podstawie nieobecności, której porównanie nie mogło potwierdzić.
+- Tylko dwa foldery na tym Macu, nie serwer i nie archiwum.
+
+**Usunięcia nie da się cofnąć.** Na tym Macu plik idzie do Kosza i można go przywrócić w Finderze; to
+cała siatka. Zapis leży przy ustawieniach: przeniesienie jednego z folderów pozbawia parę historii — a
+przebieg bez historii nic nie usuwa.
+
 ## Skróty
 
 | Akcja | Skrót |

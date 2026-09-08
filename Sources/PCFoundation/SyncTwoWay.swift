@@ -59,8 +59,10 @@ public enum SyncTwoWay {
                                 state: [String: SyncStateEntry], stateKnown: Bool,
                                 leftScope: SyncSideScope,
                                 rightScope: SyncSideScope) -> [SyncResult] {
-        guard stateKnown else {
-            // Deliberately the existing behaviour, not a weaker version of the new one.
+        guard stateKnown, options.mode == .twoWay else {
+            // Deliberately the existing behaviour, not a weaker version of the new one — and the
+            // same fallback covers the malformed `asymmetric && twoWay`, which `mode` reads as
+            // symmetric.
             return SyncModel.classify(items, options: options)
         }
         // The record's own tolerance, never `effectiveTolerance`: the daylight-hour widening is for

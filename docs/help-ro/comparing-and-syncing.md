@@ -49,6 +49,30 @@ Câmpul de mască conține o listă de includere pentru numele fișierelor. Pent
 
 Un dosar exclus nu este șters nici în modul oglindă — o oglindă înlătură doar ce a comparat efectiv. Linia de stare spune câte intrări a reținut filtrul, alături de ce va face rularea. Un filtru se salvează și se încarcă împreună cu presetarea de sincronizare de care aparține.
 
+## Păstrați două dosare identice, în ambele sensuri
+
+Cele două moduri originale nu pot deosebi un lucru: un fișier prezent doar pe o parte este fie **nou
+aici**, fie **șters acolo**, iar cele două arată la fel. Modul simetric îl copiază deci — ștergeți
+ceva pe laptop, sincronizați, și revine din copia de siguranță — iar modul oglindă șterge, dar numai
+într-un sens.
+
+**În ambele sensuri (cu memorie)** ține minte cum arătau ambele dosare ultima dată când coincideau. Cu
+această înregistrare, o ștergere pe o parte poate fi dusă pe cealaltă.
+
+- **Prima** rulare a unei perechi nu are înregistrare: se comportă ca înainte și nu șterge nimic.
+  Scrie înregistrarea. De la a doua rulare modul își face treaba.
+- O ștergere dusă mai departe apare într-o culoare proprie cu `⇒🗑` și **nu** este bifată: este singurul
+  rând care vine din memoria aplicației. Un clic pe săgeată oferă celelalte răspunsuri: copiați
+  fișierul înapoi sau lăsați ambele părți așa cum sunt.
+- Modificat pe o parte și șters pe cealaltă este un **conflict**, niciodată o ștergere. La fel un
+  fișier modificat pe ambele părți.
+- Nimic nu se șterge pe baza unei absențe pe care comparația nu a putut-o confirma.
+- Doar două dosare de pe acest Mac, nici server, nici arhivă.
+
+**O ștergere nu se poate anula.** Pe acest Mac fișierul ajunge în Coș și poate fi readus din Finder;
+asta este toată plasa. Înregistrarea stă cu setările: mutând unul dintre dosare, perechea nu mai are
+istorie — iar o rulare fără istorie nu șterge nimic.
+
 ## Comenzi rapide
 
 | Acțiune | Comandă rapidă |

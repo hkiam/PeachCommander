@@ -49,6 +49,30 @@ Pole masky nesie jeden zoznam zahrnutia cez názvy súborov. Pre to, čo sa tým
 
 Vynechaný priečinok sa nemaže ani v režime zrkadla — zrkadlo odstraňuje len to, čo skutočne porovnávalo. Stavový riadok hovorí, koľko položiek filter zadržal, vedľa toho, čo beh urobí. Filter sa ukladá a načítava spolu s predvoľbou synchronizácie, ku ktorej patrí.
 
+## Držať dva priečinky zhodné, oboma smermi
+
+Dva pôvodné režimy nedokážu rozlíšiť jednu vec: súbor, ktorý je len na jednej strane, je buď **tu
+nový**, alebo **tam zmazaný**, a oboje vyzerá rovnako. Symetrický režim ho preto skopíruje — zmažete
+niečo na notebooku, synchronizujete, a vráti sa zo zálohy — a zrkadlový režim maže, ale len v jednom
+smere.
+
+**Obojsmerne (s pamäťou)** si pamätá, ako oba priečinky vyzerali, keď sa naposledy zhodovali. S týmto
+záznamom sa dá zmazanie na jednej strane preniesť na druhú.
+
+- **Prvý** beh páru žiadny záznam nemá: chová sa ako predtým a nič nemaže. Záznam zapíše. Od druhého
+  behu režim funguje.
+- Prenesené zmazanie sa zobrazí vlastnou farbou s `⇒🗑` a **nie je** zaškrtnuté: je to jediný riadok,
+  ktorý pochádza z pamäti aplikácie. Kliknutie na šípku nabídne ostatné odpovede: skopírovať súbor
+  späť, alebo ponechať obe strany.
+- Zmenené na jednej strane a zmazané na druhej je **konflikt**, nikdy zmazanie. Rovnako súbor zmenený
+  na oboch stranách.
+- Nič sa nemaže na základe neprítomnosti, ktorú porovnanie nemohlo potvrdiť.
+- Len dva priečinky na tomto Macu, nie server a nie archív.
+
+**Zmazanie sa nedá vrátiť.** Na tomto Macu ide súbor do Koša a dá sa vrátiť vo Finderi; to je celá
+záchranná sieť. Záznam leží pri nastaveniach: ak presuniete jeden z priečinkov, pár už žiadnu históriu
+nemá — a beh bez histórie nič nemaže.
+
 ## Skratky
 
 | Akcia | Skratka |
