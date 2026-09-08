@@ -165,6 +165,22 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("scripts", isDirectory: true)
     }
 
+    /// Directory holding one synchronisation record per folder pair (F-192).
+    ///
+    /// A directory of per-pair files rather than one file with every pair in it, for the reason
+    /// `macrosDirectory` above gives: a single unparseable entry there once cost every macro. For
+    /// these records the argument is stronger, because a pair whose record is lost silently stops
+    /// propagating deletions — the mode turns itself off with nothing said.
+    ///
+    /// Central rather than a hidden file travelling in the two folders, and the reason is the
+    /// direction the failure points. Move a folder and no record is found, and a run without a
+    /// record deletes nothing: it fails safe. A travelling file means whoever copies a folder has two
+    /// pairs sharing one history, which fails the other way. The accepted cost is that a removable
+    /// disk carried to another machine has no history there.
+    public var syncStateDirectory: URL {
+        root.appendingPathComponent("sync-state", isDirectory: true)
+    }
+
     /// Resolve the configuration root, in priority order:
     /// 1. `-ConfigRoot <path>` launch argument
     /// 2. `PEACHCMD_CONFIG_ROOT` environment variable
