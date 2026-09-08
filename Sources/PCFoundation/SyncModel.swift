@@ -139,13 +139,42 @@ public struct SyncOptions: Sendable, Equatable, Codable {
 }
 
 /// The classification outcome for a single `SyncItem`.
+/// Why a row says what it says.
+///
+/// Deliberately **not** a new `SyncAction` case, and the reason is which way each choice fails. A new
+/// case would be missed by omission in every switch that already exists: `SyncExecutor.deletesPermanently`
+/// would answer `false` for it, so the permanent-deletion warning would not cover a propagated
+/// delete on a server; the executor's creates/copies/deletes partition would skip it silently, so
+/// the delete would never run and produce no outcome at all; and `deletedKeys` would not contain it,
+/// so the folder guard would refuse a delete it should allow. Reusing `.deleteRight`/`.deleteLeft`
+/// means the executor changes not at all, and both existing safety layers cover the new rows for
+/// free.
+///
+/// The distinction belongs here rather than on `SyncItem`, which carries the scanner's facts about
+/// the filesystem; "this deletion is a propagation" is a fact about the *decision*.
+///
+/// One rule to hold to: **nothing may infer "propagated" from the action value.** A mirror delete and
+/// a propagated delete are the same `SyncAction`, and only this says which is which.
+public enum SyncBasis: Sendable, Equatable {
+    /// Decided from the two sides as they are now — every row the two existing modes produce.
+    case comparison
+    /// The path was deleted on the *other* side since the last run, so it goes here too.
+    case propagatedDeletion
+    /// The record and the two sides cannot be reconciled without asking: changed on one side and
+    /// deleted on the other, changed on both, a file where a folder was — or an absence this run
+    /// could not prove.
+    case stateConflict
+}
+
 public struct SyncResult: Sendable, Equatable {
     public let action: SyncAction
     public let item: SyncItem
+    public let basis: SyncBasis
 
-    public init(action: SyncAction, item: SyncItem) {
+    public init(action: SyncAction, item: SyncItem, basis: SyncBasis = .comparison) {
         self.action = action
         self.item = item
+        self.basis = basis
     }
 }
 
