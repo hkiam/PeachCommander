@@ -16,6 +16,25 @@ does not have.
 
 ### Added
 
+- **An advanced filter for the directory synchronisation.** The mask field takes one include list over
+  file names, which cannot say `node_modules/`, cannot say "nothing over 2 GB", and cannot express an
+  exclusion at all. A **Filter…** button beside it — the one control this adds to the window — opens a
+  sheet with the same three tabs the advanced search has. Exclusion patterns work on the relative
+  path: a name without a slash matches at any depth, a trailing slash means a folder and everything in
+  it, and a pattern containing a slash matches the path, with `*` stopping at a separator. Size and
+  date judge a pair as a whole, because applied to one side an exclusion would make the pair look
+  one-sided and turn into a copy in the wrong direction. "Within the last N days" is stored relative
+  and measured from each run, so a saved job keeps meaning the last month. The Plugins tab asks a
+  content plugin about the side a file is copied from, once per file, and is offered only when both
+  sides are folders on this Mac — the registry needs a real file, and answering "does not satisfy" for
+  a side that cannot be asked would drop the whole comparison.
+
+  A filter that cannot be seen is how a backup ends up incomplete while the window reports success, so
+  the button title carries how many criteria are set, loading a preset that carries a filter moves that
+  title too, and the status line says how many entries were held back next to what the run will do.
+  Filters travel in the existing sync presets. An excluded folder is not deleted in mirror mode either.
+
+
 - **A recursive permission change can be watched and stopped.** Over a home folder that walk runs for
   minutes, and it was the one operation in the app with nothing to see and no way out. It goes through
   the transfer queue now — the same progress window, Stop button and pause the copies get — with the

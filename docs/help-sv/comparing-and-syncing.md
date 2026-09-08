@@ -38,6 +38,17 @@ När två filer ser likadana ut men du behöver bevisa att de verkligen är iden
 
 För att upptäcka skillnader mellan två öppna mappar med en blick, välj **Markera ▸ Jämför kataloger** (Shift+F2). Peach Commander markerar filerna som skiljer sig eller saknas på den andra sidan, så att du kan agera på dem med de vanliga kommandona för kopiera, flytta och ta bort.
 
+## Begränsa vad en synkronisering omfattar
+
+Maskfältet innehåller en ta-med-lista över filnamn. För det som inte går att uttrycka där öppnar **Filter…** intill ett ark med tre flikar. Det som ställs in där gäller den *nästa* jämförelsen, och knappen säger sedan hur många kriterier som är aktiva — ett filter man inte ser är hur en säkerhetskopia slutar ofullständig medan fönstret rapporterar att den är klar.
+
+- **Uteslut** tar mönster åtskilda med `;` eller `|`. Ett namn utan snedstreck träffar på varje djup (`*.tmp`), ett snedstreck sist betyder en mapp med allt i den (`node_modules/`), och ett mönster med snedstreck träffar den relativa sökvägen (`src/*/generated`). Skillnad på stora och små bokstäver görs inte.
+- **Storlek** och **datum** bedömer ett par som helhet: faller en sida utanför intervallet hålls hela paret utanför. Det är avsiktligt. Tillämpad på bara en sida skulle en uteslutning få paret att se ensidigt ut och bli en kopiering i fel riktning.
+- **Under de senaste N dagarna** mäts från varje jämförelse, inte från när en förinställning sparades — ett sparat jobb betyder alltså fortfarande "den senaste månaden".
+- Fliken **Tillägg** frågar ett innehållstillägg om den sida en fil skulle kopieras från. Det behöver en verklig fil, så den erbjuds bara när båda sidorna är mappar på den här Mac-datorn.
+
+En utesluten mapp tas inte bort i spegelläge heller — en spegel tar bara bort det den verkligen har jämfört. Statusraden säger hur många poster filtret undanhöll, intill vad körningen kommer att göra. Ett filter sparas och läses in med den synk-förinställning det hör till.
+
 ## Kortkommandon
 
 | Åtgärd | Kortkommando |
@@ -52,3 +63,4 @@ För att upptäcka skillnader mellan två öppna mappar med en blick, välj **Ma
 - **Undermappar och filter.** Synkroniseringsfönstret kan gå ned i undermappar och kan begränsas med en filtermask, så att du kan synkronisera bara de filtyper du bryr dig om.
 - **Du behåller kontrollen.** Synkronisering körs aldrig av sig själv – du granskar de föreslagna riktningarna i resultatrutnätet och kan ändra vilken som helst av dem innan något kopieras.
 - **Förinställningar.** Ofta använda synkroniseringsuppsättningar kan sparas och återanvändas så att du slipper ange samma alternativ varje gång.
+

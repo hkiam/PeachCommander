@@ -38,6 +38,17 @@ Når to filer ser ens ud, men du har brug for at bevise, at de virkelig er ident
 
 For at få øje på forskelle mellem to åbne mapper med et enkelt blik skal du vælge **Markér ▸ Sammenlign mapper** (Shift+F2). Peach Commander markerer de filer, der afviger eller mangler på den anden side, så du kan handle på dem med de sædvanlige kommandoer til kopiering, flytning og sletning.
 
+## Begræns hvad en synkronisering omfatter
+
+Maskefeltet rummer én medtag-liste over filnavne. Til det, den ikke kan udtrykke, åbner **Filter…** ved siden af et ark med tre faneblade. Hvad der sættes dér, gælder den *næste* sammenligning, og knappen siger så, hvor mange kriterier der er aktive — et filter, man ikke kan se, er sådan en sikkerhedskopi ender ufuldstændig, mens vinduet melder, at den er færdig.
+
+- **Udelad** tager mønstre adskilt af `;` eller `|`. Et navn uden skråstreg passer i enhver dybde (`*.tmp`), en skråstreg til sidst betyder en mappe med alt i den (`node_modules/`), og et mønster med skråstreg passer på den relative sti (`src/*/generated`). Der ses ikke på store og små bogstaver.
+- **Størrelse** og **dato** bedømmer et par som helhed: falder én side uden for intervallet, holdes hele parret ude. Det er med vilje. Anvendt på kun én side ville en udeladelse få parret til at se ensidigt ud og blive en kopiering i den forkerte retning.
+- **Inden for de sidste N dage** måles fra hver sammenligning, ikke fra da forudindstillingen blev gemt — en gemt opgave betyder altså fortsat "den seneste måned".
+- Fanebladet **Plugins** spørger et indholdsplugin om den side, en fil ville blive kopieret fra. Det kræver en rigtig fil, så det tilbydes kun, når begge sider er mapper på denne Mac.
+
+En udeladt mappe slettes heller ikke i spejltilstand — et spejl fjerner kun det, det faktisk har sammenlignet. Statuslinjen siger, hvor mange punkter filteret holdt ude, ved siden af hvad kørslen vil gøre. Et filter gemmes og indlæses sammen med den synk-forudindstilling, det hører til.
+
 ## Genveje
 
 | Handling | Genvej |
@@ -52,3 +63,4 @@ For at få øje på forskelle mellem to åbne mapper med et enkelt blik skal du 
 - **Undermapper og filtre.** Synkroniseringsvinduet kan gå ned i undermapper og kan begrænses med en filtermaske, så du kun kan synkronisere de filtyper, du bekymrer dig om.
 - **Du bevarer kontrollen.** Synkronisering kører aldrig af sig selv — du gennemgår de foreslåede retninger i resultatgitteret og kan ændre enhver af dem, før noget kopieres.
 - **Forudindstillinger.** Ofte brugte synkroniseringsopsætninger kan gemmes og genbruges, så du ikke skal indtaste de samme indstillinger hver gang.
+

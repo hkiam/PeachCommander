@@ -38,6 +38,17 @@ Când două fișiere arată la fel, dar trebuie să dovediți că sunt cu adevă
 
 Pentru a depista diferențele dintre două foldere deschise dintr-o privire, alegeți **Selectare ▸ Compară directoare** (Shift+F2). Peach Commander marchează fișierele care diferă sau lipsesc pe cealaltă parte, astfel încât puteți acționa asupra lor cu comenzile obișnuite de copiere, mutare și ștergere.
 
+## Limitarea a ceea ce cuprinde o sincronizare
+
+Câmpul de mască conține o listă de includere pentru numele fișierelor. Pentru ceea ce nu poate exprima, **Filtru…** de lângă el deschide o foaie cu trei file. Ce se stabilește acolo se aplică următoarei comparații, iar butonul spune apoi câte criterii sunt active — un filtru care nu se vede este modul în care o copie de siguranță rămâne incompletă în timp ce fereastra raportează că a terminat.
+
+- **Exclude** primește modele separate prin `;` sau `|`. Un nume fără bară se potrivește la orice adâncime (`*.tmp`), o bară la final înseamnă un dosar și tot ce se află în el (`node_modules/`), iar un model cu bară se potrivește cu calea relativă (`src/*/generated`). Majusculele nu contează.
+- **Dimensiunea** și **data** judecă o pereche în întregime: dacă una dintre părți iese din interval, toată perechea rămâne în afară. Este intenționat. Aplicată doar unei părți, o excludere ar face perechea să pară unilaterală și s-ar transforma în o copiere în direcția greșită.
+- **În ultimele N zile** se măsoară de la fiecare comparație, nu de la salvarea unei presetări — o sarcină salvată continuă deci să însemne „ultima lună”.
+- Fila **Pluginuri** întreabă un plugin de conținut despre partea din care ar fi copiat un fișier. Are nevoie de un fișier real, așa că se oferă doar când ambele părți sunt dosare de pe acest Mac.
+
+Un dosar exclus nu este șters nici în modul oglindă — o oglindă înlătură doar ce a comparat efectiv. Linia de stare spune câte intrări a reținut filtrul, alături de ce va face rularea. Un filtru se salvează și se încarcă împreună cu presetarea de sincronizare de care aparține.
+
 ## Comenzi rapide
 
 | Acțiune | Comandă rapidă |
@@ -52,3 +63,4 @@ Pentru a depista diferențele dintre două foldere deschise dintr-o privire, ale
 - **Subfoldere și filtre.** Fereastra de sincronizare poate coborî în subfoldere și poate fi limitată cu o mască de filtru, astfel încât puteți sincroniza doar tipurile de fișiere care vă interesează.
 - **Rămâneți în control.** Sincronizarea nu rulează niciodată de la sine — examinați direcțiile propuse în grila de rezultate și puteți schimba oricare dintre ele înainte ca ceva să fie copiat.
 - **Presetări.** Configurările de sincronizare folosite frecvent pot fi salvate și reutilizate, astfel încât să nu reintroduceți aceleași opțiuni de fiecare dată.
+

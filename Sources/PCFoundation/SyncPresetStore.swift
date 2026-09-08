@@ -20,14 +20,21 @@ public struct SyncPreset: Codable, Equatable, Sendable {
     /// you a comparison *with* them, silently. It is here rather than in `SyncOptions` because it is
     /// a question about which entries the scan visits, not about how two of them are compared.
     public var ignoreHidden: Bool
+    /// The advanced filter, or nil for a preset that carries none.
+    ///
+    /// Optional rather than a defaulted value so that "this preset has no filter" and "this preset
+    /// has an empty one" are the same thing on disk, and so a preset written before filters existed
+    /// decodes without one.
+    public var filter: SyncFilter?
 
     public init(name: String, options: SyncOptions, fileMask: String = "*.*", withSubdirs: Bool = true,
-                ignoreHidden: Bool = false) {
+                ignoreHidden: Bool = false, filter: SyncFilter? = nil) {
         self.name = name
         self.options = options
         self.fileMask = fileMask
         self.withSubdirs = withSubdirs
         self.ignoreHidden = ignoreHidden
+        self.filter = filter
     }
 
     /// Decode field by field, every one optional. See `SyncOptions.init(from:)` for why: the
@@ -40,6 +47,7 @@ public struct SyncPreset: Codable, Equatable, Sendable {
         fileMask = try c.decodeIfPresent(String.self, forKey: .fileMask) ?? "*.*"
         withSubdirs = try c.decodeIfPresent(Bool.self, forKey: .withSubdirs) ?? true
         ignoreHidden = try c.decodeIfPresent(Bool.self, forKey: .ignoreHidden) ?? false
+        filter = try c.decodeIfPresent(SyncFilter.self, forKey: .filter)
     }
 }
 

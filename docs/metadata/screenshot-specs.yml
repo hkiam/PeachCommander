@@ -153,6 +153,17 @@ screenshots:
       - syncdemo /Users/admin/pc-demo/Documents|/Users/admin/pc-demo/Archives
       - wait 1000
 
+  - id: sync-filter
+    feature: compare-sync
+    alt: "The sync filter sheet, showing exclusion patterns, a size range and a date range"
+    caption: "Restricting what a synchronisation includes."
+    pages: [comparing-and-syncing]
+    script:
+      - syncopen /Users/admin/pc-demo/Documents|/Users/admin/pc-demo/Archives
+      - wait 1000
+      - syncfilteropen
+      - wait 900
+
   - id: archive-browse
     feature: archive-browse
     alt: "Browsing inside a zip archive"

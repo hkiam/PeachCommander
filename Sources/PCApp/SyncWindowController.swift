@@ -11,6 +11,7 @@ import AppKit
 import PCArchive
 import PCFoundation
 import PCOperations
+import PCVFS
 
 /// One side of a sync: a local directory, or a whole `.zip` archive (F-193). A zip
 /// side compares/updates from the archive root; timestamps in a zip are unreliable
@@ -32,6 +33,21 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private let leftField = NSTextField()
     private let rightField = NSTextField()
     private let maskField = NSTextField()
+    /// The one control the advanced filter adds to this window. Its title carries how many criteria
+    /// are set, because a filter nobody can see is the dangerous kind: a forgotten search finds too
+    /// little and you search again, a forgotten sync filter leaves a backup incomplete and reports
+    /// that it is done.
+    private let filterButton = NSButton()
+    /// The criteria themselves. Edited in a sheet, on a copy, and taken over when it is confirmed.
+    private var filter = SyncFilter()
+    /// How many entries the last comparison held back, for the status line.
+    private var heldBack = 0
+    /// Where a plugin criterion's fields come from. Nil when the host did not hand one over, and the
+    /// filter sheet then says so instead of offering an empty popup.
+    private let contentFields: ContentFieldRegistry?
+    /// Held while the sheet is up: an NSWindowController with no owner is released out from under
+    /// its own window.
+    private var filterSheet: SyncFilterSheetController?
     private let subdirsButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let byContentButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let ignoreDateButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -87,14 +103,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         a == .copyToRight || a == .copyToLeft || a == .deleteRight || a == .deleteLeft
     }
 
-    convenience init(leftDir: String, rightDir: String, presetsURL: URL? = nil) {
-        self.init(left: .localDir(leftDir), right: .localDir(rightDir), presetsURL: presetsURL)
+    convenience init(leftDir: String, rightDir: String, presetsURL: URL? = nil,
+                     contentFields: ContentFieldRegistry? = nil) {
+        self.init(left: .localDir(leftDir), right: .localDir(rightDir), presetsURL: presetsURL,
+                  contentFields: contentFields)
     }
 
-    init(left: SyncSide, right: SyncSide, presetsURL: URL? = nil) {
+    init(left: SyncSide, right: SyncSide, presetsURL: URL? = nil,
+         contentFields: ContentFieldRegistry? = nil) {
         self.leftSide = left
         self.rightSide = right
         self.presetStore = presetsURL.map { SyncPresetStore(url: $0) }
+        self.contentFields = contentFields
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 560),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -171,6 +191,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         maskField.stringValue = "*.*"
         maskField.widthAnchor.constraint(equalToConstant: 180).isActive = true
         maskRow.addArrangedSubview(maskField)
+        filterButton.bezelStyle = .rounded
+        filterButton.target = self
+        filterButton.action = #selector(openFilterSheet)
+        filterButton.toolTip = String(localized: "Exclude paths, sizes or dates from this comparison")
+        maskRow.addArrangedSubview(filterButton)
+        updateFilterButton()
         root.addArrangedSubview(maskRow)
 
         let opts = NSStackView()
@@ -410,11 +436,57 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         presetPopup.selectItem(at: 0)
     }
 
+    // MARK: - The advanced filter
+
+    /// The button says what the filter is doing, without anybody having to open it.
+    private func updateFilterButton() {
+        // One base string plus the count, not two strings. Built from "Filter" and "Filter…"
+        // separately, the German catalogue gave the idle button "Filtern…" and the active one
+        // "Filter (1)" — the word changed form depending on whether a filter was set, which reads
+        // like two different controls. Measured in the running window.
+        let count = filter.activeCriteriaCount
+        let base = String(localized: "Filter…")
+        filterButton.title = count == 0 ? base : "\(base) (\(count))"
+    }
+
+    /// Build the sheet for the filter as it stands. One place, so the button and a script take the
+    /// same path — a scripted filter that skipped the sheet would exercise the struct and nothing of
+    /// what a person actually goes through.
+    private func makeFilterSheet() -> SyncFilterSheetController {
+        let fields = contentFields?.allQualifiedFields().map { (id: $0.qualifiedID, title: $0.field.title) } ?? []
+        let canEvaluate = SyncPluginFilter.canEvaluate(left: leftSide, right: rightSide)
+        let sheet = SyncFilterSheetController(
+            filter: filter, fields: fields,
+            pluginsAvailable: canEvaluate,
+            pluginsUnavailableReason: canEvaluate
+                ? ""
+                : String(localized: "A plugin field can only be read from a folder on this Mac — not from a server or an archive."))
+        sheet.onConfirm = { [weak self] edited in
+            guard let self else { return }
+            self.filter = edited
+            self.updateFilterButton()
+            // Not applied to the rows on screen: those came out of a comparison run without it, and
+            // silently reinterpreting them would be a plan the user never saw produced. The next
+            // Compare uses it.
+            if !self.results.isEmpty {
+                self.statusLabel.stringValue = String(localized: "Filter changed — compare again to apply it.")
+            }
+        }
+        sheet.onDismiss = { [weak self] in self?.filterSheet = nil }
+        filterSheet = sheet
+        return sheet
+    }
+
+    @objc private func openFilterSheet() {
+        makeFilterSheet().present(over: window)
+    }
+
     /// The current dialog settings as a preset with the given name.
     private func currentPreset(name: String) -> SyncPreset {
         SyncPreset(name: name, options: options(),
                    fileMask: maskField.stringValue, withSubdirs: subdirsButton.state == .on,
-                   ignoreHidden: ignoreHiddenButton.state == .on)
+                   ignoreHidden: ignoreHiddenButton.state == .on,
+                   filter: filter.isActive ? filter : nil)
     }
 
     /// Push a preset's settings into the controls.
@@ -433,6 +505,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         // bare argument and was in no preset, so a saved comparison came back with hidden files in
         // it however it had been saved.
         ignoreHiddenButton.state = preset.ignoreHidden ? .on : .off
+        // And the filter, whose whole danger is being invisible: loading a preset that carries one
+        // has to move the button too. The comment above records this exact mistake happening once
+        // already, for two options the store round-tripped while the window dropped them.
+        filter = preset.filter ?? SyncFilter()
+        updateFilterButton()
     }
 
     @objc private func presetSelected() {
@@ -471,6 +548,65 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     #if DEBUG
     /// Set the "Ignore hidden" option before an automated compare (F-192).
     func automationSetIgnoreHidden(_ on: Bool) { ignoreHiddenButton.state = on ? .on : .off }
+
+    /// Put filter criteria in as though the sheet had been filled in and confirmed, and report what
+    /// the window makes of them.
+    ///
+    /// Through the sheet rather than straight onto `filter`, so that what a script exercises is the
+    /// path a person takes: the sheet parses the size and date text, refuses an incomplete plugin
+    /// condition, and hands back a filter. Setting the field directly would test nothing but the
+    /// struct, which `SyncFilterTests` already does.
+    func automationSetFilterCriteria(_ spec: String) -> String {
+        let sheet = filterSheet ?? makeFilterSheet()
+        sheet.automationSet(spec)
+        let sheetReport = sheet.automationReport()
+        sheet.automationConfirm()
+        return sheetReport + automationFilterReport()
+    }
+
+    /// Press the Filter button and leave the sheet up, so it can be photographed.
+    func automationOpenFilterSheet() { openFilterSheet() }
+
+    /// What the sheet says while it is open, without closing it.
+    func automationFilterSheetReport() -> String {
+        filterSheet?.automationReport() ?? "ERROR: no filter sheet\n"
+    }
+
+    /// What the window says about the filter without anybody opening the sheet — which is the whole
+    /// requirement: a filter that is only visible from inside its own dialog is an invisible one.
+    func automationFilterReport() -> String {
+        """
+        filterbutton=\(filterButton.title)
+        filtercriteria=\(filter.activeCriteriaCount)
+        filterexclude=\(filter.excludePatterns)
+        heldback=\(heldBack)
+        status=\(statusLabel.stringValue)
+
+        """
+    }
+
+    /// `save <name>` or `load <name>` on the preset row, then the filter report — so the round trip
+    /// a preset has to survive is one scripted step.
+    func automationPreset(_ command: String) -> String {
+        let parts = command.split(separator: " ", maxSplits: 1).map(String.init)
+        guard let store = presetStore, parts.count == 2 else { return "ERROR: no preset store\n" }
+        let name = parts[1]
+        switch parts[0] {
+        case "save":
+            _ = store.upsert(currentPreset(name: name))
+            reloadPresetPopup()
+            presetPopup.selectItem(withTitle: name)
+        case "load":
+            guard let preset = store.load().first(where: { $0.name == name }) else {
+                return "ERROR: no preset \(name)\n"
+            }
+            presetPopup.selectItem(withTitle: name)
+            apply(preset)
+        default:
+            return "ERROR: unknown preset command \(parts[0])\n"
+        }
+        return "preset=\(name)\n" + automationFilterReport()
+    }
 
     /// Set the result filter and report what the grid then shows.
     ///
@@ -614,11 +750,14 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let report: @Sendable (SyncScanPhase) -> Void = { phase in
             Task { @MainActor in self.show(phase) }
         }
+        let activeFilter = filter
+        let registry = contentFields
         compareTask = Task.detached(priority: .userInitiated) {
-            let items = await SyncScanner.scan(left: l, right: r, mask: mask,
+            let outcome = await SyncScanner.scanDetailed(left: l, right: r, mask: mask,
                                          withSubdirs: withSubdirs, byContent: byContent,
                                          ignoreHidden: ignoreHidden, caseSensitive: opts.caseSensitive,
-                                         progress: report)
+                                         filter: activeFilter, progress: report)
+            let items = outcome.items
             // A cancelled scan returns what it had, which is a *partial* tree — showing it as a
             // result would be a comparison that quietly left files out.
             if Task.isCancelled {
@@ -629,10 +768,21 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 }
                 return
             }
-            let classified = SyncModel.classify(items, options: opts)
+            var classified = SyncModel.classify(items, options: opts)
+            var heldBack = outcome.heldBack
+            // The plugin criterion runs here and not in the scan: it needs to know which side a row
+            // reads from, which is only settled once the row has been classified. See SyncPluginFilter.
+            if let predicate = activeFilter.pluginPredicate, let registry {
+                let pass = await SyncPluginFilter.apply(to: classified, predicate: predicate,
+                                                        left: l, right: r, registry: registry)
+                if Task.isCancelled { return }
+                classified = pass.kept
+                heldBack += pass.heldBack
+            }
             await MainActor.run {
                 self.compareTask = nil
                 self.setComparing(false)
+                self.heldBack = heldBack
                 self.results = classified.filter { $0.action != .none }
                 self.rowAction = self.results.map(\.action)
                 self.rowIncluded = self.results.map { Self.isActionable($0.action) }   // include all actionable by default
@@ -767,6 +917,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         // claim about what is on screen.
         if visibleRows.count != results.count {
             text += "   ·   \(visibleRows.count)/\(results.count) \(String(localized: "shown"))"
+        }
+        // Appended, never in place of the counts: an incomplete backup that reports success is the
+        // failure this whole feature has to avoid, so how much the filter left out belongs on the
+        // same line as what will happen.
+        if heldBack > 0 {
+            text += "   ·   \(heldBack) \(String(localized: "held back by the filter"))"
         }
         statusLabel.stringValue = text
         // Recomputed here rather than once after the scan: a conflict that has just been given a

@@ -1242,14 +1242,52 @@ extension MainWindowController {
                     try? win.automationBusyReport().write(toFile: out, atomically: true, encoding: .utf8)
                     if b.count > 1, b[1] == "stop" { win.automationStopCompare() }
                 }
-            case "syncopen":                               // syncopen <left>|<right> (F-192): no compare
+            case "syncopen":                               // syncopen <left>|<right>[|<presets.json>]
                 // `syncdemo` compares 0.4 s after opening, which is a race against any script that
                 // wants to watch the comparison start.
+                //
+                // The third argument is what makes the preset row exist: built without a presets
+                // URL — which is how every scripted sync window used to be built — the row is not
+                // added at all, so nothing about saving or loading a preset could be scripted.
                 let o = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if o.count >= 2 {
-                    let win = SyncWindowController(leftDir: o[0], rightDir: o[1])
+                    let win = SyncWindowController(leftDir: o[0], rightDir: o[1],
+                                                   presetsURL: o.count >= 3 && !o[2].isEmpty
+                                                       ? URL(fileURLWithPath: o[2]) : nil,
+                                                   contentFields: contentFieldRegistry)
                     automationSyncWindows.append(win)
                     win.showWindow()
+                }
+            case "syncfilterset":                          // syncfilterset <spec>|<out> (F-192)
+                // Put a filter in without clicking through the sheet, then report what the window
+                // makes of it — the button title included, which is the part that has to be visible.
+                // Spec is `key=value;…`: exclude, min, max, days, plugin.
+                let fs = arg.split(separator: "|", omittingEmptySubsequences: false)
+                    .map { String($0).trimmingCharacters(in: .whitespaces) }
+                if fs.count == 2, let win = automationSyncWindows.last {
+                    let out = win.automationSetFilterCriteria(fs[0])
+                    try? out.write(toFile: fs[1], atomically: true, encoding: .utf8)
+                }
+            case "syncfilteropen":                         // syncfilteropen [<out>] (F-192)
+                // Press the Filter button and leave the sheet up — the only way to photograph it,
+                // and a wrong layout is the one failure that logs nothing at all.
+                automationSyncWindows.last?.automationOpenFilterSheet()
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                if !arg.isEmpty, let win = automationSyncWindows.last {
+                    try? win.automationFilterSheetReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncfilterreport":                       // syncfilterreport <out> (F-192)
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationFilterReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncpreset":                             // syncpreset save <name>|<out> | load <name>|<out>
+                // Saving a preset and loading it back is the round trip the filter has to survive,
+                // and the one the window has already got wrong once for two other options.
+                let ps = arg.split(separator: "|", omittingEmptySubsequences: false)
+                    .map { String($0).trimmingCharacters(in: .whitespaces) }
+                if ps.count == 2, let win = automationSyncWindows.last {
+                    let out = win.automationPreset(ps[0])
+                    try? out.write(toFile: ps[1], atomically: true, encoding: .utf8)
                 }
             case "synccompare":                            // synccompare (F-192): press Compare
                 automationSyncWindows.last?.compareNow()

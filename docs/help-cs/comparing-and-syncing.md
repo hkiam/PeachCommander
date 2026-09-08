@@ -38,6 +38,17 @@ Když dva soubory vypadají stejně, ale potřebujete dokázat, že jsou skuteč
 
 K rychlému odhalení rozdílů mezi dvěma otevřenými složkami zvolte **Označit ▸ Porovnat adresáře** (Shift+F2). Peach Commander označí soubory, které se liší nebo na druhé straně chybí, takže s nimi můžete pracovat pomocí obvyklých příkazů kopírování, přesunu a mazání.
 
+## Omezení toho, co synchronizace zahrnuje
+
+Pole masky nese jeden seznam zahrnutí přes jména souborů. Pro to, co se tím říci nedá, otevře **Filtr…** vedle něj list se třemi kartami. Co se tam nastaví, platí pro *následující* srovnání a tlačítko pak říká, kolik kritérií je aktivních — filtr, který není vidět, je způsob, jak záloha skončí neúplná, zatímco okno hlásí, že je hotovo.
+
+- **Vynechat** bere vzory oddělené `;` nebo `|`. Jméno bez lomítka platí v každé hloubce (`*.tmp`), lomítko na konci znamená složku i vše v ní (`node_modules/`) a vzor s lomítkem platí na relativní cestu (`src/*/generated`). Na velikosti písmen nezáleží.
+- **Velikost** a **datum** posuzují pár jako celek: vypadne-li jedna strana z rozsahu, zůstane mimo celý pár. Je to úmysl. Použito na jedinou stranu, vynechání by pár vypadalo jednostranně a změnilo by se v kopírování špatným směrem.
+- **Za posledních N dní** se měří od každého srovnání, ne od uložení předvolby — uložená úloha tedy dál znamená „poslední měsíc“.
+- Karta **Zásuvné moduly** se ptá obsahového modulu na tu stranu, ze které by se soubor kopíroval. Potřebuje skutečný soubor, takže se nabízí jen tehdy, když jsou obě strany složkami na tomto Macu.
+
+Vynechaná složka se nemaže ani v režimu zrcadla — zrcadlo odstraňuje jen to, co skutečně srovnávalo. Stavový řádek říká, kolik položek filtr zadržel, vedle toho, co běh udělá. Filtr se ukládá a načítá spolu s předvolbou synchronizace, ke které patří.
+
 ## Klávesové zkratky
 
 | Akce | Zkratka |

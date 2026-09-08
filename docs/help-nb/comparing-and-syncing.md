@@ -38,6 +38,17 @@ Når to filer ser like ut, men du trenger å bevise at de virkelig er identiske 
 
 For å oppdage forskjeller mellom to åpne mapper med ett blikk, velg **Merk ▸ Sammenlign kataloger** (Shift+F2). Peach Commander merker filene som avviker eller mangler på den andre siden, slik at du kan handle på dem med de vanlige kopier-, flytt- og slett-kommandoene.
 
+## Begrens hva en synkronisering omfatter
+
+Maskefeltet inneholder én ta-med-liste over filnavn. For det den ikke får sagt, åpner **Filter…** ved siden av et ark med tre faner. Det som settes der, gjelder den *neste* sammenligningen, og knappen sier så hvor mange kriterier som er aktive — et filter man ikke ser, er slik en sikkerhetskopi ender ufullstendig mens vinduet melder at den er ferdig.
+
+- **Utelat** tar mønstre skilt med `;` eller `|`. Et navn uten skråstrek treffer i enhver dybde (`*.tmp`), en skråstrek til slutt betyr en mappe med alt i den (`node_modules/`), og et mønster med skråstrek treffer den relative stien (`src/*/generated`). Store og små bokstaver teller ikke.
+- **Størrelse** og **dato** vurderer et par som helhet: faller én side utenfor området, holdes hele paret utenfor. Det er tilsiktet. Brukt på bare én side ville en utelatelse få paret til å se ensidig ut og bli en kopiering i gal retning.
+- **I løpet av de siste N dagene** måles fra hver sammenligning, ikke fra da oppsettet ble lagret — en lagret jobb betyr altså fortsatt "den siste måneden".
+- Fanen **Programtillegg** spør et innholdstillegg om den siden en fil ville bli kopiert fra. Det trenger en virkelig fil, så den tilbys bare når begge sider er mapper på denne Mac-en.
+
+En utelatt mappe slettes heller ikke i speilmodus — et speil fjerner bare det det faktisk har sammenlignet. Statuslinjen sier hvor mange oppføringer filteret holdt utenfor, ved siden av hva kjøringen vil gjøre. Et filter lagres og hentes sammen med synk-oppsettet det hører til.
+
 ## Snarveier
 
 | Handling | Snarvei |
@@ -52,3 +63,4 @@ For å oppdage forskjeller mellom to åpne mapper med ett blikk, velg **Merk ▸
 - **Undermapper og filtre.** Synkroniseringsvinduet kan stige ned i undermapper og kan begrenses med en filtermaske, slik at du kan synkronisere bare filtypene du bryr deg om.
 - **Du har kontrollen.** Synkronisering kjører aldri av seg selv — du ser gjennom de foreslåtte retningene i resultatrutenettet og kan endre hvilken som helst av dem før noe kopieres.
 - **Forhåndsinnstillinger.** Ofte brukte synkroniseringsoppsett kan lagres og gjenbrukes slik at du ikke skriver inn de samme alternativene hver gang.
+

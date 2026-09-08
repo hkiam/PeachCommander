@@ -148,6 +148,23 @@ SCENARIOS = [
                          "previewtabsdump /Users/admin/side-tabs.txt", "wait 400"], 22),
     ("find-files", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                     "findtab 0", "wait 2000"], 10),
+    # The advanced sync filter (F-192). Two things a screenshot and a text dump have to cover between
+    # them: the sheet's own layout, which no dump can show, and that the *window* says a filter is
+    # active, which no screenshot of the sheet can — the whole safety claim is that a filter is
+    # visible without opening it.
+    #
+    # The sheet is closed again before the script ends. Measured locally: an open sheet stops the app
+    # from quitting, so the harness waits out its forty seconds and the scenario looks like a hang.
+    ("sync-filter", ["active left", "left /Users/admin/sync-src", "wait 1200",
+                     "syncopen /Users/admin/sync-src|/Users/admin/sync-dst|/Users/admin/pc-cfg/sync-presets.json",
+                     "wait 1200",
+                     "syncfilteropen", "wait 900",
+                     "syncfilterset exclude=node_modules/;*.tmp|/Users/admin/syncfilterset.txt",
+                     "wait 500",
+                     "synccompare", "wait 1800",
+                     "syncpreset save Projekt|/Users/admin/syncfilterpreset.txt", "wait 600",
+                     "syncfilterset exclude=|/Users/admin/syncfiltercleared.txt", "wait 500",
+                     "syncpreset load Projekt|/Users/admin/syncfilter.txt", "wait 600"], 11),
     ("settings", ["active left", "left /Users/admin", "wait 1000",
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
@@ -2128,6 +2145,14 @@ REPORTS = {
     # read as success.
     "sync-sftp": ("/Users/admin/syncsftp.txt",
                   ["compared=3", "alpha.txt:copyToRight", "sub/beta.txt:copyToRight", "errors=none"]),
+    # Four claims, and the last is the one this feature exists for. The filter reaches the window
+    # (filtercriteria), it changes what the comparison covers (heldback), the status line says so
+    # next to what the run will do — and loading a preset that carries a filter puts it back on the
+    # *button*. That last one is the specific defect the window has already had once, for two
+    # options the preset store round-tripped while the window quietly dropped them.
+    "sync-filter": ("/Users/admin/syncfilter.txt",
+                    ["preset=Projekt", "filtercriteria=1", "filterexclude=node_modules/;*.tmp",
+                     "heldback=", "held back by the filter", "!ERROR"]),
     # Equal to within a point: the two panels are laid out in float widths and an odd window cannot
     # split evenly. `!diff=` catches nothing on its own, so the before-picture is checked too — without
     # it, a run where `widenleft` silently did nothing would pass.

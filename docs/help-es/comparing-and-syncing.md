@@ -38,6 +38,17 @@ Cuando dos archivos parecen iguales pero necesita demostrar que son realmente id
 
 Para detectar de un vistazo las diferencias entre dos carpetas abiertas, elija **Marcar ▸ Comparar directorios** (Shift+F2). Peach Commander marca los archivos que difieren o que faltan en el otro lado, de modo que pueda actuar sobre ellos con los comandos habituales de copiar, mover y eliminar.
 
+## Limitar lo que abarca una sincronización
+
+El campo de máscara contiene una lista de inclusión sobre los nombres de archivo. Para lo que no puede expresar, **Filtro…** al lado abre una hoja con tres pestañas. Lo que se defina allí se aplica a la *siguiente* comparación, y el botón indica entonces cuántos criterios están activos: un filtro que no se ve es la forma en que una copia de seguridad acaba incompleta mientras la ventana informa de que ha terminado.
+
+- **Excluir** admite patrones separados por `;` o `|`. Un nombre sin barra coincide a cualquier profundidad (`*.tmp`), una barra final designa una carpeta y todo lo que contiene (`node_modules/`), y un patrón con barra coincide con la ruta relativa (`src/*/generated`). No se distinguen mayúsculas y minúsculas.
+- El **tamaño** y la **fecha** juzgan una pareja en conjunto: si uno de los lados queda fuera del intervalo, la pareja entera queda fuera. Es intencionado. Aplicada a un solo lado, una exclusión haría que la pareja pareciera unilateral y se convertiría en una copia en el sentido equivocado.
+- **En los últimos N días** se mide desde cada comparación, no desde que se guardó un ajuste, de modo que una tarea guardada sigue significando «el último mes».
+- La pestaña **Plugins** pregunta a un plugin de contenido por el lado desde el que se copiaría un archivo. Necesita un archivo real, así que solo se ofrece cuando ambos lados son carpetas de este Mac.
+
+Una carpeta excluida tampoco se elimina en modo espejo: un espejo solo retira lo que realmente ha comparado. La línea de estado indica cuántas entradas ha retenido el filtro, junto a lo que hará la ejecución. Un filtro se guarda y se carga con el ajuste de sincronización al que pertenece.
+
 ## Atajos
 
 | Acción | Atajo |
@@ -52,3 +63,4 @@ Para detectar de un vistazo las diferencias entre dos carpetas abiertas, elija *
 - **Subcarpetas y filtros.** La ventana de sincronización puede descender por las subcarpetas y puede limitarse con una máscara de filtro, de modo que puede sincronizar solo los tipos de archivo que le interesan.
 - **Usted mantiene el control.** La sincronización nunca se ejecuta por su cuenta: usted revisa las direcciones propuestas en la cuadrícula de resultados y puede cambiar cualquiera de ellas antes de que se copie nada.
 - **Preajustes.** Las configuraciones de sincronización de uso frecuente pueden guardarse y reutilizarse para no tener que volver a introducir las mismas opciones cada vez.
+

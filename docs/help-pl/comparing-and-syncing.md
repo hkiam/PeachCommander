@@ -38,6 +38,17 @@ Gdy dwa pliki wyglądają tak samo, ale musisz udowodnić, że są naprawdę ide
 
 Aby dostrzec różnice między dwoma otwartymi folderami na pierwszy rzut oka, wybierz **Zaznacz ▸ Porównaj katalogi** (Shift+F2). Peach Commander oznaczy pliki, które się różnią lub brakuje ich po drugiej stronie, dzięki czemu możesz na nich działać zwykłymi poleceniami kopiowania, przenoszenia i usuwania.
 
+## Ograniczanie tego, co obejmuje synchronizacja
+
+Pole maski zawiera jedną listę włączeń dotyczącą nazw plików. Dla tego, czego nie da się tak wyrazić, **Filtr…** obok otwiera arkusz z trzema kartami. To, co się tam ustawi, dotyczy *następnego* porównania, a przycisk mówi wtedy, ile kryteriów jest aktywnych — filtr, którego nie widać, to sposób, w jaki kopia zapasowa kończy się niepełna, podczas gdy okno melduje, że skończyło.
+
+- **Pomiń** przyjmuje wzorce rozdzielone `;` lub `|`. Nazwa bez ukośnika pasuje na każdej głębokości (`*.tmp`), ukośnik na końcu oznacza folder wraz z zawartością (`node_modules/`), a wzorzec z ukośnikiem pasuje do ścieżki względnej (`src/*/generated`). Wielkość liter nie ma znaczenia.
+- **Rozmiar** i **data** oceniają parę jako całość: jeśli jedna strona wypada spoza zakresu, pomijana jest cała para. To zamierzone. Zastosowane tylko do jednej strony, pominięcie sprawiłoby, że para wyglądałaby jednostronnie i zamieniłoby się w kopiowanie w złym kierunku.
+- **W ciągu ostatnich N dni** liczy się od każdego porównania, a nie od zapisania ustawienia — zapisane zadanie nadal znaczy więc „ostatni miesiąc”.
+- Karta **Wtyczki** pyta wtyczkę treści o stronę, z której plik zostałby skopiowany. Potrzebuje prawdziwego pliku, więc jest dostępna tylko wtedy, gdy obie strony są folderami na tym Macu.
+
+Pominięty folder nie jest usuwany także w trybie lustra — lustro usuwa tylko to, co rzeczywiście porównało. Wiersz stanu mówi, ile pozycji wstrzymał filtr, obok tego, co zrobi przebieg. Filtr jest zapisywany i wczytywany razem z ustawieniem synchronizacji, do którego należy.
+
 ## Skróty
 
 | Akcja | Skrót |

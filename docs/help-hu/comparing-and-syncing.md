@@ -38,6 +38,17 @@ Amikor két fájl egyformának tűnik, de bizonyítania kell, hogy valóban azon
 
 Ahhoz, hogy egy pillantással észrevegye két megnyitott mappa közötti eltéréseket, válassza a **Kijelölés ▸ Könyvtárak összehasonlítása** menüpontot (Shift+F2). A Peach Commander megjelöli azokat a fájlokat, amelyek eltérnek, vagy amelyek hiányoznak a másik oldalon, így a szokásos másolási, áthelyezési és törlési parancsokkal cselekedhet velük.
 
+## Annak korlátozása, mit fog át egy szinkronizálás
+
+A maszkmező egyetlen, fájlnevekre vonatkozó bevonási listát tartalmaz. Amit ezzel nem lehet kifejezni, ahhoz a mellette lévő **Szűrő…** nyit egy lapot három füllel. Amit ott beállít, a *következő* összehasonlításra érvényes, a gomb pedig megmondja, hány feltétel aktív — egy szűrő, amit nem látni, éppen így lesz egy biztonsági mentés hiányos, miközben az ablak azt jelenti, hogy elkészült.
+
+- A **Kihagyás** minták vesz át, `;` vagy `|` választja el őket. A perjel nélküli név bármilyen mélységben illeszkedik (`*.tmp`), a végén álló perjel egy mappát jelent a teljes tartalmával (`node_modules/`), a perjelet tartalmazó minta pedig a relatív útvonalra illeszkedik (`src/*/generated`). A kis- és nagybetűk nem számítanak.
+- A **méret** és a **dátum** a párt egészében ítéli meg: ha az egyik oldal kiesik a tartományból, az egész pár kimarad. Ez szándékos. Csak az egyik oldalra alkalmazva a kihagyás egyoldalúnak láttatná a párt, és rossz irányú másolássá változna.
+- Az **elmúlt N nap** minden összehasonlítástól számít, nem az előbeállítás mentésétől — egy elmentett feladat tehát továbbra is „az elmúlt hónapot” jelenti.
+- A **Bővítmények** fül egy tartalombővítménytől kérdez arról az oldalról, amelyről a fájl másolódna. Ehhez valódi fájl kell, ezért csak akkor jelenik meg, ha mindkét oldal ezen a Macen lévő mappa.
+
+A kihagyott mappát tükör módban sem törli — a tükör csak azt távolítja el, amit valóban összehasonlított. Az állapotsor megmondja, hány bejegyzést tartott vissza a szűrő, amellett, hogy mit fog tenni a futás. A szűrő azzal a szinkronizálási előbeállítással együtt kerül mentésre és betöltésre, amelyhez tartozik.
+
 ## Billentyűparancsok
 
 | Művelet | Billentyűparancs |

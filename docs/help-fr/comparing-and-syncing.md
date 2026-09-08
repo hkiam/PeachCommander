@@ -38,6 +38,17 @@ Lorsque deux fichiers semblent identiques mais que vous devez prouver qu'ils le 
 
 Pour repérer d'un coup d'œil les différences entre deux dossiers ouverts, choisissez **Sélection ▸ Comparer les dossiers** (Shift+F2). Peach Commander marque les fichiers qui diffèrent ou qui manquent de l'autre côté, afin que vous puissiez agir dessus avec les commandes habituelles de copie, déplacement et suppression.
 
+## Restreindre ce qu’une synchronisation englobe
+
+Le champ de masque contient une liste d’inclusion portant sur les noms de fichiers. Pour ce qu’il ne peut pas exprimer, **Filtre…** à côté ouvre une feuille à trois onglets. Ce qui y est défini s’applique à la comparaison *suivante*, et le bouton indique alors combien de critères sont actifs — un filtre que l’on ne voit pas, c’est ainsi qu’une sauvegarde finit incomplète alors que la fenêtre annonce qu’elle est terminée.
+
+- **Exclure** accepte des motifs séparés par `;` ou `|`. Un nom sans barre oblique correspond à n’importe quelle profondeur (`*.tmp`), une barre oblique finale désigne un dossier et tout ce qu’il contient (`node_modules/`), et un motif contenant une barre oblique correspond au chemin relatif (`src/*/generated`). La casse est ignorée.
+- La **taille** et la **date** jugent une paire dans son ensemble : si un seul côté sort des limites, toute la paire est écartée. C’est voulu. Appliquée à un seul côté, une exclusion ferait paraître la paire unilatérale et se transformerait en copie dans le mauvais sens.
+- **Au cours des N derniers jours** se mesure à partir de chaque comparaison, non du moment où un préréglage a été enregistré : une tâche enregistrée continue donc de signifier « le mois dernier ».
+- L’onglet **Plugins** interroge un plugin de contenu sur le côté depuis lequel un fichier serait copié. Il lui faut un vrai fichier, il n’est donc proposé que lorsque les deux côtés sont des dossiers de ce Mac.
+
+Un dossier exclu n’est pas non plus supprimé en mode miroir — un miroir ne retire que ce qu’il a réellement comparé. La ligne d’état indique combien d’entrées le filtre a écartées, à côté de ce que fera l’exécution. Un filtre est enregistré et chargé avec le préréglage de synchronisation auquel il appartient.
+
 ## Raccourcis
 
 | Action | Raccourci |
@@ -52,3 +63,4 @@ Pour repérer d'un coup d'œil les différences entre deux dossiers ouverts, cho
 - **Sous-dossiers et filtres.** La fenêtre de synchronisation peut descendre dans les sous-dossiers et peut être limitée par un masque de filtre : vous pouvez ainsi synchroniser uniquement les types de fichiers qui vous intéressent.
 - **Vous gardez le contrôle.** La synchronisation ne s'exécute jamais toute seule — vous examinez les directions proposées dans la grille de résultats et pouvez en modifier n'importe laquelle avant qu'aucun fichier ne soit copié.
 - **Préréglages.** Les configurations de synchronisation fréquemment utilisées peuvent être enregistrées et réutilisées afin que vous n'ayez pas à ressaisir les mêmes options à chaque fois.
+

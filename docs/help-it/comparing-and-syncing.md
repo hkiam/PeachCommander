@@ -38,6 +38,17 @@ Quando due file sembrano uguali ma dovete dimostrare che sono davvero identici (
 
 Per individuare a colpo d'occhio le differenze tra due cartelle aperte, scegliete **Seleziona ▸ Confronta directory** (Shift+F2). Peach Commander contrassegna i file che differiscono o che mancano sull'altro lato, così potete agire su di essi con i consueti comandi di copia, spostamento ed eliminazione.
 
+## Limitare ciò che una sincronizzazione comprende
+
+Il campo maschera contiene un elenco di inclusione sui nomi dei file. Per ciò che non riesce a esprimere, **Filtro…** accanto apre un foglio con tre schede. Quanto vi si imposta vale per il confronto *successivo*, e il pulsante indica poi quanti criteri sono attivi: un filtro che non si vede è il modo in cui un backup finisce incompleto mentre la finestra segnala di avere finito.
+
+- **Escludi** accetta modelli separati da `;` o `|`. Un nome senza barra corrisponde a qualsiasi profondità (`*.tmp`), una barra finale indica una cartella e tutto ciò che contiene (`node_modules/`), e un modello con una barra corrisponde al percorso relativo (`src/*/generated`). Le maiuscole non contano.
+- **Dimensione** e **data** giudicano una coppia nel suo insieme: se uno dei due lati esce dall’intervallo, l’intera coppia resta fuori. È voluto. Applicata a un solo lato, un’esclusione farebbe sembrare la coppia unilaterale e si trasformerebbe in una copia nella direzione sbagliata.
+- **Negli ultimi N giorni** si misura da ogni confronto, non da quando un preset è stato salvato: un compito salvato continua quindi a significare «l’ultimo mese».
+- La scheda **Plugin** interroga un plugin di contenuto sul lato da cui un file verrebbe copiato. Gli serve un file reale, quindi è offerta solo quando entrambi i lati sono cartelle di questo Mac.
+
+Una cartella esclusa non viene eliminata nemmeno in modalità specchio: uno specchio rimuove solo ciò che ha effettivamente confrontato. La riga di stato indica quante voci il filtro ha trattenuto, accanto a ciò che l’esecuzione farà. Un filtro viene salvato e caricato con il preset di sincronizzazione a cui appartiene.
+
 ## Scorciatoie
 
 | Azione | Scorciatoia |
@@ -52,3 +63,4 @@ Per individuare a colpo d'occhio le differenze tra due cartelle aperte, scegliet
 - **Sottocartelle e filtri.** La finestra di sincronizzazione può scendere nelle sottocartelle e può essere limitata con una maschera di filtro, così potete sincronizzare solo i tipi di file che vi interessano.
 - **Restate al comando.** La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché.
 - **Preimpostazioni.** Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta.
+

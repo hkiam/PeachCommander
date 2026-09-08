@@ -39,6 +39,17 @@ When two files look the same but you need to prove they are truly identical (or 
 
 To spot differences between two open folders at a glance, choose **Mark ▸ Compare Directories** (Shift+F2). Peach Commander marks the files that differ or are missing on the other side, so you can act on them with the usual copy, move, and delete commands.
 
+## Filter what a synchronisation includes
+
+The mask field holds one include list over file names. For what it cannot express, **Filter…** beside it opens a sheet with three tabs. Whatever you set there applies to the *next* comparison, and the button then says how many criteria are active — a filter you cannot see is how a backup ends up incomplete while the window reports that it is done.
+
+- **Exclude** takes patterns separated by `;` or `|`. A name without a slash matches at any depth (`*.tmp`), a trailing slash means a folder and everything in it (`node_modules/`), and a pattern containing a slash matches the relative path (`src/*/generated`). Case is ignored.
+- **Size** and **date** judge a pair as a whole: if either side falls outside the range, the whole pair is left out. That is deliberate. Applied to one side only, an exclusion would make the pair look one-sided and turn into a copy in the wrong direction.
+- **Within the last N days** is measured from each comparison, not from when a preset was saved, so a saved job keeps meaning "the last month".
+- The **Plugins** tab asks a content plugin about the side a file would be copied from. It needs a real file, so it is offered only when both sides are folders on this Mac.
+
+An excluded folder is not deleted in mirror mode either — a mirror removes only what it actually compared. The status line says how many entries the filter held back, next to what the run will do. A filter is saved and loaded with the sync preset it belongs to.
+
 ## Shortcuts
 
 | Action | Shortcut |

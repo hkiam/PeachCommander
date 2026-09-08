@@ -38,6 +38,17 @@ Ko dve datoteki izgledata enako, a morate dokazati, da sta res enaki (ali najti 
 
 Za odkritje razlik med dvema odprtima mapama na prvi pogled izberite **Izbor ▸ Primerjaj imenike** (Shift+F2). Peach Commander označi datoteke, ki se razlikujejo ali manjkajo na drugi strani, tako da lahko na njih delujete z običajnimi ukazi kopiranja, premikanja in brisanja.
 
+## Omejitev tega, kar usklajevanje zajema
+
+Polje maske vsebuje en seznam vključitev po imenih datotek. Za to, česar z njim ni mogoče povedati, **Filter…** ob njem odpre list s tremi zavihki. Kar se tam nastavi, velja za *naslednjo* primerjavo, gumb pa nato pove, koliko meril je dejavnih — filter, ki ga ni videti, je način, kako varnostna kopija ostane nepopolna, medtem ko okno sporoča, da je končala.
+
+- **Izpusti** sprejme vzorce, ločene z `;` ali `|`. Ime brez poševnice velja na vsaki globini (`*.tmp`), poševnica na koncu pomeni mapo z vsem, kar je v njej (`node_modules/`), vzorec s poševnico pa velja za relativno pot (`src/*/generated`). Velikost črk ni pomembna.
+- **Velikost** in **datum** presojata par kot celoto: če ena stran pade izven obsega, ostane zunaj cel par. To je namerno. Uporabljeno le na eni strani bi izpustitev naredila par videti enostranski in bi postala kopiranje v napačno smer.
+- **V zadnjih N dneh** se meri od vsake primerjave, ne od shranjevanja prednastavitve — shranjeno opravilo torej še naprej pomeni »zadnji mesec«.
+- Zavihek **Vstavki** vpraša vsebinski vstavek o strani, s katere bi bila datoteka kopirana. Potrebuje resnično datoteko, zato je na voljo le, kadar sta obe strani mapi na tem Macu.
+
+Izpuščena mapa se ne izbriše niti v zrcalnem načinu — zrcalo odstrani samo tisto, kar je res primerjalo. Vrstica stanja pove, koliko vnosov je filter zadržal, poleg tega, kaj bo izvedba naredila. Filter se shrani in naloži skupaj s prednastavitvijo usklajevanja, ki ji pripada.
+
 ## Bližnjice
 
 | Dejanje | Bližnjica |

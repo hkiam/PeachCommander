@@ -38,6 +38,17 @@ Wanneer twee bestanden er hetzelfde uitzien maar je moet bewijzen dat ze werkeli
 
 Om in één oogopslag verschillen tussen twee open mappen te ontdekken, kies je **Markeren ▸ Mappen vergelijken** (Shift+F2). Peach Commander markeert de bestanden die verschillen of aan de andere kant ontbreken, zodat je erop kunt inwerken met de gebruikelijke kopieer-, verplaats- en verwijderopdrachten.
 
+## Beperken wat een synchronisatie omvat
+
+Het maskerveld bevat één insluitlijst over bestandsnamen. Voor wat daarmee niet te zeggen is, opent **Filter…** ernaast een blad met drie tabbladen. Wat daar wordt ingesteld geldt voor de *volgende* vergelijking, en de knop laat dan zien hoeveel criteria actief zijn — een filter dat je niet ziet is de manier waarop een back-up onvolledig eindigt terwijl het venster meldt dat het klaar is.
+
+- **Uitsluiten** neemt patronen, gescheiden door `;` of `|`. Een naam zonder schuine streep past op elke diepte (`*.tmp`), een schuine streep aan het eind betekent een map met alles erin (`node_modules/`), en een patroon met een schuine streep past op het relatieve pad (`src/*/generated`). Hoofdletters doen niet mee.
+- **Grootte** en **datum** beoordelen een paar als geheel: valt één kant buiten het bereik, dan blijft het hele paar weg. Dat is opzet. Op één kant toegepast zou een uitsluiting het paar eenzijdig laten lijken en een kopie de verkeerde kant op worden.
+- **In de laatste N dagen** wordt gemeten vanaf elke vergelijking, niet vanaf het bewaren van een voorinstelling — een bewaarde taak blijft dus "de laatste maand" betekenen.
+- Het tabblad **Plug-ins** vraagt een inhouds-plug-in naar de kant waarvan een bestand gekopieerd zou worden. Daarvoor is een echt bestand nodig, dus het wordt alleen aangeboden als beide kanten mappen op deze Mac zijn.
+
+Een uitgesloten map wordt ook in spiegelmodus niet verwijderd — een spiegel haalt alleen weg wat hij werkelijk heeft vergeleken. De statusregel zegt hoeveel items het filter heeft weggehouden, naast wat de uitvoering gaat doen. Een filter wordt bewaard en geladen met de sync-voorinstelling waar het bij hoort.
+
 ## Sneltoetsen
 
 | Actie | Sneltoets |
@@ -52,3 +63,4 @@ Om in één oogopslag verschillen tussen twee open mappen te ontdekken, kies je 
 - **Submappen en filters.** Het synchroniseervenster kan in submappen afdalen en kan met een filtermasker worden beperkt, zodat je alleen de bestandstypen kunt synchroniseren die je interesseren.
 - **Jij houdt de controle.** Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd.
 - **Voorinstellingen.** Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert.
+

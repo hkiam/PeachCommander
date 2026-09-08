@@ -304,7 +304,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private lazy var workspaceStore = WorkspaceStore(url: configPaths.workspaces)
     /// Content-field registry (rebuilt when enabled PDX plugins change) + the
     /// plugin fields available as columns.
-    private var contentFieldRegistry = ContentFieldRegistry()
+    /// Not private: the automation extension builds a sync window and has to hand it the same
+    /// registry the real one gets, or a scripted plugin criterion would have no fields to offer.
+    private(set) var contentFieldRegistry = ContentFieldRegistry()
     /// Content fields whose value carries an SF Symbol before a tab (unit "icon", F-428/F-430).
     private var iconContentFieldIDs: Set<String> = []
     /// The "<path>#L<line>" the viewer last asked for a note about, published through the plugin
@@ -3748,7 +3750,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 return
             }
             let win = SyncWindowController(left: leftSide, right: rightSide,
-                                           presetsURL: self.configPaths.syncPresets)
+                                           presetsURL: self.configPaths.syncPresets,
+                                           contentFields: self.contentFieldRegistry)
             self.syncWindows.append(win)
             win.onClose = { [weak self, weak win] in self?.syncWindows.removeAll { $0 === win } }
             win.reload = { [weak self] in

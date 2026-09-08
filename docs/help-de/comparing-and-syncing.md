@@ -38,6 +38,17 @@ Wenn zwei Dateien gleich aussehen, Sie aber nachweisen müssen, dass sie wirklic
 
 Um Unterschiede zwischen zwei geöffneten Ordnern auf einen Blick zu erkennen, wählen Sie **Markieren ▸ Verzeichnisse vergleichen** (Shift+F2). Peach Commander markiert die Dateien, die sich unterscheiden oder auf der anderen Seite fehlen, sodass Sie sie mit den üblichen Kopier-, Verschiebe- und Löschbefehlen bearbeiten können.
 
+## Einschränken, was zu einer Synchronisation gehört
+
+Das Maskenfeld trägt eine Einschlussliste über Dateinamen. Für alles, was sich damit nicht sagen lässt, öffnet **Filtern…** daneben ein Blatt mit drei Reitern. Was dort gesetzt wird, gilt für den *nächsten* Vergleich, und der Knopf sagt dann, wie viele Kriterien aktiv sind – ein Filter, den man nicht sieht, ist der Weg zu einer unvollständigen Sicherung, die als fertig gemeldet wird.
+
+- **Ausschließen** nimmt Muster, getrennt durch `;` oder `|`. Ein Name ohne Schrägstrich trifft in jeder Tiefe (`*.tmp`), ein Schrägstrich am Ende meint einen Ordner samt Inhalt (`node_modules/`), und ein Muster mit Schrägstrich trifft den relativen Pfad (`src/*/generated`). Groß- und Kleinschreibung wird ignoriert.
+- **Größe** und **Datum** beurteilen ein Paar als Ganzes: fällt eine der beiden Seiten heraus, bleibt das ganze Paar draußen. Das ist Absicht. Nur auf eine Seite angewandt, ließe ein Ausschluss das Paar einseitig aussehen und würde zu einer Kopie in die falsche Richtung.
+- **In den letzten N Tagen** wird ab jedem Vergleich gemessen, nicht ab dem Speichern einer Vorlage – ein gespeicherter Auftrag bedeutet also weiterhin „der letzte Monat“.
+- Der Reiter **Plugins** fragt ein Inhalts-Plugin nach der Seite, von der eine Datei kopiert würde. Dafür braucht es eine echte Datei, also wird er nur angeboten, wenn beide Seiten Ordner auf diesem Mac sind.
+
+Ein ausgeschlossener Ordner wird auch im Spiegelmodus nicht gelöscht – ein Spiegel entfernt nur, was er wirklich verglichen hat. Die Statuszeile sagt, wie viele Einträge der Filter zurückgehalten hat, neben dem, was der Lauf tun wird. Ein Filter wird mit der Sync-Vorlage gespeichert und geladen, zu der er gehört.
+
 ## Tastenkürzel
 
 | Aktion | Tastenkürzel |
