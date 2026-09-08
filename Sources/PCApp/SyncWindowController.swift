@@ -413,7 +413,8 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// The current dialog settings as a preset with the given name.
     private func currentPreset(name: String) -> SyncPreset {
         SyncPreset(name: name, options: options(),
-                   fileMask: maskField.stringValue, withSubdirs: subdirsButton.state == .on)
+                   fileMask: maskField.stringValue, withSubdirs: subdirsButton.state == .on,
+                   ignoreHidden: ignoreHiddenButton.state == .on)
     }
 
     /// Push a preset's settings into the controls.
@@ -428,6 +429,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         toleranceField.stringValue = String(Int(preset.options.toleranceSeconds))
         maskField.stringValue = preset.fileMask
         subdirsButton.state = preset.withSubdirs ? .on : .off
+        // And this one the store could not round-trip at all until now: it reached the engine as a
+        // bare argument and was in no preset, so a saved comparison came back with hidden files in
+        // it however it had been saved.
+        ignoreHiddenButton.state = preset.ignoreHidden ? .on : .off
     }
 
     @objc private func presetSelected() {

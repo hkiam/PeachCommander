@@ -43,6 +43,31 @@ does not have.
 
 ### Fixed
 
+- **A mirrored synchronisation deleted files it had been told to leave out.** Mirror mode removes a
+  folder that exists on the target side only, and that removal is recursive — `fm.trashItem` on a
+  folder takes everything under it, and the archive editor drops every entry beneath the path it is
+  given. Whatever the file mask or *Ignore hidden* held back was under that folder and had never been
+  a row in the plan, so it went too, after the window had shown the user that it was not part of the
+  comparison. Measured on all three kinds of side: mask `*.txt`, mirror mode, a target-only folder
+  holding one `.txt` and one `.jpg`, and the `.jpg` was in the Trash; the same with a dotfile and
+  *Ignore hidden*; the same inside a zip. A mirror may now delete only what it actually compared —
+  a folder still holding something the comparison declined to look at is kept and reported instead.
+  A folder whose whole content was compared is still removed, so an ordinary mirror run is unchanged.
+
+- **A saved sync preset could take every other preset with it.** `SyncPreset` and `SyncOptions` used
+  the synthesized `Codable`, which does not fall back to a property's default for a missing key — it
+  throws — and `SyncPresetStore.load` answers `[]` for anything it cannot decode. So the next option
+  added to either type would have made every existing `sync-presets.json` fail to load, and the save
+  after that would have written the empty list over the file. Both types decode field by field now,
+  the way `SearchTemplate` has since the same trap was found there, and `upsert` refuses to write over
+  a file that exists, is not empty and does not parse. The date strategy is pinned to ISO-8601 on both
+  sides while the format still carries no date, so the first one to arrive needs no migration.
+
+- **A preset forgot whether hidden files were part of the comparison.** *Ignore hidden* was in no
+  preset and in no config file — it reached the engine as a bare argument — so a comparison saved
+  without hidden files came back with them.
+
+
 The last of the paths that touch data: the attribute, checksum and encode/decode engines, plus
 `MkDirEngine`, which came out clean. Three measured, two read.
 

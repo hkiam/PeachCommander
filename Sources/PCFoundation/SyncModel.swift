@@ -102,6 +102,29 @@ public struct SyncOptions: Sendable, Equatable, Codable {
         self.caseSensitive = caseSensitive
         self.toleranceSeconds = toleranceSeconds
     }
+
+    /// Decode field by field, every one optional, falling back to this type's own defaults.
+    ///
+    /// Written out rather than synthesized for the reason `SearchTemplate.init(from:)` records: the
+    /// synthesized version does *not* fall back to a property's default, it throws on a missing key.
+    /// These options are saved to disk inside a `SyncPreset` and outlive the build that wrote them,
+    /// and `SyncPresetStore.load` answers `[]` for anything it cannot decode — so adding one option
+    /// here would have made every previously saved preset fail to load, and the next save would then
+    /// have overwritten the file. All of the user's presets, gone, with nothing said.
+    ///
+    /// The nested case is the one that matters and is easy to miss: a tolerant decoder on
+    /// `SyncPreset` alone does not help, because `decodeIfPresent(SyncOptions.self, …)` throws when
+    /// the object *is* there and is missing a key.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = SyncOptions()
+        byContent = try c.decodeIfPresent(Bool.self, forKey: .byContent) ?? d.byContent
+        ignoreDate = try c.decodeIfPresent(Bool.self, forKey: .ignoreDate) ?? d.ignoreDate
+        asymmetric = try c.decodeIfPresent(Bool.self, forKey: .asymmetric) ?? d.asymmetric
+        ignoreDaylightHour = try c.decodeIfPresent(Bool.self, forKey: .ignoreDaylightHour) ?? d.ignoreDaylightHour
+        caseSensitive = try c.decodeIfPresent(Bool.self, forKey: .caseSensitive) ?? d.caseSensitive
+        toleranceSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .toleranceSeconds) ?? d.toleranceSeconds
+    }
 }
 
 /// The classification outcome for a single `SyncItem`.

@@ -400,6 +400,25 @@ public enum SyncExecutor {
         var zipAdds: [(localPath: String, arcPath: String)] = []   // local → zip, batched
         var zipDeletes: [String] = []                              // entries to delete from the zip (F-192)
 
+        /// Every path this plan intends to delete. `holdsUncomparedContent` asks the zip whether an
+        /// entry beneath a folder is in here; if it is not, the comparison never saw it.
+        let deletedKeys = Set(results.filter { $0.action == .deleteRight || $0.action == .deleteLeft }
+                                     .map(\.item.relativePath))
+        /// The archive's entry list, read once and only when it can be needed: re-parsing the zip
+        /// for every stray folder would turn one rewrite into a walk per directory.
+        let zipEntryKeys: [String] = {
+            guard left.isZip || right.isZip,
+                  results.contains(where: { $0.item.isDirectory && ($0.action == .deleteRight || $0.action == .deleteLeft) })
+            else { return [] }
+            let archive = left.isZip ? left.path : right.path
+            guard let reader = ZipReader(fileURL: URL(fileURLWithPath: archive)) else { return [] }
+            return reader.entries.map { entry in
+                var key = entry.path
+                while key.hasSuffix("/") { key.removeLast() }
+                return key
+            }
+        }()
+
         func local(_ side: SyncSide, _ rel: String) -> String {
             (side.path as NSString).appendingPathComponent(rel)
         }
@@ -545,7 +564,50 @@ public enum SyncExecutor {
             } catch { errors.append(SyncError(path: rel, message: error.localizedDescription)) }
         }
 
-        func remove(_ side: SyncSide, _ rel: String) async {
+        /// Does this directory still hold something the comparison never looked at?
+        ///
+        /// Deleting a directory is one call and that call is recursive — `fm.trashItem` on a folder
+        /// takes everything under it, and `ArchiveEditor.remove` drops every entry beneath the path
+        /// it is given. Whatever the mask or `ignoreHidden` held back is under that folder and was
+        /// never a row in this plan, so it went too. Measured before this guard existed: mirror mode,
+        /// a right-only folder, mask `*.txt`, and the `.jpg` inside it ended up in the Trash — after
+        /// the window had shown the user that the file was not part of the comparison.
+        ///
+        /// A mirror may delete what it compared. It may not delete what it declined to look at.
+        ///
+        /// For a local or a remote side the question is simply whether the folder is empty *now*:
+        /// deletes run deepest-first (`relativePath.count` descending, which is a valid topological
+        /// order because a child's path is always longer than its ancestor's), so by the time a
+        /// directory is reached everything about it that was compared is already gone, and what
+        /// remains is what was held back. A zip is decided differently because its deletions are
+        /// batched and nothing has been removed from it yet — there the archive's own entry list is
+        /// compared against the plan.
+        func holdsUncomparedContent(_ side: SyncSide, _ rel: String) async -> Bool {
+            switch side {
+            case .localDir:
+                guard let names = try? fm.contentsOfDirectory(atPath: local(side, rel)) else {
+                    return false      // unreadable: the delete below will fail on its own terms
+                }
+                return !names.isEmpty
+            case .remote(let r):
+                do {
+                    for try await batch in r.fs.list(r.vpath(rel)) {
+                        if batch.entries.contains(where: { $0.name != "." && $0.name != ".." }) { return true }
+                    }
+                    return false
+                } catch { return false }
+            case .zip:
+                let prefix = rel + "/"
+                return zipEntryKeys.contains { $0.hasPrefix(prefix) && !deletedKeys.contains($0) }
+            }
+        }
+
+        func remove(_ side: SyncSide, _ rel: String, isDir: Bool) async {
+            if isDir, await holdsUncomparedContent(side, rel) {
+                errors.append(SyncError(path: rel,
+                                        message: "kept: it holds something this comparison did not include"))
+                return
+            }
             if case .zip = side {                         // batched into one rewrite below (F-192)
                 zipDeletes.append(rel); return
             }
@@ -597,7 +659,8 @@ public enum SyncExecutor {
             if Task.isCancelled { return errors }
             progress?(done, total)
             done += 1
-            await remove(r.action == .deleteRight ? right : left, r.item.relativePath)
+            await remove(r.action == .deleteRight ? right : left, r.item.relativePath,
+                         isDir: r.item.isDirectory)
         }
         progress?(total, total)
         // One rewrite for all entries deleted from the zip (F-192).

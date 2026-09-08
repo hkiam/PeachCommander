@@ -578,6 +578,86 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs()
         XCTAssertEqual(items.map(\.relativePath).sorted(), ["a.txt", "b.txt"])
     }
+
+    // MARK: - A mirror deletes what it compared, and nothing else
+
+    /// Mirror mode removes a folder that exists on one side only, and that removal is recursive:
+    /// `fm.trashItem` on a directory takes everything under it. Whatever the mask held back is under
+    /// that directory and was never a row in the plan — so it went too, after the window had shown
+    /// the user that it was not part of the comparison.
+    ///
+    /// Measured before the guard: mask `*.txt`, mirror mode, a right-only folder holding one `.txt`
+    /// and one `.jpg`, and the `.jpg` was gone. The same happens with "ignore hidden" and a dotfile.
+    func test_aMirrorDoesNotDeleteAFolderHoldingFilesTheMaskHeldBack() async throws {
+        try write("compared", to: right, "Old/listed.txt")
+        try write("held back", to: right, "Old/kept.jpg")
+        let items = await scanBothDirs(mask: "*.txt")
+        let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
+        let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old/kept.jpg").path),
+                      "a file the mask excluded was deleted along with its folder")
+        // What *was* compared is still deleted: this is a guard, not a retreat.
+        XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old/listed.txt").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old").path),
+                      "the folder went even though something inside it survived")
+        XCTAssertEqual(errors.map(\.path), ["Old"], "the kept folder was not reported")
+    }
+
+    /// The same for "ignore hidden", which holds entries back by a different rule but leaves them in
+    /// exactly the same place.
+    func test_aMirrorDoesNotDeleteAFolderHoldingAHiddenFile() async throws {
+        try write("compared", to: right, "Old/listed.txt")
+        try write("held back", to: right, "Old/.config")
+        let items = await scanBothDirs(ignoreHidden: true)
+        let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
+        _ = await SyncExecutor.execute(results, left: .localDir(left.path),
+                                       right: .localDir(right.path), toTrash: false)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old/.config").path),
+                      "a hidden file was deleted along with its folder")
+    }
+
+    /// A folder whose whole content *was* compared is still removed — otherwise the guard would turn
+    /// every mirror run into a pile of half-deleted trees.
+    func test_aMirrorStillDeletesAFolderItComparedEntirely() async throws {
+        try write("gone", to: right, "Old/a.txt")
+        try write("gone", to: right, "Old/b.txt")
+        let items = await scanBothDirs()
+        let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
+        let errors = await SyncExecutor.execute(results, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        XCTAssertEqual(errors, [])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: right.appendingPathComponent("Old").path),
+                       "a folder this comparison covered completely was left behind")
+    }
+
+    /// And a zip, where the mechanism is different and the outcome was the same: `ArchiveEditor.remove`
+    /// drops every entry *under* the path it is given, so a directory delete took the held-back
+    /// entries with it. The archive's own entry list is what answers the question here, because the
+    /// zip's deletions are batched into one rewrite and nothing has been removed yet when the guard
+    /// runs.
+    func test_aMirrorDoesNotDeleteAZipFolderHoldingEntriesTheMaskHeldBack() async throws {
+        let zip = root.appendingPathComponent("side.zip")
+        // The folder entry has to be in the archive for this to be reproducible at all: a zip written
+        // from two file paths alone carries no `Old/` entry, so the scan never sees a directory and
+        // there is no recursive delete to guard against. Real archives written by Finder or by this
+        // app's own packer do carry them.
+        try ZipWriter.create(at: zip, files: [(path: "Old/", data: Data()),
+                                              (path: "Old/listed.txt", data: Data("compared".utf8)),
+                                              (path: "Old/kept.jpg", data: Data("held back".utf8))])
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: .zip(zip.path),
+                                           mask: "*.txt", withSubdirs: true, byContent: false)
+        let results = SyncModel.classify(items, options: SyncOptions(asymmetric: true))
+        _ = await SyncExecutor.execute(results, left: .localDir(left.path),
+                                       right: .zip(zip.path), toTrash: false)
+
+        let remaining = ZipReader(fileURL: zip)?.entries.map(\.path) ?? []
+        XCTAssertTrue(remaining.contains("Old/kept.jpg"),
+                      "an entry the mask excluded was dropped along with its folder: \(remaining)")
+        XCTAssertFalse(remaining.contains("Old/listed.txt"))
+    }
+
 }
 
 /// A filesystem whose listing contains what a hostile server would send.
