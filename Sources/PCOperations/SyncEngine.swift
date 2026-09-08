@@ -211,22 +211,18 @@ public enum SyncScanner {
             if byContent, !isDir, let l, let r {
                 if l.size != r.size {
                     contentEqual = false
-                } else if case .localDir = left, case .localDir = right {
-                    // Two local folders, and only then: this reads the two paths as files on this
-                    // machine. The test used to be `!isZip && !isZip`, which let a *server* side in —
-                    // and `SyncSide.path` is the path on the server, so this opened `/srv/backup/…`
-                    // locally, found nothing, and reported every same-sized file as different. Worse
-                    // when such a path did exist here: it compared the wrong file and said nothing.
+                } else {
                     // Each side's own spelling: under case-insensitive matching the two names can
                     // differ in case, and reading the left one out of the right folder finds nothing.
-                    contentEqual = filesEqual((left.path as NSString).appendingPathComponent(entry.left?.key ?? key),
-                                              (right.path as NSString).appendingPathComponent(entry.right?.key ?? key))
-                } else {
-                    // Comparing by content across a remote side downloads both files. That is what
-                    // ticking the box asks for, and it is why the option is not the default.
-                    let leftData = await loadData(left, key: entry.left?.key ?? key, zip: leftZip)
-                    let rightData = await loadData(right, key: entry.right?.key ?? key, zip: rightZip)
-                    contentEqual = leftData == rightData
+                    // Never `SyncSide.path` joined by hand — that was once done for what looked like
+                    // two local folders and let a *server* side in, where the path is the path on the
+                    // server: it opened `/srv/backup/…` locally, found nothing, and reported every
+                    // same-sized file as different. Which side a key belongs to is decided in one
+                    // place now, inside the comparison.
+                    contentEqual = await streamedContentEqual(
+                        left: left, right: right,
+                        leftKey: entry.left?.key ?? key, rightKey: entry.right?.key ?? key,
+                        leftZip: leftZip, rightZip: rightZip)
                 }
             }
             // Each side's own spelling as well as the row's: under case-insensitive matching the
@@ -391,18 +387,6 @@ public enum SyncScanner {
         return w
     }
 
-    /// Load one entry's bytes from a side (for content comparison across a zip).
-    private static func loadData(_ side: SyncSide, key: String, zip: ZipReader?) async -> Data? {
-        switch side {
-        case .localDir(let dir):
-            return try? Data(contentsOf: URL(fileURLWithPath: (dir as NSString).appendingPathComponent(key)))
-        case .zip:
-            guard let zip, let e = zip.entries.first(where: { entryKey($0.path) == key }) else { return nil }
-            return try? zip.data(for: e)
-        case .remote(let r):
-            return try? await readAll(r, key)
-        }
-    }
 
     /// The whole of one remote file.
     static func readAll(_ source: RemoteSyncSource, _ rel: String) async throws -> Data {
@@ -415,6 +399,148 @@ public enum SyncScanner {
         }
         try? await stream.close()
         return data
+    }
+
+    /// How much of each side is held at once while comparing. The same 64 KB the local-to-local
+    /// comparison always used.
+    private static let contentChunk = 1 << 16
+
+    /// One side's bytes, pulled a block at a time.
+    ///
+    /// Local files and zip members can both be *pulled* from — a file handle reads what it is asked
+    /// for, and `ZipReader.reader(for:)` hands out a member piece by piece. A server cannot: a
+    /// `VFSReadStream` is an AsyncSequence with an unconstrained Element, so there is no way to hold
+    /// an iterator and ask it for the next block on demand. That is why the remote case is driven
+    /// the other way round below, and why this returns nil for it rather than pretending.
+    private final class Feed {
+        private let handle: FileHandle?
+        private let member: ArchiveMemberReader?
+        private var failed = false
+
+        init?(_ side: SyncSide, key: String, zip: ZipReader?) {
+            switch side {
+            case .localDir(let dir):
+                let path = (dir as NSString).appendingPathComponent(key)
+                guard let h = FileHandle(forReadingAtPath: path) else { return nil }
+                handle = h; member = nil
+            case .zip:
+                guard let zip,
+                      let entry = zip.entries.first(where: { SyncScanner.entryKey($0.path) == key }),
+                      // One optional, not two: `try?` flattens (SE-0230), so this is nil both for
+                      // a member that cannot be streamed — encrypted, or a compression method this
+                      // build does not implement — and for one that threw on the way.
+                      let reader = try? zip.reader(for: entry, password: nil)
+                else { return nil }
+                handle = nil; member = reader
+            case .remote:
+                return nil
+            }
+        }
+
+        /// `n` bytes, fewer only at the end of this side; nil when the read itself failed.
+        ///
+        /// Looped rather than one call: a file handle returns what it has, but an archive member
+        /// reader is allowed to hand back less than it was asked for, and comparing two blocks of
+        /// different lengths would report a difference that is not there.
+        func readFully(_ n: Int) -> Data? {
+            guard !failed else { return nil }
+            var out = Data()
+            while out.count < n {
+                let want = n - out.count
+                let piece: Data
+                if let handle {
+                    piece = handle.readData(ofLength: want)
+                } else if let member {
+                    // `do`/`catch` and not `try?`: since SE-0230 `try?` *flattens* an already
+                    // optional result, so `try? member.next(…)` is `Data?` and not `Data??` — and a
+                    // `guard let` over that treats the reader's nil-at-the-end as a failed read.
+                    // Measured: every zip comparison came back "not compared", because reaching the
+                    // end of a member looked exactly like being unable to read it.
+                    do {
+                        piece = try member.next(maxBytes: want) ?? Data()
+                    } catch {
+                        failed = true
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+                if piece.isEmpty { break }
+                out.append(piece)
+            }
+            return out
+        }
+
+        func close() { try? handle?.close() }
+    }
+
+    /// Byte-compare one entry across two sides without holding either file.
+    ///
+    /// Two things are deliberate here.
+    ///
+    /// It is **streamed, and stopped at the first difference.** The version before this read both
+    /// files whole into memory and compared the two buffers, so a 3 GB pair across a share or an
+    /// archive held six gigabytes at once and read all of it even when the first byte already
+    /// differed. Two local folders were compared in blocks all along; a server or a zip side was
+    /// not, and the comment there mentioned the download without mentioning the memory.
+    ///
+    /// And **nil means the bytes were not read**, not a verdict. The old code answered
+    /// `leftData == rightData` over two `Data?`, and `nil == nil` is true — so a pair neither side of
+    /// which could be read came out as *identical*, in the grid and in the plan. Measured. Nil makes
+    /// `classify` fall back to size and date, which is what a comparison that was not by content
+    /// would have said anyway; it is the honest degradation, where "identical" was a claim about
+    /// bytes nobody had seen.
+    private static func streamedContentEqual(left: SyncSide, right: SyncSide,
+                                             leftKey: String, rightKey: String,
+                                             leftZip: ZipReader?, rightZip: ZipReader?) async -> Bool? {
+        // At most one side is a server — `scan` refuses two — and that is what makes this workable.
+        // A read stream can only be pushed through, so the remote side drives the loop and the other
+        // side is asked for blocks of matching length.
+        if case .remote(let r) = left {
+            return await compareStreamed(driver: r, driverKey: leftKey,
+                                         other: right, otherKey: rightKey, otherZip: rightZip)
+        }
+        if case .remote(let r) = right {
+            return await compareStreamed(driver: r, driverKey: rightKey,
+                                         other: left, otherKey: leftKey, otherZip: leftZip)
+        }
+        guard let a = Feed(left, key: leftKey, zip: leftZip),
+              let b = Feed(right, key: rightKey, zip: rightZip) else { return nil }
+        defer { a.close(); b.close() }
+        while true {
+            guard let da = a.readFully(contentChunk), let db = b.readFully(contentChunk) else { return nil }
+            if da != db { return false }
+            if da.isEmpty { return true }
+        }
+    }
+
+    /// The remote half: the server's stream sets the pace, the other side supplies the same lengths.
+    private static func compareStreamed(driver: RemoteSyncSource, driverKey: String,
+                                        other: SyncSide, otherKey: String,
+                                        otherZip: ZipReader?) async -> Bool? {
+        guard let feed = Feed(other, key: otherKey, zip: otherZip) else { return nil }
+        defer { feed.close() }
+        guard let stream = try? await driver.fs.openRead(driver.vpath(driverKey)) else { return nil }
+        var equal = true
+        var failure = false
+        do {
+            for try await element in stream {
+                // `as? Data`, as everywhere else that reads a VFS stream: the protocol gives Element
+                // a default of Data but does not constrain it, so the concrete type is not known here.
+                guard let piece = element as? Data, !piece.isEmpty else { continue }
+                guard let mine = feed.readFully(piece.count) else { failure = true; break }
+                if mine != piece { equal = false; break }
+            }
+            // Both sides have to end together. The caller only asks when the two listings agree on
+            // the size, so anything left over here means one of them was not what it said.
+            if equal, !failure, let tail = feed.readFully(1), !tail.isEmpty { equal = false }
+        } catch {
+            failure = true
+        }
+        // Closed on every path, including the early break — which is the point of breaking: the rest
+        // of the file is not downloaded.
+        try? await stream.close()
+        return failure ? nil : equal
     }
 
     /// A zip entry path reduced to the comparison key (no trailing slash).
@@ -470,18 +596,6 @@ public enum SyncScanner {
         return w
     }
 
-    /// Byte-compare two files in chunks (sizes already known equal by the caller).
-    private static func filesEqual(_ a: String, _ b: String) -> Bool {
-        guard let fa = FileHandle(forReadingAtPath: a), let fb = FileHandle(forReadingAtPath: b) else { return false }
-        defer { try? fa.close(); try? fb.close() }
-        let chunk = 1 << 16
-        while true {
-            let da = fa.readData(ofLength: chunk)
-            let db = fb.readData(ofLength: chunk)
-            if da != db { return false }
-            if da.isEmpty { return true }
-        }
-    }
 }
 
 /// Executes classified sync actions against two sides (local dirs and/or a zip).

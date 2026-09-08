@@ -62,6 +62,21 @@ does not have.
 
 ### Fixed
 
+- **“By content” across a server or an archive held both files in memory, and read them to the end
+  even when the first byte already differed.** Two local folders were compared in 64 KB blocks all
+  along, stopping at the first difference; a server or a zip side was not — both files were read whole
+  and the two buffers compared, so a 3 GB pair meant six gigabytes resident and a full download for a
+  verdict that was already settled. All three kinds of side stream now, in one comparison rather than
+  two. Measured: with a difference in the first block, a server hands over one block instead of the
+  whole file.
+
+- **A pair neither side of which could be read was reported as identical.** The comparison answered
+  `leftData == rightData` over two optionals, and two absent values are equal — so a file the app had
+  not managed to open, on either side, came out as “equal” in the result grid and in the plan. It now
+  falls back to size and date, which is what a comparison that was not by content would have said:
+  “not compared” and “identical” are opposite statements, and only one of them was true.
+
+
 - **A mirrored synchronisation deleted files it had been told to leave out.** Mirror mode removes a
   folder that exists on the target side only, and that removal is recursive — `fm.trashItem` on a
   folder takes everything under it, and the archive editor drops every entry beneath the path it is

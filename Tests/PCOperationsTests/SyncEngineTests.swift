@@ -833,6 +833,130 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertEqual(later.heldBack, 1)
     }
 
+
+    // MARK: - Bytes that could not be read are not a verdict
+
+    /// "By content" on a pair neither side of which can be read used to report **equal**.
+    ///
+    /// `loadData` answers `Data?`, and `leftData == rightData` on two `nil`s is `true` — so a pair
+    /// the comparison never managed to look at came out as identical, in the grid and in the plan.
+    /// Not compared and identical are opposite statements.
+    ///
+    /// Verified by putting the claim back — and the first attempt at that proved the test was not
+    /// yet measuring it: injecting "equal" only where the comparison *finishes* left this passing,
+    /// because an unreadable side never gets that far. It is the early returns, one per way of
+    /// failing to open a side, that carry it.
+    func test_aPairNeitherSideOfWhichCanBeReadIsNotCalledEqual() async throws {
+        let file = try write("secret", to: left, "secret.bin")
+        try FileManager.default.setAttributes([.posixPermissions: 0o000], ofItemAtPath: file.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o644],
+                                                       ofItemAtPath: file.path) }
+        let server = RefusingReadFS(base: "/srv", names: ["secret.bin": 6])
+        let items = await SyncScanner.scan(left: .localDir(left.path),
+                                           right: .remote(RemoteSyncSource(fs: server, path: "/srv")),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        let entry = item(items, "secret.bin")
+        XCTAssertNotNil(entry, "the pair was dropped rather than reported")
+        XCTAssertNotEqual(entry?.contentEqual, true,
+                          "two files that could not be read were reported as identical")
+    }
+
+
+    // MARK: - Comparing by content does not hold the files
+
+    private func serverSide(_ fs: VirtualFileSystem) -> SyncSide {
+        .remote(RemoteSyncSource(fs: fs, path: "/srv"))
+    }
+
+    /// The claim worth measuring: a difference near the start stops the download.
+    ///
+    /// Before this, both files were read whole into memory and the two buffers compared — so a large
+    /// pair over a share was fetched in full even when the first block already differed, and both
+    /// copies were resident at once. The server counts what it actually handed over.
+    func test_aDifferenceEarlyOnStopsTheDownload() async throws {
+        let size = 400_000
+        var mine = Data(repeating: 0x41, count: size)
+        var theirs = Data(repeating: 0x41, count: size)
+        theirs[100] = 0x42                               // differs inside the first 64 KB block
+        try mine.write(to: left.appendingPathComponent("big.bin"))
+        let server = ChunkedServerFS(base: "/srv", files: ["big.bin": theirs], pieceSize: 1 << 16)
+
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: serverSide(server),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        XCTAssertEqual(item(items, "big.bin")?.contentEqual, false)
+        XCTAssertLessThan(server.served, size,
+                          "the whole file was downloaded although the first block already differed")
+        XCTAssertLessThanOrEqual(server.served, 1 << 16,
+                                 "more than the one block that settled it was fetched")
+        mine.removeAll(); theirs.removeAll()
+    }
+
+    /// And an equal pair is still read to the end, because that is the only way to know.
+    func test_anEqualPairIsComparedToTheEnd() async throws {
+        let bytes = Data((0..<300_000).map { UInt8($0 & 0xFF) })
+        try bytes.write(to: left.appendingPathComponent("same.bin"))
+        let server = ChunkedServerFS(base: "/srv", files: ["same.bin": bytes], pieceSize: 1 << 16)
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: serverSide(server),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        XCTAssertEqual(item(items, "same.bin")?.contentEqual, true)
+        XCTAssertEqual(server.served, bytes.count)
+    }
+
+    /// A difference in the *last* byte of a multi-block file: the loop has to keep going, and a
+    /// comparison that stopped after one block would call this pair identical.
+    func test_aDifferenceInTheLastByteIsStillFound() async throws {
+        let size = 200_000
+        var mine = Data(repeating: 0x41, count: size)
+        var theirs = mine
+        theirs[size - 1] = 0x42
+        try mine.write(to: left.appendingPathComponent("tail.bin"))
+        let server = ChunkedServerFS(base: "/srv", files: ["tail.bin": theirs], pieceSize: 1 << 16)
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: serverSide(server),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        XCTAssertEqual(item(items, "tail.bin")?.contentEqual, false)
+        mine.removeAll(); theirs.removeAll()
+    }
+
+    /// A server hands out whatever piece sizes it likes, and they do not line up with the blocks
+    /// this side reads. The pieces here are 7 bytes — deliberately coprime with everything — so a
+    /// comparison that assumed matching block boundaries would report a difference that is not there.
+    func test_aServersOwnPieceSizesDoNotAffectTheVerdict() async throws {
+        let bytes = Data((0..<5_000).map { UInt8($0 & 0xFF) })
+        try bytes.write(to: left.appendingPathComponent("odd.bin"))
+        let server = ChunkedServerFS(base: "/srv", files: ["odd.bin": bytes], pieceSize: 7)
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: serverSide(server),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        XCTAssertEqual(item(items, "odd.bin")?.contentEqual, true,
+                       "mismatched piece boundaries were reported as a difference")
+    }
+
+    /// A zip member is streamed too, not decompressed whole. Equal and different, because a
+    /// comparison that answered nil for an archive would pass a test that only checked "not true".
+    func test_aZipMemberIsComparedInBlocks() async throws {
+        let same = Data((0..<200_000).map { UInt8($0 & 0xFF) })
+        var other = same
+        other[199_999] ^= 0xFF
+        try same.write(to: left.appendingPathComponent("a.bin"))
+        try same.write(to: left.appendingPathComponent("b.bin"))
+        let zip = root.appendingPathComponent("members.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.bin", data: same),
+                                              (path: "b.bin", data: other)])
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: .zip(zip.path),
+                                           mask: "*.*", withSubdirs: true, byContent: true)
+        XCTAssertEqual(item(items, "a.bin")?.contentEqual, true)
+        XCTAssertEqual(item(items, "b.bin")?.contentEqual, false)
+    }
+
+    /// Two local folders still get the same answer they always did — the special case for them was
+    /// removed, and one comparison now serves all three kinds of side.
+    func test_twoLocalFoldersAreStillComparedByteForByte() async throws {
+        try write("aaaa", to: left, "same.txt");  try write("aaaa", to: right, "same.txt")
+        try write("aaaa", to: left, "differ.txt"); try write("bbbb", to: right, "differ.txt")
+        let items = await scanBothDirs(byContent: true)
+        XCTAssertEqual(item(items, "same.txt")?.contentEqual, true)
+        XCTAssertEqual(item(items, "differ.txt")?.contentEqual, false)
+    }
+
 }
 
 /// A filesystem whose listing contains what a hostile server would send.
@@ -915,6 +1039,122 @@ private final class MemoryServerFS: VirtualFileSystem, @unchecked Sendable {
     func openRead(_ path: VFSPath) async throws -> VFSReadStream {
         guard let data = files[rel(path)] else { throw VFSError.notFound(path.path) }
         return OneShot(data: data)
+    }
+    func openWrite(_ path: VFSPath, options: WriteOptions) async throws -> VFSWriteStream {
+        throw VFSError.notFound(path.path)
+    }
+    func mkdir(_ path: VFSPath) async throws {}
+    func delete(_ path: VFSPath) async throws {}
+    func rename(_ from: VFSPath, to: VFSPath) async throws {}
+    func setAttributes(_ path: VFSPath, attributes: VFSAttributes) async throws {}
+    func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? { nil }
+    func localFileIfAvailable(_ path: VFSPath) async throws -> URL? { nil }
+}
+
+/// Lists files with a size and refuses every read — a share that grants listing and not reading.
+private final class RefusingReadFS: VirtualFileSystem, @unchecked Sendable {
+    let scheme = "refuse"
+    var capabilities: VFSCapabilities { [.read] }
+    private let base: String
+    private let names: [String: Int]
+
+    init(base: String, names: [String: Int]) { self.base = base; self.names = names }
+
+    func list(_ dir: VFSPath) -> AsyncThrowingStream<VFSEntryBatch, Error> {
+        AsyncThrowingStream { continuation in
+            if dir.path == base {
+                continuation.yield(VFSEntryBatch(entries: names.map { name, size in
+                    VFSEntry(name: name, ext: "", kind: .file, size: Int64(size),
+                             modified: Date(timeIntervalSince1970: 1_600_000_000), created: nil,
+                             posixMode: 0o000, bsdFlags: 0, isHidden: false)
+                }))
+            }
+            continuation.finish()
+        }
+    }
+
+    func stat(_ path: VFSPath) async throws -> VFSEntry { throw VFSError.notFound(path.path) }
+    func openRead(_ path: VFSPath) async throws -> VFSReadStream {
+        throw VFSError.notFound(path.path)
+    }
+    func openWrite(_ path: VFSPath, options: WriteOptions) async throws -> VFSWriteStream {
+        throw VFSError.notFound(path.path)
+    }
+    func mkdir(_ path: VFSPath) async throws {}
+    func delete(_ path: VFSPath) async throws {}
+    func rename(_ from: VFSPath, to: VFSPath) async throws {}
+    func setAttributes(_ path: VFSPath, attributes: VFSAttributes) async throws {}
+    func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? { nil }
+    func localFileIfAvailable(_ path: VFSPath) async throws -> URL? { nil }
+}
+
+/// Serves files in pieces of a chosen size and counts the bytes it actually handed over.
+///
+/// The count is the whole point: "did it stop early" is not answerable from the verdict, and a
+/// comparison that reads both files whole gives the same verdict as one that stops at the first
+/// difference.
+private final class ChunkedServerFS: VirtualFileSystem, @unchecked Sendable {
+    let scheme = "chunked"
+    var capabilities: VFSCapabilities { [.read] }
+    private let base: String
+    private let files: [String: Data]
+    private let pieceSize: Int
+    private let lock = NSLock()
+    private var _served = 0
+    var served: Int { lock.lock(); defer { lock.unlock() }; return _served }
+
+    init(base: String, files: [String: Data], pieceSize: Int) {
+        self.base = base; self.files = files; self.pieceSize = pieceSize
+    }
+
+    private func count(_ n: Int) { lock.lock(); _served += n; lock.unlock() }
+
+    func list(_ dir: VFSPath) -> AsyncThrowingStream<VFSEntryBatch, Error> {
+        AsyncThrowingStream { continuation in
+            if dir.path == base {
+                continuation.yield(VFSEntryBatch(entries: files.map { name, data in
+                    VFSEntry(name: name, ext: "", kind: .file, size: Int64(data.count),
+                             modified: Date(timeIntervalSince1970: 1_600_000_000), created: nil,
+                             posixMode: 0o644, bsdFlags: 0, isHidden: false)
+                }))
+            }
+            continuation.finish()
+        }
+    }
+
+    private struct Pieces: VFSReadStream {
+        typealias Element = Data
+        let data: Data
+        let pieceSize: Int
+        let tally: @Sendable (Int) -> Void
+        struct AsyncIterator: AsyncIteratorProtocol {
+            let data: Data
+            let pieceSize: Int
+            let tally: @Sendable (Int) -> Void
+            var offset = 0
+            mutating func next() async throws -> Data? {
+                guard offset < data.count else { return nil }
+                let end = Swift.min(offset + pieceSize, data.count)
+                let piece = data.subdata(in: offset..<end)
+                offset = end
+                tally(piece.count)
+                return piece
+            }
+        }
+        func makeAsyncIterator() -> AsyncIterator {
+            AsyncIterator(data: data, pieceSize: pieceSize, tally: tally)
+        }
+        func close() async throws {}
+    }
+
+    private func rel(_ path: VFSPath) -> String {
+        String(path.path.dropFirst(base.count).drop(while: { $0 == "/" }))
+    }
+
+    func stat(_ path: VFSPath) async throws -> VFSEntry { throw VFSError.notFound(path.path) }
+    func openRead(_ path: VFSPath) async throws -> VFSReadStream {
+        guard let data = files[rel(path)] else { throw VFSError.notFound(path.path) }
+        return Pieces(data: data, pieceSize: pieceSize, tally: { [weak self] in self?.count($0) })
     }
     func openWrite(_ path: VFSPath, options: WriteOptions) async throws -> VFSWriteStream {
         throw VFSError.notFound(path.path)
