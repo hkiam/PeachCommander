@@ -155,6 +155,16 @@ SCENARIOS = [
     #
     # The sheet is closed again before the script ends. Measured locally: an open sheet stops the app
     # from quitting, so the harness waits out its forty seconds and the scenario looks like a hang.
+    # Mirror mode with a left root that cannot be read. Before the guard this produced a delete row
+    # for *every* file on the right, pre-ticked, one confirmation click away — a typo in the path
+    # field was enough. The claim here is not that the rows are gone (the comparison did produce
+    # them, and hiding that would be its own lie) but that the run is refused, the reason names the
+    # side, and the button is off.
+    ("sync-badroot", ["active left", "left /Users/admin/guard-dst", "wait 1200",
+                      "syncopen /Users/admin/no-such-folder|/Users/admin/guard-dst", "wait 1200",
+                      "syncasym 1", "wait 400",
+                      "synccompare", "wait 1500",
+                      "syncguard /Users/admin/syncbadroot.txt"], 10),
     ("sync-filter", ["active left", "left /Users/admin/filter-src", "wait 1200",
                      "syncopen /Users/admin/filter-src|/Users/admin/filter-dst|/Users/admin/pc-cfg/sync-presets.json",
                      "wait 1200",
@@ -1966,6 +1976,10 @@ EXTERNAL_CHECKS = {
     "terminal-orphan": ("pgrep -f 'sleep 39[12]' | wc -l | tr -d ' '", "0"),
     # The files, on the server, asked of the shell — including the one in a subfolder, because creating
     # the parent is the part a server does not do for you.
+    # The app is gone by the time this runs, so it is the disk that answers: every one of the twelve
+    # files the mirror proposed deleting is still there. A report saying "refused" and a target that
+    # was emptied anyway would both pass the text check above; only this one cannot.
+    "sync-badroot": ("ls ~/guard-dst | wc -l | tr -d ' '", "12"),
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
                   "one two"),
     # The button is in the file the app will read at the next launch, not merely in the view.
@@ -2160,6 +2174,13 @@ REPORTS = {
     # next to what the run will do — and loading a preset that carries a filter puts it back on the
     # *button*. That last one is the specific defect the window has already had once, for two
     # options the preset store round-tripped while the window quietly dropped them.
+    # `syncEnabled=false` is the load-bearing line: the plan is visible and cannot be run. The
+    # reason has to name which side to look at, because "something was wrong" does not tell anybody
+    # which path field they mistyped. And the shell check afterwards is the real proof — the twelve
+    # files are still there.
+    "sync-badroot": ("/Users/admin/syncbadroot.txt",
+                     ["syncEnabled=false", "leftReliable=false", "rightReliable=true",
+                      "could not be read at all", "12 of 12", "!ERROR"]),
     # `filterexclude` is the preset's patterns and not the `*.zzz` that was set in between, so the
     # load restored them. `heldback=2` is the excluded folder counted once plus the .tmp file — not
     # once per file inside node_modules. And the status line carries that next to what the run would
@@ -3257,6 +3278,11 @@ def boot(app: str, run: str):
                   # something to do. Without it the scenario asserted "0 copies, 2 held back", which
                   # a filter that excluded everything would satisfy just as well.
                   "printf 'new\\n' > ~/filter-src/report.txt && "
+                  # A populated target for the bad-root scenario. Its source is never created: the
+                  # scenario points the left side at a path that does not exist, which is what a
+                  # typo or an unmounted volume looks like.
+                  "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
+                  "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "
                   "printf 'js\\n' > ~/filter-src/node_modules/pad/index.js && "
                   "chmod 644 ~/sftp-demo/perm.txt; "

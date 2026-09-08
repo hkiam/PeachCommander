@@ -1276,6 +1276,14 @@ extension MainWindowController {
                 if !arg.isEmpty, let win = automationSyncWindows.last {
                     try? win.automationFilterSheetReport().write(toFile: arg, atomically: true, encoding: .utf8)
                 }
+            case "syncasym":                               // syncasym <0|1> (F-192): mirror mode
+                automationSyncWindows.last?.automationSetAsymmetric(arg.trimmingCharacters(in: .whitespaces) == "1")
+            case "syncguard":                              // syncguard <out> (F-192)
+                // What the window refuses about the plan it is showing. Readable without pressing
+                // Synchronize, because that is the claim: a plan that cannot run is not offered.
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationGuardReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "syncfilterreport":                       // syncfilterreport <out> (F-192)
                 if let win = automationSyncWindows.last, !arg.isEmpty {
                     try? win.automationFilterReport().write(toFile: arg, atomically: true, encoding: .utf8)

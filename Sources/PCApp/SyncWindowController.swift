@@ -42,6 +42,15 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private var filter = SyncFilter()
     /// How many entries the last comparison held back, for the status line.
     private var heldBack = 0
+    /// What each side's walk was able to see, from the last comparison. `.unknown` until there has
+    /// been one — which refuses every deletion, and is the right answer before anything was looked at.
+    private var leftScope = SyncSideScope.unknown
+    private var rightScope = SyncSideScope.unknown
+    /// Whether the two roots are the same folder or one inside the other. Established with the
+    /// filesystem when a comparison starts, not from the two strings.
+    private var rootRelation = SyncPlanGuard.RootRelation.distinct
+    /// Why the plan as it stands must not be offered. Recomputed whenever the plan changes.
+    private var refusals: [SyncPlanGuard.Refusal] = []
     /// Where a plugin criterion's fields come from. Nil when the host did not hand one over, and the
     /// filter sheet then says so instead of offering an empty popup.
     private let contentFields: ContentFieldRegistry?
@@ -549,6 +558,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Set the "Ignore hidden" option before an automated compare (F-192).
     func automationSetIgnoreHidden(_ on: Bool) { ignoreHiddenButton.state = on ? .on : .off }
 
+    /// Set mirror mode before an automated compare. It is the only mode that deletes today, so it
+    /// is the one a guard scenario has to be able to switch on.
+    func automationSetAsymmetric(_ on: Bool) { asymmetricButton.state = on ? .on : .off }
+
     /// Put filter criteria in as though the sheet had been filled in and confirmed, and report what
     /// the window makes of them.
     ///
@@ -570,6 +583,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// What the sheet says while it is open, without closing it.
     func automationFilterSheetReport() -> String {
         filterSheet?.automationReport() ?? "ERROR: no filter sheet\n"
+    }
+
+    /// What the window refuses, and why — the whole point being that this is readable without
+    /// clicking Synchronize, because a plan that cannot run must not be offered.
+    func automationGuardReport() -> String {
+        var out = "refusals=\(refusals.count)\n"
+        for r in refusals { out += "refusal=\(r.subject): \(r.reason)\n" }
+        out += "syncEnabled=\(syncButton.isEnabled)\n"
+        out += "deleteRows=\(rowAction.filter { $0 == .deleteRight || $0 == .deleteLeft }.count)\n"
+        out += "leftReliable=\(leftScope.isReliable)\nrightReliable=\(rightScope.isReliable)\n"
+        out += "status=\(statusLabel.stringValue)\n"
+        return out
     }
 
     /// What the window says about the filter without anybody opening the sheet — which is the whole
@@ -741,6 +766,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let byContent = byContentButton.state == .on
         let ignoreHidden = ignoreHiddenButton.state == .on
         let opts = options()
+        // Asked once per comparison, with the filesystem, before anything is scanned: two paths can
+        // reach the same folder without looking alike.
+        rootRelation = SyncScanner.rootRelation(left: leftSide, right: rightSide)
         setComparing(true)
         statusLabel.stringValue = String(localized: "Comparing…")
         syncButton.isEnabled = false
@@ -764,12 +792,15 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 await MainActor.run {
                     self.compareTask = nil
                     self.setComparing(false)
+                    self.leftScope = .unknown
+                    self.rightScope = .unknown
                     self.statusLabel.stringValue = String(localized: "Cancelled")
                 }
                 return
             }
             var classified = SyncModel.classify(items, options: opts)
             var heldBack = outcome.heldBack
+            let scopes = (outcome.leftScope, outcome.rightScope)
             // The plugin criterion runs here and not in the scan: it needs to know which side a row
             // reads from, which is only settled once the row has been classified. See SyncPluginFilter.
             if let predicate = activeFilter.pluginPredicate, let registry {
@@ -783,6 +814,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 self.compareTask = nil
                 self.setComparing(false)
                 self.heldBack = heldBack
+                (self.leftScope, self.rightScope) = scopes
                 self.results = classified.filter { $0.action != .none }
                 self.rowAction = self.results.map(\.action)
                 self.rowIncluded = self.results.map { Self.isActionable($0.action) }   // include all actionable by default
@@ -924,25 +956,57 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         if heldBack > 0 {
             text += "   ·   \(heldBack) \(String(localized: "held back by the filter"))"
         }
+        // Recomputed on every change, because the plan changes with every tick and every flipped
+        // arrow — a refusal computed once after the scan would still be shown for a row the user has
+        // since unticked.
+        refusals = SyncPlanGuard.refusals(plan: currentPlan(), leftScope: leftScope,
+                                          rightScope: rightScope, roots: rootRelation)
+        if let first = refusals.first {
+            // The refusal replaces the counts rather than being appended to them. It is the only
+            // thing that matters about this plan, and a fourth clause after "→ 3 ← 0 delete 812" is
+            // a sentence nobody reads.
+            text = "\(String(localized: "Cannot synchronize")): \(first.reason)"
+            if refusals.count > 1 {
+                text += "   ·   \(refusals.count - 1) \(String(localized: "more"))"
+            }
+        }
         statusLabel.stringValue = text
         // Recomputed here rather than once after the scan: a conflict that has just been given a
         // direction is something to synchronize, and unticking the last row is not. Fixed at scan
         // time, the button stayed disabled for a grid of nothing but conflicts however they were
         // resolved, and enabled for a grid the user had emptied by hand.
-        syncButton.isEnabled = syncTask == nil && rowIncluded.indices.contains {
+        //
+        // And disabled outright while the plan is refused. Refusing at the click would be a dialog
+        // saying no to something the window had just offered; a gated action that cannot work must
+        // not be proposed in the first place — the principle `DefaultAutomationCore` writes down for
+        // the automation surface, and there is no reason it should be weaker here.
+        syncButton.isEnabled = syncTask == nil && refusals.isEmpty && rowIncluded.indices.contains {
             rowIncluded[$0] && Self.isActionable(rowAction[$0])
+        }
+    }
+
+    /// The rows that would actually run: included, actionable, with any per-row direction override
+    /// applied (F-192).
+    ///
+    /// Lifted out of `synchronize()` because the guard has to judge exactly this — not everything
+    /// the comparison produced. Judging the whole result would refuse a copy-only run because of
+    /// delete rows the user had already unticked.
+    private func currentPlan() -> [SyncResult] {
+        results.enumerated().compactMap { i, r in
+            guard i < rowIncluded.count, rowIncluded[i], Self.isActionable(rowAction[i]) else { return nil }
+            return SyncResult(action: rowAction[i], item: r.item)
         }
     }
 
     @objc private func synchronize() {
         // The Synchronize button is the Stop button while it runs, exactly as Compare is.
         if let running = syncTask { running.cancel(); return }
-        // Only included rows, with any per-row direction override applied (F-192).
-        let actionable: [SyncResult] = results.enumerated().compactMap { i, r in
-            guard i < rowIncluded.count, rowIncluded[i], Self.isActionable(rowAction[i]) else { return nil }
-            return SyncResult(action: rowAction[i], item: r.item)
-        }
+        let actionable = currentPlan()
         guard !actionable.isEmpty else { return }
+        // Nothing should be able to get here — the button is disabled while there are refusals — but
+        // the check is repeated rather than trusted: this is the one path in the window that deletes,
+        // and a disabled button is a statement about the last layout pass.
+        guard refusals.isEmpty else { return }
         let alert = NSAlert()
         alert.messageText = String(localized: "Synchronize \(actionable.count) item(s)?")
         alert.informativeText = statusLabel.stringValue + permanentDeleteWarning(for: actionable)

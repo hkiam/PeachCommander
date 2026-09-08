@@ -62,6 +62,19 @@ does not have.
 
 ### Fixed
 
+- **A mirror whose source cannot be read no longer offers to empty the target.** Point the left side
+  at a folder that is not there — a typo in the path field, an unmounted volume, a permission failure
+  — and the comparison came back empty, which in mirror mode means "delete every file on the right":
+  twelve rows, pre-ticked, one confirmation click away. Measured on a mistyped path. A plan whose
+  deletions cannot be justified is now refused before it is offered: Synchronize is disabled, and the
+  status line says which side could not be read instead of showing a count of deletions. The rows
+  themselves stay visible — the comparison did produce them, and hiding that would be its own kind of
+  lie. Two more refusals come with it: a plan that would delete more than half of the known entries
+  (never for fewer than ten, so ordinary housekeeping is untouched), and a comparison of a folder
+  against itself or against something inside it, which had no check at all where a single copy has
+  had one all along.
+
+
 - **The comparison now says what it was able to see.** All three walks turned a failure into an empty
   result: a root that is not there or cannot be read, an archive that will not open, and a server
   whose *root* listing fails each produced "nothing here" with no error and no mark. That matters
