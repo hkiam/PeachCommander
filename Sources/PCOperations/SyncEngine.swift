@@ -98,10 +98,99 @@ public enum SyncScanPhase: Sendable, Equatable {
 public struct SyncScanOutcome: Sendable {
     public let items: [SyncItem]
     public let heldBack: Int
+    /// What each side's walk was actually able to see. A comparison decides what to *copy* from the
+    /// entries; deciding what to *delete* needs this as well, because a deletion is derived from
+    /// something being **absent**, and absence is only evidence if the walk would have found it.
+    public let leftScope: SyncSideScope
+    public let rightScope: SyncSideScope
 
-    public init(items: [SyncItem], heldBack: Int) {
+    public init(items: [SyncItem], heldBack: Int,
+                leftScope: SyncSideScope = .unknown, rightScope: SyncSideScope = .unknown) {
         self.items = items
         self.heldBack = heldBack
+        self.leftScope = leftScope
+        self.rightScope = rightScope
+    }
+}
+
+/// What one side's walk managed to look at.
+///
+/// This exists for one question, and it is the question a mirror gets wrong: *may a deletion be
+/// derived from this path being absent on this side?* Absence on its own is not evidence. The walk
+/// may never have started — `FileManager.enumerator(atPath:)` answers nil for a path that is not
+/// there, cannot be read, or sits on a volume that is not mounted, and the scanner used to turn that
+/// into an empty result with no error and no mark. In mirror mode that empty result classifies every
+/// file on the other side as "delete it", pre-ticked, one confirmation away. Measured on a
+/// mistyped path.
+///
+/// A root check alone is not enough either: the path-based enumerator has no error handler, so an
+/// unreadable *subtree* is silently missing from an otherwise fine walk. Hence `incompleteDirs` —
+/// which the walk already tracked for the folder-delete guard — is part of the answer too.
+public struct SyncSideScope: Sendable, Equatable {
+    /// The walk could be started at all.
+    public let rootEnumerable: Bool
+    /// A plain directory listing found something in the root, independently of the walk. Set only
+    /// where that can be asked cheaply; it catches the case where the walk starts and yields
+    /// nothing while the folder is plainly not empty.
+    public let rootObservedNonEmpty: Bool
+    public let entriesFound: Int
+    /// How many entries the walk was handed, before any rule dropped one.
+    ///
+    /// Separate from `entriesFound` because a mask that excludes everything is a perfectly good
+    /// answer — it keeps nothing and is still trustworthy — while an enumerator that yields nothing
+    /// over a folder that is plainly not empty is not. Measured against `entriesFound` the first
+    /// case reads as a failure, which would refuse deletions a mirror is right to make.
+    public let entriesVisited: Int
+    /// Paths the filter held back.
+    public let filtered: Set<String>
+    /// Folders whose inside was not fully seen, by any rule.
+    public let incompleteDirs: Set<String>
+
+    public init(rootEnumerable: Bool, rootObservedNonEmpty: Bool, entriesFound: Int,
+                entriesVisited: Int, filtered: Set<String>, incompleteDirs: Set<String>) {
+        self.rootEnumerable = rootEnumerable
+        self.rootObservedNonEmpty = rootObservedNonEmpty
+        self.entriesFound = entriesFound
+        self.entriesVisited = entriesVisited
+        self.filtered = filtered
+        self.incompleteDirs = incompleteDirs
+    }
+
+    /// What a caller that was handed no scope at all has to assume: nothing was established. Every
+    /// question below answers "no", so a default-constructed outcome can never justify a deletion.
+    public static let unknown = SyncSideScope(rootEnumerable: false, rootObservedNonEmpty: false,
+                                             entriesFound: 0, entriesVisited: 0,
+                                             filtered: [], incompleteDirs: [])
+
+    /// Was this side's walk trustworthy as a whole?
+    ///
+    /// False when it could not start, and false when it found nothing although the root plainly held
+    /// something — which is the shape a permission failure part-way takes.
+    public var isReliable: Bool {
+        rootEnumerable && !(entriesVisited == 0 && rootObservedNonEmpty)
+    }
+
+    /// Does this side's walk *prove* that `rel` is not there?
+    ///
+    /// Positive evidence, deliberately, rather than "the filter looked the same as last time". The
+    /// filter cannot answer this: `SyncFilter.modifiedWithinDays` is stored relative and resolved at
+    /// scan time, so the same filter text covers a different set on every run, and `keepsPair` drops
+    /// a pair before a `SyncItem` exists — so there is no way to ask whether a file that is gone
+    /// *would* have been in scope. What can be answered is the other way round: the walk ran, it did
+    /// not hold this path back, and no folder above it was left half-seen.
+    public func provesAbsence(of rel: String) -> Bool {
+        guard isReliable, !filtered.contains(rel) else { return false }
+        var prefix = ""
+        for part in rel.split(separator: "/", omittingEmptySubsequences: true).dropLast() {
+            prefix = prefix.isEmpty ? String(part) : prefix + "/" + part
+            // Both sets, and the second one is the one that is easy to forget: a folder the filter
+            // cut the descent off at lands in `filtered`, not in `incompleteDirs` — the walk never
+            // recorded it, so it never marked itself incomplete. Everything under such a folder was
+            // never looked at. Measured: with only `incompleteDirs` consulted, an excluded
+            // `build/` proved that `build/one.o` was gone.
+            if incompleteDirs.contains(prefix) || filtered.contains(prefix) { return false }
+        }
+        return true
     }
 }
 
@@ -111,6 +200,20 @@ public enum SyncScanner {
     /// What one side's walk found, and what it left behind.
     private struct Walk {
         var entries: [String: Meta] = [:]
+        /// The walk could be started. False for an enumerator that answered nil, an archive that
+        /// would not open, and a remote root whose listing failed — three shapes of the same thing,
+        /// each of which used to return an empty result indistinguishable from an empty folder.
+        var rootEnumerable = true
+        /// A plain listing of the root found something, asked independently of the walk.
+        var rootObservedNonEmpty = false
+        /// Every entry the walk was handed, whether or not a rule kept it.
+        var visited = 0
+
+        var scope: SyncSideScope {
+            SyncSideScope(rootEnumerable: rootEnumerable, rootObservedNonEmpty: rootObservedNonEmpty,
+                          entriesFound: entries.count, entriesVisited: visited,
+                          filtered: filtered, incompleteDirs: incompleteDirs)
+        }
         /// Paths the filter excluded. Reported to the user as a count.
         var filtered: Set<String> = []
         /// Folders that still hold something this walk did not record — by *any* rule, the mask and
@@ -181,6 +284,7 @@ public enum SyncScanner {
                                         ignoreHidden: ignoreHidden, exclusions: exclusions,
                                         found: progress.map { p in { p(.scanningRight(count: $0)) } })
         if Task.isCancelled { return SyncScanOutcome(items: [], heldBack: 0) }
+        let leftScope = leftWalk.scope, rightScope = rightWalk.scope
         let leftMeta = leftWalk.entries, rightMeta = rightWalk.entries
         let incomplete = leftWalk.incompleteDirs.union(rightWalk.incompleteDirs)
         var heldBack = leftWalk.filtered.union(rightWalk.filtered)
@@ -192,7 +296,10 @@ public enum SyncScanner {
         progress?(.comparing(done: 0, total: sorted.count))
         for (index, entry) in sorted.enumerated() {
             if index > 0, index % progressStride == 0 {
-                if Task.isCancelled { return SyncScanOutcome(items: items, heldBack: heldBack.count) }
+                if Task.isCancelled {
+                    return SyncScanOutcome(items: items, heldBack: heldBack.count,
+                                           leftScope: leftScope, rightScope: rightScope)
+                }
                 progress?(.comparing(done: index, total: sorted.count))
             }
             let key = entry.key
@@ -238,7 +345,8 @@ public enum SyncScanner {
                                   hasHeldBackContent: held))
         }
         progress?(.comparing(done: sorted.count, total: sorted.count))
-        return SyncScanOutcome(items: items, heldBack: heldBack.count)
+        return SyncScanOutcome(items: items, heldBack: heldBack.count,
+                               leftScope: leftScope, rightScope: rightScope)
     }
 
     /// One relative path as it appears on each side, with the metadata found there.
@@ -319,6 +427,7 @@ public enum SyncScanner {
                         // The name comes off the wire; a component that is not a name would make the
                         // relative key — and with it a local path on the other side — mean something
                         // else. See PathContainment.
+                        w.visited += 1
                         guard PathContainment.isSafeComponent(entry.name) else { continue }
                         let rel = prefix.isEmpty ? entry.name : "\(prefix)/\(entry.name)"
                         let isDir = entry.kind == .directory || entry.kind == .appBundle
@@ -343,8 +452,9 @@ public enum SyncScanner {
                 }
             } catch {
                 // A listing that failed part-way leaves its folder incomplete, and a mirror may not
-                // delete a folder it could not read to the end.
-                if !prefix.isEmpty { w.notDescended(prefix) }
+                // delete a folder it could not read to the end. For the *root* there is no folder to
+                // mark — that case used to leave no trace at all, so the whole side is unreliable.
+                if prefix.isEmpty { w.rootEnumerable = false } else { w.notDescended(prefix) }
                 return w
             }
         }
@@ -364,9 +474,16 @@ public enum SyncScanner {
     /// Enumerate a zip's entries as sync metadata, keyed by POSIX relative path.
     private static func walkZip(_ url: String, withSubdirs: Bool, wildcard: WildcardMask,
                                 ignoreHidden: Bool, exclusions: SyncFilter.Exclusions) -> Walk {
-        guard let reader = ZipReader(fileURL: URL(fileURLWithPath: url)) else { return Walk() }
         var w = Walk()
+        guard let reader = ZipReader(fileURL: URL(fileURLWithPath: url)) else {
+            // A corrupt or unreadable archive read as an empty one, which in mirror mode is
+            // "delete everything on the other side".
+            w.rootEnumerable = false
+            w.rootObservedNonEmpty = FileManager.default.fileExists(atPath: url)
+            return w
+        }
         for e in reader.entries {
+            w.visited += 1
             var rel = e.path
             while rel.hasSuffix("/") { rel.removeLast() }
             guard !rel.isEmpty else { continue }
@@ -561,8 +678,17 @@ public enum SyncScanner {
         // /private/tmp/… that don't match a /tmp/… base, silently dropping everything
         // under a symlinked root.)
         let keys: [URLResourceKey] = [.isDirectoryKey, .fileSizeKey, .contentModificationDateKey]
-        guard let en = fm.enumerator(atPath: base) else { return w }
+        // Asked before the walk, because after it an empty `entries` has two very different
+        // causes: a folder with nothing in it, and a folder this process cannot read. `nil` from
+        // `contentsOfDirectory` is itself the second answer.
+        let listing = try? fm.contentsOfDirectory(atPath: base)
+        w.rootObservedNonEmpty = listing.map { !$0.isEmpty } ?? true
+        guard let en = fm.enumerator(atPath: base) else {
+            w.rootEnumerable = false
+            return w
+        }
         for case let rel as String in en {
+            w.visited += 1
             let full = (base as NSString).appendingPathComponent(rel)
             let vals = try? URL(fileURLWithPath: full).resourceValues(forKeys: Set(keys))
             let isDir = vals?.isDirectory ?? false

@@ -62,6 +62,17 @@ does not have.
 
 ### Fixed
 
+- **The comparison now says what it was able to see.** All three walks turned a failure into an empty
+  result: a root that is not there or cannot be read, an archive that will not open, and a server
+  whose *root* listing fails each produced "nothing here" with no error and no mark. That matters
+  because a deletion is derived from something being **absent**, and in mirror mode an empty result
+  on one side classifies every file on the other as "delete it". Each side of a scan now reports
+  whether its walk could be started, how many entries it was handed, which paths it held back, and
+  which folders it did not see to the end — and answers, per path, whether it can actually prove that
+  path is gone. Nothing acts on that yet; the refusal that uses it comes next, and this is the fact
+  it will be built on.
+
+
 - **uuencode and xxencode no longer read the whole file.** They were the last two of the four
   encodings still doing so, on the reasoning that the frame carries a length byte per line and these
   are legacy formats used on small payloads. True, and not a size limit — the app offers them on

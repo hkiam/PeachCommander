@@ -50,6 +50,12 @@ final class SyncEngineTests: XCTestCase {
                          withSubdirs: withSubdirs, byContent: byContent, ignoreHidden: ignoreHidden)
     }
 
+    private func scanBothDirsDetailed(mask: String = "*.*", withSubdirs: Bool = true,
+                                      byContent: Bool = false) async -> SyncScanOutcome {
+        await SyncScanner.scanDetailed(left: .localDir(left.path), right: .localDir(right.path),
+                                       mask: mask, withSubdirs: withSubdirs, byContent: byContent)
+    }
+
     private func item(_ items: [SyncItem], _ rel: String) -> SyncItem? {
         items.first { $0.relativePath == rel }
     }
@@ -955,6 +961,117 @@ final class SyncEngineTests: XCTestCase {
         let items = await scanBothDirs(byContent: true)
         XCTAssertEqual(item(items, "same.txt")?.contentEqual, true)
         XCTAssertEqual(item(items, "differ.txt")?.contentEqual, false)
+    }
+
+
+    // MARK: - The scan says what it was able to see
+
+    /// A root that is not there answered an empty walk with no error and no mark. In mirror mode
+    /// that empty walk classifies every file on the *other* side as "delete it", pre-ticked, one
+    /// confirmation away — a mistyped path, an unmounted volume, and the target is wiped. This is
+    /// the fact the guard is built on, so it is measured at its source first.
+    func test_theScopeSaysSoWhenARootIsNotThere() async throws {
+        try write("keep", to: right, "a.txt")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(root.appendingPathComponent("does-not-exist").path),
+            right: .localDir(right.path), mask: "*.*", withSubdirs: true, byContent: false)
+        XCTAssertFalse(outcome.leftScope.rootEnumerable, "a missing root read as an empty folder")
+        XCTAssertFalse(outcome.leftScope.isReliable)
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "a.txt"),
+                       "absence on an unreadable side was taken as evidence")
+        // The other side is fine, and says so.
+        XCTAssertTrue(outcome.rightScope.isReliable)
+        XCTAssertTrue(outcome.rightScope.provesAbsence(of: "not-there.txt"))
+    }
+
+    /// An empty folder is a perfectly good answer and must stay trustworthy — otherwise a mirror
+    /// could never clear a target whose source really is empty.
+    func test_anEmptyRootIsStillReliable() async throws {
+        let outcome = await scanBothDirsDetailed()
+        XCTAssertTrue(outcome.leftScope.isReliable)
+        XCTAssertEqual(outcome.leftScope.entriesVisited, 0)
+        XCTAssertFalse(outcome.leftScope.rootObservedNonEmpty)
+    }
+
+    /// And so is a mask that happens to exclude everything — which is why the reliability test
+    /// counts what the walk was *handed*, not what it kept. Measured against the kept count this
+    /// case reads as a failure and would refuse deletions a mirror is right to make.
+    func test_aMaskThatExcludesEverythingDoesNotMakeASideUnreliable() async throws {
+        try write("x", to: left, "photo.jpg")
+        try write("x", to: left, "other.jpg")
+        let outcome = await SyncScanner.scanDetailed(left: .localDir(left.path),
+                                                    right: .localDir(right.path),
+                                                    mask: "*.txt", withSubdirs: true, byContent: false)
+        XCTAssertEqual(outcome.leftScope.entriesFound, 0, "the mask should have kept nothing")
+        XCTAssertEqual(outcome.leftScope.entriesVisited, 2)
+        XCTAssertTrue(outcome.leftScope.isReliable, "a mask that keeps nothing was read as a failure")
+    }
+
+    /// A root this process cannot read.
+    ///
+    /// Measured: `chmod 000` does **not** make `FileManager.enumerator(atPath:)` answer nil — it
+    /// hands back an enumerator that yields nothing at all. So this case is carried entirely by the
+    /// plain listing failing, not by the root being un-enumerable, and that is why the root check on
+    /// its own is not sufficient. Verified by disabling each mechanism separately: only the listing
+    /// one fails this test.
+    func test_anUnreadableRootIsNotReliable() async throws {
+        let locked = root.appendingPathComponent("locked", isDirectory: true)
+        try FileManager.default.createDirectory(at: locked, withIntermediateDirectories: true)
+        try "x".write(to: locked.appendingPathComponent("inside.txt"), atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o000], ofItemAtPath: locked.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                       ofItemAtPath: locked.path) }
+        let outcome = await SyncScanner.scanDetailed(left: .localDir(locked.path),
+                                                    right: .localDir(right.path),
+                                                    mask: "*.*", withSubdirs: true, byContent: false)
+        XCTAssertFalse(outcome.leftScope.isReliable, "an unreadable root read as an empty folder")
+    }
+
+    /// An archive that will not open is not an empty archive — same defect, third shape.
+    func test_aCorruptArchiveSideIsUnreliableRatherThanEmpty() async throws {
+        let broken = root.appendingPathComponent("broken.zip")
+        try Data("this is not a zip file".utf8).write(to: broken)
+        try write("keep", to: right, "a.txt")
+        let outcome = await SyncScanner.scanDetailed(left: .zip(broken.path),
+                                                    right: .localDir(right.path),
+                                                    mask: "*.*", withSubdirs: true, byContent: false)
+        XCTAssertFalse(outcome.leftScope.rootEnumerable)
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "a.txt"))
+    }
+
+    /// A folder whose inside was not fully seen cannot prove that something under it is gone —
+    /// which is the half a root check does not cover, because the path-based enumerator has no
+    /// error handler and an unreadable subtree is simply missing.
+    func test_anIncompleteFolderProvesNothingAboutItsContents() async throws {
+        try write("a", to: left, "keep.txt")
+        try write("b", to: left, "build/one.o")
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path), right: .localDir(right.path), mask: "*.*",
+            withSubdirs: true, byContent: false, filter: SyncFilter(excludePatterns: "build/"))
+        XCTAssertTrue(outcome.leftScope.isReliable, "the walk itself was fine")
+        XCTAssertTrue(outcome.leftScope.provesAbsence(of: "elsewhere.txt"))
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "build/one.o"),
+                       "a held-back folder was taken as proof its contents are gone")
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "build"),
+                       "the excluded folder itself was taken as absent")
+    }
+
+    /// Without subdirs, nothing below the top level was looked at at all.
+    func test_withoutSubdirsNothingBelowTheTopLevelIsProven() async throws {
+        try write("x", to: left, "Stray/inside.txt")
+        let outcome = await SyncScanner.scanDetailed(left: .localDir(left.path),
+                                                    right: .localDir(right.path),
+                                                    mask: "*.*", withSubdirs: false, byContent: false)
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "Stray/inside.txt"))
+    }
+
+    /// A caller handed no scope at all must not be able to justify anything — the default is
+    /// "nothing was established", not "everything was fine".
+    func test_anOutcomeBuiltWithoutAScopeProvesNothing() {
+        let outcome = SyncScanOutcome(items: [], heldBack: 0)
+        XCTAssertFalse(outcome.leftScope.isReliable)
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "anything"))
+        XCTAssertFalse(outcome.rightScope.provesAbsence(of: "anything"))
     }
 
 }
