@@ -18,6 +18,14 @@ public final class CopyEngine {
 
     private var state = OpProgress()
     private var processed: [String] = []
+    /// Everything this run left behind, at any depth: a conflict answered "skip", a file the
+    /// `onlyNewer` option held back, an error the resolver skipped.
+    ///
+    /// `processed` names the top-level items that finished, which is not the same question. A
+    /// directory whose child was skipped still "finished" — and `MoveEngine` used to read that as
+    /// permission to delete the source tree, child included. Anything that deletes a source after
+    /// copying it has to be able to ask whether the copy is complete.
+    public private(set) var skipped: [String] = []
     private let startTime = Date()
 
     public init(options: CopyOptions,
@@ -59,7 +67,7 @@ public final class CopyEngine {
                     if error == .cancelled { throw error }
                     switch await resolver.resolveError(error, path: src) {
                     case .retry: continue
-                    case .skip: break
+                    case .skip: skipped.append(src)
                     case .abort: throw error
                     }
                     break
@@ -75,12 +83,26 @@ public final class CopyEngine {
         var files = 0
         var bytes: Int64 = 0
         var stack = items
+        // Only needed for the followed-symlink walk below, where a link can point back at a folder
+        // already on the stack. A plain tree walk cannot revisit a path.
+        var seen = Set<String>()
         while let path = stack.popLast() {
             guard let kind = FSLowLevel.kind(of: path) else { continue }
             switch kind {
-            case .file, .symlink:
+            case .file:
                 files += 1
                 bytes += FSLowLevel.size(of: path)
+            case .symlink:
+                // With `followSymlinks` the copy takes what the link points at, which may be a whole
+                // directory — counted as one file here, the total was short by everything inside it
+                // and the progress bar filled past its own end.
+                guard options.followSymlinks else {
+                    files += 1
+                    bytes += FSLowLevel.size(of: path)
+                    continue
+                }
+                let resolved = (path as NSString).resolvingSymlinksInPath
+                if resolved != path, seen.insert(resolved).inserted { stack.append(resolved) }
             case .directory:
                 if let children = DeepPath.contentsOfDirectory(path) {
                     for c in children { stack.append((path as NSString).appendingPathComponent(c)) }
@@ -122,17 +144,28 @@ public final class CopyEngine {
     }
 
     @discardableResult
-    private func copyDirectory(from src: String, to dst: String) async throws -> String? {
+    private func copyDirectory(from src: String, to dst0: String) async throws -> String? {
+        var dst = dst0
         // Merge into an existing directory; otherwise create it.
-        if let existing = FSLowLevel.kind(of: dst) {
-            if existing != .directory {
-                let decision = await resolveOverwrite(src: src, dst: dst)
-                switch decision {
-                case .skip: return nil
-                case .abort: throw OperationError.aborted(dst)
-                case .overwrite, .append: try removeItem(dst)   // append is meaningless for a dir target
-                case .rename: break // renaming a dir merge target is unusual; fall through to create
-                }
+        // A loop, not one question: a `.rename` may land on a name that is taken too, and
+        // `OverwriteRules.autoRenameName` documents that case as "a further conflict simply
+        // re-prompts" — which nothing did.
+        var rounds = 0
+        while let existing = FSLowLevel.kind(of: dst), existing != .directory {
+            rounds += 1
+            guard rounds <= Self.maximumConflictRounds else { throw OperationError.aborted(dst) }
+            switch await resolveOverwrite(src: src, dst: dst) {
+            case .skip: skipped.append(src); return nil
+            case .abort: throw OperationError.aborted(dst)
+            case .overwrite, .append: try removeItem(dst)   // append is meaningless for a dir target
+            case .rename(let newLeaf):
+                // Used to be `break` with a comment saying it fell through to create — it did not:
+                // the file stayed, `exists(dst)` was true so no directory was made, and the children
+                // were then copied into paths underneath a regular file.
+                let next = ((dst as NSString).deletingLastPathComponent as NSString)
+                    .appendingPathComponent(newLeaf)
+                guard next != dst else { throw OperationError.aborted(dst) }
+                dst = next
             }
         }
         if !FSLowLevel.exists(dst) {
@@ -150,25 +183,64 @@ public final class CopyEngine {
     }
 
     @discardableResult
-    private func copySymlink(from src: String, to dst: String) async throws -> String? {
+    private func copySymlink(from src: String, to dst0: String) async throws -> String? {
         if options.followSymlinks {
             // Resolve and copy the target instead.
             let resolved = (src as NSString).resolvingSymlinksInPath
-            return try await copyNode(from: resolved, to: dst)
+            // A link that resolves to itself would recurse until the stack ran out.
+            guard resolved != src else { throw OperationError.readFailed(src) }
+            return try await copyNode(from: resolved, to: dst0)
         }
-        if FSLowLevel.exists(dst) {
+        var dst = dst0
+        var rounds = 0
+        while FSLowLevel.exists(dst) {
+            rounds += 1
+            guard rounds <= Self.maximumConflictRounds else { throw OperationError.aborted(dst) }
             switch await resolveOverwrite(src: src, dst: dst) {
-            case .skip: state.filesDone += 1; report(); return nil
+            case .skip: skipped.append(src); state.filesDone += 1; report(); return nil
             case .abort: throw OperationError.aborted(dst)
-            case .overwrite, .rename, .append: try removeItem(dst)   // append n/a for a symlink target
+            case .rename(let newLeaf):
+                let next = ((dst as NSString).deletingLastPathComponent as NSString)
+                    .appendingPathComponent(newLeaf)
+                guard next != dst else { throw OperationError.aborted(dst) }
+                dst = next
+            case .overwrite, .append:                       // append n/a for a symlink target
+                // Not removed here: the new link is made under a temporary name and renamed over the
+                // old one, so a failure in between leaves the old link rather than nothing.
+                break
             }
+            break
         }
         guard let target = FSLowLevel.readSymlink(src) else { throw OperationError.readFailed(src) }
-        let rc = DeepPath.symlink(target, at: dst)
-        guard rc == 0 else { throw OperationError.writeFailed(dst) }
+        if FSLowLevel.exists(dst) {
+            let temp = Self.temporaryName(for: dst)
+            guard DeepPath.symlink(target, at: temp) == 0 else { throw OperationError.writeFailed(dst) }
+            guard DeepPath.rename(temp, to: dst) == 0 else {
+                _ = DeepPath.unlink(temp)
+                throw OperationError.writeFailed(dst)
+            }
+        } else {
+            guard DeepPath.symlink(target, at: dst) == 0 else { throw OperationError.writeFailed(dst) }
+        }
         state.filesDone += 1
         report()
         return dst
+    }
+
+    /// How many times a conflict may be re-resolved before the run gives up.
+    ///
+    /// A resolver that answers `.rename` with a name that is always taken would otherwise ask for
+    /// ever. Sixty-four is far past anything a person would click through and far short of a hang.
+    private static let maximumConflictRounds = 64
+
+    /// A sibling name to write to before taking the target's place.
+    ///
+    /// A sibling rather than a temporary directory, because `rename(2)` is only atomic within one
+    /// filesystem and the point of the whole exercise is that the replacement cannot half-happen.
+    private static func temporaryName(for dst: String) -> String {
+        let dir = (dst as NSString).deletingLastPathComponent
+        let leaf = (dst as NSString).lastPathComponent
+        return (dir as NSString).appendingPathComponent(".\(leaf).pc-part-\(UUID().uuidString.prefix(8))")
     }
 
     @discardableResult
@@ -177,29 +249,49 @@ public final class CopyEngine {
         var append = false
         let size = FSLowLevel.size(of: src)
 
-        if FSLowLevel.exists(dst) {
-            if options.onlyNewer, !isSourceNewer(src: src, dst: dst) {
-                state.filesDone += 1; state.bytesDone += size; report(); return nil
-            }
+        if FSLowLevel.exists(dst), options.onlyNewer, !isSourceNewer(src: src, dst: dst) {
+            skipped.append(src)
+            state.filesDone += 1; state.bytesDone += size; report(); return nil
+        }
+        // A loop: a `.rename` can land on a name that is taken too, and the answer to that is to ask
+        // again — which is what `OverwriteRules.autoRenameName` has documented all along ("a further
+        // conflict simply re-prompts") and what nothing did. Silently, the second name was written
+        // over whatever had it.
+        var rounds = 0
+        while FSLowLevel.exists(dst) {
+            rounds += 1
+            guard rounds <= Self.maximumConflictRounds else { throw OperationError.aborted(dst) }
             switch await resolveOverwrite(src: src, dst: dst) {
             case .skip:
+                skipped.append(src)
                 state.filesDone += 1; state.bytesDone += size; report(); return nil
             case .abort:
                 throw OperationError.aborted(dst)
             case .rename(let newLeaf):
-                dst = ((dst as NSString).deletingLastPathComponent as NSString).appendingPathComponent(newLeaf)
+                let next = ((dst as NSString).deletingLastPathComponent as NSString)
+                    .appendingPathComponent(newLeaf)
+                // The new name can be the one the source already has — a rename into the source's
+                // own directory that keeps the name. That used to fall straight through to the write
+                // and truncate the source to nothing: the `.overwrite` and `.append` cases below both
+                // guarded against arriving at the same file, and this one did not.
+                if FSLowLevel.isSameFile(src, next) { throw OperationError.sameFile(src) }
+                guard next != dst else { throw OperationError.aborted(dst) }
+                dst = next
+                continue
             case .overwrite:
                 // Here, and not earlier: `.rename` above may just have moved the target somewhere
                 // else, and copying into the source's own directory under a new name is legitimate —
                 // it is what Shift+F5 does. What is never legitimate is arriving at the *same file*
                 // and then removing it, which deletes the only copy and leaves the read with nothing.
                 if FSLowLevel.isSameFile(src, dst) { throw OperationError.sameFile(src) }
-                try removeItem(dst)
+                // The target is *not* removed here any more. It is replaced at the end of the write,
+                // by renaming the finished copy over it — see `copyFileData`.
             case .append:
                 // Appending a file to itself reads what it is writing: it does not converge.
                 if FSLowLevel.isSameFile(src, dst) { throw OperationError.sameFile(src) }
                 append = true   // F-086: keep the target, stream the source onto its end
             }
+            break
         }
 
         state.currentItem = (src as NSString).lastPathComponent
@@ -216,6 +308,11 @@ public final class CopyEngine {
     /// Append the source file's bytes to an existing target (F-086), without
     /// prompting. Used by MoveEngine to fulfil an append decision on move.
     func appendRegularFile(from src: String, to dst: String) async throws {
+        // The same refusal `copyRegularFile` makes, and the reason it has to be repeated here: this
+        // is the entry `MoveEngine` uses for an append, so the guard one function away never ran for
+        // it. Appending a file onto itself reads what it is writing — it does not converge, it fills
+        // the volume.
+        if FSLowLevel.isSameFile(src, dst) { throw OperationError.sameFile(src) }
         state.currentItem = (src as NSString).lastPathComponent
         try await copyFileData(from: src, to: dst, size: FSLowLevel.size(of: src), appendMode: true)
     }
@@ -223,14 +320,37 @@ public final class CopyEngine {
     // MARK: - Data copy
 
     private func copyFileData(from src: String, to dst: String, size: Int64, appendMode: Bool = false) async throws {
-        // Clone fast path (same volume, target must not exist). Never for append.
-        if !appendMode, options.useCloneWhenPossible, !FSLowLevel.exists(dst) {
-            let rc = DeepPath.clone(src, to: dst)
+        // Replacing something? Then write beside it and take its place at the end.
+        //
+        // The old order was: remove the target, then write in its place. A cancel or an error in
+        // between left neither the old file nor a whole new one — measured with a throttled copy and
+        // a Stop after 400 ms, the target was simply gone. The user had pressed Stop on a copy and
+        // lost the file that was already there. Writing to a sibling and renaming makes the swap the
+        // last, indivisible step: `rename(2)` either replaces the target or does nothing.
+        //
+        // Append is exempt: it adds to a file that keeps its identity, so there is nothing to swap.
+        let replacing = !appendMode && FSLowLevel.exists(dst)
+        let writeTo = replacing ? Self.temporaryName(for: dst) : dst
+
+        func finish() throws {
+            guard replacing else { return }
+            guard DeepPath.rename(writeTo, to: dst) == 0 else {
+                _ = DeepPath.unlink(writeTo)
+                throw OperationError.writeFailed(dst)
+            }
+        }
+
+        // Clone fast path (same volume, target must not exist). Never for append. The temporary name
+        // is free by construction, so a replacement can use it too.
+        if !appendMode, options.useCloneWhenPossible, !FSLowLevel.exists(writeTo) {
+            let rc = DeepPath.clone(src, to: writeTo)
             if rc == 0 {
+                try finish()
                 state.bytesDone += size
                 report()
                 return
             }
+            if replacing { _ = DeepPath.unlink(writeTo) }   // a half-made clone is not a copy
             // errno EXDEV / ENOTSUP / EEXIST → fall through to streaming.
         }
 
@@ -241,7 +361,7 @@ public final class CopyEngine {
         // Append opens the existing target for O_APPEND writes; a normal copy
         // truncates (or creates) the target.
         let outFlags = appendMode ? (O_WRONLY | O_APPEND | O_CREAT) : (O_WRONLY | O_CREAT | O_TRUNC)
-        let outFD = DeepPath.open(dst, outFlags, 0o644)
+        let outFD = DeepPath.open(writeTo, outFlags, 0o644)
         guard outFD >= 0 else { throw OperationError.cannotCreateFile(dst) }
 
         let buf = UnsafeMutableRawPointer.allocate(byteCount: options.chunkSize, alignment: 16)
@@ -256,7 +376,7 @@ public final class CopyEngine {
                 var off = 0
                 while off < n {
                     let w = write(outFD, buf + off, n - off)
-                    if w <= 0 { throw OperationError.writeFailed(dst) }
+                    if w <= 0 { throw OperationError.writeFailed(writeTo) }
                     off += w
                 }
                 state.bytesDone += Int64(n)
@@ -265,12 +385,14 @@ public final class CopyEngine {
             }
         } catch {
             close(outFD)
-            // Clean up a partially written NEW target; never unlink an append target
-            // (that would destroy the pre-existing data we appended to).
-            if !appendMode { _ = DeepPath.unlink(dst) }   // SPEC-004 §1
+            // Clean up the partial write; never unlink an append target (that would destroy the
+            // pre-existing data we appended to). When replacing, the partial has the temporary name,
+            // so removing it leaves the original exactly as it was.
+            if !appendMode { _ = DeepPath.unlink(writeTo) }   // SPEC-004 §1
             throw error
         }
         close(outFD)
+        try finish()
     }
 
     // MARK: - Metadata / helpers

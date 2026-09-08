@@ -70,16 +70,24 @@ public final class MoveEngine {
                          dstDir: String) async throws -> (path: String, carryComment: Bool)? {
         var dst = dst0
         guard let srcKind = FSLowLevel.kind(of: src) else { throw OperationError.sourceNotFound(src) }
-        let targetKind = FSLowLevel.kind(of: dst)
 
-        if targetKind != nil {
+        // A loop rather than one question, and it re-reads the target each time round: a `.rename`
+        // can land on a name that is taken too, and `rename(2)` would then have replaced *that* file
+        // without anyone being asked — the opposite of what choosing a new name is for.
+        var rounds = 0
+        while let targetKind = FSLowLevel.kind(of: dst) {
+            rounds += 1
+            guard rounds <= Self.maximumConflictRounds else { throw OperationError.aborted(dst) }
             // Directory-into-directory merges without asking; otherwise resolve.
             if !(srcKind == .directory && targetKind == .directory) {
                 switch await resolveOverwrite(src: src, dst: dst) {
                 case .skip: return nil
                 case .abort: throw OperationError.aborted(dst)
                 case .rename(let newLeaf):
-                    dst = (dstDir as NSString).appendingPathComponent(newLeaf)
+                    let next = (dstDir as NSString).appendingPathComponent(newLeaf)
+                    guard next != dst else { throw OperationError.aborted(dst) }
+                    dst = next
+                    continue
                 case .append where srcKind == .file:
                     // F-086: append the source onto the target, then delete the source
                     // (a move that merges content). No prompting inside the copy.
@@ -91,11 +99,12 @@ public final class MoveEngine {
                 case .overwrite, .append:
                     // rename(2) atomically replaces a file target; remove dir/symlink targets first.
                     // (`.append` reaches here only for a non-file source → treat as replace.)
-                    if FSLowLevel.kind(of: dst) == .directory || srcKind != .file {
+                    if targetKind == .directory || srcKind != .file {
                         _ = DeepPath.removeItem(dst)
                     }
                 }
             }
+            break
         }
 
         let sameDevice = FSLowLevel.sameDevice(src, dst)
@@ -108,12 +117,25 @@ public final class MoveEngine {
 
         // Cross-device or dir-merge: copy the whole item, then delete the source.
         let copy = CopyEngine(options: options, control: control, resolver: resolver, progress: progress)
-        _ = try await copy.run(items: [src], toDirectory: (dst as NSString).deletingLastPathComponent)
-        // Only delete the source after a successful copy.
+        let copied = try await copy.run(items: [src],
+                                        toDirectory: (dst as NSString).deletingLastPathComponent)
+        // Only delete the source after a successful copy — which is what the comment here used to
+        // say while the code deleted it either way. `run` reports what it managed to copy and does
+        // *not* throw when the resolver answers "skip" to a failure, so a copy that never happened
+        // was followed by a delete that did: measured, the file was gone from both sides.
+        //
+        // `skipped` as well as `copied`, because they answer different questions. A directory whose
+        // child was skipped still counts as copied, and deleting the source tree would take that
+        // child with it. When anything was left behind the whole source stays: a move that half
+        // happened leaves duplicates the user can see and act on, which is the recoverable failure.
+        guard copied.contains(src), copy.skipped.isEmpty else { return nil }
         let del = DeleteEngine(control: control, progress: progress)
         _ = try await del.permanentDelete(items: [src])
         return (dst, true)
     }
+
+    /// See `CopyEngine.maximumConflictRounds`.
+    private static let maximumConflictRounds = 64
 
     private func resolveOverwrite(src: String, dst: String) async -> OverwriteDecision {
         let sf = FSLowLevel.facts(of: src) ?? FileFacts(path: src, name: (src as NSString).lastPathComponent, size: 0, modified: nil, isDirectory: false)

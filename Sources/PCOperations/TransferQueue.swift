@@ -101,11 +101,15 @@ public final class TransferQueue: @unchecked Sendable {
         case let .move(items, dstDir, options):
             let engine = MoveEngine(options: options, control: control, resolver: resolver, progress: progress)
             return try await engine.run(items: items, toDirectory: dstDir)
+        // The resolver reaches delete too, now that delete can ask. It is the same question F-089
+        // already asks for copy and move — retry, skip, or abort — and the reason it was worth
+        // wiring: a background delete used to abandon the rest of the selection over one locked
+        // item, and an interactive one reported a failure where it could have asked.
         case let .trash(items):
-            let engine = DeleteEngine(control: control, progress: progress)
+            let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
             return try await engine.moveToTrash(items: items)
         case let .delete(items):
-            let engine = DeleteEngine(control: control, progress: progress)
+            let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
             return try await engine.permanentDelete(items: items)
         case let .custom(run):
             return try await run(control, progress)

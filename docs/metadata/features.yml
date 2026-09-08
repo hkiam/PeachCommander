@@ -234,6 +234,8 @@ features:
     ui: { shortcuts: ["F8", "Shift+F8"], commands: [cm_Delete, cm_DeleteReal] }
     source: { modules: [PCOperations], types: [DeleteEngine] }
     documentation: { integrated_help: true, website: true }
+    notes: "Trash (batched) and permanent recursive delete; symlink-safe; per-item retry/skip/abort
+      on a failure, so one locked item no longer abandons the selection."
 
   - id: new-folder-file
     name: Neuer Ordner / neue Datei

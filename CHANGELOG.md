@@ -14,6 +14,58 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+Six of these were found by reading the copy, move and delete engines and then *measuring* the
+suspect rather than asserting it. Three lost data outright.
+
+- **A move no longer deletes a source it did not copy.** On the cross-volume and folder-merge path,
+  `MoveEngine` copied and then deleted, with a comment reading "Only delete the source after a
+  successful copy" above code that never looked at what the copy reported. `CopyEngine.run` does not
+  throw when the resolver answers "skip" to a failure — it returns a shorter list — so a copy that
+  never happened was followed by a delete that did: measured, the file was gone from the source and
+  had never reached the destination. It now also asks whether anything *inside* the item was skipped,
+  because a folder whose child was skipped still counts as copied and deleting the tree would have
+  taken that child with it. Where anything was left behind the whole source stays, which leaves
+  duplicates a user can see instead of a hole they cannot.
+
+- **A rename onto the source's own name no longer truncates it.** `.overwrite` and `.append` both
+  refused to arrive at the same file; `.rename` did not, so a rename that keeps the name in the
+  source's own directory opened the file for reading and truncated it for writing. Measured: "the
+  only copy" became 0 bytes. This is the fault F-399 fixed for the other two doors.
+
+- **A cancelled overwrite no longer destroys the file it was replacing.** The target was removed
+  *before* the write, and the failure path unlinked the partial new file, so a cancel in between
+  left neither. Measured with a throttled copy and a Stop after 400 ms: the target was simply gone.
+  The copy is now written to a sibling name and takes the target's place with `rename(2)` as its last
+  step — either the replacement happened or nothing did. Symlink targets are replaced the same way.
+
+- **Appending a file onto itself is refused on the path a move uses.** `copyRegularFile` has always
+  refused it ("reads what it is writing: it does not converge"); `appendRegularFile`, the entry
+  `MoveEngine` calls for an append, had no such check — and the failure mode is to fill the volume.
+  Not measured, for that reason.
+
+- **Choosing another name no longer overwrites whatever has it.** When the renamed-to name was taken
+  too, the copy wrote over it and the move let `rename(2)` replace it, without anyone being asked —
+  the opposite of what choosing a new name is for. Both now ask again, which is what
+  `OverwriteRules.autoRenameName` has documented all along ("a further conflict simply re-prompts").
+
+- **A rename decision on a folder target now creates the folder.** With a *file* in the way and the
+  resolver answering "rename", the code did nothing at all: the file stayed, no directory was made
+  because the path "existed", and the children were then copied to paths underneath a regular file.
+
+- **A delete can be asked about, like a copy.** One locked item threw on the spot, abandoning the
+  rest of the selection and reporting nothing about what had already gone — under a doc comment
+  promising the successful paths. `DeleteEngine` now consults the same resolver copy and move do
+  (retry / skip / abort), the transfer queue passes it through, and a folder whose contents could not
+  all go is no longer reported as removed. The default answer is still to abort, so nothing that
+  already called it changes behaviour.
+
+- **The progress total counts a followed symlink by what it points at.** With `followSymlinks` the
+  copy takes the link's target, which may be a whole directory, while the plan counted the link as
+  one file — so the bar filled past its own end. A link pointing at itself is now refused instead of
+  recursing until the stack runs out.
+
 ### Added
 
 - **Synchronize Directories says what it is doing while it does it.** Comparing two large trees took
