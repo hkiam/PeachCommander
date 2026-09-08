@@ -780,7 +780,36 @@ public enum SyncExecutor {
     public static func deletesPermanently(_ results: [SyncResult],
                                           left: SyncSide, right: SyncSide) -> Bool {
         results.contains { r in
-            (r.action == .deleteRight && right.isRemote) || (r.action == .deleteLeft && left.isRemote)
+            (r.action == .deleteRight && !recoverable(right))
+                || (r.action == .deleteLeft && !recoverable(left))
+        }
+    }
+
+    /// Can a deletion on this side be fished back out?
+    ///
+    /// Three answers, and the first two were both missing — this asked `isRemote` alone, so the
+    /// confirmation said nothing about either. Measured.
+    ///
+    ///   * **A server**: no Trash, so no. This was the only case it knew.
+    ///   * **An archive**: a deletion is `ArchiveEditor.remove`, a whole-file rewrite. There is
+    ///     nothing to fish out of, and the old bytes are gone. A mistake there costs an archive
+    ///     rather than a file, so it is the case the warning most needed to mention.
+    ///   * **A folder on a network volume**: a `.localDir` as far as this engine is concerned, and
+    ///     `fm.trashItem` on one generally fails. Answered from `.volumeIsLocalKey`, which is what
+    ///     `Volume.isLocal` and `SourceLocalityProbe` already use for the same kind of question —
+    ///     and deliberately not from probing the Trash itself, which can only be found out by trying.
+    ///     A volume this cannot read at all counts as recoverable: the run will fail on its own
+    ///     terms, and a warning about something that is not going to happen teaches people to click
+    ///     past warnings.
+    private static func recoverable(_ side: SyncSide) -> Bool {
+        switch side {
+        case .remote: return false
+        case .zip: return false
+        case .localDir(let path):
+            let url = URL(fileURLWithPath: path)
+            guard let values = try? url.resourceValues(forKeys: [.volumeIsLocalKey]),
+                  let isLocal = values.volumeIsLocal else { return true }
+            return isLocal
         }
     }
 

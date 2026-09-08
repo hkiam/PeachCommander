@@ -86,6 +86,15 @@ does not have.
 
 ### Fixed
 
+- **The “this cannot be undone” warning covers the cases that actually cannot.** It asked only
+  whether a side was a server, so it said nothing about two deletions that are just as final: one
+  inside an archive, which is a whole-file rewrite with no Trash to fish anything out of, and one in
+  a folder on a network volume, which is an ordinary local path as far as the comparison is concerned
+  and where the Trash generally refuses. And the sentence itself said “deletions on the server”, which
+  it was also saying for an archive — right about the consequence, wrong about the reason, which is
+  how somebody ends up checking the wrong path field.
+
+
 - **“Done — trees synchronized.” now means it.** The synchronisation run answered a list of errors
   and nothing else, so a successful item left no trace and success was only inferable as “absent from
   the error list”. That inference did not hold: a cancelled run returned the same list as a finished

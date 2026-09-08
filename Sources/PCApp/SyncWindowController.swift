@@ -1318,12 +1318,15 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
 
     /// The line the confirmation was missing.
     ///
-    /// Deleting on a local side goes to the Trash and can be undone from there; a server has no
-    /// Trash, so `SyncExecutor` deletes for good. The code that does it has said so in a comment
-    /// since it was written — "the dialog says so before the actions run" — and the dialog did not.
+    /// Deleting a folder on this Mac goes to the Trash and can be put back from the Finder. Three
+    /// other cases cannot: a server has no Trash, a deletion inside an archive is a whole-file
+    /// rewrite, and a folder on a network volume generally refuses `trashItem`. The wording no
+    /// longer says "on the server", because it was saying that for an archive too — the sentence was
+    /// right about the consequence and wrong about the reason, which is how somebody ends up
+    /// checking the wrong path field.
     private func permanentDeleteWarning(for actionable: [SyncResult]) -> String {
         guard SyncExecutor.deletesPermanently(actionable, left: leftSide, right: rightSide) else { return "" }
-        return "\n\n" + String(localized: "Deletions on the server are permanent — there is no Trash to take them back out of.")
+        return "\n\n" + String(localized: "Some of these deletions cannot be taken back — there is no Trash on that side.")
     }
 
     // MARK: - Table

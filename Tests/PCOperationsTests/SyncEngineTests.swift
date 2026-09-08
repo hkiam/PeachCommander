@@ -1244,6 +1244,49 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertEqual(report.outcomes.map(\.status), [.deleted(toTrash: false)])
     }
 
+
+    // MARK: - Which deletions cannot be taken back
+
+    /// Deleting an entry from an archive is a whole-file rewrite: there is no Trash to fish it out
+    /// of, and the old bytes are gone. The warning asked `isRemote` only, so a zip side was treated
+    /// as though its deletions were recoverable — measured, and it is the one case the confirmation
+    /// most needed to mention, because a mistake there costs an archive rather than a file.
+    func test_deletingInsideAnArchiveIsReportedAsPermanent() throws {
+        let zip = root.appendingPathComponent("side.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.txt", data: Data("a".utf8))])
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: nil, leftModified: nil, rightSize: 1, rightModified: Date())
+        XCTAssertTrue(SyncExecutor.deletesPermanently([SyncResult(action: .deleteRight, item: item)],
+                                                      left: .localDir(left.path),
+                                                      right: .zip(zip.path)))
+        // And the side matters, as it does for a server: a delete on the *left* while the archive is
+        // on the right takes a local file, and that one goes to the Trash.
+        XCTAssertFalse(SyncExecutor.deletesPermanently([SyncResult(action: .deleteLeft, item: item)],
+                                                       left: .localDir(left.path),
+                                                       right: .zip(zip.path)))
+    }
+
+    /// And a run with nothing to delete never warns, whatever the sides are.
+    func test_aRunWithNothingToDeleteNeverWarnsAboutAnArchive() throws {
+        let zip = root.appendingPathComponent("side.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.txt", data: Data("a".utf8))])
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: 1, leftModified: Date(), rightSize: nil, rightModified: nil)
+        XCTAssertFalse(SyncExecutor.deletesPermanently([SyncResult(action: .copyToRight, item: item)],
+                                                       left: .localDir(left.path),
+                                                       right: .zip(zip.path)))
+    }
+
+    /// A folder on this Mac keeps its Trash, so an ordinary local pair is not warned about — the
+    /// warning has to stay rare enough to be read.
+    func test_anOrdinaryLocalPairIsNotWarnedAbout() async throws {
+        try write("gone", to: right, "c.txt")
+        let items = await scanBothDirs()
+        let plan = item(items, "c.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
+        XCTAssertFalse(SyncExecutor.deletesPermanently(plan, left: .localDir(left.path),
+                                                       right: .localDir(right.path)))
+    }
+
 }
 
 /// A filesystem whose listing contains what a hostile server would send.
