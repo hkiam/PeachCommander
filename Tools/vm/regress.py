@@ -187,19 +187,22 @@ SCENARIOS = [
                       "syncguard /Users/admin/syncbadroot.txt"], 10),
     # What a run wrote down about itself. Three kinds of row on purpose — one file created, one
     # overwritten, one deleted — because a record is easy to make look right with one of them.
-    # The window is opened the way a person opens it and photographed, then closed: an open window
-    # outlives the script, and an open *sheet* stops the app quitting altogether, which is the trap
-    # the filter scenario ran into.
+    #
+    # The window is opened the way a person opens it and **left open**, which is what puts it in the
+    # picture: the only screenshot that is kept is the host's own capture of the guest's screen, and
+    # that is taken after this script finishes. A first version closed the window first and then took
+    # a `mainshot` of its own — which wrote nothing at all, because `mainshot`'s title fragment was
+    # the German one and this guest runs in English, and because nothing fetches that file anyway.
+    # A window is safe to leave open; an open *sheet* is not, which is the trap the filter scenario
+    # ran into.
     ("sync-runlog", ["active left", "left /Users/admin/runlog-src", "wait 1200",
                      "syncopen /Users/admin/runlog-src|/Users/admin/runlog-dst", "wait 1200",
                      "syncasym 1", "wait 400",
                      "synccompare", "wait 1600",
                      "syncselect all|/Users/admin/runlogsel.txt", "wait 500",
                      "syncrun", "wait 2400",
-                     "syncrunsopen /Users/admin/runlogopen.txt", "wait 1000",
-                     "mainshot /Users/admin/runlog-window.png|Was getan", "wait 600",
-                     "syncrunsclose", "wait 400",
                      "syncrunitems /Users/admin/runlogitems.txt", "wait 400",
+                     "syncrunsopen /Users/admin/runlogopen.txt", "wait 1000",
                      "syncruns /Users/admin/runlog.txt"], 12),
     # And putting one back. The claim is not that a button was pressed but that the file is at its
     # old path with its old bytes, that its neighbour was not touched, and that a second attempt is
@@ -212,9 +215,9 @@ SCENARIOS = [
                          "syncrun", "wait 2400",
                          "syncrunsopen /Users/admin/pbopen.txt", "wait 900",
                          "syncrunputback /Users/admin/pbfirst.txt", "wait 1200",
-                         # Again, on a record that now says it has been done.
-                         "syncrunputback /Users/admin/putback.txt", "wait 800",
-                         "syncrunsclose"], 12),
+                         # Again, on a record that now says it has been done. The window stays open
+                         # so the host's capture shows the row in its acted-on state.
+                         "syncrunputback /Users/admin/putback.txt", "wait 800"], 12),
     ("sync-filter", ["active left", "left /Users/admin/filter-src", "wait 1200",
                      "syncopen /Users/admin/filter-src|/Users/admin/filter-dst|/Users/admin/pc-cfg/sync-presets.json",
                      "wait 1200",

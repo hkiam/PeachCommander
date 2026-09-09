@@ -24,7 +24,10 @@
 
 import Foundation
 
-public final class SyncRunStore {
+/// `Sendable` because it holds nothing but its directory. Stated rather than left to be inferred:
+/// the window hands one to a detached task to do the encoding and the write off the main actor, and
+/// that is only sound while this type has no mutable state.
+public final class SyncRunStore: Sendable {
 
     /// Above this many planned rows, only the rows that did not run smoothly are written.
     ///
@@ -76,8 +79,8 @@ public final class SyncRunStore {
             kept = items.filter { !$0.isPlainSuccess }
             stamped.itemsListed = false
             stamped.undoUnavailable = "this run had \(items.count) items, more than the "
-                + "\(Self.maximumItems) a full record is kept for — every deletion and every "
-                + "problem is listed, the copies that went through are not"
+                + "\(Self.maximumItems) a full record is kept for — every problem is listed, and "
+                + "everything that put a file in the Trash, but not the copies that went through"
         }
 
         let id = SyncRunRecord.identifier(runAt: stamped.runDate,

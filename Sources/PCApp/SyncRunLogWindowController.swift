@@ -237,9 +237,31 @@ final class SyncRunLogWindowController: NSWindowController {
         trashButton.isEnabled = chosenItems.contains {
             $0.trashedPath != nil || $0.replacedTrashedPath != nil
         }
-        // The offer is computed rather than guessed at, and *before* the confirmation — a gated
-        // action that cannot work must not be proposed (`DefaultAutomationCore.refusalBeforeAsking`).
-        putBackButton.isEnabled = !plannedPutBack().steps.isEmpty
+        // A **cheap** test here, and the full plan only on press.
+        //
+        // `plannedPutBack` stats every candidate's two ends, and with nothing selected it considers
+        // the whole run — so on a twenty-thousand-row record every click in either table would have
+        // meant twenty thousand `lstat` calls on the main thread. The same shape of cost as the
+        // quadratic lookup in the window's state writer, one layer out.
+        //
+        // What this asks instead is decidable from the record alone: is there a row that could
+        // conceivably be put back? A gated action that cannot work must still not be proposed
+        // (`DefaultAutomationCore.refusalBeforeAsking`) — and it is not: if the filesystem then
+        // refuses everything, the press says so in the alert rather than doing nothing.
+        putBackButton.isEnabled = hasPutBackCandidates
+    }
+
+    /// Could anything in the current selection be put back, judged from the record only?
+    ///
+    /// `SyncUndoPlan.hasCandidates` and not a second copy of its conditions, which is where this
+    /// started: two readings of "is this row a candidate" is how a button that is armed and can
+    /// never do anything comes about. And it lives there rather than here because no test bundle
+    /// imports `PCApp`.
+    private var hasPutBackCandidates: Bool {
+        guard let run = selectedRun, run.isReadable else { return false }
+        let chosen = selectedItems
+        return SyncUndoPlan.hasCandidates(header: run.header,
+                                          items: chosen.isEmpty ? items : chosen)
     }
 
     /// What could be put back out of the current selection, and why the rest could not.
@@ -259,7 +281,22 @@ final class SyncRunLogWindowController: NSWindowController {
     @objc private func putBackSelected() {
         guard let run = selectedRun else { return }
         let (steps, refusals) = plannedPutBack()
-        guard !steps.isEmpty else { return }
+        guard !steps.isEmpty else {
+            // Nothing survived the guard, so say what stopped it. The button is armed from the
+            // record alone, which cannot know that the Trash was emptied or that the old path is
+            // occupied again — a press that quietly did nothing would be the worse answer.
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Nothing can be put back.")
+            alert.informativeText = refusals.isEmpty
+                ? String(localized: "This run deleted nothing that is still in the Trash.")
+                : refusals.prefix(8).map { "• \($0.subject): \($0.reason)" }
+                    .joined(separator: "\n")
+                    + (refusals.count > 8
+                       ? "\n" + String(localized: "… and \(refusals.count - 8) more.") : "")
+            alert.addButton(withTitle: String(localized: "Close"))
+            alert.runModal()
+            return
+        }
 
         let alert = NSAlert()
         alert.messageText = String(localized: "Put back \(steps.count) item(s)?")
@@ -363,6 +400,7 @@ final class SyncRunLogWindowController: NSWindowController {
         var out = "window=open\nruns=\(runs.count)\nselected=\(selectedRun?.id ?? "none")\n"
         out += "items=\(items.count)\n"
         out += "putBackEnabled=\(putBackButton.isEnabled)\n"
+        out += "putBackCandidates=\(hasPutBackCandidates)\n"
         let (steps, refusals) = plannedPutBack()
         out += "putBackSteps=\(steps.count)\nputBackRefusals=\(refusals.count)\n"
         for refusal in refusals { out += "refusal=\(refusal.subject): \(refusal.reason)\n" }

@@ -227,6 +227,65 @@ final class SyncUndoPlanTests: XCTestCase {
         XCTAssertTrue(refusals[0].reason.contains("outside both folders"), refusals[0].reason)
     }
 
+    // MARK: - The cheap predicate
+
+    /// `hasCandidates` and `plan` must agree about what the *record* rules out, and this is the test
+    /// that keeps them agreeing. The predicate exists so that arming a button costs no `lstat` at
+    /// all — a twenty-thousand-row run would otherwise have meant twenty thousand of them, on the
+    /// main thread, every time a selection changed — and a predicate that drifts from the guard is
+    /// how a button that can never do anything comes about.
+    func test_theCheapPredicateAgreesWithThePlanOnEveryRecordOnlyRefusal() {
+        let ruledOut: [SyncRunItem] = [
+            deletion("permanent.txt", toTrash: false),
+            deletion("zipped.txt", side: "zip"),
+            deletion("served.txt", side: "remote"),
+            deletion("done.txt", undoneAt: 1_700_000_500),
+            {
+                var row = deletion("nowhere.txt")
+                row.trashedPath = nil
+                return row
+            }(),
+            SyncRunItem(relativePath: "copy.txt", action: "copyToRight", basis: "comparison",
+                        outcome: SyncRunItem.Outcome.copied, destinationPath: "/right/copy.txt",
+                        destinationSide: "localDir", created: true),
+        ]
+        for row in ruledOut {
+            XCTAssertFalse(SyncUndoPlan.hasCandidates(header: header(), items: [row]),
+                           "\(row.relativePath) was offered although the record rules it out")
+            // …and the full guard produces no step for it either, whatever the disk says.
+            let (steps, _) = SyncUndoPlan.plan(
+                header: header(), items: [row],
+                probe: world([inTrash("nowhere.txt").0: inTrash("nowhere.txt").1,
+                              inTrash("permanent.txt").0: inTrash("permanent.txt").1,
+                              inTrash("zipped.txt").0: inTrash("zipped.txt").1,
+                              inTrash("served.txt").0: inTrash("served.txt").1,
+                              inTrash("done.txt").0: inTrash("done.txt").1,
+                              inTrash("copy.txt").0: inTrash("copy.txt").1]))
+            XCTAssertTrue(steps.isEmpty, "\(row.relativePath) produced a step")
+        }
+        // The one that is allowed by the record — and note what this proves and does not: the
+        // predicate says yes here **without** the file being in the Trash, which is exactly its
+        // weakness and the reason a press still asks the disk.
+        XCTAssertTrue(SyncUndoPlan.hasCandidates(header: header(),
+                                                 items: [deletion("gone.txt")]))
+        let (steps, refusals) = SyncUndoPlan.plan(header: header(),
+                                                  items: [deletion("gone.txt")], probe: world())
+        XCTAssertTrue(steps.isEmpty, "the disk had no such file, so there is nothing to do")
+        XCTAssertEqual(refusals.count, 1)
+    }
+
+    /// A whole-run refusal turns the predicate off too, without looking at a single row.
+    func test_theCheapPredicateHonoursTheWholeRunRefusals() {
+        let rows = [deletion("gone.txt")]
+        XCTAssertFalse(SyncUndoPlan.hasCandidates(header: header(version: 99), items: rows))
+        XCTAssertFalse(SyncUndoPlan.hasCandidates(header: header(itemsListed: false), items: rows))
+        XCTAssertFalse(SyncUndoPlan.hasCandidates(
+            header: header(undoUnavailable: "a server has no Trash"), items: rows))
+        // But a missing root does **not**: that needs the filesystem, so the predicate cannot know
+        // it and the press is where it is found. Stated so the difference stays deliberate.
+        XCTAssertTrue(SyncUndoPlan.hasCandidates(header: header(), items: rows))
+    }
+
     // MARK: - Ordering
 
     /// Shallowest first. Deletions ran deepest-first, so a child cannot land before its folder is

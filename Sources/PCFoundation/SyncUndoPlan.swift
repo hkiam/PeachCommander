@@ -90,6 +90,58 @@ public enum SyncUndoPlan {
         }
     }
 
+    /// Whether anything here could conceivably be put back, judged from the **record alone**.
+    ///
+    /// Deliberately weaker than `plan`: it touches no filesystem, so it cannot know whether the
+    /// item is still in the Trash or whether something now occupies its old path. It exists because
+    /// arming a button must not cost one `lstat` per row of the record on every click — a
+    /// twenty-thousand-row run would have meant twenty thousand of them, on the main thread, every
+    /// time a selection changed.
+    ///
+    /// It shares its conditions with `plan` rather than restating them, which is the point: two
+    /// copies of "is this row a candidate" is how a button that is armed and can never do anything
+    /// comes about.
+    public static func hasCandidates(header: SyncRunHeader, items: [SyncRunItem]) -> Bool {
+        guard recordRefusal(header) == nil else { return false }
+        return items.contains { recordRefusal($0) == nil && $0.outcome == SyncRunItem.Outcome.deleted }
+    }
+
+    /// Why this whole record cannot be acted on, from the record itself. Nil when it can.
+    static func recordRefusal(_ header: SyncRunHeader) -> String? {
+        if header.version > SyncRunHeader.currentVersion {
+            return "the record was written by a newer version of the app"
+        }
+        if !header.itemsListed {
+            return header.undoUnavailable ?? "this run was too large for its items to be kept"
+        }
+        if let why = header.undoUnavailable { return why }
+        return nil
+    }
+
+    /// Why this row cannot be put back, from the record itself. Nil when nothing in the record
+    /// stands in the way — which is not the same as "it will work"; `plan` then asks the disk.
+    ///
+    /// Returns nil for a row that deleted nothing at all, so a caller has to check the outcome
+    /// separately: "this was a copy" is not a refusal, it is a row that owes nothing back.
+    static func recordRefusal(_ item: SyncRunItem) -> String? {
+        guard item.outcome == SyncRunItem.Outcome.deleted else { return nil }
+        if item.undoneAt != nil {
+            return item.undoUnavailable ?? "this has already been put back"
+        }
+        guard item.destinationSide == "localDir" else {
+            // Said for the side rather than the run, because a run can have one local side and one
+            // that is not. An archive rewrite re-stamped every entry it did not touch, and a server
+            // deletion was permanent — which the confirmation says before the run, not after.
+            return "a \(item.destinationSide ?? "non-local") side keeps nothing to put back"
+        }
+        guard item.toTrash == true else {
+            return "this was removed permanently, not put in the Trash"
+        }
+        guard item.trashedPath != nil else { return "where this went was not recorded" }
+        guard item.destinationPath != nil else { return "where this came from was not recorded" }
+        return nil
+    }
+
     /// What of this run can be put back, and why the rest cannot.
     ///
     /// - Parameter probe: The facts about one absolute path. Called for both roots and for every
@@ -103,15 +155,7 @@ public enum SyncUndoPlan {
             refusals.append(Refusal(subject: Refusal.wholeRun, reason: reason))
         }
 
-        if header.version > SyncRunHeader.currentVersion {
-            refuseRun("the record was written by a newer version of the app")
-        }
-        if !header.itemsListed {
-            refuseRun(header.undoUnavailable
-                      ?? "this run was too large for its items to be kept")
-        } else if let why = header.undoUnavailable {
-            refuseRun(why)
-        }
+        if let why = recordRefusal(header) { refuseRun(why) }
 
         // The roots, checked before any item. An absolute path in a file is only safe to act on if
         // the folder it names is still the folder it named: `/Volumes/Backup` can be a different
@@ -156,23 +200,10 @@ public enum SyncUndoPlan {
     private static func candidate(_ item: SyncRunItem, header: SyncRunHeader,
                                  probe: (String) -> SyncUndoFacts) -> Candidate {
         guard item.outcome == SyncRunItem.Outcome.deleted else { return .notADeletion }
-        guard item.undoneAt == nil else {
-            return .refuse(item.undoUnavailable ?? "this has already been put back")
-        }
-        guard item.destinationSide == "localDir" else {
-            // Said for the side rather than the run, because a run can have one local side and one
-            // that is not. An archive rewrite re-stamped every entry it did not touch, and a server
-            // deletion was permanent — which the confirmation says before the run, not after.
-            return .refuse("a \(item.destinationSide ?? "non-local") side keeps nothing to put back")
-        }
-        guard item.toTrash == true else {
-            return .refuse("this was removed permanently, not put in the Trash")
-        }
-        guard let trashedPath = item.trashedPath else {
+        // Everything the record itself settles, in the one place both this and `hasCandidates` read.
+        if let why = recordRefusal(item) { return .refuse(why) }
+        guard let trashedPath = item.trashedPath, let original = item.destinationPath else {
             return .refuse("where this went was not recorded")
-        }
-        guard let original = item.destinationPath else {
-            return .refuse("where this came from was not recorded")
         }
         // Both ends inside the record's own roots — through `PathContainment.isInside`, which
         // resolves symlinks for the part of a path that exists. That matters here and not

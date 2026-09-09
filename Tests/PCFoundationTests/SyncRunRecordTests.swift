@@ -72,13 +72,18 @@ final class SyncRunRecordTests: XCTestCase {
         XCTAssertEqual(round.destinationModifiedUnix ?? 0, 1_700_000_000.123456, accuracy: 1e-6)
     }
 
-    /// A deletion is never a "plain success", whatever its outcome — it is the row a person opens
-    /// this record to find, and the only one that can be put back. That is what decides which rows
-    /// survive above the item cap.
-    func test_aDeletionIsNeverTreatedAsAPlainSuccess() {
-        func row(_ outcome: String, trashed: String? = nil) -> SyncRunItem {
+    /// A row that put something in the Trash is never a "plain success", whatever its outcome —
+    /// those are the rows a person opens this record to find, and the only ones that point at
+    /// something recoverable. That is what decides which rows survive above the item cap.
+    ///
+    /// The last assertion is the one that was wrong: a **copy** that displaced an earlier version
+    /// counted as plain, so on a large run the only trace of where that version went was dropped
+    /// while the header claimed every problem had been kept.
+    func test_aRowThatTrashedSomethingIsNeverAPlainSuccess() {
+        func row(_ outcome: String, trashed: String? = nil,
+                 replaced: String? = nil) -> SyncRunItem {
             SyncRunItem(relativePath: "x", action: "a", basis: "comparison", outcome: outcome,
-                        trashedPath: trashed)
+                        trashedPath: trashed, replacedTrashedPath: replaced)
         }
         XCTAssertTrue(row(SyncRunItem.Outcome.copied).isPlainSuccess)
         XCTAssertTrue(row(SyncRunItem.Outcome.noOp).isPlainSuccess)
@@ -87,6 +92,8 @@ final class SyncRunRecordTests: XCTestCase {
         XCTAssertFalse(row(SyncRunItem.Outcome.notAttempted).isPlainSuccess)
         XCTAssertFalse(row(SyncRunItem.Outcome.deleted).isPlainSuccess)
         XCTAssertFalse(row(SyncRunItem.Outcome.deleted, trashed: "/x/.Trash/x").isPlainSuccess)
+        XCTAssertFalse(row(SyncRunItem.Outcome.copied, replaced: "/x/.Trash/old").isPlainSuccess,
+                       "an overwrite's displaced version would be dropped above the item cap")
     }
 
     // MARK: - The identifier

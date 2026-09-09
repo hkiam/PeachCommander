@@ -258,10 +258,15 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
 
     /// Did this row run smoothly? Above the item cap only rows for which this is false are kept.
     ///
-    /// A **deletion is never smooth** in that sense, whatever its outcome: it is the row a person
-    /// comes to this record looking for, and it is the only one that can be put back.
+    /// A row that **put something in the Trash** is never smooth in that sense, whatever its
+    /// outcome. That covers a deletion, which is the row a person comes to this record looking for
+    /// and the only one that can be put back — and it also covers a copy that displaced an earlier
+    /// version, which is worth exactly as much: it is the only trace of where that version went.
+    /// Reading the rule as "not a deletion" dropped those on a large run while the header claimed
+    /// every problem was kept.
     public var isPlainSuccess: Bool {
-        (outcome == Outcome.copied || outcome == Outcome.noOp) && trashedPath == nil
+        (outcome == Outcome.copied || outcome == Outcome.noOp)
+            && trashedPath == nil && replacedTrashedPath == nil
     }
 }
 
