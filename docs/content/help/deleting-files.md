@@ -15,13 +15,13 @@ When you no longer need files or folders, Peach Commander can move them to the T
 2. Press **F8** (or the **Delete** key) to move the selection to the Trash. To choose it from the menu, use **File > Delete**.
 3. If a confirmation appears, review the list of items and click **Delete** to continue, or **Cancel** to stop.
 
-Items sent to the Trash stay there until you empty it, so you can restore them from the Finder if you change your mind.
+Items sent to the Trash stay there until you empty it, so nothing is lost while you change your mind: they are visible in the Trash in the Finder and can be moved back out by hand.
 
 **Edit ▸ Undo (⌘Z) takes the last deletion back.** The files move out of the Trash to exactly where
 they were, and nothing is written over: an item whose old path is occupied again is left alone rather
 than forced — and you are told which ones and why, rather than left to assume it worked. Two things to know about it. It is the *last* operation only, and the list of them lives
 in memory — quit the app, or do thirty more file operations, and the offer is gone while the files are
-still in the Trash, where the Finder can put them back. And a permanent deletion (Shift+F8) has no
+still sitting in the Trash for you to move back yourself. And a permanent deletion (Shift+F8) has no
 undo at all; there is nothing to put back.
 
 ## How to delete permanently

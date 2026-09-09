@@ -103,6 +103,8 @@ forced:
 - The folder the run wrote to is gone, or is not the same folder any more — a reused mount point,
   say. Then the whole run is refused rather than any part of it acted on.
 - It has already been put back. The record keeps that, so a second attempt does nothing.
+- Or the record itself is one this version cannot act on — written by a newer version of the app, or
+  naming a path outside both folders. Rare, and refused rather than guessed at.
 
 **A copy cannot be taken back.** Removing one would mean deleting a file you may have edited since,
 which is the opposite trade from putting a deletion back, so the app does not offer it — the run
