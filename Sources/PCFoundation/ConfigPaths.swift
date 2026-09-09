@@ -181,6 +181,21 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("sync-state", isDirectory: true)
     }
 
+    /// Directory holding one record per synchronisation run (F-192).
+    ///
+    /// One file per *run*, not per pair, because the run is the unit that is written, listed, acted
+    /// on and thrown away — `SyncRunStore`'s header sets that against the two other shapes in this
+    /// project. Trimmed automatically, oldest first, which `syncStateDirectory` above deliberately
+    /// is not: losing a state record changes what the next run does, while losing a run's record
+    /// takes away no behaviour at all, only the offer to put something back.
+    ///
+    /// Holds the absolute paths of both trees in plain text, as `history` and the state records
+    /// already do. There is no age setting and no switch; the answer is the two forget buttons in
+    /// the window that shows them.
+    public var syncRunsDirectory: URL {
+        root.appendingPathComponent("sync-runs", isDirectory: true)
+    }
+
     /// Resolve the configuration root, in priority order:
     /// 1. `-ConfigRoot <path>` launch argument
     /// 2. `PEACHCMD_CONFIG_ROOT` environment variable
