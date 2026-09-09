@@ -43,6 +43,17 @@ public enum SyncRunRecording {
                               leftRootInode: UInt64? = nil, rightRootInode: UInt64? = nil,
                               runAt: Date = Date()) -> (header: SyncRunHeader, items: [SyncRunItem]) {
 
+        // Standardised **once**, and every path in the record built from these.
+        //
+        // Measured on a real run: the header said `/tmp/…/dst` while every row said
+        // `/private/tmp/…/dst`, because the header standardised the root and the rows appended to
+        // the raw side path. Both are the same folder and neither is wrong on its own — but a row
+        // is not lexically inside its own recorded root, so a containment check would refuse every
+        // item of every run under a symlinked prefix. The record has to be self-consistent, since
+        // that is the only thing an offer to act on it can rest on.
+        let leftRoot = standardised(left.path)
+        let rightRoot = standardised(right.path)
+
         let basisOf = Dictionary(plan.map { ($0.item.relativePath, $0.basis) },
                                  uniquingKeysWith: { a, _ in a })
         let kindOf = Dictionary(scanned.map { ($0.relativePath, $0.isDirectory) },
@@ -55,14 +66,16 @@ public enum SyncRunRecording {
 
         for outcome in report.outcomes {
             let rel = outcome.relativePath
-            let (source, destination) = sides(for: outcome.action, left: left, right: right)
+            let (source, destination) = sides(for: outcome.action)
+            func root(_ which: Which) -> String { which == .left ? leftRoot : rightRoot }
+            func side(_ which: Which) -> SyncSide { which == .left ? left : right }
             var item = SyncRunItem(relativePath: rel,
                                    action: name(of: outcome.action),
                                    basis: name(of: basisOf[rel] ?? .comparison),
                                    outcome: "",
-                                   sourcePath: source.map { path($0, rel) },
-                                   destinationPath: destination.map { path($0, rel) },
-                                   destinationSide: destination.map(kind(of:)),
+                                   sourcePath: source.map { path(root($0), rel) },
+                                   destinationPath: destination.map { path(root($0), rel) },
+                                   destinationSide: destination.map { kind(of: side($0)) },
                                    isDirectory: kindOf[rel])
 
             switch outcome.status {
@@ -103,7 +116,7 @@ public enum SyncRunRecording {
 
         let header = SyncRunHeader(
             runAt: runAt.timeIntervalSince1970,
-            leftRoot: standardised(left.path), rightRoot: standardised(right.path),
+            leftRoot: leftRoot, rightRoot: rightRoot,
             leftRootInode: leftRootInode, rightRootInode: rightRootInode,
             mode: name(of: options.mode), fileMask: fileMask, withSubdirs: withSubdirs,
             ignoreHidden: ignoreHidden, filterSummary: filterSummary, stopped: report.stopped,
@@ -129,22 +142,25 @@ public enum SyncRunRecording {
         return nil
     }
 
+    /// Named rather than compared, because the two sides can be the same folder — a mistake the
+    /// plan guard refuses, but not one this translation should depend on being refused.
+    enum Which { case left, right }
+
     /// Which side a row reads from and which it changes. A copy reads from one and writes the other;
     /// a deletion only changes one, and has no source at all — the whole point of the row is that
     /// the file is not on the other side any more.
-    private static func sides(for action: SyncAction, left: SyncSide,
-                              right: SyncSide) -> (SyncSide?, SyncSide?) {
+    private static func sides(for action: SyncAction) -> (Which?, Which?) {
         switch action {
-        case .copyToRight: return (left, right)
-        case .copyToLeft: return (right, left)
-        case .deleteRight: return (nil, right)
-        case .deleteLeft: return (nil, left)
+        case .copyToRight: return (.left, .right)
+        case .copyToLeft: return (.right, .left)
+        case .deleteRight: return (nil, .right)
+        case .deleteLeft: return (nil, .left)
         case .equal, .conflict, .none: return (nil, nil)
         }
     }
 
-    private static func path(_ side: SyncSide, _ rel: String) -> String {
-        (side.path as NSString).appendingPathComponent(rel)
+    private static func path(_ root: String, _ rel: String) -> String {
+        (root as NSString).appendingPathComponent(rel)
     }
 
     private static func kind(of side: SyncSide) -> String {

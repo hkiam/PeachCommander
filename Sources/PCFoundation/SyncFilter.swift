@@ -115,6 +115,36 @@ public struct SyncFilter: Codable, Equatable, Sendable {
 
     public var isActive: Bool { activeCriteriaCount > 0 }
 
+    /// The criteria as one line, for a record of a run.
+    ///
+    /// Deliberately **not** localised, and diagnostic in the same sense `SyncRunItem.reason` is: it
+    /// is written into a file that outlives the build, is read back by a later version, and is shown
+    /// as it was written. Translating it would mean a record whose meaning depends on the language
+    /// the run happened in.
+    ///
+    /// And, like `SyncStateHeader.options`, it must not be used to *decide* anything.
+    /// `modifiedWithinDays` is relative and resolved at scan time, so the same summary describes a
+    /// different set of files on every run.
+    public var diagnosticSummary: String {
+        var parts: [String] = []
+        let patterns = Self.split(excludePatterns)
+        if !patterns.isEmpty { parts.append("exclude=" + patterns.joined(separator: ";")) }
+        if let min = minSize { parts.append("min=\(min)") }
+        if let max = maxSize { parts.append("max=\(max)") }
+        if let days = modifiedWithinDays, days > 0 { parts.append("days=\(days)") }
+        if let after = modifiedAfter {
+            parts.append("after=\(ISO8601DateFormatter().string(from: after))")
+        }
+        if let before = modifiedBefore {
+            parts.append("before=\(ISO8601DateFormatter().string(from: before))")
+        }
+        if let plugin = pluginPredicate,
+           !plugin.trimmingCharacters(in: .whitespaces).isEmpty {
+            parts.append("plugin=\(plugin)")
+        }
+        return parts.joined(separator: " ")
+    }
+
     /// Whether anything here has to be asked of the *pair* rather than of the walk.
     public var hasPairCriteria: Bool {
         minSize != nil || maxSize != nil || modifiedBefore != nil || effectiveAfter(now: Date()) != nil

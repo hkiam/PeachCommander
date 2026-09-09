@@ -59,13 +59,20 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// run the user has to see, so it survives the re-comparison instead of racing it.
     private var lastRunSummary = ""
 
-    /// What the last run actually did, item by item. Kept because the forced re-comparison right
-    /// after a run destroys the plan that produced it, and the outcomes are the only record of what
-    /// happened — a state file will be written from exactly this.
-    private var lastRunReport: SyncRunReport?
+    /// Which record the last run wrote, so the log window can open on it.
+    ///
+    /// The identifier and not the report. A `SyncRunReport` held here alongside a record on disk is
+    /// two answers to one question that can drift apart, which is the failure this whole feature
+    /// exists to remove — and the field it replaces was assigned twice and read nowhere, its comment
+    /// claiming a consumer nobody had wired.
+    private var lastRunID: String?
     /// Where a pair's record of the last run lives. Nil when the host did not hand one over, and
     /// two-way mode is then unavailable — the same shape as the preset store.
     private let stateStore: SyncStateStore?
+    /// Where each run is written down. Unlike `stateStore` this is not tied to a mode: every run
+    /// gets a record, because "what did that do?" is a question about the run that just happened and
+    /// not about the two-way memory.
+    private let runStore: SyncRunStore?
     /// The record the last comparison read, kept so the run can write its successor.
     private var loadedState = SyncStateLoad.unknown(reason: "no comparison yet")
 
@@ -144,18 +151,22 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     convenience init(leftDir: String, rightDir: String, presetsURL: URL? = nil,
-                     contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil) {
+                     contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil,
+                     runsDirectory: URL? = nil) {
         self.init(left: .localDir(leftDir), right: .localDir(rightDir), presetsURL: presetsURL,
-                  contentFields: contentFields, stateDirectory: stateDirectory)
+                  contentFields: contentFields, stateDirectory: stateDirectory,
+                  runsDirectory: runsDirectory)
     }
 
     init(left: SyncSide, right: SyncSide, presetsURL: URL? = nil,
-         contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil) {
+         contentFields: ContentFieldRegistry? = nil, stateDirectory: URL? = nil,
+         runsDirectory: URL? = nil) {
         self.leftSide = left
         self.rightSide = right
         self.presetStore = presetsURL.map { SyncPresetStore(url: $0) }
         self.contentFields = contentFields
         self.stateStore = stateDirectory.map { SyncStateStore(directory: $0) }
+        self.runStore = runsDirectory.map { SyncRunStore(directory: $0) }
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 820, height: 560),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -709,6 +720,46 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         return out
     }
 
+    /// What has been written down about the runs of this pair.
+    ///
+    /// The counts and not just "a run exists": a report satisfied by a file holding nothing but a
+    /// header line would be satisfied by a run that recorded nothing, which is exactly the false
+    /// pass this feature invites.
+    func automationRunsReport() -> String {
+        guard let store = runStore else { return "runs=unavailable\n" }
+        let runs = store.runs()
+        var out = "runs=\(runs.count)\nlastRunID=\(lastRunID ?? "none")\n"
+        for run in runs {
+            let h = run.header
+            out += "run=\(run.id) readable=\(run.isReadable) mode=\(h.mode)"
+                + " planned=\(h.planned) copied=\(h.copied) created=\(h.created)"
+                + " overwritten=\(h.overwritten) deleted=\(h.deleted) problems=\(h.problems)"
+                + " itemsListed=\(h.itemsListed) stopped=\(h.stopped)"
+                + " left=\(h.leftRoot) right=\(h.rightRoot)\n"
+            if let why = h.undoUnavailable { out += "runUndoUnavailable=\(why)\n" }
+        }
+        out += "status=\(statusLabel.stringValue)\n"
+        return out
+    }
+
+    /// Every row of the most recent run, with where each thing ended up.
+    func automationRunItemsReport() -> String {
+        guard let store = runStore else { return "items=unavailable\n" }
+        guard let id = lastRunID ?? store.runs().first?.id else { return "items=0\n" }
+        let rows = store.items(id: id)
+        var out = "run=\(id)\nitems=\(rows.count)\n"
+        for row in rows {
+            out += "item=\(row.relativePath) action=\(row.action) basis=\(row.basis)"
+                + " outcome=\(row.outcome)"
+                + " created=\(row.created.map(String.init(describing:)) ?? "unknown")"
+                + " side=\(row.destinationSide ?? "none")"
+                + " dest=\(row.destinationPath ?? "none")"
+                + " trashed=\(row.trashedPath ?? "none")\n"
+            if let reason = row.reason { out += "itemReason=\(reason)\n" }
+        }
+        return out
+    }
+
     /// Set mirror mode before an automated compare. It is the only mode that deletes today, so it
     /// is the one a guard scenario has to be able to switch on.
     func automationSetAsymmetric(_ on: Bool) { asymmetricButton.state = on ? .on : .off }
@@ -1230,9 +1281,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private func runSynchronize(_ actionable: [SyncResult]) {
         let (l, r) = (leftSide, rightSide)
         lastRunSummary = ""
-        lastRunReport = nil
-        // Only two-way keeps a record, and only then is it worth reading each destination back —
-        // which on a server would be a round trip per file.
+        lastRunID = nil
+        // Only two-way keeps a *state* record, and only then is a server destination worth a round
+        // trip per file to read back. Every run is written down — see `writeRunLog`.
         let opts = options()
         let recording = opts.mode == .twoWay && stateStore != nil
         let scanned = results.map(\.item)
@@ -1293,14 +1344,55 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                                                      summary: String(localized: "Kept back"),
                                                      entries: refusals.map { ($0.path, $0.message) })
                 }
-                self.lastRunReport = runReport
-                // Written before the re-comparison, because that destroys the plan this came from —
-                // the outcomes are the only record of what actually happened.
+                // Both written before the re-comparison, because that destroys the plan they come
+                // from — the outcomes are the only record of what actually happened.
                 if recording {
                     self.writeState(runReport, items: scanned, previous: previous,
                                     options: opts, scopes: scopes, left: l, right: r)
                 }
+                self.writeRunLog(runReport, plan: actionable, items: scanned, options: opts,
+                                 left: l, right: r)
                 self.compare() // re-scan to reflect the new state
+            }
+        }
+    }
+
+    /// Write down what the run did, whatever mode it was.
+    ///
+    /// Not gated on the mode, unlike `writeState`: a mirror run is the one that deletes the most,
+    /// and it is the one whose record a person is most likely to come looking for. And not gated on
+    /// there being anything interesting, because "it did nothing" is also an answer.
+    ///
+    /// The translation and the write both happen off the main actor. A run has as many rows as it
+    /// has planned items — nothing caps that — and each row carries two absolute paths, so encoding
+    /// them inside the completion block would freeze the window for as long as that takes. What
+    /// comes back to the main actor is only the refusal, if there was one.
+    private func writeRunLog(_ report: SyncRunReport, plan: [SyncResult], items: [SyncItem],
+                             options: SyncOptions, left: SyncSide, right: SyncSide) {
+        guard let store = runStore else { return }
+        let mask = maskField.stringValue
+        let subdirs = subdirsButton.state == .on
+        let hidden = ignoreHiddenButton.state == .on
+        let summary = filter.isActive ? filter.diagnosticSummary : nil
+        let leftInode = FileStamp.of(left.path)?.inode
+        let rightInode = FileStamp.of(right.path)?.inode
+        Task.detached(priority: .utility) {
+            let (header, rows) = SyncRunRecording.record(
+                report: report, plan: plan, scanned: items, left: left, right: right,
+                options: options, fileMask: mask, withSubdirs: subdirs, ignoreHidden: hidden,
+                filterSummary: summary, leftRootInode: leftInode, rightRootInode: rightInode)
+            let outcome = store.write(header: header, items: rows)
+            await MainActor.run {
+                switch outcome {
+                case .written(let id, _):
+                    self.lastRunID = id
+                case .refused(let reason):
+                    // Said out loud, in `writeState`'s voice. A run with no record is a run nothing
+                    // can be traced through afterwards, and there is no other way to find that out.
+                    self.lastRunSummary += "   ·   "
+                        + String(localized: "run not recorded") + ": \(reason)"
+                    self.updateStatus()
+                }
             }
         }
     }

@@ -1261,7 +1261,8 @@ extension MainWindowController {
                                                    presetsURL: o.count >= 3 && !o[2].isEmpty
                                                        ? URL(fileURLWithPath: o[2]) : nil,
                                                    contentFields: contentFieldRegistry,
-                                                   stateDirectory: configPaths.syncStateDirectory)
+                                                   stateDirectory: configPaths.syncStateDirectory,
+                                                   runsDirectory: configPaths.syncRunsDirectory)
                     automationSyncWindows.append(win)
                     win.showWindow()
                 }
@@ -1310,6 +1311,16 @@ extension MainWindowController {
             case "syncstate":                              // syncstate <out> (F-192)
                 if let win = automationSyncWindows.last, !arg.isEmpty {
                     try? win.automationStateReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncruns":                               // syncruns <out> (F-192)
+                // What was written down about this pair's runs. Its counts are the point: a report
+                // that only says "a run exists" is satisfied by a record that recorded nothing.
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationRunsReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncrunitems":                           // syncrunitems <out> (F-192)
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationRunItemsReport().write(toFile: arg, atomically: true, encoding: .utf8)
                 }
             case "syncbasis":                              // syncbasis <out> (F-192): row + basis
                 if let win = automationSyncWindows.last, !arg.isEmpty {

@@ -157,6 +157,56 @@ final class SyncRunRecordingTests: XCTestCase {
         XCTAssertEqual(rows.map(\.destinationSide), ["localDir", "localDir", "localDir"])
     }
 
+    /// Every path in a record is inside the root the same record names.
+    ///
+    /// Found by running the real thing, not by a unit test: the header standardised the roots while
+    /// the rows appended to the raw side paths, so a run under `/private/tmp/…` recorded
+    /// `left=/tmp/…` against `dest=/private/tmp/…`. Both name the same folder and neither is wrong
+    /// alone — but no row is then lexically inside its own recorded root, and a containment check
+    /// would refuse every item of every run under a symlinked prefix. An offer to act on this record
+    /// can rest on nothing but its own consistency.
+    ///
+    /// The directories are **really created**, and that is not decoration. Written first against
+    /// invented paths, this test passed with the defect put back — measured — because
+    /// `NSString.standardizingPath` rewrites `/private/tmp/x` to `/tmp/x` only for a path that
+    /// exists. An invented prefix standardises to itself, so both spellings agreed and there was
+    /// nothing to catch.
+    func test_everyPathIsInsideTheRootTheRecordNames() throws {
+        let fm = FileManager.default
+        let base = URL(fileURLWithPath: "/private/tmp")
+            .appendingPathComponent("pc-runrec-\(UUID().uuidString)")
+        let leftDir = base.appendingPathComponent("l")
+        let rightDir = base.appendingPathComponent("r")
+        for dir in [leftDir, rightDir] {
+            try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        defer { try? fm.removeItem(at: base) }
+        XCTAssertNotEqual((leftDir.path as NSString).standardizingPath, leftDir.path,
+                          "this machine does not rewrite /private/tmp, so the fixture proves nothing")
+
+        let outcomes = [outcome("a/one.txt", .copyToRight, .copied(CopiedDestination(size: 1))),
+                        outcome("b/two.txt", .copyToLeft, .copied(CopiedDestination(size: 1))),
+                        outcome("c/three.txt", .deleteRight, .deleted(toTrash: true,
+                                                                      trashedPath: "/t/x"))]
+        let plan = outcomes.map { SyncResult(action: $0.action, item: item($0.relativePath)) }
+        let (header, rows) = SyncRunRecording.record(
+            report: SyncRunReport(outcomes: outcomes, stopped: false), plan: plan,
+            scanned: plan.map(\.item), left: .localDir(leftDir.path),
+            right: .localDir(rightDir.path), options: SyncOptions(),
+            fileMask: "", withSubdirs: true, ignoreHidden: false)
+
+        for row in rows {
+            for path in [row.sourcePath, row.destinationPath].compactMap({ $0 }) {
+                XCTAssertTrue(path.hasPrefix(header.leftRoot + "/")
+                                || path.hasPrefix(header.rightRoot + "/"),
+                              "\(path) is inside neither \(header.leftRoot) nor \(header.rightRoot)")
+            }
+        }
+        // And still the right root for the right direction.
+        XCTAssertEqual(rows[0].destinationPath, header.rightRoot + "/a/one.txt")
+        XCTAssertEqual(rows[1].destinationPath, header.leftRoot + "/b/two.txt")
+    }
+
     /// A zip or a server destination is named as such, so a reader is not offered a path on this
     /// machine that is not one — and the run says once, in the header, that nothing in it can be
     /// taken back.
