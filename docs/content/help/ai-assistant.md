@@ -65,7 +65,7 @@ For anything that modifies files — moving, renaming, writing, deleting — the
 **Actions ▾** in the chat has two entries:
 
 - **Show what the assistant did…** lists every change, newest first, with what was asked of it and how it turned out — including attempts the autonomy setting refused. An external agent connected over MCP is in the same list.
-- **Undo the last change** takes back the most recent change that has an inverse: a rename is renamed back, a move is moved back. Where nothing can be taken back, the list says why — an overwritten file was not kept anywhere, and items in the Trash are restored from the Finder.
+- **Undo the last change** takes back the most recent change that has an inverse: a rename is renamed back, a move is moved back, and files moved to the Trash are put back where they came from — the assistant records where each one went, so it can find them again even though the Trash renames anything whose name is already taken. Nothing is written over: an item whose old path is occupied again is refused with that reason instead. Where nothing can be taken back, the list says why — an overwritten file was not kept anywhere, and a permanent deletion left nothing to restore.
 
 You can also just ask: *"undo that"* and *"what did you change?"* reach the same two functions.
 

@@ -2922,6 +2922,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// Undo the most recent recorded operation, then refresh both panels (Cmd+Z
     /// via the Edit menu when a panel — not a text field — is first responder).
+    #if DEBUG
+    /// Perform the top undo entry and say what it was — awaited, unlike the menu path.
+    ///
+    /// `undoLastOperation` starts a task and returns, so a script that dumped the panel on the next
+    /// line would read it before anything had moved. And it reports the entry's `label`, which was
+    /// stored by every `pushUndo` and read nowhere until now.
+    func automationUndo() async -> String {
+        guard let op = undoStack.popLast() else { return "undo=empty\n" }
+        await op.run()
+        await leftPanelController?.reload()
+        await rightPanelController?.reload()
+        return "undo=\(op.label)\nremaining=\(undoStack.count)\n"
+    }
+    #endif
+
     func undoLastOperation() {
         guard let op = undoStack.popLast() else { NSSound.beep(); return }
         Task { @MainActor in

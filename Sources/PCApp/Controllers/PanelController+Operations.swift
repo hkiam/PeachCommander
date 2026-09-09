@@ -404,8 +404,15 @@ extension PanelController {
             // Archive → archive: remove the entries from the *source* zip.
             await deleteInArchive(items)
         } else {
-            await runTransfer(.trash(items: items), title: String(localized: "Moving to Trash"))
-            registerUndo(label: String(localized: "Move"), undoMove: items, at: archiveZip)
+            // The undo here used to be `registerUndo(undoMove: items, at: archiveZip)`, which built
+            // a destination *inside* the archive file — `<…>.zip/name` — and guarded it with
+            // `fileExists`. That path never exists, so the entry was pushed and did nothing: an
+            // offer that could not work. The sources went to the Trash, and now that the trashing
+            // says where, the real inverse is putting them back.
+            let trashed = TrashedItemCollector()
+            await runTransfer(.trash(items: items), title: String(localized: "Moving to Trash"),
+                              trashSink: { items in trashed.add(items) })
+            registerUndoForTrash(trashed.items)
         }
     }
 
@@ -551,6 +558,41 @@ extension PanelController {
                 } else {
                     try? fm.trashItem(at: URL(fileURLWithPath: destPath), resultingItemURL: nil)
                 }
+            }
+        }
+    }
+
+    /// Push an inverse for a just-completed trashing (F-101).
+    ///
+    /// Delete was the one operation on this stack's list with no entry at all: it is fed by copy,
+    /// move, rename and mkdir, and F8 pushed nothing — while the deleted files sat in the Trash for
+    /// weeks with the app unable to say which they were. It can say now, because the trashing
+    /// reports where each item went.
+    ///
+    /// Two limits worth being plain about. The stack lives in memory, holds thirty entries and dies
+    /// with the app, so this offer is often gone long before the Trash gives the files up; it is
+    /// never *wrong*, only absent. And an item the system did not report a destination for gets no
+    /// entry rather than a guess — the Trash renames on collision, so `~/.Trash` plus the file's own
+    /// name points at an earlier file.
+    private func registerUndoForTrash(_ moved: [TrashedItem]) {
+        let restorable = moved.filter(\.isRestorable)
+        guard !restorable.isEmpty else { return }
+        let pairs = restorable.compactMap { item -> (from: String, to: String)? in
+            guard let from = item.trashedPath else { return nil }
+            return (from, item.originalPath)
+        }
+        (view.window?.windowController as? MainWindowController)?
+            .pushUndo(String(localized: "Delete")) {
+            // Through the one guarded step, shared with the synchronisation run log's put-back and
+            // the assistant's undo of a `move_to_trash`: nothing is overwritten, and an item whose
+            // old path is occupied again is left alone rather than forced.
+            //
+            // Shallowest first, so a folder is back before anything that lived in it — the delete
+            // engine works deepest-first and `moveItem` does not create a parent.
+            for pair in pairs.sorted(by: {
+                $0.to.components(separatedBy: "/").count < $1.to.components(separatedBy: "/").count
+            }) {
+                _ = TrashRestore.restore(from: pair.from, to: pair.to)
             }
         }
     }
@@ -1028,9 +1070,14 @@ extension PanelController {
         let mustConfirm = await config.bool("Operation", "ConfirmDelete", default: true)
         if mustConfirm, !confirmDelete(count: items.count, permanent: permanent) { return }
         let kind: OperationKind = permanent ? .delete(items: items) : .trash(items: items)
+        // A trashing can be taken back, so where each item went is collected while it happens.
+        // A permanent delete cannot, and asks for nothing.
+        let trashed = permanent ? nil : TrashedItemCollector()
         await runTransfer(kind, title: permanent ? String(localized: "Deleting")
-                                                 : String(localized: "Moving to Trash"))
+                                                 : String(localized: "Moving to Trash"),
+                          trashSink: trashed.map { box in { items in box.add(items) } })
         recordInHistory(finished: kind)
+        if let trashed { registerUndoForTrash(trashed.items) }
         // If a permanent delete left items behind, it was almost certainly a
         // permission error — offer an administrator retry (F-099).
         if permanent {
@@ -1186,8 +1233,10 @@ extension PanelController {
         return []
     }
 
-    func runTransfer(_ kind: OperationKind, title: String) async {
+    func runTransfer(_ kind: OperationKind, title: String,
+                     trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil) async {
         let queue = TransferQueue()
+        queue.trashSink = trashSink
         let resolver = InteractiveResolver(parentWindow: view.window)
         let progress = ProgressDialog(title: title, control: queue.control)
         progress.present(over: view.window)

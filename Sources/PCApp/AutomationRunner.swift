@@ -310,6 +310,13 @@ extension MainWindowController {
                     panel.tableView.focusEntry(named: parts[0])
                     _ = await panel.setCursorComment(parts[1])
                 }
+            case "undoop":                              // undoop <out> (F-101): Edit ▸ Undo, awaited
+                // Awaited and reported, because the menu path fires a task and returns: a dump on
+                // the next line would read the panel before the files had moved.
+                let report = await automationUndo()
+                if !arg.isEmpty {
+                    try? report.write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "markone":                             // markone <name>: mark exactly that one entry
                 if let panel = activePanel {
                     panel.tableView.focusEntry(named: arg)

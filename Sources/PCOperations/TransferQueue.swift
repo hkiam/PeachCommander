@@ -51,6 +51,16 @@ public final class TransferQueue: @unchecked Sendable {
     /// Shared cancel/pause control for the running operation.
     public let control = OperationControl()
 
+    /// Where each trashed item went, for a caller that will offer to put it back.
+    ///
+    /// A sink rather than a richer return type, which is `CopyOptions.digestSink`'s shape and its
+    /// reason: the value only exists inside the operation, every other caller of `execute` wants
+    /// the paths it already gets, and widening the return type for one of them would touch them all.
+    ///
+    /// Called once, after the trashing, with the items that actually moved. Nothing is reported for
+    /// a permanent delete — there is nowhere for it to have gone.
+    public var trashSink: (@Sendable ([TrashedItem]) -> Void)?
+
     public init() {}
 
     /// Start `kind` and return the coalesced event stream. The operation runs in
@@ -58,6 +68,9 @@ public final class TransferQueue: @unchecked Sendable {
     public func run(_ kind: OperationKind,
                     resolver: OperationResolver = OverwriteAllResolver()) -> AsyncStream<OpEvent> {
         let control = self.control
+        // Captured before the detached task, because the property is read from another actor there
+        // and reading it inside would be reading it at an unpredictable moment.
+        let trashSink = self.trashSink
         return AsyncStream { continuation in
             let throttle = ProgressThrottle(continuation)
             let progress: @Sendable (OpProgress) -> Void = { throttle.emit($0) }
@@ -65,7 +78,8 @@ public final class TransferQueue: @unchecked Sendable {
             let task = Task.detached {
                 do {
                     let processed = try await TransferQueue.execute(kind, control: control,
-                                                                    resolver: resolver, progress: progress)
+                                                                    resolver: resolver, progress: progress,
+                                                                    trashSink: trashSink)
                     continuation.yield(.completed(processed: processed))
                 } catch let error as OperationError {
                     continuation.yield(error == .cancelled ? .cancelled : .failed(error))
@@ -87,13 +101,15 @@ public final class TransferQueue: @unchecked Sendable {
     @discardableResult
     public func runToCompletion(_ kind: OperationKind,
                                 resolver: OperationResolver = OverwriteAllResolver()) async throws -> [String] {
-        try await TransferQueue.execute(kind, control: control, resolver: resolver, progress: { _ in })
+        try await TransferQueue.execute(kind, control: control, resolver: resolver,
+                                        progress: { _ in }, trashSink: trashSink)
     }
 
     static func execute(_ kind: OperationKind,
                         control: OperationControl,
                         resolver: OperationResolver,
-                        progress: @escaping @Sendable (OpProgress) -> Void) async throws -> [String] {
+                        progress: @escaping @Sendable (OpProgress) -> Void,
+                        trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil) async throws -> [String] {
         switch kind {
         case let .copy(items, dstDir, options):
             let engine = CopyEngine(options: options, control: control, resolver: resolver, progress: progress)
@@ -107,9 +123,11 @@ public final class TransferQueue: @unchecked Sendable {
         // item, and an interactive one reported a failure where it could have asked.
         case let .trash(items):
             let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
-            // The queue reports paths; where each item landed in the Trash is the caller's
-            // business and the automation surface is the one that keeps it.
-            return try await engine.moveToTrash(items: items).map(\.originalPath)
+            let moved = try await engine.moveToTrash(items: items)
+            // Handed over before the paths are returned, so a caller that offers to put these back
+            // is looking at the same set the operation reports as done.
+            trashSink?(moved)
+            return moved.map(\.originalPath)
         case let .delete(items):
             let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
             return try await engine.permanentDelete(items: items)

@@ -185,6 +185,20 @@ SCENARIOS = [
                       "syncasym 1", "wait 400",
                       "synccompare", "wait 1500",
                       "syncguard /Users/admin/syncbadroot.txt"], 10),
+    # F8 had no undo at all: the operation-undo stack is fed by copy, move, rename and mkdir, and a
+    # delete pushed nothing — while the files sat in the Trash for weeks with the app unable to say
+    # which they were. `remaining=0` together with `!undo=empty` is the positive witness that the
+    # trashing happened *and* reported where the items went, since only a completed trashing with
+    # destinations pushes an entry; the shell check afterwards is the file itself.
+    #
+    # The confirmation is switched off for this scenario and back on at the end — the guest's config
+    # persists between scenarios, so leaving it off would quietly change a later one.
+    ("undo-delete", ["setbool Operation.ConfirmDelete|0", "wait 400",
+                     "active left", "left /Users/admin/undo-del", "wait 1200",
+                     "markone gone.txt", "wait 400",
+                     "cmd cm_Delete", "wait 2200",
+                     "undoop /Users/admin/undodelete.txt", "wait 1400",
+                     "setbool Operation.ConfirmDelete|1"], 12),
     # What a run wrote down about itself. Three kinds of row on purpose — one file created, one
     # overwritten, one deleted — because a record is easy to make look right with one of them.
     #
@@ -2071,6 +2085,13 @@ EXTERNAL_CHECKS = {
     # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
     # trashed the wrong side, or copied instead of moved, passes every text assertion above and
     # fails here.
+    # The file is back with its own bytes, its neighbour was never touched, and the Trash no longer
+    # holds it — moved, not copied. Without this a scenario that deleted nothing at all would look
+    # identical: `gone.txt` present and the Trash empty of it.
+    "undo-delete": ("cat ~/undo-del/gone.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                    "cat ~/undo-del/keep.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                    "ls ~/.Trash | grep -c '^gone.txt' | tr -d ' '",
+                    "THESE BYTES MUST COME BACK untouched 0"),
     # The intruder is untouched and the original is still in the Trash — not taken out for nothing.
     "sync-occupied-path": ("cat ~/busy-dst/taken.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
                              "ls ~/.Trash | grep -c '^taken.txt' | tr -d ' '",
@@ -2280,6 +2301,11 @@ REPORTS = {
     # and its neighbour is really still there.
     "sync-twoway": ("/Users/admin/twoway.txt",
                     ["state=known", "mode=twoWay", "entries=1", "!ERROR"]),
+    # `remaining=0` only appears when an entry was on the stack and was carried out; `undo=empty`
+    # is what a stack with nothing in it reports, so the negative pins the difference. The label
+    # itself is localized and deliberately not asserted.
+    "undo-delete": ("/Users/admin/undodelete.txt",
+                    ["remaining=0", "!undo=empty", "!ERROR"]),
     # Every count named, because "a run exists" is satisfied by a file holding one header line and
     # nothing else. `created=1` against `overwritten=1` is what proves the answer comes from the
     # write and not from the scan, `trashedPath=/` that the deletion recorded where it went, and
@@ -3433,6 +3459,11 @@ def boot(app: str, run: str):
                   "rm -rf ~/putback-src ~/putback-dst && mkdir -p ~/putback-src ~/putback-dst && "
                   "printf 'kept\\n' > ~/putback-src/kept.txt && "
                   "printf 'THE BYTES THAT MUST COME BACK\\n' > ~/putback-dst/removed.txt && "
+                  # A tree for the delete-undo scenario. Distinctive bytes, because the claim is
+                  # that *this* file comes back and not merely that something is at the path.
+                  "rm -rf ~/undo-del && mkdir -p ~/undo-del && "
+                  "printf 'THESE BYTES MUST COME BACK\\n' > ~/undo-del/gone.txt && "
+                  "printf 'untouched\\n' > ~/undo-del/keep.txt && "
                   # Exact names, no globs. The guest's shell is zsh, where a pattern that matches
                   # nothing is an *error* — so `rm -f ~/.Trash/deleted*.txt` failed on a clean VM and
                   # took the rest of this `&&` chain with it, which is how the twelve files of the
@@ -3448,7 +3479,7 @@ def boot(app: str, run: str):
                   "printf 'same\\n' > ~/busy-dst/stay.txt && "
                   "printf 'THE ORIGINAL\\n' > ~/busy-dst/taken.txt && "
                   "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt "
-                  "~/.Trash/taken.txt && "
+                  "~/.Trash/taken.txt ~/.Trash/gone.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "
