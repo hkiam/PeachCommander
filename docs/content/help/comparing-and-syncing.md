@@ -111,11 +111,15 @@ the one real gap, and it is now a small one: on this Mac the version that was re
 Trash like a deleted file, so **Show in Trash** finds it. Into an archive, onto a server, or onto a
 volume with no Trash it cannot, and the confirmation says so before the run.
 
-Runs are kept for a while and then the oldest fall away, and **Forget** and **Forget All** clear
-them on the spot. Forgetting changes nothing about the folders; what goes is the record of what was
-done, and with it the offer to put anything back. Unlike the two-way memory, this is thrown away
-automatically — losing the memory of a *pair* would change what the next run does, while losing the
-record of a run only takes away an offer.
+The last 200 runs are kept, or 64 MB of them, whichever comes first; past that the oldest fall away
+one at a time as new ones arrive, and **Forget** and **Forget All** clear them on the spot. A very
+large run — more than 20,000 files — keeps every problem and everything it put in the Trash but not
+the copies that went through, and then says so instead of leaving you to notice.
+
+Forgetting changes nothing about the folders; what goes is the record of what was done, and with it
+the offer to put anything back. Unlike the two-way memory, this is thrown away automatically —
+losing the memory of a *pair* would change what the next run does, while losing the record of a run
+only takes away an offer.
 
 ## Shortcuts
 
