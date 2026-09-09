@@ -151,9 +151,29 @@ public enum SyncScanner {
             }
         }
 
-        /// Record a folder that was recorded but never looked inside — "without subdirs", or a
-        /// listing that failed. Nothing under it was compared, so a mirror must leave it alone.
-        mutating func notDescended(_ rel: String) { incompleteDirs.insert(rel) }
+        /// Record a folder that was recorded but never looked inside — "without subdirs", a
+        /// listing that failed, or a folder this process cannot read. Nothing under it was
+        /// compared, so a mirror must leave it alone.
+        ///
+        /// And **every folder above it** as well, exactly as `heldBack` does. Marking only the
+        /// folder itself left its parent looking fully compared, so a mirror could delete the
+        /// parent recursively and take the unlooked-at contents with it — which is the one thing
+        /// this set exists to prevent. Caught by a test asserting the nested case; the flat case
+        /// cannot show it.
+        ///
+        /// The cost is that `SyncSideScope.provesAbsence` consults every ancestor too, so one
+        /// unreadable folder stops deletions being carried across for the branch above it. That is
+        /// what an *excluded* path has always done here, it errs towards not deleting, and buying
+        /// precision back would mean a second set over the one structure in this project whose
+        /// mistakes are measured in lost files.
+        mutating func notDescended(_ rel: String) {
+            incompleteDirs.insert(rel)
+            var prefix = ""
+            for part in rel.split(separator: "/", omittingEmptySubsequences: true).dropLast() {
+                prefix = prefix.isEmpty ? String(part) : prefix + "/" + part
+                incompleteDirs.insert(prefix)
+            }
+        }
     }
 
     /// How many entries pass before the walk reports again. A scan of a large tree finds thousands

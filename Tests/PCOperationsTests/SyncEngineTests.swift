@@ -1505,6 +1505,42 @@ final class SyncEngineTests: XCTestCase {
                       "one unreadable folder is not a reason to distrust the whole walk")
     }
 
+    /// The mark is on the folder that could not be listed, not on the tree above it.
+    ///
+    /// The other way round would be worse than the defect: one unreadable folder deep in a project
+    /// would stop every deletion anywhere in that project from being carried across, and the mode
+    /// would quietly do nothing for the whole pair. So `a/` stays trustworthy while `a/b/` does not.
+    func test_theMarkIsOnTheFolderThatCouldNotBeListedAndNotItsParents() async throws {
+        _ = try write("visible", to: left, "outer/seen.txt")
+        _ = try write("hidden away", to: left, "outer/inner/unseen.txt")
+        let locked = left.appendingPathComponent("outer/inner")
+        try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                              ofItemAtPath: locked.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                        ofItemAtPath: locked.path) }
+
+        let outcome = await scanBothDirsDetailed()
+        XCTAssertNotNil(item(outcome.items, "outer/seen.txt"), "the readable half was not walked")
+        XCTAssertNil(item(outcome.items, "outer/inner/unseen.txt"), "the fixture is not locked")
+
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "outer/inner/unseen.txt"))
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "outer/inner/anything.txt"))
+        // The branch above it cannot prove an absence either, and that is the deliberate price: an
+        // *excluded* path has always marked its whole ancestor chain here, and both err towards not
+        // carrying a deletion across.
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "outer/never-there.txt"))
+        // Outside that branch nothing changes, or one locked folder would switch the mode off for
+        // the whole pair.
+        XCTAssertTrue(outcome.leftScope.provesAbsence(of: "top-level-gone.txt"))
+
+        // Both folders are protected from a recursive delete, and the parent is the one that
+        // matters: marking only `inner` left `outer` looking fully compared, so a mirror could
+        // remove it and take `unseen.txt` along. The flat case cannot show that.
+        XCTAssertEqual(item(outcome.items, "outer/inner")?.hasHeldBackContent, true)
+        XCTAssertEqual(item(outcome.items, "outer")?.hasHeldBackContent, true,
+                       "a folder holding an unlisted folder still holds something uncompared")
+    }
+
     /// And the folder is one a mirror must not delete either, for the reason that guard already
     /// exists: deleting a folder is recursive and would take what the comparison never saw.
     func test_aFolderThatCannotBeListedCountsAsHoldingHeldBackContent() async throws {
