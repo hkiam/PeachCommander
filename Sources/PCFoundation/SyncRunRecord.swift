@@ -76,8 +76,16 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
     /// kept. Recorded rather than inferred from the line count, because "this run had no problems"
     /// and "this run's rows were left out" are the two things a reader must never confuse.
     public var itemsListed: Bool
-    /// Why nothing from this run can be put back, when that is already decidable from the header
-    /// alone. `AuditEntry.undoUnavailable`'s job, in its voice.
+    /// Which rows were left out, when `itemsListed` is false.
+    ///
+    /// Separate from `undoUnavailable`, and the separation is the point: the rows dropped above the
+    /// cap are the *plain copies*, and a copy is never put back anyway — every deletion is kept. So
+    /// a huge run is an incomplete record and still a usable one, and reading those two as the same
+    /// thing withdrew the offer to put its deletions back for no reason at all.
+    public var itemsOmittedReason: String?
+    /// Why nothing from this run can be put back, whatever its rows say. Reserved for the cases
+    /// where that is true of the run as a whole — an archive rewritten in place, a server with no
+    /// Trash. `AuditEntry.undoUnavailable`'s job, in its voice.
     public var undoUnavailable: String?
 
     public init(version: Int = SyncRunHeader.currentVersion,
@@ -87,7 +95,8 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
                 ignoreHidden: Bool = false, filterSummary: String? = nil, stopped: Bool = false,
                 planned: Int = 0, copied: Int = 0, created: Int = 0, overwritten: Int = 0, deleted: Int = 0,
                 refused: Int = 0, failed: Int = 0, notAttempted: Int = 0, noOp: Int = 0,
-                itemsListed: Bool = true, undoUnavailable: String? = nil) {
+                itemsListed: Bool = true, itemsOmittedReason: String? = nil,
+                undoUnavailable: String? = nil) {
         self.version = version
         self.runAt = runAt
         self.leftRoot = leftRoot
@@ -110,6 +119,7 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
         self.notAttempted = notAttempted
         self.noOp = noOp
         self.itemsListed = itemsListed
+        self.itemsOmittedReason = itemsOmittedReason
         self.undoUnavailable = undoUnavailable
     }
 
@@ -142,6 +152,7 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
         // Defaults to true, so a file from a version that did not have the field is read as
         // complete — which it was. The refusal it drives only ever *takes away* an offer.
         itemsListed = try c.decodeIfPresent(Bool.self, forKey: .itemsListed) ?? true
+        itemsOmittedReason = try c.decodeIfPresent(String.self, forKey: .itemsOmittedReason)
         undoUnavailable = try c.decodeIfPresent(String.self, forKey: .undoUnavailable)
     }
 

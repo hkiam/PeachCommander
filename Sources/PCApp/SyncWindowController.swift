@@ -760,6 +760,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 + " itemsListed=\(h.itemsListed) stopped=\(h.stopped)"
                 + " left=\(h.leftRoot) right=\(h.rightRoot)\n"
             if let why = h.undoUnavailable { out += "runUndoUnavailable=\(why)\n" }
+            if let why = h.itemsOmittedReason { out += "runItemsOmitted=\(why)\n" }
         }
         out += "status=\(statusLabel.stringValue)\n"
         return out

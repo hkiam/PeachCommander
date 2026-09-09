@@ -111,9 +111,9 @@ public enum SyncUndoPlan {
         if header.version > SyncRunHeader.currentVersion {
             return "the record was written by a newer version of the app"
         }
-        if !header.itemsListed {
-            return header.undoUnavailable ?? "this run was too large for its items to be kept"
-        }
+        // `itemsListed == false` is deliberately **not** a refusal. What a run over the cap drops
+        // is its plain copies, and a copy is never put back; every deletion is kept, so such a
+        // record is incomplete and still usable. Refusing it withdrew an offer that was there.
         if let why = header.undoUnavailable { return why }
         return nil
     }

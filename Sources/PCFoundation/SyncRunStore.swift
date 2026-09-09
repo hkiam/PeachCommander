@@ -78,7 +78,11 @@ public final class SyncRunStore: Sendable {
         if items.count > Self.maximumItems {
             kept = items.filter { !$0.isPlainSuccess }
             stamped.itemsListed = false
-            stamped.undoUnavailable = "this run had \(items.count) items, more than the "
+            // `itemsOmittedReason`, not `undoUnavailable`: what was dropped is the plain copies, and
+            // a copy is never put back anyway. Every deletion is kept, so this run's deletions can
+            // still be put back — writing it as "nothing here can be undone" took that away for no
+            // reason.
+            stamped.itemsOmittedReason = "this run had \(items.count) items, more than the "
                 + "\(Self.maximumItems) a full record is kept for — every problem is listed, and "
                 + "everything that put a file in the Trash, but not the copies that went through"
         }

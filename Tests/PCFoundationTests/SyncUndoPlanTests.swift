@@ -19,12 +19,14 @@ final class SyncUndoPlanTests: XCTestCase {
 
     private func header(version: Int = SyncRunHeader.currentVersion,
                         itemsListed: Bool = true,
+                        itemsOmittedReason: String? = nil,
                         undoUnavailable: String? = nil,
                         leftInode: UInt64? = 11, rightInode: UInt64? = 22) -> SyncRunHeader {
         SyncRunHeader(version: version, runAt: 1_700_000_000,
                       leftRoot: leftRoot, rightRoot: rightRoot,
                       leftRootInode: leftInode, rightRootInode: rightInode,
                       mode: "mirror", itemsListed: itemsListed,
+                      itemsOmittedReason: itemsOmittedReason,
                       undoUnavailable: undoUnavailable)
     }
 
@@ -96,15 +98,21 @@ final class SyncUndoPlanTests: XCTestCase {
         XCTAssertTrue(refusals[0].reason.contains("newer version"), refusals[0].reason)
     }
 
-    /// A run whose rows were left out cannot be put back, because the rows that were dropped are
-    /// exactly the ones nothing knows about any more.
-    func test_aRunWhoseItemsWereNotKeptIsRefusedWhole() {
+    /// A run whose rows were left out is **still usable**, and this is the assertion that had it
+    /// backwards. Above the item cap the store drops the plain copies and keeps every deletion —
+    /// and a copy is never put back anyway — so refusing the whole record took away an offer that
+    /// was there. `itemsListed` says the record is incomplete; it does not say it is useless.
+    func test_aRunWhoseCopiesWereNotKeptCanStillPutItsDeletionsBack() {
+        let (trashPath, facts) = inTrash("gone.txt")
         let (steps, refusals) = SyncUndoPlan.plan(
-            header: header(itemsListed: false, undoUnavailable: "this run had 30000 items"),
-            items: [deletion("gone.txt")], probe: world())
-        XCTAssertTrue(steps.isEmpty)
-        XCTAssertEqual(refusals.count, 1)
-        XCTAssertTrue(refusals[0].reason.contains("30000"), refusals[0].reason)
+            header: header(itemsListed: false,
+                           itemsOmittedReason: "this run had 30000 items"),
+            items: [deletion("gone.txt")], probe: world([trashPath: facts]))
+        XCTAssertEqual(steps.map(\.relativePath), ["gone.txt"])
+        XCTAssertTrue(refusals.isEmpty, "\(refusals)")
+        XCTAssertTrue(SyncUndoPlan.hasCandidates(header: header(itemsListed: false,
+                                                                itemsOmittedReason: "…"),
+                                                 items: [deletion("gone.txt")]))
     }
 
     /// The header can already know: an archive was rewritten whole, a server kept nothing.
@@ -278,7 +286,6 @@ final class SyncUndoPlanTests: XCTestCase {
     func test_theCheapPredicateHonoursTheWholeRunRefusals() {
         let rows = [deletion("gone.txt")]
         XCTAssertFalse(SyncUndoPlan.hasCandidates(header: header(version: 99), items: rows))
-        XCTAssertFalse(SyncUndoPlan.hasCandidates(header: header(itemsListed: false), items: rows))
         XCTAssertFalse(SyncUndoPlan.hasCandidates(
             header: header(undoUnavailable: "a server has no Trash"), items: rows))
         // But a missing root does **not**: that needs the filesystem, so the predicate cannot know

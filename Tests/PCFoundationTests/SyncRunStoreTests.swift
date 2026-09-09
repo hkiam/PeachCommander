@@ -183,9 +183,13 @@ final class SyncRunStoreTests: XCTestCase {
         let run = store.runs()[0]
         XCTAssertFalse(run.header.itemsListed)
         XCTAssertEqual(run.header.planned, items.count, "the header lost the real count")
-        let why = run.header.undoUnavailable ?? ""
+        let why = run.header.itemsOmittedReason ?? ""
         XCTAssertTrue(why.contains("\(items.count)") && why.contains("\(SyncRunStore.maximumItems)"),
                       why)
+        // And **not** `undoUnavailable`: what was dropped is the plain copies, so this run's
+        // deletions can still be put back. Reading the two as one field withdrew that offer.
+        XCTAssertNil(run.header.undoUnavailable,
+                     "a run over the item cap was declared impossible to put anything back from")
 
         let rows = store.items(id: id).map(\.relativePath)
         XCTAssertEqual(Set(rows), ["gone.txt", "kept.txt"])

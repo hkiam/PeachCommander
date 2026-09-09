@@ -114,7 +114,8 @@ volume with no Trash it cannot, and the confirmation says so before the run.
 The last 200 runs are kept, or 64 MB of them, whichever comes first; past that the oldest fall away
 one at a time as new ones arrive, and **Forget** and **Forget All** clear them on the spot. A very
 large run — more than 20,000 files — keeps every problem and everything it put in the Trash but not
-the copies that went through, and then says so instead of leaving you to notice.
+the copies that went through, and says so instead of leaving you to notice. Its deletions can still
+be put back: what was left out is the copies, and a copy could not be taken back anyway.
 
 Forgetting changes nothing about the folders; what goes is the record of what was done, and with it
 the offer to put anything back. Unlike the two-way memory, this is thrown away automatically —
