@@ -407,8 +407,17 @@ public actor FileSearchEngine {
                 entries.append(contentsOf: batch.entries)
             }
         } catch {
-            // Unreadable directory (permissions, race with deletion, etc.):
-            // skip it silently rather than aborting the whole search.
+            // Unreadable directory (permissions, race with deletion, etc.): skipped rather than
+            // aborting the whole search, which would be the worse answer — but *said*, which it
+            // was not. `SearchNotice`'s own header claims every skip produces one of these, and
+            // this one produced nothing: a search that quietly declines to enter a folder reads
+            // exactly like "the term is not in there".
+            //
+            // Not for a cancellation: a search the user stopped has not "failed to read" anything,
+            // and the same rule is applied to the archive notices above.
+            if !Task.isCancelled {
+                notices.append(SearchNotice(path: trail.display(path), reason: .unreadableDirectory))
+            }
             return
         }
 

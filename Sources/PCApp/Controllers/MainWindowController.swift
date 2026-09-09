@@ -4117,13 +4117,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     for notice in notices {
                         self.logger.info("search skipped \(notice.path, privacy: .public): \(String(describing: notice.reason), privacy: .public)")
                     }
+                    // "place" and not "archive": an archive used to be the only thing a search
+                    // declined, and the wording outlived that — a folder it could not read went
+                    // unmentioned entirely. One neutral noun rather than two counts glued together,
+                    // which is a combinatorial plural in eighteen languages; *which* kind each one
+                    // was is in the detail list, where each path carries its own sentence.
                     switch notices.count {
                     case 0:
                         win.setStatus(String(localized: "Done: \(count) found"))
                     case 1:
-                        win.setStatus(String(localized: "Done: \(count) found — one archive was not searched"))
+                        win.setStatus(String(localized: "Done: \(count) found — one place was not searched"))
                     default:
-                        win.setStatus(String(localized: "Done: \(count) found — \(notices.count) archives were not searched"))
+                        win.setStatus(String(localized: "Done: \(count) found — \(notices.count) places were not searched"))
                     }
                     win.searchFinished()
                 }
@@ -4197,6 +4202,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             return String(localized: "It is \(sizeText), and a search opens archives up to \(limitText).")
         case .tooDeep:
             return String(localized: "It is nested inside more archives than a search descends into.")
+        case .unreadableDirectory:
+            return String(localized: "It could not be read, so nothing inside it was searched.")
         }
     }
 

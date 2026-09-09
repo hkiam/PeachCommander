@@ -311,7 +311,7 @@ public final class FindFilesWindowController: NSWindowController {
     @objc private func handleDetails() {
         ErrorLogWindowController.present(
             over: window,
-            summary: String(localized: "These archives were not searched, or not searched in full:"),
+            summary: String(localized: "These places were not searched, or not searched in full:"),
             entries: notices)
     }
 

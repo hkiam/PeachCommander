@@ -10,6 +10,9 @@
 import Foundation
 
 /// One place a search did not look, and the reason it did not.
+///
+/// "Place" and not "archive": for a long time an archive was the only thing a search declined, and
+/// the dialog's wording still said so while a folder it could not read went unmentioned.
 public struct SearchNotice: Sendable, Equatable {
     /// Why a file or member was not searched.
     ///
@@ -29,6 +32,14 @@ public struct SearchNotice: Sendable, Equatable {
         case tooLarge(Int64, limit: Int64)
         /// Nested deeper than `maxArchiveDepth` (the zip-bomb guard).
         case tooDeep
+        /// A **directory** whose listing failed, so nothing inside it was searched.
+        ///
+        /// The walk had always skipped these `return`-silently, under a comment saying so — while
+        /// this file's own header claims that "every skip a search makes produces one of these".
+        /// The consequence is the one this type exists for, a step further out: a search that
+        /// quietly declines to *enter* a folder reads exactly like "the term is not in there", and
+        /// somebody then concludes the file does not exist.
+        case unreadableDirectory
 
         // Deliberately no `noHandler`, `timedOut`, `memberTooLarge` or `skippedBinary`.
         // Each was written down first and emitted by nothing, and a case nobody raises is
@@ -36,7 +47,7 @@ public struct SearchNotice: Sendable, Equatable {
         // more than it did.
     }
 
-    /// The archive or member, as the user would recognise it (display path).
+    /// The archive, member or folder, as the user would recognise it (display path).
     public let path: String
     public let reason: Reason
 
