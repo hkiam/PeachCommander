@@ -518,9 +518,27 @@ extension PanelController {
                               title: String(localized: "Move \(items.count) → \((dest as NSString).lastPathComponent)"),
                               startHeld: queueForLater)
         } else {
+            // An item the move *merged* into its target gets no undo. `.append` concatenates the
+            // source onto an existing file and removes the source, so the source path is free and
+            // the occupancy guard in the undo would not stop it — it would move the merged file
+            // there, destroying the target and leaving mixed content at the old path. A wrong
+            // inverse is worse than none, which is the rule this stack already follows for a
+            // conflict auto-rename.
+            //
+            // The two halves under this — the engine reporting the merge and the queue passing it on
+            // — are covered by `MoveMergeReportTests`, each with the defect reintroduced. This line
+            // itself is not: no test bundle imports `PCApp`, and the overwrite dialog has no
+            // scripted route, so a scenario cannot answer "Append". Covering it would mean giving
+            // that dialog the queued-answer mechanism `InputDialog` already has — which is the fix,
+            // written down here so the gap is not rediscovered.
+            let merged = MergedItemCollector()
             await runTransfer(.move(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
-                              title: String(localized: "Moving"))
-            registerUndo(label: String(localized: "Move"), undoMove: items, at: dest, mask: mask)
+                              title: String(localized: "Moving"),
+                              mergedSink: { paths in merged.add(paths) })
+            let mergedPaths = Set(merged.paths)
+            registerUndo(label: String(localized: "Move"),
+                         undoMove: items.filter { !mergedPaths.contains($0) },
+                         at: dest, mask: mask)
             await offerPrivilegedTransfer(items, destDir: dest, mask: mask, move: true)   // F-099
         }
     }
@@ -1259,9 +1277,11 @@ extension PanelController {
     }
 
     func runTransfer(_ kind: OperationKind, title: String,
-                     trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil) async {
+                     trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil,
+                     mergedSink: (@Sendable ([String]) -> Void)? = nil) async {
         let queue = TransferQueue()
         queue.trashSink = trashSink
+        queue.mergedSink = mergedSink
         let resolver = InteractiveResolver(parentWindow: view.window)
         let progress = ProgressDialog(title: title, control: queue.control)
         progress.present(over: view.window)

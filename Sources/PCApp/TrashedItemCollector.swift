@@ -23,3 +23,21 @@ final class TrashedItemCollector: @unchecked Sendable {
         return collected
     }
 }
+
+/// The same box for the paths a move merged rather than moved. Its own type rather than a generic
+/// one: two boxes with names that say what is in them read better at the call site than one that
+/// does not.
+final class MergedItemCollector: @unchecked Sendable {
+    private let lock = NSLock()
+    private var collected: [String] = []
+
+    func add(_ paths: [String]) {
+        lock.lock(); defer { lock.unlock() }
+        collected.append(contentsOf: paths)
+    }
+
+    var paths: [String] {
+        lock.lock(); defer { lock.unlock() }
+        return collected
+    }
+}

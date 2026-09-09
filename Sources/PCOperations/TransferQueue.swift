@@ -61,6 +61,14 @@ public final class TransferQueue: @unchecked Sendable {
     /// a permanent delete — there is nowhere for it to have gone.
     public var trashSink: (@Sendable ([TrashedItem]) -> Void)?
 
+    /// Which items a move **merged** into their target instead of moving.
+    ///
+    /// A second narrow sink rather than one bag, for `CopyOptions.digestSink`'s reason: each answers
+    /// one question and is named for it. This one exists because `[String]` of processed paths reads
+    /// as "these were moved here", and for an `.append` that reading turns an undo into a
+    /// destruction — see `MoveEngine.merged`.
+    public var mergedSink: (@Sendable ([String]) -> Void)?
+
     public init() {}
 
     /// Start `kind` and return the coalesced event stream. The operation runs in
@@ -71,6 +79,7 @@ public final class TransferQueue: @unchecked Sendable {
         // Captured before the detached task, because the property is read from another actor there
         // and reading it inside would be reading it at an unpredictable moment.
         let trashSink = self.trashSink
+        let mergedSink = self.mergedSink
         return AsyncStream { continuation in
             let throttle = ProgressThrottle(continuation)
             let progress: @Sendable (OpProgress) -> Void = { throttle.emit($0) }
@@ -79,7 +88,8 @@ public final class TransferQueue: @unchecked Sendable {
                 do {
                     let processed = try await TransferQueue.execute(kind, control: control,
                                                                     resolver: resolver, progress: progress,
-                                                                    trashSink: trashSink)
+                                                                    trashSink: trashSink,
+                                                                    mergedSink: mergedSink)
                     continuation.yield(.completed(processed: processed))
                 } catch let error as OperationError {
                     continuation.yield(error == .cancelled ? .cancelled : .failed(error))
@@ -102,21 +112,27 @@ public final class TransferQueue: @unchecked Sendable {
     public func runToCompletion(_ kind: OperationKind,
                                 resolver: OperationResolver = OverwriteAllResolver()) async throws -> [String] {
         try await TransferQueue.execute(kind, control: control, resolver: resolver,
-                                        progress: { _ in }, trashSink: trashSink)
+                                        progress: { _ in }, trashSink: trashSink,
+                                        mergedSink: mergedSink)
     }
 
     static func execute(_ kind: OperationKind,
                         control: OperationControl,
                         resolver: OperationResolver,
                         progress: @escaping @Sendable (OpProgress) -> Void,
-                        trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil) async throws -> [String] {
+                        trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil,
+                        mergedSink: (@Sendable ([String]) -> Void)? = nil) async throws -> [String] {
         switch kind {
         case let .copy(items, dstDir, options):
             let engine = CopyEngine(options: options, control: control, resolver: resolver, progress: progress)
             return try await engine.run(items: items, toDirectory: dstDir)
         case let .move(items, dstDir, options):
             let engine = MoveEngine(options: options, control: control, resolver: resolver, progress: progress)
-            return try await engine.run(items: items, toDirectory: dstDir)
+            let moved = try await engine.run(items: items, toDirectory: dstDir)
+            // Handed over before the paths are returned, so a caller deciding what to offer an undo
+            // for is looking at the same operation the result describes.
+            if !engine.merged.isEmpty { mergedSink?(engine.merged) }
+            return moved
         // The resolver reaches delete too, now that delete can ask. It is the same question F-089
         // already asks for copy and move — retry, skip, or abort — and the reason it was worth
         // wiring: a background delete used to abandon the rest of the selection over one locked

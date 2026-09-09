@@ -6,6 +6,16 @@ import Foundation
 import PCFoundation
 
 public final class MoveEngine {
+    /// Items that were **merged** into their target rather than moved to it.
+    ///
+    /// `.append` (F-086) concatenates the source onto an existing file and then removes the source,
+    /// so the operation happened and the source path is free — but the file at the target is neither
+    /// the source nor what was there before. A caller that reads `run`'s result as "these were moved
+    /// here" and offers to move them back would put merged content at the source path and destroy
+    /// the target, which is a worse answer than offering nothing. Same shape as
+    /// `CopyEngine.skipped`, and for the same reason: the engine knows and used to throw it away.
+    public private(set) var merged: [String] = []
+
     private let options: CopyOptions
     private let control: OperationControl
     private let resolver: OperationResolver
@@ -95,6 +105,7 @@ public final class MoveEngine {
                                         resolver: SkipAllResolver(), progress: progress)
                     try await ce.appendRegularFile(from: src, to: dst)
                     _ = DeepPath.removeItem(src)
+                    merged.append(src)
                     return (dst, false)
                 case .overwrite, .append:
                     // rename(2) atomically replaces a file target; remove dir/symlink targets first.
