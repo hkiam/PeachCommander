@@ -212,6 +212,12 @@ final class SyncRunLogWindowController: NSWindowController {
     }
 
     private func reloadItems() {
+        // On the main actor, and measured before leaving it there: a run at the item cap is 8.3 MB
+        // and 20 000 rows, and reading and decoding it takes 118 ms — a visible hitch, but only when
+        // somebody picks a *different* run in a window they opened on purpose, and only at the very
+        // top of the range. Moving it off would mean asynchronous table reloads and their own
+        // ordering bugs for that. What would change the answer is the cap: at ten times these rows
+        // it is a second, and then it has to move.
         items = selectedRun.map { store.items(id: $0.id) } ?? []
         itemTable.reloadData()
         updateButtons()
