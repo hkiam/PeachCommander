@@ -88,26 +88,33 @@ final class InteractiveResolver: OperationResolver, @unchecked Sendable {
         return await MainActor.run {
             // Build the button set dynamically so "Append" appears only when both
             // sides are regular files (F-086) — appending onto a folder is nonsense.
-            var choices: [(title: String, make: () -> OverwriteDecision)] = [
-                (String(localized: "Overwrite"), { .overwrite }),
-                (String(localized: "Overwrite All"), { self.setBlanket(.overwriteAll); return .overwrite }),
-                (String(localized: "Overwrite All Older"), {
+            // Each choice carries a stable key beside its title. The titles are localized, so a
+            // script that named one would be asserting the language the guest happens to run in —
+            // the trap a scenario already walked into once with a window title.
+            var choices: [Choice] = [
+                Choice("overwrite", String(localized: "Overwrite"), { .overwrite }),
+                Choice("overwriteall", String(localized: "Overwrite All"),
+                       { self.setBlanket(.overwriteAll); return .overwrite }),
+                Choice("overwriteallolder", String(localized: "Overwrite All Older"), {
                     self.setBlanket(.overwriteIfSourceNewer)
                     return Self.autoDecision(.overwriteIfSourceNewer, source: source, target: target) ?? .skip
                 }),
-                (String(localized: "Overwrite All Larger"), {
+                Choice("overwritealllarger", String(localized: "Overwrite All Larger"), {
                     self.setBlanket(.overwriteIfSourceLarger)
                     return Self.autoDecision(.overwriteIfSourceLarger, source: source, target: target) ?? .skip
                 }),
             ]
             if !source.isDirectory && !target.isDirectory {
-                choices.append((String(localized: "Append"), { OverwriteDecision.append }))
+                choices.append(Choice("append", String(localized: "Append"),
+                                      { OverwriteDecision.append }))
             }
-            let tail: [(title: String, make: () -> OverwriteDecision)] = [
-                (String(localized: "Auto-Rename"), { .rename(OverwriteRules.autoRenameName(target.name)) }),
-                (String(localized: "Skip"), { .skip }),
-                (String(localized: "Skip All"), { self.setBlanket(.skipAll); return .skip }),
-                (String(localized: "Cancel"), { .abort }),
+            let tail: [Choice] = [
+                Choice("rename", String(localized: "Auto-Rename"),
+                       { .rename(OverwriteRules.autoRenameName(target.name)) }),
+                Choice("skip", String(localized: "Skip"), { .skip }),
+                Choice("skipall", String(localized: "Skip All"),
+                       { self.setBlanket(.skipAll); return .skip }),
+                Choice("abort", String(localized: "Cancel"), { .abort }),
             ]
             choices.append(contentsOf: tail)
             return Self.ask(source: source, target: target, choices: choices)
@@ -128,19 +135,73 @@ final class InteractiveResolver: OperationResolver, @unchecked Sendable {
     func resolveSingleOverwrite(source: FileFacts, target: FileFacts) async -> OverwriteDecision {
         await MainActor.run {
             Self.ask(source: source, target: target, choices: [
-                (String(localized: "Overwrite"), { .overwrite }),
-                (String(localized: "Auto-Rename"), { .rename(OverwriteRules.autoRenameName(target.name)) }),
-                (String(localized: "Skip"), { .skip }),
-                (String(localized: "Cancel"), { .abort }),
+                Choice("overwrite", String(localized: "Overwrite"), { .overwrite }),
+                Choice("rename", String(localized: "Auto-Rename"),
+                       { .rename(OverwriteRules.autoRenameName(target.name)) }),
+                Choice("skip", String(localized: "Skip"), { .skip }),
+                Choice("abort", String(localized: "Cancel"), { .abort }),
             ])
         }
     }
 
     /// Put the conflict up and return what was chosen. Shared so the one-item dialog cannot drift
     /// away from the batch one in wording, style or preview.
+    /// One button of the conflict dialog: a stable key for a script, the localized title for a
+    /// person, and the closure that both of them run.
+    struct Choice {
+        let key: String
+        let title: String
+        let make: () -> OverwriteDecision
+
+        init(_ key: String, _ title: String, _ make: @escaping () -> OverwriteDecision) {
+            self.key = key
+            self.title = title
+            self.make = make
+        }
+    }
+
+    #if DEBUG
+    private static var scriptedAnswers: [String] = []
+
+    /// Queue one answer for the next overwrite conflict, by key (automation only).
+    ///
+    /// The conflict dialog had no scripted route at all, so every path behind it was unreachable
+    /// from a scenario — including the two that decide whether an undo is safe to offer: "Append"
+    /// merges the files and makes the naive inverse destructive, and "Overwrite" makes it correct.
+    /// A one-line filter in the panel decides between them and could not be exercised end to end.
+    static func queueScriptedAnswer(_ key: String) {
+        scriptedAnswers.append(key.lowercased())
+    }
+
+    // No `hasScriptedAnswers` counterpart to `InputDialog`'s, deliberately: the one thing it would
+    // prove — that the conflict dialog was really reached — is already settled by what the answer
+    // *did*. Only "Append" produces a merged target, and the scenario asserts that on disk. An
+    // instrument with no reader is the shape this session has been removing, not adding.
+    #endif
+
     @MainActor
     private static func ask(source: FileFacts, target: FileFacts,
-                            choices: [(title: String, make: () -> OverwriteDecision)]) -> OverwriteDecision {
+                            choices: [Choice]) -> OverwriteDecision {
+        #if DEBUG
+        // Answered from a script, without ever showing the dialog. Inside `ask` rather than at the
+        // two callers, for the reason `DefaultAutomationCore.record` writes down: every consumer
+        // passes through here, so this is the one place that has to remember.
+        //
+        // The chosen `Choice`'s own closure runs, so a scripted "Overwrite All" sets the blanket
+        // exactly as a click does. A queued key that matches nothing is consumed and answered
+        // `.abort` with a log line: falling through to the real dialog would hang the run, and
+        // silently ignoring it would let a mistyped scenario pass.
+        if !scriptedAnswers.isEmpty {
+            let wanted = scriptedAnswers.removeFirst()
+            if let choice = choices.first(where: { $0.key == wanted }) {
+                NSLog("[automation] overwrite: %@ for %@", wanted, target.name)
+                return choice.make()
+            }
+            NSLog("[automation] overwrite: no choice named %@ (have: %@)", wanted,
+                  choices.map(\.key).joined(separator: ","))
+            return .abort
+        }
+        #endif
         let alert = NSAlert()
         alert.alertStyle = .warning
         alert.messageText = String(localized: "Replace “\(target.name)”?")

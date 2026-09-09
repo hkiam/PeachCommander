@@ -527,10 +527,10 @@ extension PanelController {
             //
             // The two halves under this — the engine reporting the merge and the queue passing it on
             // — are covered by `MoveMergeReportTests`, each with the defect reintroduced. This line
-            // itself is not: no test bundle imports `PCApp`, and the overwrite dialog has no
-            // scripted route, so a scenario cannot answer "Append". Covering it would mean giving
-            // that dialog the queued-answer mechanism `InputDialog` already has — which is the fix,
-            // written down here so the gap is not rediscovered.
+            // is covered end to end by the `append-merge` scenario, which answers the conflict
+            // dialog "Append" and asserts that no undo entry is pushed, with `overwrite-undo` as
+            // the control that one *is* pushed for an ordinary overwrite. The dialog got its
+            // scripted route for exactly that: it had none, so both paths were unreachable.
             let merged = MergedItemCollector()
             await runTransfer(.move(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
                               title: String(localized: "Moving"),

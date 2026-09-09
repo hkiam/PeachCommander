@@ -6366,6 +6366,28 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Execute a command by name against the current active/inactive panels.
     /// Plugin-contributed commands are dispatched to their plugin first; built-in
     /// `cm_*` commands fall through to the CommandRegistry.
+    #if DEBUG
+    /// Run a command and **wait for it to finish**.
+    ///
+    /// `runCommandNamed` starts a task and returns, so a script's next line races the command: a
+    /// delete that had not yet registered its undo reported an empty stack, and passed twice before
+    /// it failed once — which is worse than failing. Its own verb rather than a change to `cmd`,
+    /// because two scenarios queue a dialog's answer *after* the command on purpose and awaiting
+    /// there would wait for an answer that has not been given yet.
+    func runCommandNamedAwaiting(_ name: String) async {
+        if ContributionRegistry.shared.canHandle(name) {
+            _ = await ContributionRegistry.shared.dispatch(name, host: self)
+            return
+        }
+        let context = CommandContext(activePanel: activePanel,
+                                     inactivePanel: getInactivePanel(),
+                                     windowController: self,
+                                     selection: activePanel?.getSelectionState())
+        do { try await commandRegistry.execute(name, context: context) }
+        catch { logger.error("Command \(name) failed: \(error)") }
+    }
+    #endif
+
     func runCommandNamed(_ name: String) {
         Task { @MainActor in
             if ContributionRegistry.shared.canHandle(name) {

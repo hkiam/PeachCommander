@@ -191,14 +191,40 @@ SCENARIOS = [
     # trashing happened *and* reported where the items went, since only a completed trashing with
     # destinations pushes an entry; the shell check afterwards is the file itself.
     #
+    # `cmdwait` and not `cmd`: the latter fires the command and returns, so `undoop` raced the delete
+    # and read an empty stack. It passed twice and failed once, which is worse than failing.
+    #
     # The confirmation is switched off for this scenario and back on at the end — the guest's config
     # persists between scenarios, so leaving it off would quietly change a later one.
     ("undo-delete", ["setbool Operation.ConfirmDelete|0", "wait 400",
                      "active left", "left /Users/admin/undo-del", "wait 1200",
                      "markone gone.txt", "wait 400",
-                     "cmd cm_Delete", "wait 2200",
+                     "cmdwait cm_Delete", "wait 600",
                      "undoop /Users/admin/undodelete.txt", "wait 1400",
                      "setbool Operation.ConfirmDelete|1"], 12),
+    # The conflict dialog had no scripted route at all, so the two paths that decide whether an undo
+    # is safe to offer were unreachable from here. "Append" merges the files and makes the naive
+    # inverse destructive — it would put merged content at the source path and take the target with
+    # it — so no entry is pushed: `undo=empty` is the claim. The shell check is what makes it mean
+    # something, since `undo=empty` is also true of a move that never ran: the target holds both
+    # halves and the source is gone, and only the "Append" answer produces that.
+    ("append-merge", ["active left", "left /Users/admin/conf-src", "wait 1200",
+                      "right /Users/admin/conf-dst", "wait 900",
+                      "markone log.txt", "wait 400",
+                      "answer /Users/admin/conf-dst",
+                      "overwriteanswer append", "wait 300",
+                      "cmdwait cm_RenMov", "wait 600",
+                      "undoop /Users/admin/appendmerge.txt"], 12),
+    # The control that keeps the one above meaningful: an ordinary **overwrite** is a move, and its
+    # undo must still be offered and must work. Without this, `undo=empty` above would also pass if
+    # the undo had simply stopped being registered at all.
+    ("overwrite-undo", ["active left", "left /Users/admin/over-src", "wait 1200",
+                        "right /Users/admin/over-dst", "wait 900",
+                        "markone log.txt", "wait 400",
+                        "answer /Users/admin/over-dst",
+                        "overwriteanswer overwrite", "wait 300",
+                        "cmdwait cm_RenMov", "wait 600",
+                        "undoop /Users/admin/overwriteundo.txt"], 12),
     # And the undo that must be refused. Every closure on that stack used to swallow its failures
     # behind `try?` while the entry was popped either way, so a ⌘Z that could put nothing back looked
     # exactly like one that had. `mkfile` claims the path between the delete and the undo, from
@@ -206,7 +232,7 @@ SCENARIOS = [
     ("undo-blocked", ["setbool Operation.ConfirmDelete|0", "wait 400",
                           "active left", "left /Users/admin/undo-busy", "wait 1200",
                           "markone claimed.txt", "wait 400",
-                          "cmd cm_Delete", "wait 2200",
+                          "cmdwait cm_Delete", "wait 600",
                           "mkfile /Users/admin/undo-busy/claimed.txt", "wait 700",
                           "undoop /Users/admin/undobusy.txt", "wait 1400",
                           "setbool Operation.ConfirmDelete|1"], 12),
@@ -2096,6 +2122,16 @@ EXTERNAL_CHECKS = {
     # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
     # trashed the wrong side, or copied instead of moved, passes every text assertion above and
     # fails here.
+    # The merge really happened — the target holds both halves and the source is gone — which is what
+    # separates "no undo was offered because it would be wrong" from "nothing happened at all".
+    "append-merge": ("cat ~/conf-dst/log.txt 2>/dev/null; echo -n ' '; "
+                     "test -f ~/conf-src/log.txt && echo there || echo gone",
+                     "BBBAAA gone"),
+    # And after the control's undo: the source is back with its own bytes and the target it had
+    # replaced is gone again. An undo that did nothing leaves the opposite.
+    "overwrite-undo": ("cat ~/over-src/log.txt 2>/dev/null; echo -n ' '; "
+                       "test -f ~/over-dst/log.txt && echo there || echo gone",
+                       "AAA gone"),
     # The intruder keeps its own bytes and the deleted item is still in the Trash — not taken out for
     # nothing. An undo that had overwritten the intruder satisfies the report above just as well.
     "undo-blocked": ("cat ~/undo-busy/claimed.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
@@ -2317,6 +2353,10 @@ REPORTS = {
     # and its neighbour is really still there.
     "sync-twoway": ("/Users/admin/twoway.txt",
                     ["state=known", "mode=twoWay", "entries=1", "!ERROR"]),
+    "append-merge": ("/Users/admin/appendmerge.txt", ["undo=empty", "!ERROR"]),
+    # `problems=0` as well as `remaining=0`: the undo ran *and* had nothing it could not do.
+    "overwrite-undo": ("/Users/admin/overwriteundo.txt",
+                       ["remaining=0", "problems=0", "!undo=empty", "!ERROR"]),
     # `problems=1` with the reason is the whole point: the undo ran, refused, and said so. `undo=`
     # proves an entry existed, so this cannot pass on a delete that never happened.
     "undo-blocked": ("/Users/admin/undobusy.txt",
@@ -3485,6 +3525,13 @@ def boot(app: str, run: str):
                   "rm -rf ~/undo-del && mkdir -p ~/undo-del && "
                   "printf 'THESE BYTES MUST COME BACK\\n' > ~/undo-del/gone.txt && "
                   "printf 'untouched\\n' > ~/undo-del/keep.txt && "
+                  # Two trees for the conflict-dialog scenarios: a file that collides with one of
+                  # the same name on the other side. `AAA` onto `BBB`, so the merged result names
+                  # itself and cannot be confused with either.
+                  "rm -rf ~/conf-src ~/conf-dst && mkdir -p ~/conf-src ~/conf-dst && "
+                  "printf 'AAA' > ~/conf-src/log.txt && printf 'BBB' > ~/conf-dst/log.txt && "
+                  "rm -rf ~/over-src ~/over-dst && mkdir -p ~/over-src ~/over-dst && "
+                  "printf 'AAA' > ~/over-src/log.txt && printf 'BBB' > ~/over-dst/log.txt && "
                   # A second tree, for the undo that must be *refused*: its path is claimed again
                   # before ⌘Z is pressed. Its own tree because the first scenario consumes its file.
                   "rm -rf ~/undo-busy && mkdir -p ~/undo-busy && "

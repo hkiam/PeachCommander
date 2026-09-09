@@ -153,6 +153,12 @@ extension MainWindowController {
                 // Queued before the command that asks, so a modal prompt never stops the script.
                 // Without this every command that asks a question was unreachable from a scenario.
                 InputDialog.queueScriptedAnswer(arg)
+            case "overwriteanswer":                     // overwriteanswer <key> (F-086)
+                // The conflict dialog's own queue. Its keys are stable — overwrite, overwriteall,
+                // overwriteallolder, overwritealllarger, append, rename, skip, skipall, abort — and
+                // not the button titles, which are localized: a scenario naming a title would be
+                // asserting the language the guest happens to run in.
+                InteractiveResolver.queueScriptedAnswer(arg)
             case "packanswer":                          // packanswer <archiveName>[|<format>] (F-402)
                 // Queues the answer the pack dialog would get. Its own verb rather than `answer`:
                 // that one feeds InputDialog, and the two dialogs ask different questions. The format is
@@ -188,6 +194,11 @@ extension MainWindowController {
                 // otherwise pass quietly, having tested nothing at all.
                 try? "\(InputDialog.hasScriptedAnswers)\n".write(toFile: arg, atomically: true, encoding: .utf8)
             case "cmd":        runCommandNamed(arg)
+            case "cmdwait":                             // cmdwait <cm_name>: run it and wait
+                // `cmd` fires and returns, so the next line races the command. Use this wherever
+                // the next step reads a result — and not where the scenario answers a dialog the
+                // command puts up, since the answer is queued after it.
+                await runCommandNamedAwaiting(arg)
             case "pfxmount":                                              // pfxmount <volume-name> (e.g. TaskManager): mount a pfx drive volume by name into the active panel
                 if let vol = FileSystemPluginRegistry.shared.driveVolumes()
                     .first(where: { $0.name == arg && PFXMountSentinel.parse($0.path) != nil }),
