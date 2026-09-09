@@ -208,9 +208,12 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
     /// Where a deleted item went, when it went anywhere recoverable. The field this whole record
     /// exists to be able to write down.
     public var trashedPath: String?
-    /// Where the version this copy displaced went. Set only for an overwrite onto a side with a
-    /// Trash; nil for a fresh copy, and nil for an overwrite that was permanent — which the record
-    /// then has no way to soften, and does not pretend to.
+    /// Where the version this copy displaced went.
+    ///
+    /// Set only for an overwrite that the run could put in the Trash, which needs both: a
+    /// destination side that has one, *and* a run carrying its deletions there at all. Nil for a
+    /// fresh copy, and nil for an overwrite that was permanent — which the record then has no way
+    /// to soften, and does not pretend to.
     public var replacedTrashedPath: String?
 
     /// Set once this row has been acted on, so nothing is put back twice.

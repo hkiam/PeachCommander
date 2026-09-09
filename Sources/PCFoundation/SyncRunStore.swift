@@ -67,8 +67,11 @@ public final class SyncRunStore: Sendable {
 
     /// Write one run's record.
     ///
-    /// The header is stamped with the current version and with the counts of what is actually being
-    /// written, so `itemsListed` and the file can never disagree.
+    /// The header is stamped with the current version and, above the cap, with `itemsListed` and
+    /// the reason — so those two can never disagree with the file. The **counts** are the caller's
+    /// and describe the *run*, not the file: `planned` stays 30 000 for a run of that size even
+    /// when a dozen rows were written. That is the point of them, and it is why `itemsListed`
+    /// exists rather than a reader comparing the line count to `planned`.
     @discardableResult
     public func write(header: SyncRunHeader, items: [SyncRunItem]) -> SaveOutcome {
         var stamped = header
