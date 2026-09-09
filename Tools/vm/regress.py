@@ -228,6 +228,22 @@ SCENARIOS = [
                          # Again, on a record that now says it has been done. The window stays open
                          # so the host's capture shows the row in its acted-on state.
                          "syncrunputback /Users/admin/putback.txt", "wait 800"], 12),
+    # The one refusal whose failure destroys something: by the time the put-back is asked for,
+    # another file is at that path. It must be left exactly as it is, and the item must stay in the
+    # Trash rather than being taken out for nothing.
+    ("sync-occupied-path", ["active left", "left /Users/admin/busy-src", "wait 1200",
+                              "syncopen /Users/admin/busy-src|/Users/admin/busy-dst", "wait 1200",
+                              "syncrunsopen", "wait 700",
+                              "syncrunforgetall", "wait 400",
+                              "syncrunsclose", "wait 400",
+                              "syncasym 1", "wait 400",
+                              "synccompare", "wait 1600",
+                              "syncselect all|/Users/admin/busysel.txt", "wait 500",
+                              "syncrun", "wait 2400",
+                              # Something else claims the path, from outside any panel operation.
+                              "mkfile /Users/admin/busy-dst/taken.txt", "wait 600",
+                              "syncrunsopen /Users/admin/busyopen.txt", "wait 900",
+                              "syncrunputback /Users/admin/putback-busy.txt", "wait 900"], 12),
     ("sync-filter", ["active left", "left /Users/admin/filter-src", "wait 1200",
                      "syncopen /Users/admin/filter-src|/Users/admin/filter-dst|/Users/admin/pc-cfg/sync-presets.json",
                      "wait 1200",
@@ -2055,6 +2071,10 @@ EXTERNAL_CHECKS = {
     # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
     # trashed the wrong side, or copied instead of moved, passes every text assertion above and
     # fails here.
+    # The intruder is untouched and the original is still in the Trash — not taken out for nothing.
+    "sync-occupied-path": ("cat ~/busy-dst/taken.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                             "ls ~/.Trash | grep -c '^taken.txt' | tr -d ' '",
+                             "auto 1"),
     "sync-runputback": ("cat ~/putback-dst/removed.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
                         "cat ~/putback-dst/kept.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
                         "ls ~/.Trash | grep -c '^removed.txt' | tr -d ' '",
@@ -2272,6 +2292,11 @@ REPORTS = {
     # what the first one wrote, not by the file being missing.
     "sync-runputback": ("/Users/admin/putback.txt",
                         ["putBack=0", "refused=1", "already put back", "!ERROR"]),
+    # `putBack=0` with the reason named. The shell check underneath is the one that matters: a
+    # put-back that overwrote the intruder would satisfy "refused=1" just as well if the count were
+    # read off the wrong thing.
+    "sync-occupied-path": ("/Users/admin/putback-busy.txt",
+                             ["putBack=0", "refused=1", "at that path again", "!ERROR"]),
     # `syncEnabled=false` is the load-bearing line: the plan is visible and cannot be run. The
     # reason has to name which side to look at, because "something was wrong" does not tell anybody
     # which path field they mistyped. And the shell check afterwards is the real proof — the twelve
@@ -3414,7 +3439,16 @@ def boot(app: str, run: str):
                   # bad-root fixture and the filter fixture's node_modules stopped being created.
                   # Two previously passing scenarios failed for a line that had nothing to do with
                   # them.
-                  "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt && "
+                  # And a third pair, for the refusal whose failure would destroy something: the
+                  # original path is occupied again by the time the put-back is asked for. `mkfile`
+                  # is what puts it there — it writes from outside any panel operation, which is
+                  # exactly the case, something else having claimed the path meanwhile.
+                  "rm -rf ~/busy-src ~/busy-dst && mkdir -p ~/busy-src ~/busy-dst && "
+                  "printf 'same\\n' > ~/busy-src/stay.txt && "
+                  "printf 'same\\n' > ~/busy-dst/stay.txt && "
+                  "printf 'THE ORIGINAL\\n' > ~/busy-dst/taken.txt && "
+                  "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt "
+                  "~/.Trash/taken.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "
