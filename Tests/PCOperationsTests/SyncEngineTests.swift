@@ -268,6 +268,32 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertNotNil(item(items, "ordinary.txt"), "the honest entry beside it must still arrive")
     }
 
+    /// Dropping the entry is right; letting its folder look fully compared afterwards is not.
+    ///
+    /// The name is refused, so it never becomes something to copy — but the folder it was in was
+    /// then recorded as completely accounted for, and a mirror deletes a folder recursively. On a
+    /// server that is permanent: there is no Trash to fish it back out of. So the folder is marked
+    /// as holding something the comparison did not include, exactly as an excluded path marks its
+    /// ancestors.
+    func test_aFolderHoldingARefusedNameIsNotTreatedAsFullyCompared() async throws {
+        let hostile = HostileListingFS()
+        let outcome = await SyncScanner.scanDetailed(
+            left: .localDir(left.path),
+            right: .remote(RemoteSyncSource(fs: hostile, path: "/")),
+            mask: "*.*", withSubdirs: true, byContent: false)
+
+        // The premise: the honest neighbour arrived and the refused name did not.
+        XCTAssertNotNil(item(outcome.items, "sub/honest.txt"))
+        XCTAssertNil(item(outcome.items, "sub/.."))
+
+        XCTAssertEqual(item(outcome.items, "sub")?.hasHeldBackContent, true,
+                       "a folder whose listing had an entry dropped was offered for recursive deletion")
+        XCTAssertFalse(outcome.rightScope.provesAbsence(of: "sub/anything.txt"),
+                       "the walk claims to know what is not in a folder it could not fully read")
+        // And the rest of the side is unaffected, or one hostile name would disable the whole walk.
+        XCTAssertTrue(outcome.rightScope.provesAbsence(of: "not-there-at-all.txt"))
+    }
+
     // MARK: - What the scan says while it is running (F-192 follow-up)
 
     /// Collects the phases off whatever context the scan reports them from.
@@ -1633,6 +1659,13 @@ private final class HostileListingFS: VirtualFileSystem, @unchecked Sendable {
             // Only the root is listed; the "" entry would otherwise recurse forever.
             if dir.path == "/" {
                 continuation.yield(VFSEntryBatch(entries: [entry("ordinary.txt", .file),
+                                                           entry("..", .file),
+                                                           entry("sub", .directory)]))
+            }
+            // …and a bad name *inside a folder*, which is the only place the folder-marking below
+            // can be observed: an entry dropped at the root has no folder above it to account for.
+            if dir.path == "/sub" {
+                continuation.yield(VFSEntryBatch(entries: [entry("honest.txt", .file),
                                                            entry("..", .file)]))
             }
             continuation.finish()

@@ -388,7 +388,17 @@ public enum SyncScanner {
                         // relative key — and with it a local path on the other side — mean something
                         // else. See PathContainment.
                         w.visited += 1
-                        guard PathContainment.isSafeComponent(entry.name) else { continue }
+                        guard PathContainment.isSafeComponent(entry.name) else {
+                            // Dropped, and the folder it was in is no longer fully accounted for.
+                            // Skipping it silently left that folder looking completely compared, so
+                            // a mirror could delete the folder recursively and take the dropped
+                            // entry with it — permanently, since a server has no Trash. `byFilter:
+                            // false` marks the ancestors without putting an unusable key in
+                            // `filtered`, which is what a *filter* exclusion is for.
+                            let rel = prefix.isEmpty ? entry.name : "\(prefix)/\(entry.name)"
+                            w.heldBack(rel, byFilter: false)
+                            continue
+                        }
                         let rel = prefix.isEmpty ? entry.name : "\(prefix)/\(entry.name)"
                         let isDir = entry.kind == .directory || entry.kind == .appBundle
                                  || entry.kind == .package
