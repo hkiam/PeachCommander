@@ -194,14 +194,33 @@ SCENARIOS = [
     # `cmdwait` and not `cmd`: the latter fires the command and returns, so `undoop` raced the delete
     # and read an empty stack. It passed twice and failed once, which is worse than failing.
     #
+    # Used here and in three neighbours, each verified on its own — and **not** applied across the
+    # suite, which was tried and reverted. Twenty-four other scenarios read a result after a bare
+    # `cmd` and so race the same way, but converting them changes step *ordering*: with `cmd` the
+    # command ran after the following lines, with `cmdwait` before them, and a reload it triggers
+    # clears a mark those lines had just set. The full run said so — `quick-look` and `thumbnails`
+    # came back with the cursor on row 0 — which is what the run was for. Fixing them means giving
+    # each one an ordering that does not depend on the race, one at a time, not a pass with `sed`.
+    #
+    # The file name is this scenario's own (`undone.txt`, not `gone.txt`): the Trash is shared
+    # between scenarios and `sync-twoway` propagates a deletion of a `gone.txt` into it, so a
+    # `grep -c '^gone.txt'` counted somebody else's file. The same collision cost `sync-runputback`
+    # a rename earlier, and the lesson did not get applied here until a full run charged for it.
+    #
     # The confirmation is switched off for this scenario and back on at the end — the guest's config
     # persists between scenarios, so leaving it off would quietly change a later one.
     ("undo-delete", ["setbool Operation.ConfirmDelete|0", "wait 400",
                      "active left", "left /Users/admin/undo-del", "wait 1200",
-                     "markone gone.txt", "wait 400",
+                     "markone undone.txt", "wait 400",
                      "cmdwait cm_Delete", "wait 600",
-                     "undoop /Users/admin/undodelete.txt", "wait 1400",
-                     "setbool Operation.ConfirmDelete|1"], 12),
+                     # Restored *before* the report the harness waits on. After it, the app is killed
+                     # as soon as that file lands, so a trailing `setbool` raced the kill and lost:
+                     # `ConfirmDelete` stayed off for every later scenario, `menu-key-guard`'s F8
+                     # deleted `pc-demo/notes.txt` outright instead of asking, and nine scenarios
+                     # failed on a file that was no longer there. One leaked setting, nine failures —
+                     # and the harness's own note about settings persisting between scenarios said so.
+                     "setbool Operation.ConfirmDelete|1", "wait 500",
+                     "undoop /Users/admin/undodelete.txt"], 12),
     # The conflict dialog had no scripted route at all, so the two paths that decide whether an undo
     # is safe to offer were unreachable from here. "Append" merges the files and makes the naive
     # inverse destructive — it would put merged content at the source path and take the target with
@@ -234,8 +253,8 @@ SCENARIOS = [
                           "markone claimed.txt", "wait 400",
                           "cmdwait cm_Delete", "wait 600",
                           "mkfile /Users/admin/undo-busy/claimed.txt", "wait 700",
-                          "undoop /Users/admin/undobusy.txt", "wait 1400",
-                          "setbool Operation.ConfirmDelete|1"], 12),
+                          "setbool Operation.ConfirmDelete|1", "wait 500",
+                          "undoop /Users/admin/undobusy.txt"], 12),
     # What a run wrote down about itself. Three kinds of row on purpose — one file created, one
     # overwritten, one deleted — because a record is easy to make look right with one of them.
     #
@@ -2140,9 +2159,9 @@ EXTERNAL_CHECKS = {
     # The file is back with its own bytes, its neighbour was never touched, and the Trash no longer
     # holds it — moved, not copied. Without this a scenario that deleted nothing at all would look
     # identical: `gone.txt` present and the Trash empty of it.
-    "undo-delete": ("cat ~/undo-del/gone.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+    "undo-delete": ("cat ~/undo-del/undone.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
                     "cat ~/undo-del/keep.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
-                    "ls ~/.Trash | grep -c '^gone.txt' | tr -d ' '",
+                    "ls ~/.Trash | grep -c '^undone.txt' | tr -d ' '",
                     "THESE BYTES MUST COME BACK untouched 0"),
     # The intruder is untouched and the original is still in the Trash — not taken out for nothing.
     "sync-occupied-path": ("cat ~/busy-dst/taken.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
@@ -3523,7 +3542,7 @@ def boot(app: str, run: str):
                   # A tree for the delete-undo scenario. Distinctive bytes, because the claim is
                   # that *this* file comes back and not merely that something is at the path.
                   "rm -rf ~/undo-del && mkdir -p ~/undo-del && "
-                  "printf 'THESE BYTES MUST COME BACK\\n' > ~/undo-del/gone.txt && "
+                  "printf 'THESE BYTES MUST COME BACK\\n' > ~/undo-del/undone.txt && "
                   "printf 'untouched\\n' > ~/undo-del/keep.txt && "
                   # Two trees for the conflict-dialog scenarios: a file that collides with one of
                   # the same name on the other side. `AAA` onto `BBB`, so the merged result names
@@ -3551,7 +3570,7 @@ def boot(app: str, run: str):
                   "printf 'same\\n' > ~/busy-dst/stay.txt && "
                   "printf 'THE ORIGINAL\\n' > ~/busy-dst/taken.txt && "
                   "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt "
-                  "~/.Trash/taken.txt ~/.Trash/gone.txt ~/.Trash/claimed.txt && "
+                  "~/.Trash/taken.txt ~/.Trash/undone.txt ~/.Trash/claimed.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "
