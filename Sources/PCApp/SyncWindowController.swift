@@ -888,22 +888,19 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     /// Run the synchronization without the confirmation alert, which a script cannot answer.
+    ///
+    /// Through `currentPlan()`, like the button. It used to rebuild the same filter inline, which
+    /// meant a scripted run could stay green over a change to what the button actually carries out —
+    /// the scenarios exist to catch exactly that.
     func automationSynchronize() {
-        let actionable: [SyncResult] = results.enumerated().compactMap { i, r in
-            guard i < rowIncluded.count, rowIncluded[i], Self.isActionable(rowAction[i]) else { return nil }
-            return SyncResult(action: rowAction[i], item: r.item)
-        }
+        let actionable = currentPlan()
         guard !actionable.isEmpty else { return }
         runSynchronize(actionable)
     }
 
     /// What the confirmation would have said about deleting on a server.
     func automationDeleteWarning() -> String {
-        let actionable: [SyncResult] = results.enumerated().compactMap { i, r in
-            guard i < rowIncluded.count, rowIncluded[i], Self.isActionable(rowAction[i]) else { return nil }
-            return SyncResult(action: rowAction[i], item: r.item)
-        }
-        let warning = permanentDeleteWarning(for: actionable)
+        let warning = permanentDeleteWarning(for: currentPlan())
         return "warns=\(!warning.isEmpty)\ntext=\(warning.trimmingCharacters(in: .whitespacesAndNewlines))\n"
     }
     #endif
@@ -1198,7 +1195,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private func currentPlan() -> [SyncResult] {
         results.enumerated().compactMap { i, r in
             guard i < rowIncluded.count, rowIncluded[i], Self.isActionable(rowAction[i]) else { return nil }
-            return SyncResult(action: rowAction[i], item: r.item)
+            // The basis travels with the row. It used to be dropped here, which meant a carried-over
+            // deletion reached the executor indistinguishable from a mirror's — and `SyncModel`
+            // states the rule that would have forced: nothing may infer "propagated" from the action
+            // value. A row the user re-pointed keeps the basis it came from; where a decision
+            // *originated* is not changed by answering it differently.
+            return SyncResult(action: rowAction[i], item: r.item, basis: r.basis)
         }
     }
 

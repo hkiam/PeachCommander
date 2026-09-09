@@ -59,6 +59,9 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
     public var stopped: Bool
 
     public var planned: Int
+    /// How many rows copied. `created` and `overwritten` are a breakdown of this one and do
+    /// not have to add up to it: a copy into an archive or onto a server cannot say which it was.
+    public var copied: Int
     public var created: Int
     public var overwritten: Int
     public var deleted: Int
@@ -82,7 +85,7 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
                 leftRootInode: UInt64? = nil, rightRootInode: UInt64? = nil,
                 mode: String, fileMask: String = "", withSubdirs: Bool = true,
                 ignoreHidden: Bool = false, filterSummary: String? = nil, stopped: Bool = false,
-                planned: Int = 0, created: Int = 0, overwritten: Int = 0, deleted: Int = 0,
+                planned: Int = 0, copied: Int = 0, created: Int = 0, overwritten: Int = 0, deleted: Int = 0,
                 refused: Int = 0, failed: Int = 0, notAttempted: Int = 0, noOp: Int = 0,
                 itemsListed: Bool = true, undoUnavailable: String? = nil) {
         self.version = version
@@ -98,6 +101,7 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
         self.filterSummary = filterSummary
         self.stopped = stopped
         self.planned = planned
+        self.copied = copied
         self.created = created
         self.overwritten = overwritten
         self.deleted = deleted
@@ -127,6 +131,7 @@ public struct SyncRunHeader: Codable, Equatable, Sendable {
         filterSummary = try c.decodeIfPresent(String.self, forKey: .filterSummary)
         stopped = try c.decodeIfPresent(Bool.self, forKey: .stopped) ?? false
         planned = try c.decodeIfPresent(Int.self, forKey: .planned) ?? 0
+        copied = try c.decodeIfPresent(Int.self, forKey: .copied) ?? 0
         created = try c.decodeIfPresent(Int.self, forKey: .created) ?? 0
         overwritten = try c.decodeIfPresent(Int.self, forKey: .overwritten) ?? 0
         deleted = try c.decodeIfPresent(Int.self, forKey: .deleted) ?? 0
