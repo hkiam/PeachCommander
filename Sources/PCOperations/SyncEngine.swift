@@ -617,7 +617,10 @@ public enum SyncScanner {
         // is no prefix to strip. (The URL enumerator reports resolved paths like
         // /private/tmp/… that don't match a /tmp/… base, silently dropping everything
         // under a symlinked root.)
-        let keys: [URLResourceKey] = [.isDirectoryKey, .fileSizeKey, .contentModificationDateKey]
+        // `.isReadableKey` rides along on the `resourceValues` call this walk already makes per
+        // entry, so the subtree check below costs no extra syscall — see where it is used.
+        let keys: [URLResourceKey] = [.isDirectoryKey, .fileSizeKey, .contentModificationDateKey,
+                                      .isReadableKey]
         // Asked before the walk, because after it an empty `entries` has two very different
         // causes: a folder with nothing in it, and a folder this process cannot read. `nil` from
         // `contentsOfDirectory` is itself the second answer.
@@ -642,6 +645,27 @@ public enum SyncScanner {
             }
             // Top-level-only mode: include the directory itself but don't descend.
             if !withSubdirs && isDir { en.skipDescendants(); w.notDescended(rel) }
+            // A folder this process cannot list. `FileManager.enumerator(atPath:)` has no error
+            // handler: it yields the folder's own name and then simply nothing beneath it, with no
+            // error anywhere. Measured — a `chmod 000` directory holding a file comes back as three
+            // entries and the file is not one of them.
+            //
+            // Unmarked, that is the walk claiming to have looked inside. `provesAbsence` then
+            // answers "this path is gone" for everything under it, which in two-way mode is the
+            // permission to carry a deletion across for a file that is really there. The remote walk
+            // has always marked a failed listing this way; the local one did not, while
+            // `SyncSideScope`'s own header said `incompleteDirs` covered exactly this case.
+            //
+            // `!= true` and not `== false`, so "could not tell" counts as not looked inside: the
+            // cost of marking a folder needlessly is one deletion not carried across, and the cost
+            // of not marking one is a file deleted on both sides.
+            //
+            // That half is **not** pinned by a test, and saying so is better than implying it is:
+            // a `chmod 000` folder answers `isReadable == false` outright, so both spellings behave
+            // identically there — checked, the test passes with `== false` in place. The two differ
+            // only where `resourceValues` succeeds and leaves the key unset, which is a filesystem
+            // this suite has no way to arrange.
+            if isDir, vals?.isReadable != true { en.skipDescendants(); w.notDescended(rel) }
             // Ignore hidden items (any dotfile component), F-192.
             if ignoreHidden, isHiddenRel(rel) {
                 if isDir { en.skipDescendants() }

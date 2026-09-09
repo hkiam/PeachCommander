@@ -1466,6 +1466,63 @@ final class SyncEngineTests: XCTestCase {
                                                        right: .localDir(right.path)))
     }
 
+    // MARK: - A folder the walk could not look inside
+
+    /// A folder this process cannot list must not be reported as looked-inside.
+    ///
+    /// `FileManager.enumerator(atPath:)` has no error handler: for a `chmod 000` directory it yields
+    /// the folder's own name and then nothing beneath it, with no error anywhere. Measured. Unmarked,
+    /// that is the walk claiming to have seen the inside of it — and `SyncSideScope.provesAbsence`
+    /// then answers "this path is gone" for every file in there, which in two-way mode is the
+    /// permission to carry a deletion across for a file that is really present.
+    ///
+    /// The remote walk has always marked a failed listing. The local one did not, while
+    /// `SyncSideScope`'s own header said `incompleteDirs` covered exactly this case — a safeguard
+    /// asserted in a comment and absent from the code.
+    func test_aFolderThatCannotBeListedIsNotReportedAsLookedInside() async throws {
+        _ = try write("really here", to: left, "secret/present.txt")
+        try write("elsewhere", to: left, "plain.txt")
+        let locked = left.appendingPathComponent("secret")
+        try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                              ofItemAtPath: locked.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                        ofItemAtPath: locked.path) }
+
+        let outcome = await scanBothDirsDetailed()
+        // The premise: the walk really did not see the file. If it did, this test proves nothing.
+        XCTAssertNil(item(outcome.items, "secret/present.txt"),
+                     "the walk read the locked folder, so there is nothing here to guard against")
+        XCTAssertNotNil(item(outcome.items, "secret"), "the folder itself was not even recorded")
+
+        // The claim: the scope refuses to prove that anything inside it is gone.
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "secret/present.txt"),
+                       "the walk claims a file it never looked for is absent")
+        XCTAssertFalse(outcome.leftScope.provesAbsence(of: "secret/never-existed.txt"),
+                       "…for any path under it, not only the one that happens to be there")
+        // …and says nothing about the rest of the tree, or the guard would be useless.
+        XCTAssertTrue(outcome.leftScope.provesAbsence(of: "plain-gone.txt"))
+        XCTAssertTrue(outcome.leftScope.isReliable,
+                      "one unreadable folder is not a reason to distrust the whole walk")
+    }
+
+    /// And the folder is one a mirror must not delete either, for the reason that guard already
+    /// exists: deleting a folder is recursive and would take what the comparison never saw.
+    func test_aFolderThatCannotBeListedCountsAsHoldingHeldBackContent() async throws {
+        _ = try write("really here", to: right, "vault/present.txt")
+        let locked = right.appendingPathComponent("vault")
+        try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                              ofItemAtPath: locked.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                        ofItemAtPath: locked.path) }
+
+        let outcome = await scanBothDirsDetailed()
+        guard let folder = item(outcome.items, "vault") else {
+            return XCTFail("the folder itself was not recorded")
+        }
+        XCTAssertTrue(folder.hasHeldBackContent,
+                      "a folder nobody could look inside was offered for recursive deletion")
+    }
+
     // MARK: - Which overwrites cannot be taken back
 
     /// The companion warning, and the reason it exists: `deletesPermanently` only ever looked at
