@@ -1322,6 +1322,23 @@ extension MainWindowController {
                 if let win = automationSyncWindows.last, !arg.isEmpty {
                     try? win.automationRunItemsReport().write(toFile: arg, atomically: true, encoding: .utf8)
                 }
+            case "syncrunsopen":                           // syncrunsopen [<out>] (F-192)
+                if let win = automationSyncWindows.last {
+                    let report = win.automationOpenRunLog()
+                    if !arg.isEmpty {
+                        try? report.write(toFile: arg, atomically: true, encoding: .utf8)
+                    }
+                }
+            case "syncrunputback":                         // syncrunputback <out> (F-192)
+                // No confirmation: the alert is `runModal` and a script cannot answer it, which is
+                // the same reason `syncrun` exists.
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationPutBack().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncrunforgetall":                       // syncrunforgetall (F-192)
+                automationSyncWindows.last?.automationForgetAllRuns()
+            case "syncrunsclose":                          // syncrunsclose (F-192)
+                automationSyncWindows.last?.automationCloseRunLog()
             case "syncbasis":                              // syncbasis <out> (F-192): row + basis
                 if let win = automationSyncWindows.last, !arg.isEmpty {
                     try? win.automationBasisReport().write(toFile: arg, atomically: true, encoding: .utf8)

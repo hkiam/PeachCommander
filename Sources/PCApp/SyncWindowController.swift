@@ -73,6 +73,8 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// gets a record, because "what did that do?" is a question about the run that just happened and
     /// not about the two-way memory.
     private let runStore: SyncRunStore?
+    /// Held while it is open, so a scripted run can reach it. It owns itself otherwise.
+    private var runLogWindow: SyncRunLogWindowController?
     /// The record the last comparison read, kept so the run can write its successor.
     private var loadedState = SyncStateLoad.unknown(reason: "no comparison yet")
 
@@ -95,6 +97,8 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// housekeeping: a record that no longer fits its folders is the one input this design fears,
     /// and until now there was no way to look at it.
     private let memoryButton = NSButton()
+    /// Opens what was written down about the runs of this pair.
+    private let runsButton = NSButton()
     private let ignoreHiddenButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-192
     /// FAT/DST: absorb a whole-hour difference rather than calling it a change (F-192 follow-up).
     private let daylightButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -283,10 +287,17 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         memoryButton.target = self
         memoryButton.action = #selector(openMemorySheet)
         memoryButton.isEnabled = stateStore != nil
+        runsButton.title = String(localized: "Runs…")
+        runsButton.bezelStyle = .rounded
+        runsButton.target = self
+        runsButton.action = #selector(openRunLog)
+        runsButton.isEnabled = runStore != nil
+        runsButton.toolTip = String(localized: "What each synchronization did, and what of it can be put back")
         for b in [asymmetricButton, twoWayButton, daylightButton, caseButton] {
             opts2.addArrangedSubview(b)
         }
         opts2.addArrangedSubview(memoryButton)
+        opts2.addArrangedSubview(runsButton)
         // Exclusive, so the combination that means nothing cannot be produced here.
         asymmetricButton.target = self; asymmetricButton.action = #selector(modeChanged(_:))
         twoWayButton.target = self; twoWayButton.action = #selector(modeChanged(_:))
@@ -586,6 +597,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             : String(localized: "Memory…")
     }
 
+    /// Show what the runs of this pair did.
+    ///
+    /// Its own window, not a sheet: a sheet here would hold this window while somebody reads a
+    /// report about a run that is already over, and — measured for the error report — an open sheet
+    /// sits on the application's terminate path.
+    @objc private func openRunLog() {
+        guard let store = runStore else { return }
+        runLogWindow = SyncRunLogWindowController.present(
+            store: store, currentRunID: lastRunID,
+            onChange: { [weak self] in self?.compare() })
+    }
+
     @objc private func openMemorySheet() {
         guard let store = stateStore else { return }
         let sheet = SyncStateSheetController(store: store,
@@ -758,6 +781,25 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             if let reason = row.reason { out += "itemReason=\(reason)\n" }
         }
         return out
+    }
+
+    /// Open the run log the way a person does, and report what it shows.
+    func automationOpenRunLog() -> String {
+        openRunLog()
+        return runLogWindow?.automationReport() ?? "window=unavailable\n"
+    }
+
+    /// Put back what the shown run deleted, without the confirmation a script cannot answer.
+    func automationPutBack() -> String {
+        runLogWindow?.automationPutBack() ?? "putBack=nowindow\n"
+    }
+
+    func automationForgetAllRuns() { runLogWindow?.automationForgetAll() }
+
+    /// Close it. A scenario has to, or the window outlives the script.
+    func automationCloseRunLog() {
+        runLogWindow?.automationClose()
+        runLogWindow = nil
     }
 
     /// Set mirror mode before an automated compare. It is the only mode that deletes today, so it

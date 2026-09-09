@@ -1310,6 +1310,44 @@ final class SyncEngineTests: XCTestCase {
     }
 
 
+    /// The recorded path is the **real** one, even when the Trash already holds that name.
+    ///
+    /// This is the assertion that makes the field worth having rather than a convenience. macOS
+    /// renames on collision — a second `gone.txt` lands as `gone.txt 11-17-15-028.txt` — so anything
+    /// derived from `~/.Trash` plus the file's name points at *the earlier file*, and a put-back
+    /// built on that guess would restore the wrong bytes and then delete somebody else's file from
+    /// the Trash. Found by reading a screenshot of the real window, where exactly that rename showed
+    /// up because an earlier test run had left a `gone.txt` in there.
+    func test_theTrashedPathIsTheRealOneEvenWhenTheNameIsAlreadyTaken() async throws {
+        var recorded: [String] = []
+        for round in 0..<2 {
+            let payload = "round \(round) — these bytes must stay with this path"
+            try write(payload, to: right, "collides-in-trash.txt")
+            let items = await scanBothDirs()
+            let plan = item(items, "collides-in-trash.txt")
+                .map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
+            XCTAssertEqual(plan.count, 1, "the fixture produced no delete row in round \(round)")
+
+            let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                    right: .localDir(right.path), toTrash: true)
+            guard case .deleted(_, .some(let trashedPath)) = report.outcomes[0].status else {
+                return XCTFail("round \(round) did not say where the file went")
+            }
+            recorded.append(trashedPath)
+            XCTAssertEqual(try String(contentsOfFile: trashedPath, encoding: .utf8), payload,
+                           "round \(round): the recorded path does not hold that round's bytes")
+        }
+        defer { for path in recorded { try? FileManager.default.removeItem(atPath: path) } }
+
+        XCTAssertEqual(Set(recorded).count, 2,
+                       "both deletions reported the same path, so one of them is wrong")
+        // And the guess a caller would otherwise have made is wrong for at least one of them.
+        let guessed = (NSHomeDirectory() as NSString)
+            .appendingPathComponent(".Trash/collides-in-trash.txt")
+        XCTAssertNotEqual(recorded[1], guessed,
+                          "the second deletion happened to keep its name, so this run proves nothing")
+    }
+
     // MARK: - Which deletions cannot be taken back
 
     /// Deleting an entry from an archive is a whole-file rewrite: there is no Trash to fish it out
