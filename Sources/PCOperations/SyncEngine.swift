@@ -678,15 +678,47 @@ public enum SyncScanner {
 /// there is exactly one of these per row of the plan. `CopyEngine` is the precedent — it returns the
 /// paths it processed *and* keeps `skipped`, because `MoveEngine` once read `processed` alone as
 /// permission to delete the source tree.
+/// What a copy left at the destination.
+///
+/// Read back rather than assumed: `upload` sets the remote timestamp with `try?` because plain FTP
+/// has no way to, `copyLocalToLocal` sets none at all, and a caller that recorded the *source's*
+/// date as the destination's would be wrong about every file on such a side, on every run.
+///
+/// A struct rather than four labelled associated values, so that the reasons each field exists have
+/// one place to be written down instead of being spread over every producer.
+public struct CopiedDestination: Sendable, Equatable {
+    /// The destination's own size, or nil when it was not read — an archive destination, where
+    /// finding out would mean re-reading the rewritten zip, or a server the caller did not want a
+    /// round trip for.
+    public let size: Int64?
+    public let modified: Date?
+    /// Whether something was already there and had to make way.
+    ///
+    /// Answered by the write itself, never derived from the scan. The scan's view is minutes old by
+    /// the time a plan is carried out — the comparison, the confirmation dialog and the run all sit
+    /// in between — and four things make it wrong: a file that appeared at the destination in the
+    /// meantime, an unreadable subtree that the path enumerator reports as simply empty, two rows
+    /// for `Build/` and `build/` on a case-insensitive volume, and a hand-flipped folder row where
+    /// `createDirectory` succeeds on a directory that was there all along. Nil where the write
+    /// cannot answer it: an archive, a server, a directory.
+    public let existed: Bool?
+
+    public init(size: Int64? = nil, modified: Date? = nil, existed: Bool? = nil) {
+        self.size = size
+        self.modified = modified
+        self.existed = existed
+    }
+}
+
 public enum SyncStatus: Sendable, Equatable {
-    /// The bytes arrived. The destination's own size and timestamp when the caller asked for them to
-    /// be read back — nil when it did not, and nil for an archive destination, where finding out
-    /// would mean re-reading the rewritten zip. Read back rather than assumed: `upload` sets the
-    /// remote timestamp with `try?` because plain FTP has no way to, `copyLocalToLocal` never sets
-    /// one, and a caller that recorded the *source's* date as the destination's would be wrong about
-    /// every file on such a side, on every run.
-    case copied(destinationSize: Int64?, destinationModified: Date?)
-    case deleted(toTrash: Bool)
+    /// The bytes arrived, and what they landed on top of.
+    case copied(CopiedDestination)
+    /// Gone. `trashedPath` is where it went, which is the one thing that makes "it is in the Trash"
+    /// actionable rather than a sentence: `~/.Trash` is only right for the boot volume — a deletion
+    /// on another local volume lands in `/Volumes/X/.Trashes/<uid>` — so the only reliable answer is
+    /// the one the move itself reports. Nil for a permanent removal, for a server (which has no
+    /// Trash) and for an archive entry (whose removal is a rewrite of the whole file).
+    case deleted(toTrash: Bool, trashedPath: String?)
     /// Deliberately not done, and not a failure: the mirror's folder guard, a path that would be
     /// written outside its root, a pair of sides this engine does not support.
     case refused(reason: String)
@@ -822,11 +854,11 @@ public enum SyncExecutor {
     /// leaves a partial sync rather than a partial file.
     /// Carry out a classified plan and say, item by item, what became of each row.
     ///
-    /// - Parameter observeDestinations: Read each destination's own size and timestamp back after
-    ///   writing it. Off by default because on a server it is a round trip per file; on for a caller
-    ///   that has to *record* what the two sides now look like, which cannot be taken from the
-    ///   source — `upload` sets the remote timestamp with `try?` because plain FTP has no way to,
-    ///   and `copyLocalToLocal` sets none at all.
+    /// - Parameter observeDestinations: Pay for a round trip per file to read a **remote**
+    ///   destination back after writing it. A local destination is always read back — see
+    ///   `observed(_:existed:)` for why the two are not the same cost. On for a caller that has to
+    ///   *record* what a server now looks like, which cannot be taken from the source: `upload`
+    ///   sets the remote timestamp with `try?` because plain FTP has no way to.
     public static func execute(_ results: [SyncResult], left: SyncSide, right: SyncSide,
                                toTrash: Bool, observeDestinations: Bool = false,
                                progress: (@Sendable (Int, Int) -> Void)? = nil) async -> SyncRunReport {
@@ -906,7 +938,7 @@ public enum SyncExecutor {
             do {
                 if isDir {
                     try await r.fs.mkdir(r.vpath(rel))
-                    return .copied(destinationSize: nil, destinationModified: nil)
+                    return .copied(CopiedDestination())
                 }
                 // The parent must exist: a server does not create it on the way, and a sync of a new
                 // subtree copies the folder before its files only because `creates` is ordered that way.
@@ -934,9 +966,9 @@ public enum SyncExecutor {
                 // round trip per file. What it answers is the one thing a caller cannot work out —
                 // whether the timestamp above actually stuck.
                 if observeDestinations, let entry = try? await r.fs.stat(r.vpath(rel)) {
-                    return .copied(destinationSize: entry.size, destinationModified: entry.modified)
+                    return .copied(CopiedDestination(size: entry.size, modified: entry.modified))
                 }
-                return .copied(destinationSize: nil, destinationModified: nil)
+                return .copied(CopiedDestination())
             } catch { return .failed(message: error.localizedDescription) }
         }
 
@@ -969,16 +1001,23 @@ public enum SyncExecutor {
             } catch { return .failed(message: error.localizedDescription) }
         }
 
-        /// A local destination's own size and timestamp, when the caller asked to have them read
-        /// back. Not the source's: `copyLocalToLocal` sets no timestamp at all, so a caller that
-        /// recorded the source's date here would be wrong about every file it copied.
-        func observed(_ path: String) -> SyncStatus {
-            guard observeDestinations,
-                  let attrs = try? fm.attributesOfItem(atPath: path) else {
-                return .copied(destinationSize: nil, destinationModified: nil)
+        /// A local destination's own size and timestamp. Not the source's: `copyLocalToLocal` sets
+        /// no timestamp at all, so a caller that recorded the source's date here would be wrong
+        /// about every file it copied.
+        ///
+        /// Read unconditionally, unlike the server's `stat` above. `observeDestinations` used to
+        /// guard this too, and that conflated two costs that are nothing alike: this is
+        /// `attributesOfItem` on a file the process wrote milliseconds ago, so it comes out of the
+        /// page cache, while the remote one is a network round trip per file. Guarding both meant a
+        /// one-way or mirror run — the modes with the most copies — reported nothing about what it
+        /// left behind, so nothing downstream could check a destination against it.
+        func observed(_ path: String, existed: Bool? = nil) -> SyncStatus {
+            guard let attrs = try? fm.attributesOfItem(atPath: path) else {
+                return .copied(CopiedDestination(existed: existed))
             }
-            return .copied(destinationSize: (attrs[.size] as? NSNumber)?.int64Value,
-                           destinationModified: attrs[.modificationDate] as? Date)
+            return .copied(CopiedDestination(size: (attrs[.size] as? NSNumber)?.int64Value,
+                                             modified: attrs[.modificationDate] as? Date,
+                                             existed: existed))
         }
 
         /// `rel` under `root`, or nil if any component of it would leave `root`.
@@ -997,13 +1036,17 @@ public enum SyncExecutor {
             do {
                 if isDir {
                     try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
-                } else {
-                    try fm.createDirectory(atPath: (dst as NSString).deletingLastPathComponent,
-                                           withIntermediateDirectories: true)
-                    if fm.fileExists(atPath: dst) { try fm.removeItem(atPath: dst) }
-                    try fm.copyItem(atPath: src, toPath: dst)
+                    return observed(dst)
                 }
-                return observed(dst)
+                try fm.createDirectory(atPath: (dst as NSString).deletingLastPathComponent,
+                                       withIntermediateDirectories: true)
+                // The one place that knows whether this copy created or replaced something. It used
+                // to throw the answer away and leave callers to infer it from the scan, which is a
+                // claim about what was true minutes earlier — see `CopiedDestination.existed`.
+                let existed = fm.fileExists(atPath: dst)
+                if existed { try fm.removeItem(atPath: dst) }
+                try fm.copyItem(atPath: src, toPath: dst)
+                return observed(dst, existed: existed)
                 // The failure used to be reported as the source's `lastPathComponent`, so a failure
                 // at `a/b/x.txt` arrived as `x.txt` and could not be matched back to its row. The
                 // caller supplies the relative path now, in one place for every helper.
@@ -1088,14 +1131,22 @@ public enum SyncExecutor {
             if case .remote(let r) = side {
                 // `toTrash` cannot be honoured here: a server has no Trash, so this is permanent. The
                 // dialog says so before the actions run rather than reporting it afterwards.
-                do { try await r.fs.delete(r.vpath(rel)); return .deleted(toTrash: false) }
+                do { try await r.fs.delete(r.vpath(rel)); return .deleted(toTrash: false, trashedPath: nil) }
                 catch { return .failed(message: error.localizedDescription) }
             }
             let path = local(side, rel)
             do {
-                if toTrash { try fm.trashItem(at: URL(fileURLWithPath: path), resultingItemURL: nil) }
-                else { try fm.removeItem(atPath: path) }
-                return .deleted(toTrash: toTrash)
+                var landed: NSURL?
+                if toTrash {
+                    // The resulting URL, which every trash call in this project used to discard.
+                    // Without it "the file is in the Trash" is a sentence and not an answer: nobody
+                    // can say *which* of several hundred items there this run put down, and guessing
+                    // `~/.Trash` is wrong for anything that was not on the boot volume.
+                    try fm.trashItem(at: URL(fileURLWithPath: path), resultingItemURL: &landed)
+                } else {
+                    try fm.removeItem(atPath: path)
+                }
+                return .deleted(toTrash: toTrash, trashedPath: (landed as URL?)?.path)
                 // Reported as the relative path, not the leaf: a delete that failed at `a/b/x.txt`
                 // used to arrive as `x.txt`, which no caller could match back to its row.
             } catch { return .failed(message: error.localizedDescription) }
@@ -1148,7 +1199,7 @@ public enum SyncExecutor {
             do {
                 try ArchiveEditor.add(to: URL(fileURLWithPath: zipURL), entries: zipAdds)
                 resolve(staged, in: &outcomes, indexOf,
-                        to: .copied(destinationSize: nil, destinationModified: nil))
+                        to: .copied(CopiedDestination()))
             } catch {
                 // Every entry by name. This used to be one error with an empty path, however many
                 // files were in the batch.
@@ -1170,7 +1221,7 @@ public enum SyncExecutor {
         if !zipDeletes.isEmpty, let zipURL = (left.isZip ? left : right).path as String? {
             do {
                 try ArchiveEditor.remove(from: URL(fileURLWithPath: zipURL), paths: zipDeletes)
-                resolve(zipDeletes, in: &outcomes, indexOf, to: .deleted(toTrash: false))
+                resolve(zipDeletes, in: &outcomes, indexOf, to: .deleted(toTrash: false, trashedPath: nil))
             } catch {
                 resolve(zipDeletes, in: &outcomes, indexOf,
                         to: .failed(message: "archive delete failed: \(error.localizedDescription)"))

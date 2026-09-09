@@ -1318,10 +1318,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let summaries: [SyncItemOutcomeSummary] = report.outcomes.map { outcome in
             let change: SyncItemOutcomeSummary.Change
             switch (outcome.action, outcome.status) {
-            case (.copyToRight, .copied(let size, let modified)):
-                change = .copiedToRight(observedSide(size, modified, outcome, items))
-            case (.copyToLeft, .copied(let size, let modified)):
-                change = .copiedToLeft(observedSide(size, modified, outcome, items))
+            case (.copyToRight, .copied(let destination)):
+                change = .copiedToRight(observedSide(destination, outcome, items))
+            case (.copyToLeft, .copied(let destination)):
+                change = .copiedToLeft(observedSide(destination, outcome, items))
             case (.deleteRight, .deleted): change = .deletedRight
             case (.deleteLeft, .deleted): change = .deletedLeft
             default: change = .nothingHappened
@@ -1357,9 +1357,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
 
     /// The destination side as the run observed it, or nil when it did not — in which case
     /// `SyncState.next` deliberately does not record the copy, so the next run offers it again.
-    private func observedSide(_ size: Int64?, _ modified: Date?, _ outcome: SyncItemOutcome,
+    private func observedSide(_ destination: CopiedDestination, _ outcome: SyncItemOutcome,
                               _ items: [SyncItem]) -> SyncStateSide? {
-        guard let size, let modified else { return nil }
+        guard let size = destination.size, let modified = destination.modified else { return nil }
         let isDirectory = items.first { $0.relativePath == outcome.relativePath }?.isDirectory ?? false
         return SyncStateSide(size: size, modified: modified, isDirectory: isDirectory)
     }

@@ -1205,32 +1205,65 @@ final class SyncEngineTests: XCTestCase {
 
     /// What a caller recording the two sides needs, and cannot take from the source:
     /// `copyLocalToLocal` sets no timestamp at all, so the destination's date is the moment of the
-    /// write. Asked for explicitly, because on a server it is a round trip per file.
-    func test_theOutcomeCarriesTheDestinationsOwnSizeAndTimestampWhenAsked() async throws {
+    /// write.
+    ///
+    /// A **local** destination is read back whether or not anybody asked, and that is the claim this
+    /// test exists for. `observeDestinations` used to guard this read as well, which meant a one-way
+    /// or mirror run — the two modes that do the most copying — reported nothing at all about what
+    /// it had left behind. The two reads are not the same cost: this one is `attributesOfItem` on a
+    /// file written milliseconds earlier, out of the page cache; the flag now guards only the
+    /// server's `stat`, which is a network round trip per file.
+    func test_aLocalCopyCarriesTheDestinationsOwnSizeAndTimestampUnasked() async throws {
         try write("hello there", to: left, "a.txt")
         let items = await scanBothDirs()
         let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
 
-        let quiet = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                               right: .localDir(right.path), toTrash: false)
-        guard case .copied(let s1, let m1) = quiet.outcomes[0].status else {
-            return XCTFail("expected a copy, got \(quiet.outcomes[0].status)")
+        // No `observeDestinations`, and the destination is still described.
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        guard case .copied(let destination) = report.outcomes[0].status else {
+            return XCTFail("expected a copy, got \(report.outcomes[0].status)")
         }
-        XCTAssertNil(s1, "the destination was read back although nobody asked")
-        XCTAssertNil(m1)
-
-        try FileManager.default.removeItem(at: right.appendingPathComponent("a.txt"))
-        let observed = await SyncExecutor.execute(plan, left: .localDir(left.path),
-                                                  right: .localDir(right.path), toTrash: false,
-                                                  observeDestinations: true)
-        guard case .copied(let s2, let m2) = observed.outcomes[0].status else {
-            return XCTFail("expected a copy, got \(observed.outcomes[0].status)")
-        }
-        XCTAssertEqual(s2, 11)
+        XCTAssertEqual(destination.size, 11, "a local copy reported no size")
         let onDisk = try FileManager.default
             .attributesOfItem(atPath: right.appendingPathComponent("a.txt").path)[.modificationDate] as? Date
-        XCTAssertEqual(m2?.timeIntervalSince1970 ?? -1, onDisk?.timeIntervalSince1970 ?? -2,
+        XCTAssertEqual(destination.modified?.timeIntervalSince1970 ?? -1,
+                       onDisk?.timeIntervalSince1970 ?? -2,
                        accuracy: 0.001, "the timestamp reported was not the destination's own")
+    }
+
+    /// Created or replaced, answered by the write and not by the scan.
+    ///
+    /// The scan's view is the wrong source: minutes pass between it and the copy — the comparison,
+    /// the confirmation dialog, the run — and the item still says the destination was empty. Here
+    /// the file is put at the destination *after* the plan was classified, which is exactly that
+    /// race, and the outcome has to say it was replaced anyway.
+    func test_aCopySaysWhetherItReplacedSomething() async throws {
+        try write("new bytes", to: left, "a.txt")
+        let items = await scanBothDirs()          // right/a.txt does not exist yet
+        let plan = SyncModel.classify(items, options: SyncOptions()).filter { $0.action != .none }
+        XCTAssertNil(item(items, "a.txt")?.rightSize, "the fixture must classify a.txt as absent")
+
+        try write("older bytes", to: right, "a.txt")   // appears between the scan and the run
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        guard case .copied(let destination) = report.outcomes[0].status else {
+            return XCTFail("expected a copy, got \(report.outcomes[0].status)")
+        }
+        XCTAssertEqual(destination.existed, true,
+                       "the copy claimed to have created a file that was already there")
+
+        // And the other direction, so `existed` is not simply always true.
+        try write("only here", to: left, "b.txt")
+        let items2 = await scanBothDirs()
+        let plan2 = SyncModel.classify(items2, options: SyncOptions())
+            .filter { $0.action != .none && $0.item.relativePath == "b.txt" }
+        let report2 = await SyncExecutor.execute(plan2, left: .localDir(left.path),
+                                                 right: .localDir(right.path), toTrash: false)
+        guard case .copied(let fresh) = report2.outcomes[0].status else {
+            return XCTFail("expected a copy, got \(report2.outcomes[0].status)")
+        }
+        XCTAssertEqual(fresh.existed, false)
     }
 
     /// A delete says whether it went to the Trash, which is the difference between recoverable and
@@ -1241,7 +1274,39 @@ final class SyncEngineTests: XCTestCase {
         let plan = item(items, "c.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
         let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
                                                 right: .localDir(right.path), toTrash: false)
-        XCTAssertEqual(report.outcomes.map(\.status), [.deleted(toTrash: false)])
+        XCTAssertEqual(report.outcomes.map(\.status), [.deleted(toTrash: false, trashedPath: nil)])
+    }
+
+    /// And where it went, which is what makes "it is in the Trash" an answer instead of a sentence.
+    ///
+    /// Asserted by reading the bytes back out of the Trash, not by `fileExists`: a path that exists
+    /// proves only that *something* is there, and the whole use of this field is finding the file
+    /// this run put down among everything else in there.
+    ///
+    /// Really deletes into the user's Trash, because that is the thing being tested and a fake
+    /// cannot report a resulting URL. It cleans up after itself.
+    func test_aTrashedDeleteSaysWhereTheFileWent() async throws {
+        let payload = "the bytes that have to be findable again"
+        try write(payload, to: right, "trashed-by-test.txt")
+        let items = await scanBothDirs()
+        let plan = item(items, "trashed-by-test.txt")
+            .map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
+        XCTAssertEqual(plan.count, 1, "the fixture produced no delete row")
+
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: true)
+        guard case .deleted(let toTrash, let trashedPath) = report.outcomes[0].status else {
+            return XCTFail("expected a deletion, got \(report.outcomes[0].status)")
+        }
+        XCTAssertTrue(toTrash)
+        guard let trashedPath else {
+            return XCTFail("the deletion did not say where the file went")
+        }
+        defer { try? FileManager.default.removeItem(atPath: trashedPath) }
+        XCTAssertEqual(try String(contentsOfFile: trashedPath, encoding: .utf8), payload,
+                       "the path reported does not hold the file that was deleted")
+        XCTAssertFalse(FileManager.default
+            .fileExists(atPath: right.appendingPathComponent("trashed-by-test.txt").path))
     }
 
 
