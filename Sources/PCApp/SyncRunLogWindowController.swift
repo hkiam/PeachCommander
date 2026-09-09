@@ -509,7 +509,14 @@ extension SyncRunLogWindowController: NSTableViewDataSource, NSTableViewDelegate
         }
         if run.id == currentRunID { field.font = NSFont.boldSystemFont(ofSize: 13) }
         if !run.isReadable { field.textColor = .systemOrange }
-        if !header.itemsListed, column == "problems" { field.textColor = .systemOrange }
+        if let omitted = header.itemsOmittedReason {
+            // Marked *and* explained. The column was going orange with nothing to say why, which is
+            // a warning a person can only guess at — and the record's own comment claims the header
+            // "says so", so it has to be readable somewhere. The text is the store's own,
+            // unlocalised, as every other reason this window shows.
+            if column == "problems" { field.textColor = .systemOrange }
+            field.toolTip = omitted
+        }
     }
 
     private func fill(_ field: NSTextField, item: SyncRunItem, column: String?) {
