@@ -126,6 +126,23 @@ public struct CopyOptions: Sendable {
     /// Wildcard rename mask applied to each top-level item's name (F-080), e.g.
     /// "*.bak". Nil keeps the original names. See `CopyRenameMask`.
     public var renameMask: String? = nil
+    /// Told the CRC-32 of each source file the copy actually *read*, as it reads it.
+    ///
+    /// For verify-after-copy, which reads both sides again afterwards and throws both digests away —
+    /// so a verified 1 GB copy across volumes moves three gigabytes of reads where two would do. The
+    /// streaming loop already has every byte in a buffer, so hashing there is one pass over data
+    /// that is already in cache.
+    ///
+    /// Only the streaming path reports, and that is deliberate rather than an omission: on APFS a
+    /// same-volume copy is `clonefile`, which never reads the bytes at all. Giving up the clone in
+    /// order to obtain a digest would turn a free copy into a read plus a write and make the whole
+    /// operation *slower* — so a cloned file simply has no digest, and the verifier reads its source
+    /// as it always did.
+    ///
+    /// A closure rather than a value on the engine because the engine is built inside
+    /// `TransferQueue.execute` and only its `[String]` of processed paths comes back out; threading a
+    /// second return value through the queue would touch every operation to serve one of them.
+    public var digestSink: (@Sendable (_ sourcePath: String, _ crc32Hex: String) -> Void)? = nil
     public init() {}
 }
 

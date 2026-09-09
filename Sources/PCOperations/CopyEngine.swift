@@ -367,12 +367,18 @@ public final class CopyEngine {
         let buf = UnsafeMutableRawPointer.allocate(byteCount: options.chunkSize, alignment: 16)
         defer { buf.deallocate() }
 
+        // Only when somebody asked, and only here: the clone path above never reads the bytes, so
+        // there is nothing to hash there and forcing a read would make the copy slower than not
+        // hashing at all. See `CopyOptions.digestSink`.
+        let hasher = options.digestSink != nil ? ChecksumHasher(.crc32) : nil
         do {
             while true {
                 try await control.checkpoint()
                 let n = read(inFD, buf, options.chunkSize)
                 if n == 0 { break }
                 if n < 0 { throw OperationError.readFailed(src) }
+                // Hashed from the same buffer the write goes out of, so the bytes are read once.
+                hasher?.update(Data(bytes: buf, count: n))
                 var off = 0
                 while off < n {
                     let w = write(outFD, buf + off, n - off)
@@ -393,6 +399,10 @@ public final class CopyEngine {
         }
         close(outFD)
         try finish()
+        // After `finish`, so a copy that could not be completed reports no digest: a digest for a
+        // file that did not land is worse than none, because the verifier would compare the
+        // destination against it and call the mismatch a corruption.
+        if let hasher, let sink = options.digestSink { sink(src, hasher.finalizeHex()) }
     }
 
     // MARK: - Metadata / helpers

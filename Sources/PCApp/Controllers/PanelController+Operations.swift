@@ -26,10 +26,34 @@ extension PanelController {
 
     /// Copy options carrying an optional wildcard rename mask (F-080) and a
     /// per-operation "only newer" override (nil = keep the global default).
-    private func copyOptions(mask: String?, onlyNewer: Bool? = nil) -> CopyOptions {
+    /// Collects the CRC-32 of each source file a copy actually read, so verify-after-copy does not
+    /// have to read them all a second time.
+    ///
+    /// A class with a lock because the sink is called from the copy's own context and read from the
+    /// main actor afterwards. Only files the *streaming* path copied appear — a same-volume clone
+    /// never reads the bytes, so it has nothing to offer, and the verifier falls back to reading
+    /// those sources exactly as it always did.
+    private final class SourceDigests: @unchecked Sendable {
+        private let lock = NSLock()
+        private var digests: [String: String] = [:]
+
+        func record(_ path: String, _ hex: String) {
+            lock.lock(); digests[path] = hex; lock.unlock()
+        }
+
+        subscript(path: String) -> String? {
+            lock.lock(); defer { lock.unlock() }; return digests[path]
+        }
+
+        var count: Int { lock.lock(); defer { lock.unlock() }; return digests.count }
+    }
+
+    private func copyOptions(mask: String?, onlyNewer: Bool? = nil,
+                             digests: SourceDigests? = nil) -> CopyOptions {
         var o = defaultCopyOptions()
         o.renameMask = mask
         if let onlyNewer { o.onlyNewer = onlyNewer }
+        if let digests { o.digestSink = { path, hex in digests.record(path, hex) } }
         return o
     }
 
@@ -197,12 +221,19 @@ extension PanelController {
             startBackgroundCopy(items: items, dest: dest, mask: mask,
                                 onlyNewer: onlyNewer, queueForLater: queueForLater)
         } else {
-            await runTransfer(.copy(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
+            // Asked for only when it will be used: hashing is free in the streaming loop, but
+            // "free" is still a promise about a buffer, and a copy nobody is going to verify has no
+            // reason to make it.
+            let willVerify = await config.bool("Operation", "VerifyAfterCopy", default: false)
+            let digests = willVerify ? SourceDigests() : nil
+            await runTransfer(.copy(items: items, toDirectory: dest,
+                                    options: copyOptions(mask: mask, onlyNewer: onlyNewer,
+                                                         digests: digests)),
                               title: String(localized: "Copying"))
             registerUndo(label: String(localized: "Copy"), undoCopy: items, at: dest, mask: mask)
             await offerPrivilegedTransfer(items, destDir: dest, mask: mask, move: false)   // F-099
-            if await config.bool("Operation", "VerifyAfterCopy", default: false) {
-                await verifyCopiedItems(items, destDir: dest, mask: mask)
+            if willVerify {
+                await verifyCopiedItems(items, destDir: dest, mask: mask, sourceDigests: digests)
             }
         }
     }
@@ -380,7 +411,8 @@ extension PanelController {
 
     /// After a foreground copy, verify each copied file against its source by
     /// CRC-32 (F-090). Recurses into directories; reports missing/mismatched files.
-    private func verifyCopiedItems(_ items: [String], destDir: String, mask: String? = nil) async {
+    private func verifyCopiedItems(_ items: [String], destDir: String, mask: String? = nil,
+                                   sourceDigests: SourceDigests? = nil) async {
         let fm = FileManager.default
         func filePairs(src: String, dst: String) -> [(src: String, dst: String)] {
             var isDir: ObjCBool = false
@@ -413,7 +445,14 @@ extension PanelController {
                 mismatches.append((pair.dst as NSString).lastPathComponent + " (missing)")
                 continue
             }
-            let (a, b) = (await digest(pair.src), await digest(pair.dst))
+            // The source's digest, if the copy already worked it out while reading the bytes it was
+            // copying. Only the destination has to be read either way — that is the whole point of
+            // verifying, since it checks what actually landed — so this halves the reading for a
+            // copy that could not be cloned, which is exactly the copy people switch verification on
+            // for.
+            var a = sourceDigests?[pair.src]
+            if a == nil { a = await digest(pair.src) }
+            let b = await digest(pair.dst)
             verified += 1
             if a == nil || b == nil || a != b {
                 mismatches.append((pair.dst as NSString).lastPathComponent)

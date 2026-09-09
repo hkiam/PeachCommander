@@ -74,6 +74,15 @@ does not have.
 
 ### Changed
 
+- **Verify after copy reads half as much.** It read *both* files again once the copy was done and
+  threw both checksums away, so a verified copy across volumes moved three gigabytes of reads where
+  two would do. The copy now works out the source's checksum while it is reading the bytes it is
+  copying — one pass over data already in a buffer — and the verification only has to read what
+  actually landed, which is the point of verifying anyway. A same-volume copy on APFS is unaffected:
+  it is a clone, which never reads the bytes at all, and giving that up to obtain a checksum would
+  make the whole operation slower. Those sources are read a second time exactly as before.
+
+
 - **Base64 encoding and decoding stream.** They read the file whole, built a string a third larger
   again and copied that to bytes — several times the file's size in memory at once, one keystroke away
   in the panel. Measured on a 200 MB file: 744 MB resident before, 207 MB after, and about 207 MB of
