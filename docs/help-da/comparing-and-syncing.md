@@ -70,7 +70,9 @@ kan en sletning på den ene side føres over til den anden.
 - Kun to mapper på denne Mac, ikke en server og ikke et arkiv.
 
 **Der findes ingen fortryd for en sletning.** På denne Mac ryger filen i Papirkurven og kan hentes
-tilbage i Finder; det er hele nettet. Optegnelsen ligger sammen med indstillingerne: flytter du en af
+tilbage i Finder; det er hele nettet. **Hukommelse…** i vinduet viser hvert par, appen husker, fremhæver det du ser på, og lader dig glemme et hvilket som helst af dem — derefter opfører næste sammenligning af de mapper sig igen som en første. Intet glemmes nogensinde af sig selv: en mappe på en afmonteret disk er ikke væk, kun ikke tilsluttet.
+
+Optegnelsen ligger sammen med indstillingerne: flytter du en af
 mapperne, har parret ingen historie mere — og en kørsel uden historie sletter intet.
 
 ## Genveje

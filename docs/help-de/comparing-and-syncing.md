@@ -76,7 +76,9 @@ zuletzt übereinstimmten. Mit diesem Datensatz kann eine Löschung auf einer Sei
   das versucht.
 
 **Für eine Löschung gibt es kein Rückgängig.** Auf diesem Mac landet eine gelöschte Datei im
-Papierkorb und lässt sich im Finder zurückholen; das ist das ganze Netz. Der Datensatz liegt bei den
+Papierkorb und lässt sich im Finder zurückholen; das ist das ganze Netz. **Gedächtnis…** im Fenster listet jedes Paar auf, an das sich die App erinnert, hebt das gerade offene hervor und lässt jedes davon vergessen — danach verhält sich der nächste Vergleich dieser Ordner wieder wie ein erster. Von selbst wird nie etwas vergessen: ein Ordner auf einer ausgehängten Platte ist nicht weg, nur nicht angesteckt.
+
+Der Datensatz liegt bei den
 Einstellungen der App – verschiebt man einen der Ordner, hat das Paar keine Vorgeschichte mehr, und
 ein Lauf ohne Vorgeschichte löscht nichts. In diese Richtung soll dieser Ausfall auch zeigen.
 

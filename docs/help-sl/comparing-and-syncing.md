@@ -69,7 +69,9 @@ zapisom je mogoče izbris na eni strani prenesti na drugo.
 - Le dve mapi na tem Macu, ne strežnik in ne arhiv.
 
 **Izbrisa ni mogoče razveljaviti.** Na tem Macu gre datoteka v Koš in jo je mogoče vrniti v Finderju;
-to je vsa varnostna mreža. Zapis leži pri nastavitvah: če eno od map premaknete, par nima več
+to je vsa varnostna mreža. **Spomin…** v oknu našteje vsak par, ki si ga program zapomni, označi tistega, ki ga gledate, in omogoča pozabiti kateregakoli — nato se naslednja primerjava tistih map spet obnaša kot prva. Nič se nikoli ne pozabi samo: mapa na odklopljenem disku ni izgubljena, le ni priključena.
+
+Zapis leži pri nastavitvah: če eno od map premaknete, par nima več
 zgodovine — in zagon brez zgodovine ne izbriše ničesar.
 
 ## Bližnjice

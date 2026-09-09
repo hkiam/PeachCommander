@@ -70,7 +70,9 @@ záznamem lze smazání na jedné straně přenést na druhou.
 - Jen dvě složky na tomto Macu, ne server a ne archiv.
 
 **Smazání nelze vzít zpět.** Na tomto Macu jde soubor do Koše a lze jej vrátit ve Finderu; to je celá
-záchranná síť. Záznam leží u nastavení: přesunete-li jednu ze složek, pár už žádnou historii nemá — a
+záchranná síť. **Paměť…** v okně vypíše každý pár, který si aplikace pamatuje, zvýrazní ten otevřený a umožní kterýkoli z nich zapomenout — poté se další srovnání těch složek zachová opět jako první. Samo se nikdy nic nezapomene: složka na odpojeném disku není pryč, jen není zapojená.
+
+Záznam leží u nastavení: přesunete-li jednu ze složek, pár už žádnou historii nemá — a
 běh bez historie nic nemaže.
 
 ## Klávesové zkratky

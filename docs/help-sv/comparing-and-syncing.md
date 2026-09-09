@@ -70,7 +70,9 @@ borttagning på den ena sidan föras över till den andra.
 - Bara två mappar på den här Mac-datorn, inte en server och inte ett arkiv.
 
 **Det finns ingen ångra för en borttagning.** På den här datorn hamnar filen i Papperskorgen och kan
-hämtas tillbaka i Finder; det är hela skyddsnätet. Uppgiften ligger med inställningarna: flyttar du en
+hämtas tillbaka i Finder; det är hela skyddsnätet. **Minne…** i fönstret listar varje par appen minns, markerar det du tittar på och låter dig glömma vilket som helst av dem — därefter beter sig nästa jämförelse av de mapparna som en första igen. Ingenting glöms av sig själv: en mapp på en avmonterad disk är inte borta, bara inte ansluten.
+
+Uppgiften ligger med inställningarna: flyttar du en
 av mapparna har paret ingen historia längre — och en körning utan historia tar inte bort något.
 
 ## Kortkommandon

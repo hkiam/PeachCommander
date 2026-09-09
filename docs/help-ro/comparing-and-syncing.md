@@ -70,7 +70,9 @@ această înregistrare, o ștergere pe o parte poate fi dusă pe cealaltă.
 - Doar două dosare de pe acest Mac, nici server, nici arhivă.
 
 **O ștergere nu se poate anula.** Pe acest Mac fișierul ajunge în Coș și poate fi readus din Finder;
-asta este toată plasa. Înregistrarea stă cu setările: mutând unul dintre dosare, perechea nu mai are
+asta este toată plasa. **Memorie…** din fereastră enumeră fiecare pereche pe care aplicația o ține minte, o evidențiază pe cea deschisă și vă lasă să uitați oricare dintre ele — după care următoarea comparație a acelor dosare se comportă iar ca o primă. Nimic nu este uitat de la sine: un dosar de pe un disc demontat nu a dispărut, doar nu este conectat.
+
+Înregistrarea stă cu setările: mutând unul dintre dosare, perechea nu mai are
 istorie — iar o rulare fără istorie nu șterge nimic.
 
 ## Comenzi rapide

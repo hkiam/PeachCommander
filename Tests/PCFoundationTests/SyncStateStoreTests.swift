@@ -193,4 +193,78 @@ final class SyncStateStoreTests: XCTestCase {
                        .written(entries: 1))
         XCTAssertTrue(other.load(leftRoot: left, rightRoot: right).isKnown)
     }
+
+    // MARK: - Seeing what is kept, and getting rid of it
+
+    /// Records are listable so a person can see what the app remembers about which folders. Newest
+    /// run first, because the one you are wondering about is usually the one you just used.
+    func test_recordsAreListedNewestFirst() {
+        let older = SyncStateHeader(leftRoot: "/tmp/a", rightRoot: "/tmp/b",
+                                    runAt: t0, options: SyncOptions(), fileMask: "*.*",
+                                    withSubdirs: true, ignoreHidden: false)
+        let newer = SyncStateHeader(leftRoot: "/tmp/c", rightRoot: "/tmp/d",
+                                    runAt: t0.addingTimeInterval(3600), options: SyncOptions(),
+                                    fileMask: "*.*", withSubdirs: true, ignoreHidden: false)
+        store.save(header: older, entries: [entry("a.txt")])
+        store.save(header: newer, entries: [entry("b.txt"), entry("c.txt")])
+
+        let records = store.records()
+        XCTAssertEqual(records.count, 2)
+        XCTAssertEqual(records[0].header.leftRoot, "/tmp/c")
+        XCTAssertEqual(records[0].header.entryCount, 2)
+        XCTAssertEqual(records[1].header.leftRoot, "/tmp/a")
+        XCTAssertGreaterThan(records[0].byteSize, 0, "a list that cannot say what a record costs")
+    }
+
+    /// A record whose header will not parse is **listed** rather than skipped. It is the one a person
+    /// most needs to be able to see and get rid of — hiding it leaves them hunting for a file the app
+    /// knows about and will not name.
+    func test_anUnreadableRecordIsStillListed() throws {
+        try Data("{ not a header\n".utf8).write(to: fileURL())
+        let records = store.records()
+        XCTAssertEqual(records.count, 1)
+        XCTAssertEqual(records[0].header.version, 0, "an unreadable record was listed as readable")
+        XCTAssertEqual(records[0].key, SyncState.key(leftRoot: left, rightRoot: right))
+    }
+
+    /// And it can be got rid of by the key the listing gave, which is the whole point of listing it.
+    func test_anUnreadableRecordCanBeForgotten() throws {
+        try Data("{ not a header\n".utf8).write(to: fileURL())
+        let key = store.records()[0].key
+        XCTAssertTrue(store.forget(key: key))
+        XCTAssertEqual(store.records(), [])
+    }
+
+    func test_forgettingOneRecordLeavesTheOthers() {
+        store.save(header: header(), entries: [entry("a.txt")])
+        store.save(header: header(l: "/tmp/x", r: "/tmp/y"), entries: [entry("b.txt")])
+        let key = SyncState.key(leftRoot: left, rightRoot: right)
+        XCTAssertTrue(store.forget(key: key))
+        XCTAssertEqual(store.records().map(\.header.leftRoot), ["/tmp/x"])
+        XCTAssertFalse(store.load(leftRoot: left, rightRoot: right).isKnown)
+    }
+
+    func test_forgettingSomethingThatIsNotThereSaysSo() {
+        XCTAssertFalse(store.forget(key: "0123456789abcdef0123456789abcdef"))
+    }
+
+    /// Nothing is reaped on its own, and that is deliberate rather than unfinished. A folder on an
+    /// unmounted disk does not exist *right now*; throwing its history away is the one failure this
+    /// design cannot afford, because the pair would come back with no memory and quietly stop
+    /// carrying deletions across. This test is here so "nothing is reaped" stays a decision.
+    func test_aRecordForFoldersThatAreNotThereIsKept() {
+        store.save(header: header(l: "/Volumes/NotMounted/work", r: "/tmp/backup"),
+                   entries: [entry("a.txt")])
+        // Saving another pair is the moment a reaper would run, if there were one.
+        store.save(header: header(), entries: [entry("b.txt")])
+        XCTAssertEqual(store.records().count, 2,
+                       "a record was reaped for folders that merely are not mounted")
+    }
+
+    /// An empty directory lists nothing rather than failing, and so does one that is not there —
+    /// the store creates it on write, not on read.
+    func test_anEmptyOrMissingDirectoryListsNothing() {
+        XCTAssertEqual(store.records(), [])
+        XCTAssertEqual(SyncStateStore(directory: dir.appendingPathComponent("nope")).records(), [])
+    }
 }

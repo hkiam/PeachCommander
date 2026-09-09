@@ -70,7 +70,9 @@ Con ese registro, una eliminación en un lado puede trasladarse al otro.
 - Solo dos carpetas de este Mac, ni un servidor ni un archivo comprimido.
 
 **Una eliminación no se puede deshacer.** En este Mac el archivo va a la Papelera y puede recuperarse
-desde el Finder; eso es toda la red. El registro vive con los ajustes: mover una de las carpetas deja
+desde el Finder; eso es toda la red. **Memoria…** en la ventana enumera cada par que la aplicación recuerda, señala el que está viendo y permite olvidar cualquiera de ellos; después, la siguiente comparación de esas carpetas vuelve a comportarse como una primera. Nunca se olvida nada por su cuenta: una carpeta en un disco desmontado no ha desaparecido, solo está desconectada.
+
+El registro vive con los ajustes: mover una de las carpetas deja
 al par sin historial — y una ejecución sin historial no elimina nada.
 
 ## Atajos

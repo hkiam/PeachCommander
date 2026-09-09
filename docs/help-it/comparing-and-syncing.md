@@ -70,7 +70,9 @@ Con quel registro un’eliminazione su un lato può essere riportata sull’altr
 - Solo due cartelle di questo Mac, né un server né un archivio.
 
 **Un’eliminazione non si annulla.** Su questo Mac il file va nel Cestino e si può rimettere dal
-Finder; è tutta la rete di sicurezza. Il registro sta con le impostazioni: spostare una delle cartelle
+Finder; è tutta la rete di sicurezza. **Memoria…** nella finestra elenca ogni coppia che l’app ricorda, segnala quella che stai guardando e consente di dimenticarne una qualsiasi; dopo di che il confronto successivo di quelle cartelle si comporta di nuovo come un primo. Nulla viene mai dimenticato da sé: una cartella su un disco smontato non è sparita, è solo scollegata.
+
+Il registro sta con le impostazioni: spostare una delle cartelle
 lascia la coppia senza storia — e un’esecuzione senza storia non elimina nulla.
 
 ## Scorciatoie

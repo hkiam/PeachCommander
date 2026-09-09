@@ -75,6 +75,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Held while the sheet is up: an NSWindowController with no owner is released out from under
     /// its own window.
     private var filterSheet: SyncFilterSheetController?
+    private var memorySheet: SyncStateSheetController?
     private let subdirsButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let byContentButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let ignoreDateButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -82,6 +83,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Keep both sides the same, using a record of the last run (F-192). The only mode that can
     /// delete on *either* side, and the only one that needs to remember anything.
     private let twoWayButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    /// Opens the list of what the app remembers, and lets it be forgotten. Beside the two-way
+    /// switch because that is the mode the memory serves — and a safety valve rather than
+    /// housekeeping: a record that no longer fits its folders is the one input this design fears,
+    /// and until now there was no way to look at it.
+    private let memoryButton = NSButton()
     private let ignoreHiddenButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-192
     /// FAT/DST: absorb a whole-hour difference rather than calling it a change (F-192 follow-up).
     private let daylightButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -262,13 +268,19 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         opts2.orientation = .horizontal
         opts2.spacing = 14
         twoWayButton.title = String(localized: "Two-way (remember)")
+        memoryButton.bezelStyle = .rounded
+        memoryButton.target = self
+        memoryButton.action = #selector(openMemorySheet)
+        memoryButton.isEnabled = stateStore != nil
         for b in [asymmetricButton, twoWayButton, daylightButton, caseButton] {
             opts2.addArrangedSubview(b)
         }
+        opts2.addArrangedSubview(memoryButton)
         // Exclusive, so the combination that means nothing cannot be produced here.
         asymmetricButton.target = self; asymmetricButton.action = #selector(modeChanged(_:))
         twoWayButton.target = self; twoWayButton.action = #selector(modeChanged(_:))
         refreshTwoWayAvailability()
+        updateMemoryButton()
         opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "Tolerance:")))
         opts2.addArrangedSubview(toleranceField)
         opts2.addArrangedSubview(NSTextField(labelWithString: String(localized: "s")))
@@ -551,6 +563,39 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         return sheet
     }
 
+    /// The button's title carries whether this pair is remembered at all, so the answer is readable
+    /// without opening anything — the same reason the filter button carries its criteria count.
+    private func updateMemoryButton() {
+        guard stateStore != nil else {
+            memoryButton.title = String(localized: "Memory…")
+            return
+        }
+        memoryButton.title = loadedState.isKnown
+            ? "\(String(localized: "Memory")) (\(loadedState.entries.count))"
+            : String(localized: "Memory…")
+    }
+
+    @objc private func openMemorySheet() {
+        guard let store = stateStore else { return }
+        let sheet = SyncStateSheetController(store: store,
+                                             currentLeft: leftSide.path, currentRight: rightSide.path)
+        sheet.onChange = { [weak self] in
+            guard let self else { return }
+            // Forgetting a pair changes what the *next* comparison would decide, so the grid on
+            // screen — which was decided with the record that has just gone — is no longer something
+            // this window can stand behind.
+            self.loadedState = .unknown(reason: String(localized: "the record was forgotten"))
+            self.updateMemoryButton()
+            if !self.results.isEmpty {
+                self.lastRunSummary = String(localized: "Memory cleared — compare again.")
+                self.updateStatus()
+            }
+        }
+        sheet.onDismiss = { [weak self] in self?.memorySheet = nil }
+        memorySheet = sheet
+        sheet.present(over: window)
+    }
+
     @objc private func openFilterSheet() {
         makeFilterSheet().present(over: window)
     }
@@ -622,6 +667,22 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     #if DEBUG
     /// Set the "Ignore hidden" option before an automated compare (F-192).
     func automationSetIgnoreHidden(_ on: Bool) { ignoreHiddenButton.state = on ? .on : .off }
+
+    /// Open the memory list and leave it up, so it can be read and photographed.
+    func automationOpenMemory() { openMemorySheet() }
+
+    /// What the list says, without closing it.
+    func automationMemoryReport() -> String {
+        (memorySheet?.automationReport() ?? "ERROR: no memory sheet\n")
+            + "memorybutton=\(memoryButton.title)\n"
+    }
+
+    /// Forget everything the app remembers, the way a person would from the list.
+    func automationForgetAllMemory() {
+        memorySheet?.automationForgetAll()
+    }
+
+    func automationCloseMemory() { memorySheet?.automationClose() }
 
     /// Switch two-way mode on before an automated compare. Exclusive with mirror, as the window
     /// keeps them.
@@ -929,6 +990,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 self.setComparing(false)
                 self.heldBack = heldBack
                 (self.leftScope, self.rightScope) = scopes
+                self.updateMemoryButton()
                 self.results = classified.filter { $0.action != .none }
                 self.rowAction = self.results.map(\.action)
                 self.rowBasis = self.results.map(\.basis)

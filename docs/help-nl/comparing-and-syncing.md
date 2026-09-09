@@ -70,7 +70,9 @@ overeenkwamen. Met die gegevens kan een verwijdering aan de ene kant naar de and
 - Alleen twee mappen op deze Mac, geen server en geen archief.
 
 **Voor een verwijdering is er geen ongedaan maken.** Op deze Mac gaat het bestand naar de Prullenmand
-en kan het via de Finder terug; dat is het hele net. De gegevens staan bij de instellingen: verplaats
+en kan het via de Finder terug; dat is het hele net. **Geheugen…** in het venster toont elk paar dat de app onthoudt, markeert het paar dat je bekijkt en laat er elk van vergeten — daarna gedraagt de volgende vergelijking van die mappen zich weer als een eerste. Er wordt nooit iets vanzelf vergeten: een map op een ontkoppelde schijf is niet weg, alleen niet aangesloten.
+
+De gegevens staan bij de instellingen: verplaats
 je een van de mappen, dan heeft het paar geen geschiedenis meer — en zonder geschiedenis verwijdert
 een run niets.
 

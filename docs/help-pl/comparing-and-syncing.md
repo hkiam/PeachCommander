@@ -70,7 +70,9 @@ zapisem usunięcie po jednej stronie może zostać przeniesione na drugą.
 - Tylko dwa foldery na tym Macu, nie serwer i nie archiwum.
 
 **Usunięcia nie da się cofnąć.** Na tym Macu plik idzie do Kosza i można go przywrócić w Finderze; to
-cała siatka. Zapis leży przy ustawieniach: przeniesienie jednego z folderów pozbawia parę historii — a
+cała siatka. **Pamięć…** w oknie wypisuje każdą parę, którą program pamięta, wyróżnia tę otwartą i pozwala zapomnieć dowolną — po czym następne porównanie tych folderów zachowuje się znów jak pierwsze. Nic nie jest zapominane samo: folder na odłączonym dysku nie zniknął, tylko nie jest podłączony.
+
+Zapis leży przy ustawieniach: przeniesienie jednego z folderów pozbawia parę historii — a
 przebieg bez historii nic nie usuwa.
 
 ## Skróty

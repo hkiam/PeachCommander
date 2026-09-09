@@ -74,7 +74,9 @@ time they agreed. With that record a deletion on one side can be carried to the 
   it, a deletion on a server is permanent, and this mode is not the one to try that with.
 
 **There is no undo for a deletion.** On this Mac a deleted file goes to the Trash and can be put back
-from the Finder; that is the whole of the safety net. The record lives with the app's settings, so
+from the Finder; that is the whole of the safety net. **Memory…** in the window lists every pair the app remembers, marks the one you are looking at, and lets you forget any of them — after which the next comparison of those folders behaves like a first one again. Nothing is ever forgotten on its own: a folder on an unmounted disk is not gone, only unplugged.
+
+The record lives with the app's settings, so
 moving one of the folders means the pair has no history any more — and a run without a history
 deletes nothing, which is the way that failure should point.
 

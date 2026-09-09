@@ -181,6 +181,69 @@ public final class SyncStateStore {
         return .written(entries: entries.count)
     }
 
+    /// One stored record, enough to show it to somebody and to forget it again.
+    public struct Record: Sendable, Equatable {
+        /// The filename's stem — what `forget(key:)` takes.
+        public let key: String
+        public let header: SyncStateHeader
+        /// How many bytes the file takes, so a list can say what clearing one would free.
+        public let byteSize: Int
+
+        public init(key: String, header: SyncStateHeader, byteSize: Int) {
+            self.key = key
+            self.header = header
+            self.byteSize = byteSize
+        }
+    }
+
+    /// Every record kept here, newest run first.
+    ///
+    /// Only the header line of each file is read, so listing a hundred pairs does not mean reading a
+    /// hundred trees' worth of entries. A file whose header will not parse is *listed* with what can
+    /// be recovered rather than skipped: an unreadable record is the one a person most needs to be
+    /// able to see and get rid of, and hiding it would leave them looking for a file the app knows
+    /// about and will not name.
+    public func records() -> [Record] {
+        let fm = FileManager.default
+        guard let names = try? fm.contentsOfDirectory(atPath: directory.path) else { return [] }
+        var out: [Record] = []
+        for name in names where name.hasSuffix(".jsonl") {
+            let file = directory.appendingPathComponent(name)
+            let key = String(name.dropLast(".jsonl".count))
+            let size = (try? fm.attributesOfItem(atPath: file.path)[.size] as? NSNumber)??.intValue ?? 0
+            guard let data = try? Data(contentsOf: file),
+                  let headerLine = data.split(separator: UInt8(ascii: "\n"), maxSplits: 1,
+                                              omittingEmptySubsequences: true).first,
+                  let header = try? Self.decoder().decode(SyncStateHeader.self, from: Data(headerLine))
+            else {
+                // Version zero is how the rest of this file already recognises "not readable", so an
+                // unnameable record still gets a row rather than disappearing.
+                out.append(Record(key: key,
+                                  header: SyncStateHeader(version: 0, leftRoot: "", rightRoot: "",
+                                                          runAt: Date(timeIntervalSince1970: 0),
+                                                          options: SyncOptions(), fileMask: "",
+                                                          withSubdirs: true, ignoreHidden: false),
+                                  byteSize: size))
+                continue
+            }
+            out.append(Record(key: key, header: header, byteSize: size))
+        }
+        return out.sorted { $0.header.runAt > $1.header.runAt }
+    }
+
+    /// Forget one record by its key, as `records()` reports it.
+    ///
+    /// Deliberately the only way anything here is removed. Reaping by whether the two folders still
+    /// exist would be worse than useless: a folder on an unmounted disk does not exist *right now*,
+    /// and throwing its history away is the one failure this design cannot afford — the pair would
+    /// come back with no memory and quietly stop carrying deletions across. Reaping by age has the
+    /// same shape with a number attached. So records go when a person says so.
+    @discardableResult
+    public func forget(key: String) -> Bool {
+        let file = directory.appendingPathComponent(key + ".jsonl")
+        return (try? FileManager.default.removeItem(at: file)) != nil
+    }
+
     /// Forget this pair. Deleting the file rather than writing an empty one, so that "no record"
     /// stays one state instead of two — the same rule `RecentLines.clear` and `CommentStore` follow.
     @discardableResult

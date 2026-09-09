@@ -70,7 +70,9 @@ feljegyzéssel az egyik oldalon történt törlés átvihető a másikra.
 - Csak a Mac két mappája, sem kiszolgáló, sem archívum.
 
 **A törlés nem vonható vissza.** Ezen a Macen a fájl a Kukába kerül, és a Finderből visszatehető; ez a
-teljes védőháló. A feljegyzés a beállítások mellett lakik: ha az egyik mappát elmozgatja, a párnak
+teljes védőháló. Az **Emlékezet…** az ablakban felsorolja minden párt, amelyre az alkalmazás emlékszik, kiemeli a most nyitottat, és bármelyiket elfelejtheti — utána azoknak a mappáknak a következő összehasonlítása ismét úgy viselkedik, mint egy első. Magától soha nem felejt el semmit: egy leválasztott lemezen lévő mappa nem tűnt el, csak nincs csatlakoztatva.
+
+A feljegyzés a beállítások mellett lakik: ha az egyik mappát elmozgatja, a párnak
 nincs többé előzménye — és előzmény nélküli futás semmit nem töröl.
 
 ## Billentyűparancsok

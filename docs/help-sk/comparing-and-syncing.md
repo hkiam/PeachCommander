@@ -70,7 +70,9 @@ záznamom sa dá zmazanie na jednej strane preniesť na druhú.
 - Len dva priečinky na tomto Macu, nie server a nie archív.
 
 **Zmazanie sa nedá vrátiť.** Na tomto Macu ide súbor do Koša a dá sa vrátiť vo Finderi; to je celá
-záchranná sieť. Záznam leží pri nastaveniach: ak presuniete jeden z priečinkov, pár už žiadnu históriu
+záchranná sieť. **Pamäť…** v okne vypíše každý pár, ktorý si aplikácia pamätá, zvýrazní ten otvorený a umožní ktorýkoľvek z nich zapomenúť — potom sa ďalšie porovnanie tých priečinkov zachová opäť ako prvé. Samo sa nikdy nič nezapomene: priečinok na odpojenom disku nie je stratený, len nie je zapojený.
+
+Záznam leží pri nastaveniach: ak presuniete jeden z priečinkov, pár už žiadnu históriu
 nemá — a beh bez histórie nič nemaže.
 
 ## Skratky

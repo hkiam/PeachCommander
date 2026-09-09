@@ -70,7 +70,9 @@ Avec cet enregistrement, une suppression d’un côté peut être reportée de l
 - Deux dossiers de ce Mac uniquement, ni serveur ni archive.
 
 **Une suppression ne s’annule pas.** Sur ce Mac le fichier va à la Corbeille et peut être remis depuis
-le Finder ; c’est tout le filet. L’enregistrement vit avec les réglages : déplacer un des dossiers
+le Finder ; c’est tout le filet. **Mémoire…** dans la fenêtre liste chaque paire dont l’application se souvient, signale celle que vous regardez et permet d’en oublier n’importe laquelle — après quoi la comparaison suivante de ces dossiers se comporte de nouveau comme une première. Rien n’est jamais oublié tout seul : un dossier sur un disque démonté n’a pas disparu, il est seulement débranché.
+
+L’enregistrement vit avec les réglages : déplacer un des dossiers
 laisse la paire sans historique — et une exécution sans historique ne supprime rien.
 
 ## Raccourcis

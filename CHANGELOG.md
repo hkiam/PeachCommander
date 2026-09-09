@@ -16,6 +16,19 @@ does not have.
 
 ### Added
 
+- **You can see what the app remembers, and make it forget.** Two-way synchronisation works because
+  it keeps a record of what each pair of folders last agreed on, and a record that no longer fits its
+  folders is the one input that turns into deletions nobody asked for. There were already guards
+  against acting on a bad one; there was no way to *look* at it. **Memory…** in the synchronise window
+  lists every pair that is remembered, marks the one on screen, says when it was last run and how
+  many paths it covers, and lets any of them be forgotten — after which the next comparison of those
+  folders behaves like a first one: it copies differences, deletes nothing, and starts remembering
+  again. An unreadable record is listed rather than hidden, because it is the one somebody most needs
+  to be able to get rid of. Nothing is ever forgotten automatically: a folder on an unmounted disk is
+  not gone, only unplugged, and discarding its history would leave the pair silently unable to carry
+  a deletion across the next time it is connected.
+
+
 - **A third synchronisation mode that can carry a deletion across.** The two existing modes cannot
   tell one thing apart: a file present on one side only is either *new here* or *deleted there*, and
   those look identical. So the symmetric mode copies it — delete something on your laptop,

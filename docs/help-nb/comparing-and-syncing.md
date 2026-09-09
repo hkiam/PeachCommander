@@ -70,7 +70,9 @@ en sletting på den ene siden føres over til den andre.
 - Bare to mapper på denne Mac-en, ikke en tjener og ikke et arkiv.
 
 **Det finnes ingen angre for en sletting.** På denne Mac-en havner filen i Papirkurven og kan hentes
-tilbake i Finder; det er hele nettet. Oppføringen ligger sammen med innstillingene: flytter du en av
+tilbake i Finder; det er hele nettet. **Hukommelse…** i vinduet viser hvert par appen husker, framhever det du ser på, og lar deg glemme hvilket som helst av dem — deretter oppfører neste sammenligning av de mappene seg igjen som en første. Ingenting glemmes av seg selv: en mappe på en avmontert disk er ikke borte, bare ikke tilkoblet.
+
+Oppføringen ligger sammen med innstillingene: flytter du en av
 mappene, har paret ingen historie lenger — og en kjøring uten historie sletter ingenting.
 
 ## Snarveier

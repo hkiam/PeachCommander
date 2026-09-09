@@ -1288,6 +1288,25 @@ extension MainWindowController {
             case "synctwoway":                             // synctwoway <0|1> (F-192): remember mode
                 automationSyncWindows.last?.automationSetTwoWay(
                     arg.trimmingCharacters(in: .whitespaces) == "1")
+            case "syncmemory":                             // syncmemory [<out>] (F-192)
+                // Open the list of what the app remembers and report it. A wrong layout here logs
+                // nothing, so the sheet has to be reachable and photographable.
+                automationSyncWindows.last?.automationOpenMemory()
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                if !arg.isEmpty, let win = automationSyncWindows.last {
+                    try? win.automationMemoryReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncforget":                             // syncforget [<out>] (F-192)
+                if let win = automationSyncWindows.last {
+                    win.automationForgetAllMemory()
+                    try? await Task.sleep(nanoseconds: 200_000_000)
+                    if !arg.isEmpty {
+                        try? win.automationMemoryReport().write(toFile: arg, atomically: true,
+                                                                encoding: .utf8)
+                    }
+                }
+            case "syncmemoryclose":                        // syncmemoryclose (F-192)
+                automationSyncWindows.last?.automationCloseMemory()
             case "syncstate":                              // syncstate <out> (F-192)
                 if let win = automationSyncWindows.last, !arg.isEmpty {
                     try? win.automationStateReport().write(toFile: arg, atomically: true, encoding: .utf8)
