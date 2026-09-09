@@ -1,0 +1,2 @@
+cat ~/busy-dst/taken.txt 2>/dev/null | tr -d '\n'; echo -n ' '; ls ~/.Trash | grep -c '^taken.txt' | tr -d ' '
+auto 1

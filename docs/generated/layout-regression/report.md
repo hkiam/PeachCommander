@@ -17,6 +17,12 @@ only go down.
 | macro-manager | 0 | 0 | — | `macro-manager.png` |
 | side-panel-tabs | 0 | — | — | `side-panel-tabs.png` |
 | find-files | 0 | 0 | — | `find-files.png` |
+| sync-twoway | 0 | 0 | — | `sync-twoway.png` |
+| sync-badroot | 0 | 0 | — | `sync-badroot.png` |
+| sync-runlog | 0 | 0 | — | `sync-runlog.png` |
+| sync-runputback | 0 | 0 | — | `sync-runputback.png` |
+| sync-occupied-path | 0 | 0 | — | `sync-occupied-path.png` |
+| sync-filter | 0 | 0 | — | `sync-filter.png` |
 | settings | 0 | 0 | — | `settings.png` |
 | viewer-text | 0 | 0 | — | `viewer-text.png` |
 | menu-key-guard | 0 | — | — | `menu-key-guard.png` |
@@ -138,6 +144,7 @@ only go down.
 | viewer-crlf-lines | 0 | — | — | `viewer-crlf-lines.png` |
 | selection-restore | 0 | — | — | `selection-restore.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
+| panel-refresh-deferred | 0 | — | — | `panel-refresh-deferred.png` |
 | netpanel-watch | 0 | — | — | `netpanel-watch.png` |
 | keys-preview | 0 | 0 | — | `keys-preview.png` |
 | keys-tree | 0 | 0 | — | `keys-tree.png` |
