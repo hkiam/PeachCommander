@@ -199,6 +199,17 @@ SCENARIOS = [
                      "cmd cm_Delete", "wait 2200",
                      "undoop /Users/admin/undodelete.txt", "wait 1400",
                      "setbool Operation.ConfirmDelete|1"], 12),
+    # And the undo that must be refused. Every closure on that stack used to swallow its failures
+    # behind `try?` while the entry was popped either way, so a ⌘Z that could put nothing back looked
+    # exactly like one that had. `mkfile` claims the path between the delete and the undo, from
+    # outside any panel operation — which is the case.
+    ("undo-blocked", ["setbool Operation.ConfirmDelete|0", "wait 400",
+                          "active left", "left /Users/admin/undo-busy", "wait 1200",
+                          "markone claimed.txt", "wait 400",
+                          "cmd cm_Delete", "wait 2200",
+                          "mkfile /Users/admin/undo-busy/claimed.txt", "wait 700",
+                          "undoop /Users/admin/undobusy.txt", "wait 1400",
+                          "setbool Operation.ConfirmDelete|1"], 12),
     # What a run wrote down about itself. Three kinds of row on purpose — one file created, one
     # overwritten, one deleted — because a record is easy to make look right with one of them.
     #
@@ -2085,6 +2096,11 @@ EXTERNAL_CHECKS = {
     # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
     # trashed the wrong side, or copied instead of moved, passes every text assertion above and
     # fails here.
+    # The intruder keeps its own bytes and the deleted item is still in the Trash — not taken out for
+    # nothing. An undo that had overwritten the intruder satisfies the report above just as well.
+    "undo-blocked": ("cat ~/undo-busy/claimed.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                         "ls ~/.Trash | grep -c '^claimed.txt' | tr -d ' '",
+                         "auto 1"),
     # The file is back with its own bytes, its neighbour was never touched, and the Trash no longer
     # holds it — moved, not copied. Without this a scenario that deleted nothing at all would look
     # identical: `gone.txt` present and the Trash empty of it.
@@ -2301,6 +2317,11 @@ REPORTS = {
     # and its neighbour is really still there.
     "sync-twoway": ("/Users/admin/twoway.txt",
                     ["state=known", "mode=twoWay", "entries=1", "!ERROR"]),
+    # `problems=1` with the reason is the whole point: the undo ran, refused, and said so. `undo=`
+    # proves an entry existed, so this cannot pass on a delete that never happened.
+    "undo-blocked": ("/Users/admin/undobusy.txt",
+                         ["problems=1", "something is at that path again", "!undo=empty",
+                          "!problems=0", "!ERROR"]),
     # `remaining=0` only appears when an entry was on the stack and was carried out; `undo=empty`
     # is what a stack with nothing in it reports, so the negative pins the difference. The label
     # itself is localized and deliberately not asserted.
@@ -3464,6 +3485,10 @@ def boot(app: str, run: str):
                   "rm -rf ~/undo-del && mkdir -p ~/undo-del && "
                   "printf 'THESE BYTES MUST COME BACK\\n' > ~/undo-del/gone.txt && "
                   "printf 'untouched\\n' > ~/undo-del/keep.txt && "
+                  # A second tree, for the undo that must be *refused*: its path is claimed again
+                  # before ⌘Z is pressed. Its own tree because the first scenario consumes its file.
+                  "rm -rf ~/undo-busy && mkdir -p ~/undo-busy && "
+                  "printf 'ORIGINAL BYTES\\n' > ~/undo-busy/claimed.txt && "
                   # Exact names, no globs. The guest's shell is zsh, where a pattern that matches
                   # nothing is an *error* — so `rm -f ~/.Trash/deleted*.txt` failed on a clean VM and
                   # took the rest of this `&&` chain with it, which is how the twelve files of the
@@ -3479,7 +3504,7 @@ def boot(app: str, run: str):
                   "printf 'same\\n' > ~/busy-dst/stay.txt && "
                   "printf 'THE ORIGINAL\\n' > ~/busy-dst/taken.txt && "
                   "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt "
-                  "~/.Trash/taken.txt ~/.Trash/gone.txt && "
+                  "~/.Trash/taken.txt ~/.Trash/gone.txt ~/.Trash/claimed.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "

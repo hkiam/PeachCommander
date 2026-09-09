@@ -548,17 +548,33 @@ extension PanelController {
                             items: items, mask: mask))
         (view.window?.windowController as? MainWindowController)?.pushUndo(label) {
             let fm = FileManager.default
+            // Collected rather than swallowed: `try?` here meant a ⌘Z that could move nothing back
+            // looked exactly like one that had, and the entry was spent either way.
+            var problems: [UndoProblem] = []
             for item in items {
                 let leaf = (item as NSString).lastPathComponent
                 let name = mask.map { CopyRenameMask.apply($0, to: leaf) } ?? leaf   // F-080: undo the renamed file
                 let destPath = (dest as NSString).appendingPathComponent(name)
                 guard fm.fileExists(atPath: destPath) else { continue }
-                if isMove {
-                    try? fm.moveItem(atPath: destPath, toPath: item)   // move back to origin
-                } else {
-                    try? fm.trashItem(at: URL(fileURLWithPath: destPath), resultingItemURL: nil)
+                do {
+                    if isMove {
+                        // Never over the top of something else: the origin may be occupied again,
+                        // and forcing it would turn an undo into a deletion of its own.
+                        guard !fm.fileExists(atPath: item) else {
+                            problems.append(UndoProblem(path: item,
+                                                        reason: "something is at that path again"))
+                            continue
+                        }
+                        try fm.moveItem(atPath: destPath, toPath: item)   // move back to origin
+                    } else {
+                        try fm.trashItem(at: URL(fileURLWithPath: destPath), resultingItemURL: nil)
+                    }
+                } catch {
+                    problems.append(UndoProblem(path: isMove ? item : destPath,
+                                                reason: error.localizedDescription))
                 }
             }
+            return problems
         }
     }
 
@@ -575,26 +591,11 @@ extension PanelController {
     /// entry rather than a guess — the Trash renames on collision, so `~/.Trash` plus the file's own
     /// name points at an earlier file.
     private func registerUndoForTrash(_ moved: [TrashedItem]) {
-        let restorable = moved.filter(\.isRestorable)
-        guard !restorable.isEmpty else { return }
-        let pairs = restorable.compactMap { item -> (from: String, to: String)? in
-            guard let from = item.trashedPath else { return nil }
-            return (from, item.originalPath)
-        }
+        // Through the window's one builder, shared with the duplicate finder's delete. The guarded
+        // step under it is `TrashRestore`, shared further with the synchronisation run log's
+        // put-back and the assistant's undo of a `move_to_trash`.
         (view.window?.windowController as? MainWindowController)?
-            .pushUndo(String(localized: "Delete")) {
-            // Through the one guarded step, shared with the synchronisation run log's put-back and
-            // the assistant's undo of a `move_to_trash`: nothing is overwritten, and an item whose
-            // old path is occupied again is left alone rather than forced.
-            //
-            // Shallowest first, so a folder is back before anything that lived in it — the delete
-            // engine works deepest-first and `moveItem` does not create a parent.
-            for pair in pairs.sorted(by: {
-                $0.to.components(separatedBy: "/").count < $1.to.components(separatedBy: "/").count
-            }) {
-                _ = TrashRestore.restore(from: pair.from, to: pair.to)
-            }
-        }
+            .pushUndoForTrash(moved, label: String(localized: "Delete"))
     }
 
     func packSelection(to targetDir: String) async {
@@ -826,7 +827,9 @@ extension PanelController {
         let log = outcome.log.map { (from: $0.from, to: $0.to) }
         if !log.isEmpty {
             (view.window?.windowController as? MainWindowController)?
-                .pushUndo(String(localized: "Rename")) { [weak self] in self?.performUndo(log) }
+                .pushUndo(String(localized: "Rename")) { [weak self] in
+                    self?.performUndo(log) ?? []
+                }
             // Not repeatable from the palette — a rename has no meaning once the name has changed
             // (F-402) — but recorded in full, so it can become a macro step (F-478). The pairs are
             // leaf names; the directory is the entry's own.
@@ -928,12 +931,24 @@ extension PanelController {
 
     /// Reverse a rename log. Staged in two phases for the same reason the forward direction is: undoing
     /// a swap means putting `b` back while `a` still holds its place.
-    func performUndo(_ log: [(from: String, to: String)]) {
+    /// Replay a rename batch backwards, and say what it could not put back.
+    ///
+    /// `RenameBatchEngine.undo` answers the steps it managed; a name it could not restore — because
+    /// something is called that again — used to be dropped here, so ⌘Z after a rename reported
+    /// nothing whether it worked or not.
+    @discardableResult
+    func performUndo(_ log: [(from: String, to: String)]) -> [UndoProblem] {
         let steps = log.map { RenameBatchEngine.Step(from: $0.from, to: $0.to) }
-        for step in RenameBatchEngine.undo(steps) {
+        let done = RenameBatchEngine.undo(steps)
+        for step in done {
             // Undo has to take the comment back too, or it is left on a name that no longer exists.
             Task { await CommentStore.carryLocal(from: step.from, to: step.to, keepSource: false) }
         }
+        // What the engine did not report back, compared on the name it was meant to restore — the
+        // `from` of the original step.
+        let restored = Set(done.map(\.to))
+        return log.filter { !restored.contains($0.from) }
+            .map { UndoProblem(path: $0.from, reason: "the name could not be restored") }
     }
 
     func makeDirectory() async {
@@ -958,10 +973,20 @@ extension PanelController {
             if !created.isEmpty {
                 (view.window?.windowController as? MainWindowController)?
                     .pushUndo(String(localized: "New Folder")) {
-                        // Undo: trash the just-created folders (deepest first).
+                        // Undo: trash the just-created folders (deepest first). A folder the user
+                        // has since put something into cannot be trashed silently — `trashItem` on
+                        // a folder is recursive, so a failure here is exactly the case to report.
+                        var problems: [UndoProblem] = []
                         for p in created.sorted(by: { $0.count > $1.count }) {
-                            try? FileManager.default.trashItem(at: URL(fileURLWithPath: p), resultingItemURL: nil)
+                            do {
+                                try FileManager.default.trashItem(at: URL(fileURLWithPath: p),
+                                                                  resultingItemURL: nil)
+                            } catch {
+                                problems.append(UndoProblem(path: p,
+                                                            reason: error.localizedDescription))
+                            }
                         }
+                        return problems
                     }
                 // The operation, not the folders: a folder that was created but never opened has not
                 // been visited, and a history of places the user has not been is noise. The payload

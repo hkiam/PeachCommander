@@ -319,7 +319,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     // Undo stack for the last file operations (F-101). Each op carries a label +
     // an inverse action; removals on undo go to the Trash (never a hard delete).
-    private struct UndoableOp { let label: String; let run: () async -> Void }
+    private struct UndoableOp { let label: String; let run: () async -> [UndoProblem] }
     private var undoStack: [UndoableOp] = []
 
     /// The config as it was at launch, read synchronously so the first frame is already correct (F-360).
@@ -2902,11 +2902,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// Move duplicate files to the Trash and refresh the panels (used by the
     /// Duplicate Files window). Local files only.
+    ///
+    /// Undoable, and this is the delete where that matters most: a duplicate finder removes many
+    /// files in one press, and the mistake it invites is keeping the wrong side of a pair. The
+    /// mapping `recycle` reports was discarded here, so the app had just deleted a dozen files and
+    /// could not say which of several hundred items in the Trash they were.
     private func deleteDuplicatePaths(_ paths: [String]) async {
         let urls = paths.map { URL(fileURLWithPath: $0) }
-        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-            NSWorkspace.shared.recycle(urls) { _, _ in cont.resume() }
+        let landed: [URL: URL] = await withCheckedContinuation { cont in
+            NSWorkspace.shared.recycle(urls) { moved, _ in cont.resume(returning: moved ?? [:]) }
         }
+        // Only what actually moved: a path missing from the mapping was not trashed, and offering
+        // to put it back would be an offer that fails when pressed.
+        pushUndoForTrash(urls.compactMap { url in
+            landed[url].map { TrashedItem(originalPath: url.path, trashedPath: $0.path) }
+        }, label: String(localized: "Delete"))
         await leftPanelController?.reload()
         await rightPanelController?.reload()
     }
@@ -2915,7 +2925,43 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// Record an inverse for the last file operation. `run` should restore the
     /// prior state (move back / rename back / trash the just-created items).
-    func pushUndo(_ label: String, _ run: @escaping () async -> Void) {
+    /// Push an inverse for a just-completed trashing: put the items back where they came from.
+    ///
+    /// The one builder, because there are two callers — F8 in a panel and the duplicate finder —
+    /// and a second copy of "loop over the pairs and restore" over a step that can overwrite
+    /// somebody's file is how the copies drift apart. The guarded step itself is `TrashRestore`,
+    /// shared further with the synchronisation run log and the assistant's undo of a
+    /// `move_to_trash`.
+    ///
+    /// An item the system reported no destination for gets no entry rather than a guess: the Trash
+    /// renames on collision, so `~/.Trash` plus the file's own name points at an earlier file.
+    func pushUndoForTrash(_ moved: [TrashedItem], label: String) {
+        let pairs = moved.compactMap { item -> (from: String, to: String)? in
+            guard let from = item.trashedPath else { return nil }
+            return (from, item.originalPath)
+        }
+        guard !pairs.isEmpty else { return }
+        pushUndo(label) {
+            // Shallowest path first, so a folder is back before anything that lived in it: a delete
+            // works deepest-first and `moveItem` does not create a parent.
+            var problems: [UndoProblem] = []
+            for pair in pairs.sorted(by: {
+                $0.to.components(separatedBy: "/").count < $1.to.components(separatedBy: "/").count
+            }) {
+                // The outcome is kept, not discarded: a refusal here — the old path occupied again
+                // — is the one the user most needs to hear, and my first version of this dropped it
+                // so ⌘Z reported nothing and looked as though the file had come back.
+                switch TrashRestore.restore(from: pair.from, to: pair.to) {
+                case .restored: continue
+                case .refused(let reason), .failed(let reason):
+                    problems.append(UndoProblem(path: pair.to, reason: reason))
+                }
+            }
+            return problems
+        }
+    }
+
+    func pushUndo(_ label: String, _ run: @escaping () async -> [UndoProblem]) {
         undoStack.append(UndoableOp(label: label, run: run))
         if undoStack.count > 30 { undoStack.removeFirst(undoStack.count - 30) }
     }
@@ -2930,19 +2976,30 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// stored by every `pushUndo` and read nowhere until now.
     func automationUndo() async -> String {
         guard let op = undoStack.popLast() else { return "undo=empty\n" }
-        await op.run()
+        let problems = await op.run()
         await leftPanelController?.reload()
         await rightPanelController?.reload()
-        return "undo=\(op.label)\nremaining=\(undoStack.count)\n"
+        var out = "undo=\(op.label)\nremaining=\(undoStack.count)\nproblems=\(problems.count)\n"
+        for problem in problems { out += "problem=\(problem.path): \(problem.reason)\n" }
+        return out
     }
     #endif
 
     func undoLastOperation() {
         guard let op = undoStack.popLast() else { NSSound.beep(); return }
         Task { @MainActor in
-            await op.run()
+            let problems = await op.run()
             await leftPanelController?.reload()
             await rightPanelController?.reload()
+            // Said out loud. Every undo closure used to swallow its failures behind `try?`, and the
+            // entry was popped either way — so a ⌘Z that could not put a file back looked exactly
+            // like one that had. The window this uses is the one F-089 already opens for a partly
+            // failed operation.
+            guard !problems.isEmpty else { return }
+            ErrorLogWindowController.present(
+                over: window,
+                summary: String(localized: "\(problems.count) item(s) could not be undone."),
+                entries: problems.map { ($0.path, $0.reason) })
         }
     }
 

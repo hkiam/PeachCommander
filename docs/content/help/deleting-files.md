@@ -19,7 +19,7 @@ Items sent to the Trash stay there until you empty it, so you can restore them f
 
 **Edit ▸ Undo (⌘Z) takes the last deletion back.** The files move out of the Trash to exactly where
 they were, and nothing is written over: an item whose old path is occupied again is left alone rather
-than forced. Two things to know about it. It is the *last* operation only, and the list of them lives
+than forced — and you are told which ones and why, rather than left to assume it worked. Two things to know about it. It is the *last* operation only, and the list of them lives
 in memory — quit the app, or do thirty more file operations, and the offer is gone while the files are
 still in the Trash, where the Finder can put them back. And a permanent deletion (Shift+F8) has no
 undo at all; there is nothing to put back.
