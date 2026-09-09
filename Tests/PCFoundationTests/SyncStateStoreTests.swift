@@ -90,6 +90,23 @@ final class SyncStateStoreTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: fileURL()), before)
     }
 
+    /// An **empty** file is not an unreadable record — it is indistinguishable from no record at
+    /// all, and the rule at the top of the store says "exists, is not empty, and does not parse".
+    ///
+    /// Pinned because the refusal above is one predicate away from swallowing this case: asking
+    /// only whether the file exists turns a zero-byte leftover into a pair that can never be
+    /// recorded again, and nothing else here would have noticed.
+    func test_anEmptyFileIsWrittenOverRatherThanRefused() throws {
+        try Data().write(to: fileURL())
+
+        let outcome = store.save(header: header(), entries: [entry("a.txt")])
+        guard case .written(let count) = outcome else {
+            return XCTFail("an empty file was treated as a record worth protecting: \(outcome)")
+        }
+        XCTAssertEqual(count, 1)
+        XCTAssertTrue(store.load(leftRoot: left, rightRoot: right).isKnown)
+    }
+
     /// One bad line costs one path. That is the whole reason for JSONL over a single object: a
     /// path with no record cannot be deleted, so the failure direction is right by construction.
     func test_oneCorruptLineCostsOnlyItsOwnPath() throws {

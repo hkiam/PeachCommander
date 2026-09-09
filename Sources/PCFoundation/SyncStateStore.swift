@@ -145,11 +145,15 @@ public final class SyncStateStore {
                             + "(\(Self.maximumEntries)) — deletions will not be propagated for this pair")
         }
         let file = url(leftRoot: header.leftRoot, rightRoot: header.rightRoot)
-        if let existing = try? Data(contentsOf: file), !existing.isEmpty {
-            let firstLine = existing.split(separator: UInt8(ascii: "\n"),
-                                           maxSplits: 1, omittingEmptySubsequences: true).first
-            let readable = firstLine.flatMap {
-                try? Self.decoder().decode(SyncStateHeader.self, from: Data($0))
+        // "Exists and is not empty", as the rule at the top of this file states it: an empty file is
+        // indistinguishable from no record and may be written over.
+        let existingSize = (try? FileManager.default
+            .attributesOfItem(atPath: file.path)[.size] as? NSNumber)??.intValue ?? 0
+        if existingSize > 0 {
+            // The header only, for `records()`' reason: this ran on every save and read the entire
+            // previous record — a file the size of the tree — to look at its first line.
+            let readable = FileHeadLine.read(at: file).flatMap {
+                try? Self.decoder().decode(SyncStateHeader.self, from: $0)
             }
             guard readable?.version ?? 0 > 0 else {
                 return .refused(reason: "the existing record for these two folders could not be "
@@ -198,11 +202,14 @@ public final class SyncStateStore {
 
     /// Every record kept here, newest run first.
     ///
-    /// Only the header line of each file is read, so listing a hundred pairs does not mean reading a
-    /// hundred trees' worth of entries. A file whose header will not parse is *listed* with what can
-    /// be recovered rather than skipped: an unreadable record is the one a person most needs to be
-    /// able to see and get rid of, and hiding it would leave them looking for a file the app knows
-    /// about and will not name.
+    /// Only the header line of each file is read, through `FileHeadLine` — which is what makes that
+    /// sentence true. It used to say the same thing over a `Data(contentsOf:)`, so listing a hundred
+    /// pairs *did* mean reading a hundred trees' worth of entries, one two-hundred-thousand-path
+    /// record at a time, to fill in four columns.
+    ///
+    /// A file whose header will not parse is *listed* with what can be recovered rather than
+    /// skipped: an unreadable record is the one a person most needs to be able to see and get rid
+    /// of, and hiding it would leave them looking for a file the app knows about and will not name.
     public func records() -> [Record] {
         let fm = FileManager.default
         guard let names = try? fm.contentsOfDirectory(atPath: directory.path) else { return [] }
@@ -211,10 +218,8 @@ public final class SyncStateStore {
             let file = directory.appendingPathComponent(name)
             let key = String(name.dropLast(".jsonl".count))
             let size = (try? fm.attributesOfItem(atPath: file.path)[.size] as? NSNumber)??.intValue ?? 0
-            guard let data = try? Data(contentsOf: file),
-                  let headerLine = data.split(separator: UInt8(ascii: "\n"), maxSplits: 1,
-                                              omittingEmptySubsequences: true).first,
-                  let header = try? Self.decoder().decode(SyncStateHeader.self, from: Data(headerLine))
+            guard let headerLine = FileHeadLine.read(at: file),
+                  let header = try? Self.decoder().decode(SyncStateHeader.self, from: headerLine)
             else {
                 // Version zero is how the rest of this file already recognises "not readable", so an
                 // unnameable record still gets a row rather than disappearing.
