@@ -197,6 +197,13 @@ SCENARIOS = [
     # ran into.
     ("sync-runlog", ["active left", "left /Users/admin/runlog-src", "wait 1200",
                      "syncopen /Users/admin/runlog-src|/Users/admin/runlog-dst", "wait 1200",
+                     # Emptied first, so `runs=1` is a statement about this run. The store lives in
+                     # the config root, which persists between scenarios — measured: in the full
+                     # suite this said `runs=3`, having collected the two-way scenario's records,
+                     # while the targeted run of the same scenario said 1 and looked correct.
+                     "syncrunsopen", "wait 700",
+                     "syncrunforgetall", "wait 400",
+                     "syncrunsclose", "wait 400",
                      "syncasym 1", "wait 400",
                      "synccompare", "wait 1600",
                      "syncselect all|/Users/admin/runlogsel.txt", "wait 500",
@@ -207,8 +214,11 @@ SCENARIOS = [
     # And putting one back. The claim is not that a button was pressed but that the file is at its
     # old path with its old bytes, that its neighbour was not touched, and that a second attempt is
     # refused — which only the record can answer.
-    ("sync-runputback", ["active left", "left /Users/admin/runlog-src", "wait 1200",
-                         "syncopen /Users/admin/runlog-src|/Users/admin/runlog-dst", "wait 1200",
+    ("sync-runputback", ["active left", "left /Users/admin/putback-src", "wait 1200",
+                         "syncopen /Users/admin/putback-src|/Users/admin/putback-dst", "wait 1200",
+                         "syncrunsopen", "wait 700",
+                         "syncrunforgetall", "wait 400",
+                         "syncrunsclose", "wait 400",
                          "syncasym 1", "wait 400",
                          "synccompare", "wait 1600",
                          "syncselect all|/Users/admin/pbsel.txt", "wait 500",
@@ -2045,10 +2055,10 @@ EXTERNAL_CHECKS = {
     # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
     # trashed the wrong side, or copied instead of moved, passes every text assertion above and
     # fails here.
-    "sync-runputback": ("cat ~/runlog-dst/deleted.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
-                        "cat ~/runlog-dst/created.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
-                        "ls ~/.Trash | grep -c '^deleted.txt' | tr -d ' '",
-                        "THE BYTES THAT MUST COME BACK fresh 0"),
+    "sync-runputback": ("cat ~/putback-dst/removed.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                        "cat ~/putback-dst/kept.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                        "ls ~/.Trash | grep -c '^removed.txt' | tr -d ' '",
+                        "THE BYTES THAT MUST COME BACK kept 0"),
     "sync-badroot": ("ls ~/guard-dst | wc -l | tr -d ' '", "12"),
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
                   "one two"),
@@ -3374,7 +3384,7 @@ def boot(app: str, run: str):
                   "rm -rf ~/twoway-a ~/twoway-b && mkdir -p ~/twoway-a ~/twoway-b && "
                   "printf 'keep\\n' > ~/twoway-a/keep.txt && "
                   "printf 'gone\\n' > ~/twoway-a/gone.txt && "
-                  # A pair for the run-log scenarios. Its own tree, for the same reason the filter
+                  # A pair for the run-log scenario. Its own tree, for the same reason the filter
                   # pair has one: `sync-sftp` asserts `compared=3` over `sync-src`. It holds one
                   # file to create, one to overwrite, and one only on the right for the mirror to
                   # delete — so the record has all three kinds of row in it and none of the
@@ -3389,9 +3399,22 @@ def boot(app: str, run: str):
                   "sleep 1 && "
                   "printf 'a longer new version of this file\\n' > ~/runlog-src/overwritten.txt && "
                   "printf 'THE BYTES THAT MUST COME BACK\\n' > ~/runlog-dst/deleted.txt && "
-                  # The Trash has to be empty of that name, or macOS renames on collision and the
-                  # shell check below would look at a leftover from a previous run.
-                  "rm -f ~/.Trash/deleted.txt ~/.Trash/deleted*.txt ~/.Trash/overwritten*.txt && "
+                  # And a *separate* pair for the put-back scenario, with its own file names.
+                  # Sharing the tree above cost two things at once: the run-log scenario runs first
+                  # and *consumes* it — the file to delete is already gone by the time the second
+                  # scenario compares — and two deletions of the same name in one VM session collide
+                  # in the Trash, where macOS renames the second, so a check by name looks at the
+                  # first scenario's leftover.
+                  "rm -rf ~/putback-src ~/putback-dst && mkdir -p ~/putback-src ~/putback-dst && "
+                  "printf 'kept\\n' > ~/putback-src/kept.txt && "
+                  "printf 'THE BYTES THAT MUST COME BACK\\n' > ~/putback-dst/removed.txt && "
+                  # Exact names, no globs. The guest's shell is zsh, where a pattern that matches
+                  # nothing is an *error* — so `rm -f ~/.Trash/deleted*.txt` failed on a clean VM and
+                  # took the rest of this `&&` chain with it, which is how the twelve files of the
+                  # bad-root fixture and the filter fixture's node_modules stopped being created.
+                  # Two previously passing scenarios failed for a line that had nothing to do with
+                  # them.
+                  "rm -f ~/.Trash/deleted.txt ~/.Trash/overwritten.txt ~/.Trash/removed.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "
