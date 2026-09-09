@@ -379,4 +379,22 @@ final class SyncTwoWayTests: XCTestCase {
         XCTAssertEqual(options.mode, .symmetric)
         XCTAssertEqual(options.toleranceSeconds, 5)
     }
+
+    /// Does two-way honour "By content"? A pair the record calls unchanged on *both* sides, whose
+    /// bytes the scan found to differ — same size, same timestamp. That is the case "By content"
+    /// exists for, and the two-way table decides from size and time alone, so the question is
+    /// whether the answer still gets through.
+    func test_twoWayStillHonoursAByteComparison() {
+        let item = SyncItem(relativePath: "same.txt", isDirectory: false,
+                            leftSize: 4, leftModified: t0, rightSize: 4, rightModified: t0,
+                            contentEqual: false)
+        var o = options
+        o.byContent = true
+        let record = ["same.txt": SyncStateEntry(relativePath: "same.txt",
+                                                  left: side(4), right: side(4))]
+        let result = SyncTwoWay.classify([item], options: o, state: record, stateKnown: true,
+                                         leftScope: reliable(), rightScope: reliable())[0]
+        XCTAssertNotEqual(result.action, .equal,
+                          "a byte difference was lost because size and time matched the record")
+    }
 }
