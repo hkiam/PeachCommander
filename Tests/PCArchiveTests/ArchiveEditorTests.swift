@@ -27,6 +27,97 @@ final class ArchiveEditorTests: XCTestCase {
         return url
     }
 
+    /// A file that cannot be read must stop the add, not become a zero-byte entry.
+    ///
+    /// This is the shape that made it dangerous: F6 into an archive trashes the sources once the add
+    /// reports success, so an entry with the right name, the right path and no content was written
+    /// while the original went to the Trash — and the operation was reported as done. Both callers
+    /// treat a throw as "nothing was added", so throwing is what stops that.
+    func test_anUnreadableFileStopsTheAddInsteadOfWritingAnEmptyEntry() throws {
+        let url = try makeZip([(path: "keep.txt", data: Data("keep".utf8))])
+        let locked = tempDir.appendingPathComponent("secret.txt")
+        try Data("real content".utf8).write(to: locked)
+        try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                              ofItemAtPath: locked.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o644],
+                                                       ofItemAtPath: locked.path) }
+        // The premise: this process really cannot read it. Without that the test proves nothing.
+        XCTAssertNil(try? Data(contentsOf: locked), "the fixture is readable, so nothing is tested")
+
+        do {
+            try ArchiveEditor.add(to: url, entries: [(localPath: locked.path, arcPath: "secret.txt")])
+            XCTFail("an unreadable file was added as an empty entry")
+        } catch let error as ArchiveEditError {
+            XCTAssertEqual(error, .unreadableItems([locked.path]))
+        }
+        // And the archive is untouched: the throw happens before the rewrite, so nothing is left
+        // half-updated over it.
+        XCTAssertEqual(try paths(url), ["keep.txt"])
+    }
+
+    /// A folder that cannot be listed must stop the add too — it became an *empty folder* entry,
+    /// which is a claim about what is inside it.
+    func test_anUnlistableFolderStopsTheAddInsteadOfClaimingItIsEmpty() throws {
+        let url = try makeZip([(path: "keep.txt", data: Data("keep".utf8))])
+        let folder = tempDir.appendingPathComponent("vault", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try Data("hidden".utf8).write(to: folder.appendingPathComponent("inside.txt"))
+        try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                              ofItemAtPath: folder.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                       ofItemAtPath: folder.path) }
+        XCTAssertNil(try? FileManager.default.contentsOfDirectory(atPath: folder.path),
+                     "the fixture is listable, so nothing is tested")
+
+        do {
+            try ArchiveEditor.add(to: url, entries: [(localPath: folder.path, arcPath: "vault")])
+            XCTFail("an unlistable folder was added as an empty folder")
+        } catch let error as ArchiveEditError {
+            XCTAssertEqual(error, .unreadableItems([folder.path]))
+        }
+        XCTAssertEqual(try paths(url), ["keep.txt"])
+    }
+
+    /// A folder that really is empty still becomes an empty folder entry. The control: without it
+    /// the guard above could have been "no children means refuse", which would stop an ordinary
+    /// empty directory from being archived at all.
+    func test_aGenuinelyEmptyFolderIsStillAdded() throws {
+        let url = try makeZip([(path: "keep.txt", data: Data("keep".utf8))])
+        let folder = tempDir.appendingPathComponent("hollow", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+
+        try ArchiveEditor.add(to: url, entries: [(localPath: folder.path, arcPath: "hollow")])
+        XCTAssertEqual(try paths(url), ["keep.txt", "hollow/"])
+    }
+
+    /// Every unreadable path at once, not the first one — `RenameBatchPlan`'s rule: a dialog per
+    /// unreadable file in a folder of them is a dialog nobody reads to the end.
+    func test_everyUnreadablePathIsNamed() throws {
+        let url = try makeZip([(path: "keep.txt", data: Data("keep".utf8))])
+        var locked: [String] = []
+        for name in ["one.txt", "two.txt"] {
+            let file = tempDir.appendingPathComponent(name)
+            try Data("x".utf8).write(to: file)
+            try FileManager.default.setAttributes([.posixPermissions: 0o000],
+                                                  ofItemAtPath: file.path)
+            locked.append(file.path)
+        }
+        defer {
+            for p in locked {
+                try? FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: p)
+            }
+        }
+
+        do {
+            try ArchiveEditor.add(to: url, entries: locked.map {
+                (localPath: $0, arcPath: ($0 as NSString).lastPathComponent)
+            })
+            XCTFail("unreadable files were added")
+        } catch let error as ArchiveEditError {
+            XCTAssertEqual(error, .unreadableItems(locked))
+        }
+    }
+
     private func paths(_ url: URL) throws -> Set<String> {
         let reader = try XCTUnwrap(ZipReader(fileURL: url))
         return Set(reader.entries.map(\.path))

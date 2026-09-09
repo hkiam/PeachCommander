@@ -150,8 +150,17 @@ public enum PackEngine {
             var isDir: ObjCBool = false
             guard fm.fileExists(atPath: path, isDirectory: &isDir) else { return }
             if isDir.boolValue {
+                // A folder that cannot be listed is *not* an empty folder, and the difference is
+                // invisible after this point: `?? []` wrote an entry claiming it was empty and
+                // reported the pack as complete. Somebody archiving a tree as a backup got a
+                // silently incomplete one — the same shape as the unreadable file below, which has
+                // always thrown, and as the sync walk's unreadable subtree.
+                guard let children = try? fm.contentsOfDirectory(atPath: path) else {
+                    throw PackError.failed(
+                        "could not read \((path as NSString).lastPathComponent)", -1)
+                }
                 files.append((relative(path) + "/", Data()))
-                for child in (try? fm.contentsOfDirectory(atPath: path))?.sorted() ?? [] {
+                for child in children.sorted() {
                     try add((path as NSString).appendingPathComponent(child))
                 }
                 return

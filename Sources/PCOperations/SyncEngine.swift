@@ -1210,7 +1210,20 @@ public enum SyncExecutor {
             switch side {
             case .localDir:
                 guard let names = try? fm.contentsOfDirectory(atPath: local(side, rel)) else {
-                    return false      // unreadable: the delete below will fail on its own terms
+                    // A folder that cannot be listed may hold anything, so it is treated as holding
+                    // something. This used to answer `false` under the claim that "the delete below
+                    // will fail on its own terms" — measured, and true for `chmod 000` but **false**
+                    // for a folder that grants write and execute without read: there
+                    // `contentsOfDirectory` fails while `trashItem` succeeds, because moving a
+                    // directory is a rename in its *parent*. `0733` is the permission macOS gives
+                    // its own `~/Public/Drop Box`, so this is a configuration people have, not a
+                    // contrived one — and the mirror removed such a folder with contents nobody had
+                    // looked at.
+                    //
+                    // The plan already refuses this since the walk marks an unlistable folder as
+                    // incomplete; this is the last line of defence, and a last line that answers
+                    // "nothing in here" is not one.
+                    return true
                 }
                 return !names.isEmpty
             case .remote(let r):
@@ -1219,7 +1232,12 @@ public enum SyncExecutor {
                         if batch.entries.contains(where: { $0.name != "." && $0.name != ".." }) { return true }
                     }
                     return false
-                } catch { return false }
+                } catch {
+                    // Same direction, and it matters more here: a server has no Trash, so a folder
+                    // removed with contents nobody could list is gone. The cost of the other answer
+                    // is one refused deletion, which the user can repeat.
+                    return true
+                }
             case .zip:
                 let prefix = rel + "/"
                 return zipEntryKeys.contains { $0.hasPrefix(prefix) && !deletedKeys.contains($0) }

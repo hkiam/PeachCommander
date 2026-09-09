@@ -1585,6 +1585,47 @@ final class SyncEngineTests: XCTestCase {
                       "a folder nobody could look inside was offered for recursive deletion")
     }
 
+    /// The executor's last line of defence, for the folder whose listing fails but whose deletion
+    /// would not.
+    ///
+    /// `0311` — write and execute without read — is the case: `contentsOfDirectory` fails while
+    /// `trashItem` succeeds, because moving a directory is a rename in its *parent*. Measured both
+    /// ways, and `0733` is the permission macOS gives its own `~/Public/Drop Box`, so this is a
+    /// configuration people have. The guard answered "holds nothing uncompared" under the claim
+    /// that the delete would fail anyway — true for `chmod 000`, false here.
+    ///
+    /// The row is built by hand rather than classified: the scan now marks such a folder as
+    /// incomplete and the *plan* refuses it, which is the outer defence. This asserts the inner one
+    /// still holds when a plan reaches it anyway — a folder whose permissions changed between the
+    /// scan and the run.
+    func test_aFolderThatCannotBeListedButCouldBeTrashedIsRefused() async throws {
+        let vault = right.appendingPathComponent("dropbox", isDirectory: true)
+        try FileManager.default.createDirectory(at: vault, withIntermediateDirectories: true)
+        try Data("THE FILE NOBODY LOOKED AT".utf8)
+            .write(to: vault.appendingPathComponent("inside.txt"))
+        try FileManager.default.setAttributes([.posixPermissions: 0o311],
+                                              ofItemAtPath: vault.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755],
+                                                        ofItemAtPath: vault.path) }
+        // The premise, both halves. Without them this test proves nothing at all.
+        XCTAssertNil(try? FileManager.default.contentsOfDirectory(atPath: vault.path),
+                     "the fixture is listable, so the guard is not being exercised")
+
+        let row = SyncItem(relativePath: "dropbox", isDirectory: true,
+                           leftSize: nil, leftModified: nil,
+                           rightSize: 0, rightModified: Date())
+        let report = await SyncExecutor.execute([SyncResult(action: .deleteRight, item: row)],
+                                                left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: true)
+        guard case .refused(let reason) = report.outcomes.first?.status else {
+            return XCTFail("a folder nobody could look inside was deleted: "
+                           + "\(String(describing: report.outcomes.first))")
+        }
+        XCTAssertTrue(reason.contains("did not include"), reason)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: vault.path),
+                      "the folder is gone, with contents nobody compared")
+    }
+
     // MARK: - Which overwrites cannot be taken back
 
     /// The companion warning, and the reason it exists: `deletesPermanently` only ever looked at

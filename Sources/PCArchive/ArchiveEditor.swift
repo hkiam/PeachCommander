@@ -11,6 +11,18 @@ import Foundation
 
 public enum ArchiveEditError: Error, Equatable {
     case unreadableArchive
+    /// Items that were to go into the archive and could not be read.
+    ///
+    /// Thrown rather than substituted, which is what used to happen: a file the process cannot read
+    /// became a **zero-byte entry** with the right name and the right path, and a directory it
+    /// cannot list became an *empty folder* entry. Both silently. The consequence is worst on the
+    /// path that made it reachable — F6 into an archive trashes the sources once the add reports
+    /// success, so the content was gone from the archive and the original was in the Trash, with
+    /// the operation reported as done.
+    ///
+    /// Every path at once, `RenameBatchPlan`'s rule: one dialog per unreadable file in a folder of
+    /// them is a dialog nobody reads to the end.
+    case unreadableItems([String])
 }
 
 public enum ArchiveEditor {
@@ -58,21 +70,39 @@ public enum ArchiveEditor {
         guard let reader = ZipReader(fileURL: url) else { throw ArchiveEditError.unreadableArchive }
         let fm = FileManager.default
         var newFiles: [(path: String, data: Data)] = []
+        // Collected, then thrown once. Substituting an empty value here — which is what `?? []` and
+        // `?? Data()` did — writes an entry that claims the folder was empty or the file had no
+        // content, and says nothing.
+        var unreadable: [String] = []
         func walk(local: String, arc: String) {
             let arcN = normalize(arc)
             guard !arcN.isEmpty else { return }
             var isDir: ObjCBool = false
             guard fm.fileExists(atPath: local, isDirectory: &isDir) else { return }
             if isDir.boolValue {
-                let kids = (try? fm.contentsOfDirectory(atPath: local))?.sorted() ?? []
+                guard let kids = try? fm.contentsOfDirectory(atPath: local) else {
+                    // Distinguishable from a folder that really is empty only here: after this
+                    // point both are "no children", and the archive would have said empty.
+                    unreadable.append(local)
+                    return
+                }
                 if kids.isEmpty { newFiles.append((arcN + "/", Data())) }
-                for k in kids { walk(local: (local as NSString).appendingPathComponent(k), arc: arcN + "/" + k) }
+                for k in kids.sorted() {
+                    walk(local: (local as NSString).appendingPathComponent(k), arc: arcN + "/" + k)
+                }
             } else {
-                let data = (try? Data(contentsOf: URL(fileURLWithPath: local))) ?? Data()
+                guard let data = try? Data(contentsOf: URL(fileURLWithPath: local)) else {
+                    unreadable.append(local)
+                    return
+                }
                 newFiles.append((arcN, data))
             }
         }
         for e in entries { walk(local: e.localPath, arc: e.arcPath) }
+        // Before the rewrite, so an archive is never left half-updated over this: both callers
+        // treat a throw as "nothing was added" — the panel then does not trash the sources, and the
+        // sync executor names every staged entry as failed.
+        guard unreadable.isEmpty else { throw ArchiveEditError.unreadableItems(unreadable) }
 
         // Keep existing entries not overwritten by an added path.
         let added = Set(newFiles.map { normalize($0.path) })
