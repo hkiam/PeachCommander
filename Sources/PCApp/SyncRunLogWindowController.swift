@@ -47,6 +47,10 @@ final class SyncRunLogWindowController: NSWindowController {
     /// owns a window that does not belong to the run that opened it.
     private static var presented: [SyncRunLogWindowController] = []
 
+    /// The marker written into a row once it has been acted on. One definition, unlocalised — a
+    /// record's fields are not user-facing text.
+    static let alreadyPutBack = "already put back"
+
     init(store: SyncRunStore, currentRunID: String?) {
         self.store = store
         self.currentRunID = currentRunID
@@ -228,7 +232,11 @@ final class SyncRunLogWindowController: NSWindowController {
         revealButton.isEnabled = chosenItems.contains {
             $0.destinationSide == "localDir" && $0.destinationPath != nil
         }
-        trashButton.isEnabled = chosenItems.contains { $0.trashedPath != nil }
+        // Also for an overwrite: the version it displaced is in the Trash too, and pointing at it
+        // is the whole of what can be offered there — taking the copy back is not.
+        trashButton.isEnabled = chosenItems.contains {
+            $0.trashedPath != nil || $0.replacedTrashedPath != nil
+        }
         // The offer is computed rather than guessed at, and *before* the confirmation — a gated
         // action that cannot work must not be proposed (`DefaultAutomationCore.refusalBeforeAsking`).
         putBackButton.isEnabled = !plannedPutBack().steps.isEmpty
@@ -272,8 +280,12 @@ final class SyncRunLogWindowController: NSWindowController {
 
         let report = SyncUndoRunner.run(steps, header: run.header)
         if !report.putBack.isEmpty {
+            // Not localised, deliberately. This goes *into the record*, which outlives the build
+            // and is read by other versions — the same rule `SyncRunItem.reason` states for itself.
+            // The refusal reasons the plan produces are plain English too, as `SyncPlanGuard`'s are,
+            // and are shown as they come.
             store.markUndone(id: run.id, paths: Set(report.putBack),
-                             reason: String(localized: "already put back"))
+                             reason: SyncRunLogWindowController.alreadyPutBack)
         }
         resultLabel.stringValue =
             String(localized: "Put back \(report.putBack.count) of \(steps.count) item(s).")
@@ -299,7 +311,7 @@ final class SyncRunLogWindowController: NSWindowController {
     /// "it is in the Trash" is a sentence, this is an answer.
     @objc private func showInTrash() {
         let urls = selectedItems.compactMap { item -> URL? in
-            guard let path = item.trashedPath,
+            guard let path = item.trashedPath ?? item.replacedTrashedPath,
                   FileManager.default.fileExists(atPath: path) else { return nil }
             return URL(fileURLWithPath: path)
         }
@@ -365,8 +377,12 @@ final class SyncRunLogWindowController: NSWindowController {
         let (steps, refusals) = plannedPutBack()
         let report = SyncUndoRunner.run(steps, header: run.header)
         if !report.putBack.isEmpty {
+            // Not localised, deliberately. This goes *into the record*, which outlives the build
+            // and is read by other versions — the same rule `SyncRunItem.reason` states for itself.
+            // The refusal reasons the plan produces are plain English too, as `SyncPlanGuard`'s are,
+            // and are shown as they come.
             store.markUndone(id: run.id, paths: Set(report.putBack),
-                             reason: String(localized: "already put back"))
+                             reason: SyncRunLogWindowController.alreadyPutBack)
         }
         var out = "putBack=\(report.putBack.count)\nplanned=\(steps.count)\n"
         out += "refused=\(refusals.count + report.refusals.count)\n"
@@ -469,6 +485,10 @@ extension SyncRunLogWindowController: NSTableViewDataSource, NSTableViewDelegate
                 field.stringValue = item.destinationPath ?? ""
             } else if let trashed = item.trashedPath {
                 field.stringValue = trashed
+            } else if let displaced = item.replacedTrashedPath {
+                // The copy is at its destination; what is worth naming here is where the version it
+                // replaced went, because that is the part somebody comes looking for.
+                field.stringValue = displaced
             } else if item.outcome == SyncRunItem.Outcome.deleted {
                 field.stringValue = String(localized: "gone for good")
                 field.textColor = .systemOrange

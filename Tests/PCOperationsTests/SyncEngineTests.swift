@@ -1348,6 +1348,82 @@ final class SyncEngineTests: XCTestCase {
                           "the second deletion happened to keep its name, so this run proves nothing")
     }
 
+    /// An overwrite keeps the version it displaced, where a deletion keeps its file.
+    ///
+    /// The run used to contradict itself: its delete rows went to the Trash, and it warned in
+    /// advance when they could not — while every file it replaced was destroyed with `removeItem`,
+    /// no warning and no trace. Whichever of those two promises is right, they cannot both be.
+    func test_anOverwriteKeepsTheVersionItDisplaced() async throws {
+        try write("the new bytes", to: left, "replaced.txt")
+        try write("THE PREVIOUS VERSION", to: right, "replaced.txt")
+        let items = await scanBothDirs()
+        // The row is built rather than classified. `classify` decides the *direction* from the
+        // timestamps, and the fixture's right-hand file is the one written last — so asking for
+        // `.copyToRight` out of the classification returned nothing and the test crashed on an
+        // empty array instead of failing. What is under test is the overwrite, not the direction.
+        guard let row = item(items, "replaced.txt") else {
+            return XCTFail("the fixture produced no pair for replaced.txt")
+        }
+        XCTAssertNotNil(row.rightSize, "the destination must already exist for this to be an overwrite")
+        let plan = [SyncResult(action: .copyToRight, item: row)]
+
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: true)
+        guard case .copied(let destination) = report.outcomes.first?.status else {
+            return XCTFail("expected a copy, got \(String(describing: report.outcomes.first))")
+        }
+        XCTAssertEqual(destination.existed, true)
+        guard let displaced = destination.replacedTrashedPath else {
+            return XCTFail("the overwrite did not say where the previous version went")
+        }
+        defer { try? FileManager.default.removeItem(atPath: displaced) }
+        XCTAssertEqual(try String(contentsOfFile: displaced, encoding: .utf8),
+                       "THE PREVIOUS VERSION",
+                       "the path reported does not hold the version that was replaced")
+        XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("replaced.txt"),
+                                  encoding: .utf8), "the new bytes")
+    }
+
+    /// …and with the Trash switched off it stays permanent, reported as nothing rather than as
+    /// somewhere. A path for a version that was destroyed would be worse than none.
+    func test_anOverwriteWithoutTheTrashKeepsNothingAndSaysSo() async throws {
+        try write("the new bytes", to: left, "hard.txt")
+        try write("gone for good", to: right, "hard.txt")
+        let items = await scanBothDirs()
+        guard let row = item(items, "hard.txt") else {
+            return XCTFail("the fixture produced no pair for hard.txt")
+        }
+        let plan = [SyncResult(action: .copyToRight, item: row)]
+
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: false)
+        guard case .copied(let destination) = report.outcomes.first?.status else {
+            return XCTFail("expected a copy, got \(String(describing: report.outcomes.first))")
+        }
+        XCTAssertEqual(destination.existed, true)
+        XCTAssertNil(destination.replacedTrashedPath)
+    }
+
+    /// A fresh copy displaces nothing, so there is nothing to report. Nil rather than an empty
+    /// string, for the same reason `created` is nil where the write cannot answer.
+    func test_aFreshCopyReportsNoDisplacedVersion() async throws {
+        try write("brand new", to: left, "fresh-copy.txt")
+        let items = await scanBothDirs()
+        guard let row = item(items, "fresh-copy.txt") else {
+            return XCTFail("the fixture produced no pair for fresh-copy.txt")
+        }
+        XCTAssertNil(row.rightSize, "the destination must not exist for this to be a fresh copy")
+        let plan = [SyncResult(action: .copyToRight, item: row)]
+
+        let report = await SyncExecutor.execute(plan, left: .localDir(left.path),
+                                                right: .localDir(right.path), toTrash: true)
+        guard case .copied(let destination) = report.outcomes.first?.status else {
+            return XCTFail("expected a copy, got \(String(describing: report.outcomes.first))")
+        }
+        XCTAssertEqual(destination.existed, false)
+        XCTAssertNil(destination.replacedTrashedPath)
+    }
+
     // MARK: - Which deletions cannot be taken back
 
     /// Deleting an entry from an archive is a whole-file rewrite: there is no Trash to fish it out
@@ -1388,6 +1464,64 @@ final class SyncEngineTests: XCTestCase {
         let plan = item(items, "c.txt").map { [SyncResult(action: .deleteRight, item: $0)] } ?? []
         XCTAssertFalse(SyncExecutor.deletesPermanently(plan, left: .localDir(left.path),
                                                        right: .localDir(right.path)))
+    }
+
+    // MARK: - Which overwrites cannot be taken back
+
+    /// The companion warning, and the reason it exists: `deletesPermanently` only ever looked at
+    /// delete rows, so a copy into an archive destroyed the entry it replaced with nothing said
+    /// beforehand and no trace afterwards.
+    func test_replacingAnEntryInAnArchiveIsReportedAsPermanent() throws {
+        let zip = root.appendingPathComponent("side.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.txt", data: Data("a".utf8))])
+        // Present on both sides, so the copy replaces something.
+        let existing = SyncItem(relativePath: "a.txt", isDirectory: false,
+                                leftSize: 2, leftModified: Date(),
+                                rightSize: 1, rightModified: Date())
+        XCTAssertTrue(SyncExecutor.overwritesPermanently(
+            [SyncResult(action: .copyToRight, item: existing)],
+            left: .localDir(left.path), right: .zip(zip.path)))
+        // The other direction lands on this Mac, which keeps what it replaces.
+        XCTAssertFalse(SyncExecutor.overwritesPermanently(
+            [SyncResult(action: .copyToLeft, item: existing)],
+            left: .localDir(left.path), right: .zip(zip.path)))
+    }
+
+    /// A copy that replaces nothing is not warned about, however unrecoverable the side is. That
+    /// distinction is the whole reason this asks the item and not just the side — otherwise filling
+    /// an empty archive would carry a warning about destroying something.
+    func test_aCopyThatReplacesNothingIsNotWarnedAbout() throws {
+        let zip = root.appendingPathComponent("side.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.txt", data: Data("a".utf8))])
+        let fresh = SyncItem(relativePath: "new.txt", isDirectory: false,
+                            leftSize: 2, leftModified: Date(), rightSize: nil, rightModified: nil)
+        XCTAssertFalse(SyncExecutor.overwritesPermanently(
+            [SyncResult(action: .copyToRight, item: fresh)],
+            left: .localDir(left.path), right: .zip(zip.path)))
+    }
+
+    /// And an ordinary local overwrite is not warned about, because the run now keeps the version
+    /// it replaces. If that ever stopped being true this assertion would be the one that noticed.
+    func test_anOrdinaryLocalOverwriteIsNotWarnedAbout() async throws {
+        try write("new", to: left, "both.txt")
+        try write("old", to: right, "both.txt")
+        let items = await scanBothDirs()
+        let plan = item(items, "both.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
+        XCTAssertEqual(plan.count, 1)
+        XCTAssertFalse(SyncExecutor.overwritesPermanently(plan, left: .localDir(left.path),
+                                                          right: .localDir(right.path)))
+    }
+
+    /// A deletion is not an overwrite. The two warnings say different things and must not both fire
+    /// for one row, or the confirmation grows a paragraph nobody reads.
+    func test_aDeletionDoesNotTriggerTheOverwriteWarning() throws {
+        let zip = root.appendingPathComponent("side.zip")
+        try ZipWriter.create(at: zip, files: [(path: "a.txt", data: Data("a".utf8))])
+        let item = SyncItem(relativePath: "a.txt", isDirectory: false,
+                            leftSize: nil, leftModified: nil, rightSize: 1, rightModified: Date())
+        XCTAssertFalse(SyncExecutor.overwritesPermanently(
+            [SyncResult(action: .deleteRight, item: item)],
+            left: .localDir(left.path), right: .zip(zip.path)))
     }
 
 }

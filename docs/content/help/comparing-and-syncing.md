@@ -73,12 +73,49 @@ time they agreed. With that record a deletion on one side can be carried to the 
 - Two folders on this Mac only. Not a server and not an archive: a deletion in an archive rewrites
   it, a deletion on a server is permanent, and this mode is not the one to try that with.
 
-**There is no undo for a deletion.** On this Mac a deleted file goes to the Trash and can be put back
-from the Finder; that is the whole of the safety net. **Memory…** in the window lists every pair the app remembers, marks the one you are looking at, and lets you forget any of them — after which the next comparison of those folders behaves like a first one again. Nothing is ever forgotten on its own: a folder on an unmounted disk is not gone, only unplugged.
+**Memory…** in the window lists every pair the app remembers, marks the one you are looking at, and
+lets you forget any of them — after which the next comparison of those folders behaves like a first
+one again. Nothing is ever forgotten on its own: a folder on an unmounted disk is not gone, only
+unplugged.
 
-The record lives with the app's settings, so
-moving one of the folders means the pair has no history any more — and a run without a history
-deletes nothing, which is the way that failure should point.
+The record lives with the app's settings, so moving one of the folders means the pair has no history
+any more — and a run without a history deletes nothing, which is the way that failure should point.
+
+## What a run did, and what of it can be taken back
+
+Every synchronization is written down. **Runs…** in the window lists them newest first — when, which
+two folders, which mode, and how many files were copied, deleted or kept back — and shows what
+happened to each file in the run you select.
+
+That list is what makes the Trash usable. A file this Mac deleted went to the Trash, and the run
+recorded *where*, which matters more than it sounds: the Trash renames on collision, so a second
+`notes.txt` lands as `notes.txt 11-17-15-028.txt`, and looking for it by name finds the wrong one.
+**Show in Trash** points the Finder straight at the item.
+
+**Put Back…** moves the files a run deleted out of the Trash to the paths they were deleted from.
+Each one is checked first, and anything that does not hold is refused with its reason rather than
+forced:
+
+- Something is at that path again. It is left alone — a put-back is never allowed to overwrite.
+- The item is not in the Trash any more, or it was removed permanently rather than put there.
+- The side was an archive or a server. An archive is rewritten whole, and a server has no Trash, so
+  nothing was kept.
+- The folder the run wrote to is gone, or is not the same folder any more — a reused mount point,
+  say. Then the whole run is refused rather than any part of it acted on.
+- It has already been put back. The record keeps that, so a second attempt does nothing.
+
+**A copy cannot be taken back.** Removing one would mean deleting a file you may have edited since,
+which is the opposite trade from putting a deletion back, so the app does not offer it — the run
+tells you which files it copied and you can delete them yourself. A file that was *overwritten* is
+the one real gap, and it is now a small one: on this Mac the version that was replaced goes to the
+Trash like a deleted file, so **Show in Trash** finds it. Into an archive, onto a server, or onto a
+volume with no Trash it cannot, and the confirmation says so before the run.
+
+Runs are kept for a while and then the oldest fall away, and **Forget** and **Forget All** clear
+them on the spot. Forgetting changes nothing about the folders; what goes is the record of what was
+done, and with it the offer to put anything back. Unlike the two-way memory, this is thrown away
+automatically — losing the memory of a *pair* would change what the next run does, while losing the
+record of a run only takes away an offer.
 
 ## Shortcuts
 

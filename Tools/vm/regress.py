@@ -185,6 +185,36 @@ SCENARIOS = [
                       "syncasym 1", "wait 400",
                       "synccompare", "wait 1500",
                       "syncguard /Users/admin/syncbadroot.txt"], 10),
+    # What a run wrote down about itself. Three kinds of row on purpose — one file created, one
+    # overwritten, one deleted — because a record is easy to make look right with one of them.
+    # The window is opened the way a person opens it and photographed, then closed: an open window
+    # outlives the script, and an open *sheet* stops the app quitting altogether, which is the trap
+    # the filter scenario ran into.
+    ("sync-runlog", ["active left", "left /Users/admin/runlog-src", "wait 1200",
+                     "syncopen /Users/admin/runlog-src|/Users/admin/runlog-dst", "wait 1200",
+                     "syncasym 1", "wait 400",
+                     "synccompare", "wait 1600",
+                     "syncselect all|/Users/admin/runlogsel.txt", "wait 500",
+                     "syncrun", "wait 2400",
+                     "syncrunsopen /Users/admin/runlogopen.txt", "wait 1000",
+                     "mainshot /Users/admin/runlog-window.png|Was getan", "wait 600",
+                     "syncrunsclose", "wait 400",
+                     "syncrunitems /Users/admin/runlogitems.txt", "wait 400",
+                     "syncruns /Users/admin/runlog.txt"], 12),
+    # And putting one back. The claim is not that a button was pressed but that the file is at its
+    # old path with its old bytes, that its neighbour was not touched, and that a second attempt is
+    # refused — which only the record can answer.
+    ("sync-runputback", ["active left", "left /Users/admin/runlog-src", "wait 1200",
+                         "syncopen /Users/admin/runlog-src|/Users/admin/runlog-dst", "wait 1200",
+                         "syncasym 1", "wait 400",
+                         "synccompare", "wait 1600",
+                         "syncselect all|/Users/admin/pbsel.txt", "wait 500",
+                         "syncrun", "wait 2400",
+                         "syncrunsopen /Users/admin/pbopen.txt", "wait 900",
+                         "syncrunputback /Users/admin/pbfirst.txt", "wait 1200",
+                         # Again, on a record that now says it has been done.
+                         "syncrunputback /Users/admin/putback.txt", "wait 800",
+                         "syncrunsclose"], 12),
     ("sync-filter", ["active left", "left /Users/admin/filter-src", "wait 1200",
                      "syncopen /Users/admin/filter-src|/Users/admin/filter-dst|/Users/admin/pc-cfg/sync-presets.json",
                      "wait 1200",
@@ -2000,6 +2030,22 @@ EXTERNAL_CHECKS = {
     # files the mirror proposed deleting is still there. A report saying "refused" and a target that
     # was emptied anyway would both pass the text check above; only this one cannot.
     "sync-twoway": ("ls ~/twoway-b | tr '\\n' ' '", "keep.txt"),
+    # The disk answers, which no report can. The deleted file really is in the Trash and it really
+    # holds its own bytes — a path that merely exists proves only that something is there, and the
+    # whole use of the recorded path is finding *this* file among everything else in the Trash. The
+    # version the overwrite displaced is in there too, which is the promise the run used to break
+    # silently.
+    "sync-runlog": ("cat ~/.Trash/deleted.txt 2>/dev/null | tr -d '\\n'; "
+                    "echo -n ' '; ls ~/.Trash | grep -c '^overwritten' | tr -d ' '",
+                    "THE BYTES THAT MUST COME BACK 1"),
+    # And after the put-back: the file is at its old path with its old bytes, the neighbour the run
+    # copied is untouched, and the Trash no longer holds it — moved, not copied. A run that had
+    # trashed the wrong side, or copied instead of moved, passes every text assertion above and
+    # fails here.
+    "sync-runputback": ("cat ~/runlog-dst/deleted.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                        "cat ~/runlog-dst/created.txt 2>/dev/null | tr -d '\\n'; echo -n ' '; "
+                        "ls ~/.Trash | grep -c '^deleted.txt' | tr -d ' '",
+                        "THE BYTES THAT MUST COME BACK fresh 0"),
     "sync-badroot": ("ls ~/guard-dst | wc -l | tr -d ' '", "12"),
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
                   "one two"),
@@ -2201,6 +2247,18 @@ REPORTS = {
     # and its neighbour is really still there.
     "sync-twoway": ("/Users/admin/twoway.txt",
                     ["state=known", "mode=twoWay", "entries=1", "!ERROR"]),
+    # Every count named, because "a run exists" is satisfied by a file holding one header line and
+    # nothing else. `created=1` against `overwritten=1` is what proves the answer comes from the
+    # write and not from the scan, `trashedPath=/` that the deletion recorded where it went, and
+    # `!itemsListed=false` that nothing was silently left out of the record.
+    "sync-runlog": ("/Users/admin/runlog.txt",
+                    ["runs=1", "mode=mirror", "planned=3", "copied=2", "created=1",
+                     "overwritten=1", "deleted=1", "problems=0", "itemsListed=true",
+                     "!itemsListed=false", "!readable=false", "!ERROR"]),
+    # `putBack=0` with a refusal naming the record's own memory: the second attempt is stopped by
+    # what the first one wrote, not by the file being missing.
+    "sync-runputback": ("/Users/admin/putback.txt",
+                        ["putBack=0", "refused=1", "already put back", "!ERROR"]),
     # `syncEnabled=false` is the load-bearing line: the plan is visible and cannot be run. The
     # reason has to name which side to look at, because "something was wrong" does not tell anybody
     # which path field they mistyped. And the shell check afterwards is the real proof — the twelve
@@ -3313,6 +3371,24 @@ def boot(app: str, run: str):
                   "rm -rf ~/twoway-a ~/twoway-b && mkdir -p ~/twoway-a ~/twoway-b && "
                   "printf 'keep\\n' > ~/twoway-a/keep.txt && "
                   "printf 'gone\\n' > ~/twoway-a/gone.txt && "
+                  # A pair for the run-log scenarios. Its own tree, for the same reason the filter
+                  # pair has one: `sync-sftp` asserts `compared=3` over `sync-src`. It holds one
+                  # file to create, one to overwrite, and one only on the right for the mirror to
+                  # delete — so the record has all three kinds of row in it and none of the
+                  # assertions can be satisfied by a run that did one thing.
+                  "rm -rf ~/runlog-src ~/runlog-dst && mkdir -p ~/runlog-src ~/runlog-dst && "
+                  "printf 'fresh\\n' > ~/runlog-src/created.txt && "
+                  # Different **lengths**, and the source touched afterwards. Measured: written as
+                  # `new version` against `OLD VERSION` the two are both twelve bytes and land in
+                  # the same second, so the comparison calls them equal, no row is produced, and the
+                  # scenario asserted an overwrite its own seeding could not create.
+                  "printf 'OLD\\n' > ~/runlog-dst/overwritten.txt && "
+                  "sleep 1 && "
+                  "printf 'a longer new version of this file\\n' > ~/runlog-src/overwritten.txt && "
+                  "printf 'THE BYTES THAT MUST COME BACK\\n' > ~/runlog-dst/deleted.txt && "
+                  # The Trash has to be empty of that name, or macOS renames on collision and the
+                  # shell check below would look at a leftover from a previous run.
+                  "rm -f ~/.Trash/deleted.txt ~/.Trash/deleted*.txt ~/.Trash/overwritten*.txt && "
                   "rm -rf ~/guard-dst && mkdir -p ~/guard-dst && "
                   "for i in 1 2 3 4 5 6 7 8 9 10 11 12; do printf 'x\\n' > ~/guard-dst/f$i.txt; done && "
                   "mkdir -p ~/filter-src/node_modules/pad && "

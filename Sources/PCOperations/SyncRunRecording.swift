@@ -84,6 +84,7 @@ public enum SyncRunRecording {
                 item.created = landed.existed.map { !$0 }
                 item.destinationSize = landed.size
                 item.destinationModifiedUnix = landed.modified?.timeIntervalSince1970
+                item.replacedTrashedPath = landed.replacedTrashedPath
                 copied += 1
                 // Neither counter moves when the write could not say — an archive, a server, a
                 // folder. Left to add up to less than `copied` rather than guessed at, since the

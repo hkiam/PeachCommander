@@ -197,6 +197,10 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
     /// Where a deleted item went, when it went anywhere recoverable. The field this whole record
     /// exists to be able to write down.
     public var trashedPath: String?
+    /// Where the version this copy displaced went. Set only for an overwrite onto a side with a
+    /// Trash; nil for a fresh copy, and nil for an overwrite that was permanent — which the record
+    /// then has no way to soften, and does not pretend to.
+    public var replacedTrashedPath: String?
 
     /// Set once this row has been acted on, so nothing is put back twice.
     ///
@@ -210,6 +214,7 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
                 destinationSide: String? = nil, isDirectory: Bool? = nil, created: Bool? = nil,
                 destinationSize: Int64? = nil, destinationModifiedUnix: Double? = nil,
                 toTrash: Bool? = nil, trashedPath: String? = nil,
+                replacedTrashedPath: String? = nil,
                 undoneAt: Double? = nil, undoUnavailable: String? = nil) {
         self.relativePath = relativePath
         self.action = action
@@ -225,6 +230,7 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
         self.destinationModifiedUnix = destinationModifiedUnix
         self.toTrash = toTrash
         self.trashedPath = trashedPath
+        self.replacedTrashedPath = replacedTrashedPath
         self.undoneAt = undoneAt
         self.undoUnavailable = undoUnavailable
     }
@@ -245,6 +251,7 @@ public struct SyncRunItem: Codable, Equatable, Sendable {
         destinationModifiedUnix = try c.decodeIfPresent(Double.self, forKey: .destinationModifiedUnix)
         toTrash = try c.decodeIfPresent(Bool.self, forKey: .toTrash)
         trashedPath = try c.decodeIfPresent(String.self, forKey: .trashedPath)
+        replacedTrashedPath = try c.decodeIfPresent(String.self, forKey: .replacedTrashedPath)
         undoneAt = try c.decodeIfPresent(Double.self, forKey: .undoneAt)
         undoUnavailable = try c.decodeIfPresent(String.self, forKey: .undoUnavailable)
     }

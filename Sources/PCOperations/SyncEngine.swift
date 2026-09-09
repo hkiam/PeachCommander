@@ -702,11 +702,22 @@ public struct CopiedDestination: Sendable, Equatable {
     /// `createDirectory` succeeds on a directory that was there all along. Nil where the write
     /// cannot answer it: an archive, a server, a directory.
     public let existed: Bool?
+    /// Where the version this copy displaced was put, when it was put anywhere.
+    ///
+    /// A sync used to contradict itself here: its *delete* rows went to the Trash and it warned
+    /// beforehand when they could not, while every file it replaced was destroyed with
+    /// `removeItem` — no warning, no trace. Same run, two different promises. Nil when there was
+    /// nothing to displace, when the run was told not to use the Trash, and when the destination
+    /// volume has no Trash to use — which is the case that stays permanent and is said out loud
+    /// rather than fixed here.
+    public let replacedTrashedPath: String?
 
-    public init(size: Int64? = nil, modified: Date? = nil, existed: Bool? = nil) {
+    public init(size: Int64? = nil, modified: Date? = nil, existed: Bool? = nil,
+                replacedTrashedPath: String? = nil) {
         self.size = size
         self.modified = modified
         self.existed = existed
+        self.replacedTrashedPath = replacedTrashedPath
     }
 }
 
@@ -833,6 +844,33 @@ public enum SyncExecutor {
     ///     A volume this cannot read at all counts as recoverable: the run will fail on its own
     ///     terms, and a warning about something that is not going to happen teaches people to click
     ///     past warnings.
+    /// Whether carrying `results` out would replace a file whose previous version cannot be got
+    /// back.
+    ///
+    /// The companion to `deletesPermanently`, and it exists because that one only ever looked at
+    /// delete rows. A copy that lands on an existing file destroys what was there; on a local
+    /// volume with a Trash the run now keeps it, and on an archive, a server or a network volume it
+    /// cannot — so that is the case worth saying out loud before the run rather than discovering
+    /// afterwards.
+    ///
+    /// Answered from the **scan's** view of the destination, unlike `CopiedDestination.existed`,
+    /// which the write answers. That difference is deliberate: a warning is about what will
+    /// probably happen and the scan is the only thing available beforehand, while a record must not
+    /// state as fact something that was true minutes earlier.
+    public static func overwritesPermanently(_ results: [SyncResult], left: SyncSide,
+                                             right: SyncSide) -> Bool {
+        results.contains { result in
+            switch result.action {
+            case .copyToRight:
+                return result.item.rightSize != nil && !recoverable(right)
+            case .copyToLeft:
+                return result.item.leftSize != nil && !recoverable(left)
+            default:
+                return false
+            }
+        }
+    }
+
     private static func recoverable(_ side: SyncSide) -> Bool {
         switch side {
         case .remote: return false
@@ -900,7 +938,7 @@ public enum SyncExecutor {
                   modified: Date?) async -> SyncStatus {
             switch (src, dst) {
             case (.localDir, .localDir):
-                return copyLocalToLocal(local(src, rel), local(dst, rel), isDir: isDir)
+                return copyLocalToLocal(local(src, rel), local(dst, rel), isDir: isDir, to: dst)
             case (.localDir, .zip):
                 guard !isDir else {
                     // Empty-dir entries are implicit via child arc paths; a standalone directory has
@@ -1011,13 +1049,14 @@ public enum SyncExecutor {
         /// page cache, while the remote one is a network round trip per file. Guarding both meant a
         /// one-way or mirror run — the modes with the most copies — reported nothing about what it
         /// left behind, so nothing downstream could check a destination against it.
-        func observed(_ path: String, existed: Bool? = nil) -> SyncStatus {
+        func observed(_ path: String, existed: Bool? = nil,
+                      replaced: String? = nil) -> SyncStatus {
             guard let attrs = try? fm.attributesOfItem(atPath: path) else {
-                return .copied(CopiedDestination(existed: existed))
+                return .copied(CopiedDestination(existed: existed, replacedTrashedPath: replaced))
             }
             return .copied(CopiedDestination(size: (attrs[.size] as? NSNumber)?.int64Value,
                                              modified: attrs[.modificationDate] as? Date,
-                                             existed: existed))
+                                             existed: existed, replacedTrashedPath: replaced))
         }
 
         /// `rel` under `root`, or nil if any component of it would leave `root`.
@@ -1032,7 +1071,8 @@ public enum SyncExecutor {
             return current == root ? nil : current
         }
 
-        func copyLocalToLocal(_ src: String, _ dst: String, isDir: Bool) -> SyncStatus {
+        func copyLocalToLocal(_ src: String, _ dst: String, isDir: Bool,
+                              to dstSide: SyncSide) -> SyncStatus {
             do {
                 if isDir {
                     try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
@@ -1044,9 +1084,22 @@ public enum SyncExecutor {
                 // to throw the answer away and leave callers to infer it from the scan, which is a
                 // claim about what was true minutes earlier — see `CopiedDestination.existed`.
                 let existed = fm.fileExists(atPath: dst)
-                if existed { try fm.removeItem(atPath: dst) }
+                var replaced: String?
+                if existed {
+                    // The displaced version goes where a deleted one goes. Before this, the same run
+                    // put its delete rows in the Trash — and warned in advance when it could not —
+                    // while destroying every file it replaced outright. Whichever of those two is
+                    // right, they cannot both be.
+                    if toTrash, recoverable(dstSide) {
+                        var landed: NSURL?
+                        try fm.trashItem(at: URL(fileURLWithPath: dst), resultingItemURL: &landed)
+                        replaced = (landed as URL?)?.path
+                    } else {
+                        try fm.removeItem(atPath: dst)
+                    }
+                }
                 try fm.copyItem(atPath: src, toPath: dst)
-                return observed(dst, existed: existed)
+                return observed(dst, existed: existed, replaced: replaced)
                 // The failure used to be reported as the source's `lastPathComponent`, so a failure
                 // at `a/b/x.txt` arrived as `x.txt` and could not be matched back to its row. The
                 // caller supplies the relative path now, in one place for every helper.

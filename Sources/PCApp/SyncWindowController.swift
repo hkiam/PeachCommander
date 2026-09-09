@@ -1523,8 +1523,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// right about the consequence and wrong about the reason, which is how somebody ends up
     /// checking the wrong path field.
     private func permanentDeleteWarning(for actionable: [SyncResult]) -> String {
-        guard SyncExecutor.deletesPermanently(actionable, left: leftSide, right: rightSide) else { return "" }
-        return "\n\n" + String(localized: "Some of these deletions cannot be taken back — there is no Trash on that side.")
+        var out = ""
+        if SyncExecutor.deletesPermanently(actionable, left: leftSide, right: rightSide) {
+            out += "\n\n" + String(localized: "Some of these deletions cannot be taken back — there is no Trash on that side.")
+        }
+        // The other half of the same promise. A local run now keeps the version a copy replaces, so
+        // the case worth naming is the one where it cannot: an archive, a server, a network volume.
+        // Said before the run for `DefaultAutomationCore.refusalBeforeAsking`'s reason — afterwards
+        // is not a warning, it is a report.
+        if SyncExecutor.overwritesPermanently(actionable, left: leftSide, right: rightSide) {
+            out += "\n\n" + String(localized: "Some of these copies will replace a file whose earlier version cannot be kept — there is no Trash on that side.")
+        }
+        return out
     }
 
     // MARK: - Table
