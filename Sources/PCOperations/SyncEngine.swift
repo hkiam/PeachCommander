@@ -684,7 +684,9 @@ public enum SyncScanner {
             // answers "this path is gone" for everything under it, which in two-way mode is the
             // permission to carry a deletion across for a file that is really there. The remote walk
             // has always marked a failed listing this way; the local one did not, while
-            // `SyncSideScope`'s own header said `incompleteDirs` covered exactly this case.
+            // `SyncSideScope`'s own header said `incompleteDirs` covered exactly this case — and the
+            // **help file** promised it to the user in as many words: "an unreadable folder … proves
+            // nothing about what is inside it". Two places asserted this guard and no code did it.
             //
             // `!= true` and not `== false`, so "could not tell" counts as not looked inside: the
             // cost of marking a folder needlessly is one deletion not carried across, and the cost
