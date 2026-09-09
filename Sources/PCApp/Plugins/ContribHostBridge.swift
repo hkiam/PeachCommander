@@ -214,7 +214,12 @@ final class ContribHostBridge {
             guard let host else { return }
             ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
-                b.host?.toolMoveToTrash(ContribHostBridge.strings(paths, count))
+                // Fire and forget, deliberately: the C callback has no way to receive a result and
+                // no caller waiting for one. Where the items went is recorded for the surfaces that
+                // can offer to put them back — the assistant's log — and a plugin's trashing simply
+                // is not one of them.
+                let items = ContribHostBridge.strings(paths, count)
+                Task { @MainActor in _ = await b.host?.toolMoveToTrash(items) }
             }
         }
         s.deletePermanently = { host, paths, count in

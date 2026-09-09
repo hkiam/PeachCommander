@@ -582,8 +582,15 @@ final class HostAutomationBridge: AutomationHostBridge {
         }
         await host.mainConfig.setString(value, section, k)
     }
-    func moveToTrash(_ paths: [String]) async throws { host?.toolMoveToTrash(paths) }
+    func moveToTrash(_ paths: [String]) async throws -> [TrashedItem] {
+        guard let host else { return [] }
+        return await host.toolMoveToTrash(paths)
+    }
     func deletePermanently(_ paths: [String]) async throws { host?.toolDeletePermanently(paths) }
+    func putBack(from: [String], to: [String]) async throws -> [PutBackResult] {
+        guard let host else { return [] }
+        return await host.toolPutBack(from: from, to: to)
+    }
 
     private static func splitKey(_ key: String) -> (String, String)? {
         let parts = key.split(separator: ".", maxSplits: 1).map(String.init)

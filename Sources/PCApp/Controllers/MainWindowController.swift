@@ -11030,10 +11030,43 @@ extension MainWindowController: ToolHost {
     }
     var toolParentWindow: NSWindow? { window }
 
-    func toolMoveToTrash(_ paths: [String]) {
-        NSWorkspace.shared.recycle(paths.map { URL(fileURLWithPath: $0) }) { [weak self] _, _ in
-            Task { @MainActor in await self?.activePanel?.reload() }
+    /// Trash these and report where each one landed.
+    ///
+    /// `recycle`'s completion handler has always carried the `[URL: URL]` mapping of new locations
+    /// and this call dropped it — the same throw-away as `trashItem(at:resultingItemURL: nil)`
+    /// elsewhere. Awaited now rather than fired and forgotten, because a caller that is going to
+    /// offer to put the items back has to know where they are; `deleteDuplicatePaths` already uses
+    /// this continuation shape.
+    func toolMoveToTrash(_ paths: [String]) async -> [TrashedItem] {
+        let urls = paths.map { URL(fileURLWithPath: $0) }
+        let landed: [URL: URL] = await withCheckedContinuation { cont in
+            NSWorkspace.shared.recycle(urls) { moved, _ in cont.resume(returning: moved ?? [:]) }
         }
+        await activePanel?.reload()
+        // Only what actually moved: `recycle` reports the mapping for the items it managed, so a
+        // path missing from it was not trashed and must not be reported as though it had been.
+        return urls.compactMap { url in
+            guard let to = landed[url] else { return nil }
+            return TrashedItem(originalPath: url.path, trashedPath: to.path)
+        }
+    }
+
+    /// Put items back from the Trash, through the one guarded step.
+    ///
+    /// `TrashRestore` does the checking and the move; this only pairs the lists up and reloads the
+    /// panel afterwards. Sharing that step with the synchronisation run log's put-back is the point:
+    /// the guard that stops a restore overwriting somebody's file exists once.
+    func toolPutBack(from: [String], to: [String]) async -> [PutBackResult] {
+        var results: [PutBackResult] = []
+        for (trashed, original) in zip(from, to) {
+            switch TrashRestore.restore(from: trashed, to: original) {
+            case .restored(let path): results.append(PutBackResult(path: path, reason: nil))
+            case .refused(let reason): results.append(PutBackResult(path: original, reason: reason))
+            case .failed(let message): results.append(PutBackResult(path: original, reason: message))
+            }
+        }
+        await activePanel?.reload()
+        return results
     }
 
     func toolDeletePermanently(_ paths: [String]) {

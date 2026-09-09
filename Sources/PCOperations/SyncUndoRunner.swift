@@ -64,21 +64,11 @@ public enum SyncUndoRunner {
     /// Carry out the steps, in the order given — which `SyncUndoPlan` has already made
     /// shallowest-first, so a folder is back before anything that lived in it.
     public static func run(_ steps: [SyncUndoPlan.Step], header: SyncRunHeader) -> Report {
-        let fm = FileManager.default
         var results: [StepResult] = []
         for step in steps {
-            // The whole guard again, on this one step, now.
-            let inTrash = facts(at: step.from)
-            guard inTrash.exists else {
-                results.append(.refused(relativePath: step.relativePath,
-                                        reason: "it is no longer in the Trash"))
-                continue
-            }
-            guard !facts(at: step.to).exists else {
-                results.append(.refused(relativePath: step.relativePath,
-                                        reason: "something is at that path again"))
-                continue
-            }
+            // The one guard that is this run's own: a step may only land inside the folders the
+            // record names. `TrashRestore` cannot know about them, and the two checks being far
+            // apart is deliberate — `download` already checks containment twice for the same reason.
             let destination = URL(fileURLWithPath: step.to)
             guard PathContainment.isInside(destination,
                                            root: URL(fileURLWithPath: header.leftRoot))
@@ -88,19 +78,17 @@ public enum SyncUndoRunner {
                                         reason: "it came from outside both folders of this run"))
                 continue
             }
-            do {
-                // The parent may be gone — a mirror deletes a folder and its contents, and only the
-                // folder's own row recreates it. Created rather than refused, because refusing would
-                // make a whole subtree un-put-backable for the sake of one empty directory.
-                let parent = destination.deletingLastPathComponent()
-                if !facts(at: parent.path).exists {
-                    try fm.createDirectory(at: parent, withIntermediateDirectories: true)
-                }
-                try fm.moveItem(at: URL(fileURLWithPath: step.from), to: destination)
-                results.append(.putBack(relativePath: step.relativePath, to: step.to))
-            } catch {
-                results.append(.failed(relativePath: step.relativePath,
-                                       message: error.localizedDescription))
+            // And the rest through the one place that knows how to put a file back — shared with
+            // the assistant's undo of a `move_to_trash`, so the guards cannot drift apart. It
+            // re-checks immediately before moving, which is the point: between the plan and here
+            // sits a confirmation somebody reads.
+            switch TrashRestore.restore(from: step.from, to: step.to) {
+            case .restored(let to):
+                results.append(.putBack(relativePath: step.relativePath, to: to))
+            case .refused(let reason):
+                results.append(.refused(relativePath: step.relativePath, reason: reason))
+            case .failed(let message):
+                results.append(.failed(relativePath: step.relativePath, message: message))
             }
         }
         return Report(results: results)

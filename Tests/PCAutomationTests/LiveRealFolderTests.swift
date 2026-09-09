@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import XCTest
 @testable import PCAutomation
+import PCFoundation
 
 // A real-filesystem bridge over a sandbox root: reads are real, writes are refused.
 // Used only by the live end-to-end test below, against a temp dir (never real data).
@@ -96,8 +97,13 @@ actor RealFSBridge: AutomationHostBridge {
     func rename(path: String, newName: String) throws { throw AutomationError.notImplemented("rename") }
     func makeDirectory(_ path: String) throws { throw AutomationError.notImplemented("mkdir") }
     func setConfig(_ key: String, _ value: String) throws { throw AutomationError.notImplemented("config") }
-    func moveToTrash(_ paths: [String]) throws { throw AutomationError.notImplemented("trash") }
+    func moveToTrash(_ paths: [String]) throws -> [TrashedItem] {
+        throw AutomationError.notImplemented("trash")
+    }
     func deletePermanently(_ paths: [String]) throws { throw AutomationError.notImplemented("delete") }
+    func putBack(from: [String], to: [String]) throws -> [PutBackResult] {
+        throw AutomationError.notImplemented("put_back")
+    }
 }
 
 // The live chat test that used to live here went with the on-device chat it exercised: it drove

@@ -9,6 +9,8 @@
 // plugins now; see docs/plugin-contribution-architecture.md.)
 
 import AppKit
+import PCFoundation
+import PCAutomation
 
 /// Host services an action/tool plugin may use. Implemented by the window controller.
 @MainActor
@@ -22,8 +24,14 @@ public protocol ToolHost: AnyObject {
     func toolSelectionPaths() async -> [String]
     /// The window tools should present sheets/modals over.
     var toolParentWindow: NSWindow? { get }
-    /// Move paths to Trash (reversible).
-    func toolMoveToTrash(_ paths: [String])
+    /// Move paths to Trash, and say where each one went.
+    ///
+    /// The destinations, because "reversible" is only true if somebody knows *which* items in the
+    /// Trash these are — it renames on collision, so the file names cannot answer it. See
+    /// `TrashedItem`.
+    func toolMoveToTrash(_ paths: [String]) async -> [TrashedItem]
+    /// Put items back from the Trash, pairwise, refusing any whose old path is occupied again.
+    func toolPutBack(from: [String], to: [String]) async -> [PutBackResult]
     /// Delete paths permanently.
     func toolDeletePermanently(_ paths: [String])
     /// Reload the active panel after a mutation.

@@ -284,7 +284,13 @@ public actor DefaultAutomationCore: AutomationCore {
         // proposed, so that one action is one line.
         case .needsConfirmation(let plan, _): entry.outcome = "pending"; entry.detail = plan
         }
-        if entry.outcome == "ok", !isUndo, let inverse = AuditInverse.of(tool: name, arguments: dictionary),
+        // The execution's own result, where the arguments alone cannot say what the inverse is:
+        // trashing reports where each item landed, and the Trash renames on collision, so nothing
+        // else can reconstruct it.
+        var result: Data?
+        if case .ok(let payload) = outcome { result = payload }
+        if entry.outcome == "ok", !isUndo,
+           let inverse = AuditInverse.of(tool: name, arguments: dictionary, result: result),
            let data = try? JSONSerialization.data(withJSONObject: inverse.arguments),
            let text = String(data: data, encoding: .utf8) {
             entry.undoTool = inverse.tool
@@ -486,7 +492,33 @@ public actor DefaultAutomationCore: AutomationCore {
                 return .ok(payload: try json(["renamed": outcome.renamed, "directory": outcome.directory]))
             case "make_directory": try await bridge.makeDirectory(try a.string("path")); return .ok(payload: nil)
             case "set_config":    try await bridge.setConfig(try a.string("key"), try a.string("value")); return .ok(payload: nil)
-            case "move_to_trash": try await bridge.moveToTrash(try a.strings("paths")); return .ok(payload: nil)
+            case "move_to_trash":
+                // Where each item went comes back as the payload — which the model can read, and
+                // which `record` turns into this entry's inverse. Not held in a field: this actor
+                // suspends at every `await`, and a field would mix two calls' results, the same trap
+                // the `isUndo` parameter above exists to avoid.
+                let landed = try await bridge.moveToTrash(try a.strings("paths"))
+                return .ok(payload: AuditInverse.trashPayload(landed))
+            case "put_back":
+                let from = try a.strings("from"), to = try a.strings("to")
+                guard from.count == to.count else {
+                    // Two parallel lists are only meaningful in step. Refused rather than truncated:
+                    // pairing the wrong Trash entry with the wrong destination would restore a file
+                    // over another file's path.
+                    return .failed(error: "\"from\" and \"to\" must have the same number of paths "
+                                   + "(\(from.count) against \(to.count)).")
+                }
+                // `results`, not `restored`: the first name led straight into reporting every
+                // outcome as a success, refusals included — a tool that says it put a file back
+                // when it refused to is worse than one that cannot. Caught by the test for the
+                // occupied-path refusal.
+                let results = try await bridge.putBack(from: from, to: to)
+                return .ok(payload: try? JSONSerialization.data(
+                    withJSONObject: ["restored": results.filter { $0.reason == nil }.map(\.path),
+                                     "refused": results.compactMap { r in
+                                         r.reason.map { ["path": r.path, "reason": $0] }
+                                     }],
+                    options: [.sortedKeys]))
             case "delete_permanently": try await bridge.deletePermanently(try a.strings("paths")); return .ok(payload: nil)
             default: throw AutomationError.notImplemented(name)
             }

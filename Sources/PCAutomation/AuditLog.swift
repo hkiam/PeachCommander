@@ -12,12 +12,18 @@
 // plugin-contributed tool) is covered by construction rather than by remembering to log.
 //
 // Undo is deliberately narrow and honest: an entry carries an inverse only where one really
-// exists — a rename can be renamed back, a move can be moved back. A file that was
-// overwritten cannot be restored without a copy that was never made, and macOS offers no
-// public way to put an item back from the Trash. Those entries say so instead of offering a
-// button that would lie.
+// exists — a rename can be renamed back, a move can be moved back, and a trashing can be put
+// back *because the system reports where each item went* and that is recorded here. A file that
+// was overwritten cannot be restored without a copy that was never made. Those entries say so
+// instead of offering a button that would lie.
+//
+// This file used to claim that "macOS offers no public way to put an item back from the Trash".
+// That is true of Finder's own **Put Back**, which restores an origin the OS remembers for
+// itself. It is not true of moving a file to a path we wrote down at the moment of deletion —
+// measured, and the sentence had already been repeated in the manual before anyone checked it.
 
 import Foundation
+import PCFoundation
 
 /// One executed automation action.
 public struct AuditEntry: Codable, Sendable, Equatable {
@@ -128,11 +134,27 @@ public struct AuditLog: Sendable {
 public enum AuditInverse {
 
     /// The tool and arguments that undo `tool(arguments)`, or the reason none can.
-    /// `context` supplies what the arguments alone do not say — for a move, where the files
-    /// came from.
-    public static func of(tool: String, arguments: [String: Any])
-        -> (tool: String, arguments: [String: Any])? {
+    ///
+    /// `result` is the execution's own payload, for the cases where the arguments cannot say what
+    /// the inverse is. Trashing is the one: it reports where each item landed, and the Trash renames
+    /// on collision, so no later reader can reconstruct it from the file names.
+    ///
+    /// The parameter this comment used to name — `context`, "for a move, where the files came from"
+    /// — never existed. The move case works from the arguments alone, because it requires every
+    /// source to come from one directory.
+    public static func of(tool: String, arguments: [String: Any],
+                          result: Data? = nil) -> (tool: String, arguments: [String: Any])? {
         switch tool {
+        case "move_to_trash":
+            // Only when every item reported where it went. A partial inverse would put some back
+            // and silently leave the rest, under a button that says it undid the action.
+            //
+            // The empty case is caught here *and* in `trashPayload`, which means neither line is
+            // observable on its own — measured: removing either alone changes nothing, and only
+            // removing both makes the test fail. Kept as a pair deliberately, since the two answer
+            // for different callers: a payload with an empty list would also be shown to the model.
+            guard let items = trashPairs(result), !items.isEmpty else { return nil }
+            return ("put_back", ["from": items.map(\.trashed), "to": items.map(\.original)])
         case "rename":
             // Rename back: the new name sits in the old name's directory.
             guard let path = arguments["path"] as? String,
@@ -179,6 +201,34 @@ public enum AuditInverse {
     }
 
     /// Why an action of this kind cannot be taken back. `nil` when it can.
+    /// What a trashing reports: the pairs, as the payload the model also sees.
+    ///
+    /// Only the items that actually went somewhere known. One that did not cannot be put back, and
+    /// including it would make the inverse claim more than it can do.
+    public static func trashPayload(_ items: [TrashedItem]) -> Data? {
+        let pairs = items.compactMap { item -> [String: String]? in
+            guard let trashed = item.trashedPath else { return nil }
+            return ["from": trashed, "to": item.originalPath]
+        }
+        guard !pairs.isEmpty else { return nil }
+        return try? JSONSerialization.data(withJSONObject: ["trashed": pairs],
+                                           options: [.sortedKeys])
+    }
+
+    /// The pairs back out of such a payload. Tolerant: a payload that is not this shape yields
+    /// none, and the entry then carries no inverse rather than a broken one.
+    static func trashPairs(_ result: Data?) -> [(trashed: String, original: String)]? {
+        guard let result,
+              let object = try? JSONSerialization.jsonObject(with: result) as? [String: Any],
+              let pairs = object["trashed"] as? [[String: String]] else { return nil }
+        let items = pairs.compactMap { pair -> (trashed: String, original: String)? in
+            guard let from = pair["from"], let to = pair["to"],
+                  !from.isEmpty, !to.isEmpty else { return nil }
+            return (from, to)
+        }
+        return items.count == pairs.count ? items : nil
+    }
+
     public static func unavailableReason(tool: String) -> String? {
         switch tool {
         case "rename", "move", "rename_batch":
@@ -186,7 +236,11 @@ public enum AuditInverse {
         case "write_file":
             return "the previous contents were not kept"
         case "move_to_trash":
-            return "items can be restored from the Trash in the Finder"
+            // Reached only when the trashing reported no destination for anything — otherwise the
+            // entry carries a `put_back` inverse. This project asserted for a long time that no
+            // inverse was possible at all; that is true of Finder's own *Put Back*, which restores
+            // an origin the system remembers, and not of a path recorded at the moment of deletion.
+            return "the Trash did not report where the items went, so they can only be found by hand"
         case "delete_permanently":
             return "a permanent deletion cannot be undone"
         case "make_directory":

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import XCTest
 @testable import PCAutomation
+import PCFoundation
 
 // What the assistant did, and taking it back. The core was described as an audited seam and
 // recorded nothing; these tests pin what is now recorded, what is deliberately not, and the
@@ -135,6 +136,116 @@ final class AuditLogTests: XCTestCase {
                                   policy: PermissionPolicy(autonomy: .autonomous))
         let outcome = try await core.undoLast(policy: .readOnly)
         guard case .refused = outcome else { return XCTFail("expected a refusal, got \(outcome)") }
+    }
+
+    // MARK: Putting a trashing back
+
+    /// The claim `move_to_trash` has always carried — "(reversible)" in its own description — with
+    /// something behind it at last.
+    ///
+    /// Real files, because the guard that matters is about the filesystem: the old path has to be
+    /// free, and the bytes have to come back. A stub could not say either.
+    func test_aTrashingIsUndoable_andTheFileComesBack() async throws {
+        let (log, dir) = log(); defer { try? FileManager.default.removeItem(at: dir) }
+        let home = dir.appendingPathComponent("home")
+        let trash = dir.appendingPathComponent("trash")
+        for d in [home, trash] {
+            try FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        }
+        let original = home.appendingPathComponent("notes.txt")
+        let inTrash = trash.appendingPathComponent("notes.txt")
+        try Data("the bytes that have to come back".utf8).write(to: inTrash)
+
+        let bridge = FakeBridge()
+        await bridge.setTrash(pairs: [original.path: inTrash.path])
+        let core = core(bridge, log)
+        let policy = PermissionPolicy(autonomy: .autonomous)
+        _ = try await core.invoke(tool: "move_to_trash",
+                                  arguments: args(["paths": [original.path]]), policy: policy)
+
+        guard let entry = log.recent().first else { return XCTFail("nothing recorded") }
+        XCTAssertTrue(entry.isUndoable, "a trashing that reported where it went has an inverse")
+        XCTAssertEqual(entry.undoTool, "put_back")
+        XCTAssertNil(entry.undoUnavailable)
+        // The Trash path, not something derived from the file's name: the Trash renames on
+        // collision, so a name-derived guess points at an earlier file. Decoded rather than matched
+        // as text — `JSONSerialization` escapes forward slashes, so the stored arguments read
+        // `\/tmp\/…` and a substring test fails on correct output.
+        let undo = try JSONSerialization.jsonObject(
+            with: Data((entry.undoArguments ?? "").utf8)) as? [String: [String]]
+        XCTAssertEqual(undo?["from"], [inTrash.path])
+        XCTAssertEqual(undo?["to"], [original.path])
+
+        guard case .ok = try await core.undoLast(policy: policy) else {
+            return XCTFail("the undo did not run")
+        }
+        XCTAssertEqual(try String(contentsOf: original, encoding: .utf8),
+                       "the bytes that have to come back")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: inTrash.path),
+                       "it was copied rather than moved back")
+    }
+
+    /// A trashing the host could not describe carries no inverse, and says which of the two reasons
+    /// it is. Silence here would be a button that fails when pressed.
+    func test_aTrashingThatReportedNoDestinationIsNotOffered() async throws {
+        let (log, dir) = log(); defer { try? FileManager.default.removeItem(at: dir) }
+        let bridge = FakeBridge()
+        await bridge.setTrash(pairs: [:])          // the host reports nothing
+        let core = core(bridge, log)
+        _ = try await core.invoke(tool: "move_to_trash", arguments: args(["paths": ["/a/f.txt"]]),
+                                  policy: PermissionPolicy(autonomy: .autonomous))
+        guard let entry = log.recent().first else { return XCTFail("nothing recorded") }
+        XCTAssertFalse(entry.isUndoable)
+        XCTAssertTrue(entry.undoUnavailable?.contains("did not report where") ?? false,
+                      "got: \(entry.undoUnavailable ?? "nil")")
+    }
+
+    /// Never over the top of something else. This is the only way a put-back can destroy anything,
+    /// and the refusal has to reach the user rather than be silently skipped.
+    func test_aPutBackIsRefusedWhenTheOldPathIsOccupiedAgain() async throws {
+        let (log, dir) = log(); defer { try? FileManager.default.removeItem(at: dir) }
+        let home = dir.appendingPathComponent("home")
+        let trash = dir.appendingPathComponent("trash")
+        for d in [home, trash] {
+            try FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        }
+        let original = home.appendingPathComponent("notes.txt")
+        let inTrash = trash.appendingPathComponent("notes.txt")
+        try Data("the old one".utf8).write(to: inTrash)
+        try Data("something else entirely".utf8).write(to: original)
+
+        let bridge = FakeBridge()
+        let core = core(bridge, log)
+        let outcome = try await core.invoke(
+            tool: "put_back",
+            arguments: args(["from": [inTrash.path], "to": [original.path]]),
+            policy: PermissionPolicy(autonomy: .autonomous))
+        guard case .ok(let payload) = outcome, let payload else {
+            return XCTFail("expected a result, got \(outcome)")
+        }
+        let object = try JSONSerialization.jsonObject(with: payload) as? [String: Any]
+        let refused = object?["refused"] as? [[String: String]] ?? []
+        XCTAssertEqual(refused.first?["path"], original.path)
+        XCTAssertTrue(refused.first?["reason"]?.contains("at that path again") ?? false,
+                      "the reason has to reach the caller: \(refused)")
+        XCTAssertTrue((object?["restored"] as? [String] ?? []).isEmpty)
+        XCTAssertEqual(try String(contentsOf: original, encoding: .utf8), "something else entirely",
+                       "the put-back overwrote the file that was there")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: inTrash.path),
+                      "the item was taken out of the Trash for nothing")
+    }
+
+    /// Two lists that are not the same length are refused, not truncated: pairing the wrong Trash
+    /// entry with the wrong destination restores a file over another file's path.
+    func test_putBackRefusesMismatchedLists() async throws {
+        let core = core(FakeBridge(), log().0)
+        let outcome = try await core.invoke(
+            tool: "put_back", arguments: args(["from": ["/t/a"], "to": ["/h/a", "/h/b"]]),
+            policy: PermissionPolicy(autonomy: .autonomous))
+        guard case .failed(let error) = outcome else {
+            return XCTFail("expected a failure, got \(outcome)")
+        }
+        XCTAssertTrue(error.contains("same number"), error)
     }
 
     // MARK: The inverse rules on their own

@@ -24,15 +24,18 @@ public final class DeleteEngine {
         self.progress = progress
     }
 
-    /// Move items to the Trash, and return the ones that got there.
+    /// Move items to the Trash, and return the ones that got there **and where they went**.
     ///
     /// A failure goes to the resolver: retried, skipped (the rest of the batch still goes), or
     /// thrown. The default resolver throws, and then nothing is returned at all — which used to be
     /// the only behaviour, under a doc comment promising the successful paths. One item too deep for
     /// `trashItem` therefore abandoned the whole selection without saying what had already moved.
+    ///
+    /// The resulting URL is carried rather than dropped — see `TrashedItem` for why the Trash's own
+    /// answer is the only reliable one.
     @discardableResult
-    public func moveToTrash(items: [String]) async throws -> [String] {
-        var processed: [String] = []
+    public func moveToTrash(items: [String]) async throws -> [TrashedItem] {
+        var processed: [TrashedItem] = []
         for path in items {
             try await control.checkpoint()
             while true {
@@ -40,8 +43,11 @@ public final class DeleteEngine {
                     // `trashItem` is URL-only and there is no fd-relative equivalent, so an item whose
                     // path is past PATH_MAX cannot be put in the Trash — it fails here and the caller
                     // reports a failed delete. Permanent delete below does reach it (F-383).
-                    try FileManager.default.trashItem(at: URL(fileURLWithPath: path), resultingItemURL: nil)
-                    processed.append(path)
+                    var landed: NSURL?
+                    try FileManager.default.trashItem(at: URL(fileURLWithPath: path),
+                                                      resultingItemURL: &landed)
+                    processed.append(TrashedItem(originalPath: path,
+                                                 trashedPath: (landed as URL?)?.path))
                 } catch {
                     switch await resolver.resolveError(.deleteFailed(path), path: path) {
                     case .retry: continue

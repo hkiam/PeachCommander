@@ -4,6 +4,7 @@
 
 import XCTest
 @testable import PCAutomation
+import PCFoundation
 
 /// Records what the core asked the host to do.
 actor FakeBridge: AutomationHostBridge {
@@ -13,6 +14,13 @@ actor FakeBridge: AutomationHostBridge {
     var opened: String?
     var copied: (sources: [String], dest: String)?
     var trashed: [String]?
+    /// Where this stub says the Trash is. A fixed folder, so a test can assert the exact path the
+    /// undo will be handed.
+    let trashPrefix = "/Users/test/.Trash"
+    var putBackCalls: [(from: [String], to: [String])] = []
+    /// Nil means "make one up per path"; a dictionary means exactly these, and a missing key means
+    /// the host could not say where that one went.
+    private var trashPairs: [String: String]?
     var madeDir: String?
     var renamed: (path: String, newName: String)?
     var moved: (sources: [String], dest: String)?
@@ -74,8 +82,34 @@ actor FakeBridge: AutomationHostBridge {
     func rename(path: String, newName: String) { renamed = (path, newName) }
     func makeDirectory(_ path: String) { madeDir = path }
     func setConfig(_ key: String, _ value: String) { setConfigKV = (key, value) }
-    func moveToTrash(_ paths: [String]) { trashed = paths }
+    /// Answers with a Trash path per item, because that is what the real host reports and a stub
+    /// that returned none would make every undo-of-a-trash test pass by refusing. `setTrash` lets a
+    /// test name the exact destinations — or none, which is the other case worth covering.
+    func moveToTrash(_ paths: [String]) -> [TrashedItem] {
+        trashed = paths
+        return paths.map { path in
+            TrashedItem(originalPath: path,
+                        trashedPath: trashPairs?[path]
+                            ?? (trashPairs == nil
+                                ? trashPrefix + "/" + (path as NSString).lastPathComponent
+                                : nil))
+        }
+    }
+
+    func setTrash(pairs: [String: String]) { trashPairs = pairs }
     func deletePermanently(_ paths: [String]) {}
+    /// Through the real `TrashRestore`, so a test that asserts a refusal is asserting the guard the
+    /// app uses and not a stub's imitation of it.
+    func putBack(from: [String], to: [String]) -> [PutBackResult] {
+        putBackCalls.append((from, to))
+        return zip(from, to).map { trashed, original in
+            switch TrashRestore.restore(from: trashed, to: original) {
+            case .restored(let path): return PutBackResult(path: path, reason: nil)
+            case .refused(let reason): return PutBackResult(path: original, reason: reason)
+            case .failed(let message): return PutBackResult(path: original, reason: message)
+            }
+        }
+    }
     func getComment(_ path: String) -> String? { comments[path] }
     func setComment(_ path: String, comment: String?) {
         setCommentCalls.append((path, comment))
@@ -242,7 +276,19 @@ final class DefaultAutomationCoreTests: XCTestCase {
         let out = try await core.invoke(tool: "move_to_trash",
                                         arguments: argsData(["paths": ["/a/f.txt"]]),
                                         policy: PermissionPolicy(autonomy: .autonomous))
-        XCTAssertEqual(out, .ok(payload: nil))
+        // The payload is the mapping now, and asserting it is stronger than asserting nothing: it
+        // is what makes the tool's own "(reversible)" true.
+        //
+        // Decoded, not matched as text. `JSONSerialization` escapes forward slashes, so the payload
+        // reads `\/a\/f.txt` and a `contains("/a/f.txt")` fails on valid, correct output —
+        // measured, and it is the kind of assertion that sends you looking at the wrong layer.
+        guard case .ok(let payload) = out, let payload,
+              let object = try JSONSerialization.jsonObject(with: payload) as? [String: Any],
+              let pairs = object["trashed"] as? [[String: String]] else {
+            return XCTFail("a trashing reported nothing about where the items went: \(out)")
+        }
+        XCTAssertEqual(pairs.first?["to"], "/a/f.txt")
+        XCTAssertEqual(pairs.first?["from"], "/Users/test/.Trash/f.txt")
         let trashed = await bridge.trashed
         XCTAssertEqual(trashed, ["/a/f.txt"])
     }

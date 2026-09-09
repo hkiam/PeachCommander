@@ -107,7 +107,9 @@ public final class TransferQueue: @unchecked Sendable {
         // item, and an interactive one reported a failure where it could have asked.
         case let .trash(items):
             let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
-            return try await engine.moveToTrash(items: items)
+            // The queue reports paths; where each item landed in the Trash is the caller's
+            // business and the automation surface is the one that keeps it.
+            return try await engine.moveToTrash(items: items).map(\.originalPath)
         case let .delete(items):
             let engine = DeleteEngine(control: control, resolver: resolver, progress: progress)
             return try await engine.permanentDelete(items: items)

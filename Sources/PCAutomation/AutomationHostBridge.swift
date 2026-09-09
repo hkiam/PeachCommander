@@ -97,8 +97,20 @@ public protocol AutomationHostBridge: Sendable {
     func rename(path: String, newName: String) async throws
     func makeDirectory(_ path: String) async throws
     func setConfig(_ key: String, _ value: String) async throws
-    func moveToTrash(_ paths: [String]) async throws
+    /// Move these to the Trash and say **where each one went**.
+    ///
+    /// The resulting paths, not a bare success: they are what makes "it is in the Trash" an answer
+    /// rather than a sentence, and the Trash renames on collision so they cannot be reconstructed
+    /// from the file names — see `TrashedItem`. A host that cannot report them says so per item
+    /// with a nil, and the undo is then not offered for that item rather than guessed at.
+    func moveToTrash(_ paths: [String]) async throws -> [TrashedItem]
     func deletePermanently(_ paths: [String]) async throws
+    /// Put items back from the Trash, pairwise, and say what became of each.
+    ///
+    /// Guarded per item through `TrashRestore`, which is shared with the synchronisation run log's
+    /// own put-back so the two cannot drift apart. Nothing is overwritten: an item whose old path is
+    /// occupied again is refused with that reason rather than forced.
+    func putBack(from: [String], to: [String]) async throws -> [PutBackResult]
 
     /// Rank files in `path` (or the active folder) by semantic similarity of their
     /// names to `query`, best first. Default: unsupported (empty).
@@ -159,6 +171,18 @@ public protocol AutomationHostBridge: Sendable {
     /// The host's, not the Core's: which pasteboard, and whether this machine has one at all, is
     /// something only the host knows — the MCP server runs the same Core with no UI behind it.
     func copyToClipboard(_ text: String) async throws
+}
+
+/// What became of one put-back, in the terms a caller reports.
+public struct PutBackResult: Sendable, Equatable {
+    public let path: String
+    /// Nil when it was restored; the reason otherwise.
+    public let reason: String?
+
+    public init(path: String, reason: String?) {
+        self.path = path
+        self.reason = reason
+    }
 }
 
 public extension AutomationHostBridge {

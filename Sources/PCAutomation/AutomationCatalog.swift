@@ -151,6 +151,15 @@ public enum AutomationCatalog {
               [.init("paths", .array, "Absolute paths to trash.")]),
         .init("delete_permanently", .delete, "Delete files/folders permanently (not reversible).",
               [.init("paths", .array, "Absolute paths to delete.")]),
+        // The other half of `move_to_trash`'s "(reversible)", which was a claim with nothing behind
+        // it until the trashing started recording where each item went. Declared rather than hidden
+        // for `undo_last_action`'s stated reason: the assistant can be asked to do it, and an agent
+        // over MCP has the same way back. `list_recent_actions` is where the paths come from.
+        .init("put_back", .write,
+              "Put items back from the Trash to where they were taken from. Refuses any item that is "
+              + "no longer in the Trash or whose old path is occupied again, and says which.",
+              [.init("from", .array, "Absolute paths inside the Trash, as reported when the items were trashed."),
+               .init("to", .array, "Absolute paths to restore them to, in the same order as \"from\".")]),
         // Undoing is a write: it changes the file system back, and it is gated like any other
         // change. Declared as a tool rather than hidden in the UI so the assistant can be asked
         // to do it, and an external agent over MCP has the same way back.
