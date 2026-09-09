@@ -19,6 +19,10 @@ only go down.
 | find-files | 0 | 0 | — | `find-files.png` |
 | sync-twoway | 0 | 0 | — | `sync-twoway.png` |
 | sync-badroot | 0 | 0 | — | `sync-badroot.png` |
+| undo-delete | 0 | 0 | — | `undo-delete.png` |
+| append-merge | 0 | 0 | — | `append-merge.png` |
+| overwrite-undo | 0 | 0 | — | `overwrite-undo.png` |
+| undo-blocked | 0 | 0 | — | `undo-blocked.png` |
 | sync-runlog | 0 | 0 | — | `sync-runlog.png` |
 | sync-runputback | 0 | 0 | — | `sync-runputback.png` |
 | sync-occupied-path | 0 | 0 | — | `sync-occupied-path.png` |

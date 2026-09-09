@@ -1,0 +1,2 @@
+cat ~/undo-busy/claimed.txt 2>/dev/null | tr -d '\n'; echo -n ' '; ls ~/.Trash | grep -c '^claimed.txt' | tr -d ' '
+auto 1

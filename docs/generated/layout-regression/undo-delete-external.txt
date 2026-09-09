@@ -1,0 +1,2 @@
+cat ~/undo-del/undone.txt 2>/dev/null | tr -d '\n'; echo -n ' '; cat ~/undo-del/keep.txt 2>/dev/null | tr -d '\n'; echo -n ' '; ls ~/.Trash | grep -c '^undone.txt' | tr -d ' '
+THESE BYTES MUST COME BACK untouched 0
