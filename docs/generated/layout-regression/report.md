@@ -171,4 +171,5 @@ only go down.
 | hidden-files-race | 0 | — | — | `hidden-files-race.png` |
 | docker-drive | 0 | 0 | — | `docker-drive.png` |
 | docker-volume | 0 | 0 | — | `docker-volume.png` |
+| docker-jump | 0 | 0 | — | `docker-jump.png` |
 | docker-connect | 0 | 0 | — | `docker-connect.png` |
