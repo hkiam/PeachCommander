@@ -6,36 +6,88 @@ order: 123
 related: [plugins, view-modes-and-sorting]
 ---
 
-A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelbe hozza — nincs külön app, nincs terminál. Két oszlopot ad hozzá, amelyek minden fájl munkafa-állapotát és az aktuális branchet mutatják, egy **Git** almenüt a hétköznapi parancsokhoz (státusz, előkészítés, commit, pull, push), és a Macre már telepített `git`-et használja. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények…** menüpontból kikapcsolhatja vagy eltávolíthatja.
+A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelen mutatja meg — külön alkalmazás és terminál
+nélkül. Két oszlopot, egy **Git** almenüt, egy dokkolt panelt az előkészítéshez és a véglegesítéshez, valamint
+előzmény-, blame-, ág-, ütközés- és újraalapozó ablakokat ad hozzá. A Macen már meglévő `git`-et használja.
+Bővítmény, így kikapcsolható vagy eltávolítható a **Beállítások ▸ Bővítmények…** alatt.
 
 ## Mit ad hozzá
 
-- **Két fájllista-oszlop** — *Git Status* és *Branch*. Egy tárolóban minden fájl egy rövid állapotszót mutat (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Figyelmen kívül hagyva vagy Megváltozva), a panel pedig az aktuális branchet mutatja. Kapcsolja be az oszlopokat a **Konfiguráció ▸ Oszlopok…** menüpontban (lásd [Nézetmódok és rendezés](view-modes-and-sorting.md)).
-- **Egy Git menü** — a **Parancsok ▸ Git** alatt, valamint egy fájl jobb gombos menüjében, a következőkkel: **Git Status…**, **Git Add (előkészítés)**, **Git Commit…**, **Git Pull** és **Git Push**.
+- **Két oszlop a fájllistában** — *Git-állapot* és *Ág*. Minden fájl egy ikont és egy rövid állapotszót mutat
+  (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Mellőzve, Típus változott),
+  *(előkészítve)* jelöléssel, ha a változás már az indexben van; az *Ág* oszlop azt az ágat mutatja, amelyen a
+  fájl tárolója áll. Az oszlopokat a **Beállítások ▸ Oszlopok…** alatt kapcsolhatja be (lásd
+  [Nézetmódok és rendezés](view-modes-and-sorting.md)).
+- **Egy Git menü** — a **Parancsok ▸ Git** alatt és a fájl helyi menüjében.
 
-![A Git Status párbeszéd az aktuális branchet és a tárolóban módosított fájlokat mutatja](screenshots/git-status.png)
-*(Ábra: a Git Status jelenti a branchet és a munkafa minden változását.)*
+![A Git-állapot ablak az aktuális ággal és a tároló módosított fájljaival](screenshots/git-status.png)
+*(Ábra: a Git-állapot megnevezi az ágat és a munkafa minden változását.)*
 
-## Az állapot ellenőrzése
+## A panel: előkészítés, véglegesítés, szinkron
 
-1. Vigye a kurzort egy Git-tárolón belüli fájlra vagy mappára.
-2. Válassza a **Parancsok ▸ Git ▸ Git Status…** lehetőséget (vagy jobb kattintás ▸ **Git ▸ Git Status…**).
-3. Megjelenik egy összefoglaló: az aktuális branch (vagy *(leválasztott)*), majd vagy *A munkafa tiszta.*, vagy a változások listája, ahol minden sor az állapotot és a fájl útvonalát mutatja.
+A **Parancsok ▸ Git ▸ Panel** olyan nézetet dokkol, amely a munkafát *előkészített*, *módosított* és *nem
+követett* csoportokra bontja. Jelöljön ki fájlokat, és használja az **Előkészítés**, **Visszavonás** vagy
+**Eldobás…** gombot, írjon üzenetet, és nyomja meg a **Véglegesítés** gombot — a **Módosítás** az előző
+véglegesítésbe hajtja bele a változást. A **Letöltés** és a **Feltöltés** mellette van, ott, ahol a
+véglegesítés amúgy is történik; mindkettő mutatja a haladást, és megszakítható.
 
-Ha a kurzor nincs egy tárolón belül, a bővítmény egyszerűen azt írja: *Nem Git-tároló.*
+Az *index* kerül véglegesítésre, nem a `git commit -a`: az kerül be, amit előkészített.
 
-## Előkészítés, commit, pull, push
+## Előzmények, blame és a web
 
-- A **Git Add (előkészítés)** előkészíti a kurzor alatti fájlt (`git add`).
-- A **Git Commit…** egy commit-üzenetet kér, majd az összes változást committolja (`git commit -a`). Az összesített kimenet megjelenik, így pontosan látja, mi történt.
-- A **Git Pull** egy csak fast-forward pullt hajt végre (`git pull --ff-only`).
-- A **Git Push** az aktuális branchet pusholja (`git push`).
+- Az **Előzmények…** sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (`● main`,
+  `↗ origin/main`, `⚑ v1.0`) és az általuk érintett fájlokkal. A Return vagy dupla kattintás az adott fájl
+  változatát nyitja meg az elődjével szemben az összehasonlító ablakban. A **Véglegesítés visszavonása** és a
+  **Cherry-pick** is ott van, és mindkettő előre elutasít, ha a munkafa nem tiszta.
+- A **Fájl előzményei…** ugyanaz az ablak egyetlen fájlra.
+- A **Blame (lista)…** minden sort megmutat a véglegesítésével, szerzőjével és dátumával. A **Blame a
+  szerkesztőben** ugyanezt az információt a szerkesztő margójára írja, a sorszámok mellé: egy sorra mutatva
+  megjelenik az üzenet, kattintásra megnyílik az elődjével szemben.
+- A **Megnyitás a weben** a fájlt, a véglegesítést vagy az ágat nyitja meg a GitHubon, GitLabon, Bitbucketen
+  vagy az Azure DevOpson, a távoli tároló URL-jéből felépítve — fiók és token nélkül. Olyan kiszolgálónál,
+  amelynek hivatkozásformáját nem ismeri, a tároló oldalát ajánlja fel, ahelyett hogy találgatna.
 
-Egy olyan parancs után, amely megváltoztatja a tárolót, az aktív panel frissül, hogy az állapotoszlopok naprakészek maradjanak.
+## Ágak, félretett munkák és címkék
+
+Az **Ágak, félretett munkák és címkék…** mindhármat felsorolja. Ágat váltani, létrehozni, egyesíteni vagy
+törölni; félretett munkát feltölteni, visszavenni vagy eldobni; címkét létrehozni, törölni, feltölteni vagy
+ráváltani — a címke nem ág, ezért előre közli, hogy a HEAD leválasztva marad. A Letöltés, a Beolvasás és a
+Feltöltés ugyanabban az ablakban van, és futás közben megszakítható.
+
+A címke feltöltése szándékosan külön művelet: a `git push` nem viszi magával a címkéket.
+
+## Ütközések
+
+Az **Ütközés feloldása…** felsorolja a kurzor alatti fájl ütköző szakaszait, és mindegyikre döntést hoz: *a
+miénk*, *az övék*, *mindkettő* — vagy hagyja nyitva. Utána **Fájl írása** vagy **Írás és előkészítés**.
+Elutasítja az előkészítést, amíg egy szakasz nyitva van — a Git zokszó nélkül véglegesíti a `<<<<<<<` jeleket
+—, és inkább hozzá sem nyúl ahhoz a fájlhoz, amelynek a jeleit nem tudja elolvasni, semmint találgasson. Ha
+egy szakaszhoz kézzel kell összefésülni a két oldalt, a **Megnyitás a szerkesztőben** egy gombnyira van.
+
+## Újraalapozás
+
+Az **Újraalapozás…** felsorolja a felsőbb ág előtti véglegesítéseket — azokat, amelyek másnál még nincsenek
+meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, átrendezni vagy átfogalmazni, mielőtt az ág
+újraíródik. Ha az újraalapozás ütközésen akad meg, ugyanaz az ablak **Folytatás** / **Véglegesítés kihagyása**
+/ **Megszakítás** lesz, hogy a félbehagyott újraalapozást ne kelljen terminálban befejezni.
+
+## Fájlok mellőzése és a hitelesítő adatok
+
+- **Ezt a fájlt mellőzni…**, **Ezt a fájltípust mellőzni…** és **Ezt a mappát mellőzni…** a megfelelő mintát
+  írja a `.gitignore` fájlba — oda horgonyozva, ahová való, hogy *ennek* a `build` mappának a mellőzése ne
+  mellőzzön minden `build` nevű mappát.
+- A **Hitelesítő adatok…** arról számol be, hogyan hitelesíti magát ez a tároló: SSH vagy HTTPS, be van-e
+  állítva hitelesítési segéd, fut-e SSH-ügynök, és tart-e kulcsot. Ahol ez segít, pontosan egy műveletet
+  ajánl: hagyni, hogy a Git a macOS kulcskarikáján tartsa az adatokat. A bővítmény soha nem kér jelmondatot,
+  nem mutatja és nem tárolja.
 
 ## Megjegyzések
 
-- A bővítmény a rendszer Gitjét használja a `/usr/bin/git` alatt. Ha a Git nincs telepítve, a parancsok jelzik, hogy a Git nem érhető el. (Az Xcode Command Line Tools telepítése biztosítja.)
-- A tároló állapota mappánként egyszer olvasódik be és gyorsítótárazódik, így egy nagy tároló görgetése gyors marad; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát.
-- A commit a `git commit -a`-t használja, amely a követett változásokat committolja; a vadonatúj fájlokhoz továbbra is előbb a **Git Add (előkészítés)** szükséges.
-- A *Git Status* és *Branch* oszlopfejlécek jelenleg más felületnyelveken is angolul jelennek meg; az értékek és a párbeszédek honosítottak.
+- A bővítmény a rendszer Gitjét használja a `/usr/bin/git` útvonalon. Ha a Git hiányzik, a parancsok jelzik,
+  hogy a Git nem érhető el. (Az Xcode Command Line Tools tartalmazza.)
+- A tároló állapotát mappánként egyszer olvassa be és gyorsítótárazza, hogy egy nagy tárolóban a görgetés
+  gyors maradjon; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát, és követi az
+  alkalmazáson kívül készült véglegesítést is.
+- A csatolt munkafák és az almodulok támogatottak: egy almodulon belüli fájl *az almodul* állapotát és ágát
+  mutatja, nem a szülő tárolóét.
+- Minden listának van helyi menüje, a **Return** a fő műveletet futtatja, a **Cmd+R** újratölti az ablakot.

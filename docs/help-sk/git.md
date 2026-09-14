@@ -6,36 +6,87 @@ order: 123
 related: [plugins, view-modes-and-sorting]
 ---
 
-Zásuvný modul Git prináša stav úložiska Git priamo do panela súborov — žiadna samostatná aplikácia, žiadny terminál. Pridáva dva stĺpce, ktoré zobrazujú stav pracovného stromu každého súboru a aktuálnu vetvu, podponuku **Git** pre každodenné príkazy (stav, pripraviť, commit, pull, push), a používa `git`, ktorý je už nainštalovaný na vašom Macu. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
+Zásuvný modul Git ukazuje stav repozitára Git priamo v paneli súborov — bez samostatnej aplikácie a bez
+terminálu. Pridáva dva stĺpce, podponuku **Git**, ukotvený panel na prípravu a zápis zmien a okná pre
+históriu, blame, vetvy, konflikty a preskladanie. Používa `git`, ktorý je na vašom Macu už nainštalovaný. Je
+to zásuvný modul, takže ho môžete vypnúť alebo odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
 
 ## Čo pridáva
 
-- **Dva stĺpce v zozname súborov** — *Git Status* a *Branch*. V úložisku každý súbor zobrazuje krátke stavové slovo (Upravené, Pridané, Odstránené, Nesledované, Premenované, Skopírované, Konflikt, Ignorované alebo Zmenené) a panel zobrazuje aktuálnu vetvu. Stĺpce zapnite v **Konfigurácia ▸ Stĺpce…** (pozri [Režimy zobrazenia a triedenie](view-modes-and-sorting.md)).
-- **Ponuka Git** — pod **Príkazy ▸ Git** a v kontextovej ponuke súboru, s: **Git Status…**, **Git Add (pripraviť)**, **Git Commit…**, **Git Pull** a **Git Push**.
+- **Dva stĺpce zoznamu súborov** — *Stav Gitu* a *Vetva*. Každý súbor ukazuje ikonu a krátke slovo stavu
+  (Zmenené, Pridané, Zmazané, Nesledované, Premenované, Skopírované, Konflikt, Ignorované, Zmenený typ), s
+  *(pripravené)*, keď je zmena už v indexe; stĺpec *Vetva* ukazuje vetvu, na ktorej stojí repozitár daného
+  súboru. Stĺpce zapnete v **Konfigurácia ▸ Stĺpce…** (pozri
+  [Režimy zobrazenia a triedenie](view-modes-and-sorting.md)).
+- **Ponuka Git** — v **Príkazy ▸ Git** a v kontextovej ponuke súboru.
 
-![Dialóg Git Status zobrazujúci aktuálnu vetvu a zmenené súbory v úložisku](screenshots/git-status.png)
-*(Obrázok: Git Status hlási vetvu a každú zmenu v pracovnom strome.)*
+![Okno Stav Gitu s aktuálnou vetvou a zmenenými súbormi v repozitári](screenshots/git-status.png)
+*(Obrázok: Stav Gitu uvádza vetvu a každú zmenu v pracovnom strome.)*
 
-## Kontrola stavu
+## Panel: pripraviť, zapísať, synchronizovať
 
-1. Umiestnite kurzor na súbor alebo priečinok vnútri úložiska Git.
-2. Vyberte **Príkazy ▸ Git ▸ Git Status…** (alebo pravý klik ▸ **Git ▸ Git Status…**).
-3. Objaví sa súhrn: aktuálna vetva (alebo *(odpojené)*), potom buď *Pracovný strom je čistý.*, alebo zoznam zmien, kde každý riadok zobrazuje stav a cestu súboru.
+**Príkazy ▸ Git ▸ Panel** ukotví pohľad, ktorý delí pracovný strom na *pripravené*, *zmenené* a *nesledované*.
+Vyberte súbory a použite **Pripraviť**, **Zrušiť prípravu** alebo **Zahodiť…**, napíšte správu a stlačte
+**Zapísať** — s **Opraviť** sa zmena vloží do predošlého zápisu. **Stiahnuť** a **Odoslať** ležia vedľa, tam,
+kde sa aj tak zapisuje; obe ukazujú postup a dajú sa prerušiť.
 
-Ak kurzor nie je vnútri úložiska, zásuvný modul jednoducho oznámi *Nie je úložisko Git.*
+Zapisuje sa *index*, nie `git commit -a`: zapíše sa to, čo ste pripravili.
 
-## Pripraviť, commit, pull, push
+## História, blame a web
 
-- **Git Add (pripraviť)** pripraví súbor pod kurzorom (`git add`).
-- **Git Commit…** požiada o správu commitu, potom odovzdá všetky zmeny (`git commit -a`). Zobrazí sa kombinovaný výstup, takže presne vidíte, čo sa stalo.
-- **Git Pull** vykoná pull iba typu fast-forward (`git pull --ff-only`).
-- **Git Push** odošle aktuálnu vetvu (`git push`).
+- **História…** vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (`● main`, `↗ origin/main`,
+  `⚑ v1.0`), a súbory, ktorých sa každý zápis dotkol. Return alebo dvojklik otvorí verziu toho súboru proti
+  jeho predchodcovi v okne porovnania. **Vrátiť zápis** a **Cherry-pick** sú tam tiež a oba vopred odmietnu,
+  ak pracovný strom nie je čistý.
+- **História súboru…** je to isté okno pre jeden súbor.
+- **Blame (zoznam)…** ukazuje každý riadok s jeho zápisom, autorom a dátumom. **Blame v editore** píše tú istú
+  informáciu na okraj editora, vedľa čísel riadkov: ukázanie na riadok zobrazí správu zápisu, kliknutie ho
+  otvorí proti jeho predchodcovi.
+- **Otvoriť na webe** otvorí súbor, zápis alebo vetvu na GitHube, GitLabe, Bitbuckete či Azure DevOps,
+  zostavené z URL vzdialeného repozitára — bez účtu, bez tokenu. Pri serveri, ktorého podobu odkazov nepozná,
+  ponúkne stránku repozitára, namiesto toho aby hádal.
 
-Po príkaze, ktorý mení úložisko, sa aktívny panel obnoví, takže stavové stĺpce zostanú aktuálne.
+## Vetvy, odložené zmeny a značky
+
+**Vetvy, odložené zmeny a značky…** vypisuje všetky tri. Prepnúť, založiť, zlúčiť alebo zmazať vetvu; odoslať,
+vybrať alebo zahodiť odložené zmeny; založiť, zmazať či odoslať značku alebo na ňu prepnúť — značka nie je
+vetva, a tak sa vopred povie, že HEAD skončí odpojený. Načítanie, Stiahnuť a Odoslať sú v tom istom okne a dá
+sa ich prerušiť počas behu.
+
+Odoslať značku je zámerne samostatná akcia: `git push` značky so sebou neberie.
+
+## Konflikty
+
+**Vyriešiť konflikt…** vypisuje konfliktné oblasti súboru pod kurzorom a pre každú prijme rozhodnutie: *naše*,
+*ich*, *oboje* — alebo ju nechať otvorenú. Potom **Zapísať súbor** alebo **Zapísať a pripraviť**. Odmieta
+pripraviť, kým je niektorá oblasť otvorená — Git značky `<<<<<<<` zapíše bez mihnutia oka — a radšej sa
+nedotkne súboru, ktorého značky nevie prečítať, než aby ich hádal. Pre oblasť, ktorú treba prepliesť ručne z
+oboch strán, je **Otvoriť v editore** jedno tlačidlo ďaleko.
+
+## Preskladanie
+
+**Preskladať…** vypisuje zápisy pred prúdom — tie, ktoré nikto iný ešte nemá — a nechá vás ich zlúčiť,
+pripojiť ako opravu, zahodiť, preskladať alebo prepísať ich správu, než sa vetva prepíše. Ak sa preskladanie
+zastaví na konflikte, z toho istého okna sa stane **Pokračovať** / **Preskočiť zápis** / **Prerušiť
+preskladanie**, aby sa rozrobené preskladanie nemuselo dokončovať v termináli.
+
+## Ignorovanie súborov a prihlasovacie údaje
+
+- **Ignorovať tento súbor…**, **Ignorovať tento typ súboru…** a **Ignorovať tento priečinok…** zapíšu správny
+  vzor do `.gitignore` — ukotvený tam, kam patrí, aby ignorovanie *tohto* priečinka `build` neignorovalo každý
+  priečinok s názvom `build`.
+- **Prihlasovacie údaje…** hlásia, ako sa tento repozitár overuje: SSH, alebo HTTPS, či je nastavený pomocník
+  pre prihlasovacie údaje, či beží agent SSH a drží kľúč. Kde to pomôže, ponúknu presne jednu akciu — nechať
+  Git uchovávať údaje v zväzku kľúčov macOS. Zásuvný modul sa nikdy nepýta na heslo kľúča, nezobrazuje ho ani
+  neukladá.
 
 ## Poznámky
 
-- Zásuvný modul používa systémový Git na `/usr/bin/git`. Ak Git nie je nainštalovaný, príkazy oznámia, že Git nie je k dispozícii. (Inštalácia Xcode Command Line Tools ho poskytne.)
-- Stav úložiska sa načíta raz na priečinok a uloží do vyrovnávacej pamäte, takže posúvanie veľkého úložiska zostáva rýchle; vyrovnávacia pamäť sa obnoví po každom príkaze, ktorý zmení strom.
-- Commit používa `git commit -a`, ktorý odovzdá sledované zmeny; úplne nové súbory stále najprv potrebujú **Git Add (pripraviť)**.
-- Hlavičky stĺpcov *Git Status* a *Branch* sa momentálne zobrazujú v angličtine aj v iných jazykoch rozhrania; hodnoty a dialógy sú lokalizované.
+- Zásuvný modul používa systémový Git v `/usr/bin/git`. Ak Git chýba, príkazy oznámia, že Git nie je k
+  dispozícii. (Prinášajú ho Xcode Command Line Tools.)
+- Stav repozitára sa číta raz na priečinok a ukladá do vyrovnávacej pamäte, aby prechádzanie veľkého
+  repozitára zostalo rýchle; pamäť sa obnoví po každom príkaze, ktorý zmení strom, a sleduje aj zápis
+  urobený mimo aplikácie.
+- Pripojené pracovné stromy a podmoduly sú podporované: súbor vnútri podmodulu ukazuje stav a vetvu
+  *podmodulu*, nie nadradeného repozitára.
+- Každý zoznam má kontextovú ponuku, **Return** spustí jeho hlavnú akciu a **Cmd+R** okno znova načíta.
