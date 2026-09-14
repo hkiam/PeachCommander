@@ -16,6 +16,8 @@ Ko datotek ali map ne potrebujete več, jih lahko Peach Commander premakne v Ko�
 
 Elementi, poslani v Koš, ostanejo tam, dokler ga ne izpraznite, tako da jih lahko obnovite iz Finderja, če si premislite.
 
+**Uredi ▸ Razveljavi (⌘Z) vzame nazaj zadnji izbris.** Datoteke se iz Koša premaknejo natanko tja, kjer so bile, in nič se ne prepiše: element, čigar stara pot je spet zasedena, ostane pri miru, namesto da bi bil vsiljen — in poveste vam, kateri so to in zakaj, namesto da bi morali domnevati, da je uspelo. Dvoje je vredno vedeti. Velja le za *zadnje* opravilo, njihov seznam pa živi v pomnilniku: zaprite program ali opravite še trideset datotečnih opravil in ponudbe ni več, medtem ko datoteke še vedno ležijo v Košu, da jih premaknete nazaj sami. Trajnega izbrisa (Shift+F8) pa sploh ni mogoče razveljaviti; ni česa vrniti.
+
 ## Kako trajno izbrisati
 
 1. Označite datoteke in mape za odstranitev.

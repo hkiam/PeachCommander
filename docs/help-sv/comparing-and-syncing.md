@@ -70,14 +70,42 @@ borttagning på den ena sidan föras över till den andra.
   stället, eller låta båda sidor vara.
 - Ändrad på den ena sidan och borttagen på den andra är en **konflikt**, aldrig en borttagning. Samma
   gäller en fil som ändrats på båda sidor.
-- Inget tas bort på grund av en frånvaro som jämförelsen inte kunde bekräfta.
-- Bara två mappar på den här Mac-datorn, inte en server och inte ett arkiv.
+- Inget tas bort på grund av en frånvaro som jämförelsen inte kunde bekräfta — en oläsbar mapp,
+  eller en som filtret höll tillbaka, bevisar ingenting om vad som finns i den.
+- Bara två mappar på den här Mac-datorn. Inte en server och inte ett arkiv: en radering i ett arkiv
+  skriver om det, en radering på en server är permanent, och det här läget är inte det att pröva
+  det med.
 
 **Det finns ingen ångra för en borttagning.** På den här datorn hamnar filen i Papperskorgen och kan
 hämtas tillbaka i Finder; det är hela skyddsnätet. **Minne…** i fönstret listar varje par appen minns, markerar det du tittar på och låter dig glömma vilket som helst av dem — därefter beter sig nästa jämförelse av de mapparna som en första igen. Ingenting glöms av sig själv: en mapp på en avmonterad disk är inte borta, bara inte ansluten.
 
 Uppgiften ligger med inställningarna: flyttar du en
 av mapparna har paret ingen historia längre — och en körning utan historia tar inte bort något.
+
+## Vad en körning gjorde, och vad av det som kan tas tillbaka
+
+Varje synkronisering skrivs ned. **Körningar…** i fönstret listar dem med de senaste först — när, vilka två mappar, vilket läge, och hur många filer som kopierades, raderades eller hölls tillbaka — och visar vad som hände med varje fil i den körning du väljer.
+
+Den listan är det som gör papperskorgen användbar. En fil som den här Mac-datorn raderade hamnade i papperskorgen, och körningen antecknade *var*, vilket betyder mer än det låter: papperskorgen döper om vid krock, så en andra `notes.txt` hamnar som `notes.txt 11-17-15-028.txt`, och att leta efter den på namn ger fel fil. **Visa i papperskorgen** pekar Finder rakt på objektet.
+
+**Lägg tillbaka…** flyttar de filer en körning raderade ut ur papperskorgen till de sökvägar de raderades från. Varje enskild kontrolleras först, och det som inte håller avvisas med sitt skäl i stället för att tvingas igenom:
+
+- Det ligger något på den sökvägen igen. Det lämnas i fred — ett tillbakaläggande får aldrig skriva över.
+- Objektet finns inte i papperskorgen längre, eller det raderades permanent i stället för att läggas dit.
+- Sidan var ett arkiv eller en server. Ett arkiv skrivs om i sin helhet, och en server har ingen
+  papperskorg, så ingenting sparades.
+- Mappen körningen skrev till är borta, eller är inte samma mapp längre — en återanvänd
+  monteringspunkt, säg. Då avvisas hela körningen i stället för att någon del av den utförs.
+- Det har redan lagts tillbaka. Noteringen minns det, så ett andra försök gör ingenting.
+- Eller noteringen själv är en som den här versionen inte kan agera på — skriven av en nyare version
+  av appen, eller så namnger den en sökväg utanför båda mapparna. Ovanligt, och avvisat i stället för
+  gissat.
+
+**En kopia kan inte tas tillbaka.** Att ta bort en skulle innebära att radera en fil du kan ha redigerat sedan dess, vilket är den omvända bytesaffären mot att lägga tillbaka en radering, så appen erbjuder det inte — körningen talar om vilka filer den kopierade och du kan radera dem själv. En fil som *skrevs över* är den enda riktiga luckan, och den är numera liten: på den här Mac-datorn hamnar den ersatta versionen i papperskorgen som en raderad fil, så **Visa i papperskorgen** hittar den. In i ett arkiv, upp på en server eller till en volym utan papperskorg går det inte, och bekräftelsen säger det före körningen.
+
+De senaste 200 körningarna behålls, eller 64 MB av dem, vilket som kommer först; därutöver faller de äldsta bort en i taget allteftersom nya kommer till, och **Glöm** och **Glöm alla** rensar dem på stället. En mycket stor körning — mer än 20 000 filer — behåller varje problem och allt den lade i papperskorgen, men inte de kopior som gick igenom, och säger det i stället för att låta dig upptäcka det. Dess raderingar går fortfarande att lägga tillbaka: det som utelämnades är kopiorna, och en kopia hade ändå inte kunnat tas tillbaka.
+
+Att glömma ändrar ingenting i mapparna; det som försvinner är noteringen om vad som gjordes, och med den erbjudandet att lägga tillbaka något. Till skillnad från tvåvägsminnet slängs detta automatiskt — att förlora minnet av ett *par* skulle ändra vad nästa körning gör, medan att förlora noteringen om en körning bara tar bort ett erbjudande.
 
 ## Kortkommandon
 

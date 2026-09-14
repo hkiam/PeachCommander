@@ -16,6 +16,8 @@ Amikor már nincs szüksége fájlokra vagy mappákra, a Peach Commander a Kuká
 
 A Kukába küldött elemek addig maradnak ott, amíg ki nem üríti, így meggondolhatja magát, és visszaállíthatja őket a Finderből.
 
+**Szerkesztés ▸ Visszavonás (⌘Z) visszaveszi a legutóbbi törlést.** A fájlok a Kukából pontosan oda kerülnek vissza, ahol voltak, és semmi sem íródik felül: az az elem, amelynek régi útvonala ismét foglalt, érintetlen marad ahelyett, hogy kényszerítenénk — és megtudja, melyek ezek és miért, ahelyett hogy feltételeznie kellene, hogy sikerült. Két dolgot érdemes tudni róla. Csak a *legutóbbi* műveletre vonatkozik, és a műveletek listája a memóriában él: lépjen ki az alkalmazásból, vagy végezzen még harminc fájlműveletet, és az ajánlat eltűnik, miközben a fájlok még mindig a Kukában vannak, hogy saját kezűleg helyezze vissza őket. A végleges törlés (Shift+F8) pedig egyáltalán nem vonható vissza; nincs mit visszatenni.
+
 ## Végleges törlés
 
 1. Jelölje meg az eltávolítandó fájlokat és mappákat.

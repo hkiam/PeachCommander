@@ -16,6 +16,8 @@ Když již soubory nebo složky nepotřebujete, Peach Commander je může přesu
 
 Položky odeslané do Koše tam zůstanou, dokud jej nevysypete, takže je můžete z Finderu obnovit, pokud změníte názor.
 
+**Úpravy ▸ Zpět (⌘Z) vrátí poslední smazání.** Soubory se přesunou z Koše přesně tam, kde byly, a nic se nepřepíše: položka, jejíž původní cesta je opět obsazená, zůstane ležet, místo aby byla vynucena — a dozvíte se, které to jsou a proč, místo abyste museli předpokládat, že to vyšlo. Dvě věci k tomu. Platí to jen pro *poslední* operaci a jejich seznam žije v paměti: ukončete aplikaci nebo proveďte dalších třicet souborových operací a nabídka je pryč, zatímco soubory stále leží v Koši a můžete je přesunout zpět sami. A trvalé smazání (Shift+F8) nelze vrátit vůbec; není co vracet.
+
 ## Jak trvale smazat
 
 1. Označte soubory a složky k odstranění.

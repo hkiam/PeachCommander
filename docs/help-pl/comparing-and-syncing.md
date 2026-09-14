@@ -70,14 +70,40 @@ zapisem usunięcie po jednej stronie może zostać przeniesione na drugą.
   plik z powrotem albo zostawić obie strony.
 - Zmienione po jednej stronie i usunięte po drugiej to **konflikt**, nigdy usunięcie. Tak samo plik
   zmieniony po obu stronach.
-- Nic nie jest usuwane na podstawie nieobecności, której porównanie nie mogło potwierdzić.
-- Tylko dwa foldery na tym Macu, nie serwer i nie archiwum.
+- Nic nie jest usuwane na podstawie nieobecności, której porównanie nie mogło potwierdzić —
+  nieczytelny folder albo taki, który zatrzymał filtr, niczego nie dowodzi o swojej zawartości.
+- Tylko dwa foldery na tym Macu. Nie serwer i nie archiwum: usunięcie w archiwum zapisuje je od
+  nowa, usunięcie na serwerze jest trwałe, a ten tryb nie jest tym, na którym warto to sprawdzać.
 
 **Usunięcia nie da się cofnąć.** Na tym Macu plik idzie do Kosza i można go przywrócić w Finderze; to
 cała siatka. **Pamięć…** w oknie wypisuje każdą parę, którą program pamięta, wyróżnia tę otwartą i pozwala zapomnieć dowolną — po czym następne porównanie tych folderów zachowuje się znów jak pierwsze. Nic nie jest zapominane samo: folder na odłączonym dysku nie zniknął, tylko nie jest podłączony.
 
 Zapis leży przy ustawieniach: przeniesienie jednego z folderów pozbawia parę historii — a
 przebieg bez historii nic nie usuwa.
+
+## Co zrobił przebieg i co z tego da się cofnąć
+
+Każda synchronizacja jest zapisywana. **Przebiegi…** w oknie wypisują je od najnowszych — kiedy, które dwa foldery, który tryb i ile plików zostało skopiowanych, usuniętych lub zatrzymanych — a dla wybranego przebiegu pokazują, co stało się z każdym plikiem.
+
+To właśnie ta lista czyni Kosz użytecznym. Plik, który ten Mac usunął, trafił do Kosza, a przebieg zapisał *gdzie*, co znaczy więcej, niż brzmi: Kosz przy kolizji zmienia nazwę, więc druga `notes.txt` ląduje jako `notes.txt 11-17-15-028.txt`, a szukanie po nazwie trafia na niewłaściwą. **Pokaż w Koszu** kieruje Findera prosto na element.
+
+**Przywróć…** przenosi pliki usunięte przez przebieg z Kosza na ścieżki, z których zostały usunięte. Każdy jest najpierw sprawdzany, a to, co się nie zgadza, zostaje odrzucone wraz z powodem, zamiast być wymuszone:
+
+- Na tej ścieżce znowu coś jest. Zostaje nietknięte — przywrócenie nigdy nie może nadpisywać.
+- Elementu nie ma już w Koszu albo został usunięty trwale, zamiast tam trafić.
+- Strona była archiwum lub serwerem. Archiwum zapisuje się od nowa w całości, a serwer nie ma Kosza,
+  więc nic nie zostało zachowane.
+- Folder, do którego przebieg zapisywał, zniknął albo nie jest już tym samym folderem — na przykład
+  ponownie użyty punkt montowania. Wtedy odrzucany jest cały przebieg, zamiast wykonać jego część.
+- Zostało już przywrócone. Zapis to pamięta, więc druga próba nic nie robi.
+- Albo sam zapis jest taki, na którym ta wersja nie potrafi działać — napisany przez nowszą wersję
+  programu lub wskazujący ścieżkę poza oboma folderami. Rzadkie, i odrzucane zamiast zgadywane.
+
+**Kopii nie da się cofnąć.** Usunięcie jej oznaczałoby skasowanie pliku, który mogłeś od tego czasu edytować, a to odwrotna wymiana niż przywrócenie usunięcia, więc program tego nie oferuje — przebieg mówi, które pliki skopiował, a usunąć możesz je sam. Plik, który został *nadpisany*, to jedyna prawdziwa luka, i jest już niewielka: na tym Macu zastąpiona wersja trafia do Kosza jak plik usunięty, więc **Pokaż w Koszu** ją znajdzie. Do archiwum, na serwer ani na wolumin bez Kosza tak się nie da, i potwierdzenie mówi o tym przed przebiegiem.
+
+Przechowywanych jest ostatnich 200 przebiegów albo 64 MB z nich, zależnie od tego, co nastąpi pierwsze; powyżej tego najstarsze odpadają po kolei, w miarę jak przybywają nowe, a **Zapomnij** i **Zapomnij wszystkie** sprzątają je od razu. Bardzo duży przebieg — ponad 20 000 plików — zachowuje każdy problem i wszystko, co włożył do Kosza, ale nie kopie, które przeszły, i mówi o tym, zamiast zostawiać to twojej uwadze. Jego usunięcia wciąż da się przywrócić: pominięte zostały kopie, a kopii i tak nie dałoby się cofnąć.
+
+Zapomnienie niczego nie zmienia w folderach; znika zapis tego, co zrobiono, a wraz z nim oferta przywrócenia czegokolwiek. W odróżnieniu od pamięci dwukierunkowej to jest wyrzucane automatycznie — utrata pamięci *pary* zmieniłaby to, co zrobi następny przebieg, podczas gdy utrata zapisu przebiegu odbiera tylko ofertę.
 
 ## Skróty
 

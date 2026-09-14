@@ -16,6 +16,8 @@ Gdy pliki lub foldery nie są już potrzebne, Peach Commander może przenieść 
 
 Elementy wysłane do Kosza pozostają tam, dopóki go nie opróżnisz, więc jeśli zmienisz zdanie, możesz je przywrócić z Findera.
 
+**Edycja ▸ Cofnij (⌘Z) cofa ostatnie usunięcie.** Pliki wracają z Kosza dokładnie tam, gdzie były, i nic nie zostaje nadpisane: element, którego dawna ścieżka jest znów zajęta, zostaje nietknięty zamiast być wymuszony — a Ty dowiadujesz się, które to i dlaczego, zamiast zakładać, że się udało. Dwie rzeczy warto wiedzieć. Dotyczy to tylko *ostatniej* operacji, a ich lista żyje w pamięci: zamknij program albo wykonaj trzydzieści kolejnych operacji na plikach, a oferta znika, podczas gdy pliki nadal leżą w Koszu i możesz je przenieść z powrotem samodzielnie. A usunięcia trwałego (Shift+F8) nie da się cofnąć w ogóle; nie ma czego przywracać.
+
 ## Jak usuwać trwale
 
 1. Zaznacz pliki i foldery do usunięcia.

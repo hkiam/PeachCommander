@@ -16,6 +16,8 @@ Lorsque vous n'avez plus besoin de fichiers ou de dossiers, Peach Commander peut
 
 Les éléments envoyés à la Corbeille y restent jusqu'à ce que vous la vidiez : vous pouvez donc les restaurer depuis le Finder si vous changez d'avis.
 
+**Édition ▸ Annuler (⌘Z) reprend la dernière suppression.** Les fichiers sortent de la Corbeille et retournent exactement là où ils étaient, sans rien écraser : un élément dont l’ancien chemin est de nouveau occupé est laissé tel quel plutôt que forcé — et l’on vous dit lesquels et pourquoi, au lieu de vous laisser supposer que tout s’est bien passé. Deux choses à savoir. Cela ne vaut que pour la *dernière* opération, et leur liste vit en mémoire : quittez l’application, ou faites trente autres opérations sur des fichiers, et l’offre a disparu alors que les fichiers sont toujours dans la Corbeille, à vous de les remettre. Et une suppression définitive (Maj+F8) ne s’annule pas du tout ; il n’y a rien à remettre en place.
+
 ## Comment supprimer définitivement
 
 1. Marquez les fichiers et dossiers à retirer.

@@ -70,14 +70,43 @@ Con ese registro, una eliminación en un lado puede trasladarse al otro.
   respuestas: copiar el archivo de vuelta, o dejar ambos lados como están.
 - Modificado en un lado y eliminado en el otro es un **conflicto**, nunca una eliminación. Igual que
   un archivo modificado en ambos lados.
-- Nada se elimina por una ausencia que la comparación no pudo confirmar.
-- Solo dos carpetas de este Mac, ni un servidor ni un archivo comprimido.
+- Nada se elimina por una ausencia que la comparación no pudo confirmar — una carpeta ilegible, o
+  una que el filtro retuvo, no demuestra nada sobre lo que hay dentro.
+- Solo dos carpetas de este Mac. Ni un servidor ni un archivo comprimido: un borrado en un archivo
+  comprimido lo reescribe, un borrado en un servidor es permanente, y este modo no es aquel con el
+  que probar eso.
 
 **Una eliminación no se puede deshacer.** En este Mac el archivo va a la Papelera y puede recuperarse
 desde el Finder; eso es toda la red. **Memoria…** en la ventana enumera cada par que la aplicación recuerda, señala el que está viendo y permite olvidar cualquiera de ellos; después, la siguiente comparación de esas carpetas vuelve a comportarse como una primera. Nunca se olvida nada por su cuenta: una carpeta en un disco desmontado no ha desaparecido, solo está desconectada.
 
 El registro vive con los ajustes: mover una de las carpetas deja
 al par sin historial — y una ejecución sin historial no elimina nada.
+
+## Qué hizo una ejecución, y qué de ello se puede recuperar
+
+Cada sincronización queda anotada. **Ejecuciones…** en la ventana las enumera, las más recientes primero — cuándo, qué dos carpetas, qué modo y cuántos archivos se copiaron, borraron o se dejaron fuera — y muestra qué le pasó a cada archivo de la ejecución que seleccione.
+
+Esa lista es lo que hace útil la Papelera. Un archivo que este Mac borró fue a la Papelera, y la ejecución anotó *dónde*, lo cual importa más de lo que parece: la Papelera renombra al haber colisión, así que un segundo `notes.txt` aterriza como `notes.txt 11-17-15-028.txt`, y buscarlo por el nombre da con el equivocado. **Mostrar en la Papelera** lleva al Finder directo al elemento.
+
+**Devolver…** saca de la Papelera los archivos que una ejecución borró y los lleva a las rutas de las que se borraron. Cada uno se comprueba antes, y lo que no se sostiene se rechaza con su motivo en lugar de forzarse:
+
+- Hay algo de nuevo en esa ruta. Se deja en paz — una devolución nunca puede sobrescribir.
+- El elemento ya no está en la Papelera, o se eliminó de forma permanente en vez de enviarse allí.
+- El lado era un archivo comprimido o un servidor. Un archivo comprimido se reescribe entero, y un
+  servidor no tiene Papelera, así que no se guardó nada.
+- La carpeta en la que escribió la ejecución ya no está, o ya no es la misma carpeta — un punto de
+  montaje reutilizado, por ejemplo. Entonces se rechaza la ejecución entera en lugar de actuar sobre
+  una parte de ella.
+- Ya se devolvió. El registro lo conserva, así que un segundo intento no hace nada.
+- O el registro mismo es uno sobre el que esta versión no puede actuar — escrito por una versión más
+  nueva de la aplicación, o nombrando una ruta fuera de ambas carpetas. Raro, y rechazado en vez de
+  adivinado.
+
+**Una copia no se puede recuperar.** Quitarla significaría borrar un archivo que quizá haya editado desde entonces, que es el intercambio opuesto al de devolver un borrado, así que la aplicación no lo ofrece — la ejecución le dice qué archivos copió y puede borrarlos usted mismo. Un archivo que fue *sobrescrito* es el único hueco real, y ahora es pequeño: en este Mac la versión reemplazada va a la Papelera como un archivo borrado, así que **Mostrar en la Papelera** la encuentra. Hacia un archivo comprimido, hacia un servidor o hacia un volumen sin Papelera no puede, y la confirmación lo dice antes de la ejecución.
+
+Se conservan las últimas 200 ejecuciones, o 64 MB de ellas, lo que ocurra primero; pasado eso las más antiguas van cayendo de una en una según llegan nuevas, y **Olvidar** y **Olvidar todo** las borran al momento. Una ejecución muy grande — más de 20.000 archivos — conserva cada problema y todo lo que puso en la Papelera, pero no las copias que salieron bien, y lo dice en vez de dejar que usted lo note. Sus borrados se pueden seguir devolviendo: lo que quedó fuera son las copias, y una copia no se habría podido recuperar de todos modos.
+
+Olvidar no cambia nada en las carpetas; lo que se va es el registro de lo que se hizo, y con él la oferta de devolver algo. A diferencia de la memoria bidireccional, esto se tira automáticamente — perder la memoria de un *par* cambiaría lo que hace la siguiente ejecución, mientras que perder el registro de una ejecución solo quita una oferta.
 
 ## Atajos
 

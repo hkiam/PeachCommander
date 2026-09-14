@@ -70,14 +70,40 @@ záznamem lze smazání na jedné straně přenést na druhou.
   ponechat obě strany být.
 - Změněno na jedné straně a smazáno na druhé je **konflikt**, nikdy smazání. Stejně tak soubor
   změněný na obou stranách.
-- Nic se nemaže na základě nepřítomnosti, kterou srovnání nemohlo potvrdit.
-- Jen dvě složky na tomto Macu, ne server a ne archiv.
+- Nic se nemaže na základě nepřítomnosti, kterou srovnání nemohlo potvrdit — nečitelná složka nebo
+  složka, kterou zadržel filtr, nedokazuje nic o tom, co je uvnitř.
+- Jen dvě složky na tomto Macu. Ne server a ne archiv: smazání v archivu jej přepíše, smazání na
+  serveru je nevratné, a tento režim není ten, se kterým to zkoušet.
 
 **Smazání nelze vzít zpět.** Na tomto Macu jde soubor do Koše a lze jej vrátit ve Finderu; to je celá
 záchranná síť. **Paměť…** v okně vypíše každý pár, který si aplikace pamatuje, zvýrazní ten otevřený a umožní kterýkoli z nich zapomenout — poté se další srovnání těch složek zachová opět jako první. Samo se nikdy nic nezapomene: složka na odpojeném disku není pryč, jen není zapojená.
 
 Záznam leží u nastavení: přesunete-li jednu ze složek, pár už žádnou historii nemá — a
 běh bez historie nic nemaže.
+
+## Co běh udělal a co z toho lze vzít zpět
+
+Každá synchronizace se zapisuje. **Běhy…** v okně je vypisuje od nejnovějších — kdy, které dvě složky, který režim a kolik souborů bylo zkopírováno, smazáno nebo zadrženo — a u vybraného běhu ukazuje, co se stalo s každým souborem.
+
+Právě tento seznam dělá Koš použitelným. Soubor, který tento Mac smazal, skončil v Koši, a běh si zapsal *kde*, což znamená víc, než to zní: Koš při kolizi přejmenovává, takže druhá `notes.txt` přistane jako `notes.txt 11-17-15-028.txt`, a kdo ji hledá podle jména, najde tu špatnou. **Zobrazit v Koši** namíří Finder přímo na položku.
+
+**Vrátit zpět…** přesune soubory, které běh smazal, z Koše na cesty, ze kterých byly smazány. Každý se nejdřív zkontroluje a to, co neplatí, je odmítnuto s vlastním důvodem místo vynucení:
+
+- Na té cestě už zase něco je. Zůstane nedotčeno — vrácení nesmí nikdy přepsat.
+- Položka už v Koši není, nebo byla smazána trvale místo toho, aby tam byla přesunuta.
+- Strana byla archiv nebo server. Archiv se přepisuje celý a server žádný Koš nemá, takže se nic
+  neuchovalo.
+- Složka, do které běh zapisoval, je pryč, nebo to už není tatáž složka — třeba znovu použitý
+  přípojný bod. Pak je odmítnut celý běh místo toho, aby se provedla jeho část.
+- Už to bylo vráceno. Záznam si to pamatuje, takže druhý pokus neudělá nic.
+- Nebo je sám záznam takový, se kterým tato verze neumí pracovat — zapsaný novější verzí aplikace,
+  nebo uvádí cestu mimo obě složky. Vzácné, a odmítnuté místo dohadování.
+
+**Kopii vzít zpět nelze.** Odstranit ji by znamenalo smazat soubor, který jste mezitím mohli upravit, což je opačný obchod než vrácení smazání, takže to aplikace nenabízí — běh vám řekne, které soubory zkopíroval, a smazat je můžete sami. Soubor, který byl *přepsán*, je jediná skutečná mezera, a je už malá: na tomto Macu jde nahrazená verze do Koše jako smazaný soubor, takže ji **Zobrazit v Koši** najde. Do archivu, na server ani na svazek bez Koše to nejde, a potvrzení to řekne před během.
+
+Uchovává se posledních 200 běhů, nebo 64 MB z nich, podle toho, co nastane dřív; nad to nejstarší postupně odpadají, jak přibývají nové, a **Zapomenout** i **Zapomenout vše** je uklidí na místě. Velmi velký běh — přes 20 000 souborů — si ponechá každý problém a všechno, co dal do Koše, ale ne kopie, které prošly, a řekne to místo toho, aby vás to nechal zjistit. Jeho smazání lze stále vrátit: vynechány byly kopie, a kopii by stejně nešlo vzít zpět.
+
+Zapomenutí nemění nic na složkách; zmizí záznam o tom, co se udělalo, a s ním nabídka něco vrátit. Na rozdíl od oboustranné paměti se tohle zahazuje automaticky — ztratit paměť *dvojice* by změnilo, co udělá další běh, zatímco ztráta záznamu o běhu jen bere jednu nabídku.
 
 ## Klávesové zkratky
 

@@ -16,6 +16,8 @@ Când nu mai aveți nevoie de fișiere sau foldere, Peach Commander le poate mut
 
 Elementele trimise în Coșul de gunoi rămân acolo până când îl goliți, așa că le puteți restaura din Finder dacă vă răzgândiți.
 
+**Editare ▸ Anulează (⌘Z) ia înapoi ultima ștergere.** Fișierele ies din Coș exact acolo unde erau, și nimic nu este suprascris: un element a cărui cale veche este ocupată din nou este lăsat în pace în loc să fie forțat — iar dumneavoastră aflați care sunt și de ce, în loc să presupuneți că a mers. Două lucruri de știut. Se aplică doar *ultimei* operații, iar lista lor trăiește în memorie: închideți aplicația, sau faceți încă treizeci de operații cu fișiere, și oferta a dispărut, în timp ce fișierele stau tot în Coș, ca să le mutați înapoi singur. Iar o ștergere permanentă (Shift+F8) nu se poate anula deloc; nu este nimic de pus la loc.
+
 ## Cum se șterge definitiv
 
 1. Marcați fișierele și folderele de eliminat.

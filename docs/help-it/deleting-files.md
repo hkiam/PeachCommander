@@ -16,6 +16,8 @@ Quando non avete più bisogno di file o cartelle, Peach Commander può spostarli
 
 Gli elementi inviati al Cestino vi restano finché non lo svuotate, così potete ripristinarli dal Finder se cambiate idea.
 
+**Modifica ▸ Annulla (⌘Z) riporta indietro l’ultima eliminazione.** I file escono dal Cestino e tornano esattamente dov’erano, senza sovrascrivere nulla: un elemento il cui vecchio percorso è di nuovo occupato viene lasciato stare anziché forzato — e ti viene detto quali e perché, invece di lasciarti supporre che sia andata bene. Due cose da sapere. Vale solo per l’*ultima* operazione, e il loro elenco vive in memoria: chiudi l’app, o compi altre trenta operazioni sui file, e l’offerta è sparita mentre i file sono ancora nel Cestino, pronti da rimettere a mano. E un’eliminazione definitiva (Maiusc+F8) non si annulla affatto; non c’è nulla da rimettere.
+
 ## Come eliminare definitivamente
 
 1. Contrassegnate i file e le cartelle da rimuovere.

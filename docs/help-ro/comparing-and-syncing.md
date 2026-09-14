@@ -70,14 +70,42 @@ această înregistrare, o ștergere pe o parte poate fi dusă pe cealaltă.
   fișierul înapoi sau lăsați ambele părți așa cum sunt.
 - Modificat pe o parte și șters pe cealaltă este un **conflict**, niciodată o ștergere. La fel un
   fișier modificat pe ambele părți.
-- Nimic nu se șterge pe baza unei absențe pe care comparația nu a putut-o confirma.
-- Doar două dosare de pe acest Mac, nici server, nici arhivă.
+- Nimic nu se șterge pe baza unei absențe pe care comparația nu a putut-o confirma — un dosar
+  ilizibil, sau unul reținut de filtru, nu dovedește nimic despre ce se află în el.
+- Doar două dosare de pe acest Mac. Nici server, nici arhivă: o ștergere într-o arhivă o rescrie, o
+  ștergere pe un server este definitivă, iar acest mod nu este cel cu care să încercați asta.
 
 **O ștergere nu se poate anula.** Pe acest Mac fișierul ajunge în Coș și poate fi readus din Finder;
 asta este toată plasa. **Memorie…** din fereastră enumeră fiecare pereche pe care aplicația o ține minte, o evidențiază pe cea deschisă și vă lasă să uitați oricare dintre ele — după care următoarea comparație a acelor dosare se comportă iar ca o primă. Nimic nu este uitat de la sine: un dosar de pe un disc demontat nu a dispărut, doar nu este conectat.
 
 Înregistrarea stă cu setările: mutând unul dintre dosare, perechea nu mai are
 istorie — iar o rulare fără istorie nu șterge nimic.
+
+## Ce a făcut o execuție și ce se poate lua înapoi din ea
+
+Fiecare sincronizare este consemnată. **Execuții…** în fereastră le enumeră, cele mai noi primele — când, care două dosare, ce mod și câte fișiere au fost copiate, șterse sau reținute — și arată ce s-a întâmplat cu fiecare fișier din execuția selectată.
+
+Această listă face Coșul utilizabil. Un fișier pe care acest Mac l-a șters a ajuns în Coș, iar execuția a notat *unde*, ceea ce contează mai mult decât pare: Coșul redenumește la coliziune, așa că un al doilea `notes.txt` aterizează drept `notes.txt 11-17-15-028.txt`, iar căutarea după nume dă peste cel greșit. **Arată în Coș** îndreaptă Finder direct spre element.
+
+**Pune la loc…** mută fișierele șterse de o execuție din Coș la căile de unde au fost șterse. Fiecare este verificat mai întâi, iar ce nu se susține este refuzat cu motivul său în loc să fie forțat:
+
+- La acea cale se află din nou ceva. Este lăsat în pace — o punere la loc nu are voie să suprascrie.
+- Elementul nu mai este în Coș, sau a fost șters definitiv în loc să fie pus acolo.
+- Partea era o arhivă sau un server. O arhivă se rescrie întreagă, iar un server nu are Coș, deci nu
+  s-a păstrat nimic.
+- Dosarul în care a scris execuția a dispărut, sau nu mai este același dosar — un punct de montare
+  reutilizat, să zicem. Atunci este refuzată întreaga execuție în loc să se acționeze asupra unei
+  părți din ea.
+- A fost deja pus la loc. Consemnarea reține asta, deci o a doua încercare nu face nimic.
+- Sau consemnarea însăși este una asupra căreia această versiune nu poate acționa — scrisă de o
+  versiune mai nouă a aplicației, ori numind o cale din afara ambelor dosare. Rar, și refuzat în loc
+  de ghicit.
+
+**O copie nu poate fi luată înapoi.** A o înlătura ar însemna să ștergeți un fișier pe care poate l-ați editat între timp, ceea ce este schimbul invers față de punerea la loc a unei ștergeri, așa că aplicația nu o oferă — execuția vă spune ce fișiere a copiat și le puteți șterge singur. Un fișier care a fost *suprascris* este singura lipsă reală, iar acum este mică: pe acest Mac versiunea înlocuită ajunge în Coș ca un fișier șters, deci **Arată în Coș** o găsește. Într-o arhivă, pe un server sau pe un volum fără Coș nu poate, iar confirmarea o spune înaintea execuției.
+
+Se păstrează ultimele 200 de execuții, sau 64 MO din ele, ce vine primul; peste asta cele mai vechi cad una câte una pe măsură ce sosesc altele noi, iar **Uită** și **Uită tot** le curăță pe loc. O execuție foarte mare — peste 20.000 de fișiere — păstrează fiecare problemă și tot ce a pus în Coș, dar nu și copiile care au mers, și o spune în loc să vă lase pe dumneavoastră să observați. Ștergerile ei tot pot fi puse la loc: ce a fost lăsat deoparte sunt copiile, iar o copie oricum nu ar fi putut fi luată înapoi.
+
+Uitarea nu schimbă nimic în dosare; ce dispare este consemnarea a ceea ce s-a făcut, și cu ea oferta de a pune ceva la loc. Spre deosebire de memoria bidirecțională, aceasta este aruncată automat — pierderea memoriei unei *perechi* ar schimba ce face execuția următoare, în timp ce pierderea consemnării unei execuții ia doar o ofertă.
 
 ## Comenzi rapide
 

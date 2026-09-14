@@ -70,14 +70,43 @@ Avec cet enregistrement, une suppression d’un côté peut être reportée de l
   réponses : recopier le fichier, ou ne rien toucher.
 - Modifié d’un côté et supprimé de l’autre est un **conflit**, jamais une suppression. De même pour un
   fichier modifié des deux côtés.
-- Rien n’est supprimé sur la foi d’une absence que la comparaison n’a pas pu confirmer.
-- Deux dossiers de ce Mac uniquement, ni serveur ni archive.
+- Rien n’est supprimé sur la foi d’une absence que la comparaison n’a pas pu confirmer — un dossier
+  illisible, ou un dossier que le filtre a retenu, ne prouve rien de ce qu’il contient.
+- Deux dossiers de ce Mac uniquement. Ni serveur ni archive : une suppression dans une archive la
+  réécrit, une suppression sur un serveur est définitive, et ce mode n’est pas celui avec lequel
+  essayer cela.
 
 **Une suppression ne s’annule pas.** Sur ce Mac le fichier va à la Corbeille et peut être remis depuis
 le Finder ; c’est tout le filet. **Mémoire…** dans la fenêtre liste chaque paire dont l’application se souvient, signale celle que vous regardez et permet d’en oublier n’importe laquelle — après quoi la comparaison suivante de ces dossiers se comporte de nouveau comme une première. Rien n’est jamais oublié tout seul : un dossier sur un disque démonté n’a pas disparu, il est seulement débranché.
 
 L’enregistrement vit avec les réglages : déplacer un des dossiers
 laisse la paire sans historique — et une exécution sans historique ne supprime rien.
+
+## Ce qu’une exécution a fait, et ce qui peut en être repris
+
+Chaque synchronisation est consignée. **Exécutions…** dans la fenêtre les liste, les plus récentes d’abord — quand, quels deux dossiers, quel mode, et combien de fichiers ont été copiés, supprimés ou retenus — et montre ce qu’il est advenu de chaque fichier de l’exécution que vous sélectionnez.
+
+C’est cette liste qui rend la Corbeille utilisable. Un fichier que ce Mac a supprimé est allé à la Corbeille, et l’exécution a noté *où*, ce qui compte plus qu’il n’y paraît : la Corbeille renomme en cas de collision, si bien qu’un second `notes.txt` y atterrit sous le nom `notes.txt 11-17-15-028.txt`, et le chercher par son nom fait tomber sur le mauvais. **Afficher dans la Corbeille** amène le Finder droit sur l’élément.
+
+**Remettre en place…** ramène les fichiers qu’une exécution a supprimés hors de la Corbeille, aux chemins d’où ils ont été supprimés. Chacun est vérifié d’abord, et ce qui ne tient pas est refusé avec son motif plutôt que forcé :
+
+- Quelque chose occupe de nouveau ce chemin. On n’y touche pas — une remise en place n’a jamais le droit d’écraser.
+- L’élément n’est plus dans la Corbeille, ou il a été supprimé définitivement au lieu d’y être mis.
+- Le côté était une archive ou un serveur. Une archive est réécrite entièrement, et un serveur n’a pas
+  de Corbeille : rien n’a donc été conservé.
+- Le dossier dans lequel l’exécution a écrit a disparu, ou n’est plus le même dossier — un point de
+  montage réutilisé, par exemple. L’exécution entière est alors refusée plutôt que d’en appliquer une
+  partie.
+- Il a déjà été remis en place. L’enregistrement le retient, une seconde tentative ne fait donc rien.
+- Ou l’enregistrement lui-même est de ceux sur lesquels cette version ne peut agir — écrit par une
+  version plus récente de l’application, ou nommant un chemin en dehors des deux dossiers. Rare, et
+  refusé plutôt que deviné.
+
+**Une copie ne peut pas être reprise.** L’enlever reviendrait à supprimer un fichier que vous avez peut-être modifié depuis, ce qui est l’échange inverse de celui d’une suppression remise en place ; l’application ne le propose donc pas — l’exécution vous dit quels fichiers elle a copiés et vous pouvez les supprimer vous-même. Un fichier qui a été *écrasé* est le seul vrai manque, et il est désormais petit : sur ce Mac la version remplacée va à la Corbeille comme un fichier supprimé, et **Afficher dans la Corbeille** la retrouve donc. Vers une archive, vers un serveur ou vers un volume sans Corbeille, ce n’est pas possible, et la confirmation le dit avant l’exécution.
+
+Les 200 dernières exécutions sont conservées, ou 64 Mo d’entre elles, selon ce qui arrive en premier ; au-delà, les plus anciennes disparaissent une à une à mesure que de nouvelles arrivent, et **Oublier** et **Tout oublier** les effacent sur-le-champ. Une très grosse exécution — plus de 20 000 fichiers — garde chaque problème et tout ce qu’elle a mis à la Corbeille, mais pas les copies qui se sont bien passées, et elle le dit au lieu de vous laisser le remarquer. Ses suppressions restent remettables en place : ce qui a été laissé de côté, ce sont les copies, et une copie n’aurait de toute façon pas pu être reprise.
+
+Oublier ne change rien aux dossiers ; ce qui part, c’est l’enregistrement de ce qui a été fait, et avec lui l’offre de remettre quoi que ce soit en place. Contrairement à la mémoire bidirectionnelle, ceci est jeté automatiquement — perdre la mémoire d’une *paire* changerait ce que fait l’exécution suivante, tandis que perdre l’enregistrement d’une exécution ne retire qu’une offre.
 
 ## Raccourcis
 

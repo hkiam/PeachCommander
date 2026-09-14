@@ -70,14 +70,40 @@ záznamom sa dá zmazanie na jednej strane preniesť na druhú.
   späť, alebo ponechať obe strany.
 - Zmenené na jednej strane a zmazané na druhej je **konflikt**, nikdy zmazanie. Rovnako súbor zmenený
   na oboch stranách.
-- Nič sa nemaže na základe neprítomnosti, ktorú porovnanie nemohlo potvrdiť.
-- Len dva priečinky na tomto Macu, nie server a nie archív.
+- Nič sa nemaže na základe neprítomnosti, ktorú porovnanie nemohlo potvrdiť — nečitateľný priečinok
+  alebo priečinok, ktorý zadržal filter, nedokazuje nič o tom, čo je vnútri.
+- Len dva priečinky na tomto Macu. Nie server a nie archív: zmazanie v archíve ho prepíše, zmazanie
+  na serveri je nezvratné, a tento režim nie je ten, s ktorým to skúšať.
 
 **Zmazanie sa nedá vrátiť.** Na tomto Macu ide súbor do Koša a dá sa vrátiť vo Finderi; to je celá
 záchranná sieť. **Pamäť…** v okne vypíše každý pár, ktorý si aplikácia pamätá, zvýrazní ten otvorený a umožní ktorýkoľvek z nich zapomenúť — potom sa ďalšie porovnanie tých priečinkov zachová opäť ako prvé. Samo sa nikdy nič nezapomene: priečinok na odpojenom disku nie je stratený, len nie je zapojený.
 
 Záznam leží pri nastaveniach: ak presuniete jeden z priečinkov, pár už žiadnu históriu
 nemá — a beh bez histórie nič nemaže.
+
+## Čo beh urobil a čo sa z toho dá vziať späť
+
+Každá synchronizácia sa zapisuje. **Behy…** v okne ich vypisujú od najnovších — kedy, ktoré dva priečinky, ktorý režim a koľko súborov sa skopírovalo, zmazalo alebo zadržalo — a pri vybranom behu ukazujú, čo sa stalo s každým súborom.
+
+Práve tento zoznam robí Kôš použiteľným. Súbor, ktorý tento Mac zmazal, skončil v Koši, a beh si zapísal *kde*, čo znamená viac, než to znie: Kôš pri kolízii premenúva, takže druhá `notes.txt` pristane ako `notes.txt 11-17-15-028.txt`, a kto ju hľadá podľa mena, nájde tú nesprávnu. **Zobraziť v Koši** namieri Finder priamo na položku.
+
+**Vrátiť späť…** presunie súbory, ktoré beh zmazal, z Koša na cesty, z ktorých boli zmazané. Každý sa najprv skontroluje a to, čo neplatí, je odmietnuté s vlastným dôvodom namiesto vynútenia:
+
+- Na tej ceste je zase niečo. Zostane nedotknuté — vrátenie nesmie nikdy prepísať.
+- Položka už v Koši nie je, alebo bola zmazaná natrvalo namiesto toho, aby tam bola presunutá.
+- Strana bola archív alebo server. Archív sa prepisuje celý a server žiadny Kôš nemá, takže sa nič
+  neuchovalo.
+- Priečinok, do ktorého beh zapisoval, je preč, alebo to už nie je ten istý priečinok — napríklad
+  znovu použitý prípojný bod. Potom je odmietnutý celý beh namiesto toho, aby sa vykonala jeho časť.
+- Už to bolo vrátené. Záznam si to pamätá, takže druhý pokus neurobí nič.
+- Alebo je sám záznam taký, s ktorým táto verzia nevie pracovať — zapísaný novšou verziou aplikácie,
+  alebo uvádza cestu mimo oboch priečinkov. Zriedkavé, a odmietnuté namiesto hádania.
+
+**Kópiu vziať späť nemožno.** Odstrániť ju by znamenalo zmazať súbor, ktorý ste medzitým mohli upraviť, čo je opačný obchod než vrátenie zmazania, takže to aplikácia neponúka — beh vám povie, ktoré súbory skopíroval, a zmazať ich môžete sami. Súbor, ktorý bol *prepísaný*, je jediná skutočná medzera, a je už malá: na tomto Macu ide nahradená verzia do Koša ako zmazaný súbor, takže ju **Zobraziť v Koši** nájde. Do archívu, na server ani na zväzok bez Koša to nejde, a potvrdenie to povie pred behom.
+
+Uchováva sa posledných 200 behov, alebo 64 MB z nich, podľa toho, čo nastane skôr; nad to najstaršie postupne odpadajú, ako pribúdajú nové, a **Zabudnúť** aj **Zabudnúť všetko** ich upracú na mieste. Veľmi veľký beh — vyše 20 000 súborov — si ponechá každý problém a všetko, čo dal do Koša, ale nie kópie, ktoré prešli, a povie to namiesto toho, aby vás to nechal zistiť. Jeho zmazania sa stále dajú vrátiť: vynechané boli kópie, a kópiu by sa aj tak nedalo vziať späť.
+
+Zabudnutie nemení nič na priečinkoch; zmizne záznam o tom, čo sa urobilo, a s ním ponuka niečo vrátiť. Na rozdiel od obojstrannej pamäte sa toto zahadzuje automaticky — stratiť pamäť *dvojice* by zmenilo, čo urobí ďalší beh, zatiaľ čo strata záznamu o behu berie len jednu ponuku.
 
 ## Skratky
 

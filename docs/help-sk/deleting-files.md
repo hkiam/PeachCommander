@@ -16,6 +16,8 @@ Keď už súbory alebo priečinky nepotrebujete, Peach Commander ich môže pres
 
 Položky odoslané do Koša tam zostanú, kým ho nevyprázdnite, takže ich môžete z Finderu obnoviť, ak si to rozmyslíte.
 
+**Upraviť ▸ Späť (⌘Z) vráti posledné mazanie.** Súbory sa presunú z Koša presne tam, kde boli, a nič sa neprepíše: položka, ktorej pôvodná cesta je opäť obsadená, zostane ležať namiesto toho, aby bola vynútená — a dozviete sa, ktoré to sú a prečo, namiesto toho, aby ste museli predpokladať, že to vyšlo. Dve veci k tomu. Platí to len pre *poslednú* operáciu a ich zoznam žije v pamäti: ukončite aplikáciu alebo vykonajte ďalších tridsať súborových operácií a ponuka je preč, zatiaľ čo súbory stále ležia v Koši a môžete ich presunúť späť sami. A trvalé zmazanie (Shift+F8) sa nedá vrátiť vôbec; nie je čo vracať.
+
 ## Ako odstrániť natrvalo
 
 1. Označte súbory a priečinky na odstránenie.

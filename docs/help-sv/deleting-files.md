@@ -16,6 +16,8 @@ När du inte längre behöver filer eller mappar kan Peach Commander flytta dem 
 
 Objekt som skickas till papperskorgen ligger kvar där tills du tömmer den, så du kan återställa dem från Finder om du ändrar dig.
 
+**Redigera ▸ Ångra (⌘Z) tar tillbaka den senaste raderingen.** Filerna flyttas ut ur papperskorgen till exakt där de låg, och ingenting skrivs över: ett objekt vars gamla sökväg är upptagen igen lämnas i fred i stället för att tvingas på plats — och du får veta vilka och varför, i stället för att lämnas att anta att det gick bra. Två saker att veta om det. Det gäller bara den *senaste* åtgärden, och listan över dem finns i minnet: avsluta appen, eller gör trettio filåtgärder till, och erbjudandet är borta medan filerna fortfarande ligger i papperskorgen för dig att flytta tillbaka själv. Och en permanent radering (Skift+F8) går inte att ångra alls; det finns ingenting att lägga tillbaka.
+
 ## Så tar du bort permanent
 
 1. Markera filerna och mapparna som ska tas bort.

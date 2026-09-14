@@ -16,6 +16,8 @@ Wenn Sie Dateien oder Ordner nicht mehr benötigen, kann Peach Commander sie in 
 
 In den Papierkorb verschobene Elemente bleiben dort, bis Sie ihn leeren, sodass Sie sie über den Finder wiederherstellen können, falls Sie es sich anders überlegen.
 
+**Bearbeiten ▸ Widerrufen (⌘Z) nimmt das letzte Löschen zurück.** Die Dateien wandern aus dem Papierkorb genau dorthin zurück, wo sie waren, und nichts wird überschrieben: Ein Element, dessen alter Pfad wieder belegt ist, bleibt liegen, statt erzwungen zu werden — und Sie erfahren, welche das sind und warum, statt annehmen zu müssen, es habe geklappt. Zweierlei ist dazu zu wissen. Es gilt nur für den *letzten* Vorgang, und die Liste davon liegt im Arbeitsspeicher — beenden Sie die App oder führen Sie dreißig weitere Dateivorgänge aus, und das Angebot ist weg, während die Dateien noch im Papierkorb liegen und von Ihnen selbst zurückbewegt werden können. Und ein dauerhaftes Löschen (Shift+F8) lässt sich überhaupt nicht widerrufen; es gibt nichts zurückzuholen.
+
 ## Dauerhaft löschen
 
 1. Markieren Sie die zu entfernenden Dateien und Ordner.

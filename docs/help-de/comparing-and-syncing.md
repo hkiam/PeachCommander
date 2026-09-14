@@ -86,6 +86,32 @@ Der Datensatz liegt bei den
 Einstellungen der App – verschiebt man einen der Ordner, hat das Paar keine Vorgeschichte mehr, und
 ein Lauf ohne Vorgeschichte löscht nichts. In diese Richtung soll dieser Ausfall auch zeigen.
 
+## Was ein Lauf getan hat, und was davon zurückgeholt werden kann
+
+Jede Synchronisation wird festgehalten. **Läufe…** im Fenster listet sie, die neuesten zuerst — wann, welche zwei Ordner, welcher Modus und wie viele Dateien kopiert, gelöscht oder zurückgehalten wurden — und zeigt zu dem ausgewählten Lauf, was mit jeder einzelnen Datei geschehen ist.
+
+Diese Liste ist es, die den Papierkorb brauchbar macht. Eine Datei, die dieser Mac gelöscht hat, ist im Papierkorb gelandet, und der Lauf hat festgehalten, *wo* — was mehr bedeutet, als es klingt: Der Papierkorb benennt bei Namensgleichheit um, eine zweite `notes.txt` landet also als `notes.txt 11-17-15-028.txt`, und wer nach dem Namen sucht, findet die falsche. **Im Papierkorb zeigen** führt den Finder direkt zu dem Objekt.
+
+**Zurücklegen…** bewegt die von einem Lauf gelöschten Dateien aus dem Papierkorb an die Pfade zurück, von denen sie gelöscht wurden. Jede wird vorher geprüft, und was nicht zutrifft, wird mit seinem Grund abgelehnt statt erzwungen:
+
+- An diesem Pfad liegt wieder etwas. Es bleibt unangetastet — ein Zurücklegen darf niemals überschreiben.
+- Das Objekt ist nicht mehr im Papierkorb, oder es wurde dauerhaft gelöscht statt dorthin gelegt.
+- Die Seite war ein Archiv oder ein Server. Ein Archiv wird ganz neu geschrieben, und ein Server
+  hat keinen Papierkorb, also wurde nichts aufbewahrt.
+- Der Ordner, in den der Lauf geschrieben hat, ist verschwunden oder ist nicht mehr derselbe
+  Ordner — etwa ein wiederverwendeter Mountpunkt. Dann wird der ganze Lauf abgelehnt, statt einen
+  Teil davon auszuführen.
+- Es wurde bereits zurückgelegt. Der Eintrag hält das fest, ein zweiter Versuch tut also nichts.
+- Oder der Eintrag selbst ist einer, mit dem diese Version nichts anfangen kann — von einer neueren
+  Version der App geschrieben, oder er nennt einen Pfad außerhalb beider Ordner. Selten, und
+  abgelehnt statt geraten.
+
+**Eine Kopie lässt sich nicht zurücknehmen.** Sie zu entfernen hieße, eine Datei zu löschen, die Sie seither bearbeitet haben könnten — das ist der umgekehrte Handel zum Zurücklegen einer Löschung, und deshalb bietet die App es nicht an: Der Lauf sagt Ihnen, welche Dateien er kopiert hat, und löschen können Sie sie selbst. Eine *überschriebene* Datei ist die eine echte Lücke, und sie ist inzwischen klein: Auf diesem Mac wandert die ersetzte Fassung wie eine gelöschte Datei in den Papierkorb, **Im Papierkorb zeigen** findet sie also. In ein Archiv, auf einen Server oder auf ein Volume ohne Papierkorb geht das nicht, und die Bestätigung sagt das vor dem Lauf.
+
+Die letzten 200 Läufe werden aufbewahrt, oder 64 MB davon, je nachdem, was zuerst eintritt; darüber hinaus fallen die ältesten einzeln weg, sobald neue hinzukommen, und **Vergessen** sowie **Alle vergessen** räumen sie sofort ab. Ein sehr großer Lauf — über 20.000 Dateien — behält jedes Problem und alles, was er in den Papierkorb gelegt hat, aber nicht die durchgelaufenen Kopien, und sagt das, statt es Sie bemerken zu lassen. Seine Löschungen lassen sich weiterhin zurücklegen: Weggelassen wurden die Kopien, und eine Kopie hätte sich ohnehin nicht zurücknehmen lassen.
+
+Vergessen ändert nichts an den Ordnern; weg ist der Eintrag darüber, was getan wurde, und mit ihm das Angebot, etwas zurückzulegen. Anders als das beidseitige Gedächtnis wird dies automatisch weggeworfen — das Gedächtnis eines *Paares* zu verlieren würde ändern, was der nächste Lauf tut, während der Verlust des Eintrags zu einem Lauf nur ein Angebot wegnimmt.
+
 ## Tastenkürzel
 
 | Aktion | Tastenkürzel |

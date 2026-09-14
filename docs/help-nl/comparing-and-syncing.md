@@ -70,8 +70,11 @@ overeenkwamen. Met die gegevens kan een verwijdering aan de ene kant naar de and
   het bestand terugkopiëren, of beide kanten laten.
 - Aan de ene kant gewijzigd en aan de andere verwijderd is een **conflict**, nooit een verwijdering.
   Net als een bestand dat aan beide kanten is gewijzigd.
-- Er wordt niets verwijderd op grond van een afwezigheid die de vergelijking niet kon bevestigen.
-- Alleen twee mappen op deze Mac, geen server en geen archief.
+- Er wordt niets verwijderd op grond van een afwezigheid die de vergelijking niet kon bevestigen —
+  een onleesbare map, of een die het filter tegenhield, bewijst niets over wat erin zit.
+- Alleen twee mappen op deze Mac. Geen server en geen archief: een verwijdering in een archief
+  herschrijft het, een verwijdering op een server is definitief, en deze modus is niet die om dat
+  mee te proberen.
 
 **Voor een verwijdering is er geen ongedaan maken.** Op deze Mac gaat het bestand naar de Prullenmand
 en kan het via de Finder terug; dat is het hele net. **Geheugen…** in het venster toont elk paar dat de app onthoudt, markeert het paar dat je bekijkt en laat er elk van vergeten — daarna gedraagt de volgende vergelijking van die mappen zich weer als een eerste. Er wordt nooit iets vanzelf vergeten: een map op een ontkoppelde schijf is niet weg, alleen niet aangesloten.
@@ -79,6 +82,32 @@ en kan het via de Finder terug; dat is het hele net. **Geheugen…** in het vens
 De gegevens staan bij de instellingen: verplaats
 je een van de mappen, dan heeft het paar geen geschiedenis meer — en zonder geschiedenis verwijdert
 een run niets.
+
+## Wat een uitvoering deed, en wat daarvan is terug te halen
+
+Elke synchronisatie wordt vastgelegd. **Uitvoeringen…** in het venster somt ze op, de nieuwste eerst — wanneer, welke twee mappen, welke modus, en hoeveel bestanden zijn gekopieerd, verwijderd of tegengehouden — en toont wat er met elk bestand is gebeurd in de uitvoering die u kiest.
+
+Die lijst is wat de Prullenmand bruikbaar maakt. Een bestand dat deze Mac verwijderde ging naar de Prullenmand, en de uitvoering noteerde *waar*, wat meer uitmaakt dan het klinkt: de Prullenmand hernoemt bij een botsing, dus een tweede `notes.txt` belandt er als `notes.txt 11-17-15-028.txt`, en zoeken op naam levert de verkeerde op. **Toon in Prullenmand** wijst de Finder recht op het onderdeel.
+
+**Terugzetten…** haalt de bestanden die een uitvoering verwijderde uit de Prullenmand terug naar de paden waarvandaan ze zijn verwijderd. Elk ervan wordt eerst gecontroleerd, en wat niet klopt wordt met zijn reden geweigerd in plaats van geforceerd:
+
+- Er staat weer iets op dat pad. Dat blijft met rust — terugzetten mag nooit overschrijven.
+- Het onderdeel zit niet meer in de Prullenmand, of het is permanent verwijderd in plaats van daarheen verplaatst.
+- De zijde was een archief of een server. Een archief wordt in zijn geheel herschreven, en een server
+  heeft geen Prullenmand, dus er is niets bewaard.
+- De map waarin de uitvoering schreef is weg, of is niet meer dezelfde map — een hergebruikt
+  koppelpunt bijvoorbeeld. Dan wordt de hele uitvoering geweigerd in plaats van er een deel van uit te
+  voeren.
+- Het is al teruggezet. Het verslag houdt dat bij, dus een tweede poging doet niets.
+- Of het verslag zelf is er een waarop deze versie niet kan handelen — geschreven door een nieuwere
+  versie van de app, of het noemt een pad buiten beide mappen. Zeldzaam, en geweigerd in plaats van
+  geraden.
+
+**Een kopie kan niet worden teruggenomen.** Die weghalen zou betekenen dat u een bestand verwijdert dat u sindsdien bewerkt kunt hebben, en dat is de omgekeerde ruil van het terugzetten van een verwijdering; de app biedt het dus niet aan — de uitvoering vertelt u welke bestanden ze kopieerde en u kunt ze zelf verwijderen. Een bestand dat is *overschreven* is het enige echte gat, en het is inmiddels klein: op deze Mac gaat de vervangen versie net als een verwijderd bestand naar de Prullenmand, dus **Toon in Prullenmand** vindt haar. Naar een archief, naar een server of naar een volume zonder Prullenmand kan dat niet, en de bevestiging zegt dat vóór de uitvoering.
+
+De laatste 200 uitvoeringen worden bewaard, of 64 MB ervan, wat het eerst komt; daarna vallen de oudste er één voor één af naarmate er nieuwe bij komen, en **Vergeten** en **Alles vergeten** ruimen ze meteen op. Een zeer grote uitvoering — meer dan 20.000 bestanden — bewaart elk probleem en alles wat ze in de Prullenmand legde, maar niet de kopieën die goed gingen, en zegt dat in plaats van het u te laten opmerken. Haar verwijderingen zijn nog altijd terug te zetten: wat is weggelaten zijn de kopieën, en een kopie had toch niet kunnen worden teruggenomen.
+
+Vergeten verandert niets aan de mappen; wat verdwijnt is het verslag van wat er is gedaan, en daarmee het aanbod om iets terug te zetten. Anders dan het tweerichtingsgeheugen wordt dit automatisch weggegooid — het geheugen van een *paar* kwijtraken zou veranderen wat de volgende uitvoering doet, terwijl het kwijtraken van het verslag van een uitvoering alleen een aanbod wegneemt.
 
 ## Sneltoetsen
 

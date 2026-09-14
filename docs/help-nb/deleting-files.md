@@ -16,6 +16,8 @@ Når du ikke lenger trenger filer eller mapper, kan Peach Commander flytte dem t
 
 Elementer som sendes til Papirkurven blir liggende der til du tømmer den, så du kan gjenopprette dem fra Finder hvis du ombestemmer deg.
 
+**Rediger ▸ Angre (⌘Z) tar den siste slettingen tilbake.** Filene flyttes ut av papirkurven til nøyaktig der de lå, og ingenting blir overskrevet: et element hvis gamle sti er opptatt igjen, blir liggende i stedet for å tvinges på plass — og du får vite hvilke og hvorfor, i stedet for å måtte anta at det gikk bra. To ting å vite om det. Det gjelder bare den *siste* handlingen, og listen over dem ligger i minnet: avslutt appen, eller gjør tretti flere filoperasjoner, og tilbudet er borte mens filene fortsatt ligger i papirkurven, klare til at du selv flytter dem tilbake. Og en permanent sletting (Shift+F8) kan ikke angres i det hele tatt; det er ingenting å legge tilbake.
+
 ## Slik sletter du permanent
 
 1. Merk filene og mappene du vil fjerne.

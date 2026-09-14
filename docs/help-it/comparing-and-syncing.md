@@ -70,14 +70,43 @@ Con quel registro un’eliminazione su un lato può essere riportata sull’altr
   file, oppure lasciare entrambi i lati come sono.
 - Modificato su un lato ed eliminato sull’altro è un **conflitto**, mai un’eliminazione. Così anche
   un file modificato su entrambi i lati.
-- Nulla viene eliminato in base a un’assenza che il confronto non ha potuto confermare.
-- Solo due cartelle di questo Mac, né un server né un archivio.
+- Nulla viene eliminato in base a un’assenza che il confronto non ha potuto confermare — una
+  cartella illeggibile, o una trattenuta dal filtro, non prova nulla su ciò che contiene.
+- Solo due cartelle di questo Mac. Né un server né un archivio: un’eliminazione in un archivio lo
+  riscrive, un’eliminazione su un server è definitiva, e questa modalità non è quella con cui
+  provarlo.
 
 **Un’eliminazione non si annulla.** Su questo Mac il file va nel Cestino e si può rimettere dal
 Finder; è tutta la rete di sicurezza. **Memoria…** nella finestra elenca ogni coppia che l’app ricorda, segnala quella che stai guardando e consente di dimenticarne una qualsiasi; dopo di che il confronto successivo di quelle cartelle si comporta di nuovo come un primo. Nulla viene mai dimenticato da sé: una cartella su un disco smontato non è sparita, è solo scollegata.
 
 Il registro sta con le impostazioni: spostare una delle cartelle
 lascia la coppia senza storia — e un’esecuzione senza storia non elimina nulla.
+
+## Che cosa ha fatto un’esecuzione, e che cosa se ne può riprendere
+
+Ogni sincronizzazione viene annotata. **Esecuzioni…** nella finestra le elenca, le più recenti per prime — quando, quali due cartelle, quale modalità e quanti file sono stati copiati, eliminati o tenuti fuori — e mostra che cosa è successo a ciascun file dell’esecuzione selezionata.
+
+È quell’elenco a rendere utilizzabile il Cestino. Un file che questo Mac ha eliminato è finito nel Cestino, e l’esecuzione ha registrato *dove*, il che conta più di quanto sembri: il Cestino rinomina in caso di collisione, così un secondo `notes.txt` atterra come `notes.txt 11-17-15-028.txt`, e cercarlo per nome porta a quello sbagliato. **Mostra nel Cestino** porta il Finder dritto sull’elemento.
+
+**Rimetti a posto…** sposta i file eliminati da un’esecuzione fuori dal Cestino, ai percorsi da cui erano stati eliminati. Ciascuno viene prima controllato, e ciò che non regge viene rifiutato con la sua motivazione anziché forzato:
+
+- A quel percorso c’è di nuovo qualcosa. Viene lasciato stare — un rimettere a posto non può mai sovrascrivere.
+- L’elemento non è più nel Cestino, oppure è stato eliminato definitivamente invece che messo lì.
+- Il lato era un archivio o un server. Un archivio viene riscritto per intero, e un server non ha
+  Cestino: non è stato quindi conservato nulla.
+- La cartella in cui l’esecuzione ha scritto non c’è più, o non è più la stessa cartella — un punto di
+  mount riutilizzato, per dire. Allora viene rifiutata l’intera esecuzione anziché agire su una sua
+  parte.
+- È già stato rimesso a posto. Il registro lo ricorda, quindi un secondo tentativo non fa nulla.
+- Oppure il registro stesso è uno su cui questa versione non può agire — scritto da una versione più
+  recente dell’app, o che nomina un percorso fuori da entrambe le cartelle. Raro, e rifiutato anziché
+  indovinato.
+
+**Una copia non si può riprendere.** Toglierla significherebbe eliminare un file che potresti aver modificato nel frattempo, che è lo scambio opposto rispetto al rimettere a posto un’eliminazione: l’app quindi non lo offre — l’esecuzione ti dice quali file ha copiato e puoi eliminarli tu. Un file che è stato *sovrascritto* è l’unica vera lacuna, ed è ormai piccola: su questo Mac la versione sostituita finisce nel Cestino come un file eliminato, così **Mostra nel Cestino** la ritrova. Verso un archivio, verso un server o verso un volume senza Cestino non è possibile, e la conferma lo dice prima dell’esecuzione.
+
+Vengono conservate le ultime 200 esecuzioni, o 64 MB di esse, a seconda di che cosa arriva prima; oltre, le più vecchie cadono una alla volta man mano che ne arrivano di nuove, e **Dimentica** e **Dimentica tutto** le cancellano sul posto. Un’esecuzione molto grande — più di 20.000 file — conserva ogni problema e tutto ciò che ha messo nel Cestino, ma non le copie andate a buon fine, e lo dice invece di lasciartene accorgere. Le sue eliminazioni si possono comunque rimettere a posto: ciò che è stato lasciato fuori sono le copie, e una copia non si sarebbe potuta riprendere comunque.
+
+Dimenticare non cambia nulla nelle cartelle; ciò che se ne va è il registro di quanto è stato fatto, e con esso l’offerta di rimettere qualcosa a posto. A differenza della memoria bidirezionale, questo viene buttato via automaticamente — perdere la memoria di una *coppia* cambierebbe ciò che fa l’esecuzione successiva, mentre perdere il registro di un’esecuzione toglie solo un’offerta.
 
 ## Scorciatoie
 

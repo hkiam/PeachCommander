@@ -16,6 +16,8 @@ Cuando ya no necesita archivos o carpetas, Peach Commander puede moverlos a la P
 
 Los elementos enviados a la Papelera permanecen ahí hasta que la vacíe, de modo que puede restaurarlos desde Finder si cambia de opinión.
 
+**Edición ▸ Deshacer (⌘Z) revierte el último borrado.** Los archivos salen de la Papelera y vuelven exactamente a donde estaban, sin sobrescribir nada: un elemento cuya ruta antigua vuelve a estar ocupada se deja como está en lugar de forzarlo — y se le indica cuáles y por qué, en vez de dejarle suponer que funcionó. Dos cosas que conviene saber. Vale solo para la *última* operación, y la lista de ellas vive en memoria: cierre la aplicación, o haga otras treinta operaciones con archivos, y la oferta desaparece mientras los archivos siguen en la Papelera para que usted los mueva de vuelta. Y un borrado permanente (Mayús+F8) no se puede deshacer en absoluto; no hay nada que devolver.
+
 ## Cómo eliminar permanentemente
 
 1. Marque los archivos y carpetas que va a eliminar.

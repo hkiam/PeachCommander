@@ -16,6 +16,8 @@ Wanneer je bestanden of mappen niet meer nodig hebt, kan Peach Commander ze naar
 
 Items die naar de Prullenmand zijn gestuurd, blijven daar tot je die leegt, zodat je ze vanuit de Finder kunt herstellen als je van gedachten verandert.
 
+**Wijzig ▸ Herstel (⌘Z) maakt de laatste verwijdering ongedaan.** De bestanden gaan uit de Prullenmand terug naar precies waar ze stonden, en er wordt niets overschreven: een item waarvan het oude pad weer bezet is, blijft liggen in plaats van geforceerd te worden — en u hoort welke dat zijn en waarom, in plaats van te moeten aannemen dat het gelukt is. Twee dingen om te weten. Het geldt alleen voor de *laatste* bewerking, en de lijst daarvan staat in het geheugen: sluit de app af, of doe nog dertig bestandsbewerkingen, en het aanbod is weg terwijl de bestanden nog in de Prullenmand liggen om zelf terug te zetten. En een permanente verwijdering (Shift+F8) kan helemaal niet ongedaan worden gemaakt; er valt niets terug te plaatsen.
+
 ## Definitief verwijderen
 
 1. Markeer de bestanden en mappen die je wilt verwijderen.

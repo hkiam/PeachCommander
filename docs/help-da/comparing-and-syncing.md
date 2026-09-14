@@ -70,14 +70,40 @@ kan en sletning på den ene side føres over til den anden.
   tilbage i stedet, eller lad begge sider være.
 - Ændret på den ene side og slettet på den anden er en **konflikt**, aldrig en sletning. Det samme
   gælder en fil, der er ændret på begge sider.
-- Intet slettes på grundlag af et fravær, som sammenligningen ikke kunne bekræfte.
-- Kun to mapper på denne Mac, ikke en server og ikke et arkiv.
+- Intet slettes på grundlag af et fravær, som sammenligningen ikke kunne bekræfte — en ulæselig
+  mappe, eller en som filteret holdt tilbage, beviser intet om, hvad der er i den.
+- Kun to mapper på denne Mac. Ikke en server og ikke et arkiv: en sletning i et arkiv skriver det
+  om, en sletning på en server er permanent, og denne tilstand er ikke den at prøve det med.
 
 **Der findes ingen fortryd for en sletning.** På denne Mac ryger filen i Papirkurven og kan hentes
 tilbage i Finder; det er hele nettet. **Hukommelse…** i vinduet viser hvert par, appen husker, fremhæver det du ser på, og lader dig glemme et hvilket som helst af dem — derefter opfører næste sammenligning af de mapper sig igen som en første. Intet glemmes nogensinde af sig selv: en mappe på en afmonteret disk er ikke væk, kun ikke tilsluttet.
 
 Optegnelsen ligger sammen med indstillingerne: flytter du en af
 mapperne, har parret ingen historie mere — og en kørsel uden historie sletter intet.
+
+## Hvad en kørsel gjorde, og hvad af det der kan tages tilbage
+
+Hver synkronisering skrives ned. **Kørsler…** i vinduet viser dem med de nyeste først — hvornår, hvilke to mapper, hvilken tilstand, og hvor mange filer der blev kopieret, slettet eller holdt tilbage — og viser, hvad der skete med hver fil i den kørsel, du vælger.
+
+Den liste er det, der gør papirkurven brugbar. En fil, som denne Mac slettede, røg i papirkurven, og kørslen noterede *hvor*, hvilket betyder mere, end det lyder: papirkurven omdøber ved sammenfald, så en anden `notes.txt` lander som `notes.txt 11-17-15-028.txt`, og at lede efter den ved navn finder den forkerte. **Vis i papirkurv** peger Finder direkte på emnet.
+
+**Læg tilbage…** flytter de filer, en kørsel slettede, ud af papirkurven til de stier, de blev slettet fra. Hver enkelt tjekkes først, og alt, der ikke holder, afvises med sin begrundelse i stedet for at blive tvunget igennem:
+
+- Der ligger noget på den sti igen. Det får lov at blive — en tilbagelægning må aldrig overskrive.
+- Emnet er ikke i papirkurven længere, eller det blev slettet permanent i stedet for lagt derhen.
+- Siden var et arkiv eller en server. Et arkiv skrives helt om, og en server har ingen papirkurv, så
+  intet blev gemt.
+- Mappen, kørslen skrev til, er væk, eller er ikke den samme mappe længere — et genbrugt
+  monteringspunkt, for eksempel. Så afvises hele kørslen frem for at udføre en del af den.
+- Det er allerede lagt tilbage. Optegnelsen husker det, så et andet forsøg gør ingenting.
+- Eller optegnelsen selv er en, denne version ikke kan handle på — skrevet af en nyere version af
+  appen, eller den nævner en sti uden for begge mapper. Sjældent, og afvist frem for gættet på.
+
+**En kopi kan ikke tages tilbage.** At fjerne en ville betyde at slette en fil, du måske har redigeret siden, hvilket er den omvendte handel af at lægge en sletning tilbage, så appen tilbyder det ikke — kørslen fortæller dig, hvilke filer den kopierede, og du kan slette dem selv. En fil, der blev *overskrevet*, er det ene rigtige hul, og det er nu lille: på denne Mac ryger den erstattede udgave i papirkurven som en slettet fil, så **Vis i papirkurv** finder den. Ind i et arkiv, op på en server eller til en enhed uden papirkurv kan den ikke, og bekræftelsen siger det inden kørslen.
+
+De seneste 200 kørsler gemmes, eller 64 MB af dem, alt efter hvad der kommer først; derudover falder de ældste fra én ad gangen, efterhånden som nye kommer til, og **Glem** og **Glem alle** rydder dem på stedet. En meget stor kørsel — mere end 20.000 filer — beholder hvert problem og alt, den lagde i papirkurven, men ikke de kopier, der gik igennem, og siger det i stedet for at lade dig opdage det. Dens sletninger kan stadig lægges tilbage: det, der blev udeladt, er kopierne, og en kopi kunne alligevel ikke tages tilbage.
+
+At glemme ændrer intet ved mapperne; det, der går, er optegnelsen over, hvad der blev gjort, og med den tilbuddet om at lægge noget tilbage. I modsætning til tovejshukommelsen smides dette væk automatisk — at miste hukommelsen om et *par* ville ændre, hvad den næste kørsel gør, mens tabet af optegnelsen om en kørsel kun tager et tilbud væk.
 
 ## Genveje
 

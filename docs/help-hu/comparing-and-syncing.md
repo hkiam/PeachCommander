@@ -70,14 +70,40 @@ feljegyzéssel az egyik oldalon történt törlés átvihető a másikra.
   a fájlt, vagy hagyja békén mindkét oldalt.
 - Az egyik oldalon módosítva, a másikon törölve **ütközés**, soha nem törlés. Ugyanígy a mindkét
   oldalon módosított fájl.
-- Semmi nem törlődik olyan hiány alapján, amit az összehasonlítás nem tudott megerősíteni.
-- Csak a Mac két mappája, sem kiszolgáló, sem archívum.
+- Semmi nem törlődik olyan hiány alapján, amit az összehasonlítás nem tudott megerősíteni — egy
+  olvashatatlan mappa, vagy amelyet a szűrő visszatartott, semmit sem bizonyít a tartalmáról.
+- Csak a Mac két mappája. Sem kiszolgáló, sem archívum: az archívumon belüli törlés újraírja azt, a
+  kiszolgálón történő törlés végleges, és nem ez az a mód, amivel ezt érdemes megpróbálni.
 
 **A törlés nem vonható vissza.** Ezen a Macen a fájl a Kukába kerül, és a Finderből visszatehető; ez a
 teljes védőháló. Az **Emlékezet…** az ablakban felsorolja minden párt, amelyre az alkalmazás emlékszik, kiemeli a most nyitottat, és bármelyiket elfelejtheti — utána azoknak a mappáknak a következő összehasonlítása ismét úgy viselkedik, mint egy első. Magától soha nem felejt el semmit: egy leválasztott lemezen lévő mappa nem tűnt el, csak nincs csatlakoztatva.
 
 A feljegyzés a beállítások mellett lakik: ha az egyik mappát elmozgatja, a párnak
 nincs többé előzménye — és előzmény nélküli futás semmit nem töröl.
+
+## Mit tett egy futtatás, és mi az, ami visszavehető belőle
+
+Minden szinkronizálás fel van jegyezve. A **Futtatások…** az ablakban a legújabbaktól sorolja őket — mikor, melyik két mappa, melyik mód, és hány fájlt másolt, törölt vagy tartott vissza —, a kiválasztott futtatásnál pedig megmutatja, mi történt minden egyes fájllal.
+
+Ez a lista teszi használhatóvá a Kukát. Egy fájl, amit ez a Mac törölt, a Kukába került, és a futtatás feljegyezte, *hova*, ami többet számít, mint amennyinek hangzik: a Kuka ütközéskor átnevez, így egy második `notes.txt` `notes.txt 11-17-15-028.txt` néven landol, és a név alapján keresve a rosszat találja meg. A **Megjelenítés a Kukában** egyenesen az elemre irányítja a Findert.
+
+A **Visszahelyezés…** a futtatás által törölt fájlokat a Kukából arra az útvonalra mozgatja, ahonnan törölve lettek. Mindegyiket előbb ellenőrzi, és ami nem áll, azt az okával együtt elutasítja, nem pedig kikényszeríti:
+
+- Azon az útvonalon megint van valami. Érintetlen marad — a visszahelyezés soha nem írhat felül.
+- Az elem már nincs a Kukában, vagy véglegesen törölték ahelyett, hogy odakerült volna.
+- Az oldal archívum vagy kiszolgáló volt. Egy archívum egészében újraíródik, egy kiszolgálónak pedig
+  nincs Kukája, tehát semmi sem maradt meg.
+- A mappa, amelybe a futtatás írt, eltűnt, vagy már nem ugyanaz a mappa — mondjuk egy újrahasznált
+  csatolási pont. Ilyenkor a teljes futtatás elutasításra kerül, nem pedig egy része végrehajtásra.
+- Már visszahelyezték. A feljegyzés ezt megőrzi, így egy második próbálkozás nem tesz semmit.
+- Vagy maga a feljegyzés olyan, amivel ez a verzió nem tud mit kezdeni — az alkalmazás újabb verziója
+  írta, vagy a két mappán kívüli útvonalat nevez meg. Ritka, és elutasítjuk, nem találgatjuk.
+
+**Egy másolást nem lehet visszavenni.** Eltávolítani azt jelentené, hogy olyan fájlt törlünk, amit azóta esetleg szerkesztett — ez az ellenkező alku, mint egy törlés visszahelyezése, ezért az alkalmazás nem kínálja fel: a futtatás megmondja, mely fájlokat másolta, és ezeket Ön törölheti. A *felülírt* fájl az egyetlen valódi hézag, és az mostanra kicsi: ezen a Macen a lecserélt változat úgy kerül a Kukába, mint egy törölt fájl, így a **Megjelenítés a Kukában** megtalálja. Archívumba, kiszolgálóra vagy Kuka nélküli kötetre ez nem megy, és a megerősítés ezt a futtatás előtt közli.
+
+Az utolsó 200 futtatás marad meg, vagy 64 MB belőlük, amelyik előbb bekövetkezik; ezen túl a legrégebbiek egyenként esnek ki, ahogy újak érkeznek, a **Felejtés** és a **Mindet elfelejteni** pedig azonnal kitakarítja őket. Egy nagyon nagy futtatás — több mint 20 000 fájl — minden problémát és mindent megőriz, amit a Kukába tett, de a rendben lefutott másolatokat nem, és ezt meg is mondja ahelyett, hogy Önre bízná az észrevételét. A törlései továbbra is visszahelyezhetők: ami kimaradt, azok a másolatok, és egy másolást amúgy sem lehetett volna visszavenni.
+
+A felejtés a mappákon semmit nem változtat; ami elvész, az annak feljegyzése, hogy mi történt, és vele az ajánlat bármi visszahelyezésére. A kétirányú memóriával ellentétben ez automatikusan eldobódik — egy *pár* emlékezetének elvesztése megváltoztatná, mit tesz a következő futtatás, míg egy futtatás feljegyzésének elvesztése csak egy lehetőséget vesz el.
 
 ## Billentyűparancsok
 
