@@ -95,12 +95,21 @@ def resolve(c, path):
     which is how a real engine behaves and what the plugin's volume access depends on.
     """
     path = "/" + path.strip("/")
+    # The DEEPEST matching mount, as the engine resolves it: mounts nest, and taking the first one
+    # in the list made `/data/inner` resolve through the volume mounted at `/data` — which is a
+    # different volume's contents under the right path, i.e. exactly the wrong answer this fixture
+    # exists to let a test catch.
+    best = None
     for mount in c.get("mounts", []):
         destination = mount["Destination"].rstrip("/")
         if path == destination or path.startswith(destination + "/"):
-            base = volume_fs(mount["Name"])
-            if base:
-                return os.path.join(base, path[len(destination):].strip("/"))
+            if best is None or len(destination) > len(best["Destination"].rstrip("/")):
+                best = mount
+    if best is not None:
+        destination = best["Destination"].rstrip("/")
+        base = volume_fs(best.get("Name", ""))
+        if base:
+            return os.path.join(base, path[len(destination):].strip("/"))
     if "volumeRoot" in c and path.startswith("/peachcommander-volume"):
         return os.path.join(c["volumeRoot"], path[len("/peachcommander-volume"):].strip("/"))
     return os.path.join(container_fs(c), path.strip("/"))

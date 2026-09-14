@@ -26,6 +26,33 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-14 — the review, fourth pass: the routing checked out, and a test of mine did not
+
+Went at the part where a wrong answer would be quietest: which container or volume a path *means*,
+and which mount owns a directory. The plugin was right on both counts — recorded here because a
+negative result earns its place when it was arrived at rather than assumed.
+
+  * A directory whose name merely **starts with** a mount's destination is not claimed by it:
+    `/database` is not under the volume mounted at `/data`.
+  * **The deepest mount wins.** `/data/inner` is its own volume, not the one it nests in — which is
+    also what Jump to Volume goes by.
+
+**The first of those two tests was worthless as first written, and only reintroducing the defect
+showed it.** Matching on the string instead of the path does claim `/database` for `/data` — but the
+fixture also had a bind mounted *at* `/database`, and the correct answer then wins on length anyway.
+The test passed either way. It distinguishes now because the directory has no mount of its own: the
+broken matcher hands it to `/data`, the right one leaves the column empty. That is the second time in
+this review that a test passed with its fix reverted; it is worth assuming until checked.
+
+**And one more fault in the fixture, the same shape as the last two.** Its `resolve` took the *first*
+matching mount rather than the deepest, so `/data/inner` resolved through the volume mounted at
+`/data` — another volume's contents under the right path, which is precisely the wrong answer the
+test exists to catch. It resolves the deepest now, as the engine does. Three of the five faults this
+review has turned up in the fixture were it being *less capable than the thing it stands in for*, and
+each one could have masked a real defect rather than exposing one.
+
+The buffer logic and both host changes were read through in the previous pass and are unchanged here.
+
 ## 2026-09-14 — the review, third pass: a name in bytes read as characters, and two areas that checked out
 
 **A PAX record's length is in bytes; a Swift `String` indexes in Characters.** `applyPax` measured

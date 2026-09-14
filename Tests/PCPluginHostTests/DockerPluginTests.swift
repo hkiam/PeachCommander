@@ -177,6 +177,8 @@ final class DockerPluginTests: XCTestCase {
         try write("hello from the web container", "web/etc/hostname")
         try write("deep", "web/srv/a/b/c/d/e/f/g/h/i/j/k/l/m/a-name-long-enough-to-need-the-ustar-prefix-field.txt")
         try fm.createDirectory(at: fs.appendingPathComponent("web/data"), withIntermediateDirectories: true)
+        try fm.createDirectory(at: fs.appendingPathComponent("web/database"), withIntermediateDirectories: true)
+        try fm.createDirectory(at: fs.appendingPathComponent("web/hostlogs"), withIntermediateDirectories: true)
         try fm.createDirectory(at: fs.appendingPathComponent("web/locked"), withIntermediateDirectories: true)
         try write("cannot touch this", "web/locked/pinned.txt")
         // A symlink, which the panel has to draw as a link rather than as an empty file.
@@ -205,6 +207,11 @@ final class DockerPluginTests: XCTestCase {
         try write("locked down", "readonly/etc/frozen.conf")
         try write("a row in the database", "vol-data/rows.db")
         try write("nothing mounts me", "vol-orphan/orphan.txt")
+        try write("deeper", "vol-inner/deep.txt")
+        // The mount point as it exists inside the volume it nests in — a real container shows the
+        // directory whether or not anything is mounted over it.
+        try fm.createDirectory(at: fs.appendingPathComponent("vol-data/inner"),
+                               withIntermediateDirectories: true)
 
         let spec: [String: Any] = [
             "images": ["alpine:3"],
@@ -217,7 +224,15 @@ final class DockerPluginTests: XCTestCase {
                  "labels": ["com.docker.compose.project": "stack",
                             "com.docker.compose.service": "web"],
                  "mounts": [["Type": "volume", "Name": "stack_data",
-                             "Destination": "/data", "RW": true]]],
+                             "Destination": "/data", "RW": true],
+                            // Nested inside the one above: the deeper mount must win for a path
+                            // under it, or the Mount column names the wrong volume.
+                            ["Type": "volume", "Name": "stack_inner",
+                             "Destination": "/data/inner", "RW": true],
+                            // A read-only bind, so the four-letter tag and the host path have a
+                            // case of their own.
+                            ["Type": "bind", "Source": "/host/logs",
+                             "Destination": "/hostlogs", "RW": false]]],
                 ["name": "stack-worker-1", "id": "c-w1", "state": "running", "image": "worker:1",
                  "root": "worker1",
                  "labels": ["com.docker.compose.project": "stack",
@@ -239,6 +254,7 @@ final class DockerPluginTests: XCTestCase {
                  "root": "readonly", "labels": [:], "readOnlyRootfs": true],
             ],
             "volumes": [
+                ["name": "stack_inner", "root": "vol-inner", "labels": [:]],
                 ["name": "stack_data", "root": "vol-data",
                  "labels": ["com.docker.compose.project": "stack",
                             "com.docker.compose.volume": "data"]],
@@ -389,7 +405,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "names", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "database", "docker-logs.txt", "etc", "hostlogs", "locked", "names", "srv"])
     }
 
     func test_aReplicatedServiceKeepsItsContainerLevel() async throws {
@@ -465,9 +481,10 @@ final class DockerPluginTests: XCTestCase {
     func test_volumesAreDrivesOfTheirOwn() async throws {
         let fs = try makeFS()
         let volumes = try await names(fs, "/Volumes")
-        XCTAssertEqual(volumes, ["orphaned_data", "stack_data"])
+        XCTAssertEqual(volumes, ["orphaned_data", "stack_data", "stack_inner"])
         let inside = try await names(fs, "/Volumes/stack_data")
-        XCTAssertEqual(inside, ["rows.db"])
+        // `inner` is the directory the nested mount sits on, and it is genuinely in this volume.
+        XCTAssertEqual(inside, ["inner", "rows.db"])
     }
 
     func test_aVolumeNothingMountsIsStillBrowsable() async throws {
@@ -618,7 +635,7 @@ final class DockerPluginTests: XCTestCase {
         let etc = try await names(fs, "/Compose Projects/stack/web/etc")
         XCTAssertEqual(etc, ["hostname", "motd", "nginx"])
         let volume = try await names(fs, "/Volumes/stack_data")
-        XCTAssertEqual(volume, ["rows.db"])
+        XCTAssertEqual(volume, ["inner", "rows.db"])
         // …and the two operations that genuinely cannot be done without it say so.
         await assertThrows(.unsupported) {
             try await fs.delete(self.vpath("/Compose Projects/stack/web/etc/hostname"))
@@ -634,7 +651,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "names", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "database", "docker-logs.txt", "etc", "hostlogs", "locked", "names", "srv"])
         // The metadata still comes from the engine's own stat, not from parsing `ls -l` output.
         let srv = try await collect(fs, "/Compose Projects/stack/web").first { $0.name == "srv" }
         XCTAssertEqual(srv?.kind, .directory)
@@ -693,6 +710,37 @@ final class DockerPluginTests: XCTestCase {
                        scheme: "file", on: fs)
         XCTAssertEqual(dockerStubOpened, [])
         XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
+    // MARK: - Which mount owns a path
+
+    func test_aMountDoesNotClaimAPathThatMerelyStartsWithItsName() async throws {
+        // "/database" begins with the string "/data" and is **not** under the volume mounted there.
+        // It also has no mount of its own, which is what makes this distinguishing: with a mount at
+        // the neighbouring path the correct answer would win on length anyway, and the test would
+        // pass for a matcher that compares strings instead of paths. Measured — it did.
+        let fs = try makeFS()
+        _ = try await collect(fs, "/Compose Projects/stack/web")
+        XCTAssertEqual(column(fs, "mount", "/Compose Projects/stack/web/data"),
+                       "Volume: stack_data")
+        XCTAssertEqual(column(fs, "mount", "/Compose Projects/stack/web/database"), "",
+                       "a directory that merely starts with a mount's name was claimed by it")
+        XCTAssertEqual(column(fs, "access", "/Compose Projects/stack/web/database"), "RW")
+        // And a bind still reports as one, with the host path behind it.
+        XCTAssertEqual(column(fs, "mount", "/Compose Projects/stack/web/hostlogs"),
+                       "Bind: /host/logs")
+        XCTAssertEqual(column(fs, "access", "/Compose Projects/stack/web/hostlogs"), "BIND RO")
+    }
+
+    func test_theDeepestMountWinsForAPathInsideAnother() async throws {
+        // `/data/inner` sits inside `/data`. The row has to name the volume the directory really
+        // is, not the one it happens to be nested in — and Jump to Volume goes by the same answer.
+        let fs = try makeFS()
+        _ = try await collect(fs, "/Compose Projects/stack/web/data")
+        XCTAssertEqual(column(fs, "mount", "/Compose Projects/stack/web/data/inner"),
+                       "Volume: stack_inner")
+        let inside = try await names(fs, "/Compose Projects/stack/web/data/inner")
+        XCTAssertEqual(inside, ["deep.txt"])
     }
 
     // MARK: - A connection that dies in the middle of an answer
