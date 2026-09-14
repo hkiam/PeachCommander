@@ -176,6 +176,9 @@ enum DockerError: Error {
     case http(status: Int, message: String)
     /// The engine answered something this client cannot read.
     case malformed(String)
+    /// The user stopped the transfer. Carried as an error because that is how a write in progress
+    /// unwinds, and mapped to `PC_E_EABORTED` so the host reads it as a cancellation.
+    case cancelled
 
     /// The engine's own sentence, when it sent one — worth showing, because Docker's messages
     /// name the thing that is wrong ("container … is not running", "read-only file system").
@@ -283,7 +286,9 @@ final class DockerClient {
                     if chunk.count < want { chunk.append(Data(repeating: 0, count: want - chunk.count)) }
                     try socket.write(chunk)
                     sent += Int64(want)
-                    if !onProgress(sent) { throw DockerError.malformed("cancelled") }
+                    // Its own error rather than `malformed`, which the host renders as a data
+                    // fault: stopping a copy is not the copy having been corrupt.
+                    if !onProgress(sent) { throw DockerError.cancelled }
                 }
                 try socket.write(tail)
             }

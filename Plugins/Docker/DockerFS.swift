@@ -39,6 +39,10 @@ enum DockerFSError: Error {
     /// The container has no usable `ls`, and the archive was too large.
     case cannotList
     case notFound
+    /// The user pressed Cancel. Its own case, because the host reads `PC_E_EABORTED` as "stopped on
+    /// purpose" and anything else as a failure — a cancelled copy used to report `unsupported` one
+    /// way and "the data was corrupt" the other.
+    case cancelled
     /// The path is on a read-only rootfs or a read-only mount.
     case readOnly
     /// The container's own user may not do this. Reported as it is, never worked around: running
@@ -482,9 +486,19 @@ final class DockerConnection {
                 if !progress(percent) { aborted = true }
             }
         })
+        // `shouldContinue` is what makes Cancel *cancel*. The flag used to be set here and read only
+        // after the transfer had finished, so pressing Cancel on a two-gigabyte file downloaded the
+        // whole two gigabytes and then reported an error — the button delayed the bad news and
+        // nothing else. Checked between chunks now, which ends the HTTP read where it stands.
         try api.archive(container: target.containerID, path: target.path,
-                        budget: .max, scanner: scanner)
-        if aborted { throw DockerFSError.unsupported }
+                        budget: .max, shouldContinue: { !aborted }, scanner: scanner)
+        if aborted {
+            // And the half a file it managed to write goes, rather than being left at the
+            // destination looking like a copy that worked.
+            try? handle.close()
+            try? FileManager.default.removeItem(atPath: localPath)
+            throw DockerFSError.cancelled
+        }
     }
 
     struct ReadTarget {

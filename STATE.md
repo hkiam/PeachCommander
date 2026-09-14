@@ -26,6 +26,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-14 — the first thing a review found: Cancel did not cancel
+
+Went looking rather than guessing, at the place a hand-written transport is most likely to be wrong,
+and the first pass found a cluster of four in one path — none of them caught by any test, because
+**nothing had ever exercised a cancellation**: the stub host in `DockerPluginTests` had no `progress`
+in its services table, and that callback is the ABI's only channel for "carry on?". A plugin that is
+never asked cannot be interrupted, and a test that never asks cannot see it.
+
+  * **Cancel did not stop the transfer.** `download` set an `aborted` flag inside its data callback
+    and read it only *after* `api.archive` had returned, so pressing Cancel on a two-gigabyte file
+    downloaded the whole two gigabytes and then reported. The button delayed the bad news and did
+    nothing else. The chunk loop is asked between chunks now (`shouldContinue`), which ends the HTTP
+    read where it stands.
+  * **It was reported as `unsupported`** — `PC_E_NOT_SUPPORTED` — so the user who pressed Cancel was
+    told the operation was not supported.
+  * **A cancelled upload reported `PC_E_BAD_DATA`**, which the host renders as a data fault: stopping
+    a copy is not the copy having been corrupt.
+  * **The partially written file stayed at the destination**, looking like a copy that worked.
+
+All four are one contract, and `PFXFileSystem`'s own comment states it: "the plugin returns early
+with `PC_E_EABORTED`, and `vfsError` turns that into `VFSError.cancelled`". The plugin now does.
+
+The tests that hold it come in a pair, because the interesting assertion — *fewer than ten progress
+reports* — would also pass for a transfer that never reported at all. The control downloads the same
+4 MB file to completion and requires more than fifty. And the fix was proved by putting the defect
+back: with `shouldContinue` removed the cancellation test fails, which is the repository's own rule
+for a fix nobody can see directly.
+
 ## 2026-09-14 — the container log as a file (F-498)
 
 `docker-logs.txt` in every container's root. It is not a path in the container — `ls /` inside it

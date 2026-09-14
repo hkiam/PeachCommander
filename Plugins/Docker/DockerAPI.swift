@@ -243,7 +243,8 @@ struct DockerAPI {
     /// `budget` caps how much of a recursive archive is worth reading — see `DockerFS` for why
     /// there is a budget at all.
     func archive(container id: String, path: String, budget: Int64,
-                 seconds: Int = .max, scanner: TarScanner) throws {
+                 seconds: Int = .max, shouldContinue: () -> Bool = { true },
+                 scanner: TarScanner) throws {
         var read: Int64 = 0
         var overBudget = false
         let deadline = seconds == .max ? Date.distantFuture
@@ -251,6 +252,7 @@ struct DockerAPI {
         var sinceCheck = 0
         let (status, _) = try client.stream(method: "GET", path: "/containers/\(id)/archive",
                                             query: ["path": path]) { chunk in
+            guard shouldContinue() else { return false }
             read += Int64(chunk.count)
             if read > budget { overBudget = true; return false }
             // The clock is consulted once per few megabytes rather than per chunk: a chunk is

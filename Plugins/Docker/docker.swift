@@ -72,6 +72,11 @@ private func record(_ error: Error, on connection: DockerConnection?) -> Int32 {
 
 private func pcCode(_ error: Error) -> Int32 {
     switch error {
+    case DockerFSError.cancelled, DockerError.cancelled:
+        // The host turns this into `VFSError.cancelled`, which is the difference between "you
+        // stopped it" and an error dialog. Its own comment on the progress callback says as much:
+        // "the plugin returns early with PC_E_EABORTED".
+        return Int32(PC_E_EABORTED)
     case DockerFSError.notFound:
         return Int32(PC_E_EOPEN)
     case DockerFSError.readOnly, DockerFSError.permissionDenied:

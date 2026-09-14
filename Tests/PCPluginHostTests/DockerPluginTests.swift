@@ -28,6 +28,14 @@ private nonisolated(unsafe) var dockerStubConfigRoot = ""
 private nonisolated(unsafe) var dockerStubCursor = ""
 private nonisolated(unsafe) var dockerStubScheme = ""
 private nonisolated(unsafe) var dockerStubOpened: [String] = []
+/// How many times the plugin has reported progress, and after how many it is told to stop.
+///
+/// Without a `progress` in the services table the plugin cannot be interrupted at all — the ABI's
+/// only channel for "carry on?" is that callback — so a cancellation could not be tested before it
+/// existed here. Counting the calls is also what proves the transfer *stopped* rather than ran to
+/// the end and reported afterwards.
+private nonisolated(unsafe) var dockerStubProgressCalls = 0
+private nonisolated(unsafe) var dockerStubCancelAfter = Int.max
 private nonisolated(unsafe) var dockerStubInformed: [String] = []
 
 private let dockerStubCursorPath: @convention(c) (UnsafeMutableRawPointer?,
@@ -44,6 +52,12 @@ private let dockerStubGetContext: @convention(c) (UnsafeMutableRawPointer?, Unsa
     guard let key, let out, maxlen > 0, String(cString: key) == "panelScheme" else { return 0 }
     _ = dockerStubScheme.withCString { strlcpy(out, $0, Int(maxlen)) }
     return 1
+}
+
+private let dockerStubProgress: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?,
+                                                Int32) -> Int32 = { _, _, _ in
+    dockerStubProgressCalls += 1
+    return dockerStubProgressCalls > dockerStubCancelAfter ? Int32(PC_ABORT) : Int32(PC_CONTINUE)
 }
 
 private let dockerStubOpenPath: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?)
@@ -89,6 +103,8 @@ final class DockerPluginTests: XCTestCase {
         unsetenv("PC_DOCKER_HOST")
         unsetenv("PC_DOCKER_EXEC")
         unsetenv("PC_DOCKER_CONFIRM")
+        dockerStubProgressCalls = 0
+        dockerStubCancelAfter = .max
         server?.terminate()
         if let dir { try? FileManager.default.removeItem(at: dir) }
     }
@@ -169,6 +185,9 @@ final class DockerPluginTests: XCTestCase {
         // purpose. Generated here rather than committed — see the fixture rule in CONVENTIONS.md.
         let blob = fs.appendingPathComponent("web/srv/blob.bin")
         try Data(count: 2 * 1024 * 1024).write(to: blob)
+        // A file whose download reports progress many times, so "it stopped" and "it finished and
+        // then complained" are told apart by counting.
+        try Data(count: 4 * 1024 * 1024).write(to: fs.appendingPathComponent("web/big.bin"))
 
         try write("worker one", "worker1/etc/id")
         try write("worker two", "worker2/etc/id")
@@ -265,6 +284,9 @@ final class DockerPluginTests: XCTestCase {
             _ = dockerStubConfigRoot.withCString { strlcpy(out, $0, Int(maxlen)) }
             return 1
         }
+        // Deliberately NOT main-actor isolated, the same as `PFXHostBridge`: the plugin reports from
+        // the queue its transfer runs on, so a hop here would trap rather than hop.
+        services.progress = dockerStubProgress
         PFXPlugin(library: lib).initialize(services: services)
     }
 
@@ -328,7 +350,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["data", "docker-logs.txt", "etc", "locked", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "srv"])
     }
 
     func test_aReplicatedServiceKeepsItsContainerLevel() async throws {
@@ -573,7 +595,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["data", "docker-logs.txt", "etc", "locked", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "srv"])
         // The metadata still comes from the engine's own stat, not from parsing `ls -l` output.
         let srv = try await collect(fs, "/Compose Projects/stack/web").first { $0.name == "srv" }
         XCTAssertEqual(srv?.kind, .directory)
@@ -632,6 +654,52 @@ final class DockerPluginTests: XCTestCase {
                        scheme: "file", on: fs)
         XCTAssertEqual(dockerStubOpened, [])
         XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
+    // MARK: - Stopping a transfer
+
+    func test_cancellingADownloadStopsItAndSaysItWasCancelled() async throws {
+        let fs = try makeFS()
+        dockerStubCancelAfter = 1
+        let destination = dir.appendingPathComponent("cancelled.bin")
+        await assertThrows(.cancelled) {
+            _ = try await fs.downloadFile(self.vpath("/Compose Projects/stack/web/big.bin"),
+                                          to: destination, resume: false)
+        }
+        // It *stopped*. The flag used to be read only after the transfer had finished, so Cancel on
+        // a large file downloaded the whole thing and then reported — the button delayed the bad
+        // news and nothing else. A completed 4 MB read reports progress about a hundred times.
+        XCTAssertLessThan(dockerStubProgressCalls, 10,
+                          "the transfer ran on after Cancel (\(dockerStubProgressCalls) reports)")
+        // And what it managed to write is gone, rather than left at the destination looking like a
+        // copy that worked.
+        XCTAssertFalse(FileManager.default.fileExists(atPath: destination.path))
+    }
+
+    func test_aCompletedDownloadIsNotMistakenForACancelledOne() async throws {
+        // The control: without it "fewer than ten reports" would also pass for a transfer that never
+        // reported at all, and the cancellation test would be measuring nothing.
+        let fs = try makeFS()
+        let destination = dir.appendingPathComponent("whole.bin")
+        _ = try await fs.downloadFile(vpath("/Compose Projects/stack/web/big.bin"),
+                                      to: destination, resume: false)
+        XCTAssertGreaterThan(dockerStubProgressCalls, 50)
+        XCTAssertEqual((try? FileManager.default.attributesOfItem(atPath: destination.path)[.size]
+                        as? NSNumber)??.int64Value, 4 * 1024 * 1024)
+    }
+
+    func test_cancellingAnUploadSaysItWasCancelledRatherThanCorrupt() async throws {
+        // It used to throw the plugin's "the engine answered something unreadable" error, which the
+        // host renders as a data fault: stopping a copy is not the copy having been corrupt.
+        let fs = try makeFS()
+        let source = dir.appendingPathComponent("big-upload.bin")
+        try Data(count: 4 * 1024 * 1024).write(to: source)
+        dockerStubCancelAfter = 1
+        await assertThrows(.cancelled) {
+            _ = try await fs.uploadFile(source,
+                                        to: self.vpath("/Compose Projects/stack/web/etc/up.bin"),
+                                        resume: false)
+        }
     }
 
     // MARK: - The log as a file
@@ -794,6 +862,7 @@ final class DockerPluginTests: XCTestCase {
             case (.unsupported, .unsupported),
                  (.permissionDenied, .permissionDenied),
                  (.notFound, .notFound),
+                 (.cancelled, .cancelled),
                  (.connectionLost, .connectionLost):
                 break
             default:
