@@ -34,6 +34,21 @@ private func setCString(_ string: String, _ dst: UnsafeMutablePointer<CChar>, _ 
     string.withCString { _ = strlcpy(dst, $0, capacity) }
 }
 
+/// An automation probe setting: the environment first, then the argument domain.
+///
+/// Both channels are needed and neither is optional. The unit tests `setenv` in their own process,
+/// which is the only thing that reaches a dlopen'd plugin from inside a test. The VM harness cannot:
+/// it launches the app with `open`, which hands over arguments and never the caller's environment,
+/// so `Tools/vm/regress-guest.sh` passes each setting as `-KEY value` and it arrives in
+/// `UserDefaults`. Reading only the environment made the harness's variable have no effect at all —
+/// the scenario hung on a modal that was supposed to have been skipped, which reads exactly like the
+/// dialog being broken.
+func dockerProbe(_ key: String) -> String? {
+    if let value = ProcessInfo.processInfo.environment[key], !value.isEmpty { return value }
+    let value = UserDefaults.standard.string(forKey: key)
+    return (value?.isEmpty ?? true) ? nil : value
+}
+
 /// The services table, kept from `PfxInit` — `PfxConnect` gets one too, but the settings have to
 /// be readable before there is anything to connect.
 private nonisolated(unsafe) var hostServices: PfxHostServices?
@@ -185,9 +200,9 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
 
     // The environment path exists for the automated tests, which cannot answer a modal dialog —
     // and it is also how someone who already exported DOCKER_HOST connects without being asked.
-    if let value = ProcessInfo.processInfo.environment["PC_DOCKER_HOST"], !value.isEmpty,
+    if let value = dockerProbe("PC_DOCKER_HOST"),
        let endpoint = DockerEndpoint.parse(value, label: "Docker") {
-        if let exec = ProcessInfo.processInfo.environment["PC_DOCKER_EXEC"] {
+        if let exec = dockerProbe("PC_DOCKER_EXEC") {
             settings.execFallback = exec != "0"
         }
         return makeConnection(endpoint: endpoint, settings: settings)

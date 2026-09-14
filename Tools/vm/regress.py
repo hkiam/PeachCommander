@@ -2160,6 +2160,37 @@ SCENARIOS = [
       # never arrives, which is exactly how this scenario fails.
       "wait 1500", "dump /Users/admin/hidden-files-race.txt", "wait 500"], 12),
 
+
+    # ---- Docker (F-490…F-494) ----------------------------------------------------------------
+    # The provider as a drive, through the chip rather than through its dialog: `pfxmount` goes by
+    # the volume the plugin published, so this walks the same path a click does — and that path is
+    # the one that can silently publish nothing, because the chip only appears when an engine was
+    # found at load time.
+    #
+    # Three claims, and the middle one is the design: a service running ONE container *is* that
+    # container (`stack/web` lists `etc`, not a folder named after the container), while a replicated
+    # service keeps a level. A build that got that backwards would list `stack-web-1` here and read
+    # as working.
+    ("docker-drive", ["active left", "pfxmount Docker", "wait 3000",
+                      "drivebardump /Users/admin/docker-bar.txt", "wait 400",
+                      "focus Compose Projects", "enter", "wait 2000",
+                      "focus stack", "enter", "wait 2000",
+                      "dump /Users/admin/docker-services.txt", "wait 500",
+                      "focus web", "enter", "wait 2500",
+                      "dump /Users/admin/docker-container.txt"], 16),
+    # Volumes as drives of their own, including one no container mounts — which the provider reaches
+    # by creating a throwaway container around it. That is the part with a side effect on the engine,
+    # so it is worth having on screen once rather than only in a unit test.
+    ("docker-volume", ["active left", "pfxmount Docker", "wait 3000",
+                       "focus Volumes", "enter", "wait 2500",
+                       "dump /Users/admin/docker-volumes.txt", "wait 500",
+                       "focus orphaned_data", "enter", "wait 3000",
+                       "dump /Users/admin/docker-volume.txt"], 16),
+    # The one new window this plugin brings. Measured rather than looked at: `mainshot` reports the
+    # content view's size, which a frozen layout gets right, so only the frames underneath can say
+    # whether the fields actually grew with the window.
+    ("docker-connect", ["active left", "wait 1200", "fsconnect Docker", "wait 2500",
+                        "windowlayout Docker|900x400|/Users/admin/docker-connect.txt"], 14),
 ]
 
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
@@ -2309,7 +2340,6 @@ KEYBOARD_GATES = {
 }
 
 KEYBOARD_REPORTS = {
-
     "keys-main": ["menu.txt", "keyloop-main.txt", "a11y-main.txt"],
     "keys-find": ["keyloop-find.txt", "a11y-find.txt"],
     "keys-settings": ["keyloop-settings.txt", "a11y-settings.txt"],
@@ -2330,6 +2360,43 @@ KEYBOARD_REPORTS = {
 # report is checked before it has run: name new scenarios so they are not a prefix-extension of an
 # existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
+    # Docker: the last file each scenario writes is its primary report, because that is the one the
+    # guest waits for before the run is allowed to end.
+    #
+    # The container's own root, reached through `Compose Projects/stack/web` — so the flattening of a
+    # single-replica service is asserted by the *path* as well as by the contents. `!stack-web-1`
+    # is the negation that makes it mean something: with the level left in, `web` would list the
+    # container and this would otherwise pass.
+    "docker-drive": ("/Users/admin/docker-container.txt",
+                     ["path=/Compose Projects/stack/web", "etc", "data", "!stack-web-1"]),
+    "docker-drive-services": ("/Users/admin/docker-services.txt",
+                              ["path=/Compose Projects/stack",
+                               # Running and stopped alike: a provider that listed only running
+                               # containers would be a process list, which is the thing it is not.
+                               "batch", "web", "worker"]),
+    # The chip exists and says what kind of drive it is. Without this, a mount that worked by some
+    # other route would hide a provider that publishes no drive at all.
+    "docker-drive-bar": ("/Users/admin/docker-bar.txt", ["Docker:pluginDrive:plugin"]),
+    # A volume nothing mounts, browsed anyway.
+    "docker-volume": ("/Users/admin/docker-volume.txt",
+                      ["path=/Volumes/orphaned_data", "orphan.txt"]),
+    "docker-volume-list": ("/Users/admin/docker-volumes.txt",
+                           ["path=/Volumes", "orphaned_data", "stack_data"]),
+    # The window grew and its contents grew with it — and this is the scenario that found a defect
+    # rather than confirming one. The "Engine:" label and the combo box beside it both hugged their
+    # content at priority 250, so AppKit split the row between them: 448 pt for the word "Engine:"
+    # and 408 for the field, in a 900 pt window, with **zero** Auto Layout conflicts. A satisfiable
+    # and merely wrong layout is the class the conflict count cannot see, which is why the frames are
+    # asserted and not just counted.
+    #
+    # The negation is the defect's own signature, so it cannot come back quietly; the combo's width
+    # is pinned exactly, because `windowlayout` sets the content size itself and everything but the
+    # label's intrinsic width is arithmetic from it. If a future font metric moves that 49 pt, this
+    # fails loudly and wants re-measuring — which is the right failure for a layout baseline.
+    "docker-connect": ("/Users/admin/docker-connect.txt",
+                       ["window=Connect to Docker", "content=900x400", "NSComboBox=807x24",
+                        "!NSTextField=448x16", "!ERROR: no visible window"]),
+
     # F-478. The confirmation is the promise the whole feature rests on, so it is asserted as three
     # separate claims: the macro was *proposed* rather than run, its steps are the rows, and the row
     # that cannot be resolved yet says what it is waiting for instead of guessing. `answer: cancelled`
@@ -3750,6 +3817,41 @@ def boot(app: str, run: str):
                   "(nohup /usr/bin/python3 ~/s3server.py ~/s3-root 9200 >/dev/null 2>&1 &) ; "
                   "sleep 2; curl -fsS -o /dev/null http://127.0.0.1:9200/ && echo s3-fixture-up || "
                   "echo s3-fixture-DOWN")
+    # The Docker fixture: the same stand-in daemon the unit tests drive, on a Unix socket in the
+    # guest. Taken from Tests/ for the same reason the S3 one is — a second copy is a second thing to
+    # keep in step — while the engine it serves is a file here, because writing that JSON through
+    # python -> ssh -> sh is the escaping trap the descript.ion fixture above already paid for.
+    #
+    # The plugin's settings have to be in place before the app launches: it is asked for its drive
+    # volumes while it loads, and a socket it learns about later produces no chip for `pfxmount`.
+    sh(["scp", *SSH,
+        str(Path(__file__).resolve().parents[2] / "Tests/PCPluginHostTests/Fixtures/dockerd.py"),
+        f"{GUEST}@{ip}:dockerd.py"])
+    ssh_guest(ip, "rm -rf ~/docker-root && mkdir -p ~/docker-root/fs/web/etc/nginx "
+                  "~/docker-root/fs/web/data ~/docker-root/fs/worker1/etc "
+                  "~/docker-root/fs/worker2/etc ~/docker-root/fs/batch/var/log "
+                  "~/docker-root/fs/redis/etc ~/docker-root/fs/vol-data "
+                  "~/docker-root/fs/vol-orphan")
+    sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-docker") / "spec.json"),
+        f"{GUEST}@{ip}:docker-root/spec.json"])
+    ssh_guest(ip, "printf 'server {}' > ~/docker-root/fs/web/etc/nginx/nginx.conf && "
+                  "printf 'hello from the web container' > ~/docker-root/fs/web/etc/hostname && "
+                  # A symlink, because 'drawn as a link rather than as an empty file' is a claim about
+                  # the host reading the S_IF* bits out of a PFX mode and nothing else tests it on screen.
+                  "ln -sf /etc/hostname ~/docker-root/fs/web/etc/motd && "
+                  "printf 'worker one' > ~/docker-root/fs/worker1/etc/id && "
+                  "printf 'worker two' > ~/docker-root/fs/worker2/etc/id && "
+                  "printf 'batch ran' > ~/docker-root/fs/batch/var/log/batch.log && "
+                  "printf 'standalone' > ~/docker-root/fs/redis/etc/redis.conf && "
+                  "printf 'a row' > ~/docker-root/fs/vol-data/rows.db && "
+                  "printf 'nothing mounts me' > ~/docker-root/fs/vol-orphan/orphan.txt && "
+                  "mkdir -p ~/pc-cfg/Docker && "
+                  "printf '[Docker]\\nEndpoint=unix:///Users/admin/pcd.sock\\n' "
+                  "> ~/pc-cfg/Docker/docker.ini && "
+                  "pkill -f dockerd.py; rm -f ~/pcd.sock ~/pcd.sock.ready; "
+                  "(nohup /usr/bin/python3 ~/dockerd.py ~/docker-root ~/pcd.sock >/dev/null 2>&1 &) ; "
+                  "sleep 2; test -S ~/pcd.sock && echo docker-fixture-up || echo docker-fixture-DOWN")
+
     # A listening witness for the viewer's network block (F-116), plus a document that tries to reach it.
     # The self-test request is what makes a later "no hit" mean anything: without it, a dead server and a
     # working block produce the same empty log, and the scenario passes hardest when it proves least.
@@ -3933,6 +4035,12 @@ PLUGINS_ON = {
     # else — measured: `--only plugin-context-menu` green, `--only main-window,plugin-context-menu`
     # red, with no other change.
     "plugin-context-menu": ["AI Assistant", "AI On-Device"],
+    # Docker ships switched off (a connection to a daemon carries the user's own rights on the
+    # machine), so every scenario that wants it has to say so — and the ones that do not get a
+    # provider that publishes no drive at all, which is the shipped default and worth leaving true.
+    "docker-drive": ["Docker"],
+    "docker-volume": ["Docker"],
+    "docker-connect": ["Docker"],
 }
 
 
@@ -3960,6 +4068,10 @@ SCENARIO_ENV = {
                      "PC_MACRO_RECORD_KEEP": "1",
                      "PC_MACRO_RECORD_BUTTON": "0",
                      "PC_MACRO_RECORD_DUMP": "/Users/admin/macro-record.txt"},
+    # The connect dialog without its modal loop — see DockerConnectDialog.run(). A modal opened from
+    # a script does not return, so this is the only way the window can be on screen while the script
+    # is still running to measure it.
+    "docker-connect": {"PC_DOCKER_DIALOG_NOMODAL": "1"},
 }
 
 

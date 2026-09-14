@@ -35,6 +35,20 @@ final class DockerConnectDialog: NSObject {
     }
 
     func run() -> Result? {
+        // A modal opened from an automation script never returns. The runner is an async task on the
+        // main actor and does not resume inside the modal's nested runloop, so `quit` never lands and
+        // the run has to be killed — which is also why this window could not be measured at all.
+        //
+        // It has to be measurable: it is the one new window this plugin brings, and the repository's
+        // Auto Layout baseline is zero everywhere, so a conflict here is a regression nobody would
+        // otherwise see. Under this variable the window is shown and laid out without the modal loop
+        // and the connect is cancelled, so a scenario can measure the real article with
+        // `windowlayout` instead of a stand-in. Same shape as the AI plugins' `PC_AI_DIRECT_DUMP`.
+        if dockerProbe("PC_DOCKER_DIALOG_NOMODAL") != nil {
+            window.orderFront(nil)
+            window.contentView?.layoutSubtreeIfNeeded()
+            return nil
+        }
         NSApp.runModal(for: window)
         window.orderOut(nil)
         guard confirmed else { return nil }
@@ -58,6 +72,14 @@ final class DockerConnectDialog: NSObject {
         guard let content = window.contentView else { return }
 
         let title = NSTextField(labelWithString: L("Engine:"))
+        // A programmatically created NSTextField hugs its content at priority 250 — the same as the
+        // combo box beside it — so the row has two views that are equally willing to stretch and
+        // AppKit splits the width between them: measured at 448 pt for the word "Engine:" and 408
+        // for the field, in a 900 pt window, with **zero** Auto Layout conflicts. The layout is
+        // satisfiable and merely wrong, which is the class the conflict count cannot see. Saying the
+        // label is the one that does not grow leaves the rest to the field.
+        title.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        title.setContentCompressionResistancePriority(.required, for: .horizontal)
         endpointCombo.addItems(withObjectValues: candidates.map(\.url))
         endpointCombo.stringValue = settings.endpoint.isEmpty
             ? (candidates.first?.url ?? "unix:///var/run/docker.sock")
