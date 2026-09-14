@@ -11,6 +11,29 @@ import PCOperations
 
 /// Generic modal single-line text input dialog.
 final class InputDialog: ModalWindowController {
+    /// What is highlighted when the dialog opens.
+    ///
+    /// It decides two things at once: what the next keystroke replaces, and — because AppKit draws
+    /// no insertion point while a selection stands — whether the reader can see where in the text
+    /// they are. Selecting *everything* answers the first question and destroys the second, which is
+    /// what was reported for Shift+F5: a 128-character path came up as one highlighted bar with no
+    /// caret anywhere in it, and under a dark palette that bar does not even read as a selection.
+    /// The field also scrolls to the *start* of the selection, so the one part of a long path worth
+    /// editing — the name on the end — was off screen.
+    enum InitialSelection {
+        /// The whole value. Right where the value is short and meant to be replaced outright: a
+        /// search term, a line number, a folder to go to.
+        case all
+        /// The name in a prefilled path, without its extension — the same part an in-cell rename
+        /// highlights (`PanelListView.inlineBasenameLength`), so the dialog and the in-cell editor
+        /// agree about what a rename is about. The path in front of it stays put and stays visible.
+        ///
+        /// `isDirectory` is not a detail: a folder has no extension to keep out of the way, so all
+        /// of its name is offered. Without it the two editors disagree about `Backup 2026.01` —
+        /// which is the sort of name a backup folder actually has.
+        case name(isDirectory: Bool)
+    }
+
     private let logger = PCFoundationLogger.logger
 
     /// Called on OK with the entered text.
@@ -20,6 +43,7 @@ final class InputDialog: ModalWindowController {
 
     private let prompt: String
     private let okTitle: String
+    private let initialSelection: InitialSelection
     private let textField: NSTextField
     private let confirmButton = NSButton()
     private let cancelButton = NSButton()
@@ -47,12 +71,15 @@ final class InputDialog: ModalWindowController {
     ///   - prompt: The label shown above the text field.
     ///   - initialValue: The text pre-filled (and selected) in the field.
     ///   - okTitle: The title of the confirm button.
+    ///   - selecting: What of `initialValue` comes up highlighted; see `InitialSelection`.
     init(title: String, prompt: String, initialValue: String, okTitle: String = "OK", secure: Bool = false,
+         selecting: InitialSelection = .all,
          checkboxTitle: String? = nil, checkboxOn: Bool = false,
          secondCheckboxTitle: String? = nil, secondCheckboxOn: Bool = false,
          thirdCheckboxTitle: String? = nil, thirdCheckboxOn: Bool = false) {
         self.prompt = prompt
         self.okTitle = okTitle
+        self.initialSelection = selecting
         self.textField = secure ? NSSecureTextField() : NSTextField()
         self.checkboxTitle = checkboxTitle
         self.secondCheckboxTitle = secondCheckboxTitle
@@ -140,8 +167,26 @@ final class InputDialog: ModalWindowController {
             window.makeKeyAndOrderFront(nil)
         }
         window.makeFirstResponder(textField)
-        textField.currentEditor()?.selectAll(nil)
+        applyInitialSelection()
         if window.sheetParent == nil { NSApp.runModal(for: window) }
+    }
+
+    /// Highlight what the caller said to highlight, and bring it into view.
+    ///
+    /// `scrollRangeToVisible` matters as much as the range itself: the field is one line and holds
+    /// paths far longer than it, and it is the *selected* end that has to be on screen.
+    private func applyInitialSelection() {
+        guard let editor = textField.currentEditor() else { return }
+        switch initialSelection {
+        case .all:
+            editor.selectAll(nil)
+        case .name(let isDirectory):
+            // The rule itself is `NameInPath`, shared with the panel's in-cell rename and tested
+            // there — this dialog only applies it.
+            let range = NameInPath.range(in: textField.stringValue, isDirectory: isDirectory)
+            editor.selectedRange = range
+            editor.scrollRangeToVisible(range)
+        }
     }
 
     private func dismiss() {

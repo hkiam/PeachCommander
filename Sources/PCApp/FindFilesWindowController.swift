@@ -589,8 +589,10 @@ public final class FindFilesWindowController: NSWindowController {
         // strip and border. Nothing here is a chosen number: the stacks report what they need.
         // Measured, not chosen: the General tab's stack reports 250 pt and the others less, and 34 is
         // what NSTabView spends on its strip and border.
-        let tabHeightConstraint = tabView.heightAnchor.constraint(
-            greaterThanOrEqualToConstant: form.measuredTabHeight())
+        // Measured once and used twice — as the required floor below and as the preferred height
+        // after the activation, which are the two halves of one decision about this view.
+        let tabHeight = form.measuredTabHeight()
+        let tabHeightConstraint = tabView.heightAnchor.constraint(greaterThanOrEqualToConstant: tabHeight)
         NSLayoutConstraint.activate([
             tabView.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             tabView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
@@ -620,6 +622,24 @@ public final class FindFilesWindowController: NSWindowController {
             buttons.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             buttons.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
         ])
+        // Which view gets the room a bigger window brings. Both heights above are lower *bounds*, so
+        // between them the layout has one degree of freedom and nothing said who should take it —
+        // and the tab view took all of it: measured at a content height of 1100, the tab grew from
+        // 426 to 856 pt while the list stayed on its 160 pt floor, with the tab's own criteria still
+        // 302 pt tall and the rest of it empty. Maximising the window therefore bought a bigger
+        // *form* and not one more result row.
+        //
+        // A preferred (breakable) equality at the measured height names the tab as the view that
+        // does not grow, which leaves the list as the only one that can. Preferred and not required
+        // on purpose, and what it yields to is the tab *pages*: `TabbedFormLayout` pins each page's
+        // stack inside its tab at priority 999, so criteria that need more room than the
+        // measurement predicted push this equality open rather than being clipped by it. (The
+        // required lower bound beside it is the same constant, so it is not what protects them —
+        // it is what keeps the list from being squeezed when the window shrinks.) A *required*
+        // equality here is the arrangement whose conflicts `measuredTabHeight` warns about.
+        let tabPreferredHeight = tabView.heightAnchor.constraint(equalToConstant: tabHeight)
+        tabPreferredHeight.priority = .defaultHigh
+        tabPreferredHeight.isActive = true
         form.alignRowLabels()
         updateOptionAvailability()
     }

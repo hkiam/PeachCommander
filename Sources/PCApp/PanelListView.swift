@@ -902,11 +902,9 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// How many leading characters to preselect: the name minus its extension for
     /// files (so ".txt" isn't selected), the whole name for directories/dotfiles.
     private func inlineBasenameLength(_ name: String, isDir: Bool) -> Int {
-        let ns = name as NSString
-        if isDir { return ns.length }
-        let dot = ns.range(of: ".", options: .backwards)
-        if dot.location == NSNotFound || dot.location == 0 { return ns.length }
-        return dot.location
+        // The rule itself lives in `NameInPath`, because the rename *dialogs* highlight the same
+        // part and used to decide it separately (F-399).
+        NameInPath.basenameLength(name, isDirectory: isDir)
     }
 
     /// Snapshot of selection counts/sizes for the status bar, including a

@@ -1749,6 +1749,20 @@ SCENARIOS = [
                          "findtext |/Users/admin/ft-empty.txt", "wait 600",
                          "findtext superseded|/Users/admin/ft-typed.txt", "wait 600",
                          "findtext |/Users/admin/ft-cleared.txt", "wait 800"], 12),
+    # What a bigger window buys (F-150). Both heights in this dialog were lower bounds, so the extra
+    # height of a resized window went wherever the layout engine put it — and it put all of it in the
+    # criteria tab: measured at a content height of 1100, the tab grew from 426 to 856 pt while the
+    # results list stayed on its 160 pt floor with the tab's own criteria still 302 pt tall. The
+    # negative expectation is the whole check: at a content height of 1000 the list must not still be
+    # the 160 pt it was built at. Numbers rather than a picture, because a layout that is merely
+    # wrong is satisfiable and reports no conflict.
+    ("find-maximize", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "findsearch *.txt|", "wait 2500",
+                       # More height than the guest's screen can give, deliberately: what is being
+                       # measured is where the room goes, and the clamp only means there is less of
+                       # it than was asked for.
+                       "windowlayout Find Files|1400x1000|/Users/admin/find-big.txt",
+                       "wait 800"], 12),
     # Switching *to* System after a named palette (F-409). Two defects in one sequence: the palette used
     # to be resolved from the app's own overridden appearance, so Light → Midnight → System kept the dark
     # colours under a light window until the next launch; and repainting the Settings sidebar reloaded it,

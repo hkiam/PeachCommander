@@ -3195,7 +3195,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             let dir = await panel.getCurrentPath()
             let dialog = InputDialog(title: String(localized: "New Text File"),
-                                     prompt: String(localized: "File name:"), initialValue: "new.txt")
+                                     prompt: String(localized: "File name:"), initialValue: "new.txt",
+                                     selecting: .name(isDirectory: false))
             dialog.onConfirm = { [weak self] name in
                 let leaf = name.trimmingCharacters(in: .whitespaces)
                 guard !leaf.isEmpty else { return }
@@ -3354,8 +3355,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             guard let name = panel.cursorEntryName() else { return }
             let dir = await panel.getCurrentPath()
+            // The name without its extension, exactly as the in-cell rename highlights it — the two
+            // are the same operation reached two ways, and only one of them used to show the reader
+            // where in the name they were. The listing's own kind decides it, for the same reason
+            // the in-cell editor asks: a folder's dot is part of its name.
+            let isDir = panel.tableView.cursorEntry()
+                .map { PanelEntryHelpers.isDirectoryLike($0.kind) } ?? false
             let dialog = InputDialog(title: String(localized: "Rename"),
-                                     prompt: String(localized: "New name:"), initialValue: name)
+                                     prompt: String(localized: "New name:"), initialValue: name,
+                                     selecting: .name(isDirectory: isDir))
             dialog.onConfirm = { [weak self] newName in
                 let trimmed = newName.trimmingCharacters(in: .whitespaces)
                 guard RenameValidator.isValid(trimmed), trimmed != name else { return }

@@ -266,9 +266,15 @@ extension PanelController {
         let offered = single
             ? (dir as NSString).appendingPathComponent((items[0] as NSString).lastPathComponent)
             : (dir as NSString).appendingPathComponent("*.*")
+        // Asked of the file system, not of the name: a folder has no extension to keep, so all of
+        // its name is offered — `Backup 2026.01` is not `Backup 2026` plus a type. This path is
+        // local by the guard above, so `isDirectory` here is the real answer.
+        var isDir: ObjCBool = false
+        if single { _ = FileManager.default.fileExists(atPath: items[0], isDirectory: &isDir) }
         guard let (raw, background, onlyNewer, queueForLater) = promptTarget(
                 title: String(localized: "Copy as"), count: items.count,
-                initial: offered, allowBackground: true),
+                initial: offered, allowBackground: true,
+                selecting: .name(isDirectory: isDir.boolValue)),
               let target = CopyAsTarget.resolve(raw, baseDir: dir, singleItem: single) else { return }
 
         // Confirmed unchanged. The engine refuses this now, but it refuses it as an error dialog in
@@ -1309,12 +1315,18 @@ extension PanelController {
         await reload()
     }
 
+    /// - Parameter selecting: what of `initial` comes up highlighted. A target *directory* is
+    ///   replaced whole, so it stays `.all`; a target that ends in a name — which is what
+    ///   `copySelectionSamePanel` offers — highlights the name, so the caret has a visible place and
+    ///   the path in front of it survives the first keystroke.
     private func promptTarget(title: String, count: Int, initial: String,
-                              allowBackground: Bool = false)
+                              allowBackground: Bool = false,
+                              selecting: InputDialog.InitialSelection = .all)
         -> (dest: String, background: Bool, onlyNewer: Bool, queueForLater: Bool)? {
         let dialog = InputDialog(title: title,
                                  prompt: String(localized: "\(count) item(s) to:"),
                                  initialValue: initial,
+                                 selecting: selecting,
                                  checkboxTitle: allowBackground ? String(localized: "Run in background") : nil,
                                  secondCheckboxTitle: String(localized: "Only newer files"),
                                  secondCheckboxOn: copyOnlyNewer,   // seed from the global default

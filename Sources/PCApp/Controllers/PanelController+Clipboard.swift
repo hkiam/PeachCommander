@@ -51,7 +51,7 @@ extension PanelController {
         let parent = await getCurrentDirectory()
         let dialog = InputDialog(title: String(localized: "New Text File"),
                                  prompt: String(localized: "File name:"),
-                                 initialValue: "new.txt")
+                                 initialValue: "new.txt", selecting: .name(isDirectory: false))
         var name: String?
         dialog.onConfirm = { name = $0 }
         dialog.runModalDialog()
