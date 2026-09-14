@@ -111,6 +111,10 @@ private func makeConnection(endpoint: DockerEndpoint, settings: DockerSettings)
     }
     let connection = DockerConnection(client: client, settings: settings)
     connection.sweepAbandonedHelpers()
+    // So the context-menu actions can find the engine this mount is on. They are handed a panel
+    // scheme and nothing else, and they must not reach for this connection itself — see the note in
+    // DockerCommands.swift.
+    dockerRegisterMount(id: "docker:" + connection.title, endpoint: endpoint, settings: settings)
     return Unmanaged.passRetained(connection).toOpaque()
 }
 
@@ -275,6 +279,7 @@ public func PfxConnectionId(_ conn: UnsafeMutableRawPointer?, _ out: UnsafeMutab
 public func PfxDisconnect(_ conn: UnsafeMutableRawPointer?) {
     guard let conn else { return }
     let connection = Unmanaged<DockerConnection>.fromOpaque(conn).takeUnretainedValue()
+    dockerForgetMount(id: "docker:" + connection.title)
     // The throwaway containers made for volumes are this mount's, and letting ARC decide when
     // they go would leave containers behind on the user's machine.
     connection.cleanup()

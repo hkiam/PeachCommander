@@ -59,6 +59,23 @@ Dostop do Dockerjevega strežnika praviloma pomeni zelo širok dostop do računa
 
 Edino, kar ustvari, je **enkratni vsebnik** — in to le zato, da doseže nosilec, ki ga noben obstoječi vsebnik ne priklaplja, saj je nosilec viden le od znotraj nečesa, kar ga priklaplja. Nikoli se ne zažene, označen je kot vsebnik Peach Commanderja in je odstranjen, ko pogon zapustite.
 
+## Dejanja na vsebniku ali nosilcu
+
+Desni klik na vsebnik ali nosilec v podmeniju **Docker** ponudi tisto, česar pogon sam ne more povedati:
+
+- **Inspect** — vse, kar pogon o njem ve, kot oblikovan JSON v oknu, po katerem se da drsati in iz
+  katerega se da kopirati.
+- **Show Logs** — zadnjih 500 vrstic, ki jih je vsebnik zapisal.
+- **Show Mounts** — vsak priklop, ki ga nosi, kaj je in ali je vanj mogoče pisati.
+- **Copy ID** — polni id vsebnika ali ime nosilca na odložišče. *Polni* id, ne dvanajst znakov iz
+  stolpca ID: namenjen je lepljenju v ukaz `docker`, kratek id pa je predpona, ki lahko preneha biti
+  enolična.
+- **Jump to Volume** — pri imeniku, ki je v resnici nosilec, skočiti na ta nosilec pod **Volumes**.
+  To je druga polovica stolpca Priklop: stolpec nosilec poimenuje, to pa vas pripelje do njega.
+- **Open Compose Project** — iti k projektu, ki mu vsebnik pripada.
+
+Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.
+
 ## Nastavitve
 
 Vtičnik vodi majhno datoteko v `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

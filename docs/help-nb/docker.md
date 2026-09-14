@@ -59,6 +59,23 @@ Tilgang til en Docker-tjeneste betyr som regel vidtrekkende tilgang til maskinen
 
 Det eneste det oppretter, er en **engangscontainer** — og bare for å nå et volum ingen eksisterende container monterer, siden et volum bare er synlig innenfra noe som monterer det. Den startes aldri, den er merket som Peach Commanders, og den fjernes når du forlater stasjonen.
 
+## Handlinger på en container eller et volum
+
+Et høyreklikk på en container eller et volum tilbyr i undermenyen **Docker** det en stasjon alene ikke kan si:
+
+- **Inspect** — alt motoren vet om den, som formatert JSON i et vindu som kan rulles og merkes
+  i.
+- **Show Logs** — de siste 500 linjene containeren har skrevet.
+- **Show Mounts** — hver montering den bærer, hva den er, og om det kan skrives i den.
+- **Copy ID** — containerens fulle id, eller volumets navn, på utklippstavlen. Den *fulle* id-en,
+  ikke de tolv tegnene i ID-kolonnen: dette er ment for å limes inn i en `docker`-kommando, og en kort
+  id er et prefiks som kan slutte å være entydig.
+- **Jump to Volume** — på en mappe som egentlig er et volum, gå til det volumet under **Volumes**.
+  Det er den andre halvdelen av Montering-kolonnen: kolonnen navngir volumet, dette tar deg dit.
+- **Open Compose Project** — gå til prosjektet containeren hører til.
+
+Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de ikke der i det hele tatt.
+
 ## Innstillinger
 
 Programtillegget holder en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

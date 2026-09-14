@@ -59,6 +59,23 @@ Egy Docker-démonhoz való hozzáférés általában igen messzemenő hozzáfér
 
 Az egyetlen, amit létrehoz, egy **eldobható konténer** — és csak azért, hogy elérjen egy olyan kötetet, amelyet egyetlen létező konténer sem csatol, hiszen egy kötet kizárólag belülről látható valamiből, ami csatolja. Soha nem indul el, a Peach Commander címkéjét viseli, és eltávolításra kerül, amikor elhagyja a meghajtót.
 
+## Műveletek konténeren vagy köteten
+
+Egy konténerre vagy kötetre jobb gombbal kattintva a **Docker** almenü azt kínálja, amit egy meghajtó önmagában nem tud megmondani:
+
+- **Inspect** — mindent, amit a motor tud róla, formázott JSON-ként, görgethető és másolható
+  ablakban.
+- **Show Logs** — az utolsó 500 sor, amit a konténer írt.
+- **Show Mounts** — minden csatolás, amit hordoz, hogy mi az, és hogy írható-e.
+- **Copy ID** — a konténer teljes azonosítója vagy a kötet neve a vágólapra. A *teljes* azonosító,
+  nem az ID oszlop tizenkét karaktere: ez egy `docker` parancsba való beillesztésre való, és egy
+  rövid azonosító olyan előtag, amely megszűnhet egyedi lenni.
+- **Jump to Volume** — olyan könyvtárnál, amely valójában kötet, ugrás arra a kötetre a **Volumes**
+  alatt. Ez a Csatolás oszlop másik fele: az oszlop megnevezi a kötetet, ez pedig odavisz.
+- **Open Compose Project** — ugrás ahhoz a projekthez, amelyhez a konténer tartozik.
+
+A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött egyáltalán nincsenek ott.
+
 ## Beállítások
 
 A bővítmény egy kis fájlt tart a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen:

@@ -59,6 +59,23 @@ Toegang tot een Docker-daemon betekent doorgaans verstrekkende toegang tot de ma
 
 Het enige dat hij aanmaakt is een **wegwerpcontainer** — en alleen om een volume te bereiken dat geen bestaande container koppelt, want een volume is alleen zichtbaar van binnenuit iets dat het koppelt. Hij wordt nooit gestart, draagt het label van Peach Commander en wordt verwijderd zodra u de schijf verlaat.
 
+## Acties op een container of een volume
+
+Een rechterklik op een container of een volume biedt in het submenu **Docker** wat een schijf alleen niet kan zeggen:
+
+- **Inspect** — alles wat de engine ervan weet, als opgemaakte JSON, in een venster waarin u kunt
+  scrollen en selecteren.
+- **Show Logs** — de laatste 500 regels die de container heeft geschreven.
+- **Show Mounts** — elke koppeling die hij draagt, wat elk ervan is en of erin geschreven kan worden.
+- **Copy ID** — de volledige id van de container, of de naam van het volume, op het klembord.
+  De *volledige* id, niet de twaalf tekens van de ID-kolom: dit is bedoeld om in een `docker`-opdracht
+  te plakken, en een korte id is een voorvoegsel dat kan ophouden uniek te zijn.
+- **Jump to Volume** — op een map die in werkelijkheid een volume is, naar dat volume onder
+  **Volumes** gaan. Dat is de andere helft van de kolom Koppeling: de kolom noemt het volume, dit brengt u erheen.
+- **Open Compose Project** — naar het project gaan waar de container bij hoort.
+
+De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn ze er helemaal niet.
+
 ## Instellingen
 
 De plug-in houdt een klein bestand bij op `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

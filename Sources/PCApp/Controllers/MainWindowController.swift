@@ -10802,28 +10802,51 @@ extension MainWindowController: ContributionHost {
     }
 
     func contribOpenPath(_ path: String) {
-        var isDir: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir) else { return }
-        let target = isDir.boolValue ? path : (path as NSString).deletingLastPathComponent
-        Task { @MainActor in await activePanel?.loadDirectory(target) }
+        guard let panel = activePanel else { return }
+        Task { @MainActor in
+            guard let isDirectory = await self.contribResolve(path, on: panel) else { return }
+            await panel.loadDirectory(isDirectory ? path : (path as NSString).deletingLastPathComponent)
+        }
     }
 
     /// Navigate a specific panel (side 0 = left, 1 = right) to `path`; a file
     /// navigates to its parent folder and is selected there.
     func contribOpenPathInPanel(side: Int, path: String) {
-        var isDir: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir) else { return }
         guard let panel = (side == 1 ? rightPanelController : leftPanelController) else { return }
-        let isDirectory = isDir.boolValue
-        let target = isDirectory ? path : (path as NSString).deletingLastPathComponent
         activePanel = panel
         Task { @MainActor in
+            guard let isDirectory = await self.contribResolve(path, on: panel) else { return }
             if isDirectory {
-                await panel.loadDirectory(target)
+                await panel.loadDirectory(path)
             } else {
-                await panel.loadDirectory(target, selecting: (path as NSString).lastPathComponent)
+                await panel.loadDirectory((path as NSString).deletingLastPathComponent,
+                                          selecting: (path as NSString).lastPathComponent)
             }
         }
+    }
+
+    /// Is `path` a directory on the filesystem `panel` is showing — and is it there at all?
+    ///
+    /// Both `openPath` entry points used to ask `FileManager`, which answers for the local disk and
+    /// for nothing else. So every path inside a mount failed the check and the call returned in
+    /// silence: no plugin could navigate its *own* drive, which is where its paths come from. The
+    /// Docker provider's "jump to the volume this directory really is" had nowhere to jump to, and
+    /// the same wall stood in front of every other file-system plugin.
+    ///
+    /// A stat that fails inside a mount answers "directory" rather than nil. The listing then fails
+    /// where the user can see it, which is the honest end of a plugin asking for somewhere that is
+    /// not there; the silence it used to get was not.
+    private func contribResolve(_ path: String, on panel: PanelController) async -> Bool? {
+        let fs = panel.currentFileSystem
+        guard !(fs is LocalFS) else {
+            var isDir: ObjCBool = false
+            guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir) else { return nil }
+            return isDir.boolValue
+        }
+        guard let entry = try? await fs.stat(VFSPath(filesystemId: fs.scheme, path: path)) else {
+            return true
+        }
+        return entry.kind == .directory || entry.kind == .symlinkDir || entry.kind == .package
     }
 
     /// Show the plugin view `viewId` in the sidebar, rooted at `root`.
@@ -10905,6 +10928,16 @@ extension MainWindowController: ContributionHost {
         context.set("diskMapActive", diskMapRoot != nil)
         context.set("sidebarViewRoot", diskMapRoot)
         context.set("dir", cachedActiveCwd)
+        // Which filesystem the active panel is showing: "file" locally, "zip" in an archive, and a
+        // plugin mount's own connection id ("docker:Colima", "s3:127.0.0.1:9000") inside one.
+        //
+        // `contrib.h` has documented this key since the ABI was written and nothing ever set it, so
+        // a plugin could not tell whether the cursor was in its own drive or on the disk. The only
+        // gate available was the cursor's *path*, which a local folder can carry just as well — a
+        // context item meant for a Docker container would have offered itself over a folder called
+        // "Compose Projects" in someone's home directory. Every file-system plugin needs this, not
+        // only the one that found it missing.
+        context.set("panelScheme", activePanel?.currentFileSystem.scheme)
         // Which panel is active, in the same 0 = left / 1 = right terms `openPathInPanel` takes, so a
         // plugin that produces files can put them in the *other* panel — beside the input rather than
         // on top of it, which is what F5 and the compare tools do.

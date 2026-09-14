@@ -59,6 +59,23 @@ L’accès à un démon Docker signifie généralement un accès très étendu �
 
 La seule chose qu’elle crée est un **conteneur jetable** — uniquement pour atteindre un volume qu’aucun conteneur existant ne monte, puisqu’un volume n’est visible que depuis l’intérieur de quelque chose qui le monte. Il n’est jamais démarré, il porte une étiquette de Peach Commander, et il est supprimé dès que vous quittez le disque.
 
+## Actions sur un conteneur ou un volume
+
+Un clic droit sur un conteneur ou un volume propose, dans le sous-menu **Docker**, ce qu’un disque seul ne peut pas dire :
+
+- **Inspect** — tout ce que le moteur sait à son sujet, en JSON formaté, dans une fenêtre où l’on peut
+  faire défiler et sélectionner.
+- **Show Logs** — les 500 dernières lignes écrites par le conteneur.
+- **Show Mounts** — chaque montage qu’il porte, ce qu’il est, et s’il est accessible en écriture.
+- **Copy ID** — l’identifiant complet du conteneur, ou le nom du volume, dans le presse-papiers.
+  L’identifiant *complet*, pas les douze caractères de la colonne ID : c’est fait pour être collé dans
+  une commande `docker`, et un identifiant court est un préfixe qui peut cesser d’être unique.
+- **Jump to Volume** — sur un dossier qui est en réalité un volume, aller à ce volume sous
+  **Volumes**. C’est l’autre moitié de la colonne Montage : la colonne nomme le volume, ceci vous y emmène.
+- **Open Compose Project** — aller au projet auquel appartient le conteneur.
+
+Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur un de vos dossiers, elles ne sont pas là du tout.
+
 ## Réglages
 
 L’extension tient un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini` :

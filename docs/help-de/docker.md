@@ -59,6 +59,23 @@ Zugriff auf einen Docker-Daemon bedeutet in aller Regel weitreichenden Zugriff a
 
 Das Einzige, was es anlegt, ist ein **Wegwerf-Container** — und zwar nur, um ein Volume zu erreichen, das kein vorhandener Container einhängt, denn ein Volume ist nur von innerhalb eines Containers sichtbar, der es einhängt. Er wird nie gestartet, ist als Peach Commanders Container gekennzeichnet und wird entfernt, sobald Sie das Laufwerk verlassen.
 
+## Aktionen auf einem Container oder einem Volume
+
+Ein Rechtsklick auf einen Container oder ein Volume bietet im Untermenü **Docker**, was ein Laufwerk allein nicht sagen kann:
+
+- **Inspect** — alles, was die Engine darüber weiß, als formatiertes JSON in einem Fenster, das sich
+  scrollen und aus dem sich kopieren lässt.
+- **Show Logs** — die letzten 500 Zeilen, die der Container geschrieben hat.
+- **Show Mounts** — jeder Mount, den er trägt, mit dem, was er ist, und ob er beschreibbar ist.
+- **Copy ID** — die vollständige ID des Containers oder der Name des Volumes in die Zwischenablage.
+  Die vollständige ID, nicht die zwölf Zeichen der ID-Spalte: Das ist zum Einfügen in einen
+  `docker`-Befehl gedacht, und eine kurze ID ist ein Präfix, das aufhören kann, eindeutig zu sein.
+- **Jump to Volume** — bei einem Verzeichnis, das in Wahrheit ein Volume ist, zu diesem Volume unter
+  **Volumes** springen. Das ist die andere Hälfte der Mount-Spalte: Die Spalte nennt das Volume, das hier bringt Sie hin.
+- **Open Compose Project** — zu dem Projekt gehen, zu dem der Container gehört.
+
+Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigenen Ordner sind sie gar nicht vorhanden.
+
 ## Einstellungen
 
 Das Plugin führt eine kleine Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

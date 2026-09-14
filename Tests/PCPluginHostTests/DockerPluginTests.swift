@@ -13,13 +13,48 @@
 // is a shape the plugin got wrong at some point against the real engine.
 
 import XCTest
+import AppKit
 import PCVFS
 import CPFX
+import CContrib
 @testable import PCPluginHost
 
 /// The config root the stub host hands the plugin. A file-scope variable because a
 /// `@convention(c)` callback cannot capture, and this has to be readable from inside one.
 private nonisolated(unsafe) var dockerStubConfigRoot = ""
+
+/// What the stub host answers a contributed command, and what the command did to it. File-scope for
+/// the same reason as the config root: a `@convention(c)` callback cannot capture.
+private nonisolated(unsafe) var dockerStubCursor = ""
+private nonisolated(unsafe) var dockerStubScheme = ""
+private nonisolated(unsafe) var dockerStubOpened: [String] = []
+private nonisolated(unsafe) var dockerStubInformed: [String] = []
+
+private let dockerStubCursorPath: @convention(c) (UnsafeMutableRawPointer?,
+                                                  UnsafeMutablePointer<CChar>?, Int32) -> Int32 = {
+    _, out, maxlen in
+    guard let out, maxlen > 0, !dockerStubCursor.isEmpty else { return 0 }
+    _ = dockerStubCursor.withCString { strlcpy(out, $0, Int(maxlen)) }
+    return 1
+}
+
+private let dockerStubGetContext: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?,
+                                                  UnsafeMutablePointer<CChar>?, Int32) -> Int32 = {
+    _, key, out, maxlen in
+    guard let key, let out, maxlen > 0, String(cString: key) == "panelScheme" else { return 0 }
+    _ = dockerStubScheme.withCString { strlcpy(out, $0, Int(maxlen)) }
+    return 1
+}
+
+private let dockerStubOpenPath: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?)
+    -> Void = { _, path in
+    if let path { dockerStubOpened.append(String(cString: path)) }
+}
+
+private let dockerStubPresentInfo: @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?,
+                                                   UnsafePointer<CChar>?) -> Void = { _, _, message in
+    if let message { dockerStubInformed.append(String(cString: message)) }
+}
 
 final class DockerPluginTests: XCTestCase {
     private var dir: URL!
@@ -68,7 +103,8 @@ final class DockerPluginTests: XCTestCase {
             try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
             let out = cache.appendingPathComponent("libdocker.dylib")
             let sources = ["docker", "DockerEngine", "DockerAPI", "DockerTar", "DockerTree",
-                           "DockerFS", "DockerWrite", "DockerSettings", "DockerConnectDialog"]
+                           "DockerFS", "DockerWrite", "DockerSettings", "DockerConnectDialog",
+                           "DockerCommands", "DockerTextWindow"]
                 .map { repoRoot.appendingPathComponent("Plugins/Docker/\($0).swift").path }
             let process = Process()
             process.executableURL = URL(fileURLWithPath: swiftc)
@@ -93,8 +129,13 @@ final class DockerPluginTests: XCTestCase {
             }
             return out
         }
+        // `ContribSymbols.optional` as well as the PFX ones: `PluginLibrary.symbol` answers from the
+        // table it resolved at open time, so a symbol nobody asked for is not "missing from the
+        // dylib" — it was never looked up. Without it `PcRunCommand` comes back nil and the failure
+        // reads as a plugin that does not export it.
         guard case .success(let lib) = PluginLibrary.open(
-            path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional) else {
+            path: out.path, required: PFXSymbols.required,
+            optional: PFXSymbols.optional + ContribSymbols.optional) else {
             throw PluginBuildFailure(description: "the Docker plugin compiled but could not be loaded")
         }
         return lib
@@ -538,7 +579,82 @@ final class DockerPluginTests: XCTestCase {
         }
     }
 
+    // MARK: - The container and volume actions (contributions)
+
+    func test_copyIdentifierTakesTheFullContainerId() throws {
+        let fs = try makeFS()
+        try runCommand("plugin.docker.copyid", cursor: "/Compose Projects/stack/web", on: fs)
+        // The full id, not the twelve characters the ID column shows: this is for pasting into a
+        // `docker` command, and a short id is a prefix that can stop being unique.
+        XCTAssertEqual(NSPasteboard.general.string(forType: .string), "c-web")
+    }
+
+    func test_jumpToVolumeGoesToTheVolumeTheDirectoryReallyIs() throws {
+        let fs = try makeFS()
+        try runCommand("plugin.docker.jumptovolume",
+                       cursor: "/Compose Projects/stack/web/data", on: fs)
+        // The destination is a path in the *mount*, which is the whole reason the host's `openPath`
+        // had to stop asking `FileManager` whether it exists.
+        XCTAssertEqual(dockerStubOpened, ["/Volumes/stack_data"])
+    }
+
+    func test_jumpToVolumeRefusesADirectoryThatIsNotOne() throws {
+        let fs = try makeFS()
+        try runCommand("plugin.docker.jumptovolume",
+                       cursor: "/Compose Projects/stack/web/etc", on: fs)
+        XCTAssertEqual(dockerStubOpened, [], "nothing should have been navigated to")
+        XCTAssertFalse(dockerStubInformed.isEmpty, "the refusal has to say something")
+    }
+
+    func test_openComposeProjectGoesToTheProject() throws {
+        let fs = try makeFS()
+        try runCommand("plugin.docker.composeproject",
+                       cursor: "/Compose Projects/stack/web", on: fs)
+        XCTAssertEqual(dockerStubOpened, ["/Compose Projects/stack"])
+    }
+
+    func test_anActionOutsideADockerPanelIsRefused() throws {
+        let fs = try makeFS()
+        // The declarative `when` gates these to a Docker drive, but a command is also reachable from
+        // the command browser, a shortcut and the button bar — none of which consult it.
+        try runCommand("plugin.docker.copyid", cursor: "/Users/someone/notes.txt",
+                       scheme: "file", on: fs)
+        XCTAssertEqual(dockerStubOpened, [])
+        XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
     // MARK: - Helpers
+
+    /// Invoke a contributed command with a stub host table, the way the panel's context menu does.
+    ///
+    /// `fs` is taken and held for the length of the call, and that is load-bearing rather than
+    /// tidiness: the plugin registers the mounted engine when `PfxConnect` succeeds and forgets it in
+    /// `PfxDisconnect`, so a mount whose `PFXFileSystem` has already been released leaves a command
+    /// with no engine to talk to. Discarding the result of `makeFS()` made every one of these tests
+    /// fail as "the command did nothing", which is also what a genuinely broken command looks like.
+    private func runCommand(_ id: String, cursor: String, scheme: String = "docker:Docker",
+                            on fs: PFXFileSystem) throws {
+        typealias RunCommand = @convention(c) (UnsafePointer<CChar>?,
+                                               UnsafePointer<PcHostServices>?) -> Void
+        let symbol = try XCTUnwrap(lib.symbol("PcRunCommand"),
+                                   "the plugin does not export PcRunCommand")
+        dockerStubCursor = cursor
+        dockerStubScheme = scheme
+        dockerStubOpened = []
+        dockerStubInformed = []
+        NSPasteboard.general.clearContents()
+
+        var services = PcHostServices()
+        services.cursorPath = dockerStubCursorPath
+        services.getContext = dockerStubGetContext
+        services.openPath = dockerStubOpenPath
+        services.presentInfo = dockerStubPresentInfo
+        try withExtendedLifetime(fs) {
+            withUnsafePointer(to: &services) { table in
+                id.withCString { unsafeBitCast(symbol, to: RunCommand.self)($0, table) }
+            }
+        }
+    }
 
     private func copyIn(_ fs: PFXFileSystem, _ source: URL, to path: String) async throws {
         let data = try Data(contentsOf: source)

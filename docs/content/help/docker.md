@@ -52,6 +52,24 @@ Two things need a container that is actually running: **deleting** and **renamin
 
 **Copying a whole container out is a copy of its whole filesystem** — including `/proc` and `/dev`. Copy the directory you want, not `/`.
 
+## Actions on a container or a volume
+
+Right-click a container or a volume and the **Docker** submenu offers what a drive on its own cannot
+say:
+
+- **Inspect** — everything the engine knows about it, as formatted JSON in a window you can scroll
+  and select from.
+- **Show Logs** — the last 500 lines the container has written.
+- **Show Mounts** — every mount it carries, with what each one is and whether it is writable.
+- **Copy ID** — the container's full id, or the volume's name, on the clipboard. The full id, not the
+  twelve characters the ID column shows: this is for pasting into a `docker` command, and a short id
+  is a prefix that can stop being unique.
+- **Jump to Volume** — on a directory that is really a volume, go to that volume under **Volumes**.
+  This is the other half of the Mount column: the column names the volume, and this takes you there.
+- **Open Compose Project** — go to the project the container belongs to.
+
+The items appear only inside a Docker drive; on a folder of your own they are not there at all.
+
 ## What it can reach
 
 The plugin talks to whichever engine you would reach from a terminal: `DOCKER_HOST` if you have set it, otherwise your current `docker context`, otherwise the usual sockets of Docker Desktop, Colima, Rancher Desktop, Lima and Podman. Podman works because it serves the same API.

@@ -59,6 +59,23 @@ Dostęp do demona Dockera oznacza zwykle bardzo szeroki dostęp do maszyny, na k
 
 Jedyne, co tworzy, to **kontener jednorazowy** — i tylko po to, by dotrzeć do wolumenu, którego nie montuje żaden istniejący kontener, ponieważ wolumen widać wyłącznie od wewnątrz czegoś, co go montuje. Nigdy nie jest uruchamiany, jest oznaczony jako należący do Peach Commandera i zostaje usunięty, gdy opuszczasz napęd.
 
+## Działania na kontenerze albo wolumenie
+
+Kliknięcie prawym przyciskiem na kontenerze albo wolumenie oferuje w podmenu **Docker** to, czego sam napęd powiedzieć nie może:
+
+- **Inspect** — wszystko, co silnik o nim wie, jako sformatowany JSON w oknie, które można przewijać
+  i z którego można kopiować.
+- **Show Logs** — ostatnie 500 wierszy, które kontener zapisał.
+- **Show Mounts** — każde montowanie, które niesie, czym jest i czy da się w nim pisać.
+- **Copy ID** — pełny identyfikator kontenera albo nazwa wolumenu do schowka. *Pełny* identyfikator,
+  a nie dwanaście znaków z kolumny ID: to służy do wklejenia w polecenie `docker`, a krótki
+  identyfikator jest przedrostkiem, który może przestać być jednoznaczny.
+- **Jump to Volume** — na katalogu, który naprawdę jest wolumenem, przejść do tego wolumenu w
+  **Volumes**. To druga połowa kolumny Montowanie: kolumna nazywa wolumen, a to prowadzi do niego.
+- **Open Compose Project** — przejść do projektu, do którego kontener należy.
+
+Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym folderem nie ma ich wcale.
+
 ## Ustawienia
 
 Wtyczka prowadzi mały plik w `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

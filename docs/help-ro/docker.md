@@ -59,6 +59,23 @@ Accesul la un demon Docker înseamnă de regulă acces foarte larg la mașina pe
 
 Singurul lucru pe care îl creează este un **container de unică folosință** — și doar pentru a ajunge la un volum pe care niciun container existent nu îl montează, de vreme ce un volum este vizibil numai din interiorul a ceva care îl montează. Nu este pornit niciodată, poartă eticheta Peach Commander și este șters când părăsiți unitatea.
 
+## Acțiuni asupra unui container sau a unui volum
+
+Un clic dreapta pe un container sau pe un volum oferă, în submeniul **Docker**, ceea ce o unitate singură nu poate spune:
+
+- **Inspect** — tot ce știe motorul despre el, ca JSON formatat, într-o fereastră prin care se poate
+  derula și din care se poate selecta.
+- **Show Logs** — ultimele 500 de rânduri scrise de container.
+- **Show Mounts** — fiecare montare pe care o poartă, ce este și dacă se poate scrie în ea.
+- **Copy ID** — identificatorul complet al containerului, sau numele volumului, în clipboard.
+  Identificatorul *complet*, nu cele douăsprezece caractere din coloana ID: este pentru a fi lipit
+  într-o comandă `docker`, iar un id scurt este un prefix care poate înceta să fie unic.
+- **Jump to Volume** — pe un dosar care este în realitate un volum, mergeți la acel volum sub
+  **Volumes**. Este cealaltă jumătate a coloanei Montare: coloana numește volumul, iar aceasta vă duce acolo.
+- **Open Compose Project** — mergeți la proiectul căruia îi aparține containerul.
+
+Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavoastră nu sunt deloc.
+
 ## Setări
 
 Pluginul ține un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

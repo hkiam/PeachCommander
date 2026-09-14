@@ -59,6 +59,23 @@ Insticksprogrammet talar med samma motor som du skulle nå från en terminal: `D
 
 Det enda det skapar är en **engångscontainer** — och bara för att nå en volym som ingen befintlig container monterar, eftersom en volym bara syns inifrån något som monterar den. Den startas aldrig, den är märkt som Peach Commanders och den tas bort när du lämnar enheten.
 
+## Åtgärder på en container eller en volym
+
+Ett högerklick på en container eller en volym erbjuder i undermenyn **Docker** det som en enhet ensam inte kan säga:
+
+- **Inspect** — allt motorn vet om den, som formaterad JSON i ett fönster som går att rulla och
+  markera i.
+- **Show Logs** — de senaste 500 raderna containern har skrivit.
+- **Show Mounts** — varje montering den bär, vad den är och om det går att skriva i den.
+- **Copy ID** — containerns fullständiga id, eller volymens namn, till urklipp. Det *fullständiga*
+  id:t, inte de tolv tecknen i ID-kolumnen: det här är till för att klistras in i ett `docker`-kommando,
+  och ett kort id är ett prefix som kan sluta vara unikt.
+- **Jump to Volume** — på en katalog som egentligen är en volym, gå till den volymen under
+  **Volumes**. Det är den andra halvan av Montering-kolumnen: kolumnen namnger volymen, det här tar dig dit.
+- **Open Compose Project** — gå till projektet containern hör till.
+
+Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls.
+
 ## Inställningar
 
 Insticksprogrammet håller en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

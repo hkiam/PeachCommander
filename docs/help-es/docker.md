@@ -59,6 +59,23 @@ El acceso a un demonio de Docker suele significar un acceso muy amplio a la máq
 
 Lo único que crea es un **contenedor desechable**, y solo para llegar a un volumen que ningún contenedor existente monta, ya que un volumen únicamente es visible desde dentro de algo que lo monta. Nunca se inicia, lleva la etiqueta de Peach Commander y se elimina al salir de la unidad.
 
+## Acciones sobre un contenedor o un volumen
+
+Un clic derecho sobre un contenedor o un volumen ofrece, en el submenú **Docker**, lo que una unidad por sí sola no puede decir:
+
+- **Inspect** — todo lo que el motor sabe de él, como JSON formateado, en una ventana por la que se
+  puede desplazar y de la que se puede copiar.
+- **Show Logs** — las últimas 500 líneas que ha escrito el contenedor.
+- **Show Mounts** — cada montaje que lleva, qué es cada uno y si se puede escribir en él.
+- **Copy ID** — el identificador completo del contenedor, o el nombre del volumen, al portapapeles.
+  El identificador *completo*, no los doce caracteres de la columna ID: esto es para pegarlo en un
+  comando `docker`, y un identificador corto es un prefijo que puede dejar de ser único.
+- **Jump to Volume** — en un directorio que en realidad es un volumen, ir a ese volumen bajo
+  **Volumes**. Es la otra mitad de la columna Montaje: la columna nombra el volumen, y esto lo lleva allí.
+- **Open Compose Project** — ir al proyecto al que pertenece el contenedor.
+
+Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suya no están en absoluto.
+
 ## Ajustes
 
 El complemento mantiene un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

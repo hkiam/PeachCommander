@@ -16,6 +16,30 @@ does not have.
 
 ### Added
 
+- **A container or a volume has a context menu now**, and building it found two things the host had
+  been getting wrong since before this plugin existed. Right-click inside a Docker drive and the
+  **Docker** submenu offers **Inspect** (everything the engine knows, as formatted JSON in a window
+  you can scroll), **Show Logs**, **Show Mounts**, **Copy ID** — the full id, not the twelve
+  characters the column shows, because this is for pasting into a `docker` command — **Jump to
+  Volume**, and **Open Compose Project**. Jump to Volume is the other half of the Mount column: the
+  column names the volume a directory really is, and this takes you to it.
+
+  **The items know which drive you are in.** `panelScheme` — which filesystem the active panel is
+  showing — has been documented in the plugin ABI since it was written and was set by nothing, so
+  until now a plugin could only gate a context item on the cursor's *path*, and a folder of your own
+  can carry the same path. Every file-system plugin gets this, not only the one that found it
+  missing.
+
+  **And the panel's context menu now sees the same context as everything else.** It was evaluating
+  its `when` expressions against its own five keys and never reaching the ones the host adds, so an
+  item gated on the panel's directory, the other panel's directory, or which side is active silently
+  never appeared — while the identical expression worked in a menu and on a keyboard shortcut.
+
+  **A plugin can also navigate inside its own drive now.** The two "open this path" services checked
+  whether the path existed *on the local disk*, so anything inside a mount failed the check and the
+  call did nothing at all, without a word. The question goes to the filesystem the panel is actually
+  on.
+
 - **Docker containers and volumes are a drive.** A new plugin mounts a Docker engine in a panel:
   `Compose Projects` grouped by project and service, `Standalone Containers`, and `Volumes` — and
   below those, a container's real filesystem, where F3, F4, F5 and F7 work as they do anywhere else.

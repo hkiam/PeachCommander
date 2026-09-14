@@ -35,6 +35,8 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/Docker/DockerWrite.swift" \
   "$ROOT/Plugins/Docker/DockerSettings.swift" \
   "$ROOT/Plugins/Docker/DockerConnectDialog.swift" \
+  "$ROOT/Plugins/Docker/DockerCommands.swift" \
+  "$ROOT/Plugins/Docker/DockerTextWindow.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).

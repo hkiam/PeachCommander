@@ -2186,6 +2186,26 @@ SCENARIOS = [
                        "dump /Users/admin/docker-volumes.txt", "wait 500",
                        "focus orphaned_data", "enter", "wait 3000",
                        "dump /Users/admin/docker-volume.txt"], 16),
+    # The context-menu actions, and the claim `panelScheme` exists to make. The same run dumps the
+    # panel's context menu twice with the plugin switched **on** both times — once on a local folder
+    # and once inside the mount — so the only thing that differs between the two dumps is the
+    # filesystem the panel is showing. Without that control the items' absence downstairs could just
+    # as well be a plugin that failed to load.
+    #
+    # Then the action itself, which is the only end-to-end proof the host fix has: `openPath` used to
+    # ask `FileManager` whether the destination existed, so a path inside a mount failed the check and
+    # the call returned in silence. Nothing in `MainWindowController` has unit tests — the app target
+    # has no test bundle — so this scenario *is* the test.
+    ("docker-jump", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                     "ctxdump notes.txt|/Users/admin/docker-ctx-local.txt", "wait 600",
+                     "pfxmount Docker", "wait 3000",
+                     "focus Compose Projects", "enter", "wait 2000",
+                     "focus stack", "enter", "wait 2000",
+                     "focus web", "enter", "wait 2500",
+                     "ctxdump data|/Users/admin/docker-ctx-mount.txt", "wait 600",
+                     "focus data", "wait 400",
+                     "cmdwait plugin.docker.jumptovolume", "wait 2500",
+                     "dump /Users/admin/docker-jump.txt"], 20),
     # The one new window this plugin brings. Measured rather than looked at: `mainshot` reports the
     # content view's size, which a frozen layout gets right, so only the frames underneath can say
     # whether the fields actually grew with the window.
@@ -2382,6 +2402,17 @@ REPORTS = {
                       ["path=/Volumes/orphaned_data", "orphan.txt"]),
     "docker-volume-list": ("/Users/admin/docker-volumes.txt",
                            ["path=/Volumes", "orphaned_data", "stack_data"]),
+    # Where the jump landed: the volume the container's `/data` really is, listed. `rows.db` is the
+    # file that only exists in the volume, so the panel cannot be showing the container's directory.
+    "docker-jump": ("/Users/admin/docker-jump.txt",
+                    ["path=/Volumes/stack_data", "rows.db"]),
+    # The items are offered inside the mount…
+    "docker-jump-menu": ("/Users/admin/docker-ctx-mount.txt",
+                         ["Jump to Volume", "Inspect", "Show Logs", "Show Mounts"]),
+    # …and not on a local folder, with the plugin switched on in both cases. That pair is the whole
+    # of what `panelScheme` claims; a `when` on the cursor's path could not tell the two apart.
+    "docker-jump-local": ("/Users/admin/docker-ctx-local.txt",
+                          ["!Jump to Volume", "!Show Mounts"]),
     # The window grew and its contents grew with it — and this is the scenario that found a defect
     # rather than confirming one. The "Engine:" label and the combo box beside it both hugged their
     # content at priority 250, so AppKit split the row between them: 448 pt for the word "Engine:"
@@ -4041,6 +4072,7 @@ PLUGINS_ON = {
     "docker-drive": ["Docker"],
     "docker-volume": ["Docker"],
     "docker-connect": ["Docker"],
+    "docker-jump": ["Docker"],
 }
 
 

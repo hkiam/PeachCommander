@@ -59,6 +59,23 @@ Adgang til en Docker-dæmon betyder normalt vidtgående adgang til den maskine, 
 
 Det eneste, det opretter, er en **engangscontainer** — og kun for at nå et volumen, som ingen eksisterende container monterer, da et volumen kun er synligt indefra noget, der monterer det. Den startes aldrig, den er mærket som Peach Commanders, og den fjernes, når du forlader drevet.
 
+## Handlinger på en container eller et volumen
+
+Et højreklik på en container eller et volumen tilbyder i undermenuen **Docker** det, et drev alene ikke kan sige:
+
+- **Inspect** — alt, hvad motoren ved om den, som formateret JSON i et vindue, der kan rulles og
+  markeres i.
+- **Show Logs** — de sidste 500 linjer, containeren har skrevet.
+- **Show Mounts** — hver montering, den bærer, hvad den er, og om der kan skrives i den.
+- **Copy ID** — containerens fulde id, eller volumenets navn, til udklipsholderen. Det *fulde* id,
+  ikke de tolv tegn i ID-kolonnen: det er til at indsætte i en `docker`-kommando, og et kort id er et
+  præfiks, der kan holde op med at være entydigt.
+- **Jump to Volume** — på en mappe, der i virkeligheden er et volumen, gå til det volumen under
+  **Volumes**. Det er den anden halvdel af Montering-kolonnen: kolonnen nævner volumenet, dette fører dig dertil.
+- **Open Compose Project** — gå til det projekt, containeren hører til.
+
+Punkterne vises kun inde i et Docker-drev; over en af dine egne mapper er de der slet ikke.
+
 ## Indstillinger
 
 Pluginet fører en lille fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

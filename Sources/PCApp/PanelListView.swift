@@ -2557,8 +2557,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     /// Context snapshot for evaluating context-menu contributions' `when` — keyed on
     /// the item under the cursor (right-click moved the cursor to it).
+    ///
+    /// Built on top of the *host's* context rather than from nothing, and that is a fix rather than a
+    /// tidy-up. This method used to set five cursor keys and stop, so every key the host augments —
+    /// `dir`, `targetDir`, `activeSide`, `diskMapActive`, `configRoot`, and now `panelScheme` — was
+    /// invisible to a **context-menu** `when` while the identical expression worked in a menu and on
+    /// a keybinding. One documented context, two implementations, and the difference was silent: an
+    /// item gated on such a key simply never appeared.
     private func contributionContext() -> ContributionContext {
-        var c = ContributionContext()
+        var c = (window?.windowController as? MainWindowController)?.contributionContext()
+            ?? ContributionContext()
+        // The cursor keys are then overwritten: a right-click moves the cursor to the row under the
+        // pointer, and this menu is about that row.
         let path = cursorItemFullPath()
         c.set("cursorPath", path)
         c.set("cursorName", path.map { ($0 as NSString).lastPathComponent })

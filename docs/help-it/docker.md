@@ -59,6 +59,23 @@ L’accesso a un demone Docker comporta di norma un accesso molto ampio alla mac
 
 L’unica cosa che crea è un **container usa e getta** — e solo per raggiungere un volume che nessun container esistente monta, dato che un volume è visibile soltanto dall’interno di qualcosa che lo monta. Non viene mai avviato, porta l’etichetta di Peach Commander e viene rimosso quando lasci il disco.
 
+## Azioni su un container o su un volume
+
+Un clic destro su un container o su un volume offre, nel sottomenu **Docker**, quello che un disco da solo non può dire:
+
+- **Inspect** — tutto ciò che il motore sa di esso, come JSON formattato, in una finestra che si può
+  scorrere e da cui si può copiare.
+- **Show Logs** — le ultime 500 righe scritte dal container.
+- **Show Mounts** — ogni mount che porta, che cosa è e se è scrivibile.
+- **Copy ID** — l’identificativo completo del container, o il nome del volume, negli appunti.
+  L’identificativo *completo*, non i dodici caratteri della colonna ID: serve per incollarlo in un
+  comando `docker`, e un id breve è un prefisso che può smettere di essere univoco.
+- **Jump to Volume** — su una cartella che è in realtà un volume, andare a quel volume sotto
+  **Volumes**. È l’altra metà della colonna Mount: la colonna nomina il volume, questo ti ci porta.
+- **Open Compose Project** — andare al progetto a cui il container appartiene.
+
+Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono affatto.
+
 ## Impostazioni
 
 Il plugin tiene un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

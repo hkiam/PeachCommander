@@ -59,6 +59,23 @@ Prístup k démonovi Dockeru spravidla znamená veľmi rozsiahly prístup k stro
 
 Jediné, čo vytvára, je **jednorazový kontajner** — a to len preto, aby sa dostal k zväzku, ktorý žiadny existujúci kontajner nepripája, keďže zväzok vidno iba zvnútra niečoho, čo ho pripája. Nikdy sa nespúšťa, je označený ako kontajner Peach Commanderu a je odstránený, len čo jednotku opustíte.
 
+## Akcie nad kontajnerom alebo zväzkom
+
+Kliknutie pravým tlačidlom na kontajner alebo zväzok ponúkne v podponuke **Docker** to, čo jednotka sama povedať nedokáže:
+
+- **Inspect** — všetko, čo o ňom engine vie, ako formátovaný JSON v okne, v ktorom sa dá rolovať a
+  vyberať.
+- **Show Logs** — posledných 500 riadkov, ktoré kontajner zapísal.
+- **Show Mounts** — každé pripojenie, ktoré nesie, čím je a či sa doň dá zapisovať.
+- **Copy ID** — úplné id kontajnera alebo meno zväzku do schránky. *Úplné* id, nie dvanásť znakov zo
+  stĺpca ID: je to určené na vloženie do príkazu `docker`, a krátke id je predpona, ktorá môže
+  prestať byť jednoznačná.
+- **Jump to Volume** — pri adresári, ktorý je v skutočnosti zväzkom, prejsť na tento zväzok do
+  **Volumes**. To je druhá polovica stĺpca Pripojenie: stĺpec zväzok pomenuje, toto vás k nemu zavedie.
+- **Open Compose Project** — prejsť k projektu, ku ktorému kontajner patrí.
+
+Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam nie sú vôbec.
+
 ## Nastavenia
 
 Zásuvný modul vedie malý súbor v `~/Library/Application Support/PeachCommander/Docker/docker.ini`:

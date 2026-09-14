@@ -320,6 +320,36 @@ struct DockerAPI {
         return ExecResult(exitCode: code, stdout: stdout, stderr: stderr)
     }
 
+    /// The tail of a container's log, as text.
+    ///
+    /// Multiplexed exactly like an attached exec — an 8-byte header per frame — unless the container
+    /// was created with a TTY, in which case the stream is raw. Both shapes arrive here, so the
+    /// demultiplexer is given the benefit of the doubt and the raw case falls back to the bytes as
+    /// they came: a log shown with eight bytes of framing in front of every line is worse than one
+    /// shown plainly.
+    func logs(container id: String, tail: Int = 500) throws -> String {
+        var stdout = Data(), stderr = Data()
+        var demux = DockerStreamDemultiplexer()
+        var raw = Data()
+        let (status, _) = try client.stream(method: "GET", path: "/containers/\(id)/logs",
+                                            query: ["stdout": "1", "stderr": "1",
+                                                    "tail": String(tail), "timestamps": "0"]) { chunk in
+            raw.append(contentsOf: chunk)
+            demux.feed(chunk, stdout: &stdout, stderr: &stderr)
+            return true
+        }
+        guard (200..<300).contains(status) else {
+            throw DockerError.http(status: status, message: "")
+        }
+        let framed = stdout + stderr
+        return String(decoding: framed.isEmpty ? raw : framed, as: UTF8.self)
+    }
+
+    /// One volume's own record, for Inspect.
+    func inspect(volume name: String) throws -> [String: Any] {
+        (try client.json(path: "/volumes/\(name)") as? [String: Any]) ?? [:]
+    }
+
     // MARK: Helper containers (volume access)
 
     /// Create a container that exists only to have a volume mounted into it. It is never started.

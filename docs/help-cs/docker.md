@@ -59,6 +59,23 @@ Přístup k démonu Dockeru zpravidla znamená velmi rozsáhlý přístup ke str
 
 Jediné, co vytváří, je **jednorázový kontejner** — a to jen proto, aby se dostal ke svazku, který žádný existující kontejner nepřipojuje, neboť svazek je vidět pouze zevnitř něčeho, co jej připojuje. Nikdy se nespouští, je označen jako kontejner Peach Commanderu a je odstraněn, jakmile jednotku opustíte.
 
+## Akce nad kontejnerem nebo svazkem
+
+Klepnutí pravým tlačítkem na kontejner nebo svazek nabídne v podnabídce **Docker** to, co jednotka sama říci nedokáže:
+
+- **Inspect** — vše, co o něm engine ví, jako formátovaný JSON v okně, ve kterém lze rolovat a
+  vybírat.
+- **Show Logs** — posledních 500 řádků, které kontejner zapsal.
+- **Show Mounts** — každé připojení, které nese, čím je a zda do něj lze zapisovat.
+- **Copy ID** — úplné id kontejneru nebo jméno svazku do schránky. *Úplné* id, ne dvanáct znaků ze
+  sloupce ID: je to určeno k vložení do příkazu `docker`, a krátké id je předpona, která může
+  přestat být jednoznačná.
+- **Jump to Volume** — u adresáře, který je ve skutečnosti svazkem, přejít na tento svazek do
+  **Volumes**. To je druhá polovina sloupce Připojení: sloupec svazek pojmenuje, tohle vás k němu dovede.
+- **Open Compose Project** — přejít k projektu, ke kterému kontejner patří.
+
+Položky se objeví jen uvnitř jednotky Dockeru; nad vlastní složkou tam nejsou vůbec.
+
 ## Nastavení
 
 Zásuvný modul vede malý soubor v `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
