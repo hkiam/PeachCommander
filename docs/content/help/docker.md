@@ -67,6 +67,9 @@ say:
 - **Jump to Volume** — on a directory that is really a volume, go to that volume under **Volumes**.
   This is the other half of the Mount column: the column names the volume, and this takes you there.
 - **Open Compose Project** — go to the project the container belongs to.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — these change the container rather
+  than reading it, so they ask first. Start is also the way out of the two refusals above:
+  deleting and renaming need a running container.
 
 The items appear only inside a Docker drive; on a folder of your own they are not there at all.
 
@@ -80,7 +83,9 @@ The one thing it creates is a **throwaway container** — and only to reach a vo
 
 ## Settings
 
-The plugin keeps a small file at `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Configuration ▸ Settings ▸ Docker** has all of it. The same values live in a small file at
+`~/Library/Application Support/PeachCommander/Docker/docker.ini`, which is what to edit if you are
+setting a machine up from a script:
 
 - `Endpoint` — an address to use instead of the one that was found.
 - `ExecFallback` — `0` makes the plugin use Docker's archive API and nothing else: it will then never run anything inside a container, at the cost of not being able to list a very large directory, delete, or rename.

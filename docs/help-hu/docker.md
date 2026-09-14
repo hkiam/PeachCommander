@@ -73,12 +73,15 @@ Egy konténerre vagy kötetre jobb gombbal kattintva a **Docker** almenü azt k�
 - **Jump to Volume** — olyan könyvtárnál, amely valójában kötet, ugrás arra a kötetre a **Volumes**
   alatt. Ez a Csatolás oszlop másik fele: az oszlop megnevezi a kötetet, ez pedig odavisz.
 - **Open Compose Project** — ugrás ahhoz a projekthez, amelyhez a konténer tartozik.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — ezek nem olvassák a konténert, hanem
+  megváltoztatják, ezért előbb kérdeznek. A Start egyben a fenti két elutasításból is kivezet: a
+  törléshez és az átnevezéshez futó konténer kell.
 
 A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött egyáltalán nincsenek ott.
 
 ## Beállítások
 
-A bővítmény egy kis fájlt tart a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen:
+A **Beállítások ▸ Beállítások ▸ Docker** mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:
 
 - `Endpoint` — a megtalált helyett használandó cím.
 - `ExecFallback` — a `0` hatására a bővítmény kizárólag a Docker archívum-API-ját használja: ekkor soha nem futtat semmit egy konténerben, annak árán, hogy nem tud kilistázni nagyon nagy könyvtárat, törölni vagy átnevezni.

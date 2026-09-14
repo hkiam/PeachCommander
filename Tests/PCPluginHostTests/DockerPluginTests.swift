@@ -88,6 +88,7 @@ final class DockerPluginTests: XCTestCase {
     override func tearDownWithError() throws {
         unsetenv("PC_DOCKER_HOST")
         unsetenv("PC_DOCKER_EXEC")
+        unsetenv("PC_DOCKER_CONFIRM")
         server?.terminate()
         if let dir { try? FileManager.default.removeItem(at: dir) }
     }
@@ -104,7 +105,7 @@ final class DockerPluginTests: XCTestCase {
             let out = cache.appendingPathComponent("libdocker.dylib")
             let sources = ["docker", "DockerEngine", "DockerAPI", "DockerTar", "DockerTree",
                            "DockerFS", "DockerWrite", "DockerSettings", "DockerConnectDialog",
-                           "DockerCommands", "DockerTextWindow"]
+                           "DockerCommands", "DockerTextWindow", "DockerSettingsView"]
                 .map { repoRoot.appendingPathComponent("Plugins/Docker/\($0).swift").path }
             let process = Process()
             process.executableURL = URL(fileURLWithPath: swiftc)
@@ -620,6 +621,48 @@ final class DockerPluginTests: XCTestCase {
         try runCommand("plugin.docker.copyid", cursor: "/Users/someone/notes.txt",
                        scheme: "file", on: fs)
         XCTAssertEqual(dockerStubOpened, [])
+        XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
+    // MARK: - Lifecycle
+
+    func test_stoppingAContainerChangesWhatTheStatusColumnSays() async throws {
+        setenv("PC_DOCKER_CONFIRM", "1", 1)
+        let fs = try makeFS()
+        _ = try await collect(fs, "/Compose Projects/stack")
+        XCTAssertEqual(column(fs, "status", "/Compose Projects/stack/web"), "● running")
+
+        try runCommand("plugin.docker.lifecycle.stop", cursor: "/Compose Projects/stack/web", on: fs)
+
+        // Re-listed, because the column is answered from the listing that was taken before — which
+        // is exactly why the command tells the panel to reload.
+        _ = try await collect(fs, "/Compose Projects/stack")
+        XCTAssertEqual(column(fs, "status", "/Compose Projects/stack/web"), "○ stopped")
+    }
+
+    func test_refusingTheConfirmationChangesNothing() async throws {
+        // The half that matters more: a state-changing action that ran anyway would be found by
+        // nobody until it had already happened.
+        setenv("PC_DOCKER_CONFIRM", "0", 1)
+        let fs = try makeFS()
+        try runCommand("plugin.docker.lifecycle.stop", cursor: "/Compose Projects/stack/web", on: fs)
+        _ = try await collect(fs, "/Compose Projects/stack")
+        XCTAssertEqual(column(fs, "status", "/Compose Projects/stack/web"), "● running")
+    }
+
+    func test_startingAContainerThatIsAlreadyRunningIsNotAnError() async throws {
+        // The engine answers 304 for "it is already like that". Read as a failure it would report
+        // "the engine refused" for the one case where nothing was wrong.
+        setenv("PC_DOCKER_CONFIRM", "1", 1)
+        let fs = try makeFS()
+        try runCommand("plugin.docker.lifecycle.start", cursor: "/Compose Projects/stack/web", on: fs)
+        XCTAssertEqual(dockerStubInformed, [], "a 304 must not be reported as a refusal")
+    }
+
+    func test_lifecycleOnSomethingThatIsNotAContainerIsRefused() throws {
+        setenv("PC_DOCKER_CONFIRM", "1", 1)
+        let fs = try makeFS()
+        try runCommand("plugin.docker.lifecycle.stop", cursor: "/Volumes/orphaned_data", on: fs)
         XCTAssertFalse(dockerStubInformed.isEmpty)
     }
 

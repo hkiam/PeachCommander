@@ -73,12 +73,15 @@ Ein Rechtsklick auf einen Container oder ein Volume bietet im Untermenü **Docke
 - **Jump to Volume** — bei einem Verzeichnis, das in Wahrheit ein Volume ist, zu diesem Volume unter
   **Volumes** springen. Das ist die andere Hälfte der Mount-Spalte: Die Spalte nennt das Volume, das hier bringt Sie hin.
 - **Open Compose Project** — zu dem Projekt gehen, zu dem der Container gehört.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — diese verändern den Container, statt
+  ihn zu lesen, also fragen sie vorher. Start ist zugleich der Ausweg aus den beiden Ablehnungen
+  oben: Löschen und Umbenennen brauchen einen laufenden Container.
 
 Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigenen Ordner sind sie gar nicht vorhanden.
 
 ## Einstellungen
 
-Das Plugin führt eine kleine Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Konfiguration ▸ Einstellungen ▸ Docker** enthält alles davon. Dieselben Werte liegen in einer kleinen Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`, die Sie bearbeiten, wenn Sie einen Rechner per Skript einrichten:
 
 - `Endpoint` — eine Adresse, die statt der gefundenen verwendet wird.
 - `ExecFallback` — `0` lässt das Plugin ausschließlich Dockers Archiv-API verwenden: Es führt dann nie etwas in einem Container aus, um den Preis, sehr große Verzeichnisse nicht auflisten und nicht löschen oder umbenennen zu können.

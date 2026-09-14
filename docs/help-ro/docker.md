@@ -73,12 +73,15 @@ Un clic dreapta pe un container sau pe un volum oferă, în submeniul **Docker**
 - **Jump to Volume** — pe un dosar care este în realitate un volum, mergeți la acel volum sub
   **Volumes**. Este cealaltă jumătate a coloanei Montare: coloana numește volumul, iar aceasta vă duce acolo.
 - **Open Compose Project** — mergeți la proiectul căruia îi aparține containerul.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — acestea schimbă containerul în loc să
+  îl citească, așa că întreabă înainte. Start este totodată ieșirea din cele două refuzuri de mai
+  sus: ștergerea și redenumirea au nevoie de un container pornit.
 
 Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavoastră nu sunt deloc.
 
 ## Setări
 
-Pluginul ține un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Configurare ▸ Setări ▸ Docker** conține tot. Aceleași valori se află într-un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`, pe care îl editați dacă pregătiți o mașină dintr-un script:
 
 - `Endpoint` — o adresă de folosit în locul celei găsite.
 - `ExecFallback` — `0` face pluginul să folosească exclusiv API-ul de arhivă al Docker: atunci nu va rula niciodată nimic într-un container, cu prețul de a nu putea lista un director foarte mare, de a nu putea șterge și de a nu putea redenumi.

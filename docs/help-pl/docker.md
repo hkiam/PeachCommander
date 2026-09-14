@@ -73,12 +73,15 @@ Kliknięcie prawym przyciskiem na kontenerze albo wolumenie oferuje w podmenu **
 - **Jump to Volume** — na katalogu, który naprawdę jest wolumenem, przejść do tego wolumenu w
   **Volumes**. To druga połowa kolumny Montowanie: kolumna nazywa wolumen, a to prowadzi do niego.
 - **Open Compose Project** — przejść do projektu, do którego kontener należy.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — te zmieniają kontener, zamiast go
+  czytać, więc najpierw pytają. Start jest zarazem wyjściem z dwóch odmów powyżej: usuwanie i zmiana
+  nazwy wymagają działającego kontenera.
 
 Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym folderem nie ma ich wcale.
 
 ## Ustawienia
 
-Wtyczka prowadzi mały plik w `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Konfiguracja ▸ Ustawienia ▸ Docker** zawiera to wszystko. Te same wartości leżą w małym pliku w `~/Library/Application Support/PeachCommander/Docker/docker.ini`, który edytujesz, gdy przygotowujesz maszynę skryptem:
 
 - `Endpoint` — adres używany zamiast znalezionego.
 - `ExecFallback` — `0` sprawia, że wtyczka używa wyłącznie archiwalnego API Dockera: nigdy wtedy niczego nie uruchamia w kontenerze, kosztem niemożności wypisania bardzo dużego katalogu, usunięcia i zmiany nazwy.

@@ -205,6 +205,8 @@ class Handler(BaseHTTPRequestHandler):
             self._exec_create(path.split("/")[2], json.loads(body or b"{}"))
         elif path.startswith("/exec/") and path.endswith("/start"):
             self._exec_start(path.split("/")[2])
+        elif path.startswith("/containers/") and path.split("/")[-1] in LIFECYCLE:
+            self._lifecycle(path.split("/")[2], path.split("/")[-1])
         else:
             self._error(404, "no such endpoint: " + path)
 
@@ -349,6 +351,18 @@ class Handler(BaseHTTPRequestHandler):
             return self._error(400, "bad tar: %s" % error)
         self._empty(200)
 
+    def _lifecycle(self, ident, verb):
+        c = find_container(ident)
+        if not c:
+            return self._error(404, "No such container: " + ident)
+        wanted = LIFECYCLE[verb]
+        # 304 for "it is already like that", exactly as the engine answers — the plugin has to read
+        # that as success, and a fixture that answered 204 would let a wrong reading pass.
+        if c.get("state", "running") == wanted and verb in ("start", "unpause"):
+            return self._empty(304)
+        c["state"] = wanted
+        self._empty(204)
+
     # ---- exec ----------------------------------------------------------
 
     def _exec_create(self, ident, spec):
@@ -379,6 +393,10 @@ class Handler(BaseHTTPRequestHandler):
 
 
 EXECS = {}
+
+# What each lifecycle verb leaves the container in.
+LIFECYCLE = {"start": "running", "restart": "running", "unpause": "running",
+             "stop": "exited", "pause": "paused"}
 
 
 def run_tool(container, argv):

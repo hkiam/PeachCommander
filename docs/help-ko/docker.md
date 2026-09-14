@@ -73,12 +73,15 @@ Docker 데몬에 대한 접근은 대개 그것이 실행되는 컴퓨터에 대
 - **Jump to Volume** — 실제로는 볼륨인 디렉터리에서 **Volumes** 아래의 그 볼륨으로 이동합니다.
   마운트 열의 나머지 절반입니다. 열은 볼륨의 이름을 알려 주고, 이것은 그리로 데려갑니다.
 - **Open Compose Project** — 컨테이너가 속한 프로젝트로 이동합니다.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — 이것들은 컨테이너를 읽는 대신 바꾸므로
+  먼저 묻습니다. Start는 위의 두 거절에서 빠져나가는 길이기도 합니다. 삭제와 이름 변경에는 실행 중인
+  컨테이너가 필요합니다.
 
 이 항목들은 Docker 드라이브 안에서만 나타납니다. 자신의 폴더 위에서는 아예 없습니다.
 
 ## 설정
 
-플러그인은 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 에 작은 파일을 둡니다.
+**환경설정 ▸ 설정 ▸ Docker** 에 이 모든 것이 있습니다. 같은 값이 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 의 작은 파일에도 들어 있으며, 스크립트로 컴퓨터를 준비할 때는 그 파일을 편집합니다.
 
 - `Endpoint` — 찾아낸 주소 대신 사용할 주소.
 - `ExecFallback` — `0` 이면 플러그인이 Docker의 아카이브 API만 사용합니다. 그러면 컨테이너 안에서 아무것도 실행하지 않는 대신, 아주 큰 디렉터리를 나열하거나 삭제하거나 이름을 바꿀 수 없습니다.

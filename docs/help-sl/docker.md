@@ -73,12 +73,15 @@ Desni klik na vsebnik ali nosilec v podmeniju **Docker** ponudi tisto, česar po
 - **Jump to Volume** — pri imeniku, ki je v resnici nosilec, skočiti na ta nosilec pod **Volumes**.
   To je druga polovica stolpca Priklop: stolpec nosilec poimenuje, to pa vas pripelje do njega.
 - **Open Compose Project** — iti k projektu, ki mu vsebnik pripada.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — ta vsebnik spreminjajo, namesto da bi
+  ga brala, zato prej vprašajo. Start je hkrati izhod iz obeh zavrnitev zgoraj: brisanje in
+  preimenovanje potrebujeta delujoč vsebnik.
 
 Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.
 
 ## Nastavitve
 
-Vtičnik vodi majhno datoteko v `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Nastavitve ▸ Nastavitve ▸ Docker** vsebuje vse to. Iste vrednosti so v majhni datoteki v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ki jo uredite, če računalnik pripravljate s skriptom:
 
 - `Endpoint` — naslov, ki naj se uporabi namesto najdenega.
 - `ExecFallback` — `0` doseže, da vtičnik uporablja izključno Dockerjev arhivski API: takrat v vsebniku nikoli ničesar ne zažene, za ceno tega, da ne more izpisati zelo velikega imenika, brisati ali preimenovati.

@@ -2211,6 +2211,33 @@ SCENARIOS = [
     # whether the fields actually grew with the window.
     ("docker-connect", ["active left", "wait 1200", "fsconnect Docker", "wait 2500",
                         "windowlayout Docker|900x400|/Users/admin/docker-connect.txt"], 14),
+    # The provider's settings page. Everything on it was reachable before only by hand-editing
+    # `docker.ini`, which is a reasonable thing for a file to be and an unreasonable thing for a
+    # feature to be — and it is a new view, so it is measured rather than looked at: the connect
+    # dialog shipped with a row AppKit had split down the middle and not one conflict to show for it.
+    ("docker-settings", ["active left", "wait 1000",
+                         "settingspage Docker", "wait 2500",
+                         # The guest is forced to English (`-AppleLanguages '(en)'`), so the title fragment is the
+                         # English one — on this Mac the same window is called "Einstellungen".
+                         "windowlayout Settings|900x620|/Users/admin/docker-settings-window.txt",
+                         "wait 400",
+                         # The page itself writes the second report: `windowlayout` stops two levels
+                         # under the content view and the accessibility dump stops as shallow, while
+                         # this page sits deeper, inside the Settings window's own scroll view.
+                         "wait 1200"], 16),
+    # The one group of actions that changes the machine rather than reading it. Last of the Docker
+    # scenarios on purpose: the fixture engine is one process for the whole run, so a container this
+    # stops stays stopped for everything after it.
+    #
+    # The report says the panel still lists the container — a stopped container is *in* this provider,
+    # which is half of what it is for — and the external check asks the engine itself whether the
+    # state actually changed. Asking the app would be asking the thing whose behaviour is in doubt.
+    ("docker-lifecycle", ["active left", "pfxmount Docker", "wait 3000",
+                          "focus Compose Projects", "enter", "wait 2000",
+                          "focus stack", "enter", "wait 2000",
+                          "focus web", "wait 600",
+                          "cmdwait plugin.docker.lifecycle.stop", "wait 3000",
+                          "dump /Users/admin/docker-lifecycle.txt"], 18),
 ]
 
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
@@ -2220,6 +2247,9 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # Did the *engine* actually stop it? The panel's own Status column is drawn from a listing and
+    # would answer for the app's idea of the world; this asks the thing the action was aimed at.
+    "docker-lifecycle": ("/usr/bin/python3 ~/container-state.py stack-web-1", "exited"),
     # Does the key-loop dump land on the guest at all? Asked of the machine rather than of the
     # harness's fetch, because "the file is empty here" has two causes — nothing was written, or
     # something was written and did not come back — and they need different fixes.
@@ -2408,11 +2438,35 @@ REPORTS = {
                     ["path=/Volumes/stack_data", "rows.db"]),
     # The items are offered inside the mount…
     "docker-jump-menu": ("/Users/admin/docker-ctx-mount.txt",
-                         ["Jump to Volume", "Inspect", "Show Logs", "Show Mounts"]),
+                         ["Jump to Volume", "Inspect", "Show Logs", "Show Mounts",
+                          # The lifecycle items are in the same submenu and under the same gate.
+                          "Start", "Stop", "Restart"]),
     # …and not on a local folder, with the plugin switched on in both cases. That pair is the whole
     # of what `panelScheme` claims; a `when` on the cursor's path could not tell the two apart.
     "docker-jump-local": ("/Users/admin/docker-ctx-local.txt",
                           ["!Jump to Volume", "!Show Mounts"]),
+    # The page is there, and its fields took the room the window gave them. The label of each row is
+    # the one that must not grow — two views hugging their content at the same priority is the defect
+    # the connect dialog had, and it logs nothing.
+    # Built, laid out, and filled from the file — all three, because a page that is there with every
+    # field 0 pt wide is a page nobody can use and no conflict is logged for it.
+    "docker-settings": ("/Users/admin/docker-settings.txt",
+                        # The height is the claim. With the rows pinned only at the top, nothing
+                        # stopped the view from being nothing tall and the host was handed 702x0 —
+                        # while every control inside it still had a sensible frame, which is why
+                        # neither a screenshot nor the conflict count could see it. Both zero-height
+                        # readings are negated so that defect cannot come back quietly.
+                        ["view=514x260", "!view=514x0", "!view=702x0",
+                         # …and the values came out of the file, so the page is filled and not blank.
+                         "probeBudget=90x24 value=16", "maxSeconds=90x24 value=20",
+                         "execFallback=true", "anonymousVolumes=true"]),
+    # …and the window it sits in took the size it was given, which is the half the tree cannot say.
+    "docker-settings-window": ("/Users/admin/docker-settings-window.txt",
+                               ["window=Settings", "content=900x620",
+                                "!ERROR: no visible window"]),
+    # A stopped container is still listed, which is half of what this provider is for.
+    "docker-lifecycle": ("/Users/admin/docker-lifecycle.txt",
+                         ["path=/Compose Projects/stack", "web", "batch"]),
     # The window grew and its contents grew with it — and this is the scenario that found a defect
     # rather than confirming one. The "Engine:" label and the combo box beside it both hugged their
     # content at priority 250, so AppKit split the row between them: 448 pt for the word "Engine:"
@@ -3865,6 +3919,9 @@ def boot(app: str, run: str):
                   "~/docker-root/fs/vol-orphan")
     sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-docker") / "spec.json"),
         f"{GUEST}@{ip}:docker-root/spec.json"])
+    # The witness for a lifecycle action is the engine, not the app — see EXTERNAL_CHECKS.
+    sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-docker") / "container-state.py"),
+        f"{GUEST}@{ip}:container-state.py"])
     ssh_guest(ip, "printf 'server {}' > ~/docker-root/fs/web/etc/nginx/nginx.conf && "
                   "printf 'hello from the web container' > ~/docker-root/fs/web/etc/hostname && "
                   # A symlink, because 'drawn as a link rather than as an empty file' is a claim about
@@ -4073,6 +4130,8 @@ PLUGINS_ON = {
     "docker-volume": ["Docker"],
     "docker-connect": ["Docker"],
     "docker-jump": ["Docker"],
+    "docker-lifecycle": ["Docker"],
+    "docker-settings": ["Docker"],
 }
 
 
@@ -4104,6 +4163,11 @@ SCENARIO_ENV = {
     # a script does not return, so this is the only way the window can be on screen while the script
     # is still running to measure it.
     "docker-connect": {"PC_DOCKER_DIALOG_NOMODAL": "1"},
+    # Answers the confirmation the lifecycle actions put up. A modal raised from a plugin stops an
+    # automation run dead — the runner does not resume inside its nested runloop — so the question is
+    # answered here rather than left standing.
+    "docker-lifecycle": {"PC_DOCKER_CONFIRM": "1"},
+    "docker-settings": {"PC_DOCKER_SETTINGS_DUMP": "/Users/admin/docker-settings.txt"},
 }
 
 

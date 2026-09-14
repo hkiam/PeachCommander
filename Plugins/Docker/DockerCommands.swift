@@ -65,6 +65,24 @@ private struct CommandContext {
         }
     }
 
+    /// Ask before changing the machine. Answers itself when a scenario says how to answer, because a
+    /// modal raised from a plugin stops an automation run dead: the runner is an async task on the
+    /// main actor and does not resume inside the modal's nested runloop. Same shape as the AI
+    /// plugins' `PC_AI_DIRECT_APPLY`.
+    func confirm(_ message: String, title: String) -> Bool {
+        if let scripted = dockerProbe("PC_DOCKER_CONFIRM") { return scripted != "0" }
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.addButton(withTitle: L("Continue"))
+        alert.addButton(withTitle: L("Cancel"))
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    func reload() {
+        services.reloadActivePanel?(services.host)
+    }
+
     func open(_ path: String) {
         guard let openPath = services.openPath else { return }
         path.withCString { openPath(services.host, $0) }
@@ -113,6 +131,14 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?,
         return
     }
     let route = inventory.route(context.cursorPath)
+
+    // Start/stop/restart/pause/unpause: the id's last component is the engine's own verb, so there
+    // is one branch rather than five that differ by a string.
+    if id.hasPrefix("plugin.docker.lifecycle.") {
+        let verb = String(id.dropFirst("plugin.docker.lifecycle.".count))
+        lifecycle(route, connection, context, verb: verb)
+        return
+    }
 
     switch id {
     case "plugin.docker.inspect":      inspect(route, connection, context)
@@ -205,6 +231,29 @@ private func openComposeProject(_ route: DockerRoute, _ context: CommandContext)
         return context.inform(L("This container is not part of a Compose project."))
     }
     context.open(DockerPath.join("/" + DockerSection.composeProjects.rawValue, project))
+}
+
+/// Start, stop, restart, pause or resume the container under the cursor.
+///
+/// The one group of actions here that changes the machine rather than reading it, so it asks first —
+/// and then tells the panel to reload, because the Status column it just changed is drawn from a
+/// listing that was taken before.
+private func lifecycle(_ route: DockerRoute, _ connection: DockerConnection,
+                       _ context: CommandContext, verb: String) {
+    guard case .container(let container, _) = route else {
+        return context.inform(L("Put the cursor on a container."))
+    }
+    guard context.confirm(String(format: L("Carry this out on the container “%@”?"), container.name),
+                          title: verb.capitalized) else { return }
+    do {
+        try connection.api.lifecycle(container: container.id, action: verb)
+    } catch {
+        let reason = (error as? DockerError)?.engineMessage ?? L("The Docker engine could not be asked.")
+        return context.inform(String(format: L("The engine refused: %@"), reason))
+    }
+    // The Status column is drawn from a listing taken before this ran, so without the reload the
+    // container the user just stopped goes on saying `● running` until something else refreshes.
+    context.reload()
 }
 
 // MARK: - Formatting

@@ -73,12 +73,15 @@ Een rechterklik op een container of een volume biedt in het submenu **Docker** w
 - **Jump to Volume** — op een map die in werkelijkheid een volume is, naar dat volume onder
   **Volumes** gaan. Dat is de andere helft van de kolom Koppeling: de kolom noemt het volume, dit brengt u erheen.
 - **Open Compose Project** — naar het project gaan waar de container bij hoort.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — deze veranderen de container in plaats
+  van hem te lezen, dus vragen ze eerst. Start is ook de uitweg uit de twee weigeringen hierboven:
+  verwijderen en hernoemen vereisen een draaiende container.
 
 De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn ze er helemaal niet.
 
 ## Instellingen
 
-De plug-in houdt een klein bestand bij op `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Configuratie ▸ Instellingen ▸ Docker** bevat dit alles. Dezelfde waarden staan in een klein bestand op `~/Library/Application Support/PeachCommander/Docker/docker.ini`, dat u bewerkt als u een machine vanuit een script inricht:
 
 - `Endpoint` — een adres dat in plaats van het gevonden adres wordt gebruikt.
 - `ExecFallback` — `0` laat de plug-in uitsluitend Dockers archief-API gebruiken: hij voert dan nooit iets uit in een container, ten koste van het opsommen van een zeer grote map, verwijderen en hernoemen.

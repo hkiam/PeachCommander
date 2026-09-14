@@ -350,6 +350,21 @@ struct DockerAPI {
         (try client.json(path: "/volumes/\(name)") as? [String: Any]) ?? [:]
     }
 
+    // MARK: Lifecycle
+
+    /// Start, stop, restart, pause or unpause a container.
+    ///
+    /// The engine answers 304 for "it was already like that" — already started, already unpaused —
+    /// which is a success and not an error: the user asked for a state and the container is in it.
+    /// Treating it as a failure would report "the engine refused" for the one case where nothing was
+    /// wrong at all.
+    func lifecycle(container id: String, action: String) throws {
+        let response = try client.send(method: "POST", path: "/containers/\(id)/\(action)")
+        guard (200..<300).contains(response.status) || response.status == 304 else {
+            throw DockerError.http(status: response.status, message: response.message)
+        }
+    }
+
     // MARK: Helper containers (volume access)
 
     /// Create a container that exists only to have a volume mounted into it. It is never started.

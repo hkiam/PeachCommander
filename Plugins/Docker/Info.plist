@@ -72,10 +72,51 @@
 				<key>title</key>
 				<string>Open Compose Project</string>
 			</dict>
+			<dict>
+				<key>category</key>
+				<string>Docker</string>
+				<key>id</key>
+				<string>plugin.docker.lifecycle.start</string>
+				<key>title</key>
+				<string>Start</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Docker</string>
+				<key>id</key>
+				<string>plugin.docker.lifecycle.stop</string>
+				<key>title</key>
+				<string>Stop</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Docker</string>
+				<key>id</key>
+				<string>plugin.docker.lifecycle.restart</string>
+				<key>title</key>
+				<string>Restart</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Docker</string>
+				<key>id</key>
+				<string>plugin.docker.lifecycle.pause</string>
+				<key>title</key>
+				<string>Pause</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Docker</string>
+				<key>id</key>
+				<string>plugin.docker.lifecycle.unpause</string>
+				<key>title</key>
+				<string>Unpause</string>
+			</dict>
 		</array>
 		<!-- All gated on `panelScheme`, which says which filesystem the panel is showing. The
 		     alternative is the cursor's path, and a local folder can carry the same path — these
-		     items would then offer themselves over somebody's home directory. -->
+		     items would then offer themselves over somebody's home directory. The five
+		     `lifecycle.*` ones change the machine and ask before they do. -->
 		<key>contextMenus</key>
 		<array>
 			<dict>
@@ -150,6 +191,66 @@
 				<key>when</key>
 				<string>panelScheme startswith 'docker:'</string>
 			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.docker.lifecycle.start</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Docker</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>panelScheme startswith 'docker:'</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.docker.lifecycle.stop</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Docker</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>panelScheme startswith 'docker:'</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.docker.lifecycle.restart</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Docker</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>panelScheme startswith 'docker:'</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.docker.lifecycle.pause</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Docker</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>panelScheme startswith 'docker:'</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.docker.lifecycle.unpause</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Docker</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>panelScheme startswith 'docker:'</string>
+			</dict>
 		</array>
 		<key>menus</key>
 		<array>
@@ -162,6 +263,17 @@
 				<string>Net</string>
 				<key>order</key>
 				<integer>120</integer>
+			</dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>container</key>
+				<string>settings</string>
+				<key>id</key>
+				<string>plugin.docker.settings</string>
+				<key>title</key>
+				<string>Docker</string>
 			</dict>
 		</array>
 	</dict>

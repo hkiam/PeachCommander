@@ -73,12 +73,15 @@ Et høyreklikk på en container eller et volum tilbyr i undermenyen **Docker** d
 - **Jump to Volume** — på en mappe som egentlig er et volum, gå til det volumet under **Volumes**.
   Det er den andre halvdelen av Montering-kolonnen: kolonnen navngir volumet, dette tar deg dit.
 - **Open Compose Project** — gå til prosjektet containeren hører til.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — disse endrer containeren i stedet for å
+  lese den, så de spør først. Start er også veien ut av de to avvisningene over: sletting og
+  navnebytte krever en kjørende container.
 
 Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de ikke der i det hele tatt.
 
 ## Innstillinger
 
-Programtillegget holder en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Konfigurasjon ▸ Innstillinger ▸ Docker** inneholder alt dette. De samme verdiene ligger i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den du redigerer hvis du setter opp en maskin fra et skript:
 
 - `Endpoint` — en adresse som skal brukes i stedet for den som ble funnet.
 - `ExecFallback` — `0` gjør at programtillegget bare bruker Dockers arkiv-API: det kjører da aldri noe inne i en container, mot at det ikke kan liste en svært stor mappe, slette eller gi nytt navn.

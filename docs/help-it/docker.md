@@ -73,12 +73,15 @@ Un clic destro su un container o su un volume offre, nel sottomenu **Docker**, q
 - **Jump to Volume** — su una cartella che è in realtà un volume, andare a quel volume sotto
   **Volumes**. È l’altra metà della colonna Mount: la colonna nomina il volume, questo ti ci porta.
 - **Open Compose Project** — andare al progetto a cui il container appartiene.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — queste cambiano il container invece di
+  leggerlo, quindi chiedono prima. Start è anche la via d’uscita dai due rifiuti qui sopra: eliminare
+  e rinominare richiedono un container in esecuzione.
 
 Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono affatto.
 
 ## Impostazioni
 
-Il plugin tiene un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Configurazione ▸ Impostazioni ▸ Docker** contiene tutto questo. Gli stessi valori stanno in un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`, che è ciò da modificare se prepari una macchina da uno script:
 
 - `Endpoint` — un indirizzo da usare al posto di quello trovato.
 - `ExecFallback` — `0` fa usare al plugin soltanto l’API di archivio di Docker: non eseguirà mai nulla dentro un container, al prezzo di non poter elencare una directory molto grande, né eliminare, né rinominare.

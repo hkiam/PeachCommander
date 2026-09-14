@@ -73,12 +73,15 @@ Un clic droit sur un conteneur ou un volume propose, dans le sous-menu **Docker*
 - **Jump to Volume** — sur un dossier qui est en réalité un volume, aller à ce volume sous
   **Volumes**. C’est l’autre moitié de la colonne Montage : la colonne nomme le volume, ceci vous y emmène.
 - **Open Compose Project** — aller au projet auquel appartient le conteneur.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — celles-ci modifient le conteneur au
+  lieu de le lire, elles demandent donc d’abord. Start est aussi la sortie des deux refus ci-dessus :
+  supprimer et renommer exigent un conteneur en fonctionnement.
 
 Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur un de vos dossiers, elles ne sont pas là du tout.
 
 ## Réglages
 
-L’extension tient un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini` :
+**Configuration ▸ Réglages ▸ Docker** contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini`, à modifier si vous préparez une machine par script :
 
 - `Endpoint` — une adresse à utiliser à la place de celle qui a été trouvée.
 - `ExecFallback` — `0` limite l’extension à l’API d’archive de Docker : elle n’exécutera alors jamais rien dans un conteneur, au prix de ne pas pouvoir lister un très gros dossier, ni supprimer, ni renommer.

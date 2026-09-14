@@ -73,12 +73,15 @@ Ett högerklick på en container eller en volym erbjuder i undermenyn **Docker**
 - **Jump to Volume** — på en katalog som egentligen är en volym, gå till den volymen under
   **Volumes**. Det är den andra halvan av Montering-kolumnen: kolumnen namnger volymen, det här tar dig dit.
 - **Open Compose Project** — gå till projektet containern hör till.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — dessa ändrar containern i stället för
+  att läsa den, så de frågar först. Start är också vägen ut ur de två avslagen ovan: radera och byta
+  namn kräver en körande container.
 
 Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls.
 
 ## Inställningar
 
-Insticksprogrammet håller en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Konfiguration ▸ Inställningar ▸ Docker** innehåller allt detta. Samma värden finns i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som är den du redigerar om du sätter upp en maskin från ett skript:
 
 - `Endpoint` — en adress att använda i stället för den som hittades.
 - `ExecFallback` — `0` gör att insticksprogrammet bara använder Dockers arkiv-API: det kör då aldrig något inuti en container, till priset av att inte kunna lista en mycket stor katalog, radera eller byta namn.

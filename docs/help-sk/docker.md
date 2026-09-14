@@ -73,12 +73,15 @@ Kliknutie pravým tlačidlom na kontajner alebo zväzok ponúkne v podponuke **D
 - **Jump to Volume** — pri adresári, ktorý je v skutočnosti zväzkom, prejsť na tento zväzok do
   **Volumes**. To je druhá polovica stĺpca Pripojenie: stĺpec zväzok pomenuje, toto vás k nemu zavedie.
 - **Open Compose Project** — prejsť k projektu, ku ktorému kontajner patrí.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — tieto kontajner menia, namiesto aby ho
+  čítali, takže sa najprv opýtajú. Start je zároveň východisko z oboch odmietnutí vyššie: mazanie a
+  premenovanie potrebujú bežiaci kontajner.
 
 Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam nie sú vôbec.
 
 ## Nastavenia
 
-Zásuvný modul vedie malý súbor v `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Konfigurácia ▸ Nastavenia ▸ Docker** obsahuje všetko z toho. Tie isté hodnoty ležia v malom súbore v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ktorý upravíte, keď stroj pripravujete skriptom:
 
 - `Endpoint` — adresa, ktorá sa použije namiesto nájdenej.
 - `ExecFallback` — `0` spôsobí, že modul používa výhradne archívne API Dockeru: nikdy potom vnútri kontajnera nič nespustí, za cenu toho, že nedokáže vypísať veľmi veľký adresár, mazať ani premenovávať.

@@ -73,12 +73,15 @@ Un clic derecho sobre un contenedor o un volumen ofrece, en el submenú **Docker
 - **Jump to Volume** — en un directorio que en realidad es un volumen, ir a ese volumen bajo
   **Volumes**. Es la otra mitad de la columna Montaje: la columna nombra el volumen, y esto lo lleva allí.
 - **Open Compose Project** — ir al proyecto al que pertenece el contenedor.
+- **Start**, **Stop**, **Restart**, **Pause**, **Unpause** — estas cambian el contenedor en vez de
+  leerlo, así que preguntan antes. Start es además la salida de los dos rechazos de arriba: borrar y
+  renombrar necesitan un contenedor en ejecución.
 
 Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suya no están en absoluto.
 
 ## Ajustes
 
-El complemento mantiene un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`:
+**Configuración ▸ Ajustes ▸ Docker** tiene todo esto. Los mismos valores están en un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`, que es lo que hay que editar si prepara una máquina desde un script:
 
 - `Endpoint` — una dirección que usar en lugar de la encontrada.
 - `ExecFallback` — `0` hace que el complemento use la API de archivo de Docker y nada más: entonces nunca ejecutará nada dentro de un contenedor, a costa de no poder listar un directorio muy grande, ni borrar, ni renombrar.

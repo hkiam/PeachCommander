@@ -16,6 +16,25 @@ does not have.
 
 ### Added
 
+- **The Docker provider has a settings page**, and containers can be started and stopped from the
+  panel. Everything except the engine and the exec fallback used to be reachable only by editing
+  `docker.ini` by hand — how much of a directory is worth reading before giving up, the image the
+  throwaway container is made from, whether the digest-named volumes are listed. It is a page in
+  **Configuration ▸ Settings ▸ Docker** now, beside the app's own; the file is still there and still
+  read, for setting a machine up from a script.
+
+  **Start, Stop, Restart, Pause and Unpause** are in the same context submenu as the rest. They
+  change the container rather than reading it, so they ask first — and Start is the way out of the
+  provider's own two refusals, since deleting and renaming inside a container need it to be running.
+  "It is already like that" is treated as success and not as a refusal, which is what the engine
+  means by the 304 it answers in that case.
+
+  The page shipped with a layout defect that neither a screenshot nor the Auto Layout conflict count
+  could see, and measuring it found it before anybody else did: with its rows pinned only at the top,
+  the page was handed **702 by 0** points while every control inside it still had a sensible frame.
+  It reports its own measurements to the regression suite now, because the two ways the app has of
+  measuring a window both stop shallower than a plugin's page sits.
+
 - **A container or a volume has a context menu now**, and building it found two things the host had
   been getting wrong since before this plugin existed. Right-click inside a Docker drive and the
   **Docker** submenu offers **Inspect** (everything the engine knows, as formatted JSON in a window

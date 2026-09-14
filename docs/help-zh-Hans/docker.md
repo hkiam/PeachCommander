@@ -72,12 +72,14 @@ Docker 容器的文件系统可以像任何文件夹一样在面板中浏览，D
 - **Jump to Volume** — 在一个实际上是卷的目录上，前往 **Volumes** 下的那个卷。这是挂载列的另一半：
   列告诉你是哪个卷，这一项把你带过去。
 - **Open Compose Project** — 前往该容器所属的项目。
+- **Start**、**Stop**、**Restart**、**Pause**、**Unpause** — 这些是改变容器而不是读取它，所以会先
+  询问。Start 也是上面那两条拒绝的出口：删除和重命名需要一个正在运行的容器。
 
 这些条目只在 Docker 驱动器内出现；在你自己的文件夹上根本不存在。
 
 ## 设置
 
-插件在 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 保存一个小文件：
+**配置 ▸ 设置 ▸ Docker** 里有全部这些。同样的值也在 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 的一个小文件里——用脚本准备机器时改的就是它：
 
 - `Endpoint` — 用来代替自动找到的地址。
 - `ExecFallback` — 设为 `0` 时，插件只使用 Docker 的归档 API：它便绝不会在容器内执行任何东西，代价是无法列出非常大的目录，也无法删除和重命名。
