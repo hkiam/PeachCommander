@@ -74,6 +74,7 @@ final class DockerPluginTests: XCTestCase {
     private var dir: URL!
     private var socketPath: String!
     private var server: Process!
+    private var droppingServer: Process!
     private var lib: PluginLibrary!
 
     private var repoRoot: URL {
@@ -106,6 +107,7 @@ final class DockerPluginTests: XCTestCase {
         dockerStubProgressCalls = 0
         dockerStubCancelAfter = .max
         server?.terminate()
+        droppingServer?.terminate()
         if let dir { try? FileManager.default.removeItem(at: dir) }
     }
 
@@ -274,6 +276,39 @@ final class DockerPluginTests: XCTestCase {
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
                                                 withIntermediateDirectories: true)
         try Data("[Docker]\nProbeBudgetMB=\(probeMB)\nMaxBudgetMB=\(maxMB)\n".utf8).write(to: url)
+    }
+
+    /// A second engine on its own socket, whose first archive response is cut off after `after`
+    /// bytes. Its own process because the setting is global to the fixture: sharing the one every
+    /// other test uses would make this test's behaviour depend on the order they run in.
+    private func startDroppingServer(after bytes: Int, key: String = "dropArchiveAfter") throws -> String {
+        let python = "/usr/bin/python3"
+        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: python), "python3 unavailable")
+        let root = dir.appendingPathComponent("drop-root")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        // The same filesystem, a spec that differs in one key.
+        try FileManager.default.createSymbolicLink(at: root.appendingPathComponent("fs"),
+                                                   withDestinationURL: dir.appendingPathComponent("fs"))
+        var spec = try JSONSerialization.jsonObject(
+            with: Data(contentsOf: dir.appendingPathComponent("spec.json"))) as? [String: Any] ?? [:]
+        spec[key] = bytes
+        try JSONSerialization.data(withJSONObject: spec)
+            .write(to: root.appendingPathComponent("spec.json"))
+
+        let path = "/tmp/pcd-drop-\(UUID().uuidString.prefix(8)).sock"
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: python)
+        process.arguments = [URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appendingPathComponent("Fixtures/dockerd.py").path, root.path, path]
+        process.standardOutput = Pipe()
+        process.standardError = Pipe()
+        try process.run()
+        droppingServer = process
+        for _ in 0..<400 {
+            if FileManager.default.fileExists(atPath: path + ".ready") { return path }
+            Thread.sleep(forTimeInterval: 0.02)
+        }
+        throw XCTSkip("the dropping Docker fixture never came up")
     }
 
     private func initPlugin(configRoot: URL) {
@@ -654,6 +689,74 @@ final class DockerPluginTests: XCTestCase {
                        scheme: "file", on: fs)
         XCTAssertEqual(dockerStubOpened, [])
         XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
+    // MARK: - A connection that dies in the middle of an answer
+
+    func test_aConnectionLostMidBodyIsNotRetriedOverAHalfWrittenFile() async throws {
+        // The retry exists for a kept-alive socket the daemon has since closed, which fails before
+        // answering. Applied to a drop *mid-body* it re-delivers the answer from the beginning into
+        // a consumer that is half-way through one: the file on disk keeps what arrived before the
+        // drop and then gets a whole fresh stream appended. This engine drops once, so with the
+        // retry in place the call would *succeed* — with a file larger than the original.
+        let socket = try startDroppingServer(after: 64 * 1024)
+        setenv("PC_DOCKER_HOST", "unix://\(socket)", 1)
+        let fs = try makeFS()
+
+        let destination = dir.appendingPathComponent("torn.bin")
+        await assertThrows(.connectionLost(retryable: true)) {
+            _ = try await fs.downloadFile(self.vpath("/Compose Projects/stack/web/big.bin"),
+                                          to: destination, resume: false)
+        }
+
+        // And the mount still works afterwards. A response abandoned mid-body used to leave the
+        // socket cached with the rest of it unread, so the next request read the tail of the old
+        // answer as its own response head.
+        let etc = try await names(fs, "/Compose Projects/stack/web/etc")
+        XCTAssertEqual(etc, ["hostname", "motd", "nginx"])
+    }
+
+    func test_anAnswerAbandonedMidBodyDoesNotPoisonTheNextRequest() async throws {
+        // The case a dropped connection cannot produce: the answer goes wrong while the socket is
+        // still perfectly usable. The plugin gives up on a response it is half-way through, and if
+        // it keeps that socket the next request reads the rest of this answer as its own response
+        // head. A dead connection self-heals — the write fails and the retry opens a fresh one — so
+        // only a *live* one with an unread tail shows whether the socket is really dropped.
+        let socket = try startDroppingServer(after: 64 * 1024, key: "badChunkAfter")
+        setenv("PC_DOCKER_HOST", "unix://\(socket)", 1)
+        let fs = try makeFS()
+
+        // *That* it fails is not the claim — a garbled answer is reported as bad data, which is
+        // what it is. The claim is the line after it.
+        let destination = dir.appendingPathComponent("garbled.bin")
+        do {
+            _ = try await fs.downloadFile(vpath("/Compose Projects/stack/web/big.bin"),
+                                          to: destination, resume: false)
+            XCTFail("a malformed chunk size should not have been read as a file")
+        } catch {}
+
+        // The mount still works. This is the assertion the socket-dropping `defer` exists for, and
+        // it is why this test exists at all: the *dropped-connection* test passes with or without
+        // that defer, because a dead socket heals itself on the next write. Only a live one with an
+        // unread tail can tell.
+        let etc = try await names(fs, "/Compose Projects/stack/web/etc")
+        XCTAssertEqual(etc, ["hostname", "motd", "nginx"])
+    }
+
+    // MARK: - Names a tar header cannot hold
+
+    func test_aFileNameLongerThanATarHeaderFieldArrivesWithItsName() async throws {
+        // USTAR's name field is 100 bytes and its prefix field splits on a "/" — which a *file name*
+        // has none of, so a long name has nowhere to go. macOS allows 255 bytes.
+        let fs = try makeFS()
+        let long = String(repeating: "a", count: 120) + ".txt"
+        let source = dir.appendingPathComponent("long-source.txt")
+        try Data("payload".utf8).write(to: source)
+        try await copyIn(fs, source, to: "/Compose Projects/stack/web/etc/\(long)")
+
+        let after = try await names(fs, "/Compose Projects/stack/web/etc")
+        XCTAssertTrue(after.contains(long),
+                      "the name was not preserved; the directory holds \(after)")
     }
 
     // MARK: - Stopping a transfer

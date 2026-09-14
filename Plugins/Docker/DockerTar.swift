@@ -286,6 +286,52 @@ final class TarScanner {
 /// A minimal USTAR writer: exactly the fields the engine needs, and nothing else.
 enum TarWriter {
 
+    /// Whether USTAR can carry `name` at all, and how it splits if it can.
+    ///
+    /// The name field is 100 bytes and the prefix field 155, joined by a "/" — so a name is
+    /// representable only if it can be cut at a separator into two pieces that fit. A **file name**
+    /// has no separator, so anything over 100 bytes cannot be represented at all.
+    static func ustarSplit(_ name: String) -> (prefix: String, name: String)? {
+        if Array(name.utf8).count <= 100 { return ("", name) }
+        let components = name.split(separator: "/", omittingEmptySubsequences: false)
+        var chosen: (String, String)?
+        // The latest split that works, so as much as possible stays in the prefix.
+        for split in 1..<max(components.count, 1) {
+            let head = components[0..<split].joined(separator: "/")
+            let tail = components[split...].joined(separator: "/")
+            guard Array(head.utf8).count <= 155, Array(tail.utf8).count <= 100 else { continue }
+            chosen = (head, tail)
+        }
+        return chosen
+    }
+
+    /// A PAX extended header carrying the real name, for a name USTAR cannot hold.
+    ///
+    /// Without it the writer truncated such a name to 99 bytes and sent it, and the engine accepted
+    /// that: the copy reported success and the file arrived inside the container under a *different
+    /// name*. macOS allows 255-byte file names, so an ordinary long name reaches this — measured,
+    /// with a 124-byte name that landed as 99 characters.
+    ///
+    /// Both readers that matter understand it: the engine's own is Go's `archive/tar`, and the test
+    /// fixture's is Python's `tarfile`.
+    static func paxHeader(for name: String) -> Data {
+        // A PAX record is `<len> key=value` followed by a newline, where <len> counts its own
+        // digits — so the length is a fixed point: adding a digit to it can make it one longer.
+        let suffix = " path=" + name + "\n"
+        var length = suffix.utf8.count + 1
+        while String(length).utf8.count + suffix.utf8.count != length {
+            length = String(length).utf8.count + suffix.utf8.count
+        }
+        let records = Data((String(length) + suffix).utf8)
+        // A fixed name for the header entry itself: it is never extracted, and one built from the
+        // real name could overflow the very field this exists to get around.
+        var out = header(name: "PaxHeaders/0", size: Int64(records.count), mode: 0o644,
+                         mtime: 0, type: "x", linkName: "", pax: false)
+        out.append(records)
+        out.append(padding(for: Int64(records.count)))
+        return out
+    }
+
     /// A tar holding one regular file, read from `localPath` and named `name` inside the archive.
     static func file(named name: String, from localPath: String, mode: UInt32, mtime: Int64) throws -> Data {
         guard let handle = FileHandle(forReadingAtPath: localPath) else {
@@ -335,7 +381,12 @@ enum TarWriter {
     /// which is what USTAR is for; a name that cannot be split that way is rejected rather than
     /// silently truncated into a write to the wrong path.
     static func header(name: String, size: Int64, mode: UInt32, mtime: Int64,
-                       type: Character, linkName: String) -> Data {
+                       type: Character, linkName: String, pax: Bool = true) -> Data {
+        // A name USTAR cannot represent gets a PAX record in front of it carrying the truth; the
+        // fields below then hold a truncation that no reader uses. `pax: false` is for the PAX
+        // header entry itself, which must not recurse.
+        var prelude = Data()
+        if pax, ustarSplit(name) == nil { prelude = paxHeader(for: name) }
         var block = [UInt8](repeating: 0, count: 512)
 
         func put(_ text: String, _ offset: Int, _ length: Int) {
@@ -351,25 +402,12 @@ enum TarWriter {
 
         var recorded = name
         var prefix = ""
-        if Array(recorded.utf8).count > 100 {
-            // USTAR splits a long name on a '/': at most 155 bytes go in `prefix` and at most
-            // 100 in `name`, and the reader joins them back with a '/'. Take the *latest* split
-            // that makes the tail fit, so as much as possible stays in the prefix.
-            let components = recorded.split(separator: "/", omittingEmptySubsequences: false)
-            var chosen: (String, String)?
-            for split in 1..<components.count {
-                let head = components[0..<split].joined(separator: "/")
-                let tail = components[split...].joined(separator: "/")
-                guard Array(head.utf8).count <= 155, Array(tail.utf8).count <= 100 else { continue }
-                chosen = (head, tail)
-            }
-            if let chosen {
-                prefix = chosen.0
-                recorded = chosen.1
-            }
-            // No split works only for a single component longer than 100 bytes, which no file
-            // system this can reach produces; the name is then recorded truncated, and the engine
-            // reports the mismatch rather than this writing silently to the wrong path.
+        if let split = ustarSplit(name) {
+            prefix = split.prefix
+            recorded = split.name
+        } else if Array(recorded.utf8).count > 100 {
+            // Nothing here can represent it, so what goes in the field is a truncation and the
+            // PAX record above is what the reader actually uses.
         }
 
         put(recorded, 0, 100)
@@ -394,6 +432,8 @@ enum TarWriter {
         block[154] = 0
         block[155] = 32
 
-        return Data(block)
+        var out = prelude
+        out.append(Data(block))
+        return out
     }
 }

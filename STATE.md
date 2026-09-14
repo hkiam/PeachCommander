@@ -26,6 +26,46 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-14 — the review, continued: three more in the transport, and one in the fixture
+
+Carried on at the two places a hand-written transport is most likely to be wrong. Each was verified
+before it was believed, and each fix was proved by putting the defect back.
+
+**A file name longer than a tar header field was silently truncated.** USTAR's name field is 100
+bytes and its prefix field splits on a "/" — which a *file* name has none of, so anything longer has
+nowhere to go. The writer truncated to 99 bytes and sent it; the engine accepted that, the copy
+reported success, and the file arrived inside the container **under a different name**. macOS allows
+255-byte names, so an ordinary long one reaches it: measured with 124 bytes, which landed as 99. Such
+a name now gets a PAX extended header carrying the truth, which both readers that matter understand —
+Go's `archive/tar` in the engine and Python's `tarfile` in the fixture. Verified against the live
+engine as well as the fixture, because only one of those is the real reader.
+
+**Two faults found while fixing that, both in the fixture rather than the plugin**, and both making
+it *less capable than the thing it stands in for*. It refused **any** PAX header as if it were the
+`com.apple.provenance` xattr the engine really rejects — so the moment the plugin legitimately sent
+one, a correct upload became a 500. And it wrote its own archives as USTAR only, so a name the engine
+serves without blinking raised `ValueError: name is too long`, killed the handler, and reached the
+plugin as a dropped connection. It serves PAX now, which also means the reader's PAX path is
+exercised by every listing rather than by nothing.
+
+**A connection that died mid-body was retried over a half-written file.** The retry exists for a
+kept-alive socket the daemon has since closed, which fails *before* answering. Applied to a drop
+mid-body it re-sent the request and delivered the answer from the beginning into a consumer already
+half-way through one: the file on disk kept what had arrived and then had a whole fresh stream
+appended to it. Only a response nothing has been delivered from is retried now.
+
+**And an answer abandoned mid-body left the socket cached with the rest of it unread**, so the next
+request would read the tail of the old answer as its own response head. Dropped on every error path
+now, not on the ones that were thought of.
+
+**A note on proving the last one.** Its first test passed with the fix removed — twice, for two
+different reasons, and both are worth knowing. A *dead* connection heals itself: the next write
+fails and the retry opens a fresh socket, so the dropped-connection case cannot see the guard at all.
+And a fixture that sends a malformed chunk and then stops leaves the socket **empty** rather than
+dirty, so there is nothing for the next request to trip over. Only a live connection with an unread
+tail shows it: the fixture emits the bad chunk and then keeps writing. A test that passes with the
+fix reverted is measuring nothing, and it took two tries here to notice.
+
 ## 2026-09-14 — the first thing a review found: Cancel did not cancel
 
 Went looking rather than guessing, at the place a hand-written transport is most likely to be wrong,

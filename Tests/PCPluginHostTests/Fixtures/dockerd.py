@@ -51,6 +51,16 @@ SPEC = json.load(open(os.path.join(ROOT, "spec.json"), encoding="utf-8"))
 # Containers created at run time (the plugin's volume helpers land here).
 CREATED = {}
 
+# When set, the next archive response is cut off after this many bytes and the connection closed —
+# once. Driven by the spec so a test can ask for it without a second channel.
+DROP_ONCE_AFTER = SPEC.get("dropArchiveAfter")
+
+# When set, the next archive response gets a malformed chunk size after this many bytes — once, and
+# with the connection left **open**. That is the case a dropped connection cannot produce: the
+# plugin gives up on an answer it is half-way through while the socket is still perfectly usable,
+# and if it keeps that socket the next request reads the rest of this answer as its own head.
+BAD_CHUNK_ONCE_AFTER = SPEC.get("badChunkAfter")
+
 
 def containers():
     """Everything the engine would list, spec'd plus created."""
@@ -315,7 +325,13 @@ class Handler(BaseHTTPRequestHandler):
 
         buffer = io.BytesIO()
         base = os.path.basename(target.rstrip("/")) or "/"
-        with tarfile.open(fileobj=buffer, mode="w", format=tarfile.USTAR_FORMAT) as tar:
+        # PAX, not USTAR, because that is what the engine emits: Go's `archive/tar` picks the format
+        # per entry and reaches for PAX whenever a field does not fit — a name over 100 bytes above
+        # all. A USTAR-only fixture is *less capable than the thing it stands in for*: it raised
+        # `ValueError: name is too long` on a name the engine serves without blinking, the handler
+        # died, and the plugin saw the connection drop. It also means the reader's PAX path is
+        # exercised by every listing rather than by nothing.
+        with tarfile.open(fileobj=buffer, mode="w", format=tarfile.PAX_FORMAT) as tar:
             # Recursive, like the real engine — which is the whole reason the plugin budgets it.
             tar.add(target, arcname=base, recursive=True)
         data = buffer.getvalue()
@@ -327,9 +343,33 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
         step = 8192
+        # A connection that dies mid-body, once. The point is what the plugin must NOT do next: a
+        # retry re-delivers the answer from the beginning into a consumer that is half-way through
+        # one, so the file on disk ends up holding the start of the first attempt followed by the
+        # whole of the second. Dropping only the FIRST time is what makes the two behaviours
+        # distinguishable — a fixture that always drops fails either way.
+        global DROP_ONCE_AFTER
+        limit = DROP_ONCE_AFTER
+        bad = BAD_CHUNK_ONCE_AFTER
+        sent = 0
         for offset in range(0, len(data), step):
             piece = data[offset:offset + step]
+            if limit is not None and sent >= limit:
+                DROP_ONCE_AFTER = None
+                self.close_connection = True
+                self.wfile.flush()
+                self.connection.close()
+                return
+            if bad is not None and sent >= bad:
+                # A malformed chunk size, and then the rest of the answer anyway. Writing nothing
+                # after it would leave the socket *empty* rather than dirty, and the client that
+                # kept it would find nothing to trip over — the test would pass whether or not the
+                # connection was dropped, which is exactly what it did at first.
+                bad = None
+                globals()["BAD_CHUNK_ONCE_AFTER"] = None
+                self.wfile.write(b"nonsense\r\n")
             self.wfile.write(b"%x\r\n" % len(piece) + piece + b"\r\n")
+            sent += len(piece)
         self.wfile.write(b"0\r\n\r\n")
 
     def _archive_put(self, ident, path, body):
@@ -344,9 +384,15 @@ class Handler(BaseHTTPRequestHandler):
         try:
             with tarfile.open(fileobj=io.BytesIO(body), mode="r") as tar:
                 for member in tar.getmembers():
-                    # Refuse an entry carrying extended attributes, which is what BSD tar produces
+                    # Refuse an entry carrying extended ATTRIBUTES, which is what BSD tar produces
                     # and what the real engine rejects with a 500 *after* writing the file.
-                    if member.pax_headers:
+                    #
+                    # Only those. This used to refuse any PAX header at all, which is a different and
+                    # wrong claim: PAX is also how a name too long for USTAR is carried, and the
+                    # engine accepts that perfectly well. The over-broad guard turned a correct
+                    # upload into a 500 the moment the plugin learned to send one.
+                    if any(k.startswith("SCHILY.xattr.") or k.startswith("LIBARCHIVE.xattr.")
+                           for k in member.pax_headers):
                         return self._error(500, 'lsetxattr: operation not supported')
                     tar.extract(member, path=target, set_attrs=False)
         except tarfile.TarError as error:

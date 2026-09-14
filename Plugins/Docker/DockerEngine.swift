@@ -345,16 +345,32 @@ final class DockerClient {
         // it was — but a *fresh* socket that fails means the engine really is unreachable, and
         // retrying that only doubles the wait before the user is told.
         let reusing = socket != nil
+        // Whether any of the answer has already reached the caller. A retry that re-sends the
+        // request also re-delivers the body from the beginning — into a consumer that is mid-state.
+        // For a download that means the tar scanner is half-way through an entry and the file on
+        // disk already holds what arrived before the drop: the second attempt appends a fresh
+        // stream to it, and the result is a file that is neither. A connection that dies *mid-body*
+        // is not retryable; only one that dies before answering is.
+        var delivered = false
         do {
-            return try perform(request, method: method, body: body, onChunk: onChunk)
-        } catch DockerError.unreachable where reusing {
+            return try perform(request, method: method, body: body,
+                               delivered: &delivered, onChunk: onChunk)
+        } catch DockerError.unreachable where reusing && !delivered {
             close()
-            return try perform(request, method: method, body: body, onChunk: onChunk)
+            return try perform(request, method: method, body: body,
+                               delivered: &delivered, onChunk: onChunk)
         }
     }
 
     private func perform(_ request: Data, method: String, body: RequestBody,
+                         delivered: inout Bool,
                          onChunk: (UnsafeRawBufferPointer) throws -> Bool) throws -> (Int, [String: String]) {
+        // Any way out of here but the last line leaves a connection with an unread answer still in
+        // it, and the next request would read the tail of this one as its own response head. The
+        // socket is therefore dropped on every error path rather than on the ones that were thought
+        // of: a scanner that throws, a malformed chunk size, a body that ends early.
+        var completed = false
+        defer { if !completed { close() } }
         let socket = try connectedSocket()
         try socket.write(request)
         try body.write(socket)
@@ -365,6 +381,10 @@ final class DockerClient {
         let closeAfter = (headers["connection"] ?? "").lowercased().contains("close")
 
         var keepReading = true
+        let report: (UnsafeRawBufferPointer) throws -> Bool = { chunk in
+            delivered = true
+            return try onChunk(chunk)
+        }
         // A response to HEAD has no body, whatever its headers say — and Docker's headers say
         // plenty: `HEAD …/archive` answers with the Content-Length a GET would have had. Reading
         // that many bytes waits for a body the daemon is never going to send, which is a hang per
@@ -373,14 +393,15 @@ final class DockerClient {
         if !hasBody {
             // nothing to read
         } else if headers["transfer-encoding"]?.lowercased().contains("chunked") == true {
-            keepReading = try socket.readChunked(onChunk)
+            keepReading = try socket.readChunked(report)
         } else if let lengthText = headers["content-length"], let length = Int(lengthText) {
-            keepReading = try socket.readFixed(length, onChunk)
+            keepReading = try socket.readFixed(length, report)
         } else {
-            keepReading = try socket.readToEOF(onChunk)
+            keepReading = try socket.readToEOF(report)
             self.socket = nil   // no framing: the body ended because the connection did
         }
         if closeAfter || !keepReading { close() }
+        completed = true
         return (status, headers)
     }
 
