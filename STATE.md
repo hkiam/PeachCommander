@@ -26,6 +26,37 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-14 — the review, third pass: a name in bytes read as characters, and two areas that checked out
+
+**A PAX record's length is in bytes; a Swift `String` indexes in Characters.** `applyPax` measured
+the first and walked the second, so the two agreed for ASCII and parted company the moment a name was
+not. A 60-character name of umlauts is 120 bytes: the guard `length <= rest.count` compared 130
+against 61, threw the record away, and the listing fell back to the **truncated USTAR field** — which
+for UTF-8 is not merely short but cut through the middle of a character, and came back as
+`u?u?u?u?…`. Parsed over bytes now. Verified against the live engine as well as the fixture, and
+round-tripped: a 120-byte umlaut name goes out through the writer's PAX header and comes back through
+the reader's PAX parser intact.
+
+That one only became reachable *because* of the previous pass — teaching the writer to emit PAX and
+the fixture to serve it is what put records in front of the parser at all. A fix that exposes the
+next defect is the ordinary way this goes, and it is an argument for finishing a review rather than
+stopping at the first find.
+
+**Two areas checked and clean, which is worth recording as much as a defect.**
+
+  * The `S_IF*` bits the host now reads out of a PFX mode could in principle turn another plugin's
+    entries into symlinks. Every other file-system plugin in the tree — S3, WebDAV, SampleFS,
+    TaskManager, FSImage — writes `mode = 0` or leaves the host's zero-initialised field alone, and
+    an `S_IFMT` of 0 matches no case and falls to the previous behaviour. No regression.
+  * The panel's context menu now builds on the host's context, which carries `dir`, `targetDir` and
+    `activeSide` — all read from the **active** panel. A right-click in the *inactive* panel would
+    therefore have described the wrong one. It does not: `rightMouseDown` calls `onActivate?()`
+    before the menu is built, so the panel being right-clicked is the active one by then.
+
+The buffer logic under `readHead`/`fill`/`readFixed` was read through as well. The one thing found is
+not reachable: a negative `Content-Length` would leave a body unread and the socket cached, and the
+engine does not send one. Left alone rather than guarded with code no test could reach.
+
 ## 2026-09-14 — the review, continued: three more in the transport, and one in the fixture
 
 Carried on at the two places a hand-written transport is most likely to be wrong. Each was verified

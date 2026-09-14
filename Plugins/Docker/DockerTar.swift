@@ -229,20 +229,30 @@ final class TarScanner {
 
     /// PAX records are `"<len> key=value\n"`; only `path` and `linkpath` matter here.
     private func applyPax(_ bytes: [UInt8]) {
-        let text = String(decoding: bytes, as: UTF8.self)
-        var rest = Substring(text)
-        while let space = rest.firstIndex(of: " ") {
-            guard let length = Int(rest[rest.startIndex..<space]),
-                  length > 0, length <= rest.count else { return }
-            let recordEnd = rest.index(rest.startIndex, offsetBy: length)
-            let record = rest[rest.index(after: space)..<recordEnd].trimmingCharacters(in: .newlines)
-            if let equals = record.firstIndex(of: "=") {
-                let key = String(record[record.startIndex..<equals])
-                let value = String(record[record.index(after: equals)...])
+        // Walked over BYTES, and that is the whole point. A record is `<len> key=value` plus a
+        // newline, where <len> counts the record's length **in bytes** — while a Swift `String`
+        // indexes in Characters, and `index(_:offsetBy:)` on one advances that many *Characters*.
+        // The two agree for ASCII and part company the moment a name is not: a 60-character name of
+        // umlauts is 120 bytes, the length check `length <= rest.count` then compared 130 against
+        // 61, the record was thrown away, and the listing fell back to the truncated USTAR field —
+        // which for UTF-8 is not merely short but cut through the middle of a character.
+        var index = 0
+        while index < bytes.count {
+            guard let space = bytes[index...].firstIndex(of: UInt8(ascii: " ")) else { return }
+            guard let length = Int(String(decoding: bytes[index..<space], as: UTF8.self)),
+                  length > 0, index + length <= bytes.count else { return }
+            let recordEnd = index + length
+            // The value ends before the record's trailing newline, which is part of its length.
+            var valueEnd = recordEnd
+            if valueEnd > space + 1, bytes[valueEnd - 1] == UInt8(ascii: "\n") { valueEnd -= 1 }
+            let record = bytes[(space + 1)..<valueEnd]
+            if let equals = record.firstIndex(of: UInt8(ascii: "=")) {
+                let key = String(decoding: record[record.startIndex..<equals], as: UTF8.self)
+                let value = String(decoding: record[record.index(after: equals)...], as: UTF8.self)
                 if key == "path" { overrideName = value }
                 if key == "linkpath" { overrideLink = value }
             }
-            rest = rest[recordEnd...]
+            index = recordEnd
         }
     }
 

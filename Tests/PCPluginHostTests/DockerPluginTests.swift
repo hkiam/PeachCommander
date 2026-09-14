@@ -198,6 +198,10 @@ final class DockerPluginTests: XCTestCase {
         // A container carrying a real file of the reserved name: its own file has to win, or the
         // provider would hide a file that is genuinely in the image.
         try write("this one is real", "shadow/docker-logs.txt")
+        // A name that is long *and* not ASCII. Long enough that USTAR cannot hold it, so the engine
+        // describes it in a PAX record — whose length field counts BYTES, while a Swift String
+        // indexes in Characters. The two agree for ASCII and part company here.
+        try write("umlauts", "web/names/" + String(repeating: "ü", count: 60) + ".txt")
         try write("locked down", "readonly/etc/frozen.conf")
         try write("a row in the database", "vol-data/rows.db")
         try write("nothing mounts me", "vol-orphan/orphan.txt")
@@ -385,7 +389,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "names", "srv"])
     }
 
     func test_aReplicatedServiceKeepsItsContainerLevel() async throws {
@@ -630,7 +634,7 @@ final class DockerPluginTests: XCTestCase {
         let entries = try await names(fs, "/Compose Projects/stack/web")
         // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
         // root listing whichever way that listing was produced.
-        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "srv"])
+        XCTAssertEqual(entries, ["big.bin", "data", "docker-logs.txt", "etc", "locked", "names", "srv"])
         // The metadata still comes from the engine's own stat, not from parsing `ls -l` output.
         let srv = try await collect(fs, "/Compose Projects/stack/web").first { $0.name == "srv" }
         XCTAssertEqual(srv?.kind, .directory)
@@ -741,6 +745,14 @@ final class DockerPluginTests: XCTestCase {
         // unread tail can tell.
         let etc = try await names(fs, "/Compose Projects/stack/web/etc")
         XCTAssertEqual(etc, ["hostname", "motd", "nginx"])
+    }
+
+    func test_aLongNonAsciiNameSurvivesThePaxHeaderThatCarriesIt() async throws {
+        let fs = try makeFS()
+        let expected = String(repeating: "ü", count: 60) + ".txt"
+        let entries = try await names(fs, "/Compose Projects/stack/web/names")
+        XCTAssertEqual(entries, [expected],
+                       "the name came back as something else")
     }
 
     // MARK: - Names a tar header cannot hold
