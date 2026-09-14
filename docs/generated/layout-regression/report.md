@@ -173,3 +173,5 @@ only go down.
 | docker-volume | 0 | 0 | — | `docker-volume.png` |
 | docker-jump | 0 | 0 | — | `docker-jump.png` |
 | docker-connect | 0 | 0 | — | `docker-connect.png` |
+| docker-settings | 0 | 0 | — | `docker-settings.png` |
+| docker-lifecycle | 0 | 0 | — | `docker-lifecycle.png` |
