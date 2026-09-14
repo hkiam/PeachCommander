@@ -79,6 +79,8 @@ Un clic droit sur un conteneur ou un volume propose, dans le sous-menu **Docker*
 
 Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur un de vos dossiers, elles ne sont pas là du tout.
 
+**Le journal est aussi un fichier.** La racine de chaque conteneur contient `docker-logs.txt` — qui n’est pas un fichier du conteneur : le lire demande le journal au moteur. F3 dessus l’ouvre dans la visionneuse, si bien que sa recherche, son saut à une ligne et son choix d’encodage s’appliquent, ce qu’une fenêtre à part ne peut pas offrir. Un conteneur qui embarque réellement un fichier de ce nom montre le sien, et rien ne peut être écrit dans le fichier virtuel.
+
 ## Réglages
 
 **Configuration ▸ Réglages ▸ Docker** contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini`, à modifier si vous préparez une machine par script :
@@ -91,4 +93,4 @@ Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur 
 
 ## Absent de cette version
 
-Les moteurs distants via SSH ou TLS, le démarrage et l’arrêt des conteneurs, les journaux de conteneur sous forme de fichier, un shell interactif, et les images comme systèmes de fichiers en lecture seule.
+Les moteurs distants via SSH ou TLS, un shell interactif, et les images comme systèmes de fichiers en lecture seule.

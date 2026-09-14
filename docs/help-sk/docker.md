@@ -79,6 +79,8 @@ Kliknutie pravým tlačidlom na kontajner alebo zväzok ponúkne v podponuke **D
 
 Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam nie sú vôbec.
 
+**Protokol je zároveň súbor.** V koreni každého kontajnera leží `docker-logs.txt` — ktorý nie je súborom v kontajneri: jeho čítanie si vyžiada protokol od enginu. F3 naň ho otvorí v prehliadači, takže platí jeho hľadanie, skok na riadok aj voľba kódovania — čo samostatné okno dať nemôže. Kontajner, ktorý súbor toho mena naozaj nesie, ukáže svoj vlastný, a do virtuálneho sa nedá nič zapísať.
+
 ## Nastavenia
 
 **Konfigurácia ▸ Nastavenia ▸ Docker** obsahuje všetko z toho. Tie isté hodnoty ležia v malom súbore v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ktorý upravíte, keď stroj pripravujete skriptom:
@@ -91,4 +93,4 @@ Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam 
 
 ## Nie je v tejto verzii
 
-Vzdialené stroje cez SSH alebo TLS, spúšťanie a zastavovanie kontajnerov, protokoly kontajnera ako súbor, interaktívny shell a image ako súborové systémy len na čítanie.
+Vzdialené stroje cez SSH alebo TLS, interaktívny shell a image ako súborové systémy len na čítanie.

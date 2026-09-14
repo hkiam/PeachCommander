@@ -176,7 +176,7 @@ private func showLogs(_ route: DockerRoute, _ connection: DockerConnection, _ co
     guard case .container(let container, _) = route else {
         return context.inform(L("Put the cursor on a container."))
     }
-    guard let text = try? connection.api.logs(container: container.id) else {
+    guard let text = try? connection.api.logs(container: container.id, tail: DockerLog.tail) else {
         return context.inform(L("The Docker engine could not be asked."))
     }
     DockerTextWindow.show(

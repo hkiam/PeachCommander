@@ -189,6 +189,8 @@ class Handler(BaseHTTPRequestHandler):
             self._inspect(path.split("/")[2])
         elif path.startswith("/containers/") and path.endswith("/archive"):
             self._archive_get(path.split("/")[2], unquote(query.get("path", "/")))
+        elif path.startswith("/containers/") and path.endswith("/logs"):
+            self._logs(path.split("/")[2])
         elif path.startswith("/exec/") and path.endswith("/json"):
             self._json({"ExitCode": EXECS.get(path.split("/")[2], {}).get("exit", 0),
                         "Running": False})
@@ -350,6 +352,23 @@ class Handler(BaseHTTPRequestHandler):
         except tarfile.TarError as error:
             return self._error(400, "bad tar: %s" % error)
         self._empty(200)
+
+    def _logs(self, ident):
+        c = find_container(ident)
+        if not c:
+            return self._error(404, "No such container: " + ident)
+        # Multiplexed exactly like an attached exec, because that is what the engine does for a
+        # container without a TTY — the plugin has to demultiplex it, and a fixture that answered in
+        # plain text would let a missing demultiplexer pass.
+        text = c.get("log", "")
+        body = text.encode()
+        framed = bytes([1, 0, 0, 0]) + len(body).to_bytes(4, "big") + body if body else b""
+        self.send_response(200)
+        self.send_header("Content-Type", "application/vnd.docker.raw-stream")
+        self.send_header("Content-Length", str(len(framed)))
+        self.end_headers()
+        if framed:
+            self.wfile.write(framed)
 
     def _lifecycle(self, ident, verb):
         c = find_container(ident)

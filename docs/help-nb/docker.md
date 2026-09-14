@@ -79,6 +79,8 @@ Et høyreklikk på en container eller et volum tilbyr i undermenyen **Docker** d
 
 Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de ikke der i det hele tatt.
 
+**Loggen er også en fil.** I roten av hver container ligger `docker-logs.txt` — som ikke er en fil i containeren: å lese den ber motoren om loggen. F3 på den åpner den i fremviseren, så søket, hoppet til en linje og valget av tegnsett gjelder alle, noe et eget vindu ikke kan gi. En container som faktisk har en fil med det navnet, viser sin egen, og til den virtuelle kan ingenting skrives.
+
 ## Innstillinger
 
 **Konfigurasjon ▸ Innstillinger ▸ Docker** inneholder alt dette. De samme verdiene ligger i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den du redigerer hvis du setter opp en maskin fra et skript:
@@ -91,4 +93,4 @@ Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de 
 
 ## Ikke med i denne versjonen
 
-Eksterne motorer over SSH eller TLS, å starte og stoppe containere, containerlogger som fil, et interaktivt skall, og images som skrivebeskyttede filsystemer.
+Eksterne motorer over SSH eller TLS, et interaktivt skall, og images som skrivebeskyttede filsystemer.

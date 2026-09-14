@@ -79,6 +79,8 @@ Desni klik na vsebnik ali nosilec v podmeniju **Docker** ponudi tisto, česar po
 
 Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.
 
+**Dnevnik je tudi datoteka.** V korenu vsakega vsebnika leži `docker-logs.txt` — ki ni datoteka v vsebniku: njeno branje vpraša pogon za dnevnik. F3 nanjo jo odpre v pregledovalniku, zato veljajo njegovo iskanje, skok na vrstico in izbira kodiranja, česar lastno okno ne more dati. Vsebnik, ki datoteko tega imena res prinaša, pokaže svojo, v navidezno pa ni mogoče ničesar zapisati.
+
 ## Nastavitve
 
 **Nastavitve ▸ Nastavitve ▸ Docker** vsebuje vse to. Iste vrednosti so v majhni datoteki v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ki jo uredite, če računalnik pripravljate s skriptom:
@@ -91,4 +93,4 @@ Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.
 
 ## Ni v tej različici
 
-Oddaljeni pogoni prek SSH ali TLS, zaganjanje in ustavljanje vsebnikov, dnevniki vsebnika kot datoteka, interaktivna lupina in slike kot datotečni sistemi samo za branje.
+Oddaljeni pogoni prek SSH ali TLS, interaktivna lupina in slike kot datotečni sistemi samo za branje.

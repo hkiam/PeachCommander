@@ -79,6 +79,8 @@ Un clic derecho sobre un contenedor o un volumen ofrece, en el submenú **Docker
 
 Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suya no están en absoluto.
 
+**El registro también es un archivo.** La raíz de cada contenedor contiene `docker-logs.txt`, que no es un archivo del contenedor: leerlo le pide el registro al motor. F3 sobre él lo abre en el visor, así que la búsqueda del visor, su salto a una línea y su elección de codificación se aplican, que es lo que una ventana propia no puede dar. Un contenedor que realmente trae un archivo con ese nombre muestra el suyo, y en el virtual no se puede escribir nada.
+
 ## Ajustes
 
 **Configuración ▸ Ajustes ▸ Docker** tiene todo esto. Los mismos valores están en un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`, que es lo que hay que editar si prepara una máquina desde un script:
@@ -91,4 +93,4 @@ Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suy
 
 ## No está en esta versión
 
-Motores remotos por SSH o TLS, arrancar y parar contenedores, los registros del contenedor como archivo, un intérprete de comandos interactivo e imágenes como sistemas de archivos de solo lectura.
+Motores remotos por SSH o TLS, un intérprete de comandos interactivo e imágenes como sistemas de archivos de solo lectura.

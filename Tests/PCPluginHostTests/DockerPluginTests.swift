@@ -174,6 +174,9 @@ final class DockerPluginTests: XCTestCase {
         try write("worker two", "worker2/etc/id")
         try write("batch ran", "batch/var/log/batch.log")
         try write("standalone", "redis/etc/redis.conf")
+        // A container carrying a real file of the reserved name: its own file has to win, or the
+        // provider would hide a file that is genuinely in the image.
+        try write("this one is real", "shadow/docker-logs.txt")
         try write("locked down", "readonly/etc/frozen.conf")
         try write("a row in the database", "vol-data/rows.db")
         try write("nothing mounts me", "vol-orphan/orphan.txt")
@@ -203,7 +206,10 @@ final class DockerPluginTests: XCTestCase {
                  "labels": ["com.docker.compose.project": "stack",
                             "com.docker.compose.service": "batch"]],
                 ["name": "redis-test", "id": "c-redis", "state": "running", "image": "redis:7",
-                 "root": "redis", "labels": [:]],
+                 "root": "redis", "labels": [:],
+                 "log": "ready to accept connections\nbackground saving started\n"],
+                ["name": "shadowed", "id": "c-shadow", "state": "running", "image": "shadow:1",
+                 "root": "shadow", "labels": [:], "log": "this log must not be reachable"],
                 ["name": "frozen", "id": "c-frozen", "state": "running", "image": "frozen:1",
                  "root": "readonly", "labels": [:], "readOnlyRootfs": true],
             ],
@@ -320,7 +326,9 @@ final class DockerPluginTests: XCTestCase {
         let fs = try makeFS()
         // `…/stack/web` is the container's own root, not a list holding one container.
         let entries = try await names(fs, "/Compose Projects/stack/web")
-        XCTAssertEqual(entries, ["data", "etc", "locked", "srv"])
+        // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
+        // root listing whichever way that listing was produced.
+        XCTAssertEqual(entries, ["data", "docker-logs.txt", "etc", "locked", "srv"])
     }
 
     func test_aReplicatedServiceKeepsItsContainerLevel() async throws {
@@ -334,7 +342,7 @@ final class DockerPluginTests: XCTestCase {
     func test_standaloneContainersExcludeComposeMembers() async throws {
         let fs = try makeFS()
         let standalone = try await names(fs, "/Standalone Containers")
-        XCTAssertEqual(standalone, ["frozen", "redis-test"])
+        XCTAssertEqual(standalone, ["frozen", "redis-test", "shadowed"])
     }
 
     func test_aStoppedContainerIsListedAndItsFilesystemIsReadable() async throws {
@@ -563,7 +571,9 @@ final class DockerPluginTests: XCTestCase {
         try writeSettings(probeMB: 1, maxMB: 1)
         let fs = try makeFS()
         let entries = try await names(fs, "/Compose Projects/stack/web")
-        XCTAssertEqual(entries, ["data", "etc", "locked", "srv"])
+        // `docker-logs.txt` is the container's log offered as a file — see `DockerLog`. It is in the
+        // root listing whichever way that listing was produced.
+        XCTAssertEqual(entries, ["data", "docker-logs.txt", "etc", "locked", "srv"])
         // The metadata still comes from the engine's own stat, not from parsing `ls -l` output.
         let srv = try await collect(fs, "/Compose Projects/stack/web").first { $0.name == "srv" }
         XCTAssertEqual(srv?.kind, .directory)
@@ -622,6 +632,67 @@ final class DockerPluginTests: XCTestCase {
                        scheme: "file", on: fs)
         XCTAssertEqual(dockerStubOpened, [])
         XCTAssertFalse(dockerStubInformed.isEmpty)
+    }
+
+    // MARK: - The log as a file
+
+    func test_theContainersLogIsOfferedAsAFileInItsRoot() async throws {
+        let fs = try makeFS()
+        let entries = try await collect(fs, "/Standalone Containers/redis-test")
+        let log = try XCTUnwrap(entries.first { $0.name == "docker-logs.txt" })
+        XCTAssertEqual(log.kind, .file)
+        // Read-only, because there is nothing in the container to write to.
+        XCTAssertEqual(log.posixMode & 0o222, 0)
+    }
+
+    func test_readingTheLogFileGivesTheLog() async throws {
+        let fs = try makeFS()
+        let found = try await fs.localFileIfAvailable(
+            vpath("/Standalone Containers/redis-test/docker-logs.txt"))
+        let local = try XCTUnwrap(found)
+        let text = try String(contentsOf: local, encoding: .utf8)
+        XCTAssertTrue(text.contains("ready to accept connections"), "got: \(text)")
+        // Demultiplexed: the engine frames a non-TTY container's log the way it frames an attached
+        // exec, and a reader that forgot that would show eight bytes of header before the first line.
+        XCTAssertFalse(text.hasPrefix("\u{01}"))
+    }
+
+    func test_aRealFileOfThatNameWinsOverTheLog() async throws {
+        // Hiding a file that is genuinely in the image would be the worse trade, so the container's
+        // own file is what the row means — and what reading it gives.
+        let fs = try makeFS()
+        let entries = try await collect(fs, "/Standalone Containers/shadowed")
+        XCTAssertEqual(entries.filter { $0.name == "docker-logs.txt" }.count, 1)
+        let found = try await fs.localFileIfAvailable(
+            vpath("/Standalone Containers/shadowed/docker-logs.txt"))
+        let local = try XCTUnwrap(found)
+        XCTAssertEqual(try String(contentsOf: local, encoding: .utf8), "this one is real")
+    }
+
+    func test_theLogRefusesToBeWrittenOver() async throws {
+        // Without this, a copy onto the row would create a real file of that name inside the
+        // container — which then wins, and looks exactly like the log having been overwritten.
+        let fs = try makeFS()
+        let source = dir.appendingPathComponent("nope.txt")
+        try Data("no".utf8).write(to: source)
+        await assertThrows(.unsupported) {
+            try await self.copyIn(fs, source, to: "/Standalone Containers/redis-test/docker-logs.txt")
+        }
+        await assertThrows(.unsupported) {
+            try await fs.delete(self.vpath("/Standalone Containers/redis-test/docker-logs.txt"))
+        }
+    }
+
+    func test_theLogsTimestampMovesSoAStaleCopyCannotBeServed() async throws {
+        // `MemberStage` keys its temporary copies by size and modification time. A log that reported
+        // neither changing would be fetched once and shown for the rest of the session.
+        let fs = try makeFS()
+        let first = try await collect(fs, "/Standalone Containers/redis-test")
+            .first { $0.name == "docker-logs.txt" }?.modified
+        try await Task.sleep(nanoseconds: 1_100_000_000)
+        let second = try await collect(fs, "/Standalone Containers/redis-test")
+            .first { $0.name == "docker-logs.txt" }?.modified
+        XCTAssertNotEqual(first, second)
     }
 
     // MARK: - Lifecycle

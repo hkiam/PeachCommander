@@ -79,6 +79,8 @@ Egy konténerre vagy kötetre jobb gombbal kattintva a **Docker** almenü azt k�
 
 A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött egyáltalán nincsenek ott.
 
+**A napló egyben fájl is.** Minden konténer gyökerében ott van a `docker-logs.txt` — amely nem a konténer fájlja: az olvasása a motortól kéri el a naplót. Az F3 megnyitja a megjelenítőben, így annak keresése, sorra ugrása és kódolásválasztása mind érvényes, amit egy saját ablak nem tud megadni. Az a konténer, amely valóban hoz egy ilyen nevű fájlt, a sajátját mutatja, a virtuálisba pedig nem lehet írni.
+
 ## Beállítások
 
 A **Beállítások ▸ Beállítások ▸ Docker** mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:
@@ -91,4 +93,4 @@ A **Beállítások ▸ Beállítások ▸ Docker** mindezt tartalmazza. Ugyaneze
 
 ## Ebben a változatban nincs benne
 
-Távoli motorok SSH-n vagy TLS-en át, konténerek indítása és leállítása, a konténernaplók fájlként, interaktív parancsértelmező, valamint a lemezképek írásvédett fájlrendszerként.
+Távoli motorok SSH-n vagy TLS-en át, interaktív parancsértelmező, valamint a lemezképek írásvédett fájlrendszerként.

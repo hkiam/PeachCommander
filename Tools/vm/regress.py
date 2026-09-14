@@ -2225,6 +2225,19 @@ SCENARIOS = [
                          # under the content view and the accessibility dump stops as shallow, while
                          # this page sits deeper, inside the Settings window's own scroll view.
                          "wait 1200"], 16),
+    # The log as a file, which is the point of offering it as one: F3 on the row opens it in the
+    # host's viewer, and with it the viewer's search, its jump to a line and its encoding choice —
+    # none of which a window of the plugin's own would have.
+    #
+    # The container is `redis-test`, whose log the fixture engine serves framed the way the real one
+    # does. A reader that forgot to demultiplex would show eight bytes of header before the first
+    # line, which the report would catch as the text not starting where it should.
+    ("docker-log", ["active left", "pfxmount Docker", "wait 3000",
+                    "focus Standalone Containers", "enter", "wait 2000",
+                    "focus redis-test", "enter", "wait 2500",
+                    "focus docker-logs.txt", "wait 600",
+                    "cmd cm_List", "wait 3000",
+                    "listerdump /Users/admin/docker-log.txt"], 18),
     # The one group of actions that changes the machine rather than reading it. Last of the Docker
     # scenarios on purpose: the fixture engine is one process for the whole run, so a container this
     # stops stays stopped for everything after it.
@@ -2464,6 +2477,10 @@ REPORTS = {
     "docker-settings-window": ("/Users/admin/docker-settings-window.txt",
                                ["window=Settings", "content=900x620",
                                 "!ERROR: no visible window"]),
+    # The viewer opened the log, and what it is showing is the log rather than a framing header.
+    "docker-log": ("/Users/admin/docker-log.txt",
+                   ["ready to accept connections", "background saving started",
+                    "!ERROR: no lister window"]),
     # A stopped container is still listed, which is half of what this provider is for.
     "docker-lifecycle": ("/Users/admin/docker-lifecycle.txt",
                          ["path=/Compose Projects/stack", "web", "batch"]),
@@ -4132,6 +4149,7 @@ PLUGINS_ON = {
     "docker-jump": ["Docker"],
     "docker-lifecycle": ["Docker"],
     "docker-settings": ["Docker"],
+    "docker-log": ["Docker"],
 }
 
 

@@ -48,6 +48,25 @@ enum DockerFSError: Error {
     case unsupported
 }
 
+/// The container's log, offered as a file in its own root.
+///
+/// A file rather than a window, because a file is what makes the *viewer's* search, its jump to a
+/// line, its encoding choice and its follow work — none of which a window of the plugin's own would
+/// have, and all of which are the reason anybody opens a log.
+///
+/// It is **not** a path in the container: `ls /` inside it shows no such file, and the engine is
+/// asked for the log rather than for a file. Two consequences are deliberate. A real entry of this
+/// name wins — a container that genuinely ships `/docker-logs.txt` shows its own file, because
+/// hiding a file that is really there would be the worse trade. And the entry's timestamp is the
+/// moment it was listed, which is what keeps the host from serving a temporary copy it made
+/// earlier: `MemberStage` keys its copies by size and modification time, and a log that never
+/// changed either would be fetched once and shown for the rest of the session.
+enum DockerLog {
+    static let name = "docker-logs.txt"
+    /// Lines taken from the end. The engine counts them itself.
+    static let tail = 2000
+}
+
 /// One row as the panel wants it.
 struct DockerEntry {
     var name: String
@@ -212,6 +231,29 @@ final class DockerConnection {
         return entry
     }
 
+    /// The synthetic row for a container's log. See `DockerLog` for why the time is now and why the
+    /// size is zero: nothing here knows how long the log is without fetching it, and the size is
+    /// cosmetic — what the viewer reads is the file this provider writes when it is asked for it.
+    private func logEntry(for container: DockerContainer) -> DockerEntry {
+        var entry = DockerEntry(name: DockerLog.name)
+        entry.size = 0
+        entry.mtime = Int64(Date().timeIntervalSince1970)
+        entry.mode = UInt32(S_IFREG) | 0o444
+        entry.identifier = container.shortID
+        entry.access = "RO"
+        entry.image = container.image
+        return entry
+    }
+
+    /// The container whose log `path` names, or nil when it names anything else — including a real
+    /// file of the same name, which always wins.
+    func logContainer(for path: String) throws -> DockerContainer? {
+        guard case .container(let container, let inner) = try inventory().route(path),
+              inner == "/" + DockerLog.name else { return nil }
+        let real = (try? api.stat(container: container.id, path: inner)) ?? nil
+        return real == nil ? container : nil
+    }
+
     private func volumeEntry(_ volume: DockerVolume) -> DockerEntry {
         var entry = DockerEntry(name: volume.name, isDir: true, mode: UInt32(S_IFDIR) | 0o755)
         entry.mtime = DockerAPI.parseTime(volume.createdAt)
@@ -224,8 +266,11 @@ final class DockerConnection {
 
     private func listContainer(_ container: DockerContainer, inner: String,
                                inventory: DockerInventory) throws -> [DockerEntry] {
-        let entries = try listInner(containerID: container.id, path: inner,
+        var entries = try listInner(containerID: container.id, path: inner,
                                     canExec: container.canExec)
+        if inner == "/", !entries.contains(where: { $0.name == DockerLog.name }) {
+            entries.append(logEntry(for: container))
+        }
         let readOnlyRoot = (try? api.readOnlyRootfs(container: container.id)) ?? false
         return entries.map { entry in
             var copy = entry
@@ -372,6 +417,7 @@ final class DockerConnection {
 
         case .container(let container, let inner):
             if inner == "/" { return containerEntry(container) }
+            if try logContainer(for: path) != nil { return logEntry(for: container) }
             return try statInner(containerID: container.id, path: inner)
 
         case .volume(let volume, let inner):
@@ -404,6 +450,14 @@ final class DockerConnection {
     /// abort, which is exactly the host's `PfxHostServices.progress` contract.
     func download(_ path: String, to localPath: String,
                   progress: @escaping (Int) -> Bool) throws {
+        // The log is not in the container, so it is not fetched like a file: the engine is asked for
+        // it and the answer is written out whole. Small enough that progress is one step.
+        if let container = try logContainer(for: path) {
+            let text = try api.logs(container: container.id, tail: DockerLog.tail)
+            try Data(text.utf8).write(to: URL(fileURLWithPath: localPath), options: .atomic)
+            _ = progress(100)
+            return
+        }
         let target = try resolveForRead(path)
         let total = max(target.size, 0)
         FileManager.default.createFile(atPath: localPath, contents: nil)

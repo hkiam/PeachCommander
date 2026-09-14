@@ -79,6 +79,8 @@ Un clic dreapta pe un container sau pe un volum oferă, în submeniul **Docker**
 
 Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavoastră nu sunt deloc.
 
+**Jurnalul este și un fișier.** În rădăcina fiecărui container se află `docker-logs.txt` — care nu este un fișier din container: citirea lui cere jurnalul de la motor. F3 pe el îl deschide în vizualizator, deci căutarea acestuia, saltul la o linie și alegerea codificării se aplică toate, lucru pe care o fereastră separată nu îl poate oferi. Un container care chiar aduce un fișier cu acest nume îl arată pe al său, iar în cel virtual nu se poate scrie nimic.
+
 ## Setări
 
 **Configurare ▸ Setări ▸ Docker** conține tot. Aceleași valori se află într-un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`, pe care îl editați dacă pregătiți o mașină dintr-un script:
@@ -91,4 +93,4 @@ Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavo
 
 ## Nu este în această versiune
 
-Motoare la distanță prin SSH sau TLS, pornirea și oprirea containerelor, jurnalele containerului ca fișier, un shell interactiv și imaginile ca sisteme de fișiere doar în citire.
+Motoare la distanță prin SSH sau TLS, un shell interactiv și imaginile ca sisteme de fișiere doar în citire.

@@ -79,6 +79,8 @@ Klepnutí pravým tlačítkem na kontejner nebo svazek nabídne v podnabídce **
 
 Položky se objeví jen uvnitř jednotky Dockeru; nad vlastní složkou tam nejsou vůbec.
 
+**Protokol je zároveň soubor.** V kořeni každého kontejneru leží `docker-logs.txt` — který není souborem v kontejneru: jeho čtení si vyžádá protokol od enginu. F3 na něm jej otevře v prohlížeči, takže platí jeho hledání, skok na řádek i volba kódování — což samostatné okno dát nemůže. Kontejner, který soubor toho jména opravdu nese, ukáže svůj vlastní, a do virtuálního nelze nic zapsat.
+
 ## Nastavení
 
 **Konfigurace ▸ Nastavení ▸ Docker** obsahuje všechno z toho. Tytéž hodnoty leží v malém souboru v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, který upravíte, když stroj připravujete skriptem:
@@ -91,4 +93,4 @@ Položky se objeví jen uvnitř jednotky Dockeru; nad vlastní složkou tam nejs
 
 ## Není v této verzi
 
-Vzdálené stroje přes SSH nebo TLS, spouštění a zastavování kontejnerů, protokoly kontejneru jako soubor, interaktivní shell a image jako souborové systémy jen pro čtení.
+Vzdálené stroje přes SSH nebo TLS, interaktivní shell a image jako souborové systémy jen pro čtení.

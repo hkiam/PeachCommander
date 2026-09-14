@@ -79,6 +79,8 @@ Ett högerklick på en container eller en volym erbjuder i undermenyn **Docker**
 
 Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls.
 
+**Loggen är också en fil.** I roten av varje container ligger `docker-logs.txt` — som inte är en fil i containern: att läsa den ber motorn om loggen. F3 på den öppnar den i visaren, så dess sökning, hopp till en rad och val av teckenkodning gäller alla, vilket ett eget fönster inte kan ge. En container som verkligen har en fil med det namnet visar sin egen, och till den virtuella går det inte att skriva.
+
 ## Inställningar
 
 **Konfiguration ▸ Inställningar ▸ Docker** innehåller allt detta. Samma värden finns i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som är den du redigerar om du sätter upp en maskin från ett skript:
@@ -91,4 +93,4 @@ Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls
 
 ## Inte med i den här versionen
 
-Fjärrmotorer över SSH eller TLS, att starta och stoppa containrar, containerloggar som fil, ett interaktivt skal, och avbilder som skrivskyddade filsystem.
+Fjärrmotorer över SSH eller TLS, ett interaktivt skal, och avbilder som skrivskyddade filsystem.

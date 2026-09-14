@@ -79,6 +79,8 @@ Ein Rechtsklick auf einen Container oder ein Volume bietet im Untermenü **Docke
 
 Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigenen Ordner sind sie gar nicht vorhanden.
 
+**Das Log ist außerdem eine Datei.** Im Wurzelverzeichnis jedes Containers liegt `docker-logs.txt` — die keine Datei im Container ist: Sie zu lesen fragt die Engine nach dem Log. F3 darauf öffnet sie im Betrachter, also greifen dessen Suche, das Springen zu einer Zeile und die Wahl der Kodierung — was ein eigenes Fenster nicht geben kann. Ein Container, der tatsächlich eine Datei dieses Namens mitbringt, zeigt seine eigene, und in die virtuelle lässt sich nichts schreiben.
+
 ## Einstellungen
 
 **Konfiguration ▸ Einstellungen ▸ Docker** enthält alles davon. Dieselben Werte liegen in einer kleinen Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`, die Sie bearbeiten, wenn Sie einen Rechner per Skript einrichten:
@@ -91,4 +93,4 @@ Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigen
 
 ## Nicht in dieser Version
 
-Entfernte Engines über SSH oder TLS, Starten und Stoppen von Containern, Container-Logs als Datei, eine interaktive Shell und Images als schreibgeschützte Dateisysteme.
+Entfernte Engines über SSH oder TLS, eine interaktive Shell und Images als schreibgeschützte Dateisysteme.

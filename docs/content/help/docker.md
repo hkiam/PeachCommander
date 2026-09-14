@@ -73,6 +73,8 @@ say:
 
 The items appear only inside a Docker drive; on a folder of your own they are not there at all.
 
+**The log is a file as well.** Every container's root holds `docker-logs.txt` — which is not a file in the container: reading it asks the engine for the log. F3 on it opens it in the viewer, so the viewer's search, its jump to a line and its choice of encoding all apply, which is what a window of its own cannot give you. A container that genuinely ships a file of that name shows its own instead, and nothing can be written to the virtual one.
+
 ## What it can reach
 
 The plugin talks to whichever engine you would reach from a terminal: `DOCKER_HOST` if you have set it, otherwise your current `docker context`, otherwise the usual sockets of Docker Desktop, Colima, Rancher Desktop, Lima and Podman. Podman works because it serves the same API.
@@ -95,4 +97,4 @@ setting a machine up from a script:
 
 ## Not in this version
 
-Remote engines over SSH or TLS, starting and stopping containers, container logs as a file, an interactive shell, and images as read-only filesystems.
+Remote engines over SSH or TLS, an interactive shell, and images as read-only filesystems.

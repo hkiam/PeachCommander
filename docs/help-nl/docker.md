@@ -79,6 +79,8 @@ Een rechterklik op een container of een volume biedt in het submenu **Docker** w
 
 De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn ze er helemaal niet.
 
+**Het logboek is ook een bestand.** In de hoofdmap van elke container staat `docker-logs.txt` — geen bestand in de container: het lezen ervan vraagt de engine om het logboek. F3 erop opent het in de weergave, dus de zoekfunctie, het springen naar een regel en de keuze van codering gelden allemaal, wat een eigen venster niet kan geven. Een container die werkelijk een bestand met die naam meebrengt, toont het zijne, en naar het virtuele kan niets worden geschreven.
+
 ## Instellingen
 
 **Configuratie ▸ Instellingen ▸ Docker** bevat dit alles. Dezelfde waarden staan in een klein bestand op `~/Library/Application Support/PeachCommander/Docker/docker.ini`, dat u bewerkt als u een machine vanuit een script inricht:
@@ -91,4 +93,4 @@ De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn z
 
 ## Niet in deze versie
 
-Externe engines via SSH of TLS, containers starten en stoppen, containerlogboeken als bestand, een interactieve shell, en images als alleen-lezen bestandssystemen.
+Externe engines via SSH of TLS, een interactieve shell, en images als alleen-lezen bestandssystemen.

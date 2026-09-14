@@ -79,6 +79,8 @@ Un clic destro su un container o su un volume offre, nel sottomenu **Docker**, q
 
 Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono affatto.
 
+**Il log è anche un file.** La radice di ogni container contiene `docker-logs.txt`, che non è un file del container: leggerlo chiede il log al motore. F3 su di esso lo apre nel visualizzatore, quindi la sua ricerca, il salto a una riga e la scelta della codifica valgono — cosa che una finestra a sé non può dare. Un container che porta davvero un file con quel nome mostra il proprio, e nel file virtuale non si può scrivere nulla.
+
 ## Impostazioni
 
 **Configurazione ▸ Impostazioni ▸ Docker** contiene tutto questo. Gli stessi valori stanno in un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`, che è ciò da modificare se prepari una macchina da uno script:
@@ -91,4 +93,4 @@ Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono a
 
 ## Non in questa versione
 
-Motori remoti via SSH o TLS, avvio e arresto dei container, i log del container come file, una shell interattiva e le immagini come filesystem di sola lettura.
+Motori remoti via SSH o TLS, una shell interattiva e le immagini come filesystem di sola lettura.

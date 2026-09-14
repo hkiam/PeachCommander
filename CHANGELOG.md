@@ -16,6 +16,16 @@ does not have.
 
 ### Added
 
+- **A container's log is a file now.** Every container's root holds `docker-logs.txt`, and it is not
+  a file in the container — reading it asks the engine for the log. The point of making it a file
+  rather than a window is everything that then comes for free: F3 opens it in the viewer, so the
+  viewer's search, its jump to a line and its choice of encoding all apply. The **Show Logs** item is
+  still there for a quick look that does not move you out of where you were.
+
+  A container that genuinely ships a file of that name shows its own instead — hiding a real file
+  would be the worse trade — and nothing can be written to the virtual one, because a copy onto that
+  row would create the real file that then shadows it.
+
 - **The Docker provider has a settings page**, and containers can be started and stopped from the
   panel. Everything except the engine and the exec fallback used to be reachable only by editing
   `docker.ini` by hand — how much of a directory is worth reading before giving up, the image the

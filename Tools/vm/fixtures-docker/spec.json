@@ -1,26 +1,88 @@
 {
-  "images": ["alpine:3"],
-  "tools": ["ls", "rm", "mv"],
+  "images": [
+    "alpine:3"
+  ],
+  "tools": [
+    "ls",
+    "rm",
+    "mv"
+  ],
   "containers": [
-    {"name": "stack-web-1", "id": "c-web", "state": "running", "image": "nginx:1",
-     "root": "web",
-     "labels": {"com.docker.compose.project": "stack", "com.docker.compose.service": "web"},
-     "mounts": [{"Type": "volume", "Name": "stack_data", "Destination": "/data", "RW": true}]},
-    {"name": "stack-worker-1", "id": "c-w1", "state": "running", "image": "worker:1",
-     "root": "worker1",
-     "labels": {"com.docker.compose.project": "stack", "com.docker.compose.service": "worker"}},
-    {"name": "stack-worker-2", "id": "c-w2", "state": "running", "image": "worker:1",
-     "root": "worker2",
-     "labels": {"com.docker.compose.project": "stack", "com.docker.compose.service": "worker"}},
-    {"name": "stack-batch-1", "id": "c-batch", "state": "exited", "image": "batch:1",
-     "root": "batch",
-     "labels": {"com.docker.compose.project": "stack", "com.docker.compose.service": "batch"}},
-    {"name": "redis-test", "id": "c-redis", "state": "running", "image": "redis:7",
-     "root": "redis", "labels": {}}
+    {
+      "name": "stack-web-1",
+      "id": "c-web",
+      "state": "running",
+      "image": "nginx:1",
+      "root": "web",
+      "labels": {
+        "com.docker.compose.project": "stack",
+        "com.docker.compose.service": "web"
+      },
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "stack_data",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "stack-worker-1",
+      "id": "c-w1",
+      "state": "running",
+      "image": "worker:1",
+      "root": "worker1",
+      "labels": {
+        "com.docker.compose.project": "stack",
+        "com.docker.compose.service": "worker"
+      }
+    },
+    {
+      "name": "stack-worker-2",
+      "id": "c-w2",
+      "state": "running",
+      "image": "worker:1",
+      "root": "worker2",
+      "labels": {
+        "com.docker.compose.project": "stack",
+        "com.docker.compose.service": "worker"
+      }
+    },
+    {
+      "name": "stack-batch-1",
+      "id": "c-batch",
+      "state": "exited",
+      "image": "batch:1",
+      "root": "batch",
+      "labels": {
+        "com.docker.compose.project": "stack",
+        "com.docker.compose.service": "batch"
+      }
+    },
+    {
+      "name": "redis-test",
+      "id": "c-redis",
+      "state": "running",
+      "image": "redis:7",
+      "root": "redis",
+      "labels": {},
+      "log": "ready to accept connections\nbackground saving started\n"
+    }
   ],
   "volumes": [
-    {"name": "stack_data", "root": "vol-data",
-     "labels": {"com.docker.compose.project": "stack", "com.docker.compose.volume": "data"}},
-    {"name": "orphaned_data", "root": "vol-orphan", "labels": {}}
+    {
+      "name": "stack_data",
+      "root": "vol-data",
+      "labels": {
+        "com.docker.compose.project": "stack",
+        "com.docker.compose.volume": "data"
+      }
+    },
+    {
+      "name": "orphaned_data",
+      "root": "vol-orphan",
+      "labels": {}
+    }
   ]
 }

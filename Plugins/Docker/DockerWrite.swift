@@ -109,6 +109,10 @@ extension DockerConnection {
     /// tree that are not a filesystem at all.
     func writeTarget(_ path: String) throws -> (containerID: String, inner: String,
                                                 canExec: Bool, mount: DockerMount?) {
+        // The log is not a path in the container, so nothing may be written *to* it. Without this a
+        // copy onto the row would create a real `/docker-logs.txt` inside the container — which then
+        // wins over the synthetic entry and looks like the log having been overwritten.
+        if try logContainer(for: path) != nil { throw DockerFSError.unsupported }
         let inventory = try self.inventory()
         switch inventory.route(path) {
         case .container(let container, let inner):
@@ -136,6 +140,9 @@ extension DockerConnection {
     // MARK: - Upload / mkdir
 
     func upload(localPath: String, to path: String, progress: @escaping (Int) -> Bool) throws {
+        // Checked on the destination itself, because `writeTarget` below is asked about the *parent*
+        // and would not see the name being written.
+        if try logContainer(for: path) != nil { throw DockerFSError.unsupported }
         let (parentPath, leaf) = DockerPath.split(path)
         let target = try writeTarget(parentPath)
         let attributes = try? FileManager.default.attributesOfItem(atPath: localPath)

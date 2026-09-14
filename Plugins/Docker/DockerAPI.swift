@@ -327,7 +327,7 @@ struct DockerAPI {
     /// demultiplexer is given the benefit of the doubt and the raw case falls back to the bytes as
     /// they came: a log shown with eight bytes of framing in front of every line is worse than one
     /// shown plainly.
-    func logs(container id: String, tail: Int = 500) throws -> String {
+    func logs(container id: String, tail: Int = DockerLog.tail) throws -> String {
         var stdout = Data(), stderr = Data()
         var demux = DockerStreamDemultiplexer()
         var raw = Data()

@@ -79,6 +79,8 @@ Kliknięcie prawym przyciskiem na kontenerze albo wolumenie oferuje w podmenu **
 
 Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym folderem nie ma ich wcale.
 
+**Dziennik jest także plikiem.** W katalogu głównym każdego kontenera leży `docker-logs.txt` — który nie jest plikiem w kontenerze: jego odczyt pyta silnik o dziennik. F3 na nim otwiera go w podglądzie, więc działa wyszukiwanie podglądu, skok do wiersza i wybór kodowania, czego osobne okno dać nie może. Kontener, który naprawdę niesie plik o tej nazwie, pokazuje własny, a do wirtualnego nic nie da się zapisać.
+
 ## Ustawienia
 
 **Konfiguracja ▸ Ustawienia ▸ Docker** zawiera to wszystko. Te same wartości leżą w małym pliku w `~/Library/Application Support/PeachCommander/Docker/docker.ini`, który edytujesz, gdy przygotowujesz maszynę skryptem:
@@ -91,4 +93,4 @@ Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym fold
 
 ## Nie ma w tej wersji
 
-Zdalnych silników przez SSH lub TLS, uruchamiania i zatrzymywania kontenerów, dzienników kontenera jako pliku, interaktywnej powłoki oraz obrazów jako systemów plików tylko do odczytu.
+Zdalnych silników przez SSH lub TLS, interaktywnej powłoki oraz obrazów jako systemów plików tylko do odczytu.
