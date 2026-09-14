@@ -20,7 +20,7 @@ Ko hranite dve kopiji iste mape — delovno mapo in varnostno kopijo, prenosnik 
 ![Okno za sinhronizacijo imenikov z dvema potema map in mrežo rezultatov datotek s puščicami levo, enako in desno](screenshots/sync-dialog.png)
 *(Slika: okno Sinhroniziraj imenike primerja obe strani in predlaga smer kopiranja za vsako datoteko.)*
 
-Z desnim klikom na vrstico si oglejte datoteki za njo. **Primerjaj** odpre obe strani eno ob drugi, **Prikaži levo datoteko** in **Prikaži desno datoteko** pa odpreta samo eno stran v pregledovalniku — to je odgovor za vrstico, ki obstaja le na eni strani, kjer ni česa primerjati. Vnosi, ki jih na kliknjeni vrstici ni mogoče uporabiti, so zatemnjeni, namesto da ne bi naredili nič. Datoteka v arhivu `.zip` ali na strežniku se najprej razpakira oziroma prenese v začasno kopijo samo za branje, tako da izvirnika nič ne spremeni.
+Z desnim klikom na vrstico si oglejte datoteki za njo. **Primerjaj** odpre obe strani eno ob drugi, **Prikaži levo datoteko** in **Prikaži desno datoteko** pa odpreta samo eno stran v pregledovalniku — to je odgovor za vrstico, ki obstaja le na eni strani, kjer ni česa primerjati. Vnosi, ki jih na kliknjeni vrstici ni mogoče uporabiti, so zatemnjeni, namesto da ne bi naredili nič. Datoteka v arhivu `.zip` ali na strežniku se najprej razpakira oziroma prenese v začasno kopijo samo za branje, tako da izvirnika nič ne spremeni. Isto velja za **Primerjaj**, tako da je mapo mogoče primerjati z arhivom ali strežnikom — gumba za prevzem in shranjevanje pa za tako stran ostaneta izklopljena, saj je tam odprta kopija.
 
 ## Primerjajte dve datoteki po vsebini
 

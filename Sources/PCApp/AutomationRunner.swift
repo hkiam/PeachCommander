@@ -103,6 +103,20 @@ private var automationSyncWindows: [SyncWindowController] = []
 private var automationTypeColorEditors: [TypeColorsWindowController] = []
 private var automationDiffWindows: [DiffWindowController] = []
 private var automationBinaryCompareWindows: [BinaryCompareWindowController] = []
+
+@MainActor
+extension MainWindowController {
+    /// What a path handed to `syncdemo`/`syncopen` means: a `.zip` is the archive side, anything
+    /// else a folder.
+    ///
+    /// Shared by both verbs on purpose. It lived in one of them, and a scenario that opened an
+    /// archive through the other got a *directory* side pointed at a file — an empty listing, every
+    /// row one-sided, and a report that reads exactly like the feature refusing to work. That cost
+    /// one VM run to find, which is one more than the two lines it takes to have a single answer.
+    static func automationSyncSide(_ path: String) -> SyncSide {
+        path.lowercased().hasSuffix(".zip") ? .zip(path) : .localDir(path)
+    }
+}
 private var automationProgressDialogs: [ProgressDialog] = []
 
 extension MainWindowController {
@@ -1240,10 +1254,8 @@ extension MainWindowController {
                 // panels, and a scripted run has no double-click.
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count >= 2 {
-                    func side(_ path: String) -> SyncSide {
-                        path.lowercased().hasSuffix(".zip") ? .zip(path) : .localDir(path)
-                    }
-                    let win = SyncWindowController(left: side(a[0]), right: side(a[1]))
+                    let win = SyncWindowController(left: Self.automationSyncSide(a[0]),
+                                                   right: Self.automationSyncSide(a[1]))
                     automationSyncWindows.append(win)
                     win.onView = { [weak self] path in self?.viewFileInLister(path) }
                     win.showWindow()
@@ -1283,7 +1295,8 @@ extension MainWindowController {
                 // added at all, so nothing about saving or loading a preset could be scripted.
                 let o = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if o.count >= 2 {
-                    let win = SyncWindowController(leftDir: o[0], rightDir: o[1],
+                    let win = SyncWindowController(left: Self.automationSyncSide(o[0]),
+                                                   right: Self.automationSyncSide(o[1]),
                                                    presetsURL: o.count >= 3 && !o[2].isEmpty
                                                        ? URL(fileURLWithPath: o[2]) : nil,
                                                    contentFields: contentFieldRegistry,
@@ -1412,6 +1425,15 @@ extension MainWindowController {
                         ? await win.automationViewSide(row: row, left: side == "left")
                         : "ERROR: side must be left or right, not \(sv[1])\n"
                     try? out.write(toFile: sv[2], atomically: true, encoding: .utf8)
+                }
+            case "synccomparerow":                         // synccomparerow <name>|<out> (F-192)
+                // "Compare" on one row, through the menu item itself. The interesting pair is a
+                // local side against an archive one, which used to beep: both sides have to be
+                // fetched before the window can open, and the report names what went into it.
+                let sc = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if sc.count == 2, let win = automationSyncWindows.last {
+                    try? await win.automationCompareRow(named: sc[0])
+                        .write(toFile: sc[1], atomically: true, encoding: .utf8)
                 }
             case "syncsort":                               // syncsort <column id>|<0|1 ascending>|<out>
                 let so = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }

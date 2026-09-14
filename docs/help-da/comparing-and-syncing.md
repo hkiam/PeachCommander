@@ -20,7 +20,7 @@ Når du har to kopier af den samme mappe — en arbejdsmappe og en backup, en b�
 ![Vinduet til synkronisering af mapper med to mappestier og et resultatgitter af filer med venstre-, lige- og højrepile](screenshots/sync-dialog.png)
 *(Figur: Vinduet Synkronisér mapper sammenligner begge sider og foreslår en kopieringsretning for hver fil.)*
 
-Højreklik på en række for at se filerne bag den. **Sammenlign** åbner de to sider ved siden af hinanden, mens **Vis venstre fil** og **Vis højre fil** åbner én side alene i fremviseren — det er svaret for en række, der kun findes på den ene side, hvor der ikke er noget at sammenligne. Punkter, der ikke kan bruges på den række, du klikkede på, er grå i stedet for ikke at gøre noget. En fil inde i en `.zip` eller på en server pakkes ud eller hentes først til en skrivebeskyttet midlertidig kopi, så originalen aldrig berøres.
+Højreklik på en række for at se filerne bag den. **Sammenlign** åbner de to sider ved siden af hinanden, mens **Vis venstre fil** og **Vis højre fil** åbner én side alene i fremviseren — det er svaret for en række, der kun findes på den ene side, hvor der ikke er noget at sammenligne. Punkter, der ikke kan bruges på den række, du klikkede på, er grå i stedet for ikke at gøre noget. En fil inde i en `.zip` eller på en server pakkes ud eller hentes først til en skrivebeskyttet midlertidig kopi, så originalen aldrig berøres. Det gælder også **Sammenlign**, så en mappe kan sammenlignes med et arkiv eller en server — og knapperne til at flette og gemme forbliver slået fra for en sådan side, for det, der er åbent der, er kopien.
 
 ## Sammenlign to filer efter indhold
 

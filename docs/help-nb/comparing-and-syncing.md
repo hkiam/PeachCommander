@@ -20,7 +20,7 @@ Når du beholder to kopier av samme mappe — en arbeidsmappe og en sikkerhetsko
 ![Synkroniser kataloger-vinduet med to mappestier og et resultatrutenett av filer med venstre-, likhets- og høyrepiler](screenshots/sync-dialog.png)
 *(Figur: Synkroniser kataloger-vinduet sammenligner begge sider og foreslår en kopieringsretning for hver fil.)*
 
-Høyreklikk en rad for å se filene bak den. **Sammenlign** åpner de to sidene ved siden av hverandre, mens **Vis venstre fil** og **Vis høyre fil** åpner én side alene i fremviseren — det er svaret for en rad som bare finnes på én side, der det ikke er noe å sammenligne. Oppføringer som ikke kan brukes på raden du klikket på, er grå i stedet for å ikke gjøre noe. En fil inne i en `.zip` eller på en server pakkes ut eller lastes ned til en skrivebeskyttet midlertidig kopi først, så originalen berøres aldri.
+Høyreklikk en rad for å se filene bak den. **Sammenlign** åpner de to sidene ved siden av hverandre, mens **Vis venstre fil** og **Vis høyre fil** åpner én side alene i fremviseren — det er svaret for en rad som bare finnes på én side, der det ikke er noe å sammenligne. Oppføringer som ikke kan brukes på raden du klikket på, er grå i stedet for å ikke gjøre noe. En fil inne i en `.zip` eller på en server pakkes ut eller lastes ned til en skrivebeskyttet midlertidig kopi først, så originalen berøres aldri. Det gjelder også **Sammenlign**, så en mappe kan sammenlignes med et arkiv eller en server — og knappene for å flette og lagre blir stående av for en slik side, for det som er åpent der, er kopien.
 
 ## Sammenlign to filer etter innhold
 

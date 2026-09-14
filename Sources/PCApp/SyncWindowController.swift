@@ -151,6 +151,8 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// than that a window appeared — the two differ exactly when the row-to-side mapping is wrong,
     /// which is the mistake worth catching here.
     private(set) var lastViewedPath: String?
+    /// The same question for a comparison, where both answers matter: which two files went into it.
+    private(set) var lastComparedPaths: (left: String, right: String)?
     /// Which column the grid is ordered by, and which way. `nil` is the scan's own order — by path,
     /// which is the order the two trees are walked in and the only one that groups folders together.
     private var sortKey: String?
@@ -945,7 +947,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         var out = "row=\(row)\nname=\(results[index].item.relativePath)\n"
         out += "canViewLeft=\(canView(index, left: true))\n"
         out += "canViewRight=\(canView(index, left: false))\n"
-        out += "canCompare=\(localPair(index) != nil)\n"
+        out += "canCompare=\(canCompare(index))\n"
         // In the report because it is the other entry whose enablement is a claim about the *side*:
         // the Finder cannot be pointed inside a zip or at a server, and that used to beep.
         out += "canReveal=\(canReveal(index))\n"
@@ -961,6 +963,43 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             }
         }
         out += "opened=\(lastViewedPath ?? "-")\n"
+        out += "status=\(statusLabel.stringValue)\n"
+        return out
+    }
+
+    /// Choose "Compare" on the row named `rel`, and report what came of it (F-192).
+    ///
+    /// By *name* and not by row index, unlike `automationViewSide`: the rows a comparison against an
+    /// archive produces depend on what the archive holds, and a scenario that hard-codes an index
+    /// into that is asserting the fixture's sort order rather than the feature.
+    func automationCompareRow(named rel: String) async -> String {
+        guard let row = visibleRows.firstIndex(where: { results[$0].item.relativePath == rel }) else {
+            return "ERROR: no visible row named \(rel)\n"
+        }
+        let index = visibleRows[row]
+        lastComparedPaths = nil
+        tableView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        guard let menu = tableView.menu,
+              let item = menu.items.first(where: { $0.action == #selector(compareRow) }) else {
+            return "ERROR: no Compare entry\n"
+        }
+        var out = "name=\(rel)\ncanCompare=\(canCompare(index))\n"
+        menu.update()
+        out += "enabled=\(item.isEnabled)\n"
+        if item.isEnabled, let action = item.action {
+            let statusBefore = statusLabel.stringValue
+            _ = NSApp.sendAction(action, to: item.target, from: item)
+            for _ in 0..<60 where lastComparedPaths == nil && statusLabel.stringValue == statusBefore {
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+        }
+        out += "left=\(lastComparedPaths?.left ?? "-")\n"
+        out += "right=\(lastComparedPaths?.right ?? "-")\n"
+        // The guard against merging into a copy, read from the window that got the flags — and only
+        // when *this* call opened one, or the report would carry the previous comparison's answer
+        // for a row that opened nothing.
+        let editable = lastComparedPaths == nil ? nil : diffWindows.last?.automationEditable
+        out += "editable=\(editable.map { "\($0.left)/\($0.right)" } ?? "-")\n"
         out += "status=\(statusLabel.stringValue)\n"
         return out
     }
@@ -1698,7 +1737,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         // would be an answer about menus that have nothing to do with the grid.
         switch item.action {
         case #selector(compareRow):
-            return targetedIndex.map { localPair($0) != nil } ?? false
+            return targetedIndex.map { canCompare($0) } ?? false
         case #selector(viewLeftRow):
             return targetedIndex.map { canView($0, left: true) } ?? false
         case #selector(viewRightRow):
@@ -1721,21 +1760,75 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     /// The two sides of one row as local paths, when both exist and both are local.
-    private func localPair(_ index: Int) -> (String, String)? {
-        guard case .localDir(let l) = leftSide, case .localDir(let r) = rightSide else { return nil }
+    /// Whether a row has two sides to compare — a question about the *row*, not about where the two
+    /// sides live.
+    ///
+    /// It used to be a question about both: comparing needed two local folders, so a row inside a
+    /// zip or on a server beeped. That was the same answer "View Left/Right" gave before it learned
+    /// to unpack, and once one side can be fetched for looking at, there is no reason the other
+    /// cannot be fetched for comparing.
+    private func canCompare(_ index: Int) -> Bool {
+        guard results.indices.contains(index) else { return false }
         let item = results[index].item
-        guard !item.isDirectory, item.leftSize != nil, item.rightSize != nil else { return nil }
-        return ((l as NSString).appendingPathComponent(item.relativePath),
-                (r as NSString).appendingPathComponent(item.relativePath))
+        return !item.isDirectory && item.leftSize != nil && item.rightSize != nil
     }
 
     @objc private func compareRow() {
-        guard let index = targetedIndex, let (l, r) = localPair(index) else { NSSound.beep(); return }
-        let win = DiffWindowController(leftPath: l, rightPath: r)
+        guard let index = targetedIndex, canCompare(index) else { NSSound.beep(); return }
+        let item = results[index].item
+        Task { @MainActor in
+            // Both sides, then the window — and the *first* failure stops it, because a comparison
+            // with one side missing is the empty window this feature exists to stop producing.
+            // Each side is fetched exactly once: an extraction is not something to repeat for the
+            // sake of a message.
+            switch await self.localCopy(of: item.relativePath, on: self.leftSide,
+                                        bytes: item.leftSize ?? 0) {
+            case .problem(let why):
+                NSSound.beep()
+                self.statusLabel.stringValue = why
+            case .ready(let left):
+                switch await self.localCopy(of: item.relativePath, on: self.rightSide,
+                                            bytes: item.rightSize ?? 0) {
+                case .problem(let why):
+                    NSSound.beep()
+                    self.statusLabel.stringValue = why
+                case .ready(let right):
+                    self.openComparison(left: left, right: right, rel: item.relativePath)
+                }
+            }
+        }
+    }
+
+    /// Show the two sides side by side.
+    ///
+    /// The columns are named after the *sides*, not after the files handed over (F-416): half of
+    /// what is compared here can be a copy in the temp directory, and "both.txt ↔ both.txt" would
+    /// leave the reader no way to tell which column came out of the archive. And a side that is a
+    /// copy is not editable — the merge and save buttons would write into the temp file and report
+    /// success while the archive or the server kept what it had, which is the shape of a data loss
+    /// even though nothing is lost.
+    private func openComparison(left: String, right: String, rel: String) {
+        lastComparedPaths = (left, right)
+        let win = DiffWindowController(leftPath: left, rightPath: right,
+                                       leftTitle: Self.columnTitle(for: leftSide, rel: rel),
+                                       rightTitle: Self.columnTitle(for: rightSide, rel: rel),
+                                       leftEditable: leftSide.isLocalDirectory,
+                                       rightEditable: rightSide.isLocalDirectory)
         diffWindows.append(win)
         win.onClose = { [weak self, weak win] in self?.diffWindows.removeAll { $0 === win } }
         win.showWindow(nil)
         win.window?.makeKeyAndOrderFront(nil)
+    }
+
+    /// What a column is called: the member's path prefixed by the archive or the server it came out
+    /// of, and the plain name for a folder on this Mac — where the path bar of the window says the
+    /// rest anyway.
+    private static func columnTitle(for side: SyncSide, rel: String) -> String {
+        switch side {
+        case .localDir: return rel
+        case .zip(let archive): return "\((archive as NSString).lastPathComponent):\(rel)"
+        case .remote(let source): return "\(source.fs.scheme)://\(rel)"
+        }
     }
 
     /// Whether one side of a row holds a file this window can show.
@@ -1784,6 +1877,16 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         }
     }
 
+    /// Where this window's unpacked copies live for the life of the process.
+    ///
+    /// One root per run, named for the process so the launch sweeper can tell a leftover from a copy
+    /// a second running app still needs; the per-member directories inside it keep their own stable
+    /// key, so viewing the same member twice still reuses one copy.
+    private static let stagingRoot: URL = {
+        let name = "\(MemberStage.prefix)\(ProcessInfo.processInfo.processIdentifier)-syncview"
+        return URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(name)
+    }()
+
     /// A file to show, or the sentence explaining why there is none.
     ///
     /// Not `Result`: the failure here is a sentence for the status line and not an `Error` anyone
@@ -1829,10 +1932,15 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Write one zip member to a temporary file and return its path.
     ///
     /// Streamed rather than read whole: a member is as big as somebody made it, and this window can
-    /// be pointed at an archive of any size. The copy is left for the system to reap rather than
-    /// deleted with the window, because the viewer keeps the *path*: it reads the file again on a
-    /// reload, an encoding change or a search, so the copy has to outlive both this call and the
-    /// window that made it — the same reason the panel's handoff copies outlive their mount.
+    /// be pointed at an archive of any size. The copy outlives the window on purpose, because the
+    /// viewer keeps the *path*: it reads the file again on a reload, an encoding change or a search
+    /// — the same reason the panel's handoff copies outlive their mount.
+    ///
+    /// Which is why the root is named `PCStage-<pid>-…`: `ArchiveTempSweeper` sweeps that prefix at
+    /// every launch and decides by the **owner process** rather than by age, so these copies go when
+    /// the app that made them is gone and are never taken out from under a viewer that still has one
+    /// open. A rule of its own here would have had to be either less safe or less thorough than the
+    /// one the archive filesystems and `MemberStage` already share.
     ///
     /// The directory name carries the archive's own `FileStamp`, which makes viewing the same member
     /// twice reuse one copy instead of leaving a new one behind each time, and makes a *rewritten*
@@ -1868,9 +1976,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             let tail = flat.count > 120 ? String(flat.suffix(120)) : flat
             let key = "\((archive as NSString).lastPathComponent.suffix(60))"
                 + "-\(stamp?.inode ?? 0)-\(stamp?.size ?? 0)-\(Int((stamp?.modified ?? 0) * 1000))-\(tail)"
-            let dir = URL(fileURLWithPath: NSTemporaryDirectory())
-                .appendingPathComponent("pc-sync-view")
-                .appendingPathComponent(key)
+            let dir = Self.stagingRoot.appendingPathComponent(key)
             let dst = dir.appendingPathComponent((rel as NSString).lastPathComponent)
             // Already unpacked, under a key that includes what the archive was when it was: the
             // bytes cannot have moved on without the key moving with them.
@@ -1898,6 +2004,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
                 // `rename(2)` and not `FileManager`: it is atomic *and* it overwrites, and the two
                 // FileManager calls that come close each miss one half — `moveItem` refuses an
                 // existing destination, `replaceItemAt` requires one to exist.
+                // Read-only, exactly as `MemberStage` leaves its own copies: what this hands back
+                // is a photograph of something inside an archive, and an editor that saves into it
+                // would be writing to a file nothing reads again.
+                try? FileManager.default.setAttributes([.posixPermissions: 0o444],
+                                                       ofItemAtPath: partial.path)
                 guard rename(partial.path, dst.path) == 0 else {
                     PCFoundationLogger.logger.error(
                         "sync view rename of \(rel, privacy: .public) failed: errno \(errno)")

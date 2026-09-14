@@ -348,6 +348,16 @@ SCENARIOS = [
                    # side that does not is not offered — which is the reported case.
                    "syncview 1|right|/Users/admin/view-one-right.txt", "wait 900",
                    "syncview 1|left|/Users/admin/view-one-left.txt", "wait 1200"], 12),
+    # Comparing a folder on this Mac against an archive (F-192). It needed two *local* sides until
+    # now, so a row inside a zip beeped — the same answer "View" gave before it learned to unpack.
+    # Both sides are fetched before the window opens, the columns are named after the sides rather
+    # than after two files both called `both.txt`, and the archive side is handed over as not
+    # editable: merging into a copy and saving it would report success while the archive kept what
+    # it had. The one-sided row is the control, and it must still be refused.
+    ("sync-compare-zip", ["active left", "left /Users/admin/view-src", "wait 1200",
+                          "syncdemo /Users/admin/view-src|/Users/admin/view-zip.zip", "wait 2600",
+                          "synccomparerow onlyleft.txt|/Users/admin/cmp-onesided.txt", "wait 600",
+                          "synccomparerow both.txt|/Users/admin/cmp-zip.txt", "wait 1500"], 12),
     # The verdict the compare window gives when there is nothing to see (F-190). "No differences" was
     # an 11 pt grey sentence at the bottom edge of a window whose middle is two columns of identical
     # text, and it was reported as the window saying nothing. The differing pair is the control: the
@@ -2486,6 +2496,18 @@ REPORTS = {
     "sync-view-one-right": ("/Users/admin/view-one-right.txt",
                             ["name=onlyleft.txt", "canViewRight=false", "enabled=false",
                              "opened=-", "!ERROR"]),
+    # F-192. `left=` is the real file and `right=` a copy under the staging prefix the launch
+    # sweeper owns — which is the whole claim: the archive side was fetched, not refused. `editable`
+    # is the guard that keeps a merge from being saved into that copy.
+    "sync-compare-zip": ("/Users/admin/cmp-zip.txt",
+                         ["name=both.txt", "canCompare=true", "enabled=true",
+                          "left=/Users/admin/view-src/both.txt", "PCStage-", "syncview",
+                          "editable=true/false", "!ERROR"]),
+    # And the row that has only one side is still refused — greyed out, nothing opened, no window
+    # left over from the call before it.
+    "sync-compare-zip-onesided": ("/Users/admin/cmp-onesided.txt",
+                                  ["name=onlyleft.txt", "canCompare=false", "enabled=false",
+                                   "left=-", "right=-", "editable=-", "!ERROR"]),
     # F-190. The banner is what the window says where the reader is looking; the status line is the
     # sentence that was always there. The control run's report must carry an *empty* banner.
     "diff-equal": ("/Users/admin/diff-equal.txt",
@@ -3677,6 +3699,10 @@ def boot(app: str, run: str):
                   "printf 'first line\\nsecond line\\n' > ~/view-src/both.txt && "
                   "printf 'first line\\nsecond line\\n' > ~/view-dst/both.txt && "
                   "printf 'only on the left\\n' > ~/view-src/onlyleft.txt && "
+                  # …and the same file inside an archive, for the comparison that used to beep:
+                  # a local side against a zip one. Built from `view-dst` so the two sides really
+                  # do hold the same bytes, which is what makes the verdict in the window readable.
+                  "rm -f ~/view-zip.zip && ( cd ~/view-dst && /usr/bin/zip -q ~/view-zip.zip both.txt ) && "
                   "rm -rf ~/busy-src ~/busy-dst && mkdir -p ~/busy-src ~/busy-dst && "
                   "printf 'same\\n' > ~/busy-src/stay.txt && "
                   "printf 'same\\n' > ~/busy-dst/stay.txt && "

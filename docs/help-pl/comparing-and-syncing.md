@@ -20,7 +20,7 @@ Gdy przechowujesz dwie kopie tego samego folderu — folder roboczy i kopię zap
 ![Okno synchronizacji katalogów z dwiema ścieżkami folderów i siatką wyników plików ze strzałkami w lewo, równości i w prawo](screenshots/sync-dialog.png)
 *(Rysunek: okno Synchronizuj katalogi porównuje obie strony i proponuje kierunek kopiowania dla każdego pliku.)*
 
-Kliknij wiersz prawym przyciskiem myszy, aby zajrzeć do plików, które za nim stoją. **Porównaj** otwiera obie strony obok siebie, a **Pokaż plik z lewej** i **Pokaż plik z prawej** otwierają jedną stronę osobno w przeglądarce — to odpowiedź dla wiersza, który istnieje tylko po jednej stronie i w którym nie ma czego porównywać. Pozycje, których nie da się zastosować do klikniętego wiersza, są wyszarzone, zamiast nic nie robić. Plik w archiwum `.zip` lub na serwerze jest najpierw rozpakowywany albo pobierany do tylko do odczytu kopii tymczasowej, więc oryginał nigdy nie jest ruszany.
+Kliknij wiersz prawym przyciskiem myszy, aby zajrzeć do plików, które za nim stoją. **Porównaj** otwiera obie strony obok siebie, a **Pokaż plik z lewej** i **Pokaż plik z prawej** otwierają jedną stronę osobno w przeglądarce — to odpowiedź dla wiersza, który istnieje tylko po jednej stronie i w którym nie ma czego porównywać. Pozycje, których nie da się zastosować do klikniętego wiersza, są wyszarzone, zamiast nic nie robić. Plik w archiwum `.zip` lub na serwerze jest najpierw rozpakowywany albo pobierany do tylko do odczytu kopii tymczasowej, więc oryginał nigdy nie jest ruszany. To samo dotyczy **Porównaj**, więc folder można porównać z archiwum albo serwerem — a przyciski scalania i zapisu pozostają wyłączone dla takiej strony, bo otwarta jest tam kopia.
 
 ## Porównaj dwa pliki według zawartości
 

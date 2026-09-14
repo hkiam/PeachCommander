@@ -57,14 +57,26 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Column titles a caller supplied instead of the file names (F-416).
     private let leftTitleOverride: String?
     private let rightTitleOverride: String?
+    /// Whether writing a side back reaches the file the reader thinks it does; see `init`.
+    private let leftEditable: Bool
+    private let rightEditable: Bool
 
     /// `leftTitle`/`rightTitle` name the columns when the file names would not: a plugin comparing a
     /// blob it wrote to a temp file needs to say "HEAD:src/app.swift", not "git-blob-4F2A.swift" (F-416).
-    init(leftPath: String, rightPath: String, leftTitle: String? = nil, rightTitle: String? = nil) {
+    ///
+    /// `leftEditable`/`rightEditable` say whether writing back means anything. A caller that handed
+    /// over a *copy* — a member unpacked from an archive, a file staged off a server (F-192) — must
+    /// say so: merging into it and saving would report success while the archive or the server kept
+    /// what it had, which looks exactly like losing an edit. Default true, which is every caller
+    /// that passes real files.
+    init(leftPath: String, rightPath: String, leftTitle: String? = nil, rightTitle: String? = nil,
+         leftEditable: Bool = true, rightEditable: Bool = true) {
         self.leftPath = leftPath
         self.rightPath = rightPath
         self.leftTitleOverride = leftTitle
         self.rightTitleOverride = rightTitle
+        self.leftEditable = leftEditable
+        self.rightEditable = rightEditable
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 900, height: 600),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -290,6 +302,10 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
 
     /// What the banner is saying, for the automation report (empty when it is not shown).
     var automationBannerText: String { verdictBanner.shownText }
+    /// Whether each side may be written back — the guard that keeps a merge from being saved into a
+    /// copy of an archive member. Reported rather than inferred, because the caller passing the flag
+    /// and the window honouring it are two different things.
+    var automationEditable: (left: Bool, right: Bool) { (leftEditable, rightEditable) }
     /// The status line under the table, and how many aligned rows the diff produced.
     var automationStatusText: String { statusLabel.stringValue }
     var automationRowCount: Int { rows.count }
@@ -375,11 +391,14 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     private func updateEditButtons() {
+        // Two different questions, and both have to be yes: `readable` is whether this window got
+        // text out of the side at all, `editable` whether putting text back into it would reach the
+        // file the reader means. A copy staged out of an archive is readable and not editable.
         let hasBlock = selectedBlockRange() != nil
-        copyToLeftButton.isEnabled = hasBlock && leftReadable
-        copyToRightButton.isEnabled = hasBlock && rightReadable
-        saveLeftButton.isEnabled = leftDirty
-        saveRightButton.isEnabled = rightDirty
+        copyToLeftButton.isEnabled = hasBlock && leftReadable && leftEditable
+        copyToRightButton.isEnabled = hasBlock && rightReadable && rightEditable
+        saveLeftButton.isEnabled = leftDirty && leftEditable
+        saveRightButton.isEnabled = rightDirty && rightEditable
     }
 
     private func updateTitle() {

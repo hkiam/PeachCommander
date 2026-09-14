@@ -20,7 +20,7 @@ Keď udržiavate dve kópie toho istého priečinka — pracovný priečinok a z
 ![Okno synchronizácie adresárov s dvoma cestami priečinkov a mriežkou výsledkov súborov so šípkami vľavo, rovnosti a vpravo](screenshots/sync-dialog.png)
 *(Obrázok: okno Synchronizovať adresáre porovnáva obe strany a navrhuje smer kopírovania pre každý súbor.)*
 
-Kliknutím pravým tlačidlom na riadok sa pozriete na súbory, ktoré za ním stoja. **Porovnať** otvorí obe strany vedľa seba, **Zobraziť ľavý súbor** a **Zobraziť pravý súbor** otvoria jednu stranu samostatne v prehliadači — to je odpoveď pre riadok, ktorý existuje len na jednej strane a kde niet čo porovnávať. Položky, ktoré na daný riadok nemožno použiť, sú zosvetlené, namiesto toho aby nič nerobili. Súbor v archíve `.zip` alebo na serveri sa najprv rozbalí či stiahne do temporárnej kópie len na čítanie, takže originál sa nikdy nedotkne.
+Kliknutím pravým tlačidlom na riadok sa pozriete na súbory, ktoré za ním stoja. **Porovnať** otvorí obe strany vedľa seba, **Zobraziť ľavý súbor** a **Zobraziť pravý súbor** otvoria jednu stranu samostatne v prehliadači — to je odpoveď pre riadok, ktorý existuje len na jednej strane a kde niet čo porovnávať. Položky, ktoré na daný riadok nemožno použiť, sú zosvetlené, namiesto toho aby nič nerobili. Súbor v archíve `.zip` alebo na serveri sa najprv rozbalí či stiahne do temporárnej kópie len na čítanie, takže originál sa nikdy nedotkne. To isté platí pre **Porovnať**, takže priečinok možno porovnať s archívom či serverom — a tlačidlá na prevzatie a uloženie zostanú pre takú stranu vypnuté, pretože otvorená je tam kópia.
 
 ## Porovnajte dva súbory podľa obsahu
 

@@ -21,7 +21,7 @@ When you keep two copies of the same folder — a working folder and a backup, a
 ![The synchronize directories window with two folder paths and a result grid of files with left, equal, and right arrows](screenshots/sync-dialog.png)
 *(Figure: The Synchronize Dirs window compares both sides and proposes a copy direction for each file.)*
 
-Right-click a row to look at the files behind it. **Compare** opens the two sides next to each other, while **View Left** and **View Right** open one side on its own in the viewer — which is the answer for a row that exists on one side only, where there is nothing to compare. Entries that cannot apply to the row you clicked are greyed out instead of doing nothing. A file inside a `.zip` or on a server is unpacked or downloaded into a read-only temporary copy first, so the original is never touched.
+Right-click a row to look at the files behind it. **Compare** opens the two sides next to each other, while **View Left** and **View Right** open one side on its own in the viewer — which is the answer for a row that exists on one side only, where there is nothing to compare. Entries that cannot apply to the row you clicked are greyed out instead of doing nothing. A file inside a `.zip` or on a server is unpacked or downloaded into a read-only temporary copy first, so the original is never touched. That also applies to **Compare**, so a folder can be compared against an archive or a server — and the merge and save buttons stay switched off for such a side, because what is open there is the copy.
 
 ## Compare two files by content
 

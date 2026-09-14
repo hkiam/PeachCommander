@@ -20,7 +20,7 @@ När du håller två kopior av samma mapp – en arbetsmapp och en säkerhetskop
 ![Fönstret för att synkronisera kataloger med två mappsökvägar och ett resultatrutnät av filer med vänster-, likhets- och högerpilar](screenshots/sync-dialog.png)
 *(Figur: Fönstret Synkronisera kataloger jämför båda sidorna och föreslår en kopieringsriktning för varje fil.)*
 
-Högerklicka på en rad för att titta på filerna bakom den. **Jämför** öppnar de två sidorna intill varandra, medan **Visa vänster fil** och **Visa höger fil** öppnar en sida för sig i visaren — det är svaret för en rad som bara finns på en sida, där det inte finns något att jämföra. Poster som inte går att använda på raden du klickade på är gråmarkerade i stället för att inte göra något. En fil inuti en `.zip` eller på en server packas upp eller hämtas först till en skrivskyddad tillfällig kopia, så originalet berörs aldrig.
+Högerklicka på en rad för att titta på filerna bakom den. **Jämför** öppnar de två sidorna intill varandra, medan **Visa vänster fil** och **Visa höger fil** öppnar en sida för sig i visaren — det är svaret för en rad som bara finns på en sida, där det inte finns något att jämföra. Poster som inte går att använda på raden du klickade på är gråmarkerade i stället för att inte göra något. En fil inuti en `.zip` eller på en server packas upp eller hämtas först till en skrivskyddad tillfällig kopia, så originalet berörs aldrig. Detsamma gäller **Jämför**, så en mapp kan jämföras med ett arkiv eller en server — och knapparna för att slå samman och spara förblir avstängda för en sådan sida, eftersom det som är öppet där är kopian.
 
 ## Jämför två filer efter innehåll
 

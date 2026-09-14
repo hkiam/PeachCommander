@@ -27,6 +27,12 @@ does not have.
   is opened through the main window, so it is the viewer F3 gives you: the lister plugins, the
   per-extension viewer application and the history entry all apply.
 
+  **Comparing works across those sides too.** It needed two folders on this Mac, so a row inside a
+  zip or on a server beeped — the same answer looking at one side used to give. Both sides are
+  fetched first now, the two columns are named after the *sides* rather than after two files with
+  the same name, and a side that is a copy is handed over as not editable: merging into it and
+  saving would have reported success while the archive or the server kept what it had.
+
 
 - **The compare window says when there is nothing to see.** “No differences” was there all along — in
   11 pt secondary grey, at the very bottom edge of a window whose whole middle is two columns of
@@ -159,8 +165,9 @@ does not have.
   the sides were read now decides what may be said about them, before any count does: both windows
   say that nothing was compared, in the warning colour, and say which file it was when only one side
   failed. The hex window's “identical” sentence is also no longer English in the other eighteen
-  languages — it never went through the string extraction, which nothing noticed while it was an
-  11 pt line at the bottom of the window.
+  languages — nor are the three sentences beside it. None of the four ever went through the string
+  extraction, which nothing noticed while they were an 11 pt line at the bottom of the window; all
+  four are translated now.
 
 
 - **The “this cannot be undone” warning covers the cases that actually cannot.** It asked only

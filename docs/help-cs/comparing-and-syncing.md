@@ -20,7 +20,7 @@ Když udržujete dvě kopie stejné složky — pracovní složku a zálohu, not
 ![Okno synchronizace adresářů se dvěma cestami ke složkám a výslednou mřížkou souborů se šipkami vlevo, rovná se a vpravo](screenshots/sync-dialog.png)
 *(Obrázek: Okno Synchronizovat adresáře porovnává obě strany a pro každý soubor navrhuje směr kopírování.)*
 
-Klepnutím pravým tlačítkem na řádek se podíváte na soubory, které za ním stojí. **Porovnat** otevře obě strany vedle sebe, **Zobrazit levý soubor** a **Zobrazit pravý soubor** otevřou jednu stranu samostatně v prohlížeči — to je odpověď pro řádek, který existuje jen na jedné straně a kde není co porovnávat. Položky, které pro daný řádek nemají smysl, jsou zašedlé, místo aby nic nedělaly. Soubor v archivu `.zip` nebo na serveru se nejprve rozbalí či stáhne do temporární kopie určené jen ke čtení, takže originál zůstane nedotčen.
+Klepnutím pravým tlačítkem na řádek se podíváte na soubory, které za ním stojí. **Porovnat** otevře obě strany vedle sebe, **Zobrazit levý soubor** a **Zobrazit pravý soubor** otevřou jednu stranu samostatně v prohlížeči — to je odpověď pro řádek, který existuje jen na jedné straně a kde není co porovnávat. Položky, které pro daný řádek nemají smysl, jsou zašedlé, místo aby nic nedělaly. Soubor v archivu `.zip` nebo na serveru se nejprve rozbalí či stáhne do temporární kopie určené jen ke čtení, takže originál zůstane nedotčen. Totéž platí pro **Porovnat**, takže složku lze porovnat s archivem či serverem — a tlačítka pro převzetí a uložení zůstanou pro takovou stranu vypnutá, protože otevřená je tam kopie.
 
 ## Porovnání dvou souborů podle obsahu
 

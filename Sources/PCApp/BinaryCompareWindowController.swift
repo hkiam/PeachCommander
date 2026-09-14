@@ -218,10 +218,14 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
         }
         var parts: [String] = []
         if let first = r.firstDifference {
-            parts.append(String(format: NSLocalizedString("Differ at offset 0x%llX", comment: ""), first))
+            // The offset is formatted first and interpolated as text: `String(localized:)` takes a
+            // `LocalizationValue`, which has no hexadecimal form — and the number is an address, so
+            // it must stay hexadecimal. The rest go through interpolation directly.
+            let offset = String(format: "%llX", first)
+            parts.append(String(localized: "Differ at offset 0x\(offset)"))
         }
-        parts.append(String(format: NSLocalizedString("%lld differing bytes", comment: ""), r.differingBytes))
-        parts.append(String(format: NSLocalizedString("sizes %lld / %lld", comment: ""), r.sizeA, r.sizeB))
+        parts.append(String(localized: "\(r.differingBytes) differing bytes"))
+        parts.append(String(localized: "sizes \(r.sizeA) / \(r.sizeB)"))
         if r.truncatedRanges { parts.append(String(localized: "(more differences not listed)")) }
         return parts.joined(separator: "  ·  ")
     }

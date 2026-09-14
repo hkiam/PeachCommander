@@ -47,6 +47,9 @@ public enum SyncSide: Sendable, Equatable {
     case zip(String)   // on-disk .zip path
     case remote(RemoteSyncSource)
 
+    /// A folder on this Mac — the one side whose files are files, so they can be opened, compared
+    /// and written to in place rather than fetched into a copy first.
+    public var isLocalDirectory: Bool { if case .localDir = self { return true } else { return false } }
     public var isZip: Bool { if case .zip = self { return true } else { return false } }
     public var isRemote: Bool { if case .remote = self { return true } else { return false } }
     public var path: String {
