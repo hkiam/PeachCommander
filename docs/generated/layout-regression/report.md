@@ -174,4 +174,5 @@ only go down.
 | docker-jump | 0 | 0 | — | `docker-jump.png` |
 | docker-connect | 0 | 0 | — | `docker-connect.png` |
 | docker-settings | 0 | 0 | — | `docker-settings.png` |
+| docker-log | 0 | 0 | — | `docker-log.png` |
 | docker-lifecycle | 0 | 0 | — | `docker-lifecycle.png` |
