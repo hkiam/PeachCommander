@@ -20,6 +20,8 @@ Lorsque vous conservez deux copies d'un même dossier — un dossier de travail 
 ![La fenêtre de synchronisation des dossiers avec deux chemins de dossiers et une grille de résultats de fichiers comportant des flèches gauche, égal et droite](screenshots/sync-dialog.png)
 *(Figure : la fenêtre Synchroniser les dossiers compare les deux côtés et propose une direction de copie pour chaque fichier.)*
 
+Faites un clic droit sur une ligne pour regarder les fichiers qui sont derrière. **Comparer** ouvre les deux côtés l’un à côté de l’autre, tandis que **Afficher le fichier de gauche** et **Afficher le fichier de droite** ouvrent un seul côté dans la visionneuse — c’est la réponse pour une ligne qui n’existe que d’un côté, où il n’y a rien à comparer. Les entrées qui ne s’appliquent pas à la ligne cliquée sont grisées au lieu de ne rien faire. Un fichier situé dans un `.zip` ou sur un serveur est d’abord extrait ou téléchargé dans une copie temporaire en lecture seule ; l’original n’est jamais touché.
+
 ## Comparer deux fichiers par contenu
 
 1. Sélectionnez un fichier dans chaque panneau (ou deux fichiers dans le même panneau).
@@ -29,6 +31,8 @@ Lorsque vous conservez deux copies d'un même dossier — un dossier de travail 
 
 ![La fenêtre de comparaison affichant deux fichiers texte côte à côte avec les lignes différentes mises en évidence](screenshots/diff-window.png)
 *(Figure : comparaison de deux fichiers texte ; les lignes modifiées sont mises en évidence des deux côtés.)*
+
+Lorsque les deux fichiers ne présentent aucune différence, la fenêtre le dit dans un bandeau coloré en haut, au lieu de vous laisser le déduire d’un tableau où rien n’est mis en évidence. Le bandeau apparaît aussi, dans une couleur d’avertissement, quand un fichier n’a pas pu être lu du tout : tout verdict sur les différences serait alors une affirmation sur une comparaison qui n’a jamais eu lieu. La comparaison octet par octet dit la même chose pour la même raison : deux fichiers qu’elle ne peut pas ouvrir ne sont pas deux fichiers identiques.
 
 ## Comparer des fichiers octet par octet
 
@@ -82,6 +86,7 @@ laisse la paire sans historique — et une exécution sans historique ne supprim
 | Comparer les listes de répertoires (marquer les fichiers différents) | Shift+F2 |
 | Comparer par contenu | Fichier ▸ Comparer par contenu… |
 | Synchroniser les répertoires | Commandes ▸ Synchroniser les dossiers… |
+| Afficher un côté d’une ligne de synchronisation | Clic droit sur la ligne ▸ Afficher le fichier de gauche / de droite |
 
 ## Remarques
 

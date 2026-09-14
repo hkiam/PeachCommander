@@ -334,6 +334,45 @@ SCENARIOS = [
                      # means a report taken before the comparison cannot carry what the run will do.
                      "synccompare", "wait 1800",
                      "syncfilterreport /Users/admin/syncfilter.txt"], 11),
+    # Looking at one side of a row (F-192). Comparing was the only thing a row offered, so every row
+    # that exists on one side only — which is every row of a first backup — had nothing behind it at
+    # all, and the entry it did have beeped. Four dumps rather than one, because the mistake this
+    # cannot be allowed to make is quiet: an entry wired to the other side opens *a* file and reads
+    # as working, so each dump names the path that was opened and they must differ.
+    ("sync-view", ["active left", "left /Users/admin/view-src", "wait 1200",
+                   "syncopen /Users/admin/view-src|/Users/admin/view-dst", "wait 1200",
+                   "synccompare", "wait 1800",
+                   "syncview 0|left|/Users/admin/view-both-left.txt", "wait 900",
+                   "syncview 0|right|/Users/admin/view-both-right.txt", "wait 900",
+                   # The one-sided row, both ways round: the side that has the file opens it, and the
+                   # side that does not is not offered — which is the reported case.
+                   "syncview 1|right|/Users/admin/view-one-right.txt", "wait 900",
+                   "syncview 1|left|/Users/admin/view-one-left.txt", "wait 1200"], 12),
+    # The verdict the compare window gives when there is nothing to see (F-190). "No differences" was
+    # an 11 pt grey sentence at the bottom edge of a window whose middle is two columns of identical
+    # text, and it was reported as the window saying nothing. The differing pair is the control: the
+    # banner must be *absent* there, or its presence proves nothing.
+    ("diff-equal", ["active left", "left /Users/admin/view-src", "wait 1200",
+                    "diffdemo /Users/admin/view-src/both.txt|/Users/admin/view-src/onlyleft.txt",
+                    "wait 1500",
+                    "diffdump /Users/admin/diff-differ.txt", "wait 600",
+                    # Two files that are not there, under *different* names. Both windows fall back
+                    # to a placeholder for a side they cannot read, and the text one's carries the
+                    # file's own name and size — so equal placeholders are the exception, and the
+                    # honest verdict has to come from whether the sides were read rather than from
+                    # comparing what stood in for them.
+                    "diffdemo /Users/admin/view-src/gone-a.dat|/Users/admin/view-src/gone-b.dat",
+                    "wait 1500",
+                    "diffdump /Users/admin/diff-unread.txt", "wait 600",
+                    # And the hex window, where "identical" is the strongest claim the app makes:
+                    # a file it cannot open is an empty byte source, and two of those compare equal.
+                    "bindiff /Users/admin/view-src/gone-a.dat|/Users/admin/view-src/gone-b.dat|/Users/admin/diff-binunread.txt",
+                    "wait 400",
+                    "bindiff /Users/admin/view-src/both.txt|/Users/admin/view-dst/both.txt|/Users/admin/diff-binequal.txt",
+                    "wait 400",
+                    "diffdemo /Users/admin/view-src/both.txt|/Users/admin/view-dst/both.txt",
+                    "wait 1500",
+                    "diffdump /Users/admin/diff-equal.txt", "wait 800"], 16),
     ("settings", ["active left", "left /Users/admin", "wait 1000",
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
@@ -2428,6 +2467,56 @@ REPORTS = {
     # load restored them. `heldback=2` is the excluded folder counted once plus the .tmp file — not
     # once per file inside node_modules. And the status line carries that next to what the run would
     # do, which is the whole safety claim: a filter has to be visible without opening it.
+    # F-192. The primary report is the one-sided row's *left* side, because that is the last file the
+    # script writes; the other three are what it took to get there. `opened=` is the assertion in all
+    # four: the two sides of the two-sided row must open two different files, and the missing side of
+    # the one-sided row must open none and not be offered.
+    "sync-view": ("/Users/admin/view-one-left.txt",
+                  ["name=onlyleft.txt", "canViewLeft=true", "canViewRight=false", "canCompare=false",
+                   "canReveal=true",
+                   "enabled=true", "opened=/Users/admin/view-src/onlyleft.txt", "!ERROR"]),
+    "sync-view-both-left": ("/Users/admin/view-both-left.txt",
+                            ["name=both.txt", "canCompare=true", "enabled=true",
+                             "opened=/Users/admin/view-src/both.txt", "!ERROR"]),
+    "sync-view-both-right": ("/Users/admin/view-both-right.txt",
+                             ["name=both.txt", "enabled=true",
+                              "opened=/Users/admin/view-dst/both.txt", "!ERROR"]),
+    # Not offered, and nothing opened. Both halves: an entry that was greyed out and still acted on a
+    # click would report the same `enabled=false`.
+    "sync-view-one-right": ("/Users/admin/view-one-right.txt",
+                            ["name=onlyleft.txt", "canViewRight=false", "enabled=false",
+                             "opened=-", "!ERROR"]),
+    # F-190. The banner is what the window says where the reader is looking; the status line is the
+    # sentence that was always there. The control run's report must carry an *empty* banner.
+    "diff-equal": ("/Users/admin/diff-equal.txt",
+                   ["status=Files are identical.", "banner=Files are identical.", "!ERROR"]),
+    "diff-equal-differ": ("/Users/admin/diff-differ.txt",
+                          ["banner=\n", "differing line block", "!Files are identical", "!ERROR"]),
+    # Neither side read, and the two placeholders differ — so the count path is what this used to
+    # take: "1 differing line block(s)" about two files nobody had opened. Both assertions are
+    # needed: the sentence, and the absence of a number.
+    "diff-equal-unread": ("/Users/admin/diff-unread.txt",
+                          ["status=Neither file could be read, so nothing was compared.",
+                           "banner=Neither file could be read, so nothing was compared.",
+                           "!differing line block", "!Files are identical", "!ERROR"]),
+    # The same question of the hex window, where the wrong answer is the strongest claim it makes.
+    "diff-equal-binunread": ("/Users/admin/diff-binunread.txt",
+                             ["status=Neither file could be read, so nothing was compared.",
+                              "banner=Neither file could be read, so nothing was compared.",
+                              "!identical", "!ERROR"]),
+    # …and the honest identity, byte for byte, with the size in it: 11 + 12 bytes of fixture.
+    "diff-equal-binequal": ("/Users/admin/diff-binequal.txt",
+                            ["status=Files are identical (23 bytes).",
+                             "banner=Files are identical (23 bytes).", "equal=true", "!ERROR"]),
+    # F-150. `content=` proves the window really took the size — a `setContentSize` the screen
+    # refused would otherwise leave the old layout looking correct — and the negation is the defect:
+    # the results list stuck at the 160 pt floor it is built with.
+    # The *width* is what proves the resize landed — the guest's screen is shorter than the 1000 pt
+    # asked for and AppKit clamps the height, which is why the height is not asserted (measured:
+    # content came back 1400x706). The negation is the defect: the list stuck at its 160 pt floor.
+    "find-maximize": ("/Users/admin/find-big.txt",
+                      ["window=Find Files", "content=1400x", "NSScrollView=1360x",
+                       "!NSScrollView=1360x160", "!ERROR"]),
     "sync-filter": ("/Users/admin/syncfilter.txt",
                     ["filtercriteria=1", "filterexclude=node_modules/;*.tmp",
                      "heldback=2", "held back by the filter", "filterbutton=Filter",
@@ -3579,6 +3668,15 @@ def boot(app: str, run: str):
                   # original path is occupied again by the time the put-back is asked for. `mkfile`
                   # is what puts it there — it writes from outside any panel operation, which is
                   # exactly the case, something else having claimed the path meanwhile.
+                  # A pair for the two scenarios that only *look* at files: one name on both
+                  # sides with the same bytes, one on the left only. Its own tree, like every pair
+                  # above, because the sync scenarios that run before it consume theirs — and the
+                  # identical pair is what the compare window's "no differences" verdict is measured
+                  # on, so nothing may write into it.
+                  "rm -rf ~/view-src ~/view-dst && mkdir -p ~/view-src ~/view-dst && "
+                  "printf 'first line\\nsecond line\\n' > ~/view-src/both.txt && "
+                  "printf 'first line\\nsecond line\\n' > ~/view-dst/both.txt && "
+                  "printf 'only on the left\\n' > ~/view-src/onlyleft.txt && "
                   "rm -rf ~/busy-src ~/busy-dst && mkdir -p ~/busy-src ~/busy-dst && "
                   "printf 'same\\n' > ~/busy-src/stay.txt && "
                   "printf 'same\\n' > ~/busy-dst/stay.txt && "

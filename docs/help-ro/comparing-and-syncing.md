@@ -20,6 +20,8 @@ Când păstrați două copii ale aceluiași folder — un folder de lucru și o 
 ![Fereastra de sincronizare a directoarelor cu două căi de folder și o grilă de rezultate a fișierelor cu săgeți stânga, egal și dreapta](screenshots/sync-dialog.png)
 *(Figura: fereastra Sincronizează directoare compară ambele părți și propune o direcție de copiere pentru fiecare fișier.)*
 
+Faceți clic dreapta pe un rând pentru a vedea fișierele din spatele lui. **Compară** deschide cele două părți una lângă alta, în timp ce **Vizualizează fișierul din stânga** și **Vizualizează fișierul din dreapta** deschid o singură parte în vizualizator — acesta este răspunsul pentru un rând care există doar pe o parte, unde nu este nimic de comparat. Intrările care nu se pot aplica rândului pe care ați dat clic sunt estompate, în loc să nu facă nimic. Un fișier din interiorul unei arhive `.zip` sau de pe un server este mai întâi dezarhivat ori descărcat într-o copie temporară doar pentru citire, așa că originalul nu este atins niciodată.
+
 ## Comparați două fișiere după conținut
 
 1. Selectați un fișier în fiecare panou (sau două fișiere în același panou).
@@ -29,6 +31,8 @@ Când păstrați două copii ale aceluiași folder — un folder de lucru și o 
 
 ![Fereastra de comparare care arată două fișiere text unul lângă altul cu rândurile diferite evidențiate](screenshots/diff-window.png)
 *(Figura: compararea a două fișiere text; rândurile modificate sunt evidențiate pe ambele părți.)*
+
+Când cele două fișiere nu au nicio diferență, fereastra o spune într-o bandă colorată în partea de sus, în loc să vă lase să deduceți asta dintr-un tabel în care nimic nu este evidențiat. Banda apare și, într-o culoare de avertizare, când un fișier nu a putut fi citit deloc — atunci orice verdict despre diferențe ar fi o afirmație despre o comparație care nu a avut loc niciodată. Comparația octet cu octet spune același lucru din același motiv: două fișiere pe care nu le poate deschide nu sunt două fișiere identice.
 
 ## Comparați fișierele octet cu octet
 
@@ -82,6 +86,7 @@ istorie — iar o rulare fără istorie nu șterge nimic.
 | Compară listele de directoare (marchează fișierele diferite) | Shift+F2 |
 | Compară după conținut | Fișier ▸ Compară după conținut… |
 | Sincronizează directoare | Comenzi ▸ Sincronizează directoare… |
+| Vizualizarea unei părți dintr-un rând de sincronizare | Clic dreapta pe rând ▸ Vizualizează fișierul din stânga / din dreapta |
 
 ## Note
 

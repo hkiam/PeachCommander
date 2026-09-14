@@ -38,6 +38,14 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     private let tableView = NSTableView()
     private let overviewBar = DiffOverviewBar()
     private let statusLabel = NSTextField(labelWithString: "")
+    /// Said across the top when the two sides came out equal, and hidden otherwise (F-190).
+    ///
+    /// "No differences" was already in `statusLabel` — 11 pt, secondary grey, at the very bottom
+    /// edge of a window whose whole middle is two columns of identical text. That is a sentence you
+    /// have to go looking for to answer the one question the window was opened to answer, and it was
+    /// reported as the window not saying anything at all. This is the same fact where the eye
+    /// already is, and it appears *only* in that case, so its presence is the answer.
+    private let verdictBanner = VerdictBanner()
     private let ignoreCaseButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let ignoreLineEndsButton = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let whitespacePopup = NSPopUpButton(frame: .zero, pullsDown: false)
@@ -186,15 +194,21 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
         statusLabel.textColor = .secondaryLabelColor
         content.addSubview(statusLabel)
 
+        content.addSubview(verdictBanner)
+
         NSLayoutConstraint.activate([
             toolbar.topAnchor.constraint(equalTo: content.topAnchor),
             toolbar.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             toolbar.trailingAnchor.constraint(equalTo: content.trailingAnchor),
 
-            scroll.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            verdictBanner.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            verdictBanner.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            verdictBanner.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+
+            scroll.topAnchor.constraint(equalTo: verdictBanner.bottomAnchor),
             scroll.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: overviewBar.leadingAnchor),
-            overviewBar.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            overviewBar.topAnchor.constraint(equalTo: verdictBanner.bottomAnchor),
             overviewBar.trailingAnchor.constraint(equalTo: content.trailingAnchor),
             overviewBar.bottomAnchor.constraint(equalTo: scroll.bottomAnchor),
             overviewBar.widthAnchor.constraint(equalToConstant: 16),
@@ -242,12 +256,43 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
         tableView.reloadData()
         overviewBar.ops = rows.map(\.op)
         let diffs = rows.filter { $0.op != .equal }.count
-        statusLabel.stringValue = diffs == 0
-            ? String(localized: "Files are identical.")
-            : String(localized: "\(diffs) differing line block(s).")
+        // Whether the two sides were *read* decides what may be said about them, and it decides it
+        // before the count does. A side this window cannot read — missing, or over the 256 MB text
+        // limit — becomes a single sentinel line carrying its own name and size, so two unread
+        // sides produce equal sentinels only when those coincide: two 300 MB files of different
+        // sizes came out as "1 differing line block", which is a difference between two files
+        // neither of which had been opened. Neither number is about the files, so neither is
+        // offered. (Binary content does not reach this: `readLines` falls back to ISO Latin-1,
+        // which decodes any byte sequence, so two identical binaries really are identical.)
+        let verdict: String
+        let compared: Bool
+        switch (leftReadable, rightReadable) {
+        case (true, true):
+            compared = true
+            verdict = diffs == 0 ? String(localized: "Files are identical.")
+                                 : String(localized: "\(diffs) differing line block(s).")
+        case (false, false):
+            compared = false
+            verdict = String(localized: "Neither file could be read, so nothing was compared.")
+        default:
+            // Which of the two is in the table: the sentinel line stands where its content would.
+            compared = false
+            verdict = String(localized: "The file could not be read.")
+        }
+        statusLabel.stringValue = verdict
+        // The banner says it where it cannot be missed, whenever the table itself cannot answer the
+        // question: no differences to look at, or a side that was never read. A count of differing
+        // blocks needs no banner — the table is the answer to that one.
+        verdictBanner.show(compared && diffs > 0 ? nil : verdict, good: compared)
         updateEditButtons()
         updateTitle()
     }
+
+    /// What the banner is saying, for the automation report (empty when it is not shown).
+    var automationBannerText: String { verdictBanner.shownText }
+    /// The status line under the table, and how many aligned rows the diff produced.
+    var automationStatusText: String { statusLabel.stringValue }
+    var automationRowCount: Int { rows.count }
 
     @objc private func optionChanged() { recompute() }
 

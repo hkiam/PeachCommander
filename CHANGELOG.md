@@ -16,6 +16,26 @@ does not have.
 
 ### Added
 
+- **You can look at one side of a synchronisation row.** Comparing was the only thing a row offered,
+  and comparing needs two sides — so every row that exists on one side only, which is every row of a
+  first backup, had nothing behind it at all: the one entry there beeped. A row's menu now also has
+  **View Left** and **View Right**, which open that side in the app's own viewer, and entries the row
+  cannot support are greyed out instead of silently doing nothing. A file inside a `.zip` is unpacked
+  and one on a server downloaded into a read-only temporary copy first, so the original is never
+  touched — and the copy is keyed by the archive's own timestamp and size, which means looking at the
+  same file twice reuses one copy while a rewritten archive can never serve a stale one. The viewer
+  is opened through the main window, so it is the viewer F3 gives you: the lister plugins, the
+  per-extension viewer application and the history entry all apply.
+
+
+- **The compare window says when there is nothing to see.** “No differences” was there all along — in
+  11 pt secondary grey, at the very bottom edge of a window whose whole middle is two columns of
+  identical text. That is a sentence you have to go looking for to answer the one question the window
+  was opened to answer, and it was reported as the window saying nothing at all. Two identical files
+  now put a tinted band across the top, in the text comparison and in the hex one, and it appears
+  *only* in that case — so its presence is the answer.
+
+
 - **You can see what the app remembers, and make it forget.** Two-way synchronisation works because
   it keeps a record of what each pair of folders last agreed on, and a record that no longer fits its
   folders is the one input that turns into deletions nobody asked for. There were already guards
@@ -107,6 +127,41 @@ does not have.
   used on small payloads.
 
 ### Fixed
+
+- **Maximising the search window enlarges the hit list.** Both heights in that dialog were lower
+  bounds, which leaves the extra height of a resized window for the layout engine to place — and it
+  gave all of it to the criteria tab. Measured at a content height of 1100 pt: the tab grew from 426
+  to 856 pt with its own criteria still 302 pt tall and the rest of it empty, while the results list
+  stayed on the 160 pt floor it is built with. So the one thing a bigger window was wanted for was the
+  one thing it did not buy. The tab is held at its measured height as a *preference* now, which leaves
+  the list as the only view that can take the room; the required lower bound still wins whenever the
+  criteria need more than the measurement predicted, so nothing can be clipped. The default window
+  gains rows too — 250 pt of list where there were 160.
+
+
+- **The rename prompts show where in the name you are.** Shift+F5 comes up with the source's whole
+  path in the field, and it used to arrive with all of it selected: AppKit draws no insertion point
+  while a selection stands, so a 128-character path was one highlighted bar with no cursor anywhere in
+  it — and the field scrolls to the *start* of a selection, so the name on the end, the one part worth
+  editing, was off screen. Only the name is highlighted now, without its extension, which is what the
+  in-cell rename in the panel has always done; the path in front of it stays put, stays visible, and
+  survives the first keystroke. The Rename and New Text File prompts do the same, and the rule they
+  share is one piece of code rather than three.
+
+
+- **Two files that could not be read are no longer reported identical — or as differing.** Both
+  comparison windows fall back to a placeholder for a side they cannot read: the text one to a line
+  carrying the file's name and size, the hex one to an empty byte source. Two empty byte sources are
+  “identical (0 bytes)”, and two placeholder lines are equal whenever the names and sizes coincide —
+  so a pair of files neither of which had been opened came out as proof that they are the same. And
+  when the placeholders *differed* — two 300 MB files, which is the ordinary case — the text window
+  reported “1 differing line block”, a difference between two files it had not read either. Whether
+  the sides were read now decides what may be said about them, before any count does: both windows
+  say that nothing was compared, in the warning colour, and say which file it was when only one side
+  failed. The hex window's “identical” sentence is also no longer English in the other eighteen
+  languages — it never went through the string extraction, which nothing noticed while it was an
+  11 pt line at the bottom of the window.
+
 
 - **The “this cannot be undone” warning covers the cases that actually cannot.** It asked only
   whether a side was a server, so it said nothing about two deletions that are just as final: one

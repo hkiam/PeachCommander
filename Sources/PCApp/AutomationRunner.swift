@@ -102,6 +102,7 @@ private var automationSyncWindows: [SyncWindowController] = []
 /// Retains type-colour editors opened by the `typecolors` verb (F-032).
 private var automationTypeColorEditors: [TypeColorsWindowController] = []
 private var automationDiffWindows: [DiffWindowController] = []
+private var automationBinaryCompareWindows: [BinaryCompareWindowController] = []
 private var automationProgressDialogs: [ProgressDialog] = []
 
 extension MainWindowController {
@@ -1234,10 +1235,17 @@ extension MainWindowController {
                 automationTypeColorEditors.append(editor)
                 editor.showWindow(nil); editor.window?.makeKeyAndOrderFront(nil)
             case "syncdemo":                               // syncdemo <left>|<right>[|hidden] (F-192): open sync + compare
+                // A side named `*.zip` is opened as an archive side, which is how the zip half of
+                // this window is reachable from a script at all — the only other way in was the
+                // panels, and a scripted run has no double-click.
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count >= 2 {
-                    let win = SyncWindowController(leftDir: a[0], rightDir: a[1])
+                    func side(_ path: String) -> SyncSide {
+                        path.lowercased().hasSuffix(".zip") ? .zip(path) : .localDir(path)
+                    }
+                    let win = SyncWindowController(left: side(a[0]), right: side(a[1]))
                     automationSyncWindows.append(win)
+                    win.onView = { [weak self] path in self?.viewFileInLister(path) }
                     win.showWindow()
                     if a.count >= 3, a[2] == "hidden" { win.automationSetIgnoreHidden(true) }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { win.compareNow() }
@@ -1282,6 +1290,7 @@ extension MainWindowController {
                                                    stateDirectory: configPaths.syncStateDirectory,
                                                    runsDirectory: configPaths.syncRunsDirectory)
                     automationSyncWindows.append(win)
+                    win.onView = { [weak self] path in self?.viewFileInLister(path) }
                     win.showWindow()
                 }
             case "syncfilterset":                          // syncfilterset <spec>|<out> (F-192)
@@ -1388,6 +1397,21 @@ extension MainWindowController {
                 let rw = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if rw.count == 2, let win = automationSyncWindows.last, let row = Int(rw[0]) {
                     try? win.automationFlipRow(row).write(toFile: rw[1], atomically: true, encoding: .utf8)
+                }
+            case "syncview":                               // syncview <visible row>|<left|right>|<out>
+                // "View Left"/"View Right" in a row's menu (F-192): what the entry is offered for,
+                // and which file it actually opened — a one-sided row is the case that had nothing
+                // behind it before, and the side mapping is the part worth asserting.
+                let sv = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if sv.count == 3, let win = automationSyncWindows.last, let row = Int(sv[0]) {
+                    // The side is named, not inferred: `left` unless it says `right` would make a
+                    // typo test the *other* side and pass, which is the one way a report like this
+                    // can be quietly meaningless.
+                    let side = sv[1].lowercased()
+                    let out = side == "left" || side == "right"
+                        ? await win.automationViewSide(row: row, left: side == "left")
+                        : "ERROR: side must be left or right, not \(sv[1])\n"
+                    try? out.write(toFile: sv[2], atomically: true, encoding: .utf8)
                 }
             case "syncsort":                               // syncsort <column id>|<0|1 ascending>|<out>
                 let so = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
@@ -1699,6 +1723,32 @@ extension MainWindowController {
                     automationDiffWindows.append(win)
                     win.showWindow()
                 }
+            case "bindiff":                                // bindiff <a>|<b>|<out> (F-190): hex compare
+                // Its own verb rather than a second `diffdemo`: this window reads its files with
+                // `FileSlice` and reports a *byte* verdict, and the case worth a scenario is the one
+                // where opening fails — where "identical (0 bytes)" would otherwise be the
+                // strongest thing the app can say about two files nobody read.
+                let bd = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if bd.count == 3 {
+                    let win = BinaryCompareWindowController(leftPath: bd[0], rightPath: bd[1])
+                    automationBinaryCompareWindows.append(win)
+                    win.showWindow()
+                    // `runCompare` is dispatched after the window is on screen, so the verdict is
+                    // not there yet when `showWindow` returns.
+                    try? await Task.sleep(nanoseconds: 900_000_000)
+                    try? win.automationVerdictReport.write(toFile: bd[2], atomically: true,
+                                                           encoding: .utf8)
+                }
+            case "diffdump":                               // diffdump <out> (F-190): the verdict, as text
+                // The one thing about this window that cannot be read off a screenshot: whether it
+                // *says* the two files are the same. The banner is a colour and a sentence, and a
+                // capture of a themed window resolves neither reliably — see the layout notes.
+                let win = automationDiffWindows.last
+                let out = win.map {
+                    "status=\($0.automationStatusText)\nbanner=\($0.automationBannerText)\n"
+                        + "rows=\($0.automationRowCount)\n"
+                } ?? "ERROR: no diff window\n"
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "progressdemo":                           // progressdemo (I04): show a sample transfer progress dialog
                 let dlg = ProgressDialog(title: "Copying 128 items…", control: OperationControl())
                 automationProgressDialogs.append(dlg)

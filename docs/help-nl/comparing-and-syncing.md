@@ -20,6 +20,8 @@ Wanneer je twee kopieën van dezelfde map bijhoudt — een werkmap en een back-u
 ![Het venster Mappen synchroniseren met twee mappaden en een resultatenraster van bestanden met linker-, gelijk- en rechterpijlen](screenshots/sync-dialog.png)
 *(Afbeelding: Het venster Mappen synchroniseren vergelijkt beide kanten en stelt voor elk bestand een kopieerrichting voor.)*
 
+Klik met de rechtermuisknop op een rij om naar de bestanden erachter te kijken. **Vergelijk** opent de twee kanten naast elkaar, terwijl **Linkerbestand weergeven** en **Rechterbestand weergeven** één kant op zichzelf in de weergave openen — dat is het antwoord voor een rij die maar aan één kant bestaat, waar niets te vergelijken is. Items die niet op de aangeklikte rij van toepassing zijn, zijn grijs in plaats van niets te doen. Een bestand in een `.zip` of op een server wordt eerst uitgepakt of gedownload naar een alleen-lezen tijdelijke kopie, zodat het origineel nooit wordt aangeraakt.
+
 ## Twee bestanden op inhoud vergelijken
 
 1. Selecteer één bestand in elk paneel (of twee bestanden in hetzelfde paneel).
@@ -29,6 +31,8 @@ Wanneer je twee kopieën van dezelfde map bijhoudt — een werkmap en een back-u
 
 ![Het vergelijkvenster met twee tekstbestanden naast elkaar met verschillende regels gemarkeerd](screenshots/diff-window.png)
 *(Afbeelding: Twee tekstbestanden vergelijken; gewijzigde regels worden aan beide kanten gemarkeerd.)*
+
+Als de twee bestanden helemaal geen verschillen hebben, zegt het venster dat in een gekleurde balk aan de bovenkant, in plaats van u het te laten opmaken uit een tabel waarin niets is gemarkeerd. De balk verschijnt ook, in een waarschuwingskleur, wanneer een bestand helemaal niet gelezen kon worden — dan zou elk oordeel over verschillen een uitspraak zijn over een vergelijking die nooit heeft plaatsgevonden. De byte-voor-byte-vergelijking zegt hetzelfde om dezelfde reden: twee bestanden die het niet kan openen zijn geen twee identieke bestanden.
 
 ## Bestanden byte voor byte vergelijken
 
@@ -83,6 +87,7 @@ een run niets.
 | Mappenlijsten vergelijken (verschillende bestanden markeren) | Shift+F2 |
 | Op inhoud vergelijken | Bestand ▸ Op inhoud vergelijken… |
 | Mappen synchroniseren | Opdrachten ▸ Mappen synchroniseren… |
+| Eén kant van een synchronisatierij weergeven | Rechtsklik op de rij ▸ Linkerbestand weergeven / Rechterbestand weergeven |
 
 ## Opmerkingen
 

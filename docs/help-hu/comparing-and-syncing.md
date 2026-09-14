@@ -20,6 +20,8 @@ Amikor ugyanannak a mappának két másolatát tartja – egy munkamappát és e
 ![A könyvtárak szinkronizálása ablak két mappaútvonallal és egy eredményráccsal, amely bal, egyenlő és jobb nyilakkal jeleníti meg a fájlokat](screenshots/sync-dialog.png)
 *(Ábra: A Könyvtárak szinkronizálása ablak összehasonlítja mindkét oldalt, és minden fájlhoz javasol egy másolási irányt.)*
 
+Kattintson a jobb gombbal egy sorra, hogy megnézze a mögötte lévő fájlokat. Az **Összehasonlítás** egymás mellett nyitja meg a két oldalt, a **Bal oldali fájl megtekintése** és a **Jobb oldali fájl megtekintése** pedig egyetlen oldalt nyit meg a megjelenítőben — ez a válasz arra a sorra, amely csak az egyik oldalon létezik, és ahol nincs mit összehasonlítani. Azok a menüpontok, amelyek az adott sorra nem alkalmazhatók, szürkék, nem pedig hatás nélküliek. A `.zip` fájlban vagy kiszolgálón lévő fájl előbb egy csak olvasható átmeneti példányba kerül kibontásra vagy letöltésre, így az eredetihez semmi nem nyúl hozzá.
+
 ## Két fájl összehasonlítása tartalom szerint
 
 1. Jelöljön ki egy-egy fájlt mindegyik panelen (vagy két fájlt ugyanazon a panelen).
@@ -29,6 +31,8 @@ Amikor ugyanannak a mappának két másolatát tartja – egy munkamappát és e
 
 ![Az összehasonlító ablak két szövegfájlt mutat egymás mellett, kiemelt eltérő sorokkal](screenshots/diff-window.png)
 *(Ábra: Két szövegfájl összehasonlítása; a megváltozott sorok mindkét oldalon ki vannak emelve.)*
+
+Ha a két fájl között egyáltalán nincs különbség, az ablak ezt egy színes sávban közli a felső szélén, nem pedig Önre hagyja, hogy egy kiemelés nélküli táblázatból következtessen rá. A sáv figyelmeztető színben akkor is megjelenik, ha egy fájlt egyáltalán nem sikerült beolvasni — ilyenkor a különbségekről szóló bármely ítélet egy meg sem történt összehasonlításról szóló állítás lenne. A bájtonkénti összehasonlítás ugyanezt mondja ugyanezért: két fájl, amelyet nem tud megnyitni, nem két azonos fájl.
 
 ## Fájlok összehasonlítása bájtról bájtra
 
@@ -82,6 +86,7 @@ nincs többé előzménye — és előzmény nélküli futás semmit nem töröl
 | Könyvtárlisták összehasonlítása (eltérő fájlok megjelölése) | Shift+F2 |
 | Összehasonlítás tartalom szerint | Fájl ▸ Összehasonlítás tartalom szerint… |
 | Könyvtárak szinkronizálása | Parancsok ▸ Könyvtárak szinkronizálása… |
+| Egy szinkronizálási sor egyik oldalának megtekintése | Jobb gomb a soron ▸ Bal oldali fájl megtekintése / Jobb oldali fájl megtekintése |
 
 ## Megjegyzések
 

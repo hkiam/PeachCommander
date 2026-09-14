@@ -21,6 +21,8 @@ When you keep two copies of the same folder — a working folder and a backup, a
 ![The synchronize directories window with two folder paths and a result grid of files with left, equal, and right arrows](screenshots/sync-dialog.png)
 *(Figure: The Synchronize Dirs window compares both sides and proposes a copy direction for each file.)*
 
+Right-click a row to look at the files behind it. **Compare** opens the two sides next to each other, while **View Left** and **View Right** open one side on its own in the viewer — which is the answer for a row that exists on one side only, where there is nothing to compare. Entries that cannot apply to the row you clicked are greyed out instead of doing nothing. A file inside a `.zip` or on a server is unpacked or downloaded into a read-only temporary copy first, so the original is never touched.
+
 ## Compare two files by content
 
 1. Select one file in each panel (or two files in the same panel).
@@ -30,6 +32,8 @@ When you keep two copies of the same folder — a working folder and a backup, a
 
 ![The compare window showing two text files side by side with differing lines highlighted](screenshots/diff-window.png)
 *(Figure: Comparing two text files; changed lines are highlighted on both sides.)*
+
+When the two files have no differences at all, the window says so in a coloured band across the top, rather than leaving you to conclude it from a table with nothing highlighted in it. The band also appears, in a warning colour, when a file could not be read at all — the case where a verdict about differences would be a claim about a comparison that never happened. The byte-by-byte comparison says the same thing for the same reason: two files it cannot open are not two identical files.
 
 ## Compare files byte by byte
 
@@ -130,6 +134,7 @@ only takes away an offer.
 | --- | --- |
 | Compare directory listings (mark differing files) | Shift+F2 |
 | Compare by content | File ▸ Compare by Content… |
+| View one side of a synchronize row | Right-click the row ▸ View Left / View Right |
 | Synchronize directories | Commands ▸ Synchronize Dirs… |
 
 ## Notes

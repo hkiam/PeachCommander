@@ -20,6 +20,8 @@ Wenn Sie zwei Kopien desselben Ordners führen – einen Arbeitsordner und ein B
 ![Das Fenster „Verzeichnisse synchronisieren" mit zwei Ordnerpfaden und einem Ergebnisraster von Dateien mit Links-, Gleichheits- und Rechtspfeilen](screenshots/sync-dialog.png)
 *(Abbildung: Das Fenster „Verzeichnisse synchronisieren" vergleicht beide Seiten und schlägt für jede Datei eine Kopierrichtung vor.)*
 
+Klicken Sie mit der rechten Maustaste auf eine Zeile, um sich die Dateien dahinter anzusehen. **Vergleichen** öffnet die beiden Seiten nebeneinander, **Linke Datei ansehen** und **Rechte Datei ansehen** öffnen jeweils eine Seite allein im Betrachter — das ist die Antwort für eine Zeile, die es nur auf einer Seite gibt und bei der es nichts zu vergleichen gibt. Einträge, die auf die angeklickte Zeile nicht zutreffen, sind ausgegraut, anstatt nichts zu tun. Eine Datei in einem `.zip` oder auf einem Server wird zuvor in eine schreibgeschützte temporäre Kopie entpackt oder heruntergeladen, das Original wird also nie angefasst.
+
 ## Zwei Dateien nach Inhalt vergleichen
 
 1. Wählen Sie in jedem Panel eine Datei aus (oder zwei Dateien im selben Panel).
@@ -29,6 +31,8 @@ Wenn Sie zwei Kopien desselben Ordners führen – einen Arbeitsordner und ein B
 
 ![Das Vergleichsfenster zeigt zwei Textdateien nebeneinander mit hervorgehobenen abweichenden Zeilen](screenshots/diff-window.png)
 *(Abbildung: Zwei Textdateien im Vergleich; geänderte Zeilen sind auf beiden Seiten hervorgehoben.)*
+
+Wenn die beiden Dateien überhaupt keine Unterschiede haben, sagt das Fenster das in einem farbigen Band am oberen Rand, anstatt es Ihnen aus einer Tabelle ohne Hervorhebungen zu überlassen. Das Band erscheint auch — in einer Warnfarbe —, wenn eine Datei überhaupt nicht gelesen werden konnte; dann wäre jede Aussage über Unterschiede eine Aussage über einen Vergleich, der nie stattgefunden hat. Der byteweise Vergleich sagt aus demselben Grund dasselbe: zwei Dateien, die er nicht öffnen kann, sind keine zwei identischen Dateien.
 
 ## Dateien Byte für Byte vergleichen
 
@@ -89,6 +93,7 @@ ein Lauf ohne Vorgeschichte löscht nichts. In diese Richtung soll dieser Ausfal
 | Verzeichnisauflistungen vergleichen (abweichende Dateien markieren) | Shift+F2 |
 | Nach Inhalt vergleichen | Datei ▸ Nach Inhalt vergleichen… |
 | Verzeichnisse synchronisieren | Befehle ▸ Verzeichnisse synchronisieren… |
+| Eine Seite einer Synchronisierungszeile ansehen | Rechtsklick auf die Zeile ▸ Linke Datei ansehen / Rechte Datei ansehen |
 
 ## Hinweise
 

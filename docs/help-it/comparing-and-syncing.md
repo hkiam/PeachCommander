@@ -20,6 +20,8 @@ Quando mantenete due copie della stessa cartella — una cartella di lavoro e un
 ![La finestra di sincronizzazione delle directory con due percorsi di cartella e una griglia di risultati di file con frecce sinistra, uguale e destra](screenshots/sync-dialog.png)
 *(Figura: la finestra Sincronizza directory confronta entrambi i lati e propone una direzione di copia per ogni file.)*
 
+Fate clic con il tasto destro su una riga per guardare i file che stanno dietro. **Confronta** apre i due lati uno accanto all’altro, mentre **Visualizza file sinistro** e **Visualizza file destro** aprono un solo lato nel visualizzatore: è la risposta per una riga che esiste su un lato soltanto, dove non c’è nulla da confrontare. Le voci che non si applicano alla riga su cui avete fatto clic sono disattivate invece di non fare nulla. Un file dentro un `.zip` o su un server viene prima estratto o scaricato in una copia temporanea in sola lettura, così l’originale non viene mai toccato.
+
 ## Confrontare due file per contenuto
 
 1. Selezionate un file in ciascun pannello (oppure due file nello stesso pannello).
@@ -29,6 +31,8 @@ Quando mantenete due copie della stessa cartella — una cartella di lavoro e un
 
 ![La finestra di confronto che mostra due file di testo affiancati con le righe divergenti evidenziate](screenshots/diff-window.png)
 *(Figura: confronto di due file di testo; le righe modificate sono evidenziate su entrambi i lati.)*
+
+Quando i due file non presentano differenze di alcun tipo, la finestra lo dice in una fascia colorata in alto, invece di lasciarvelo dedurre da una tabella in cui non c’è nulla di evidenziato. La fascia compare anche, in un colore di avviso, quando un file non è stato possibile leggerlo affatto: qualunque verdetto sulle differenze sarebbe allora un’affermazione su un confronto che non è mai avvenuto. Il confronto byte per byte dice la stessa cosa per la stessa ragione: due file che non riesce ad aprire non sono due file identici.
 
 ## Confrontare i file byte per byte
 
@@ -82,6 +86,7 @@ lascia la coppia senza storia — e un’esecuzione senza storia non elimina nul
 | Confrontare gli elenchi delle directory (contrassegnare i file divergenti) | Shift+F2 |
 | Confrontare per contenuto | File ▸ Confronta per contenuto… |
 | Sincronizzare le directory | Comandi ▸ Sincronizza directory… |
+| Visualizzare un lato di una riga di sincronizzazione | Clic destro sulla riga ▸ Visualizza file sinistro / destro |
 
 ## Note
 

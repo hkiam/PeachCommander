@@ -21,6 +21,9 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     var onClose: (() -> Void)?
     /// Reload the panels after a successful sync.
     var reload: (() async -> Void)?
+    /// Show one local file in the app's viewer. Wired by the host, which is what makes the viewer
+    /// opened from this window the same viewer F3 opens — see `showInViewer`.
+    var onView: ((String) -> Void)?
     /// Where named sync presets are persisted (F-194).
     private let presetStore: SyncPresetStore?
     private let presetPopup = NSPopUpButton()
@@ -142,6 +145,12 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     private var syncTask: Task<Void, Never>?
     /// Kept alive while they are on screen; a comparison opened from a row belongs to nobody else.
     private var diffWindows: [DiffWindowController] = []
+    /// Viewer windows this window opened itself; see `showInViewer`.
+    private var listerWindows: [ListerWindowController] = []
+    /// The last file handed to the viewer, so a script can assert *which* file was opened rather
+    /// than that a window appeared — the two differ exactly when the row-to-side mapping is wrong,
+    /// which is the mistake worth catching here.
+    private(set) var lastViewedPath: String?
     /// Which column the grid is ordered by, and which way. `nil` is the scan's own order — by path,
     /// which is the order the two trees are walked in and the only one that groups folders together.
     private var sortKey: String?
@@ -906,6 +915,56 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         return automationGridReport()
     }
 
+    /// Choose "View Left"/"View Right" on one visible row, and report what came of it (F-192).
+    ///
+    /// Through the menu the table actually shows, and through AppKit's own validation: `menu.update()`
+    /// is what a right-click does before the menu is drawn, so `item.isEnabled` afterwards is the
+    /// answer the *user* gets — including whether the `NSMenuItemValidation` conformance is wired at
+    /// all, which calling `validateMenuItem` directly cannot tell anyone. The action is then sent to
+    /// the item's own target, because the question a scenario has to answer is not "does the
+    /// controller have a method" but "does the entry reach it": an item on the wrong selector reports
+    /// `enabled` and does nothing, which is indistinguishable from success in any report that calls
+    /// the method itself.
+    ///
+    /// Waited for rather than slept on. A local side is ready in the same turn, a zip member is
+    /// extracted and a server file downloaded after the action has returned, and the two ends of that
+    /// range are a factor of a hundred apart — a sleep long enough for the slow case is dead time in
+    /// every scenario, and four calls of it is most of a scenario's budget.
+    func automationViewSide(row: Int, left: Bool) async -> String {
+        guard visibleRows.indices.contains(row) else {
+            return "ERROR: no visible row \(row) (rows=\(visibleRows.count))\n"
+        }
+        let index = visibleRows[row]
+        lastViewedPath = nil
+        tableView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        let wanted = left ? #selector(viewLeftRow) : #selector(viewRightRow)
+        guard let menu = tableView.menu,
+              let item = menu.items.first(where: { $0.action == wanted }) else {
+            return "ERROR: no menu entry for \(left ? "left" : "right")\n"
+        }
+        var out = "row=\(row)\nname=\(results[index].item.relativePath)\n"
+        out += "canViewLeft=\(canView(index, left: true))\n"
+        out += "canViewRight=\(canView(index, left: false))\n"
+        out += "canCompare=\(localPair(index) != nil)\n"
+        // In the report because it is the other entry whose enablement is a claim about the *side*:
+        // the Finder cannot be pointed inside a zip or at a server, and that used to beep.
+        out += "canReveal=\(canReveal(index))\n"
+        menu.update()
+        out += "enabled=\(item.isEnabled)\n"
+        if item.isEnabled, let action = item.action {
+            let statusBefore = statusLabel.stringValue
+            _ = NSApp.sendAction(action, to: item.target, from: item)
+            // Either outcome ends the wait: a file handed to the viewer, or a sentence in the status
+            // line saying why there is none. Three seconds is the cap, which only a hung mount reaches.
+            for _ in 0..<60 where lastViewedPath == nil && statusLabel.stringValue == statusBefore {
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+        }
+        out += "opened=\(lastViewedPath ?? "-")\n"
+        out += "status=\(statusLabel.stringValue)\n"
+        return out
+    }
+
     /// Press one of the two buttons beside the filter.
     func automationSelectVisible(_ included: Bool) -> String {
         if included { selectAllVisible() } else { deselectAllVisible() }
@@ -1606,17 +1665,51 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         date.map { dateFormatter.string(from: $0) } ?? "—"
     }
 
-    /// Two entries, and deliberately no more: everything else the grid can do — include a row,
-    /// reverse it, resolve a conflict — is already one click away in the row itself, and a menu that
-    /// repeats those would be a second place to keep them right.
+    /// What can be done with one row, and deliberately no more: everything else the grid can do —
+    /// include a row, reverse it, resolve a conflict — is already one click away in the row itself,
+    /// and a menu that repeats those would be a second place to keep them right.
+    ///
+    /// Looking at *one* side is here because comparing was the only thing the grid offered, and a
+    /// comparison needs two: every row that exists on one side only — which is every row a
+    /// first-time backup produces — had nothing at all behind it. Two entries rather than one
+    /// "View", because on a row that has both sides the question is which of the two.
     private func rowMenu() -> NSMenu {
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: String(localized: "Compare"), action: #selector(compareRow),
+                                keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: String(localized: "View Left"), action: #selector(viewLeftRow),
+                                keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: String(localized: "View Right"), action: #selector(viewRightRow),
                                 keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: String(localized: "Reveal in Finder"),
                                 action: #selector(revealRow), keyEquivalent: ""))
         for item in menu.items { item.target = self }
         return menu
+    }
+
+    /// Grey out what this row cannot do, rather than beeping once it is chosen.
+    ///
+    /// The reported case is the reason: "Compare" was the only entry, and on a row present on one
+    /// side only it beeped — which reads as a broken command rather than as "there is nothing to
+    /// compare here". An entry that is not offered says the same thing before the click.
+    func validateMenuItem(_ item: NSMenuItem) -> Bool {
+        // Only the four entries this window owns are answered for. Everything else gets `true`: this
+        // controller sits in the responder chain while its window is key, so a blanket answer here
+        // would be an answer about menus that have nothing to do with the grid.
+        switch item.action {
+        case #selector(compareRow):
+            return targetedIndex.map { localPair($0) != nil } ?? false
+        case #selector(viewLeftRow):
+            return targetedIndex.map { canView($0, left: true) } ?? false
+        case #selector(viewRightRow):
+            return targetedIndex.map { canView($0, left: false) } ?? false
+        case #selector(revealRow):
+            // The Finder can only be pointed at a path on this Mac, and `revealRow` picks the side
+            // the file is on — so on a zip or a server side it beeped. Asked the same way it acts.
+            return targetedIndex.map { canReveal($0) } ?? false
+        default:
+            return true
+        }
     }
 
     /// The `results` index the menu or the double-click is aimed at: the clicked row, or the
@@ -1643,6 +1736,201 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         win.onClose = { [weak self, weak win] in self?.diffWindows.removeAll { $0 === win } }
         win.showWindow(nil)
         win.window?.makeKeyAndOrderFront(nil)
+    }
+
+    /// Whether one side of a row holds a file this window can show.
+    ///
+    /// A directory has no content to view (the grid's own row is what there is to say about it), and
+    /// a side with no size is a side the file is not on.
+    private func canView(_ index: Int, left: Bool) -> Bool {
+        guard results.indices.contains(index) else { return false }
+        let item = results[index].item
+        guard !item.isDirectory else { return false }
+        return (left ? item.leftSize : item.rightSize) != nil
+    }
+
+    /// Whether the Finder can be pointed at this row: the side the file is on has to be a folder on
+    /// this Mac. The same choice of side `revealRow` makes, so the two cannot disagree.
+    private func canReveal(_ index: Int) -> Bool {
+        guard results.indices.contains(index) else { return false }
+        let side: SyncSide = results[index].item.leftSize != nil ? leftSide : rightSide
+        if case .localDir = side { return true }
+        return false
+    }
+
+    @objc private func viewLeftRow() { viewRow(left: true) }
+    @objc private func viewRightRow() { viewRow(left: false) }
+
+    /// Show one side of the targeted row in the app's own viewer.
+    ///
+    /// The file may not be a file: a zip side has to be extracted and a server side downloaded
+    /// first, which is why this is asynchronous and why it says so when it fails. Both copies are
+    /// read-only temporaries — the viewer is a reader, and writing back into an archive or onto a
+    /// server from here is not something this window offers.
+    private func viewRow(left: Bool) {
+        guard let index = targetedIndex, canView(index, left: left) else { NSSound.beep(); return }
+        let item = results[index].item
+        let rel = item.relativePath
+        let side = left ? leftSide : rightSide
+        let bytes = (left ? item.leftSize : item.rightSize) ?? 0
+        Task { @MainActor in
+            switch await self.localCopy(of: rel, on: side, bytes: bytes) {
+            case .ready(let path):
+                self.showInViewer(path)
+            case .problem(let reason):
+                NSSound.beep()
+                self.statusLabel.stringValue = reason
+            }
+        }
+    }
+
+    /// A file to show, or the sentence explaining why there is none.
+    ///
+    /// Not `Result`: the failure here is a sentence for the status line and not an `Error` anyone
+    /// throws, and wrapping it in one would invite a caller to log it instead of showing it.
+    private enum ViewSource {
+        case ready(String)
+        case problem(String)
+    }
+
+    /// A path on this Mac for `rel` on `side`, extracting or downloading it when it is not one
+    /// already — or the sentence to put in the status line instead.
+    private func localCopy(of rel: String, on side: SyncSide, bytes: Int64) async -> ViewSource {
+        switch side {
+        case .localDir(let root):
+            let path = (root as NSString).appendingPathComponent(rel)
+            guard FileManager.default.fileExists(atPath: path) else {
+                // The comparison is a snapshot; the file can be gone by the time somebody looks.
+                return .problem(String(localized: "\(rel) is no longer there."))
+            }
+            return .ready(path)
+        case .zip(let archive):
+            return await Self.extractForViewing(rel: rel, fromZip: archive)
+        case .remote(let source):
+            // The same staging service the panels use for a mount, so a file downloaded here is
+            // cached, size-capped and cleaned up exactly as one downloaded by F3 in a panel is.
+            let base = source.path.hasSuffix("/") ? String(source.path.dropLast()) : source.path
+            let vpath = VFSPath(filesystemId: source.fs.scheme, path: "\(base)/\(rel)")
+            do {
+                let staged = try await MemberStage.shared.stage(
+                    vpath, on: source.fs, mountKey: "\(source.fs.scheme)://\(base)",
+                    bytes: bytes, purpose: .handoff)
+                return .ready(staged.url.path)
+            } catch {
+                // The reason goes to the log, not into the sentence: what a server hands back is a
+                // protocol error nobody can act on, and the status line is one line wide.
+                PCFoundationLogger.logger.error(
+                    "sync view download of \(rel, privacy: .public) failed: \(error)")
+                return .problem(String(localized: "\(rel) could not be downloaded."))
+            }
+        }
+    }
+
+    /// Write one zip member to a temporary file and return its path.
+    ///
+    /// Streamed rather than read whole: a member is as big as somebody made it, and this window can
+    /// be pointed at an archive of any size. The copy is left for the system to reap rather than
+    /// deleted with the window, because the viewer keeps the *path*: it reads the file again on a
+    /// reload, an encoding change or a search, so the copy has to outlive both this call and the
+    /// window that made it — the same reason the panel's handoff copies outlive their mount.
+    ///
+    /// The directory name carries the archive's own `FileStamp`, which makes viewing the same member
+    /// twice reuse one copy instead of leaving a new one behind each time, and makes a *rewritten*
+    /// archive a different key — so a stale copy can never be handed out under a name that has since
+    /// changed. `MainWindowController.mountKey` keys its archive staging the same way and for the
+    /// same reason: the usual way a program rewrites an archive is to rename a new file over the old
+    /// one, which carries the source's mtime across.
+    ///
+    /// The **inode** is in the key as well, and it is the part that makes it an identity rather than
+    /// a description: a file system component cannot hold a long path, so the archive contributes
+    /// only the tail of its name — and a name, a size and an mtime are all shared by a copy of an
+    /// archive made with `cp -p`, or by two same-named archives from one generator. Two zip sides
+    /// are a comparison this window allows, so that collision is reachable, and it would serve one
+    /// archive's member under the other's key.
+    private static func extractForViewing(rel: String, fromZip archive: String) async -> ViewSource {
+        await Task.detached(priority: .userInitiated) { () -> ViewSource in
+            // One sentence for every way unpacking one member can fail, and deliberately the one
+            // the panel already uses for the same failure (F-479): which of the four it was is not
+            // something the reader can act on differently, and a fifth wording of "it did not come
+            // out of the archive" is a translation nobody needed.
+            let failed = ViewSource.problem(String(
+                localized: "“\(rel)” could not be unpacked. It may be encrypted, or the archive may be damaged."))
+            guard let reader = ZipReader(fileURL: URL(fileURLWithPath: archive)) else { return failed }
+            guard let entry = reader.entries.first(where: {
+                ($0.path.hasSuffix("/") ? String($0.path.dropLast()) : $0.path) == rel
+            }) else { return failed }
+            guard !entry.isEncrypted else { return failed }
+            let stamp = FileStamp.of(archive)
+            // The member's path flattened into the directory name, and trimmed from the *front*: a
+            // file system component is limited to 255 bytes, a path inside an archive is not, and
+            // the end of the path is the part that distinguishes two members of the same tree.
+            let flat = rel.replacingOccurrences(of: "/", with: "_")
+            let tail = flat.count > 120 ? String(flat.suffix(120)) : flat
+            let key = "\((archive as NSString).lastPathComponent.suffix(60))"
+                + "-\(stamp?.inode ?? 0)-\(stamp?.size ?? 0)-\(Int((stamp?.modified ?? 0) * 1000))-\(tail)"
+            let dir = URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent("pc-sync-view")
+                .appendingPathComponent(key)
+            let dst = dir.appendingPathComponent((rel as NSString).lastPathComponent)
+            // Already unpacked, under a key that includes what the archive was when it was: the
+            // bytes cannot have moved on without the key moving with them.
+            if let existing = FileStamp.of(dst.path), existing.size == entry.uncompressedSize {
+                return .ready(dst.path)
+            }
+            // Written beside the destination and renamed onto it, never into it. Two things follow
+            // from that, and both are worth the extra line: a run killed halfway leaves a
+            // `.partial-…` file that is never handed to anybody rather than a truncated copy under
+            // the real name, and two views of the same big member at once each fill their own file
+            // and one rename wins — where writing to a shared path would have the second unlink the
+            // first's file from under a viewer that is reading it.
+            let partial = dir.appendingPathComponent(".partial-\(UUID().uuidString)")
+            do {
+                try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                guard let member = try reader.reader(for: entry, password: nil) else { return failed }
+                guard FileManager.default.createFile(atPath: partial.path, contents: nil) else {
+                    return failed
+                }
+                let handle = try FileHandle(forWritingTo: partial)
+                while let chunk = try member.next(maxBytes: 256 * 1024) {
+                    try handle.write(contentsOf: chunk)
+                }
+                try handle.close()
+                // `rename(2)` and not `FileManager`: it is atomic *and* it overwrites, and the two
+                // FileManager calls that come close each miss one half — `moveItem` refuses an
+                // existing destination, `replaceItemAt` requires one to exist.
+                guard rename(partial.path, dst.path) == 0 else {
+                    PCFoundationLogger.logger.error(
+                        "sync view rename of \(rel, privacy: .public) failed: errno \(errno)")
+                    try? FileManager.default.removeItem(at: partial)
+                    return failed
+                }
+                return .ready(dst.path)
+            } catch {
+                try? FileManager.default.removeItem(at: partial)
+                PCFoundationLogger.logger.error(
+                    "sync view unpack of \(rel, privacy: .public) failed: \(error)")
+                return failed
+            }
+        }.value
+    }
+
+    /// Hand a local path to the viewer.
+    ///
+    /// Through the host when it wired `onView`, because opening the viewer is the host's job: it
+    /// carries the lister plugins, the per-extension viewer association and the history entry, and a
+    /// viewer opened here would quietly have none of the three. Without a host — no wiring, which is
+    /// only the case in a test — the plain viewer, so the entry is never dead.
+    private func showInViewer(_ path: String) {
+        lastViewedPath = path
+        if let onView {
+            onView(path)
+            return
+        }
+        let lister = ListerWindowController(files: [path], startIndex: 0)
+        listerWindows.removeAll { !($0.window?.isVisible ?? false) }
+        listerWindows.append(lister)
+        lister.showWindow(nil)
+        lister.window?.makeKeyAndOrderFront(nil)
     }
 
     @objc private func revealRow() {
@@ -1759,6 +2047,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         rowBasis.indices.contains(index) ? rowBasis[index] : .comparison
     }
 }
+
+/// Declared explicitly: a context menu only greys its items out if the target is *known* to answer
+/// this, and the conformance is what makes AppKit ask.
+extension SyncWindowController: NSMenuItemValidation {}
 
 extension SyncWindowController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {

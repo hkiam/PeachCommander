@@ -20,6 +20,8 @@ Cuando mantiene dos copias de la misma carpeta —una carpeta de trabajo y una d
 ![La ventana de sincronizar directorios con dos rutas de carpeta y una cuadrícula de resultados de archivos con flechas izquierda, igual y derecha](screenshots/sync-dialog.png)
 *(Figura: La ventana Sincronizar directorios compara ambos lados y propone una dirección de copia para cada archivo.)*
 
+Haga clic con el botón derecho en una fila para ver los archivos que hay detrás. **Comparar** abre los dos lados uno al lado del otro, mientras que **Ver archivo izquierdo** y **Ver archivo derecho** abren un solo lado en el visor: esa es la respuesta para una fila que solo existe en un lado, donde no hay nada que comparar. Las entradas que no se pueden aplicar a la fila en la que hizo clic aparecen atenuadas en lugar de no hacer nada. Un archivo dentro de un `.zip` o en un servidor se descomprime o descarga primero en una copia temporal de solo lectura, de modo que el original nunca se toca.
+
 ## Comparar dos archivos por contenido
 
 1. Seleccione un archivo en cada panel (o dos archivos en el mismo panel).
@@ -29,6 +31,8 @@ Cuando mantiene dos copias de la misma carpeta —una carpeta de trabajo y una d
 
 ![La ventana de comparación mostrando dos archivos de texto uno al lado del otro con las líneas diferentes resaltadas](screenshots/diff-window.png)
 *(Figura: Comparando dos archivos de texto; las líneas modificadas se resaltan en ambos lados.)*
+
+Cuando los dos archivos no tienen ninguna diferencia, la ventana lo dice en una banda de color en la parte superior, en lugar de dejar que lo deduzca de una tabla en la que no hay nada resaltado. La banda aparece también, en un color de advertencia, cuando un archivo no se pudo leer en absoluto: entonces cualquier veredicto sobre diferencias sería una afirmación sobre una comparación que nunca ocurrió. La comparación byte a byte dice lo mismo por la misma razón: dos archivos que no puede abrir no son dos archivos idénticos.
 
 ## Comparar archivos byte a byte
 
@@ -82,6 +86,7 @@ al par sin historial — y una ejecución sin historial no elimina nada.
 | Comparar los listados de directorios (marcar archivos diferentes) | Shift+F2 |
 | Comparar por contenido | Archivo ▸ Comparar por contenido… |
 | Sincronizar directorios | Comandos ▸ Sincronizar directorios… |
+| Ver un lado de una fila de sincronización | Clic derecho en la fila ▸ Ver archivo izquierdo / Ver archivo derecho |
 
 ## Notas
 

@@ -31,6 +31,12 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
 
     private let tableView = NSTableView()
     private let statusLabel = NSTextField(labelWithString: "")
+    /// Said across the top when the two files came out byte for byte equal (F-190).
+    ///
+    /// The same reason as the text diff's banner, and the same type: "identical" in 11 pt grey at
+    /// the bottom edge of a window full of hex is a sentence you go looking for, and here the table
+    /// gives even less away — two identical dumps look exactly like two dumps.
+    private let verdictBanner = VerdictBanner()
     private let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
     private var lastFind: [UInt8] = []
     private var findDialog: InputDialog?
@@ -117,11 +123,16 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
         statusLabel.textColor = .secondaryLabelColor
         content.addSubview(statusLabel)
 
+        content.addSubview(verdictBanner)
+
         NSLayoutConstraint.activate([
             toolbar.topAnchor.constraint(equalTo: content.topAnchor),
             toolbar.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             toolbar.trailingAnchor.constraint(equalTo: content.trailingAnchor),
-            scroll.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            verdictBanner.topAnchor.constraint(equalTo: toolbar.bottomAnchor),
+            verdictBanner.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            verdictBanner.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+            scroll.topAnchor.constraint(equalTo: verdictBanner.bottomAnchor),
             scroll.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: content.trailingAnchor),
             statusLabel.topAnchor.constraint(equalTo: scroll.bottomAnchor, constant: 4),
@@ -151,10 +162,39 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
         let r = BinaryDiff.compare(a, b)
         result = r
         diffRows = Self.rowsWithDifferences(r)
-        statusLabel.stringValue = Self.summary(r)
+        // A side that could not be *opened* is a `ZeroSource` here — nil `FileSlice`, which is what
+        // a missing file, a permission the process does not have or an unmounted volume comes back
+        // as. Two of those are "equal, 0 bytes", so the strongest thing this window can say would
+        // have been said about two files it never read. The same guard the text comparison has, and
+        // for the sharper reason: proving two files identical is exactly what somebody opens this
+        // for. Sizes are read with `stat` afterwards, so the table still shows what it can.
+        let verdict: String
+        let readable = leftSlice != nil && rightSlice != nil
+        if readable {
+            verdict = Self.summary(r)
+        } else if leftSlice == nil && rightSlice == nil {
+            verdict = String(localized: "Neither file could be read, so nothing was compared.")
+        } else {
+            verdict = String(localized: "The file could not be read.")
+        }
+        statusLabel.stringValue = verdict
+        // The band for "equal" and for "not compared"; a difference is answered by the tinted bytes
+        // in the table.
+        verdictBanner.show(readable ? (r.equal ? verdict : nil) : verdict, good: readable)
         tableView.reloadData()
         if let first = r.firstDifference { jump(toOffset: first) }
     }
+
+    #if DEBUG
+    /// The verdict this window is showing, for the automation report: the sentence under the table
+    /// and the band above it. Both, because the band is the claim a reader cannot miss and the
+    /// status line is the one that was always there — a report of only one of them would have
+    /// passed while the other said something else.
+    var automationVerdictReport: String {
+        "status=\(statusLabel.stringValue)\nbanner=\(verdictBanner.shownText)\n"
+            + "equal=\(result?.equal ?? false)\n"
+    }
+    #endif
 
     private static func rowsWithDifferences(_ r: BinaryDiffResult) -> [Int] {
         var set = Set<Int>()
@@ -169,7 +209,12 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
 
     private static func summary(_ r: BinaryDiffResult) -> String {
         if r.equal {
-            return String(format: NSLocalizedString("Files are identical (%lld bytes).", comment: ""), r.sizeA)
+            // `String(localized:)` and not `NSLocalizedString`: the extraction only sees the former,
+            // so this window's four summary sentences have never been in the catalogue and have been
+            // English in all nineteen languages. This is the one the band puts in front of the
+            // reader, so it is the one that had to stop being English. The other three are still
+            // where they always were — in the status line — and are their own piece of work.
+            return String(localized: "Files are identical (\(r.sizeA) bytes).")
         }
         var parts: [String] = []
         if let first = r.firstDifference {

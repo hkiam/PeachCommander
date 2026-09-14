@@ -20,6 +20,8 @@ När du håller två kopior av samma mapp – en arbetsmapp och en säkerhetskop
 ![Fönstret för att synkronisera kataloger med två mappsökvägar och ett resultatrutnät av filer med vänster-, likhets- och högerpilar](screenshots/sync-dialog.png)
 *(Figur: Fönstret Synkronisera kataloger jämför båda sidorna och föreslår en kopieringsriktning för varje fil.)*
 
+Högerklicka på en rad för att titta på filerna bakom den. **Jämför** öppnar de två sidorna intill varandra, medan **Visa vänster fil** och **Visa höger fil** öppnar en sida för sig i visaren — det är svaret för en rad som bara finns på en sida, där det inte finns något att jämföra. Poster som inte går att använda på raden du klickade på är gråmarkerade i stället för att inte göra något. En fil inuti en `.zip` eller på en server packas upp eller hämtas först till en skrivskyddad tillfällig kopia, så originalet berörs aldrig.
+
 ## Jämför två filer efter innehåll
 
 1. Markera en fil i varje panel (eller två filer i samma panel).
@@ -29,6 +31,8 @@ När du håller två kopior av samma mapp – en arbetsmapp och en säkerhetskop
 
 ![Jämförelsefönstret som visar två textfiler sida vid sida med avvikande rader markerade](screenshots/diff-window.png)
 *(Figur: Jämförelse av två textfiler; ändrade rader är markerade på båda sidorna.)*
+
+När de två filerna inte har några skillnader alls säger fönstret det i ett färgat fält längst upp, i stället för att låta dig sluta dig till det från en tabell där ingenting är markerat. Fältet visas också, i en varningsfärg, när en fil inte kunde läsas alls — då skulle varje utlåtande om skillnader vara ett påstående om en jämförelse som aldrig ägde rum. Jämförelsen byte för byte säger detsamma av samma skäl: två filer som den inte kan öppna är inte två identiska filer.
 
 ## Jämför filer byte för byte
 
@@ -82,6 +86,7 @@ av mapparna har paret ingen historia längre — och en körning utan historia t
 | Jämför kataloglistor (markera avvikande filer) | Shift+F2 |
 | Jämför efter innehåll | Arkiv ▸ Jämför efter innehåll… |
 | Synkronisera kataloger | Kommandon ▸ Synkronisera kataloger… |
+| Visa den ena sidan av en synkroniseringsrad | Högerklicka på raden ▸ Visa vänster fil / Visa höger fil |
 
 ## Anteckningar
 

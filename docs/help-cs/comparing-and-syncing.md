@@ -20,6 +20,8 @@ Když udržujete dvě kopie stejné složky — pracovní složku a zálohu, not
 ![Okno synchronizace adresářů se dvěma cestami ke složkám a výslednou mřížkou souborů se šipkami vlevo, rovná se a vpravo](screenshots/sync-dialog.png)
 *(Obrázek: Okno Synchronizovat adresáře porovnává obě strany a pro každý soubor navrhuje směr kopírování.)*
 
+Klepnutím pravým tlačítkem na řádek se podíváte na soubory, které za ním stojí. **Porovnat** otevře obě strany vedle sebe, **Zobrazit levý soubor** a **Zobrazit pravý soubor** otevřou jednu stranu samostatně v prohlížeči — to je odpověď pro řádek, který existuje jen na jedné straně a kde není co porovnávat. Položky, které pro daný řádek nemají smysl, jsou zašedlé, místo aby nic nedělaly. Soubor v archivu `.zip` nebo na serveru se nejprve rozbalí či stáhne do temporární kopie určené jen ke čtení, takže originál zůstane nedotčen.
+
 ## Porovnání dvou souborů podle obsahu
 
 1. Vyberte jeden soubor v každém panelu (nebo dva soubory ve stejném panelu).
@@ -29,6 +31,8 @@ Když udržujete dvě kopie stejné složky — pracovní složku a zálohu, not
 
 ![Okno porovnání zobrazující dva textové soubory vedle sebe se zvýrazněnými odlišnými řádky](screenshots/diff-window.png)
 *(Obrázek: Porovnání dvou textových souborů; změněné řádky jsou zvýrazněny na obou stranách.)*
+
+Pokud mezi soubory nejsou žádné rozdíly, okno to řekne barevným pásem v horní části, místo aby vás nechalo usoudit to z tabulky, v níž není nic zvýrazněno. Pás se objeví i ve výstražné barvě, když některý soubor nešlo vůbec přečíst — pak by jakýkoli verdikt o rozdílech byl tvrzení o porovnání, které se nikdy nekonalo. Porovnání po bajtech říká totéž ze stejného důvodu: dva soubory, které nelze otevřít, nejsou dva totožné soubory.
 
 ## Porovnání souborů bajt po bajtu
 
@@ -82,6 +86,7 @@ běh bez historie nic nemaže.
 | Porovnat výpisy adresářů (označit odlišné soubory) | Shift+F2 |
 | Porovnat podle obsahu | Soubor ▸ Porovnat podle obsahu… |
 | Synchronizovat adresáře | Příkazy ▸ Synchronizovat adresáře… |
+| Zobrazit jednu stranu řádku synchronizace | Pravé tlačítko na řádek ▸ Zobrazit levý soubor / Zobrazit pravý soubor |
 
 ## Poznámky
 

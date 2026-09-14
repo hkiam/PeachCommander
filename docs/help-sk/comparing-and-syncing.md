@@ -20,6 +20,8 @@ Keď udržiavate dve kópie toho istého priečinka — pracovný priečinok a z
 ![Okno synchronizácie adresárov s dvoma cestami priečinkov a mriežkou výsledkov súborov so šípkami vľavo, rovnosti a vpravo](screenshots/sync-dialog.png)
 *(Obrázok: okno Synchronizovať adresáre porovnáva obe strany a navrhuje smer kopírovania pre každý súbor.)*
 
+Kliknutím pravým tlačidlom na riadok sa pozriete na súbory, ktoré za ním stoja. **Porovnať** otvorí obe strany vedľa seba, **Zobraziť ľavý súbor** a **Zobraziť pravý súbor** otvoria jednu stranu samostatne v prehliadači — to je odpoveď pre riadok, ktorý existuje len na jednej strane a kde niet čo porovnávať. Položky, ktoré na daný riadok nemožno použiť, sú zosvetlené, namiesto toho aby nič nerobili. Súbor v archíve `.zip` alebo na serveri sa najprv rozbalí či stiahne do temporárnej kópie len na čítanie, takže originál sa nikdy nedotkne.
+
 ## Porovnajte dva súbory podľa obsahu
 
 1. Vyberte jeden súbor v každom paneli (alebo dva súbory v tom istom paneli).
@@ -29,6 +31,8 @@ Keď udržiavate dve kópie toho istého priečinka — pracovný priečinok a z
 
 ![Okno porovnania zobrazujúce dva textové súbory vedľa seba so zvýraznenými odlišnými riadkami](screenshots/diff-window.png)
 *(Obrázok: porovnávanie dvoch textových súborov; zmenené riadky sú zvýraznené na oboch stranách.)*
+
+Keď medzi súbormi nie sú žiadne rozdiely, okno to povie farebným pásom v hornej časti, namiesto toho aby vás nechalo usúdiť to z tabuľky, v ktorej nič nie je zvýraznené. Pás sa objaví aj vo výstražnej farbe, keď sa niektorý súbor nepodarilo načítať vôbec — vtedy by akýkoľvek verdikt o rozdieloch bol tvrdením o porovnaní, ktoré sa nikdy nekonalo. Porovnanie bajt po bajte hovorí to isté z toho istého dôvodu: dva súbory, ktoré sa nedajú otvoriť, nie sú dva totožné súbory.
 
 ## Porovnajte súbory bajt po bajte
 
@@ -82,6 +86,7 @@ nemá — a beh bez histórie nič nemaže.
 | Porovnať zoznamy adresárov (označiť odlišné súbory) | Shift+F2 |
 | Porovnať podľa obsahu | Súbor ▸ Porovnať podľa obsahu… |
 | Synchronizovať adresáre | Príkazy ▸ Synchronizovať adresáre… |
+| Zobraziť jednu stranu riadku synchronizácie | Pravé tlačidlo na riadok ▸ Zobraziť ľavý súbor / pravý súbor |
 
 ## Poznámky
 

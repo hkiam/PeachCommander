@@ -20,6 +20,8 @@ Gdy przechowujesz dwie kopie tego samego folderu — folder roboczy i kopię zap
 ![Okno synchronizacji katalogów z dwiema ścieżkami folderów i siatką wyników plików ze strzałkami w lewo, równości i w prawo](screenshots/sync-dialog.png)
 *(Rysunek: okno Synchronizuj katalogi porównuje obie strony i proponuje kierunek kopiowania dla każdego pliku.)*
 
+Kliknij wiersz prawym przyciskiem myszy, aby zajrzeć do plików, które za nim stoją. **Porównaj** otwiera obie strony obok siebie, a **Pokaż plik z lewej** i **Pokaż plik z prawej** otwierają jedną stronę osobno w przeglądarce — to odpowiedź dla wiersza, który istnieje tylko po jednej stronie i w którym nie ma czego porównywać. Pozycje, których nie da się zastosować do klikniętego wiersza, są wyszarzone, zamiast nic nie robić. Plik w archiwum `.zip` lub na serwerze jest najpierw rozpakowywany albo pobierany do tylko do odczytu kopii tymczasowej, więc oryginał nigdy nie jest ruszany.
+
 ## Porównaj dwa pliki według zawartości
 
 1. Zaznacz jeden plik w każdym panelu (lub dwa pliki w tym samym panelu).
@@ -29,6 +31,8 @@ Gdy przechowujesz dwie kopie tego samego folderu — folder roboczy i kopię zap
 
 ![Okno porównania pokazujące dwa pliki tekstowe obok siebie z podświetlonymi różniącymi się wierszami](screenshots/diff-window.png)
 *(Rysunek: porównywanie dwóch plików tekstowych; zmienione wiersze są podświetlone po obu stronach.)*
+
+Gdy między plikami nie ma żadnych różnic, okno mówi o tym kolorowym paskiem u góry, zamiast pozostawiać wniosek tabeli, w której nic nie jest wyróżnione. Pasek pojawia się także, w kolorze ostrzeżenia, gdy jakiegoś pliku nie udało się w ogóle odczytać — wtedy każdy wniosek o różnicach byłby twierdzeniem o porównaniu, które nigdy się nie odbyło. Porównanie bajt po bajcie mówi to samo z tego samego powodu: dwa pliki, których nie da się otworzyć, to nie dwa identyczne pliki.
 
 ## Porównaj pliki bajt po bajcie
 
@@ -82,6 +86,7 @@ przebieg bez historii nic nie usuwa.
 | Porównaj listy katalogów (oznacz różniące się pliki) | Shift+F2 |
 | Porównaj według zawartości | Plik ▸ Porównaj według zawartości… |
 | Synchronizuj katalogi | Polecenia ▸ Synchronizuj katalogi… |
+| Pokaż jedną stronę wiersza synchronizacji | Prawy przycisk na wierszu ▸ Pokaż plik z lewej / z prawej |
 
 ## Uwagi
 

@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **133 scenarios with reports** (`rename-replace` and `rename-mount` are new with F-081) (`macro-confirm`, `macro-ask`, `macro-record` and `macro-manager` are new with F-478) (`side-panel-tabs` is new with F-476) (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). The count is the one `Tools/check-scenario-reports.py` prints, and is worth reading from there rather than counting by hand: this row said 98 until 2026-08-22, six behind the 104 that already existed before `hidden-files-race`. New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app), `hidden-files-race` (F-435: forty panel/hidden-file commands in a row — the app used to abort partway through, so the report's absence is the failure). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. **The full run is 148 of 148 green (2026-09-07)**, with `plugin-install-prompt` in it. Previously **147 of 147 (2026-09-06)**, zero Auto Layout conflicts, with `rename-replace`, `rename-mount` and `rename-s3-refused` in it. Previously **145 of 145** the same day. Previously **128 of 128 green (2026-08-28)** — after `plugin-context-menu` was found to be naming the wrong plugin and passing only by riding a one-time migration; see the F-478 review entry. Previously **122 of 122 green (2026-08-24)**. It was 121 of 122 for a few hours: `plugin-context-menu` asserts the AI plugin's context items and that plugin has shipped switched off since F-448, while the harness never enabled it in the guest — fixed in F-473 with a per-scenario `plugins.ini`, and the removal afterwards checked on the guest itself. It had ended non-zero on two, both measurement rather than application: `surface-colours` pinned a window count that moves, and `tree-colours` read a tree row that can be scrolled out of view while a `.labelColor` fallback made the miss look like black text. Both fixed — see the harness entry of 2026-08-22 — along with the layout conflict that came from one scenario toggling the trees another had set. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. `Tools/check-inventory.py` reports **rows=241 evidence_ok=744 problems=0 done_without_evidence=0** (2026-09-03): the backlog this line used to track — 87 rows without a pointer, then 67 after the sweep of 2026-08-07/08 — is closed. Read the numbers from the gate rather than from here; this row said 67 for weeks after it had stopped being true, and a plan was nearly made from it. **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-09-06 |
+| Last updated | 2026-09-09 |
 | Released | **0.8.2 (build 17), 2026-09-02** — a file inside an archive can be previewed and opened, which is what was reported, plus the thing working out why led into: three parts of the window read a file because the cursor landed on it and none of them had ever asked what that costs — only whether the path existed, which is the wrong question on a network share, on a cloud file that has not been downloaded, and inside an archive. Gallery view on a share used to read every file in the folder over the wire. It asks first now and answers in seconds rather than megabytes, measuring the connection as it goes; the limits are under Configuration ▸ Edit/View and there is a help topic in nineteen languages. Underneath, reading a member no longer needs it to fit in memory: 400 MB out of a ZIP cost 588 MB before and 151 MB now. Unsigned, as every build so far. Previously **0.8.1 (build 16), 2026-08-29** — macros worked through against the three things the first person to use them ran into: a recorder with two ends you press yourself instead of a list of the last thirty things; the "nothing has happened yet" it told somebody who had just made three folders, because what you do by hand is read out of a history that can be switched off; and one file per macro, since a macro is a thing people hand to each other and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs every macro in the file. Plus Export…/Import…, Run in the macro window, Shift+F4 recordable through a non-overwriting `create_file`, and a recording that survives a quit. Unsigned, as every build so far. Previously **0.8.0 (build 15), 2026-08-29** — the assistant split in two, AppleScript and JavaScript run *by* the app, the side panel's pages switch off, and macros: a named sequence of file actions built from what you just did — in the panels as well as through the assistant — that asks for a value when it needs one, is held to the most demanding thing in it, and is shown to you as rows in your own language before any of it runs. Eight worked examples ship with it. Unsigned, as every build so far. Previously **0.7.2 (build 13), 2026-08-19** — the Git plugin built out in six stages, plus asynchronous plugin commands with progress and cancel; unsigned, as every build so far. Previously **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1635 keys × 19) + all shipping plugins + the **full in-app Help Book (55 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=55 · ui_strings=1635 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,124 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-09-09 — four reports from one user, and what each of them actually was
+
+Four things reported in one message. Three were what they looked like; one was not, and finding out
+which cost the only real work in the round.
+
+**"Maximising the search does not enlarge the hit list."** Exactly right, and measurable: both the
+criteria tab's height and the results list's were lower *bounds*, so between them the layout had a
+free variable and nothing said who should take it. `windowlayout Dateien suchen|1600x1100` reported
+the tab at 856 pt — up from 426 — with its own content still 302 and the rest empty, while the list
+sat on the 160 pt floor it is built with. A preferred (breakable) equality at the tab's measured
+height names the tab as the view that does not grow: 664 pt of list at that size afterwards, and 234
+instead of 160 at the default size, with zero constraint conflicts either way. The lower bound stays
+required, so criteria that need more room than the measurement predicted still get it — which is the
+arrangement `measuredTabHeight`'s own comment warns about when it is required instead.
+
+**"Shift+F5 shows no cursor where I am."** The one that was not what it looked like. Asked first
+whether it was the caret in the field or the cursor bar in the panel — the caret, and under Midnight,
+so the first hypothesis was a colour the theme had not reached. It was not: a diagnostic inside the
+dialog reported `active=1 key=1`, a live field editor, `drawsIP=1`, and — resolved *inside the
+editor's own appearance* — the correct dark values (`selBG=0.25,0.39,0.55`, `txtBG=0.12`, insertion
+point at the accent blue). An isolated 40-line AppKit repro of the same window showed a perfectly
+visible selection. What is actually wrong is upstream of colour: the prompt selected the **whole**
+value, and AppKit draws no insertion point while a selection stands — so there was no cursor to see
+anywhere in a 128-character path, and because the field scrolls to the *start* of a selection, the
+name on the end was off screen as well. Only the name is highlighted now (`NameInPath`, which is the
+in-cell rename's rule, now one copy shared by the Rename and New Text File prompts too). Measured
+after the change, in the app: `sel={119, 5} selectedText=note1`, with the end of the path on screen.
+
+One trap worth recording: a `cacheDisplay` capture of a themed window is **not** evidence about its
+colours. The dialog's shot showed a near-white selection bar with black text, which reads exactly like
+"the field editor is drawing in light appearance". It is not — dynamic catalogue colours resolve
+against the process's default appearance during `cacheDisplay`, and the same run logged the light
+values for the same colours read outside the editor's appearance block. A screenshot was the reason
+this looked like a theme defect for half an hour.
+
+**"The sync window has no viewer, and the compare is empty with only one side."** Both true, and the
+same root: comparing needs two sides, so a row present on one side only — every row of a first backup
+— had one menu entry that beeped at it. "View Left"/"View Right" open that side in the host's viewer;
+a zip member is streamed out to a read-only temp copy keyed by the archive's own `FileStamp`, a server
+side goes through `MemberStage` like any mount, and entries the row cannot support are greyed out via
+`validateMenuItem` rather than beeping. The verb `syncview <row>|<side>|<out>` drives the menu item's
+own target and action, so a scenario asserting `opened=` catches the mistake this feature can most
+easily make quietly: an entry wired to the other side opens *a* file and reads as working.
+
+**"File compare should say when there are no differences."** It did say so — 11 pt, secondary grey, at
+the bottom edge of a window whose middle is two columns of identical text. A tinted band across the
+top now, in the text and the hex window, shown only in that case. Fixing the presentation turned up a
+claim underneath it: a side that cannot be read comes back as one placeholder line, two of the same
+placeholder are equal, and a pair of files over the 256 MB text limit was therefore reported
+identical without either having been compared. That says "nothing was compared" now, in a warning
+colour. (Binary files do **not** reach it: `readLines` falls back to ISO Latin-1, which decodes any
+byte sequence, so two identical binaries genuinely are identical.)
+
+**Verified.** Locally in the DEBUG app for all four (scripts and dumps under the session scratchpad),
+`Tools/test.sh` green with ten new `NameInPathTests`, and three new VM scenarios green on the guest:
+`sync-view` (four dumps, both sides of a two-sided row opening two different files), `diff-equal`
+(with the differing pair as the control that must show no band) and `find-maximize`. All three at 0
+conflicts, entered in the layout baseline. The guest clamps a window to its screen — `find-maximize`
+asked for 1400x1000 and got 1400x706 — so the scenario asserts the width and the negation
+`!NSScrollView=1360x160`, which is the defect itself, rather than an exact height.
+
+
+## 2026-09-09 — the review of that round, and the two claims it found
+
+A review pass over the same day's four changes, at high effort. Five findings, four of them real, and
+the two that mattered were the same mistake in the same shape as the defect the round had just fixed.
+
+**The hex window got the band without the guard.** `FileSlice(path:)` returns nil for a file it
+cannot *open* — missing, no permission, volume gone — and `runCompare` substitutes a `ZeroSource`.
+Two of those compare equal at 0 bytes, so the new band said "Files are identical (0 bytes)." about
+two files nobody had read, in the success colour, in the one window somebody opens *to prove* two
+files identical. The text window had been given exactly this guard in the same session and the hex
+one had not.
+
+**And the text window's guard was on the wrong side of the count.** It said "nothing was compared"
+only when the two placeholder lines happened to be equal — and the placeholders carry each file's own
+name and size, so two 300 MB files over the limit produce *different* ones and the window reported
+"1 differing line block": a difference between two files neither of which had been opened. The
+CHANGELOG entry written that morning claimed this case was fixed. It was not. Both windows now decide
+from whether the sides were read before any count is formed, and say which file it was when only one
+side failed.
+
+**Two smaller ones, both the same lesson as the feature itself.** "Reveal in Finder" stayed enabled
+for a row whose file is on a zip or a server side, where it beeps — while the help text added the
+same day says entries that cannot apply are greyed out. And the rename prompts split a *folder* name
+at its last dot, because `NameInPath.range` always asked as if it were a file: `Backup 2026.01` came
+up as `Backup 2026`, disagreeing with the in-cell editor the shared rule exists to agree with. The
+call sites pass what the listing says the entry is now.
+
+**One finding was about identity, not behaviour.** The zip-extraction cache key was basename + size +
+mtime, and the doc comment claimed it was `mountKey`'s identity — which is the full path *plus the
+inode*. Two archives with the same name, size and mtime (`cp -p`, or one generator) would have shared
+a staging directory, which is reachable now that two zip sides can be compared. The inode is in the
+key, and the comment says what it actually is.
+
+**What the review also uncovered by accident.** The hex window's four summary sentences use
+`NSLocalizedString`, which `Tools/extract-strings.sh` does not see — so they have never been in the
+catalogue and have been English in all nineteen languages. Nobody noticed while they were 11 pt grey
+at the bottom edge; the band put one of them in front of the reader. That one is converted and
+translated. The other three are still where they were and are their own piece of work.
+
+**Optimisations taken in the same pass.** The two banners became one type (`VerdictBanner`), which is
+what makes the height-and-`isHidden` pairing an invariant rather than a convention — an `NSBox` does
+not clip its subviews on this deployment target, so a 0 pt strip that forgets `isHidden` draws its
+text over the table. `automationViewSide` waits on the outcome instead of sleeping 1.2 s per call
+(the local four-call run went 12 s → 7 s) and drives `NSMenu.update()` so `isEnabled` is the answer
+the *user* gets, which is also the only way a report can prove the `NSMenuItemValidation` conformance
+is wired at all. The zip extraction writes a `.partial-<uuid>` file and `rename(2)`s it into place,
+so a killed run leaves nothing under the real name and two views of one big member cannot unlink each
+other's file from under a reader. New verb `bindiff <a>|<b>|<out>`, because the high finding was in a
+window no scenario could reach.
+
+**Full run still owed.** `Tools/test.sh` is green (3985 cases, plus one more `NameInPathTests`), the
+three new scenarios are green on the guest with the extended `diff-equal` in them, and the string,
+inventory, scenario-report and format gates pass. The whole 155-scenario suite has not been run since
+these edits.
+
 
 ## 2026-09-06 (F-482) — the plugin API had no way out of its own first version
 

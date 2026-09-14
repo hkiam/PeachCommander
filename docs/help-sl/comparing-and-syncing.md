@@ -20,6 +20,8 @@ Ko hranite dve kopiji iste mape — delovno mapo in varnostno kopijo, prenosnik 
 ![Okno za sinhronizacijo imenikov z dvema potema map in mrežo rezultatov datotek s puščicami levo, enako in desno](screenshots/sync-dialog.png)
 *(Slika: okno Sinhroniziraj imenike primerja obe strani in predlaga smer kopiranja za vsako datoteko.)*
 
+Z desnim klikom na vrstico si oglejte datoteki za njo. **Primerjaj** odpre obe strani eno ob drugi, **Prikaži levo datoteko** in **Prikaži desno datoteko** pa odpreta samo eno stran v pregledovalniku — to je odgovor za vrstico, ki obstaja le na eni strani, kjer ni česa primerjati. Vnosi, ki jih na kliknjeni vrstici ni mogoče uporabiti, so zatemnjeni, namesto da ne bi naredili nič. Datoteka v arhivu `.zip` ali na strežniku se najprej razpakira oziroma prenese v začasno kopijo samo za branje, tako da izvirnika nič ne spremeni.
+
 ## Primerjajte dve datoteki po vsebini
 
 1. Izberite eno datoteko v vsakem podoknu (ali dve datoteki v istem podoknu).
@@ -29,6 +31,8 @@ Ko hranite dve kopiji iste mape — delovno mapo in varnostno kopijo, prenosnik 
 
 ![Okno za primerjavo, ki prikazuje dve besedilni datoteki drug ob drugem s poudarjenimi različnimi vrsticami](screenshots/diff-window.png)
 *(Slika: primerjava dveh besedilnih datotek; spremenjene vrstice so poudarjene na obeh straneh.)*
+
+Kadar med datotekama ni nobene razlike, okno to pove v obarvanem traku na vrhu, namesto da bi to prepustilo vašemu sklepanju iz tabele, v kateri ni nič poudarjeno. Trak se v opozorilni barvi pokaže tudi, kadar kakšne datoteke ni bilo mogoče prebrati sploh — takrat bi bila vsaka sodba o razlikah trditev o primerjavi, ki se nikoli ni zgodila. Primerjava bajt za bajtom pove isto iz istega razloga: dve datoteki, ki jih ne more odpreti, nista dve enaki datoteki.
 
 ## Primerjajte datoteke bajt za bajtom
 
@@ -81,6 +85,7 @@ zgodovine — in zagon brez zgodovine ne izbriše ničesar.
 | Primerjaj sezname imenikov (označi različne datoteke) | Shift+F2 |
 | Primerjaj po vsebini | Datoteka ▸ Primerjaj po vsebini… |
 | Sinhroniziraj imenike | Ukazi ▸ Sinhroniziraj imenike… |
+| Prikaz ene strani vrstice usklajevanja | Desni klik na vrstico ▸ Prikaži levo datoteko / desno datoteko |
 
 ## Opombe
 

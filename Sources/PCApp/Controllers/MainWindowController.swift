@@ -3836,6 +3836,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                            runsDirectory: self.configPaths.syncRunsDirectory)
             self.syncWindows.append(win)
             win.onClose = { [weak self, weak win] in self?.syncWindows.removeAll { $0 === win } }
+            win.onView = { [weak self] path in self?.viewFileInLister(path) }
             win.reload = { [weak self] in
                 // Re-parse a zip side from disk (its bytes changed); reload listings.
                 if leftSide.isZip { await self?.leftPanelController?.reloadCurrentArchive() }
@@ -4246,6 +4247,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         listerWindows.append(lister)
         lister.showWindow(nil)
         lister.window?.makeKeyAndOrderFront(nil)
+    }
+
+    /// Open one local file in the viewer the way F3 does, for a window that has a file but no
+    /// panel — the synchronisation grid (F-192).
+    ///
+    /// It goes through the same two steps F3 does rather than straight to `openLister`, because
+    /// both are settings the user made about *files of that kind*, and a viewer reached from
+    /// another window that ignored them would be a second answer to the same question: the
+    /// per-extension viewer application (F-273) first, the lister plugins after it.
+    func viewFileInLister(_ path: String) {
+        Task { @MainActor in
+            if let app = self.fileAssociations().viewerApp(forExtension: (path as NSString).pathExtension),
+               self.openWithExternalApp(path, app: app) {
+                return
+            }
+            self.openLister(files: [path], index: 0, plugins: await self.makeListerPlugins())
+        }
     }
 
     private func openDirectoryLister(_ dir: String) {

@@ -20,6 +20,8 @@ Når du har to kopier af den samme mappe — en arbejdsmappe og en backup, en b�
 ![Vinduet til synkronisering af mapper med to mappestier og et resultatgitter af filer med venstre-, lige- og højrepile](screenshots/sync-dialog.png)
 *(Figur: Vinduet Synkronisér mapper sammenligner begge sider og foreslår en kopieringsretning for hver fil.)*
 
+Højreklik på en række for at se filerne bag den. **Sammenlign** åbner de to sider ved siden af hinanden, mens **Vis venstre fil** og **Vis højre fil** åbner én side alene i fremviseren — det er svaret for en række, der kun findes på den ene side, hvor der ikke er noget at sammenligne. Punkter, der ikke kan bruges på den række, du klikkede på, er grå i stedet for ikke at gøre noget. En fil inde i en `.zip` eller på en server pakkes ud eller hentes først til en skrivebeskyttet midlertidig kopi, så originalen aldrig berøres.
+
 ## Sammenlign to filer efter indhold
 
 1. Markér én fil i hvert panel (eller to filer i samme panel).
@@ -29,6 +31,8 @@ Når du har to kopier af den samme mappe — en arbejdsmappe og en backup, en b�
 
 ![Sammenligningsvinduet, der viser to tekstfiler side om side med afvigende linjer fremhævet](screenshots/diff-window.png)
 *(Figur: Sammenligning af to tekstfiler; ændrede linjer er fremhævet på begge sider.)*
+
+Når de to filer slet ikke har nogen forskelle, siger vinduet det i et farvet bånd øverst i stedet for at lade dig slutte det ud fra en tabel, hvor intet er fremhævet. Båndet vises også i en advarselsfarve, når en fil slet ikke kunne læses — så ville enhver dom om forskelle være en påstand om en sammenligning, der aldrig fandt sted. Sammenligningen byte for byte siger det samme af samme grund: to filer, den ikke kan åbne, er ikke to identiske filer.
 
 ## Sammenlign filer byte for byte
 
@@ -82,6 +86,7 @@ mapperne, har parret ingen historie mere — og en kørsel uden historie sletter
 | Sammenlign mappelister (markér afvigende filer) | Shift+F2 |
 | Sammenlign efter indhold | Fil ▸ Sammenlign efter indhold… |
 | Synkronisér mapper | Kommandoer ▸ Synkronisér mapper… |
+| Vis den ene side af en synkroniseringsrække | Højreklik på rækken ▸ Vis venstre fil / Vis højre fil |
 
 ## Bemærkninger
 

@@ -20,6 +20,8 @@ Når du beholder to kopier av samme mappe — en arbeidsmappe og en sikkerhetsko
 ![Synkroniser kataloger-vinduet med to mappestier og et resultatrutenett av filer med venstre-, likhets- og høyrepiler](screenshots/sync-dialog.png)
 *(Figur: Synkroniser kataloger-vinduet sammenligner begge sider og foreslår en kopieringsretning for hver fil.)*
 
+Høyreklikk en rad for å se filene bak den. **Sammenlign** åpner de to sidene ved siden av hverandre, mens **Vis venstre fil** og **Vis høyre fil** åpner én side alene i fremviseren — det er svaret for en rad som bare finnes på én side, der det ikke er noe å sammenligne. Oppføringer som ikke kan brukes på raden du klikket på, er grå i stedet for å ikke gjøre noe. En fil inne i en `.zip` eller på en server pakkes ut eller lastes ned til en skrivebeskyttet midlertidig kopi først, så originalen berøres aldri.
+
 ## Sammenlign to filer etter innhold
 
 1. Merk én fil i hvert panel (eller to filer i samme panel).
@@ -29,6 +31,8 @@ Når du beholder to kopier av samme mappe — en arbeidsmappe og en sikkerhetsko
 
 ![Sammenligningsvinduet som viser to tekstfiler side om side med avvikende linjer uthevet](screenshots/diff-window.png)
 *(Figur: Sammenligning av to tekstfiler; endrede linjer uthevet på begge sider.)*
+
+Når de to filene ikke har noen forskjeller i det hele tatt, sier vinduet det i et farget felt øverst, i stedet for å la deg slutte det fra en tabell der ingenting er markert. Feltet vises også, i en varselfarge, når en fil ikke kunne leses i det hele tatt — da ville enhver dom om forskjeller være en påstand om en sammenligning som aldri fant sted. Sammenligningen byte for byte sier det samme av samme grunn: to filer den ikke kan åpne, er ikke to identiske filer.
 
 ## Sammenlign filer byte for byte
 
@@ -82,6 +86,7 @@ mappene, har paret ingen historie lenger — og en kjøring uten historie slette
 | Sammenlign kataloglister (merk avvikende filer) | Shift+F2 |
 | Sammenlign etter innhold | Fil ▸ Sammenlign etter innhold… |
 | Synkroniser kataloger | Kommandoer ▸ Synkroniser kataloger… |
+| Vis den ene siden av en synkroniseringsrad | Høyreklikk raden ▸ Vis venstre fil / Vis høyre fil |
 
 ## Merknader
 
