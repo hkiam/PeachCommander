@@ -28,6 +28,7 @@ only go down.
 | sync-occupied-path | 0 | 0 | — | `sync-occupied-path.png` |
 | sync-filter | 0 | 0 | — | `sync-filter.png` |
 | sync-view | 0 | 0 | — | `sync-view.png` |
+| sync-compare-zip | 0 | 0 | — | `sync-compare-zip.png` |
 | diff-equal | 0 | 0 | — | `diff-equal.png` |
 | settings | 0 | 0 | — | `settings.png` |
 | viewer-text | 0 | 0 | — | `viewer-text.png` |
@@ -168,3 +169,6 @@ only go down.
 | hex-clipboard | 0 | 0 | — | `hex-clipboard.png` |
 | history-palette | 0 | 0 | — | `history-palette.png` |
 | hidden-files-race | 0 | — | — | `hidden-files-race.png` |
+| docker-drive | 0 | 0 | — | `docker-drive.png` |
+| docker-volume | 0 | 0 | — | `docker-volume.png` |
+| docker-connect | 0 | 0 | — | `docker-connect.png` |
