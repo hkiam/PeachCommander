@@ -27,6 +27,8 @@ only go down.
 | sync-runputback | 0 | 0 | — | `sync-runputback.png` |
 | sync-occupied-path | 0 | 0 | — | `sync-occupied-path.png` |
 | sync-filter | 0 | 0 | — | `sync-filter.png` |
+| sync-view | 0 | 0 | — | `sync-view.png` |
+| diff-equal | 0 | 0 | — | `diff-equal.png` |
 | settings | 0 | 0 | — | `settings.png` |
 | viewer-text | 0 | 0 | — | `viewer-text.png` |
 | menu-key-guard | 0 | — | — | `menu-key-guard.png` |
@@ -136,6 +138,7 @@ only go down.
 | find-seeded-viewer | 0 | 0 | — | `find-seeded-viewer.png` |
 | find-seed-off | 0 | 0 | — | `find-seed-off.png` |
 | find-text-field | 0 | 0 | — | `find-text-field.png` |
+| find-maximize | 0 | 0 | — | `find-maximize.png` |
 | theme-system | 0 | 0 | — | `theme-system.png` |
 | search-settings | 0 | 0 | — | `search-settings.png` |
 | notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
