@@ -18,14 +18,11 @@
 <li>Set how thorough the comparison should be: include subfolders, compare <strong>by content</strong> (not just by date and size), or ignore the modification date.</li>
 <li>Add a filter mask (for example <code>*.jpg;*.png</code>) if you only want to sync certain files.</li>
 <li>Review the result grid. Each row shows a file on the left, a direction arrow in the middle, and the matching file on the right. The arrows tell you what will happen: <strong>→</strong> copies left to right, <strong>←</strong> copies right to left, and <strong>=</strong> means the two are identical.</li>
-<li>Narrow what the grid shows with <strong>Show</strong>: everything, only the rows that go <strong>&#8594;</strong> to the right, or only those that go <strong>&#8592;</strong> to the left. <strong>Hide identical</strong> leaves out the files that are already the same on both sides, and the line under the grid says how many rows the filter is holding back.</li>
-<li><strong>Select All</strong> ticks exactly what is on screen and unticks everything the filter hides &mdash; pick a direction, press it, and the run goes that way only. <strong>Deselect All</strong> clears every row, shown or not, if you would rather pick by hand.</li>
-<li>Each row shows both timestamps as well as both sizes, so you can see <em>why</em> an arrow points the way it does. Click a column header to sort by it, and double-click a row to open the two files side by side.</li>
-<li>A <strong>&#8800;</strong> marks a conflict: two files of the same age that differ anyway, where Peach Commander refuses to guess. Click the mark to choose <strong>&#8594;</strong> or <strong>&#8592;</strong> yourself; clicking on past them leaves the row a conflict and out of the run.</li>
 <li>Adjust individual rows if you disagree with a suggested direction, then click the synchronize button to carry out the changes.</li>
 </ol>
 <p><img alt="The synchronize directories window with two folder paths and a result grid of files with left, equal, and right arrows" src="images/sync-dialog.png" />
 <em>(Figure: The Synchronize Dirs window compares both sides and proposes a copy direction for each file.)</em></p>
+<p>Right-click a row to look at the files behind it. <strong>Compare</strong> opens the two sides next to each other, while <strong>View Left</strong> and <strong>View Right</strong> open one side on its own in the viewer — which is the answer for a row that exists on one side only, where there is nothing to compare. Entries that cannot apply to the row you clicked are greyed out instead of doing nothing. A file inside a <code>.zip</code> or on a server is unpacked or downloaded into a read-only temporary copy first, so the original is never touched. That also applies to <strong>Compare</strong>, so a folder can be compared against an archive or a server — and the merge and save buttons stay switched off for such a side, because what is open there is the copy.</p>
 <h2 id="compare-two-files-by-content">Compare two files by content</h2>
 <ol>
 <li>Select one file in each panel (or two files in the same panel).</li>
@@ -35,10 +32,84 @@
 </ol>
 <p><img alt="The compare window showing two text files side by side with differing lines highlighted" src="images/diff-window.png" />
 <em>(Figure: Comparing two text files; changed lines are highlighted on both sides.)</em></p>
+<p>When the two files have no differences at all, the window says so in a coloured band across the top, rather than leaving you to conclude it from a table with nothing highlighted in it. The band also appears, in a warning colour, when a file could not be read at all — the case where a verdict about differences would be a claim about a comparison that never happened. The byte-by-byte comparison says the same thing for the same reason: two files it cannot open are not two identical files.</p>
 <h2 id="compare-files-byte-by-byte">Compare files byte by byte</h2>
 <p>When two files look the same but you need to prove they are truly identical (or find the one byte that differs), use the binary comparison. It shows both files in a hex view with mismatching bytes marked, which is ideal for verifying downloads, checking encoded data, or confirming an exact copy.</p>
 <h2 id="compare-directory-listings">Compare directory listings</h2>
 <p>To spot differences between two open folders at a glance, choose <strong>Mark ▸ Compare Directories</strong> (Shift+F2). Peach Commander marks the files that differ or are missing on the other side, so you can act on them with the usual copy, move, and delete commands.</p>
+<h2 id="filter-what-a-synchronisation-includes">Filter what a synchronisation includes</h2>
+<p>The mask field holds one include list over file names. For what it cannot express, <strong>Filter…</strong> beside it opens a sheet with three tabs. Whatever you set there applies to the <em>next</em> comparison, and the button then says how many criteria are active — a filter you cannot see is how a backup ends up incomplete while the window reports that it is done.</p>
+<ul>
+<li><strong>Exclude</strong> takes patterns separated by <code>;</code> or <code>|</code>. A name without a slash matches at any depth (<code>*.tmp</code>), a trailing slash means a folder and everything in it (<code>node_modules/</code>), and a pattern containing a slash matches the relative path (<code>src/*/generated</code>). Case is ignored.</li>
+<li><strong>Size</strong> and <strong>date</strong> judge a pair as a whole: if either side falls outside the range, the whole pair is left out. That is deliberate. Applied to one side only, an exclusion would make the pair look one-sided and turn into a copy in the wrong direction.</li>
+<li><strong>Within the last N days</strong> is measured from each comparison, not from when a preset was saved, so a saved job keeps meaning "the last month".</li>
+<li>The <strong>Plugins</strong> tab asks a content plugin about the side a file would be copied from. It needs a real file, so it is offered only when both sides are folders on this Mac.</li>
+</ul>
+<p>An excluded folder is not deleted in mirror mode either — a mirror removes only what it actually compared. The status line says how many entries the filter held back, next to what the run will do. A filter is saved and loaded with the sync preset it belongs to.</p>
+<h2 id="keep-two-folders-the-same-both-ways">Keep two folders the same, both ways</h2>
+<p>The two original modes cannot tell one thing apart: a file that is on one side only is either <strong>new
+here</strong> or <strong>deleted there</strong>, and they look identical. So the symmetric mode copies it — delete
+something on your laptop, synchronise, and it comes back from the backup — and the mirror mode
+deletes, but only in one direction, so anything you did on the target side is lost.</p>
+<p><strong>Two-way (remember)</strong> answers that by keeping a record of what both folders looked like the last
+time they agreed. With that record a deletion on one side can be carried to the other.</p>
+<ul>
+<li>The <strong>first</strong> run of a pair has no record, so it behaves exactly as before and deletes nothing. It
+  writes the record. The mode does its work from the second run on.</li>
+<li>A deletion carried over is shown in its own colour with a <code>⇒🗑</code> arrow and is <strong>not ticked</strong>. It is
+  the one row that comes from the app's memory rather than from anything you can see in the two
+  folders, so you arm it yourself. Clicking the arrow offers the other answers: copy the file back
+  instead, or leave both sides alone.</li>
+<li>Changed on one side and deleted on the other is a <strong>conflict</strong>, never a deletion. So is a file
+  that changed on both sides.</li>
+<li>Nothing is deleted on the strength of an absence the comparison could not confirm — an unreadable
+  folder, or one the filter held back, proves nothing about what is inside it.</li>
+<li>Two folders on this Mac only. Not a server and not an archive: a deletion in an archive rewrites
+  it, a deletion on a server is permanent, and this mode is not the one to try that with.</li>
+</ul>
+<p><strong>Memory…</strong> in the window lists every pair the app remembers, marks the one you are looking at, and
+lets you forget any of them — after which the next comparison of those folders behaves like a first
+one again. Nothing is ever forgotten on its own: a folder on an unmounted disk is not gone, only
+unplugged.</p>
+<p>The record lives with the app's settings, so moving one of the folders means the pair has no history
+any more — and a run without a history deletes nothing, which is the way that failure should point.</p>
+<h2 id="what-a-run-did-and-what-of-it-can-be-taken-back">What a run did, and what of it can be taken back</h2>
+<p>Every synchronization is written down. <strong>Runs…</strong> in the window lists them newest first — when, which
+two folders, which mode, and how many files were copied, deleted or kept back — and shows what
+happened to each file in the run you select.</p>
+<p>That list is what makes the Trash usable. A file this Mac deleted went to the Trash, and the run
+recorded <em>where</em>, which matters more than it sounds: the Trash renames on collision, so a second
+<code>notes.txt</code> lands as <code>notes.txt 11-17-15-028.txt</code>, and looking for it by name finds the wrong one.
+<strong>Show in Trash</strong> points the Finder straight at the item.</p>
+<p><strong>Put Back…</strong> moves the files a run deleted out of the Trash to the paths they were deleted from.
+Each one is checked first, and anything that does not hold is refused with its reason rather than
+forced:</p>
+<ul>
+<li>Something is at that path again. It is left alone — a put-back is never allowed to overwrite.</li>
+<li>The item is not in the Trash any more, or it was removed permanently rather than put there.</li>
+<li>The side was an archive or a server. An archive is rewritten whole, and a server has no Trash, so
+  nothing was kept.</li>
+<li>The folder the run wrote to is gone, or is not the same folder any more — a reused mount point,
+  say. Then the whole run is refused rather than any part of it acted on.</li>
+<li>It has already been put back. The record keeps that, so a second attempt does nothing.</li>
+<li>Or the record itself is one this version cannot act on — written by a newer version of the app, or
+  naming a path outside both folders. Rare, and refused rather than guessed at.</li>
+</ul>
+<p><strong>A copy cannot be taken back.</strong> Removing one would mean deleting a file you may have edited since,
+which is the opposite trade from putting a deletion back, so the app does not offer it — the run
+tells you which files it copied and you can delete them yourself. A file that was <em>overwritten</em> is
+the one real gap, and it is now a small one: on this Mac the version that was replaced goes to the
+Trash like a deleted file, so <strong>Show in Trash</strong> finds it. Into an archive, onto a server, or onto a
+volume with no Trash it cannot, and the confirmation says so before the run.</p>
+<p>The last 200 runs are kept, or 64 MB of them, whichever comes first; past that the oldest fall away
+one at a time as new ones arrive, and <strong>Forget</strong> and <strong>Forget All</strong> clear them on the spot. A very
+large run — more than 20,000 files — keeps every problem and everything it put in the Trash but not
+the copies that went through, and says so instead of leaving you to notice. Its deletions can still
+be put back: what was left out is the copies, and a copy could not be taken back anyway.</p>
+<p>Forgetting changes nothing about the folders; what goes is the record of what was done, and with it
+the offer to put anything back. Unlike the two-way memory, this is thrown away automatically —
+losing the memory of a <em>pair</em> would change what the next run does, while losing the record of a run
+only takes away an offer.</p>
 <h2 id="shortcuts">Shortcuts</h2>
 <table>
 <thead>
@@ -57,6 +128,10 @@
 <td>File ▸ Compare by Content…</td>
 </tr>
 <tr>
+<td>View one side of a synchronize row</td>
+<td>Right-click the row ▸ View Left / View Right</td>
+</tr>
+<tr>
 <td>Synchronize directories</td>
 <td>Commands ▸ Synchronize Dirs…</td>
 </tr>
@@ -67,10 +142,6 @@
 <li><strong>By content vs. by date/size.</strong> A quick comparison matches files by size and modification date, which is fast but can be fooled when timestamps differ for identical files. Turn on <strong>by content</strong> for a reliable result at the cost of reading every file.</li>
 <li><strong>Subfolders and filters.</strong> The synchronize window can descend into subfolders and can be limited with a filter mask, so you can sync just the file types you care about.</li>
 <li><strong>You stay in control.</strong> Synchronizing never runs on its own — you review the proposed directions in the result grid and can change any of them before anything is copied.</li>
-<li><strong>A comparison you can watch, and stop.</strong> Scanning a large pair of trees takes time, so the window counts the entries it has walked and then the files it has compared while it works, with a spinner beside the count. The Compare button reads <strong>Stop</strong> for as long as the scan runs; stopping it leaves the previous result alone rather than showing half a tree.</li>
-<li><strong>Which side is the master.</strong> Mirroring runs left to right. <strong>Swap sides</strong> exchanges the two folders, which is how the right-hand tree becomes the one that wins &mdash; and how you correct the panels having put them the wrong way round.</li>
-<li><strong>Timestamps that are not quite equal.</strong> <strong>Ignore a 1-hour difference</strong> absorbs the offset a FAT volume or a daylight-saving change puts on an otherwise unchanged file. <strong>Case sensitive</strong> decides whether two names differing only in case are the same file; left off, they are &mdash; which is what a Mac volume usually says.</li>
-<li><strong>When something goes wrong.</strong> Synchronizing reports its progress and the button reads <strong>Stop</strong> while it runs; stopping between items leaves what has been copied copied. Anything that failed is listed by file and reason in the Operation Errors window, rather than counted. Deleting on a server is permanent &mdash; there is no Trash there &mdash; and the confirmation says so before it happens.</li>
 <li><strong>Presets.</strong> Frequently used synchronize setups can be saved and reused so you don't re-enter the same options each time.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Renaming many files</a></li></ul></section>

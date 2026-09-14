@@ -17,7 +17,13 @@
 <li>Press <strong>F8</strong> (or the <strong>Delete</strong> key) to move the selection to the Trash. To choose it from the menu, use <strong>File &gt; Delete</strong>.</li>
 <li>If a confirmation appears, review the list of items and click <strong>Delete</strong> to continue, or <strong>Cancel</strong> to stop.</li>
 </ol>
-<p>Items sent to the Trash stay there until you empty it, so you can restore them from the Finder if you change your mind.</p>
+<p>Items sent to the Trash stay there until you empty it, so nothing is lost while you change your mind: they are visible in the Trash in the Finder and can be moved back out by hand.</p>
+<p><strong>Edit ▸ Undo (⌘Z) takes the last deletion back.</strong> The files move out of the Trash to exactly where
+they were, and nothing is written over: an item whose old path is occupied again is left alone rather
+than forced — and you are told which ones and why, rather than left to assume it worked. Two things to know about it. It is the <em>last</em> operation only, and the list of them lives
+in memory — quit the app, or do thirty more file operations, and the offer is gone while the files are
+still sitting in the Trash for you to move back yourself. And a permanent deletion (Shift+F8) has no
+undo at all; there is nothing to put back.</p>
 <h2 id="how-to-delete-permanently">How to delete permanently</h2>
 <ol>
 <li>Mark the files and folders to remove.</li>
@@ -50,7 +56,6 @@
 <li><strong>Default behavior of F8.</strong> Normally F8 moves items to the Trash. If you prefer F8 to delete permanently by default, change the delete option in the <strong>Configuration &gt; Operation</strong> settings. Shift+F8 always deletes permanently regardless of this setting.</li>
 <li><strong>Deleting inside archives.</strong> When you're browsing inside a supported archive, deleting removes the selected entries from the archive. Read-only locations, such as some network or plugin folders, cannot be changed this way.</li>
 <li><strong>Folders.</strong> Deleting a folder removes everything inside it. Be sure you've selected the right items before confirming, especially for a permanent delete.</li>
-<li><strong>When something cannot be removed.</strong> A file that is locked, in use or out of reach no longer abandons the rest of the selection: you are asked whether to retry it, skip it and carry on, or stop &mdash; the same question a copy asks. A folder whose contents could not all go stays where it is rather than being reported as deleted.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li></ul></section>
 </main>
