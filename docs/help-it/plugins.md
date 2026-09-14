@@ -21,6 +21,7 @@ Diversi plugin hanno un proprio argomento della guida dettagliato — segui il l
 - **[Task Manager](task-manager.md)** — monta i tuoi processi in esecuzione come un'unità **TaskManager** sfogliabile; ordinali, esaminali come file o terminali con Elimina.
 - **[Immagini di file system](filesystem-images.md)** — apre un'immagine di file system (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) come un archivio, comprese le immagini disco con più partizioni. Sola lettura, e disattivato finché non lo attivate.
 - **[Uninstaller](uninstaller.md)** — rimuove un'applicazione **e** i file di supporto, le cache e le preferenze che lascia dietro di sé, dopo averti mostrato esattamente cosa verrà rimosso.
+- **[Docker](docker.md)** — sfoglia container e volumi Docker come dischi: progetti Compose raggruppati per servizio, container fermi compresi, e volumi come filesystem a sé. Disattivato finché non lo attivi.
 
 I restanti plugin integrati sono più piccoli e non necessitano di una pagina propria:
 

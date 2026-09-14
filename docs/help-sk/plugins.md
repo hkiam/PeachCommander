@@ -21,6 +21,7 @@ Niekoľko zásuvných modulov má vlastnú podrobnú tému pomocníka — pre ce
 - **[Task Manager](task-manager.md)** — pripojí vaše bežiace procesy ako prehliadateľný disk **TaskManager**; trieďte ich, skúmajte ich ako súbory alebo ich ukončite klávesom Odstrániť.
 - **[Obrazy súborových systémov](filesystem-images.md)** — otvorí obraz súborového systému (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) ako archív, vrátane obrazov diskov s viacerými oddielmi. Iba na čítanie a vypnuté, kým ho nezapnete.
 - **[Uninstaller](uninstaller.md)** — odstráni aplikáciu **aj** podporné súbory, vyrovnávacie pamäte a predvoľby, ktoré za sebou nechá, po tom, ako vám presne ukáže, čo zmizne.
+- **[Docker](docker.md)** — prechádza kontajnery a zväzky Dockeru ako jednotky: projekty Compose zoskupené podľa služby, vrátane zastavených kontajnerov, a zväzky ako samostatné súborové systémy. Vypnuté, kým ho nezapnete.
 
 Zvyšné vstavané zásuvné moduly sú menšie a nepotrebujú vlastnú stránku:
 

@@ -21,6 +21,7 @@ Több bővítménynek saját, részletes súgótémája van — kövesse a hivat
 - **[Task Manager](task-manager.md)** — a futó folyamatait böngészhető **TaskManager** meghajtóként csatolja; rendezze, vizsgálja őket fájlokként, vagy zárja be őket a Törlés billentyűvel.
 - **[Fájlrendszerképek](filesystem-images.md)** — úgy nyit meg egy fájlrendszerképet (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS), mint egy archívumot, a több partíciót tartalmazó lemezképeket is. Csak olvasható, és ki van kapcsolva, amíg be nem kapcsolja.
 - **[Uninstaller](uninstaller.md)** — eltávolít egy alkalmazást **és** a hátrahagyott támogatófájlokat, gyorsítótárakat és beállításokat, miután pontosan megmutatta, mi tűnik el.
+- **[Docker](docker.md)** — a Docker-konténereket és -köteteket meghajtóként böngészi: a Compose-projekteket szolgáltatás szerint csoportosítva, a leállított konténereket is beleértve, a köteteket pedig önálló fájlrendszerként. Kikapcsolva, amíg be nem kapcsolja.
 
 A többi beépített bővítmény kisebb, és nincs szüksége saját oldalra:
 

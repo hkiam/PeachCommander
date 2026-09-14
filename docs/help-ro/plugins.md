@@ -21,6 +21,7 @@ Mai multe pluginuri au propriul lor subiect detaliat de ajutor — urmați linku
 - **[Task Manager](task-manager.md)** — montează procesele care rulează ca o unitate **TaskManager** parcurgibilă; sortați-le, examinați-le ca pe fișiere sau încheiați-le cu Ștergere.
 - **[Imagini de sisteme de fișiere](filesystem-images.md)** — deschide o imagine de sistem de fișiere (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) ca pe o arhivă, inclusiv imaginile de disc cu mai multe partiții. Doar citire și dezactivat până când îl activați.
 - **[Uninstaller](uninstaller.md)** — elimină o aplicație **și** fișierele de suport, cache-urile și preferințele pe care le lasă în urmă, după ce vă arată exact ce va dispărea.
+- **[Docker](docker.md)** — parcurge containerele și volumele Docker ca unități: proiecte Compose grupate pe servicii, inclusiv containerele oprite, iar volumele ca sisteme de fișiere de sine stătătoare. Dezactivat până îl activați.
 
 Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină proprie:
 

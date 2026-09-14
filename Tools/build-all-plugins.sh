@@ -40,6 +40,7 @@ SCRIPTS=(
   build-scripting-plugin
   build-pfx-plugins
   build-s3-plugin
+  build-docker-plugin
 )
 # Rebuild only what changed. Building all seventeen is the slowest part of a build and most changes
 # are not to a plugin at all; the stamp is a content hash of everything the script reads, so a branch

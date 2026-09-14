@@ -21,6 +21,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **[Task Manager](task-manager.md)** — 실행 중인 프로세스를 탐색 가능한 **TaskManager** 드라이브로 마운트합니다. 정렬하고, 파일처럼 살펴보고, 삭제로 종료하세요.
 - **[파일 시스템 이미지](filesystem-images.md)** — 파일 시스템 이미지(SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS)를 압축 파일처럼 엽니다. 파티션이 여러 개인 디스크 이미지도 포함합니다. 읽기 전용이며, 켜기 전까지는 꺼져 있습니다.
 - **[Uninstaller](uninstaller.md)** — 응용 프로그램 **과** 그것이 남기는 지원 파일, 캐시, 환경설정을 정확히 무엇이 사라질지 보여준 후 제거합니다.
+- **[Docker](docker.md)** — Docker 컨테이너와 볼륨을 드라이브처럼 탐색합니다. Compose 프로젝트는 서비스별로 묶이고, 멈춘 컨테이너도 포함되며, 볼륨은 그 자체로 하나의 파일 시스템입니다. 켜기 전까지는 꺼져 있습니다.
 
 나머지 기본 제공 플러그인은 더 작아서 별도의 페이지가 필요하지 않습니다:
 

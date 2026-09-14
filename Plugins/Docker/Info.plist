@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>Docker</string>
+	<key>CFBundleExecutable</key><string>Docker</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>pfx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Docker</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<!-- Off until switched on. A connection to a Docker daemon carries the same rights on this
+	     Mac as the user running the application, which is a thing to enable deliberately rather
+	     than to find already running. Shipped so it is one click away, not a download away. -->
+	<key>PCPluginEnabledByDefault</key><false/>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.docker.connect</string>
+				<key>title</key><string>Docker Connect…</string>
+				<key>category</key><string>Network</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.docker.connect</string>
+				<key>menu</key><string>Net</string>
+				<key>group</key><string>5_plugins</string>
+				<key>order</key><integer>120</integer>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

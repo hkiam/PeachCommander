@@ -26,6 +26,78 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-14 — Docker as a drive (F-490…F-494), and the four things the engine does not do
+
+A Docker engine mounts as a drive now: `Compose Projects` / `Standalone Containers` / `Volumes` at the
+root, a container's real filesystem below. It is a PFX plugin (`Plugins/Docker`, `Docker.pfxplugin`)
+and it **ships switched off** — `PCPluginEnabledByDefault` false, verified in the app rather than
+assumed: with no `plugins.ini` the drive bar has no chip and `pfxmount Docker` reports "no pfx volume
+named Docker".
+
+**The transport is written here, because there isn't one.** `URLSession` cannot address a Unix domain
+socket and a developer's engine is always one, so `DockerEngine.swift` is HTTP/1.1 over `connect(2)`.
+Three things the daemon does that cost a run each to find:
+
+* **The API version is negotiated, not chosen.** `/v1.43/containers/json` against Docker 29 answers
+  *400 client version 1.43 is too old*, with no fallback. `GET /_ping` reports `Api-Version` and every
+  later request carries that prefix.
+* **A HEAD carries a `Content-Length` and no body.** Every `PfxStat` here is a HEAD on
+  `…/archive`, and the first client read that many bytes and waited forever for them. It looked like
+  the engine hanging; it is the engine being correct. The fixture reproduces it deliberately.
+* **A file mode from the engine is a *Go* `os.FileMode`**, whose type bits sit at the top of the word
+  (`ModeDir` 1<<31, `ModeSymlink` 1<<27) and have nothing to do with `S_IFMT`. Read as POSIX it is a
+  file of an impossible type with plausible permissions — right-looking and wrong.
+
+**The listing problem, which is the design.** The Engine API has *no call that lists a directory*.
+The only universal way is `GET …/archive`, which returns the directory **and its whole subtree**. For
+an ordinary directory that is a few hundred kilobytes and gives a perfect listing — modes, sizes,
+times and link targets out of the tar itself, for a stopped container as readily as a running one. For
+a container's `/` it is the image: measured at **22.4 GB and 82 seconds** on one ordinary application
+image. So the archive is tried first under a 16 MB budget, and a directory that blows through it is
+listed by running `ls -1 -A` *in* the container with each name stat'd by the engine's own HEAD — no
+`ls -l` output is parsed, so BusyBox, Toybox and coreutils are all the same. That fallback is off by
+one setting (`ExecFallback=0`), which is the guarantee that matters: nothing here *depends* on a
+shell, `ls`, `cat` or `tar` being in the image. With no fallback available the archive is retried
+under a 512 MB / 20 s ceiling and then fails — the root of a big stopped container is genuinely
+unreadable this way, and saying so beats showing three of its twenty entries.
+
+**Delete and rename do not exist in the Engine API.** Not "are awkward" — there is no endpoint, and
+`docker` has no counterpart to `cp`. They are `execve` in a *running* container, refused with a clear
+code otherwise. Which produces an asymmetry worth knowing: a write goes in through the archive API
+**as root**, a delete runs **as the image's own user**, so deleting a file you copied in a moment
+earlier can fail with *Operation not permitted*. It is reported as a permissions error and not worked
+around — passing `"User": "root"` to the exec would be the application overriding the image.
+
+**Volumes are first-class, and reachable without a container.** A volume is only visible from inside
+something that mounts it, so where no container does, one is *created* around it — never started,
+labelled `com.peachcommander.helper` with the owning pid, removed on disconnect, and abandoned ones
+swept on the next connect only when their process is gone. Verified both directions against the real
+daemon: a file written through one never-started helper is visible through a second one.
+
+**Two traps that would have shipped.** macOS's own `tar` stamps `com.apple.provenance` on everything
+it packs; the engine refuses the xattr with a 500 *after having written the file*, so the user is told
+a copy failed that in fact happened. The tar writer here emits bare USTAR for that reason. And
+`presentInfo` is `MainActor.assumeIsolated` — calling it from a file operation traps the app, so a
+listing that cannot be served reports a code and nothing else.
+
+**One host change.** A PFX plugin had no way to say "symlink": `PfxFindData` has a name, a size, a
+time, an `isDir` flag and a mode, and appending a field is an ABI break the *plugin* side cannot
+survive. `PFXFileSystem.entry(from:)` now reads the `S_IF*` field of `mode`, so `S_IFLNK` draws `l`;
+plugins reporting permission bits or 0 are unaffected. Documented in all three copies of `pfx.h`.
+
+**Testing.** `Tests/PCPluginHostTests/DockerPluginTests.swift` — 29 tests through `PFXFileSystem`
+against `Fixtures/dockerd.py`, a stand-in daemon on a real AF_UNIX socket whose whole point is
+answering the way the daemon answers (HEAD with a length and no body, recursive archives, an unframed
+exec stream, an upload with xattrs refused). The two that carry the design: the same directory with
+the same budgets passes with the fallback allowed and *fails* without it, so the tiering is proven
+rather than incidentally exercised. Verified additionally against this machine's live Colima engine —
+listing, stopped containers, volumes with and without a container, upload, download, mkdir, the
+permission refusals — and in the app itself, where F3 on `/etc/os-release` inside a container opens
+the *target's* content.
+
+Not in it, deliberately: remote engines over SSH/TLS, lifecycle commands, logs as a virtual file, a
+shell, and images as read-only filesystems.
+
 ## 2026-09-09 — four reports from one user, and what each of them actually was
 
 Four things reported in one message. Three were what they looked like; one was not, and finding out

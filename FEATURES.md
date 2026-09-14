@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**94 features** across 13 categories. AI ships as two optional, removable plugins: AI On-Device (Apple Intelligence, actions only, no chat) and AI Assistant (the chat, needs an OpenAI-compatible endpoint). Auto-update (Sparkle) is planned but not yet integrated.
+**95 features** across 13 categories. AI ships as two optional, removable plugins: AI On-Device (Apple Intelligence, actions only, no chat) and AI Assistant (the chat, needs an OpenAI-compatible endpoint). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -73,6 +73,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 |---|---|---|---|
 | Amazon S3 (plugin) | user, expert | — | ✅ |
 | Attributes on remote servers | expert | — | ✅ |
+| Docker (plugin) | user, expert | — | ✅ |
 | Download from URL | user | Cmd+Shift+D | ✅ |
 | FTP / FTPS | user, expert | Ctrl+F, Ctrl+N | ✅ |
 | FTP console & protocol log | expert | — | ✅ |

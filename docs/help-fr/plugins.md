@@ -21,6 +21,7 @@ Plusieurs extensions ont leur propre rubrique d'aide détaillée — suivez le l
 - **[Task Manager](task-manager.md)** — monte vos processus en cours comme un lecteur **TaskManager** parcourable ; triez-les, examinez-les comme des fichiers, ou terminez-les avec Supprimer.
 - **[Images de systèmes de fichiers](filesystem-images.md)** — ouvre une image de système de fichiers (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) comme une archive, y compris les images disque à plusieurs partitions. En lecture seule, et désactivé tant que vous ne l'activez pas.
 - **[Uninstaller](uninstaller.md)** — retire une application **et** les fichiers de support, caches et préférences qu'elle laisse derrière elle, après vous avoir montré exactement ce qui va partir.
+- **[Docker](docker.md)** — parcourt les conteneurs et volumes Docker comme des disques : projets Compose groupés par service, conteneurs arrêtés compris, et volumes comme systèmes de fichiers à part entière. Désactivé jusqu’à ce que vous l’activiez.
 
 Les autres extensions intégrées sont plus petites et n'ont pas besoin de leur propre page :
 

@@ -21,6 +21,7 @@ Varios complementos tienen su propio tema de ayuda detallado; sigue el enlace pa
 - **[Task Manager](task-manager.md)** — monta los procesos en ejecución como una unidad **TaskManager** explorable; ordénalos, inspecciónalos como archivos o finalízalos con Eliminar.
 - **[Imágenes de sistemas de archivos](filesystem-images.md)** — abre una imagen de sistema de archivos (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) como un archivo comprimido, incluidas las imágenes de disco con varias particiones. Solo lectura, y desactivado hasta que usted lo active.
 - **[Uninstaller](uninstaller.md)** — elimina una aplicación **y** los archivos de soporte, cachés y preferencias que deja atrás, tras mostrarte exactamente qué se va a ir.
+- **[Docker](docker.md)** — explora contenedores y volúmenes de Docker como unidades: proyectos de Compose agrupados por servicio, contenedores detenidos incluidos y volúmenes como sistemas de archivos propios. Desactivado hasta que lo active.
 
 Los demás complementos integrados son más pequeños y no necesitan una página propia:
 

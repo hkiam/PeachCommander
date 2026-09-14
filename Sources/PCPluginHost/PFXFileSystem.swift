@@ -523,9 +523,25 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
             let parts = name.split(separator: ".", maxSplits: 1, omittingEmptySubsequences: true)
             ext = parts.count > 1 ? String(parts[1]) : ""
         }
-        return VFSEntry(name: name, ext: ext, kind: isDir ? .directory : .file,
+        return VFSEntry(name: name, ext: ext, kind: Self.kind(of: d, isDir: isDir),
                         size: d.size, modified: Date(timeIntervalSince1970: TimeInterval(d.mtime)),
                         posixMode: UInt16(truncatingIfNeeded: d.mode))
+    }
+
+    /// A symlink is told from a file by the type bits of `mode`, because there is nowhere else to
+    /// put it: `PfxFindData` carries a name, a size, a time, an `isDir` flag and a mode, and
+    /// appending a field to it would be an ABI change a plugin built against the old header could
+    /// not survive. So a plugin that knows a path is a link sets `S_IFLNK` in the mode it already
+    /// reports, and the panel draws `l` instead of `-`.
+    ///
+    /// Older plugins are unaffected: they report permission bits only (or zero), whose `S_IFMT`
+    /// field is 0 and matches none of the cases below, which lands on the previous behaviour.
+    private static func kind(of d: PfxFindData, isDir: Bool) -> VFSEntry.Kind {
+        switch mode_t(d.mode) & S_IFMT {
+        case S_IFLNK: return isDir ? .symlinkDir : .symlinkFile
+        case S_IFDIR: return .directory
+        default: return isDir ? .directory : .file
+        }
     }
 
     // MARK: - VirtualFileSystem

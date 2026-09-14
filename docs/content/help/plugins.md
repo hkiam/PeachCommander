@@ -22,6 +22,7 @@ Several plugins have their own detailed help topic — follow the link for the f
 - **[Task Manager](task-manager.md)** — mounts your running processes as a browsable **TaskManager** drive; sort them, inspect them like files, or end them with Delete.
 - **[Filesystem Images](filesystem-images.md)** — opens a filesystem image (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) the way an archive opens, including disk images with several partitions. Read-only, and off until you switch it on.
 - **[Uninstaller](uninstaller.md)** — removes an application **and** the support files, caches, and preferences it leaves behind, after showing you exactly what will go.
+- **[Docker](docker.md)** — browses Docker containers and volumes as drives: Compose projects grouped by service, stopped containers included, and volumes as filesystems of their own. Off until you switch it on.
 
 The remaining built-in plugins are smaller and don't need a page of their own:
 

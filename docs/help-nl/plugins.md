@@ -21,6 +21,7 @@ Verschillende plug-ins hebben hun eigen uitgebreide helponderwerp — volg de ko
 - **[Task Manager](task-manager.md)** — koppelt je actieve processen als een doorbladerbare **TaskManager**-schijf; sorteer ze, inspecteer ze als bestanden of beëindig ze met Verwijderen.
 - **[Bestandssysteemimages](filesystem-images.md)** — opent een bestandssysteemimage (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) zoals een archief, inclusief schijfimages met meerdere partities. Alleen lezen, en uit tot u hem aanzet.
 - **[Uninstaller](uninstaller.md)** — verwijdert een applicatie **én** de ondersteuningsbestanden, caches en voorkeuren die het achterlaat, nadat het je precies heeft getoond wat er weggaat.
+- **[Docker](docker.md)** — doorzoekt Docker-containers en -volumes als schijven: Compose-projecten gegroepeerd per service, gestopte containers inbegrepen, en volumes als eigen bestandssystemen. Uit tot u het aanzet.
 
 De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:
 

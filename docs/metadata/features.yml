@@ -483,6 +483,29 @@ features:
       copy/move across buckets; Storage Class and ETag as content columns. No range read —
       the PFX ABI is whole-file.
 
+  - id: docker
+    name: Docker (Plugin)
+    name_en: Docker (plugin)
+    category: network
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Net], shortcuts: [], commands: [plugin.docker.connect] }
+    source: { modules: [Plugins/Docker], types: [DockerClient, DockerConnection, TarScanner] }
+    documentation: { integrated_help: true, website: true, developer_docs: false }
+    notes: >-
+      Removable PFX plugin, shipped switched off — a Docker connection carries the same rights on
+      the machine as the user running the app. Mounts an engine as a drive: Compose Projects
+      (grouped from the containers' own labels, a single-replica service flattened to the
+      container), Standalone Containers, and Volumes as drives of their own. Speaks the Engine API
+      over the daemon's Unix socket directly, with the API version negotiated from /_ping; Podman
+      works through the same code. Running and stopped containers alike read and write through the
+      archive API, which needs nothing installed in the image; delete and rename do not exist in
+      the API and run in a *running* container, refused otherwise. A volume nothing mounts is
+      reached through a throwaway container that is never started and is removed on disconnect.
+      Status, Access (RW/RO/VOL/BIND/TMP), Image, Mount and ID as content columns; symlinks
+      reported through the S_IF* field of the PFX mode. No remote engines over SSH/TLS, no
+      lifecycle commands, no logs-as-file, no shell.
+
   - id: sftp
     name: SFTP / SCP (SSH)
     name_en: SFTP / SCP
@@ -1315,7 +1338,7 @@ features:
       the plugin, its version, its identifier and **the file extensions it will take over**, since a
       packer plugin is consulted before the built-in readers for every name it claims; and it says
       when the file came from the internet, because installing clears its quarantine flag. Bundled:
-      AIAssistant, AILocal, AIColumn, Archive, CSVLister, Git, iCloud, LogViewer, Notes,
+      AIAssistant, AILocal, AIColumn, Archive, CSVLister, Docker, Git, iCloud, LogViewer, Notes,
       SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV.
 
   - id: disk-map

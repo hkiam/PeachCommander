@@ -21,6 +21,7 @@ Kilka wtyczek ma własny szczegółowy temat pomocy — kliknij łącze, aby poz
 - **[Task Manager](task-manager.md)** — montuje Twoje działające procesy jako przeglądalny dysk **TaskManager**; sortuj je, badaj jak pliki lub kończ klawiszem Usuń.
 - **[Obrazy systemów plików](filesystem-images.md)** — otwiera obraz systemu plików (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) jak archiwum, także obrazy dysków z wieloma partycjami. Tylko do odczytu i wyłączona, dopóki jej nie włączysz.
 - **[Uninstaller](uninstaller.md)** — usuwa aplikację **oraz** pliki pomocnicze, pamięci podręczne i preferencje, które po sobie zostawia, po pokazaniu Ci dokładnie, co zniknie.
+- **[Docker](docker.md)** — przegląda kontenery i wolumeny Dockera jak napędy: projekty Compose pogrupowane według usług, łącznie z zatrzymanymi kontenerami, a wolumeny jako osobne systemy plików. Wyłączone, dopóki go nie włączysz.
 
 Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:
 

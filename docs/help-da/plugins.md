@@ -21,6 +21,7 @@ Flere plugins har deres eget detaljerede hjælpeemne — følg linket for hele h
 - **[Task Manager](task-manager.md)** — monterer dine kørende processer som et drev **TaskManager**, der kan gennemses; sortér dem, granske dem som filer, eller afslut dem med Slet.
 - **[Filsystemsbilleder](filesystem-images.md)** — åbner et filsystemsbillede (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som et arkiv, også diskbilleder med flere partitioner. Kun læsning, og slået fra, indtil du slår det til.
 - **[Uninstaller](uninstaller.md)** — fjerner et program **og** de supportfiler, caches og indstillinger, det efterlader, efter at have vist dig præcis hvad der forsvinder.
+- **[Docker](docker.md)** — gennemser Docker-containere og -volumener som drev: Compose-projekter grupperet efter tjeneste, stoppede containere medregnet, og volumener som deres egne filsystemer. Slået fra, indtil du slår det til.
 
 De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv:
 

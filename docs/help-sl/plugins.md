@@ -21,6 +21,7 @@ Več vtičnikov ima svojo podrobno temo pomoči — sledite povezavi za celotno 
 - **[Task Manager](task-manager.md)** — priklopi vaše izvajajoče se procese kot disk **TaskManager**, po katerem lahko brskate; razvrstite jih, preučite kot datoteke ali jih končajte z Izbriši.
 - **[Slike datotečnih sistemov](filesystem-images.md)** — odpre sliko datotečnega sistema (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) kot arhiv, vključno s slikami diskov z več razdelki. Samo za branje in izklopljeno, dokler ga ne vklopite.
 - **[Uninstaller](uninstaller.md)** — odstrani aplikacijo **in** podporne datoteke, predpomnilnike in nastavitve, ki jih pusti za seboj, potem ko vam natančno pokaže, kaj bo odšlo.
+- **[Docker](docker.md)** — brska po Dockerjevih vsebnikih in nosilcih kot po pogonih: projekti Compose, združeni po storitvi, vključno z ustavljenimi vsebniki, in nosilci kot samostojni datotečni sistemi. Izklopljeno, dokler ga ne vklopite.
 
 Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:
 

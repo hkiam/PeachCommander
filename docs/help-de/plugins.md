@@ -21,6 +21,7 @@ Mehrere Plugins haben ihr eigenes ausführliches Hilfethema — folgen Sie dem L
 - **[Task Manager](task-manager.md)** — bindet Ihre laufenden Prozesse als durchsuchbares Laufwerk **TaskManager** ein; sortieren Sie sie, untersuchen Sie sie wie Dateien oder beenden Sie sie mit Löschen.
 - **[Dateisystem-Images](filesystem-images.md)** — öffnet ein Dateisystem-Image (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) wie ein Archiv, auch Disk-Images mit mehreren Partitionen. Nur lesend, und aus, bis Sie es einschalten.
 - **[Uninstaller](uninstaller.md)** — entfernt eine Anwendung **und** die Support-Dateien, Caches und Einstellungen, die sie hinterlässt, nachdem er Ihnen genau gezeigt hat, was verschwinden wird.
+- **[Docker](docker.md)** — durchsucht Docker-Container und -Volumes wie Laufwerke: Compose-Projekte nach Service gruppiert, gestoppte Container eingeschlossen, Volumes als eigene Dateisysteme. Abgeschaltet, bis Sie es einschalten.
 
 Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:
 

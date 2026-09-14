@@ -16,6 +16,42 @@ does not have.
 
 ### Added
 
+- **Docker containers and volumes are a drive.** A new plugin mounts a Docker engine in a panel:
+  `Compose Projects` grouped by project and service, `Standalone Containers`, and `Volumes` — and
+  below those, a container's real filesystem, where F3, F4, F5 and F7 work as they do anywhere else.
+  It **ships switched off**, because a connection to a Docker daemon carries the same rights on the
+  machine as the person running the app; turn it on under Configuration ▸ Plugins…. Compose grouping
+  comes from the labels Compose puts on its own containers, so it is right for a stack whose
+  `docker-compose.yml` is long gone, and a service running one container *is* that container rather
+  than a folder holding one. The engine is reached the way the `docker` command reaches it —
+  `DOCKER_HOST`, then the current `docker context`, then the usual sockets of Docker Desktop, Colima,
+  Rancher Desktop, Lima and Podman, the last of which works because it serves the same API.
+
+  **Stopped containers are in it, not just running ones.** Docker's file API answers for a container
+  that has not run for a month, which is what makes this a drive rather than a process list. Two
+  things genuinely cannot be done without a running container — deleting and renaming, for which the
+  Engine API has no operation at all — and those are refused with a clear reason instead of faked.
+
+  **Volumes are drives in their own right**, not only folders inside a container, because a volume
+  outlives the container that made it and is usually where the data actually is. One that nothing
+  currently mounts is still browsable: the plugin makes a throwaway container around it, never starts
+  it, and removes it when you leave. Inside a container, a directory that is really a mount says so
+  in the new **Mount** column and names the volume, so there is a way from the data back to the drive
+  it lives on. **Status**, **Access** (RW/RO/VOL/BIND/TMP), **Image** and **ID** are columns too.
+
+  Three things it does not do, deliberately: it stores no credential, it never touches Docker's own
+  directories on the disk, and it does not run anything as `root` to get past permissions the image
+  set — a delete the container's own user may not perform is reported as what it is. Nothing depends
+  on `sh`, `ls`, `cat` or `tar` being present in an image either; the archive API is the foundation
+  and running `ls` is a fallback for the one directory it cannot serve cheaply, which can be switched
+  off entirely.
+
+  A plugin can now also say that an entry is a **symbolic link**. `PfxFindData` has a name, a size, a
+  time, an `isDir` flag and a mode, and appending a field to it would break every plugin built
+  against the older header — so the type bits of the mode are read instead, and a plugin that sets
+  `S_IFLNK` gets `l` in the Attr column. Reading such a file reads what it points at, rather than
+  copying out the zero-byte link and calling it an empty file.
+
 - **You can look at one side of a synchronisation row.** Comparing was the only thing a row offered,
   and comparing needs two sides — so every row that exists on one side only, which is every row of a
   first backup, had nothing behind it at all: the one entry there beeped. A row's menu now also has

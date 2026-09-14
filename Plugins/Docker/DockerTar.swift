@@ -1,0 +1,399 @@
+// SPDX-License-Identifier: Apache-2.0
+// DockerTar.swift — the tar the engine speaks, read as a stream and written by hand.
+//
+// Docker's file API is tar in both directions: `GET /containers/{id}/archive` answers with one,
+// `PUT` takes one. So this file is the whole of the plugin's file transfer, and both halves have
+// a reason to be written here rather than shelled out to `/usr/bin/tar`.
+//
+// **Reading** has to be a stream. The archive of a directory is *recursive* — a container's "/"
+// is the entire filesystem — and a listing needs only the entries one level down. `TarScanner`
+// is fed whatever arrived from the socket and reports entries as it crosses their headers, so a
+// listing costs no memory whatever the archive's size, and a consumer that has seen enough can
+// stop the transfer instead of finishing it.
+//
+// **Writing** has to be plain. Uploading with macOS's own `tar` looked like it worked and did
+// not: BSD tar records `com.apple.provenance` as a PAX extended attribute on every file it
+// packs, the Linux side of the engine refuses to set it, and the upload ends in
+//
+//     500 lsetxattr /tmp/x: xattr "com.apple.provenance": operation not supported
+//
+// *after* having written the file — a failure the user is told about for a copy that in fact
+// happened. What goes out of here is therefore a bare USTAR entry: name, mode, size, mtime,
+// type, and nothing else that another operating system could have an opinion about.
+
+import Foundation
+
+/// One entry in a tar stream.
+struct TarEntry {
+    enum Kind {
+        case file
+        case directory
+        case symlink
+        case hardlink
+        case other
+    }
+
+    var name: String          // as recorded, relative and '/'-separated
+    var size: Int64
+    var mode: UInt32          // permission bits only (type lives in `kind`)
+    var mtime: Int64
+    var kind: Kind
+    var linkName: String
+    var uid: Int
+    var gid: Int
+
+    /// The leaf, with any trailing slash removed.
+    var leaf: String {
+        var path = name
+        while path.hasSuffix("/") { path.removeLast() }
+        guard let slash = path.lastIndex(of: "/") else { return path }
+        return String(path[path.index(after: slash)...])
+    }
+
+    /// How many '/'-separated components the entry sits under, ignoring a trailing slash.
+    var depth: Int {
+        var path = name
+        while path.hasSuffix("/") { path.removeLast() }
+        return path.split(separator: "/").count
+    }
+}
+
+/// A tar reader that is fed bytes as they arrive.
+///
+/// `onEntry` is called once per entry, before its data. Returning `.skip` discards the data,
+/// `.take` routes it to `onData`, and `.stop` ends the scan — which the caller turns into
+/// abandoning the HTTP response.
+final class TarScanner {
+    enum Disposition {
+        case skip
+        case take
+        case stop
+    }
+
+    private enum State {
+        case header
+        case body(remaining: Int64, padding: Int, deliver: Bool)
+        case longName(remaining: Int64, padding: Int, isLink: Bool)
+        case pax(remaining: Int64, padding: Int)
+        case finished
+    }
+
+    private var pending: [UInt8] = []
+    private var state: State = .header
+    /// A GNU long name or a PAX `path=` seen just before the entry it belongs to.
+    private var overrideName: String?
+    private var overrideLink: String?
+    private var zeroBlocks = 0
+
+    private let onEntry: (TarEntry) throws -> Disposition
+    private let onData: (UnsafeRawBufferPointer) throws -> Void
+
+    init(onEntry: @escaping (TarEntry) throws -> Disposition,
+         onData: @escaping (UnsafeRawBufferPointer) throws -> Void = { _ in }) {
+        self.onEntry = onEntry
+        self.onData = onData
+        pending.reserveCapacity(1024)
+    }
+
+    var isFinished: Bool { if case .finished = state { return true }; return false }
+
+    /// Feed the next piece of the stream. Returns false once the scan is over, which the caller
+    /// uses to stop reading the response.
+    func feed(_ bytes: UnsafeRawBufferPointer) throws -> Bool {
+        var offset = 0
+        while offset < bytes.count {
+            switch state {
+            case .finished:
+                return false
+
+            case .body(let remaining, let padding, let deliver):
+                let take = Int(min(remaining, Int64(bytes.count - offset)))
+                if deliver, take > 0 {
+                    try onData(UnsafeRawBufferPointer(rebasing: bytes[offset..<(offset + take)]))
+                }
+                offset += take
+                let left = remaining - Int64(take)
+                state = left > 0
+                    ? .body(remaining: left, padding: padding, deliver: deliver)
+                    : Self.skipping(padding)
+
+            case .longName(let remaining, let padding, let isLink):
+                let take = Int(min(remaining, Int64(bytes.count - offset)))
+                pending.append(contentsOf: bytes[offset..<(offset + take)])
+                offset += take
+                let left = remaining - Int64(take)
+                if left > 0 {
+                    state = .longName(remaining: left, padding: padding, isLink: isLink)
+                } else {
+                    let text = Self.trimNul(pending)
+                    if isLink { overrideLink = text } else { overrideName = text }
+                    pending.removeAll(keepingCapacity: true)
+                    state = Self.skipping(padding)
+                }
+
+            case .pax(let remaining, let padding):
+                let take = Int(min(remaining, Int64(bytes.count - offset)))
+                pending.append(contentsOf: bytes[offset..<(offset + take)])
+                offset += take
+                let left = remaining - Int64(take)
+                if left > 0 {
+                    state = .pax(remaining: left, padding: padding)
+                } else {
+                    applyPax(pending)
+                    pending.removeAll(keepingCapacity: true)
+                    state = Self.skipping(padding)
+                }
+
+            case .header:
+                let need = 512 - pending.count
+                let take = min(need, bytes.count - offset)
+                pending.append(contentsOf: bytes[offset..<(offset + take)])
+                offset += take
+                guard pending.count == 512 else { continue }
+                let block = pending
+                pending.removeAll(keepingCapacity: true)
+                if try !consumeHeader(block) { return false }
+            }
+        }
+        return !isFinished
+    }
+
+    /// Padding is modelled as a body with nothing to deliver, so there is one place that counts
+    /// bytes rather than two that could disagree.
+    private static func skipping(_ padding: Int) -> State {
+        padding == 0 ? .header : .body(remaining: Int64(padding), padding: 0, deliver: false)
+    }
+
+    private func consumeHeader(_ block: [UInt8]) throws -> Bool {
+        if block.allSatisfy({ $0 == 0 }) {
+            zeroBlocks += 1
+            // Two zero blocks end a tar. One can legitimately appear inside a corrupt-looking
+            // but valid stream, so it is not enough on its own.
+            if zeroBlocks >= 2 { state = .finished; return false }
+            state = .header
+            return true
+        }
+        zeroBlocks = 0
+
+        let name = overrideName ?? Self.string(block, 0, 100, prefix: Self.string(block, 345, 155))
+        let mode = UInt32(Self.octal(block, 100, 8))
+        let uid = Int(Self.octal(block, 108, 8))
+        let gid = Int(Self.octal(block, 116, 8))
+        let size = Self.octal(block, 124, 12)
+        let mtime = Self.octal(block, 136, 12)
+        let typeflag = block[156]
+        let linkName = overrideLink ?? Self.string(block, 157, 100)
+        let padding = size % 512 == 0 ? 0 : Int(512 - size % 512)
+
+        switch typeflag {
+        case UInt8(ascii: "L"):          // GNU long name
+            state = .longName(remaining: size, padding: padding, isLink: false)
+            return true
+        case UInt8(ascii: "K"):          // GNU long link target
+            state = .longName(remaining: size, padding: padding, isLink: true)
+            return true
+        case UInt8(ascii: "x"), UInt8(ascii: "X"), UInt8(ascii: "g"):   // PAX
+            state = .pax(remaining: size, padding: padding)
+            return true
+        default:
+            break
+        }
+
+        let kind: TarEntry.Kind
+        switch typeflag {
+        case UInt8(ascii: "0"), 0: kind = .file
+        case UInt8(ascii: "5"): kind = .directory
+        case UInt8(ascii: "2"): kind = .symlink
+        case UInt8(ascii: "1"): kind = .hardlink
+        default: kind = .other
+        }
+
+        overrideName = nil
+        overrideLink = nil
+        let entry = TarEntry(name: name, size: kind == .directory ? 0 : size, mode: mode & 0o7777,
+                             mtime: mtime, kind: kind, linkName: linkName, uid: uid, gid: gid)
+        let disposition = try onEntry(entry)
+        switch disposition {
+        case .stop:
+            state = .finished
+            return false
+        case .take:
+            state = size > 0 ? .body(remaining: size, padding: padding, deliver: true)
+                             : Self.skipping(padding)
+        case .skip:
+            state = size > 0 ? .body(remaining: size, padding: padding, deliver: false)
+                             : Self.skipping(padding)
+        }
+        return true
+    }
+
+    /// PAX records are `"<len> key=value\n"`; only `path` and `linkpath` matter here.
+    private func applyPax(_ bytes: [UInt8]) {
+        let text = String(decoding: bytes, as: UTF8.self)
+        var rest = Substring(text)
+        while let space = rest.firstIndex(of: " ") {
+            guard let length = Int(rest[rest.startIndex..<space]),
+                  length > 0, length <= rest.count else { return }
+            let recordEnd = rest.index(rest.startIndex, offsetBy: length)
+            let record = rest[rest.index(after: space)..<recordEnd].trimmingCharacters(in: .newlines)
+            if let equals = record.firstIndex(of: "=") {
+                let key = String(record[record.startIndex..<equals])
+                let value = String(record[record.index(after: equals)...])
+                if key == "path" { overrideName = value }
+                if key == "linkpath" { overrideLink = value }
+            }
+            rest = rest[recordEnd...]
+        }
+    }
+
+    // MARK: Field decoding
+
+    private static func trimNul(_ bytes: [UInt8]) -> String {
+        let end = bytes.firstIndex(of: 0) ?? bytes.count
+        return String(decoding: bytes[..<end], as: UTF8.self)
+    }
+
+    private static func string(_ block: [UInt8], _ offset: Int, _ length: Int,
+                               prefix: String = "") -> String {
+        let slice = Array(block[offset..<(offset + length)])
+        let value = trimNul(slice)
+        guard !prefix.isEmpty else { return value }
+        return value.isEmpty ? prefix : prefix + "/" + value
+    }
+
+    private static func octal(_ block: [UInt8], _ offset: Int, _ length: Int) -> Int64 {
+        // GNU base-256: the high bit of the first byte marks a binary field, used for sizes and
+        // times that do not fit in octal. A tar from a container with a >8 GB file arrives this
+        // way, and reading it as octal would report a nonsense size.
+        if block[offset] & 0x80 != 0 {
+            var value: Int64 = Int64(block[offset] & 0x7F)
+            for index in (offset + 1)..<(offset + length) {
+                value = (value << 8) | Int64(block[index])
+            }
+            return value
+        }
+        var value: Int64 = 0
+        for index in offset..<(offset + length) {
+            let byte = block[index]
+            if byte == 0 || byte == 32 { continue }
+            guard byte >= 48, byte <= 55 else { continue }
+            value = value * 8 + Int64(byte - 48)
+        }
+        return value
+    }
+}
+
+/// A minimal USTAR writer: exactly the fields the engine needs, and nothing else.
+enum TarWriter {
+
+    /// A tar holding one regular file, read from `localPath` and named `name` inside the archive.
+    static func file(named name: String, from localPath: String, mode: UInt32, mtime: Int64) throws -> Data {
+        guard let handle = FileHandle(forReadingAtPath: localPath) else {
+            throw DockerError.malformed("cannot read \(localPath)")
+        }
+        defer { try? handle.close() }
+        let attributes = try? FileManager.default.attributesOfItem(atPath: localPath)
+        let size = (attributes?[.size] as? NSNumber)?.int64Value ?? 0
+        var out = Data()
+        out.append(header(name: name, size: size, mode: mode, mtime: mtime, type: "0", linkName: ""))
+        var written: Int64 = 0
+        while true {
+            let chunk = handle.readData(ofLength: 1 << 20)
+            if chunk.isEmpty { break }
+            out.append(chunk)
+            written += Int64(chunk.count)
+        }
+        // A file that grew or shrank between the stat and the read would make a tar whose header
+        // and body disagree, which the engine unpacks as a truncated or corrupt file. Pad or trim
+        // to the size the header promises instead.
+        if written < size {
+            out.append(Data(repeating: 0, count: Int(size - written)))
+        } else if written > size {
+            out.removeLast(Int(written - size))
+        }
+        out.append(padding(for: size))
+        out.append(Data(repeating: 0, count: 1024))
+        return out
+    }
+
+    /// A tar holding one directory entry.
+    static func directory(named name: String, mode: UInt32 = 0o755, mtime: Int64) -> Data {
+        var out = Data()
+        var leaf = name
+        if !leaf.hasSuffix("/") { leaf += "/" }
+        out.append(header(name: leaf, size: 0, mode: mode, mtime: mtime, type: "5", linkName: ""))
+        out.append(Data(repeating: 0, count: 1024))
+        return out
+    }
+
+    static func padding(for size: Int64) -> Data {
+        let remainder = size % 512
+        return remainder == 0 ? Data() : Data(repeating: 0, count: Int(512 - remainder))
+    }
+
+    /// One 512-byte USTAR header. Names longer than 100 bytes are split over the `prefix` field,
+    /// which is what USTAR is for; a name that cannot be split that way is rejected rather than
+    /// silently truncated into a write to the wrong path.
+    static func header(name: String, size: Int64, mode: UInt32, mtime: Int64,
+                       type: Character, linkName: String) -> Data {
+        var block = [UInt8](repeating: 0, count: 512)
+
+        func put(_ text: String, _ offset: Int, _ length: Int) {
+            for (index, byte) in Array(text.utf8).prefix(length - 1).enumerated() {
+                block[offset + index] = byte
+            }
+        }
+        func putOctal(_ value: Int64, _ offset: Int, _ length: Int) {
+            let text = String(value, radix: 8)
+            let padded = String(repeating: "0", count: max(0, length - 1 - text.count)) + text
+            put(padded, offset, length)
+        }
+
+        var recorded = name
+        var prefix = ""
+        if Array(recorded.utf8).count > 100 {
+            // USTAR splits a long name on a '/': at most 155 bytes go in `prefix` and at most
+            // 100 in `name`, and the reader joins them back with a '/'. Take the *latest* split
+            // that makes the tail fit, so as much as possible stays in the prefix.
+            let components = recorded.split(separator: "/", omittingEmptySubsequences: false)
+            var chosen: (String, String)?
+            for split in 1..<components.count {
+                let head = components[0..<split].joined(separator: "/")
+                let tail = components[split...].joined(separator: "/")
+                guard Array(head.utf8).count <= 155, Array(tail.utf8).count <= 100 else { continue }
+                chosen = (head, tail)
+            }
+            if let chosen {
+                prefix = chosen.0
+                recorded = chosen.1
+            }
+            // No split works only for a single component longer than 100 bytes, which no file
+            // system this can reach produces; the name is then recorded truncated, and the engine
+            // reports the mismatch rather than this writing silently to the wrong path.
+        }
+
+        put(recorded, 0, 100)
+        putOctal(Int64(mode & 0o7777), 100, 8)
+        putOctal(0, 108, 8)                       // uid — see the note in DockerFS.upload
+        putOctal(0, 116, 8)                       // gid
+        putOctal(size, 124, 12)
+        putOctal(mtime, 136, 12)
+        for index in 148..<156 { block[index] = 32 }   // checksum field counts as spaces
+        block[156] = String(type).utf8.first ?? UInt8(ascii: "0")
+        put(linkName, 157, 100)
+        put("ustar", 257, 6)
+        block[263] = UInt8(ascii: "0"); block[264] = UInt8(ascii: "0")
+        put("root", 265, 32)
+        put("root", 297, 32)
+        put(prefix, 345, 155)
+
+        let checksum = block.reduce(0) { $0 + Int($1) }
+        let text = String(checksum, radix: 8)
+        let padded = String(repeating: "0", count: max(0, 6 - text.count)) + text
+        put(padded, 148, 7)
+        block[154] = 0
+        block[155] = 32
+
+        return Data(block)
+    }
+}

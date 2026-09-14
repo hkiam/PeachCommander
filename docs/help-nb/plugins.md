@@ -21,6 +21,7 @@ Flere programtillegg har sitt eget detaljerte hjelpeemne – følg lenken for he
 - **[Task Manager](task-manager.md)** – monterer prosessene dine som kjører som en **TaskManager**-stasjon du kan bla i; sorter dem, gransk dem som filer, eller avslutt dem med Slett.
 - **[Filsystemavbilder](filesystem-images.md)** — åpner en filsystemavbild (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som et arkiv, også diskavbilder med flere partisjoner. Bare lesing, og avslått til du slår det på.
 - **[Uninstaller](uninstaller.md)** – fjerner et program **og** støttefilene, hurtiglagrene og innstillingene det etterlater seg, etter å ha vist deg nøyaktig hva som forsvinner.
+- **[Docker](docker.md)** — utforsker Docker-containere og -volumer som stasjoner: Compose-prosjekter gruppert etter tjeneste, stoppede containere inkludert, og volumer som egne filsystemer. Av til du slår det på.
 
 De resterende innebygde programtilleggene er mindre og trenger ikke en egen side:
 

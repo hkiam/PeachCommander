@@ -21,6 +21,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **[Task Manager](task-manager.md)** —— 将你正在运行的进程挂载为一个可浏览的 **TaskManager** 驱动器；对它们排序、像文件一样查看，或用删除结束它们。
 - **[文件系统映像](filesystem-images.md)** — 像打开压缩包一样打开文件系统映像（SquashFS、ext、Btrfs、JFFS2、UBIFS、cramfs、initramfs、FAT、exFAT、NTFS），也包括含多个分区的磁盘映像。只读，并且在你启用之前处于关闭状态。
 - **[Uninstaller](uninstaller.md)** —— 移除一个应用程序**以及**它留下的支持文件、缓存和偏好设置，在此之前会准确地向你显示将被移除的内容。
+- **[Docker](docker.md)** — 把 Docker 容器和卷当作驱动器来浏览：Compose 项目按服务分组，包含已停止的容器，卷则是各自独立的文件系统。开启之前处于关闭状态。
 
 其余的内置插件较小，不需要各自单独的页面：
 

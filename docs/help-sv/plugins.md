@@ -21,6 +21,7 @@ Flera insticksprogram har sitt eget detaljerade hjälpavsnitt — följ länken 
 - **[Task Manager](task-manager.md)** — monterar dina processer som körs som en bläddringsbar **TaskManager**-enhet; sortera dem, granska dem som filer eller avsluta dem med Ta bort.
 - **[Filsystemsavbilder](filesystem-images.md)** — öppnar en filsystemsavbild (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som ett arkiv, även diskavbilder med flera partitioner. Endast läsning, och avstängd tills du slår på den.
 - **[Uninstaller](uninstaller.md)** — tar bort ett program **och** de stödfiler, cacheminnen och inställningar det lämnar efter sig, efter att ha visat dig exakt vad som kommer att försvinna.
+- **[Docker](docker.md)** — bläddrar i Docker-containrar och -volymer som enheter: Compose-projekt grupperade per tjänst, stoppade containrar inräknade, och volymer som egna filsystem. Av tills du slår på det.
 
 De återstående inbyggda insticksprogrammen är mindre och behöver ingen egen sida:
 
