@@ -4,15 +4,16 @@ slug: version-notes
 group: Get started
 section: user-guide
 order: 90
-related: [known-limitations]
+related: [whats-new, known-limitations]
 ---
 
 # Version notes
 
-Peach Commander is a **pre-1.0 preview**. The current build carries version
-**0.1.0**. This page summarizes what works today, what is still on the way, and
-the honest limits of this release, so you know what to expect before you install
-it.
+Peach Commander is a **pre-1.0 preview**. This page summarizes what works today,
+what is still on the way, and the honest limits of this release, so you know what
+to expect before you install it. For what each individual release changed — and
+which version you are looking at — see [What's new](whats-new.md), which is
+written from the changelog itself.
 
 Peach Commander is a **universal app** — it runs natively on both Apple Silicon
 and Intel Macs — and requires **macOS 13 (Ventura) or later**.
@@ -89,8 +90,9 @@ For the full list, workarounds, and details, read
 
 ## A note on version numbers
 
-Version numbers on this page come straight from the app and its changelog. As a
-pre-1.0 preview, features and shortcuts may still change between builds, and
-nothing here should be read as a promise of a specific future version. If your
-copy behaves differently from what this page describes, check the version shown
-in the **Help** menu against the number at the top of this page.
+As a pre-1.0 preview, features and shortcuts may still change between builds, and
+nothing here should be read as a promise of a specific future version. The version
+you are running is in the **Help** menu; what each release before it changed is on
+[What's new](whats-new.md). This page deliberately carries no version number of its
+own — it described 0.1.0 for eight releases after 0.1.0 had stopped being the
+current one.
