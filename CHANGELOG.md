@@ -2864,7 +2864,7 @@ this is the release to take.
 
 ## [0.1.0] — 2026-07-14
 
-First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
+First public beta: dual-panel browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
 [0.9.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1

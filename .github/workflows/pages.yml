@@ -13,6 +13,8 @@ on:
     branches: [main]
     paths:
       - docs/**
+      # The release-highlights page and the homepage band are generated from it.
+      - CHANGELOG.md
       - .github/workflows/pages.yml
   workflow_dispatch: {}
 

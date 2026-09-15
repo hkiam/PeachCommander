@@ -90,6 +90,7 @@ iteration logs) rather than being duplicated.
 | **GitHub README** | hand-written; its checkable claims are gated | — | `Tools/check-readme.py` |
 | **FEATURES.md** (feature overview) + glossary | `features.yml`, `terminology.yml` | generator | `docs/scripts/gen-overviews.py` |
 | **API reference** | Swift/C sources + doc-comments | generator | `docs/scripts/gen-api-reference.py` |
+| **Release highlights** (`whats-new`) + the homepage's latest-release band | `CHANGELOG.md` | generator | `docs/scripts/gen-whats-new.py` |
 | **Offline HTML** | `content/**` | MkDocs (`mkdocs build` output is self-contained) | `mkdocs build` |
 | **PDF** _(planned)_ | `content/**` | MkDocs + `mkdocs-with-pdf` | `ENABLE_PDF=1 mkdocs build` |
 
@@ -139,6 +140,7 @@ iteration logs) rather than being duplicated.
 | `build-site.py` | Stage `content/**` and each `help-<code>/` into MkDocs workspaces, generate `mkdocs.yml` and the nav, render 19 sites | built · gated |
 | `gen-api-reference.py` | Extract public C API + doc-comments from `Plugins/SDK/*.h` → `content/reference/` | built · gated |
 | `gen-overviews.py` | Generate `FEATURES.md` from `features.yml` and the glossary from `terminology.yml` | built · gated |
+| `gen-whats-new.py` | Turn each `CHANGELOG.md` release into a card on `whats-new.md`, and the newest one into the homepage band | built · gated |
 | `check-docs.py` | Front-matter completeness, `slug` == filename, `related`/link resolution, missing and unreferenced screenshots, terminology | built · gated |
 | `check-translations.py` | Every language has one `.md` per English help topic, and a translated value per UI string | built · gated |
 | `check-translation-drift.py` | Translated pages keep the English skeleton — headings, paragraph/list counts, image targets, code | built · gated |

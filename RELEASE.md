@@ -123,23 +123,29 @@ Tools/verify-shipping.sh path/to/App.app # plus every Mach-O is arm64 + x86_64
 ## Cutting a release
 
 ```bash
-# 1. Make sure main is green (CI, Docs, Pages) and the tree is clean.
+# 1. Write the CHANGELOG section for the version, then regenerate what reads it.
+#    The release notes (Tools/changelog-section.py) and the website's release
+#    highlights both come out of that section — see "The changelog is the source"
+#    below.
+python3 docs/scripts/gen-whats-new.py && git add -A && git commit
+
+# 2. Make sure main is green (CI, Docs, Pages) and the tree is clean.
 git switch main && git pull
 
-# 2. Dry-run the packaging pipeline without publishing anything.
+# 3. Dry-run the packaging pipeline without publishing anything.
 gh workflow run release.yml --ref main
 gh run watch
 
-# 3. Tag and push. This is what actually creates the release.
+# 4. Tag and push. This is what actually creates the release.
 git tag -a v0.9.0 -m "Peach Commander v0.9.0"
 git push origin v0.9.0
 
-# 4. Review the DRAFT release, then publish it.
+# 5. Review the DRAFT release, then publish it.
 gh release view v0.9.0
 gh release edit v0.9.0 --draft=false
 ```
 
-Step 4 is deliberately manual: the workflow creates the release as
+Step 5 is deliberately manual: the workflow creates the release as
 `draft: true`, so nothing becomes public until a human looks at the notes and the
 attached DMG.
 
@@ -147,15 +153,25 @@ attached DMG.
 `/releases/latest/download/PeachCommander.dmg` — a direct, always-current download that needs no edit
 per release. That route, and the `releases/latest` API the website prefers, both **skip pre-releases**:
 while v0.6.0 was the newest and carried that flag, the direct link answered 404 and the API said "Not
-Found" (measured, which is how it was found). So the flag is the switch, and step 4 above deliberately
+Found" (measured, which is how it was found). So the flag is the switch, and step 5 above deliberately
 does not set it. If a future build really is a pre-release, expect the README's button and the website's
 to fall back to the previous release, and say so in the release notes rather than leaving people to
 discover it.
 
+**The changelog is the source, in two places now.** The release notes attached to the GitHub
+release are the `CHANGELOG.md` section for that version (`Tools/changelog-section.py`), and the
+website's [release highlights](https://hkiam.github.io/PeachCommander/whats-new.html) page plus
+the band on its homepage are generated from the same file by
+`docs/scripts/gen-whats-new.py` — each release's opening prose and the bold sentence every entry
+starts with. Two consequences worth knowing before tagging: the Docs workflow **fails** if that
+page is not regenerated in the same commit as the changelog, and it fails if the prose carries a
+term `docs/metadata/terminology.yml` forbids, because the generated page is checked like any
+other documentation page. Fix that in the changelog rather than in the page.
+
 **Publishing matters for the website.** The download buttons on
 <https://hkiam.github.io/PeachCommander/> read the GitHub releases API
 (`docs/assets/website/download.js`). Draft releases are invisible to the anonymous
-API, so the buttons keep showing "No build published yet" until step 4 is done.
+API, so the buttons keep showing "No build published yet" until step 5 is done.
 Once a release is published the buttons pick it up on the next page load — no
 redeploy of the site is needed.
 
