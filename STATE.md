@@ -26,6 +26,45 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-15 — cutting 0.9.1, and the two things that went wrong on the way out
+
+The release itself is unremarkable and is in CHANGELOG. What is worth keeping is how it failed
+twice, because neither failure was in the app.
+
+**Homebrew dropped libssh2's x86_64 macOS bottle**, thirteen days after it did the same to
+`openssl@3`. `make-universal-deps.sh` refused to package, exactly as written — it could build openssl
+from source and said in as many words that it would not learn to build anything else. RELEASE.md had
+named the answers for this day: an Intel runner, or dropping the universal promise. There was a third
+nobody had priced, and *measuring* it rather than arguing it is what settled the choice: libssh2 is a
+small autotools project, it cross-compiles to x86_64 on Apple Silicon in seconds, and the openssl it
+links against is already built here for the same reason. Both slices now come from source. The line
+the script drew still holds — a third formula losing a bottle stops the release and earns the same
+measurement before it is added.
+
+Three details in that fix, each of which cost a wrong turn or nearly did:
+
+  * **The build order is written out, not sorted.** `sort` puts "libssh2" before "openssl@3" because
+    l < o, which is backwards — and it would only ever fail on the one machine this path runs on.
+  * **`--build` has to accompany `--host`**, or autotools infers host == build, quietly makes a
+    native build and hands back an arm64 dylib.
+  * **`-arch x86_64` belongs in `CC`, not `CFLAGS`**: libtool passes CC to the link step and CFLAGS
+    not always, which produces an arm64 dylib out of x86_64 objects.
+
+**Then GitHub's release API answered 500, 500, 502** — and had created the release anyway. This is
+the shape to remember: `softprops/action-gh-release` retried three times, reported "Too many
+retries", and failed the job, while a **draft existed server-side with the notes already on it and
+no asset attached**. The workflow's own steps told the true story — `Package DMG: success`,
+`Upload DMG artifact: success`, `Create GitHub Release: failure` — so the DMG was sitting in the
+run's artifact. Downloading it, checking it (0.9.1/19, universal binary, universal `libssh2.1.dylib`,
+22 plugins), `gh release upload` and `gh release edit --draft=false` finished what the action could
+not. Re-running the whole job would have rebuilt for twenty minutes to reach the same place.
+
+**And `gh release list` lied about the clean-up.** Deleting the orphan draft has to go by release
+*id* — `gh release delete v0.9.1` is ambiguous while two objects share the tag, and would have been
+a coin toss between the draft and the published release. Afterwards `gh release list` still showed
+the draft: it reads GraphQL, which lags a delete, while `gh api .../releases` is authoritative and
+showed one object. Believe the REST call, not the listing.
+
 ## 2026-09-15 — four reported things, and the one measurement each of them needed
 
 Four change requests from one user, in three places. Each had a claim underneath it that only a
