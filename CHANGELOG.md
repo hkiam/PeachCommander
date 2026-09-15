@@ -14,6 +14,27 @@ does not have.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.9.1] — 2026-09-15
+
+Docker as a drive, directory synchronisation worked through end to end, and a round of things
+reported by the people using it.
+
+A running container's filesystem browses like any other volume — its own drive, its volumes and
+compose projects as folders, its log as a *file* so F3, the viewer's search and its encoding picker
+all apply to it, and start/stop/restart in the same context menu as everything else. Synchronisation
+gained the half that was missing: it says what it is doing while it does it and can be called off, it
+remembers what a pair looked like last time so a deletion on one side is carried to the other rather
+than undone, it writes down what each run did and can put it back, and the preset now restores the
+*view* of a comparison as well as its rules. Underneath both, the copy engine stopped losing things
+at the edges — a symlink is copied as a symlink, an interrupted overwrite leaves the existing file
+untouched, and verify-after-copy reads half as much as it did.
+
+The rest came from use: the terminal tab's ✕ sits inside the tab and asks before closing, "Search in"
+stopped clipping its own letters, Escape closes the synchronise window, and the search dialog's third
+field remembers the folders you searched.
+
 ### Added
 
 - **A container's log is a file now.** Every container's root holds `docker-logs.txt`, and it is not
@@ -199,6 +220,54 @@ does not have.
   client — an ordinary thing for a share to be, and there the whole tree reads as changed. Loading a
   preset now also restores *Ignore a 1-hour difference* and *Case sensitive*, which the preset store
   had been round-tripping all along while the window quietly dropped back to the defaults.
+
+
+- **Synchronize Directories says what it is doing while it does it.** Comparing two large trees took
+  minutes during which the window showed the word "Comparing…" and nothing else — no count, no
+  spinner, no way to call it off; the only signal that the app was alive rather than wedged was that
+  it had not been force-quit yet. The scan now reports as it goes: the entries walked on each side,
+  then the files compared as `done/total`, with a spinner beside the count. The Compare button reads
+  **Stop** for as long as the scan runs and cancels it, and a cancelled scan leaves the previous
+  result standing rather than showing the half of the tree it had reached — a partial tree would have
+  classified every file it never saw as "only on the other side" and offered it for copying.
+
+- **The result grid now shows the dates, and can be ordered and asked about.** It showed two sizes
+  and an arrow, so the one thing that decides that arrow in the default mode — which side is newer —
+  could not be seen at all. Both timestamps are columns now; every column sorts by clicking its
+  header; a double-click (or **Compare** in the row's menu) opens the two sides in the text
+  comparison, and **Reveal in Finder** shows the file the row is about.
+
+- **A conflict can be given a direction.** When two files are the same age and differ anyway, the
+  classifier refuses to guess — and until now that refusal was final: the row could not be ticked, so
+  the pair could never be synchronized from this window at all. Clicking the **≠** now cycles it
+  through **→**, **←** and back, ticking the row when it points somewhere and unticking it when it
+  goes back to being a conflict. The counts under the grid follow what the row says now rather than
+  what the scan first decided, so a resolved conflict is counted in the direction it was given.
+
+- **Synchronizing reports its progress and can be stopped**, the way comparing already does: the
+  Synchronize button reads **Stop** while it runs, the status line counts the items, and stopping
+  between items leaves what was copied copied. Closing the window stops whichever of the two is
+  running instead of leaving it to finish into a window nobody can see.
+
+- **Swap sides**, which is also how the right-hand tree becomes the master: mirroring only ever runs
+  left → right, so "the right side is the one that wins" previously had no way to be said. It is
+  worth having on its own — the panels decide which folder lands on which side, and they are often
+  the wrong way round.
+
+- **Two comparison options that existed in the model and nowhere on screen.** *Ignore a 1-hour
+  difference* absorbs the FAT/daylight-saving offset that makes an unchanged file look an hour old;
+  *Case sensitive* decides whether two names differing only in case are the same file. The options
+  now sit on two rows rather than one, so the window's minimum width does not grow with them.
+
+- **A direction filter over the compared result, and it drives the selection.** **Show** narrows the
+  grid to everything, to the rows whose change lands on the right (**→**), or to those that land on
+  the left (**←**); **Hide identical** leaves out the files that are already the same on both sides,
+  which until now could not be got out of the way at all. **Select All** then ticks exactly what is
+  on screen and unticks everything the filter hides, so choosing a direction and pressing it is a
+  one-way run in two clicks; **Deselect All** clears every row, shown or not, for picking by hand.
+  Reversing a row's direction moves it out of a filter it no longer belongs to instead of sitting
+  there pointing the wrong way, and the status line — which counts what Synchronize will actually do,
+  filtered or not — says how many rows the filter is holding back.
 
 ### Changed
 
@@ -555,56 +624,6 @@ suspect rather than asserting it. Three lost data outright.
   one file — so the bar filled past its own end. A link pointing at itself is now refused instead of
   recursing until the stack runs out.
 
-### Added
-
-- **Synchronize Directories says what it is doing while it does it.** Comparing two large trees took
-  minutes during which the window showed the word "Comparing…" and nothing else — no count, no
-  spinner, no way to call it off; the only signal that the app was alive rather than wedged was that
-  it had not been force-quit yet. The scan now reports as it goes: the entries walked on each side,
-  then the files compared as `done/total`, with a spinner beside the count. The Compare button reads
-  **Stop** for as long as the scan runs and cancels it, and a cancelled scan leaves the previous
-  result standing rather than showing the half of the tree it had reached — a partial tree would have
-  classified every file it never saw as "only on the other side" and offered it for copying.
-
-- **The result grid now shows the dates, and can be ordered and asked about.** It showed two sizes
-  and an arrow, so the one thing that decides that arrow in the default mode — which side is newer —
-  could not be seen at all. Both timestamps are columns now; every column sorts by clicking its
-  header; a double-click (or **Compare** in the row's menu) opens the two sides in the text
-  comparison, and **Reveal in Finder** shows the file the row is about.
-
-- **A conflict can be given a direction.** When two files are the same age and differ anyway, the
-  classifier refuses to guess — and until now that refusal was final: the row could not be ticked, so
-  the pair could never be synchronized from this window at all. Clicking the **≠** now cycles it
-  through **→**, **←** and back, ticking the row when it points somewhere and unticking it when it
-  goes back to being a conflict. The counts under the grid follow what the row says now rather than
-  what the scan first decided, so a resolved conflict is counted in the direction it was given.
-
-- **Synchronizing reports its progress and can be stopped**, the way comparing already does: the
-  Synchronize button reads **Stop** while it runs, the status line counts the items, and stopping
-  between items leaves what was copied copied. Closing the window stops whichever of the two is
-  running instead of leaving it to finish into a window nobody can see.
-
-- **Swap sides**, which is also how the right-hand tree becomes the master: mirroring only ever runs
-  left → right, so "the right side is the one that wins" previously had no way to be said. It is
-  worth having on its own — the panels decide which folder lands on which side, and they are often
-  the wrong way round.
-
-- **Two comparison options that existed in the model and nowhere on screen.** *Ignore a 1-hour
-  difference* absorbs the FAT/daylight-saving offset that makes an unchanged file look an hour old;
-  *Case sensitive* decides whether two names differing only in case are the same file. The options
-  now sit on two rows rather than one, so the window's minimum width does not grow with them.
-
-- **A direction filter over the compared result, and it drives the selection.** **Show** narrows the
-  grid to everything, to the rows whose change lands on the right (**→**), or to those that land on
-  the left (**←**); **Hide identical** leaves out the files that are already the same on both sides,
-  which until now could not be got out of the way at all. **Select All** then ticks exactly what is
-  on screen and unticks everything the filter hides, so choosing a direction and pressing it is a
-  one-way run in two clicks; **Deselect All** clears every row, shown or not, for picking by hand.
-  Reversing a row's direction moves it out of a filter it no longer belongs to instead of sitting
-  there pointing the wrong way, and the status line — which counts what Synchronize will actually do,
-  filtered or not — says how many rows the filter is holding back.
-
-### Fixed
 
 - **`Case sensitive` was declared, saved in presets, and never read.** Matching was always exact, so
   on a case-insensitive volume — which is what macOS formats by default — `README.md` and `readme.md`
@@ -2848,6 +2867,8 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.9.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1
+[0.9.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.0
 [0.8.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.2
 [0.8.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.1
 [0.8.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0
