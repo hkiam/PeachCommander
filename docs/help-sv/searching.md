@@ -43,7 +43,7 @@ För lokala mappar som macOS redan har indexerat, slå på **Använd Spotlight**
 
 - **Skicka till lista** placerar varje resultat i den aktiva panelen som en tillfällig lista, så att du kan kopiera, flytta eller radera hela uppsättningen på en gång.
 - På fliken **Läs in / Spara**, välj **Spara som mall…** för att lagra den aktuella sökningen (mönster och alternativ) och välja den igen senare från mall-listan.
-- **Sök efter** och **Sök text** kommer vardera ihåg de 20 senaste posterna du sökt med, senast använda först — klicka på pilen i slutet av fältet för att välja en igen. Ett uttryck som används två gånger flyttas överst i stället för att stå med två gånger, och listorna överlever både att fönstret stängs och att appen avslutas. **Rensa historiken…** på fliken **Läs in / Spara** glömmer bort båda; sparade mallar påverkas inte.
+- **Sök efter**, **Sök i** och **Sök text** kommer vardera ihåg de 20 senaste posterna du sökt med, senast använda först — klicka på pilen i slutet av fältet för att välja en igen. Ett uttryck som används två gånger flyttas överst i stället för att stå med två gånger, och listorna överlever både att fönstret stängs och att appen avslutas. **Rensa historiken…** på fliken **Läs in / Spara** glömmer bort alla tre; sparade mallar påverkas inte.
 
 ## Kortkommandon
 

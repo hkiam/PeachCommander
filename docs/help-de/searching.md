@@ -43,7 +43,7 @@ Für lokale Ordner, die macOS bereits indiziert hat, schalten Sie **Spotlight ve
 
 - **An Listenfeld übergeben** platziert jedes Ergebnis als temporäre Liste in das aktive Panel, sodass Sie den gesamten Satz auf einmal kopieren, verschieben oder löschen können.
 - Wählen Sie auf dem Tab **Laden / Speichern** die Option **Als Vorlage speichern…**, um die aktuelle Suche (Muster und Optionen) zu speichern und sie später wieder aus der Vorlagenliste auszuwählen.
-- **Suchen nach** und **Text suchen** merken sich jeweils die letzten 20 verwendeten Einträge, zuletzt verwendete zuerst — klicken Sie auf den Pfeil am Ende des Feldes, um einen davon erneut zu wählen. Ein zweimal verwendeter Begriff rückt wieder nach oben, statt doppelt zu erscheinen, und die Listen überstehen das Schließen des Fensters und das Beenden der App. **Verlauf leeren…** auf dem Tab **Laden / Speichern** vergisst beide; gesicherte Vorlagen bleiben unberührt.
+- **Suchen nach**, **Suchen in** und **Text suchen** merken sich jeweils die letzten 20 verwendeten Einträge, zuletzt verwendete zuerst — klicken Sie auf den Pfeil am Ende des Feldes, um einen davon erneut zu wählen. Ein zweimal verwendeter Begriff rückt wieder nach oben, statt doppelt zu erscheinen, und die Listen überstehen das Schließen des Fensters und das Beenden der App. **Verlauf leeren…** auf dem Tab **Laden / Speichern** vergisst alle drei; gesicherte Vorlagen bleiben unberührt.
 
 ## Tastaturkürzel
 

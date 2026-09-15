@@ -43,7 +43,7 @@ For lokale mapper som macOS allerede har indeksert, slå på **Bruk Spotlight** 
 
 - **Send til liste** plasserer hvert resultat i det aktive panelet som en midlertidig liste, slik at du kan kopiere, flytte eller slette hele settet på én gang.
 - På **Last inn / Lagre**-fanen velger du **Lagre som mal…** for å lagre det gjeldende søket (mønstre og alternativer) og velge det igjen senere fra mal-listen.
-- **Søk etter** og **Finn tekst** husker hver de siste 20 oppføringene du søkte med, sist brukte først — klikk pilen i enden av feltet for å velge en av dem igjen. Et uttrykk du bruker to ganger flyttes øverst i stedet for å stå der to ganger, og listene overlever både at vinduet lukkes og at appen avsluttes. **Tøm historikken…** på **Last inn / Lagre**-fanen glemmer begge; lagrede maler berøres ikke.
+- **Søk etter**, **Søk i** og **Finn tekst** husker hver de siste 20 oppføringene du søkte med, sist brukte først — klikk pilen i enden av feltet for å velge en av dem igjen. Et uttrykk du bruker to ganger flyttes øverst i stedet for å stå der to ganger, og listene overlever både at vinduet lukkes og at appen avsluttes. **Tøm historikken…** på **Last inn / Lagre**-fanen glemmer alle tre; lagrede maler berøres ikke.
 
 ## Snarveier
 

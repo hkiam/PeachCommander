@@ -46,20 +46,51 @@ the shell has printed lives. A tab with a job still names the job, because that 
 decides it. `foregroundJob` runs `/bin/ps`, so it is read once and kept — read twice, a job ending
 between the two reads would be named in the message over a button saying "Close Tab".
 
-**"Search in" was one line tall, and the report was "the text is only half visible".** The first
-guess was vertical clipping, and the measurement said otherwise: all three entry controls were 24 pt
-and fitted their text exactly. What is wrong is the *shape* — the field takes several folders
-separated by `;`, and at 379 pt it showed `/Users/…/PeachCommander/Sources/` and stopped, with no
-ellipsis and nothing to say the rest was there. So the answer to "where am I searching" lived only in
-the tooltip, which nobody opens to read what they typed. Three lines, wrapping by character (a path
-has no spaces to break at).
+**"Search in" clipped its own letters, and my first fix was to the wrong thing.** The report was
+"one line does not fit in the height, the characters are cut off top and bottom, and it had a
+different height from Suchen nach". I read that as "not enough room for the text", made the field
+three lines tall and wrapping, and shipped it — which is not what was asked for and costs space.
+Corrected the same day, on the user's own reading of their report.
 
-**A wrapping field silently takes Return away from the default button**, because its editor is a real
-multi-line one and `insertNewline(_:)` never leaves it. `control(_:textView:doCommandBy:)` puts it
-back, and the new `findreturn` verb is what proves it: `doCommand(by:)` and not `insertNewline(nil)`,
-since the first is the step `interpretKeyEvents` takes that consults the delegate — calling the
-editor's own method would bypass exactly the code under test. Measured both ways: with the guard
-disabled the same verb answers `searching=false`.
+What it actually is, measured *in the app* rather than from a screenshot: all three entry controls
+are 24 pt with a **16 pt text rect**, and 13 pt system text needs exactly **16** — no slack at all —
+so where the line sits *inside* that rect decides whether an "Ä" keeps its dots. A bare `NSTextField`
+sets it lower than the `NSComboBox` beside it (`firstBaselineOffsetFromTop` 17 against 13), and on
+this field the tails of "g" and "j" met the bottom edge while the umlauts met the top. It shows on
+this field and no other because it is the only one that always holds a real path — "Search for"
+holds `*.*`, "Find text" is usually empty — and it was reported from **Midnight**, where light
+glyphs on a dark fill make the contact obvious. `usesSingleLineMode`, `cell.isScrollable` and
+`bezelStyle = .roundedBezel` were each tried and each moved nothing.
+
+It is an `NSComboBox` now, like the two fields it sits between, and all three report
+`baseline=13/3`. Two alternatives were measured and rejected: 2 pt more height does fix the field's
+own text rect (18 against 16 needed) but the combo boxes ignore extra height and stay at 16, so the
+box ends up 2 pt taller than its neighbours — the "different height" complaint in the other
+direction; and leaving it alone keeps the clipping. Making it the same *control* is the only one of
+the three that satisfies "one line", "not clipped" and "same height as its neighbours" at once. The
+choice between them was the user's, because what is left is a question about what they see.
+
+The dropdown it gains is not a side effect worth apologising for: the other two fields have
+remembered what was typed into them since F-406, and a folder is the most re-used of the three. A
+third `RecentLines` list (`find-folders.txt`), holding the field's whole value per entry rather than
+one path per entry — a search over two folders is one thing somebody set up, and offering back half
+of it would offer a search that never ran.
+
+**This is the same trap the InputDialog fix of 2026-09-03 wrote down** ("a text field created in
+code is a *wrapping, non-scrolling* field by default"), one level further on: there the long path
+laid itself out over three lines inside a 24-point field, here the single line sits a few points too
+low in a rect with no room to spare. Worth knowing that the entry existed and I did not find it
+until after the wrong fix had been committed.
+
+**Two lessons about the measuring, both of which cost a wrong fix.** A `cacheDisplay` screenshot is
+not evidence about *where a glyph sits*: its colours are wrong for a themed window, its scale changed
+between runs (1280×1340 once, 640×670 the next), and eyeballing an anti-aliased edge at 5× produced
+"all three are 24 pt and fit" — true, and the answer to a question nobody asked. What settled it was
+asking the *cell*: `drawingRect(forBounds:)`, `titleRect(forBounds:)` and `ascender - descender`,
+printed side by side for all three controls. That triple is in the dialog's automation report and in
+the `find-searchin` scenario now, because it is the only form in which this class of defect can be
+seen at all. And the first report from a user is about what they *see*; "the height is wrong" was
+right, and my reading of which height was not.
 
 **The sync presets saved the comparison and not the view of it.** The direction filter and "Hide
 identical" were left out because they narrow the *result* rather than the comparison. That is the

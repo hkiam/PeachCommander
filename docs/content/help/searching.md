@@ -44,7 +44,7 @@ For local folders that macOS has already indexed, turn on **Use Spotlight** on t
 
 - **Feed to Listbox** places every result into the active panel as a temporary list, so you can copy, move, or delete the whole set at once.
 - On the **Load / Save** tab, choose **Save as Template…** to store the current search (patterns and options) and pick it again later from the template list.
-- **Search for** and **Find text** each remember the last 20 entries you searched with, most recently used first — click the arrow at the end of the field to pick one again. The same term used twice moves back to the top rather than appearing twice, and the lists survive closing the window and quitting the app. **Clear History…** on the **Load / Save** tab forgets both of them; saved templates are not affected.
+- **Search for**, **Search in** and **Find text** each remember the last 20 entries you searched with, most recently used first — click the arrow at the end of the field to pick one again. The same term used twice moves back to the top rather than appearing twice, and the lists survive closing the window and quitting the app. **Clear History…** on the **Load / Save** tab forgets all three; saved templates are not affected.
 
 ## Shortcuts
 

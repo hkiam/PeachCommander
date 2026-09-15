@@ -36,11 +36,24 @@ public final class FindFilesWindowController: NSWindowController {
     /// True while a search is in progress (Start acts as Stop).
     private var isSearching = false
 
-    /// "Search for:" and "Find text:" are combo boxes rather than plain fields because each carries its
+    /// "Search for:", "Search in:" and "Find text:" are combo boxes rather than plain fields because each carries its
     /// own history (F-406) — a dropdown of what was searched for before, most recent first. `NSComboBox`
     /// *is* an `NSTextField`, so everything else in this file reads and writes them unchanged.
     private let nameMaskField = NSComboBox()
-    private let startDirField = NSTextField()
+    /// "Search in:" — a combo box, like the two fields it sits between.
+    ///
+    /// It was a plain `NSTextField`, and that is what the row's reported defect came down to. All
+    /// three controls are 24 pt with a 16 pt text rect, and a 13 pt font needs exactly 16 — no slack
+    /// at all — but a bare field sets its line lower inside that rect than `NSComboBox` does, so on
+    /// this one the tail of a "g" met the bottom edge and the umlaut of an "Ä" the top. Visible here
+    /// and nowhere else because this is the field that always holds a real path; measured in
+    /// Midnight, where light glyphs on a dark fill make the contact obvious.
+    ///
+    /// Made the same control as its neighbours rather than nudged: two controls that must line up
+    /// exactly, drawn by different AppKit classes, is the arrangement that produced this. The
+    /// dropdown it gains is not a side effect worth apologising for — the other two fields have
+    /// remembered what was typed into them since F-406, and a folder is the most re-used of the three.
+    private let startDirField = NSComboBox()
     // Content-field predicate (F-157): "<field> <op> <value>", e.g. fileinfo.width > 1000.
     private let contentFieldCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let contentFieldPopup = NSPopUpButton()
@@ -219,6 +232,34 @@ public final class FindFilesWindowController: NSWindowController {
             // is measured from the longest label and so differs per language (94 pt in English, 103
             // in German), and an assertion about one of them fails in the other.
             + "searchInRow=\(Int(startDirField.superview?.frame.height ?? 0))\n"
+            // What each control gives its text, which is where this row's reported defect lived and
+            // the only place it was visible. All three are 24 pt with a 16 pt text rect, and 13 pt
+            // system text needs exactly 16 — no slack — so where the line sits *inside* that rect
+            // decides whether an "Ä" keeps its dots. A bare NSTextField set it lower than
+            // NSComboBox (`baseline` 17 against 13) and the descenders met the bottom edge.
+            + entries.map { name, view -> String in
+                guard let c = view as? NSControl else { return "\(name)=?" }
+                let cellSize = c.cell?.cellSize ?? .zero
+                let insets = c.alignmentRectInsets
+                return "\(name): frame=\(Int(c.frame.width))x\(Int(c.frame.height))"
+                    + " intrinsic=\(Int(c.intrinsicContentSize.height))"
+                    + " cellSize=\(Int(cellSize.height))"
+                    + " controlSize=\(c.controlSize.rawValue)"
+                    + " insets=\(insets.top)/\(insets.bottom)"
+                    + " baseline=\(Int(c.firstBaselineOffsetFromTop))/\(Int(c.lastBaselineOffsetFromBottom))"
+                    + {
+                        guard let cell = c.cell else { return "" }
+                        let drawing = cell.drawingRect(forBounds: c.bounds)
+                        let title = cell.titleRect(forBounds: c.bounds)
+                        let f = c.font ?? .systemFont(ofSize: 13)
+                        // What the glyphs of this font need, top to bottom, including the room the
+                        // umlaut of an "Ä" and the tail of a "g" actually use.
+                        let need = ceil(f.ascender - f.descender)
+                        return " drawn=\(Int(drawing.height))@\(Int(drawing.minY))"
+                            + " title=\(Int(title.height))@\(Int(title.minY))"
+                            + " needs=\(Int(need))"
+                    }()
+            }.joined(separator: "\n") + "\n"
             + "searchInText=[\(startDirField.stringValue)]\n"
             + "typed=[\(findTextField.stringValue)]\nfieldEnabled=\(findTextField.isEnabled)\n"
             + "case=\(state(caseSensitiveCheckbox))\nregex=\(state(regexCheckbox))\n"
@@ -230,28 +271,6 @@ public final class FindFilesWindowController: NSWindowController {
     /// Point a scripted search at a directory (automation).
     public func automationSetDirectory(_ path: String) {
         startDirField.stringValue = path
-    }
-
-    /// Press Return in "Search in", the way a keypress reaches it, and say what came of it.
-    ///
-    /// `doCommand(by:)` and not `insertNewline(nil)`: the first is what `interpretKeyEvents` calls
-    /// after turning the key into a command, and it is the step that consults the field's delegate.
-    /// Calling the editor's own method instead would bypass exactly the code this is about.
-    ///
-    /// Worth a verb of its own because the failure is invisible. The field wraps now, so its editor
-    /// is a real multi-line one and Return is swallowed there rather than reaching the default
-    /// button; a build without `control(_:textView:doCommandBy:)` answers this with a field that has
-    /// quietly gained a blank line and a search that never started — and a screenshot of a field with
-    /// a blank line in it looks like a field.
-    public func automationReturnInSearchIn() -> String {
-        window?.makeFirstResponder(startDirField)
-        guard let editor = window?.fieldEditor(false, for: startDirField) as? NSTextView else {
-            return "ERROR: no field editor\n"
-        }
-        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
-        return "searching=\(isSearching)\n"
-            + "editorHasNewline=\(editor.string.contains { $0.isNewline })\n"
-            + "searchInText=[\(startDirField.stringValue)]\n"
     }
 
     /// "View" on the first result, exactly as the button does — the path a hit takes into the viewer,
@@ -266,6 +285,7 @@ public final class FindFilesWindowController: NSWindowController {
     /// otherwise a list AppKit draws in a popped-up window.
     public func automationHistoryDump() -> String {
         "names=" + nameMaskField.objectValues.map { "\($0)" }.joined(separator: ",") + "\n"
+        + "folders=" + startDirField.objectValues.map { "\($0)" }.joined(separator: ",") + "\n"
         + "texts=" + findTextField.objectValues.map { "\($0)" }.joined(separator: ",") + "\n"
     }
 
@@ -379,29 +399,6 @@ public final class FindFilesWindowController: NSWindowController {
         startDirField.stringValue = startDirectory
         startDirField.font = Fonts.system13
         startDirField.toolTip = String(localized: "One or more folders, separated by “;”, are each searched (F-150).")
-        // Three lines, and the text wraps. One line was this field's shape since it was written, and
-        // it is the wrong shape for what goes in it: a single ordinary path already runs off the end
-        // with nothing to say so — measured, a field 379 pt wide showed
-        // "/Users/maik1/Sources/github/PeachCommander/Sources/" and stopped — and the field takes
-        // *several* paths at once. "Where am I searching" was then a question only the tooltip
-        // answered, and nobody opens a tooltip to read what they typed.
-        startDirField.usesSingleLineMode = false
-        // By character, not by word: a path has no spaces to break at, so word wrapping puts one long
-        // component on a line of its own and leaves the rest of the line empty.
-        startDirField.lineBreakMode = .byCharWrapping
-        startDirField.cell?.wraps = true
-        startDirField.cell?.isScrollable = false
-        startDirField.maximumNumberOfLines = 0
-        // Return has to keep starting the search. A wrapping field's editor is a real multi-line one,
-        // so the key that used to reach the default button now inserts a newline instead — see
-        // `control(_:textView:doCommandBy:)`, which puts it back.
-        startDirField.delegate = self
-        // Three lines of 13 pt text plus the cell's own insets. A floor rather than a fixed height:
-        // the row must be free to grow if a future language or control size needs more, and the
-        // stack it sits in hands out the leftover height to whatever hugs least.
-        let startDirHeight = startDirField.heightAnchor.constraint(greaterThanOrEqualToConstant: 57)
-        startDirHeight.priority = .init(999)
-        startDirHeight.isActive = true
 
         // No checkbox in front of the content term (F-407): the field decides. Something in it is
         // searched for, an empty one is not — which is what the tick box said anyway, one click later,
@@ -417,6 +414,7 @@ public final class FindFilesWindowController: NSWindowController {
         // word for you turns "*.s" into last week's "*.swift" the moment you stop typing, and the term
         // that actually ran would then be one nobody typed.
         for (combo, label) in [(nameMaskField, String(localized: "Search for:")),
+                               (startDirField, String(localized: "Search in:")),
                                (findTextField, String(localized: "Find text:"))] {
             combo.usesDataSource = false
             combo.completes = false
@@ -543,7 +541,7 @@ public final class FindFilesWindowController: NSWindowController {
         clearHistoryButton.bezelStyle = .rounded
         clearHistoryButton.target = self
         clearHistoryButton.action = #selector(clearHistory)
-        clearHistoryButton.toolTip = String(localized: "Forget the entries remembered by the “Search for” and “Find text” fields.")
+        clearHistoryButton.toolTip = String(localized: "Forget the entries remembered by the “Search for”, “Search in” and “Find text” fields.")
 
         // --- Tabbed options area (F-150): General / Advanced / Plugins / Load & Save ---
         let tabView = optionsTabView
@@ -574,7 +572,7 @@ public final class FindFilesWindowController: NSWindowController {
         tabView.addTabViewItem(form.makeTab(String(localized: "Load / Save"), rows: [
             form.hintLabel(String(localized: "Load a saved search, or save the current settings as a reusable template.")),
             tmplRow,
-            form.hintLabel(String(localized: "“Search for” and “Find text” each offer the last 20 entries you searched with, most recently used first.")),
+            form.hintLabel(String(localized: "“Search for”, “Search in” and “Find text” each offer the last 20 entries you searched with, most recently used first.")),
             clearHistoryButton,
         ]))
         content.addSubview(tabView)
@@ -792,15 +790,20 @@ public final class FindFilesWindowController: NSWindowController {
     private func rememberSearchTerms() {
         guard let history else { return }
         history.names.remember(nameMaskField.stringValue)
+        // The folder is recorded whatever kind of search this was: unlike the content term it always
+        // took part, and an empty-folder search is exactly the kind somebody repeats over the same
+        // tree. `RecentLines` ignores an empty line, so a cleared field adds nothing.
+        history.folders.remember(startDirField.stringValue)
         if emptyDirsCheckbox.state != .on {
             history.texts.remember(findTextField.stringValue)
         }
         reloadHistories()
     }
 
-    /// Refill both dropdowns from disk, leaving what is typed in the fields alone.
+    /// Refill every dropdown from disk, leaving what is typed in the fields alone.
     private func reloadHistories() {
-        for (combo, entries) in [(nameMaskField, history?.names), (findTextField, history?.texts)] {
+        for (combo, entries) in [(nameMaskField, history?.names), (startDirField, history?.folders),
+                                 (findTextField, history?.texts)] {
             combo.removeAllItems()
             combo.addItems(withObjectValues: entries?.load() ?? [])
         }
@@ -810,7 +813,7 @@ public final class FindFilesWindowController: NSWindowController {
     @objc private func clearHistory() {
         let alert = NSAlert()
         alert.messageText = String(localized: "Forget the remembered search entries?")
-        alert.informativeText = String(localized: "The “Search for” and “Find text” fields will offer nothing until you search again. Saved templates are not affected.")
+        alert.informativeText = String(localized: "The “Search for”, “Search in” and “Find text” fields will offer nothing until you search again. Saved templates are not affected.")
         alert.addButton(withTitle: String(localized: "Clear"))
         alert.addButton(withTitle: String(localized: "Cancel"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }
@@ -1009,24 +1012,6 @@ extension FindFilesWindowController: NSComboBoxDelegate {
     /// field's value is the new one — hence the hop through the main queue.
     public func comboBoxSelectionDidChange(_ notification: Notification) {
         DispatchQueue.main.async { [weak self] in self?.updateOptionAvailability() }
-    }
-
-    /// Return in the (now multi-line) "Search in" field starts the search, as it always did.
-    ///
-    /// The default button's `keyEquivalent` no longer sees that key: a wrapping field gets a real
-    /// multi-line field editor, and its `insertNewline(_:)` is handled by the editor itself before
-    /// the key ever reaches the window. Without this, Return in the one field whose whole job is to
-    /// be typed into silently added a blank line instead of starting the search.
-    public func control(_ control: NSControl, textView: NSTextView,
-                        doCommandBy commandSelector: Selector) -> Bool {
-        guard control === startDirField,
-              commandSelector == #selector(NSResponder.insertNewline(_:)) else { return false }
-        // Commit what is in the editor first: `stringValue` is still the pre-edit value until the
-        // field gives up first responder, so starting the search from here without this searched the
-        // folder the field held before the user typed.
-        window?.makeFirstResponder(nil)
-        handleStartStop()
-        return true
     }
 }
 

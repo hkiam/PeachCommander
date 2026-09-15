@@ -43,7 +43,7 @@ Pri lokálnych priečinkoch, ktoré macOS už zaindexoval, zapnite **Použiť Sp
 
 - **Poslať do zoznamu** umiestni každý výsledok do aktívneho panela ako dočasný zoznam, takže môžete celú sadu skopírovať, presunúť alebo odstrániť naraz.
 - Na karte **Načítať / Uložiť** vyberte **Uložiť ako šablónu…** na uloženie aktuálneho hľadania (vzory a možnosti) a jeho neskoršie opätovné vybratie zo zoznamu šablón.
-- **Hľadať** aj **Nájsť text** si pamätajú posledných 20 použitých výrazov, naposledy použité ako prvé — kliknutím na šípku na konci poľa niektorý z nich vyberiete znova. Dvakrát použitý výraz sa vráti nahor, namiesto toho aby sa objavil dvakrát, a zoznamy prežijú zatvorenie okna aj ukončenie aplikácie. **Vymazať históriu…** na karte **Načítať / Uložiť** zabudne oba; uložených šablón sa to netýka.
+- **Hľadať**, **Hľadať v** aj **Nájsť text** si pamätajú posledných 20 použitých výrazov, naposledy použité ako prvé — kliknutím na šípku na konci poľa niektorý z nich vyberiete znova. Dvakrát použitý výraz sa vráti nahor, namiesto toho aby sa objavil dvakrát, a zoznamy prežijú zatvorenie okna aj ukončenie aplikácie. **Vymazať históriu…** na karte **Načítať / Uložiť** zabudne všetky tri; uložených šablón sa to netýka.
 
 ## Skratky
 

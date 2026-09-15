@@ -43,7 +43,7 @@ Para carpetas locales que macOS ya ha indexado, activa **Usar Spotlight** en la 
 
 - **Enviar a la lista** coloca cada resultado en el panel activo como una lista temporal, para que puedas copiar, mover o eliminar todo el conjunto de una vez.
 - En la pestaña **Cargar / Guardar**, elige **Guardar como plantilla…** para almacenar la búsqueda actual (patrones y opciones) y volver a elegirla más tarde en la lista de plantillas.
-- **Buscar** y **Buscar texto** recuerdan cada uno las últimas 20 entradas que has usado, la más reciente primero: haz clic en la flecha al final del campo para volver a elegir una. Un término usado dos veces vuelve arriba en lugar de aparecer duplicado, y las listas sobreviven al cierre de la ventana y a la salida de la app. **Borrar historial…** en la pestaña **Cargar / Guardar** olvida ambas; las plantillas guardadas no se ven afectadas.
+- **Buscar**, **Buscar en** y **Buscar texto** recuerdan cada uno las últimas 20 entradas que has usado, la más reciente primero: haz clic en la flecha al final del campo para volver a elegir una. Un término usado dos veces vuelve arriba en lugar de aparecer duplicado, y las listas sobreviven al cierre de la ventana y a la salida de la app. **Borrar historial…** en la pestaña **Cargar / Guardar** olvida las tres; las plantillas guardadas no se ven afectadas.
 
 ## Atajos
 

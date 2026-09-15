@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
-// FindFilesHistory.swift - What the Find Files dialog's two search fields remember (F-406).
+// FindFilesHistory.swift - What the Find Files dialog's three search fields remember (F-406).
 //
-// Two lists, not one: a name mask and a content term are different kinds of thing, and a dropdown that
-// offered `*.log` next to `TODO(` would make both fields worse. Each is a `RecentLines`, so the
-// promote-on-reuse rule and the file permissions are the same ones the editor's filter history uses.
+// Three lists, not one: a name mask, a content term and a folder are different kinds of thing, and a
+// dropdown that offered `*.log` next to `TODO(` would make both fields worse. Each is a `RecentLines`,
+// so the promote-on-reuse rule and the file permissions are the same ones the editor's filter history
+// uses.
 //
 // Separate files rather than two sections of one, for the same reason `RecentLines` is not INI: a search
 // term is arbitrary text, and a format with no delimiters to escape cannot be corrupted by one.
@@ -16,16 +17,24 @@ public struct FindFilesHistory: Sendable {
     public let names: RecentLines
     /// "Find text:" — content terms, including hex strings when hex mode was on.
     public let texts: RecentLines
+    /// "Search in:" — the folders searched, ";"-separated exactly as the field held them.
+    ///
+    /// The field's whole value and not one path per entry: a search over two folders is one thing
+    /// somebody set up, and splitting it into two entries would offer back halves of it that were
+    /// never searched together.
+    public let folders: RecentLines
 
     public init(configRoot: URL, limit: Int = RecentLines.defaultLimit) {
         self.names = RecentLines(url: configRoot.appendingPathComponent("find-names.txt"), limit: limit)
         self.texts = RecentLines(url: configRoot.appendingPathComponent("find-texts.txt"), limit: limit)
+        self.folders = RecentLines(url: configRoot.appendingPathComponent("find-folders.txt"), limit: limit)
     }
 
-    /// Forget both lists. One call, because the dialog offers one "clear" and a half-cleared history
+    /// Forget every list. One call, because the dialog offers one "clear" and a half-cleared history
     /// would be a puzzle rather than a state anybody asked for.
     public func clear() {
         names.clear()
         texts.clear()
+        folders.clear()
     }
 }

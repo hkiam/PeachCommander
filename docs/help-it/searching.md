@@ -43,7 +43,7 @@ Per le cartelle locali che macOS ha già indicizzato, attiva **Usa Spotlight** n
 
 - **Invia all'elenco** colloca ogni risultato nel pannello attivo come elenco temporaneo, così puoi copiare, spostare o eliminare l'intero insieme in una volta.
 - Nella scheda **Carica / Salva**, scegli **Salva come modello…** per memorizzare la ricerca corrente (schemi e opzioni) e sceglierla di nuovo più tardi dall'elenco dei modelli.
-- **Cerca** e **Trova testo** ricordano ciascuno le ultime 20 voci usate, dalla più recente: fai clic sulla freccia in fondo al campo per sceglierne di nuovo una. Un termine usato due volte torna in cima invece di comparire due volte, e gli elenchi sopravvivono alla chiusura della finestra e all'uscita dall'app. **Cancella cronologia…** nella scheda **Carica / Salva** li dimentica entrambi; i modelli salvati non sono interessati.
+- **Cerca**, **Cerca in** e **Trova testo** ricordano ciascuno le ultime 20 voci usate, dalla più recente: fai clic sulla freccia in fondo al campo per sceglierne di nuovo una. Un termine usato due volte torna in cima invece di comparire due volte, e gli elenchi sopravvivono alla chiusura della finestra e all'uscita dall'app. **Cancella cronologia…** nella scheda **Carica / Salva** li dimentica tutti e tre; i modelli salvati non sono interessati.
 
 ## Scorciatoie
 

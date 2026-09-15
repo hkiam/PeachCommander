@@ -157,11 +157,7 @@ SCENARIOS = [
                        "findtab 0", "wait 1500",
                        "finddir /Users/admin/pc-demo;/Users/admin/Library/Application Support"
                        "|/Users/admin/find-searchin.txt", "wait 600",
-                       # Return still starts the search, which a wrapping field breaks by default:
-                       # its editor is a real multi-line one and swallows the key the default button
-                       # used to get. Measured both ways — with the delegate hook removed the same
-                       # verb answers `searching=false`.
-                       "findreturn /Users/admin/find-return.txt", "wait 1500"], 12),
+                       ], 12),
     # The advanced sync filter (F-192). Two things a screenshot and a text dump have to cover between
     # them: the sheet's own layout, which no dump can show, and that the *window* says a filter is
     # active, which no screenshot of the sheet can — the whole safety claim is that a filter is
@@ -3649,18 +3645,15 @@ REPORTS = {
     # make: `fieldsFit` is each entry control's frame height against its fitting height, and the
     # height itself is asserted because `fieldsFit` alone is satisfied by the one-line field it was
     # before — a one-line field fits one line of text perfectly, and truncates the rest sideways.
-    # `searchInRow` is the second half: a field given more height inside a row that kept its own is
-    # clipped by the row, which the field's own measurement cannot see. Heights only — the widths in
-    # this dialog follow the label column, which is measured from the longest label and so differs per
-    # language (94 pt in English, 103 in German). A width assertion passed here and failed in the VM.
-    "find-searchin-field": ("/Users/admin/find-searchin.txt",
-                            ["fieldsFit=true", "searchIn=57/", "searchInRow=57", "labelsFit=true",
-                             "Application Support", "!ERROR"]),
-    # Return in the field still starts the search, and no blank line was added instead. Last written,
-    # so it is the one the guest waits for — and measured the other way: with the delegate hook
-    # removed this same verb answers `searching=false`.
-    "find-searchin": ("/Users/admin/find-return.txt",
-                      ["searching=true", "editorHasNewline=false", "!ERROR"]),
+    # One line, the same height as the two combo boxes beside it, and a text rect with room for the
+    # glyphs. `title`/`needs` is the pair that matters: a text rect exactly as tall as the font's
+    # ascender-to-descender leaves an "Ä" and a "g" flush against the edges, which is what was
+    # reported. Heights only — the widths here follow the label column, which is measured from the
+    # longest label and so differs per language (94 pt in English, 103 in German); a width assertion
+    # passed locally and failed in the VM.
+    "find-searchin": ("/Users/admin/find-searchin.txt",
+                      ["fieldsFit=true", "searchIn=24/", "searchInRow=24", "labelsFit=true",
+                       "Application Support", "!ERROR"]),
     "find-text-field-typed": ("/Users/admin/ft-typed.txt",
                               ["typed=[superseded]", "contentTerm=superseded", "hex=on",
                                "wholeWord=on", "notContaining=on", "comments=on", "!ERROR"]),
@@ -3668,9 +3661,14 @@ REPORTS = {
     # guest waits for it; the two before it are what there was to clear. Each dump asserts the *order*:
     # "names=*.txt,*.csv" would also fail for a build that remembered both and sorted them by name.
     "find-history": ("/Users/admin/fh-cleared.txt",
-                     ["names=\n", "texts=\n", "!*.csv", "!superseded", "!ERROR"]),
+                     ["names=\n", "texts=\n", "folders=\n", "!*.csv", "!superseded", "!ERROR"]),
+    # `folders=` is the third list, added when "Search in" became a combo box like its neighbours.
+    # Asserted at the *start* of the line rather than as the whole of it: earlier scenarios in the run
+    # search other folders and leave them in this list, and both searches here ran over `pc-demo`, so
+    # what this pins is that the folder searched most recently is the one offered first.
     "find-history-after": ("/Users/admin/fh-after.txt",
-                           ["names=*.txt,*.csv", "texts=superseded", "!ERROR"]),
+                           ["names=*.txt,*.csv", "texts=superseded",
+                            "folders=/Users/admin/pc-demo", "!ERROR"]),
     # The third search re-used the first mask: it moves to the front instead of appearing twice, and the
     # content term is untouched because that search had none.
     "find-history-promoted": ("/Users/admin/fh-promoted.txt",

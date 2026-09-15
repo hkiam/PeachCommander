@@ -43,7 +43,7 @@ Pentru folderele locale pe care macOS le-a indexat deja, activați **Folosește 
 
 - **Trimite în listă** plasează fiecare rezultat în panoul activ ca o listă temporară, astfel încât să puteți copia, muta sau șterge întregul set deodată.
 - Pe fila **Încarcă / Salvează**, alegeți **Salvează ca șablon…** pentru a stoca căutarea curentă (tipare și opțiuni) și a o alege din nou mai târziu din lista de șabloane.
-- **Caută** și **Găsește text** rețin fiecare ultimele 20 de intrări folosite, cea mai recentă prima — faceți clic pe săgeata de la capătul câmpului pentru a alege din nou una. Un termen folosit de două ori urcă înapoi în vârf în loc să apară de două ori, iar listele supraviețuiesc închiderii ferestrei și ieșirii din aplicație. **Golește istoricul…** de pe fila **Încarcă / Salvează** le uită pe amândouă; șabloanele salvate nu sunt afectate.
+- **Caută**, **Caută în** și **Găsește text** rețin fiecare ultimele 20 de intrări folosite, cea mai recentă prima — faceți clic pe săgeata de la capătul câmpului pentru a alege din nou una. Un termen folosit de două ori urcă înapoi în vârf în loc să apară de două ori, iar listele supraviețuiesc închiderii ferestrei și ieșirii din aplicație. **Golește istoricul…** de pe fila **Încarcă / Salvează** le uită pe toate trei; șabloanele salvate nu sunt afectate.
 
 ## Comenzi rapide
 

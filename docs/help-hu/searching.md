@@ -43,7 +43,7 @@ Olyan helyi mappákhoz, amelyeket a macOS már indexelt, kapcsolja be a **Spotli
 
 - A **Küldés a listadobozba** minden eredményt az aktív panelbe helyez ideiglenes listaként, így az egész készletet egyszerre másolhatja, helyezheti át vagy törölheti.
 - A **Betöltés / Mentés** lapon válassza a **Mentés sablonként…** lehetőséget az aktuális keresés (minták és beállítások) tárolásához és későbbi újbóli kiválasztásához a sablonlistából.
-- A **Keresés** és a **Szöveg keresése** mező is megjegyzi a legutóbbi 20 használt bejegyzést, a legutóbb használtat elöl — a mező végén lévő nyílra kattintva bármelyiket újra kiválaszthatja. A kétszer használt kifejezés visszakerül a lista élére ahelyett, hogy kétszer szerepelne, és a listák túlélik az ablak bezárását és az app kilépését is. A **Betöltés / Mentés** lapon az **Előzmények törlése…** mindkettőt elfelejti; a mentett sablonokat ez nem érinti.
+- A **Keresés**, a **Keresés itt** és a **Szöveg keresése** mező is megjegyzi a legutóbbi 20 használt bejegyzést, a legutóbb használtat elöl — a mező végén lévő nyílra kattintva bármelyiket újra kiválaszthatja. A kétszer használt kifejezés visszakerül a lista élére ahelyett, hogy kétszer szerepelne, és a listák túlélik az ablak bezárását és az app kilépését is. A **Betöltés / Mentés** lapon az **Előzmények törlése…** mind a hármat elfelejti; a mentett sablonokat ez nem érinti.
 
 ## Billentyűparancsok
 

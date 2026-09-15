@@ -223,14 +223,24 @@ does not have.
   is the Stop button instead, and the second press closes — pressing Escape to get out of a dialog
   and closing the window mid-copy is the one outcome worth designing around.
 
-- **"Search in" is three lines tall and wraps.** It takes several folders separated by `;`, and it
-  was one line: measured in the running dialog, a field 379 pt wide showed
-  `/Users/…/PeachCommander/Sources/` and stopped, with no ellipsis and nothing to say the rest was
-  there. What "where am I searching" was answered by was then the tooltip, which nobody opens to read
-  what they typed. Return still starts the search — a wrapping field gets a real multi-line editor,
-  whose `insertNewline` never reaches the default button — and a line break now counts as a separator
-  alongside `;`, so a pasted list of folders works. Spotlight mode was handed the raw field all along
-  and never split it at all: `a;b` searched a folder called `a;b` and found nothing.
+- **"Search in" clipped the top and bottom of its own letters, and is a combo box now.** All three
+  entry controls in that dialog are 24 pt with a 16 pt text rect, and 13 pt system text needs exactly
+  16 — no slack at all — so where the line sits *inside* that rect decides whether an "Ä" keeps its
+  dots. A bare `NSTextField` sets it lower than the `NSComboBox` beside it (first baseline 17 pt
+  against 13), and on this one field the tails of "g" and "j" met the bottom edge while the umlauts
+  met the top. It showed here and nowhere else because this is the field that always holds a real
+  path — "Search for" holds `*.*` and "Find text" is usually empty — and it was reported from the
+  Midnight palette, where light glyphs on a dark fill make the contact obvious.
+
+  Made the same control as its two neighbours rather than nudged by a point or two: two controls that
+  have to line up exactly, drawn by different AppKit classes, is the arrangement that produced this.
+  Giving the field more height was measured and rejected — its text rect grows with it and the combo
+  boxes' does not, so the box ends up 2 pt taller than the ones it sits between.
+
+  It gains the dropdown the other two have had since F-406: the last 20 folders searched, most
+  recently used first, cleared by the same **Clear History…**. A line break now counts as a folder
+  separator alongside `;` as well, so a pasted list works. And Spotlight mode was handed the raw
+  field all along and never split it at all: `a;b` searched a folder called `a;b` and found nothing.
 
 - **Closing a terminal tab always asks, and the ✕ is inside the tab.** The question used to be
   reserved for a tab with something running in it; but the tab is also where everything the shell has

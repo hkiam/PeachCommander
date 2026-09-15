@@ -43,7 +43,7 @@ U místních složek, které macOS už zaindexoval, zapněte **Použít Spotligh
 
 - **Poslat do seznamu** umístí každý výsledek do aktivního panelu jako dočasný seznam, takže můžete zkopírovat, přesunout nebo smazat celou sadu najednou.
 - Na kartě **Načíst / Uložit** zvolte **Uložit jako šablonu…** pro uložení aktuálního hledání (vzory a možnosti) a jeho pozdější opětovný výběr ze seznamu šablon.
-- **Hledat** a **Najít text** si pamatují posledních 20 použitých výrazů, naposledy použité první — klepnutím na šipku na konci pole některý z nich vyberete znovu. Dvakrát použitý výraz se vrátí nahoru, místo aby se objevil dvakrát, a seznamy přežijí zavření okna i ukončení aplikace. **Vymazat historii…** na kartě **Načíst / Uložit** zapomene oba; uložených šablon se to netýká.
+- **Hledat**, **Hledat v** a **Najít text** si pamatují posledních 20 použitých výrazů, naposledy použité první — klepnutím na šipku na konci pole některý z nich vyberete znovu. Dvakrát použitý výraz se vrátí nahoru, místo aby se objevil dvakrát, a seznamy přežijí zavření okna i ukončení aplikace. **Vymazat historii…** na kartě **Načíst / Uložit** zapomene všechny tři; uložených šablon se to netýká.
 
 ## Zkratky
 

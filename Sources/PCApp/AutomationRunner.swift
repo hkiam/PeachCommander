@@ -1646,16 +1646,6 @@ extension MainWindowController {
                     try? (findWindow?.automationOptionsDump() ?? "ERROR: no find window\n")
                         .write(toFile: a[1], atomically: true, encoding: .utf8)
                 }
-            case "findreturn":                             // findreturn <out>: Return in "Search in"
-                if findWindow == nil {
-                    showFindFiles()
-                    try? await Task.sleep(nanoseconds: 700_000_000)
-                }
-                if !arg.isEmpty {
-                    let out = findWindow?.automationReturnInSearchIn() ?? "ERROR: no find window\n"
-                    try? await Task.sleep(nanoseconds: 400_000_000)
-                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
-                }
             case "findviewhit":                            // findviewhit <mask>|<text>|<dir>|<out> (F-407)
                 // A content search, then View on its first result, then what the viewer's own search
                 // holds — the whole point of the feature is that those two are the same search.

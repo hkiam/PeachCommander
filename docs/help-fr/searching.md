@@ -43,7 +43,7 @@ Pour les dossiers locaux que macOS a déjà indexés, activez **Utiliser Spotlig
 
 - **Envoyer dans la liste** place chaque résultat dans le panneau actif sous forme de liste temporaire, afin que vous puissiez copier, déplacer ou supprimer l'ensemble d'un coup.
 - Dans l'onglet **Charger / Enregistrer**, choisissez **Enregistrer comme modèle…** pour conserver la recherche actuelle (motifs et options) et la reprendre plus tard dans la liste des modèles.
-- **Rechercher** et **Rechercher le texte** mémorisent chacun les 20 dernières entrées utilisées, la plus récente en premier : cliquez sur la flèche au bout du champ pour en reprendre une. Un terme utilisé deux fois remonte en tête au lieu d'apparaître en double, et les listes survivent à la fermeture de la fenêtre comme à la sortie de l'app. **Effacer l'historique…** dans l'onglet **Charger / Enregistrer** les oublie toutes les deux ; les modèles enregistrés ne sont pas touchés.
+- **Rechercher**, **Rechercher dans** et **Rechercher le texte** mémorisent chacun les 20 dernières entrées utilisées, la plus récente en premier : cliquez sur la flèche au bout du champ pour en reprendre une. Un terme utilisé deux fois remonte en tête au lieu d'apparaître en double, et les listes survivent à la fermeture de la fenêtre comme à la sortie de l'app. **Effacer l'historique…** dans l'onglet **Charger / Enregistrer** les oublie toutes les trois ; les modèles enregistrés ne sont pas touchés.
 
 ## Raccourcis
 

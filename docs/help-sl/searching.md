@@ -43,7 +43,7 @@ Za lokalne mape, ki jih je macOS že indeksiral, vklopite **Uporabi Spotlight** 
 
 - **Pošlji v seznam** postavi vsak rezultat v dejavno podokno kot začasni seznam, tako da lahko kopirate, premaknete ali izbrišete celoten nabor naenkrat.
 - Na zavihku **Naloži / Shrani** izberite **Shrani kot predlogo…**, da shranite trenutno iskanje (vzorce in možnosti) in ga kasneje znova izberete s seznama predlog.
-- **Poišči** in **Najdi besedilo** si zapomnita zadnjih 20 uporabljenih vnosov, nazadnje uporabljeni na vrhu — kliknite puščico na koncu polja in enega izberite znova. Dvakrat uporabljen izraz se vrne na vrh, namesto da bi se pojavil dvakrat, seznama pa preživita zaprtje okna in izhod iz programa. **Počisti zgodovino…** na zavihku **Naloži / Shrani** pozabi oba; shranjene predloge ostanejo nedotaknjene.
+- **Poišči**, **Išči v** in **Najdi besedilo** si zapomnijo zadnjih 20 uporabljenih vnosov, nazadnje uporabljeni na vrhu — kliknite puščico na koncu polja in enega izberite znova. Dvakrat uporabljen izraz se vrne na vrh, namesto da bi se pojavil dvakrat, seznama pa preživita zaprtje okna in izhod iz programa. **Počisti zgodovino…** na zavihku **Naloži / Shrani** pozabi vse tri; shranjene predloge ostanejo nedotaknjene.
 
 ## Bližnjice
 

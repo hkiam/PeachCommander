@@ -43,7 +43,7 @@ W przypadku folderów lokalnych, które macOS już zindeksował, włącz **Użyj
 
 - **Wyślij do listy** umieszcza każdy wynik w aktywnym panelu jako tymczasową listę, dzięki czemu możesz skopiować, przenieść lub usunąć cały zestaw naraz.
 - Na karcie **Wczytaj / Zapisz** wybierz **Zapisz jako szablon…**, aby zapamiętać bieżące wyszukiwanie (wzorce i opcje) i wybrać je ponownie później z listy szablonów.
-- Pola **Szukaj** i **Znajdź tekst** zapamiętują po 20 ostatnio użytych wpisów, od najnowszego — kliknij strzałkę na końcu pola, aby wybrać któryś ponownie. Ten sam termin użyty dwa razy wraca na górę, zamiast pojawiać się dwukrotnie, a listy przetrwają zamknięcie okna i zakończenie aplikacji. **Wyczyść historię…** na karcie **Wczytaj / Zapisz** zapomina obie; zapisanych szablonów to nie dotyczy.
+- Pola **Szukaj**, **Szukaj w** i **Znajdź tekst** zapamiętują po 20 ostatnio użytych wpisów, od najnowszego — kliknij strzałkę na końcu pola, aby wybrać któryś ponownie. Ten sam termin użyty dwa razy wraca na górę, zamiast pojawiać się dwukrotnie, a listy przetrwają zamknięcie okna i zakończenie aplikacji. **Wyczyść historię…** na karcie **Wczytaj / Zapisz** zapomina wszystkie trzy; zapisanych szablonów to nie dotyczy.
 
 ## Skróty
 

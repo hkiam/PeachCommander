@@ -43,7 +43,7 @@ Voor lokale mappen die macOS al heeft geïndexeerd, zet je **Spotlight gebruiken
 
 - **Naar lijst sturen** plaatst elk resultaat in het actieve paneel als een tijdelijke lijst, zodat je de hele set tegelijk kunt kopiëren, verplaatsen of verwijderen.
 - Kies op het tabblad **Laden / Bewaren** de optie **Bewaren als sjabloon…** om de huidige zoekopdracht (patronen en opties) op te slaan en later opnieuw te kiezen uit de sjabloonlijst.
-- **Zoeken naar** en **Tekst zoeken** onthouden elk de laatste 20 gebruikte items, laatst gebruikte eerst — klik op de pijl aan het eind van het veld om er weer een te kiezen. Een term die je twee keer gebruikt schuift terug naar boven in plaats van dubbel te verschijnen, en de lijsten overleven het sluiten van het venster en het stoppen van de app. **Wis geschiedenis…** op het tabblad **Laden / Bewaren** vergeet ze allebei; bewaarde sjablonen blijven ongemoeid.
+- **Zoeken naar**, **Zoeken in** en **Tekst zoeken** onthouden elk de laatste 20 gebruikte items, laatst gebruikte eerst — klik op de pijl aan het eind van het veld om er weer een te kiezen. Een term die je twee keer gebruikt schuift terug naar boven in plaats van dubbel te verschijnen, en de lijsten overleven het sluiten van het venster en het stoppen van de app. **Wis geschiedenis…** op het tabblad **Laden / Bewaren** vergeet ze alle drie; bewaarde sjablonen blijven ongemoeid.
 
 ## Sneltoetsen
 

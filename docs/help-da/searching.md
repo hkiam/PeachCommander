@@ -43,7 +43,7 @@ For lokale mapper, macOS allerede har indekseret, slå **Brug Spotlight** til p�
 
 - **Send til listeboks** placerer hvert resultat i det aktive panel som en midlertidig liste, så du kan kopiere, flytte eller slette hele sættet på én gang.
 - På fanen **Indlæs / Gem** skal du vælge **Gem som skabelon…** for at gemme den aktuelle søgning (mønstre og indstillinger) og vælge den igen senere fra skabelonlisten.
-- **Søg efter** og **Find tekst** husker hver de seneste 20 emner, du har søgt med — sidst brugte først; klik på pilen for enden af feltet for at vælge et af dem igen. Et ord, du bruger to gange, rykker op øverst i stedet for at optræde to gange, og listerne overlever både lukning af vinduet og afslutning af appen. **Ryd historik…** på fanen **Indlæs / Gem** glemmer dem begge; gemte skabeloner berøres ikke.
+- **Søg efter**, **Søg i** og **Find tekst** husker hver de seneste 20 emner, du har søgt med — sidst brugte først; klik på pilen for enden af feltet for at vælge et af dem igen. Et ord, du bruger to gange, rykker op øverst i stedet for at optræde to gange, og listerne overlever både lukning af vinduet og afslutning af appen. **Ryd historik…** på fanen **Indlæs / Gem** glemmer alle tre; gemte skabeloner berøres ikke.
 
 ## Genveje
 
