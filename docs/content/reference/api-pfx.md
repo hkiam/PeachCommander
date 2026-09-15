@@ -164,7 +164,18 @@ typedef struct {
     int64_t  size;        /* size in bytes; -1 if unknown                             */
     int64_t  mtime;       /* modification time, Unix epoch seconds (0 if unknown)     */
     int      isDir;       /* 1 if a directory                                         */
-    uint32_t mode;        /* POSIX permission bits (0 if unknown)                     */
+    /* POSIX st_mode: permission bits, and OPTIONALLY the S_IF* type field. 0 = unknown.
+
+       The type field is how a plugin says "this is a symlink", and the only way it can: this
+       struct has a name, a size, a time, an isDir flag and this, and appending a field to it
+       would break every plugin built against the older header — the PLUGIN writes this struct,
+       so a new plugin on an old host would write past the end of the host's allocation.
+
+       Set S_IFLNK here (together with isDir, if the link points at a directory) and the host
+       draws the entry as a link — `l` in the Attr column — instead of an ordinary file. A plugin
+       that reports permission bits only, or 0, is read exactly as before: an S_IFMT field of 0
+       matches no type and the host falls back to isDir. */
+    uint32_t mode;
 } PfxFindData;
 
 /*
