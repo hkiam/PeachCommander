@@ -136,6 +136,20 @@ for formula, version, url, sha in missing:
 PY
 }
 
+# A downloaded source tarball is checked against the formula's own stable checksum before it is
+# unpacked, so what gets built is the release the API named and not whatever the mirror served.
+verify_checksum() {  # verify_checksum <file> <sha256> <what>
+  local file="$1" sha="$2" what="$3" got
+  [ -n "$sha" ] || return 0
+  got="$(shasum -a 256 "$file" | awk '{print $1}')"
+  if [ "$got" != "$sha" ]; then
+    echo "error: checksum mismatch for $what:" >&2
+    echo "  expected $sha" >&2
+    echo "  got      $got" >&2
+    exit 1
+  fi
+}
+
 # --- Build one x86_64 slice from source, when Homebrew has no bottle for it ---
 #
 # Only openssl@3, and deliberately so: it is the formula that lost its Intel bottles, and libssh2
@@ -151,9 +165,13 @@ PY
 # built is the same OpenSSL release as the arm64 slice that is fetched — not merely a compatible one.
 build_source_slice() {  # <formula> <version> <url> <sha256> <arch-stage>
   local formula="$1" version="$2" url="$3" sha="$4" stage="$5"
+  if [ "$formula" = "libssh2" ]; then
+    build_libssh2_slice "$version" "$url" "$sha" "$stage"
+    return
+  fi
   if [ "$formula" != "openssl@3" ]; then
     echo "error: no source build for $formula. Homebrew dropped its x86_64 macOS bottle and this" >&2
-    echo "       script only knows how to build openssl@3 (see the comment above it)." >&2
+    echo "       script knows how to build openssl@3 and libssh2 only (see the comments above)." >&2
     exit 1
   fi
   # `--libdir=lib` is not decoration: without it OpenSSL's `mkinstallvars.pl` resolves LIBDIR to
@@ -163,16 +181,7 @@ build_source_slice() {  # <formula> <version> <url> <sha256> <arch-stage>
   mkdir -p "$work" "$prefix"
   echo "==> no x86_64 bottle for openssl@3 — building $version from source"
   curl -fsSL "$url" -o "$work/openssl.tar.gz"
-  if [ -n "$sha" ]; then
-    local got
-    got="$(shasum -a 256 "$work/openssl.tar.gz" | awk '{print $1}')"
-    if [ "$got" != "$sha" ]; then
-      echo "error: checksum mismatch for the openssl source:" >&2
-      echo "  expected $sha" >&2
-      echo "  got      $got" >&2
-      exit 1
-    fi
-  fi
+  verify_checksum "$work/openssl.tar.gz" "$sha" "the openssl source"
   tar xzf "$work/openssl.tar.gz" -C "$work"
   local abs log
   abs="$(cd "$prefix" && pwd)"
@@ -206,13 +215,78 @@ build_source_slice() {  # <formula> <version> <url> <sha256> <arch-stage>
   fi
 }
 
+# --- libssh2 from source, against the openssl slice built just above ---------
+#
+# Added the day Homebrew dropped libssh2's x86_64 macOS bottle too (2026-09-15), which is the case
+# the comment above predicted and answered with "an Intel runner, or dropping the promise". There is
+# a third answer it did not price, and measuring it is what changed the decision: libssh2 is a small
+# autotools project, it cross-compiles to x86_64 on Apple Silicon in seconds, and the openssl it
+# needs to link against is already being built here. Two pinned formulae built in dependency order
+# is not the "build anything" this file refused to become — nothing else may be added without the
+# same measurement.
+#
+# `--host` makes it a cross build so configure stops trying to *run* what it compiles; `--build` has
+# to be given as well, or autotools infers host == build and silently makes it a native one. The
+# `-arch x86_64` goes in CC rather than CFLAGS because libtool passes CC to the link step and
+# CFLAGS not always, which produced an arm64 dylib out of an x86_64 object file.
+build_libssh2_slice() {  # <version> <url> <sha256> <arch-stage>
+  local version="$1" url="$2" sha="$3" stage="$4"
+  local work="$stage/.src-ssh2" prefix="$stage/libssh2/$version" ssl
+  # The openssl keg in this same stage — fetched bottle or source build, whichever happened.
+  ssl="$(find "$stage/openssl@3" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | head -1)"
+  if [ -z "$ssl" ]; then
+    echo "error: libssh2 needs an x86_64 openssl to link against and none was staged." >&2
+    echo "       The source builds run in dependency order; openssl@3 must come first." >&2
+    exit 1
+  fi
+  mkdir -p "$work" "$prefix"
+  echo "==> no x86_64 bottle for libssh2 — building $version from source"
+  curl -fsSL "$url" -o "$work/libssh2.tar.gz"
+  verify_checksum "$work/libssh2.tar.gz" "$sha" "the libssh2 source"
+  tar xzf "$work/libssh2.tar.gz" -C "$work"
+  local abs absssl log
+  abs="$(cd "$prefix" && pwd)"
+  absssl="$(cd "$ssl" && pwd)"
+  log="$stage/libssh2-build.log"
+  if ! ( cd "$work/libssh2-$version" \
+           && ./configure --host=x86_64-apple-darwin --build="$(uname -m)-apple-darwin" \
+                --prefix="$abs" --with-libssl-prefix="$absssl" \
+                --disable-static --enable-shared --disable-examples-build \
+                CC="clang -arch x86_64" \
+           && make -j"$(sysctl -n hw.ncpu)" \
+           && make install ) >"$log" 2>&1; then
+    echo "error: building libssh2 $version for x86_64 failed; last 40 lines:" >&2
+    tail -40 "$log" >&2
+    exit 1
+  fi
+  rm -f "$log"
+  rm -rf "$work"
+  if [ ! -f "$prefix/lib/libssh2.1.dylib" ]; then
+    echo "error: the source build left no libssh2.1.dylib in $prefix/lib" >&2
+    exit 1
+  fi
+  if ! lipo -archs "$prefix/lib/libssh2.1.dylib" | grep -qw x86_64; then
+    echo "error: the libssh2 source build produced no x86_64 slice — see RELEASE.md." >&2
+    exit 1
+  fi
+}
+
 rm -rf "$STAGE" "$OUT"
 mkdir -p "$STAGE" "$LIB" "$INC"
 # Anything with no bottle comes back as `source<TAB>formula<TAB>version<TAB>url<TAB>sha256`.
-while IFS="$(printf '\t')" read -r kind formula version url sha; do
-  [ "$kind" = "source" ] || continue
-  build_source_slice "$formula" "$version" "$url" "$sha" "$STAGE/x86_64"
-done < <(fetch_bottles "$STAGE")
+# In dependency order, and stated rather than sorted: libssh2 links against openssl, and `sort` puts
+# "libssh2" first because l < o — which is the wrong way round and would only fail on the machine
+# where both bottles are missing, i.e. the one machine this path ever runs on.
+SOURCE_LINES="$(fetch_bottles "$STAGE")"
+for want in "openssl@3" "libssh2"; do
+  while IFS="$(printf '\t')" read -r kind formula version url sha; do
+    [ "$kind" = "source" ] || continue
+    [ "$formula" = "$want" ] || continue
+    build_source_slice "$formula" "$version" "$url" "$sha" "$STAGE/x86_64"
+  done <<EOF
+$SOURCE_LINES
+EOF
+done
 
 # A bottle unpacks to <name>/<version>/…; resolve each keg's real prefix.
 keg() {  # keg <arch> <formula-dir-name>

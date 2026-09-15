@@ -85,12 +85,18 @@ result on its own before:
    cores; `no-tests no-docs`, and the build log is kept only if it fails, because OpenSSL 3.6's
    installer prints a page of harmless perl warnings that would bury a real error.
 
-   Only `openssl@3` is built this way, deliberately: `libssh2` needs an openssl to build
-   *against*, so a general "build anything" fallback would be a build system rather than a
-   fallback. If `libssh2` loses its x86_64 bottle too, the script stops with a sentence saying
-   exactly that — and so does the point at which shipping a universal binary needs a different
-   answer (an Intel runner, or dropping the promise in `CONVENTIONS.md` and
-   `docs/architecture/tech-stack.md`).
+   **And on 2026-09-15 `libssh2` lost its Intel bottle as well**, which the paragraph above had
+   named as the point where shipping a universal binary needs a different answer — "an Intel
+   runner, or dropping the promise". There turned out to be a third, and measuring it is what
+   settled the choice: `libssh2` is a small autotools project, it cross-compiles to x86_64 on
+   Apple Silicon in seconds, and the openssl it links against is already being built here. So it
+   is built from source too, *after* openssl and against that slice.
+
+   Two pinned formulae built in dependency order is still not the "build anything" this script
+   refused to become, and the line holds: anything else that loses a bottle stops the release
+   with a sentence saying so, and earns the same measurement before it is added. The order is
+   stated in the script rather than sorted — `sort` puts "libssh2" before "openssl@3" because
+   l < o, which is backwards and would only fail on the one machine this path runs on.
 3. **Universal plugins.** Every `Tools/build-*-plugin*.sh` goes through
    `Tools/lib/pc-universal.sh`. They used to compile for `$(uname -m)`, which meant
    the app launched on Intel while *no plugin could load* — Git, Archive, WebDAV,
