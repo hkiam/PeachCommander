@@ -4,95 +4,87 @@ slug: version-notes
 group: Get started
 section: user-guide
 order: 90
-related: [whats-new, known-limitations]
+related: [whats-new, known-limitations, installation]
 ---
 
 # Version notes
 
-Peach Commander is a **pre-1.0 preview**. This page summarizes what works today,
-what is still on the way, and the honest limits of this release, so you know what
-to expect before you install it. For what each individual release changed — and
-which version you are looking at — see [What's new](whats-new.md), which is
-written from the changelog itself.
+Peach Commander is a **pre-1.0 preview**. This page is the short answer to "should I install
+this, and what should I know first?" — what state the preview is in, the two things that are
+not finished, and the limits worth knowing before you rely on it. For what each individual
+release changed — and which version you are looking at — see
+[What's new](whats-new.md), which is written from the changelog itself.
 
-Peach Commander is a **universal app** — it runs natively on both Apple Silicon
-and Intel Macs — and requires **macOS 13 (Ventura) or later**.
+Peach Commander is a **universal app** — it runs natively on both Apple Silicon and Intel
+Macs — and requires **macOS 13 (Ventura) or later**.
 
-## What works today
+## What state it is in
 
-The core of a dual-panel file manager is in place and usable for day-to-day
-work:
+It is a file manager people use for a day's work, not a demonstration. Two panels with tabs
+and the function keys; copy and move with a background transfer manager; archives you step
+into like folders; search across names and contents, including inside archives; multi-rename,
+compare and synchronize; FTP, SFTP, WebDAV, Amazon S3 and a running Docker engine, each
+browsing like a folder on your Mac; a viewer and an editor; and a set of plugins that arrive
+in the box rather than on a shop page. The interface and the complete in-app help are
+translated into nineteen languages.
 
-- **Dual-panel browsing** with tabs, a path bar, a drive bar that lists every
-  mounted volume live (including disk images), and a status bar that summarizes
-  your selection. Press **Tab** to switch panels.
-- **File operations** — copy (**F5**), move (**F6**), delete, and create — with
-  an optional background transfer manager so long copies don't block you, plus
-  drag-and-drop between panels and to and from Finder.
-- **Two keyboard schemes** so you can work the way you already think: a classic
-  dual-commander layout and a macOS-native layout. See
-  [Keyboard shortcuts](keyboard-shortcuts.md).
-- **Archives as folders** — open ZIP, 7z, TAR, and RAR archives and step into
-  them like any other folder. See [Working with archives](archives.md).
-- **Deep search** across names and contents, including regular expressions, hex,
-  text-encoding matching, searching inside archives, and Spotlight. See
-  [Finding files](searching.md).
-- **File utilities** — multi-rename, folder synchronize, compare, duplicate
-  finder, and checksums. See [Multi-rename](multi-rename.md) and
-  [Comparing and syncing](comparing-and-syncing.md).
-- **Built-in networking** — FTP, FTPS, SFTP, SCP, WebDAV, and SOCKS5, plus a
-  resuming HTTP downloader, with a saved-sites connection manager. Passwords are
-  stored **only in the macOS Keychain**, never in plain files. See
-  [FTP and SFTP](ftp-and-sftp.md).
-- **Viewers and editors** — a text and image lister with Quick Look, a text
-  editor with find and replace, a hex editor, a binary compare tool, and a diff
-  viewer.
-- **Native macOS integration** — Quick Look (**Cmd+Y**), the Share sheet, Open
-  With, Finder Tags, and richer Get Info details. See
-  [macOS integration](macos-integration.md).
-- **Plugins and an SDK** — five plugin types are supported, and settings can be
-  imported from a Total Commander `wincmd.ini`. See [Plugins](plugins.md).
+**What the app does is deliberately not listed again here.** It was, for eight releases, and
+the list was wrong for most of them — a page nobody had a reason to reread is the worst place
+to keep a feature list. The tour is on the [homepage](index.md), the full record is
+[What's new](whats-new.md), and the individual topics are what the rest of this
+documentation is.
 
 Peach Commander collects **no telemetry** and transmits nothing about your usage
 automatically. See [Privacy and security](privacy-and-security.md).
 
-## Still coming
+## The two things that are not finished
 
-A few things are planned but **not yet enabled** in this build:
+- **Automatic updates.** The groundwork for background auto-update is declared but not
+  integrated, so this preview will not update itself. New builds are on the project's
+  [releases page](https://github.com/hkiam/PeachCommander/releases), and
+  [What's new](whats-new.md) says what each one changed — download and install them by hand
+  for now.
+- **Signing and notarization.** The release pipeline signs the app and submits it to Apple
+  already; those steps skip themselves when no credentials are configured, and the project
+  has no Apple Developer ID, so **every build so far is unsigned**. macOS therefore blocks
+  the first launch. On **macOS 15 and later**, open it once, dismiss the warning, then allow
+  it under System Settings ▸ Privacy & Security ▸ **Open Anyway** — Apple removed the
+  right-click shortcut for unsigned software in macOS 15. On **macOS 13–14**, right-click
+  (or Control-click) the app and choose **Open**, then confirm. The
+  [installation guide](installation.md) walks through both.
 
-- **Automatic updates.** The groundwork for background auto-update is present but
-  not wired up, so this preview will not update itself. Watch the project's
-  release page for new builds and install them manually for now.
-- **Finalized signing and notarization.** Developer-ID code signing and Apple
-  notarization are being finalized. Until that is complete, a preview build is
-  **not signed**, so macOS Gatekeeper may warn that the app is from an
-  unidentified developer the first time you open it. To run it, **right-click
-  (or Control-click) the app and choose Open**, then confirm.
-- **Instant folder refresh.** A panel currently checks the active folder for
-  outside changes about every 2 seconds rather than the instant a file appears.
-  You can always refresh manually — see the limitations below.
+## Limits worth knowing
 
-## Known limitations
+A preview has honest limits. These are the ones that change what you can expect, in brief:
 
-This is a preview, so some features have honest limits worth knowing before you
-rely on them. In brief:
+- **A split archive needs all of its parts.** A set split across `.z01`, `.z02`, … or
+  `name.zip.001`, … opens as a folder when every part is in the same directory; one missing
+  part is refused rather than opened half-read. Split TAR sets are not covered.
+- **Over SFTP you can change permissions and timestamps, but not an owner.** The protocol
+  carries owner and group as numbers with no way to resolve a name, so the change is refused
+  rather than guessed at. Over plain FTP only permissions can be set, and only where the
+  server offers `SITE CHMOD`.
+- **Remote locations are not watched.** A folder on this Mac — and an archive you are looking
+  inside — updates by itself as soon as something else changes it. FTP and SFTP offer no way
+  to be told, so re-read those with **F2** or **Ctrl+R**.
+- **Very long paths work, except for the Trash.** macOS refuses any path longer than 1024
+  bytes, and nothing can trash a file it cannot name. Delete reports an error there;
+  Shift+Delete (delete permanently) works.
+- **The build is unsigned** (see above).
 
-- **Very large ZIP files (ZIP64)** may not open in the built-in reader.
-- **Changing file attributes over SFTP/SCP** has no effect in this version.
-- The **Download from URL** shortcut can conflict with a Go-menu shortcut; start
-  the download from the **Net** menu to be sure.
-- Panels notice **outside changes on a short delay** (about 2 seconds); refresh
-  the active panel with **F2** or **Ctrl+R** if you don't want to wait.
-- The **preview build is unsigned** (see above).
-
-For the full list, workarounds, and details, read
-[Known limitations](known-limitations.md).
+For the full list, the workarounds and the reasoning, read
+[Known limitations](known-limitations.md), which is the page these are drawn from.
 
 ## A note on version numbers
 
-As a pre-1.0 preview, features and shortcuts may still change between builds, and
-nothing here should be read as a promise of a specific future version. The version
-you are running is in the **Help** menu; what each release before it changed is on
-[What's new](whats-new.md). This page deliberately carries no version number of its
-own — it described 0.1.0 for eight releases after 0.1.0 had stopped being the
-current one.
+As a pre-1.0 preview, features and shortcuts may still change between builds, and nothing
+here should be read as a promise of a specific future version. The version you are running is
+in the **Help** menu; what each release before it changed is on [What's new](whats-new.md).
+
+This page deliberately carries no version number and no feature list of its own. It had both,
+and it described 0.1.0 for eight releases after 0.1.0 had stopped being the current one —
+including three limits that were not limits: ZIP64 archives it said might not open, SFTP
+attributes it said could not be changed, and a two-second refresh delay that had never
+existed. The same three sentences were in the README, where a gate now checks the claims that
+can be checked. Prose still cannot be gated, so the answer here is to state fewer facts and
+point at the pages that own them.
