@@ -118,5 +118,5 @@ Zabudnutie nemení nič na priečinkoch; zmizne záznam o tom, čo sa urobilo, a
 
 - **Podľa obsahu vs. podľa dátumu/veľkosti.** Rýchle porovnanie zhoduje súbory podľa veľkosti a dátumu úpravy, čo je rýchle, ale možno oklamať, keď sa časové značky líšia pre rovnaké súbory. Zapnite **podľa obsahu** pre spoľahlivý výsledok za cenu čítania každého súboru.
 - **Podpriečinky a filtre.** Okno synchronizácie môže zostúpiť do podpriečinkov a možno ho obmedziť maskou filtra, takže môžete synchronizovať iba typy súborov, ktoré vás zaujímajú.
-- **Zostávate pod kontrolou.** Synchronizácia nikdy nebeží sama — preskúmate navrhované smery v mriežke výsledkov a ktorýkoľvek z nich môžete zmeniť pred tým, ako sa čokoľvek skopíruje.
-- **Predvoľby.** Často používané nastavenia synchronizácie možno uložiť a znovu použiť, takže nezadávate tie isté možnosti zakaždým.
+- **Zostávate pod kontrolou.** Synchronizácia nikdy nebeží sama — preskúmate navrhované smery v mriežke výsledkov a ktorýkoľvek z nich môžete zmeniť pred tým, ako sa čokoľvek skopíruje. **Esc** zastaví prebiehajúce porovnanie a zavrie okno, keď nič nebeží.
+- **Predvoľby.** Často používané nastavenia synchronizácie možno uložiť a znovu použiť, takže nezadávate tie isté možnosti zakaždým. Predvoľba si pamätá aj to, čo ukazuje mriežka výsledkov — filter smeru a **Skryť rovnaké** — a okno sa otvorí s naposledy použitou predvoľbou. Predvoľba **Predvolené** je k dispozícii od prvého otvorenia okna; uložením cez ňu si ju prispôsobíte.

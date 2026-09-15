@@ -26,7 +26,7 @@ Allt annat finns i menyn **Terminal**:
 | Visa terminalen | Fäller ihop den och fram igen; flikarna och det som körs i dem blir som de är |
 | Växla mellan panel och terminal | Flyttar tangentbordsfokus, utan att ändra något annat |
 | Ny terminalflik | Ytterligare ett skal, i samma mapp |
-| Stäng terminalfliken | Stänger den — och frågar först om något fortfarande körs i den |
+| Stäng terminalfliken | Stänger den — och frågar först; körs något i den nämns det vid namn |
 | Dela terminalen | Två skal sida vid sida i samma flik |
 | Gå till panelens mapp | Gör `cd` till där den aktiva panelen står |
 | Infoga de valda filnamnen | Skriver de markerade namnen vid prompten, citerade |
@@ -71,4 +71,4 @@ Flikarna kommer tillbaka när du startar appen igen, i de mappar de var i. Det s
 
 ## När du avslutar
 
-Att stänga appen stänger skalen. Det som fortfarande körs i dem avslutas, precis som att stänga ett Terminal-fönster avslutar det som finns i det. Därför frågar det först när du stänger en flik där något körs.
+Att stänga appen stänger skalen. Det som fortfarande körs i dem avslutas, precis som att stänga ett Terminal-fönster avslutar det som finns i det. Att stänga en enskild flik frågar också först och nämner vad som körs i den — en flik rymmer dessutom allt skalet har skrivit ut, och ✕ sitter nära nästa flik.

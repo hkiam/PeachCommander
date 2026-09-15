@@ -118,5 +118,5 @@ Zapomenutí nemění nic na složkách; zmizí záznam o tom, co se udělalo, a 
 
 - **Podle obsahu vs. podle data/velikosti.** Rychlé porovnání srovnává soubory podle velikosti a data úpravy, což je rychlé, ale dá se oklamat, když se u shodných souborů liší časové značky. Zapněte **podle obsahu** pro spolehlivý výsledek za cenu čtení každého souboru.
 - **Podsložky a filtry.** Okno synchronizace umí sestoupit do podsložek a lze jej omezit maskou filtru, takže můžete synchronizovat jen typy souborů, na kterých vám záleží.
-- **Máte vše pod kontrolou.** Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit.
-- **Předvolby.** Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti.
+- **Máte vše pod kontrolou.** Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit. **Esc** zastaví probíhající porovnání a zavře okno, když nic neběží.
+- **Předvolby.** Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti. Předvolba si pamatuje i to, co ukazuje výsledná mřížka — filtr směru a **Skrýt shodné** — a okno se otevře s naposledy použitou předvolbou. Předvolba **Výchozí** je k dispozici od prvního otevření okna; uložením přes ni si ji přizpůsobíte.

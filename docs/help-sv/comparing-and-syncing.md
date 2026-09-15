@@ -120,6 +120,6 @@ Att glömma ändrar ingenting i mapparna; det som försvinner är noteringen om 
 
 - **Efter innehåll kontra efter datum/storlek.** En snabb jämförelse matchar filer efter storlek och ändringsdatum, vilket är snabbt men kan luras när tidsstämplar skiljer sig för identiska filer. Slå på **efter innehåll** för ett tillförlitligt resultat på bekostnad av att varje fil läses.
 - **Undermappar och filter.** Synkroniseringsfönstret kan gå ned i undermappar och kan begränsas med en filtermask, så att du kan synkronisera bara de filtyper du bryr dig om.
-- **Du behåller kontrollen.** Synkronisering körs aldrig av sig själv – du granskar de föreslagna riktningarna i resultatrutnätet och kan ändra vilken som helst av dem innan något kopieras.
-- **Förinställningar.** Ofta använda synkroniseringsuppsättningar kan sparas och återanvändas så att du slipper ange samma alternativ varje gång.
+- **Du behåller kontrollen.** Synkronisering körs aldrig av sig själv – du granskar de föreslagna riktningarna i resultatrutnätet och kan ändra vilken som helst av dem innan något kopieras. **Esc** avbryter en pågående jämförelse och stänger fönstret när ingen pågår.
+- **Förinställningar.** Ofta använda synkroniseringsuppsättningar kan sparas och återanvändas så att du slipper ange samma alternativ varje gång. En förinställning minns även vad resultatrutnätet visar — riktningsfiltret och **Dölj identiska** — och fönstret öppnas med den förinställning du använde senast. En förinställning **Standard** finns från första gången du öppnar fönstret; spara över den för att göra den till din egen.
 

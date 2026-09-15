@@ -26,7 +26,7 @@ Vse drugo je v meniju **Terminal**:
 | Pokaži terminal | Zloži ga in znova razpre; zavihki in to, kar teče v njih, ostanejo takšni, kot so |
 | Preklopi med ploščo in terminalom | Premakne pozornost tipkovnice, drugega ne spremeni |
 | Nov zavihek terminala | Še ena lupina, v isti mapi |
-| Zapri zavihek terminala | Zapre jo — in prej vpraša, če v njej še kaj teče |
+| Zapri zavihek terminala | Zapre jo — in prej vpraša; če v njej kaj teče, to tudi poimenuje |
 | Razdeli terminal | Dve lupini druga ob drugi v istem zavihku |
 | Pojdi v mapo plošče | V terminalu naredi `cd` tja, kjer stoji dejavna plošča |
 | Vstavi izbrana imena datotek | Izbrana imena vpiše v poziv, v narekovajih |
@@ -71,4 +71,4 @@ Zavihki se vrnejo, ko aplikacijo znova zaženete, v mapah, v katerih so bili. Ka
 
 ## Ob izhodu
 
-Zaprtje aplikacije zapre lupine. Kar v njih še teče, se konča, tako kot zaprtje okna Terminala konča tisto, kar je v njem. Zato zaprtje zavihka, v katerem kaj teče, prej vpraša.
+Zaprtje aplikacije zapre lupine. Kar v njih še teče, se konča, tako kot zaprtje okna Terminala konča tisto, kar je v njem. Tudi zaprtje enega samega zavihka prej vpraša in poimenuje, kaj v njem teče — v zavihku je poleg tega vse, kar je lupina izpisala, in ✕ je blizu naslednjega zavihka.

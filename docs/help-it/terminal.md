@@ -26,7 +26,7 @@ Tutto il resto è nel menu **Terminale**:
 | Mostra il terminale | Lo richiude e lo riapre; le schede e ciò che vi gira restano come sono |
 | Passa dal pannello al terminale | Sposta il fuoco della tastiera, senza cambiare altro |
 | Nuova scheda del terminale | Un’altra shell, nella stessa cartella |
-| Chiudi la scheda del terminale | La chiude — e chiede prima se qualcosa è ancora in esecuzione |
+| Chiudi la scheda del terminale | La chiude — e chiede prima; se qualcosa è ancora in esecuzione, lo nomina |
 | Dividi il terminale | Due shell affiancate nella stessa scheda |
 | Vai alla cartella del pannello | Porta il terminale con `cd` dove si trova il pannello attivo |
 | Inserisci i nomi dei file selezionati | Scrive i nomi selezionati al prompt, fra virgolette |
@@ -71,4 +71,4 @@ Le schede tornano al riavvio dell’app, nelle cartelle in cui erano. Quello che
 
 ## Quando uscite
 
-Chiudere l’app chiude le shell. Quello che vi sta ancora girando viene terminato, come chiudere una finestra del Terminale termina ciò che contiene. Per questo chiudere una scheda con qualcosa in esecuzione chiede prima conferma.
+Chiudere l’app chiude le shell. Quello che vi sta ancora girando viene terminato, come chiudere una finestra del Terminale termina ciò che contiene. Anche chiudere una singola scheda chiede prima conferma e nomina ciò che vi è in esecuzione — una scheda contiene inoltre tutto ciò che la shell ha stampato, e la ✕ sta vicino alla scheda successiva.

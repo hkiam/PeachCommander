@@ -26,7 +26,7 @@ Todo lo demás está en el menú **Terminal**:
 | Mostrar el terminal | Lo pliega y lo vuelve a desplegar; las pestañas y lo que se ejecuta en ellas siguen igual |
 | Cambiar entre el panel y la terminal | Mueve el foco del teclado, sin cambiar nada más |
 | Nueva pestaña de terminal | Otra shell, en la misma carpeta |
-| Cerrar la pestaña de terminal | La cierra —y pregunta antes si algo sigue ejecutándose en ella |
+| Cerrar la pestaña de terminal | La cierra —y pregunta antes; si algo sigue ejecutándose, lo nombra |
 | Dividir la terminal | Dos shells una al lado de otra en la misma pestaña |
 | Ir a la carpeta del panel | Hace `cd` en la terminal hasta donde está el panel activo |
 | Insertar los nombres de archivo seleccionados | Escribe los nombres seleccionados en el prompt, entrecomillados |
@@ -71,4 +71,4 @@ Las pestañas vuelven al iniciar la app de nuevo, en las carpetas en las que est
 
 ## Al salir
 
-Cerrar la app cierra las shells. Lo que siga ejecutándose en ellas se termina, igual que cerrar una ventana de Terminal termina lo que hay dentro. Por eso cerrar una pestaña con algo en marcha pregunta antes.
+Cerrar la app cierra las shells. Lo que siga ejecutándose en ellas se termina, igual que cerrar una ventana de Terminal termina lo que hay dentro. Cerrar una sola pestaña también pregunta antes y nombra lo que se está ejecutando en ella — una pestaña guarda además todo lo que la shell ha impreso, y la ✕ queda muy cerca de la pestaña siguiente.

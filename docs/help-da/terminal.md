@@ -26,7 +26,7 @@ Alt andet står i menuen **Terminal**:
 | Vis terminal | Folder den sammen og ud igen; fanebladene og det, der kører i dem, bliver som de er |
 | Skift mellem panel og terminal | Flytter tastaturfokus uden at ændre andet |
 | Ny terminalfane | Endnu en skal, i den samme mappe |
-| Luk terminalfanen | Lukker den — og spørger først, hvis noget stadig kører i den |
+| Luk terminalfanen | Lukker den — og spørger først; kører der noget i den, nævnes det ved navn |
 | Del terminalen | To skaller side om side i samme faneblad |
 | Gå til panelets mappe | Laver `cd` i terminalen hen, hvor det aktive panel står |
 | Indsæt de valgte filnavne | Skriver de valgte navne ved prompten, i anførselstegn |
@@ -71,4 +71,4 @@ Fanebladene kommer tilbage, når du starter appen igen, i de mapper de var i. De
 
 ## Når du slutter
 
-At lukke appen lukker skallerne. Det, der stadig kører i dem, afsluttes, ligesom at lukke et Terminal-vindue afslutter det, der er i det. Derfor spørger det først, når du lukker et faneblad, hvor noget kører.
+At lukke appen lukker skallerne. Det, der stadig kører i dem, afsluttes, ligesom at lukke et Terminal-vindue afslutter det, der er i det. Også det at lukke et enkelt faneblad spørger først og nævner, hvad der kører i det — et faneblad rummer desuden alt, hvad skallen har skrevet, og ✕ sidder tæt på næste faneblad.

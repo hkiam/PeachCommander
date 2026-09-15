@@ -122,6 +122,6 @@ Vergeten verandert niets aan de mappen; wat verdwijnt is het verslag van wat er 
 
 - **Op inhoud versus op datum/grootte.** Een snelle vergelijking koppelt bestanden op grootte en wijzigingsdatum, wat snel is maar misleid kan worden wanneer tijdstempels verschillen voor identieke bestanden. Zet **op inhoud** aan voor een betrouwbaar resultaat ten koste van het lezen van elk bestand.
 - **Submappen en filters.** Het synchroniseervenster kan in submappen afdalen en kan met een filtermasker worden beperkt, zodat je alleen de bestandstypen kunt synchroniseren die je interesseren.
-- **Jij houdt de controle.** Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd.
-- **Voorinstellingen.** Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert.
+- **Jij houdt de controle.** Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd. **Esc** stopt een lopende vergelijking en sluit het venster wanneer er niets loopt.
+- **Voorinstellingen.** Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert. Een voorinstelling onthoudt ook wat het resultatenraster toont — het richtingfilter en **Identieke verbergen** — en het venster opent met de voorinstelling die je het laatst gebruikte. Een voorinstelling **Standaard** is er vanaf de eerste keer dat je het venster opent; sla eroverheen op om er je eigen van te maken.
 

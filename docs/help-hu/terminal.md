@@ -26,7 +26,7 @@ Minden más a **Terminál** menüben van:
 | Terminál megjelenítése | Behajtja és újra kihajtja; a lapok és ami bennük fut, változatlan marad |
 | Váltás a panel és a terminál között | Áthelyezi a billentyűzetfókuszt, mást nem változtat |
 | Új terminállap | Még egy parancsértelmező, ugyanabban a mappában |
-| Terminállap bezárása | Bezárja — és előbb rákérdez, ha még fut benne valami |
+| Terminállap bezárása | Bezárja — és előbb rákérdez; ha fut benne valami, azt meg is nevezi |
 | Terminál felosztása | Két parancsértelmező egymás mellett ugyanazon a lapon |
 | Ugrás a panel mappájába | A terminálban `cd`-t hajt végre oda, ahol az aktív panel áll |
 | A kijelölt fájlnevek beszúrása | A kijelölt neveket beírja a promptba, idézőjelek között |
@@ -71,4 +71,4 @@ A lapok visszatérnek, amikor újraindítja az alkalmazást, abban a mappában, 
 
 ## Kilépéskor
 
-Az alkalmazás bezárása bezárja a parancsértelmezőket. Ami még fut bennük, az befejeződik, ahogy egy Terminál-ablak bezárása is befejezi, ami benne van. Ezért kérdez rá előbb egy olyan lap bezárása, amelyben fut valami.
+Az alkalmazás bezárása bezárja a parancsértelmezőket. Ami még fut bennük, az befejeződik, ahogy egy Terminál-ablak bezárása is befejezi, ami benne van. Egyetlen lap bezárása is rákérdez előbb, és megnevezi, mi fut benne — a lapon ráadásul ott van minden, amit a parancsértelmező kiírt, és a ✕ közel esik a következő laphoz.

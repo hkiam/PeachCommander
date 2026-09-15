@@ -202,6 +202,43 @@ does not have.
 
 ### Changed
 
+- **A sync preset carries what the grid shows, and the window opens on the last one used.** The
+  preset row saved the comparison and not the *view* of it: the direction filter and **Hide
+  identical** were left out on the grounds that they narrow the result rather than the comparison.
+  That is the wrong line to draw — what a preset is for is "show me this pair of folders the way I
+  always look at them", and half of that is which rows are on screen, so every load ended with the
+  same two controls being set again by hand. They round-trip now, are applied to the rows already on
+  screen, and the window comes back to the preset most recently chosen or saved instead of to
+  `(none)`.
+
+  An installation that has never saved one gets a **Default** preset the first time the window opens,
+  so the popup is no longer an empty control that appears to do nothing and there is something to
+  save over — the shortest way to make a preset is to change two things and overwrite one that
+  exists. It holds the window's own defaults and nothing cleverer, so the first run of the window
+  behaves exactly as it always did; deleting it makes it stay gone, because it is seeded from the
+  absence of the file rather than from an empty list.
+
+- **Escape closes the Synchronize Directories window**, which had no keyboard way out at all: Return
+  compares, and everything else was the red button. While a scan or a synchronization is running it
+  is the Stop button instead, and the second press closes — pressing Escape to get out of a dialog
+  and closing the window mid-copy is the one outcome worth designing around.
+
+- **"Search in" is three lines tall and wraps.** It takes several folders separated by `;`, and it
+  was one line: measured in the running dialog, a field 379 pt wide showed
+  `/Users/…/PeachCommander/Sources/` and stopped, with no ellipsis and nothing to say the rest was
+  there. What "where am I searching" was answered by was then the tooltip, which nobody opens to read
+  what they typed. Return still starts the search — a wrapping field gets a real multi-line editor,
+  whose `insertNewline` never reaches the default button — and a line break now counts as a separator
+  alongside `;`, so a pasted list of folders works. Spotlight mode was handed the raw field all along
+  and never split it at all: `a;b` searched a folder called `a;b` and found nothing.
+
+- **Closing a terminal tab always asks, and the ✕ is inside the tab.** The question used to be
+  reserved for a tab with something running in it; but the tab is also where everything the shell has
+  printed lives, and the ✕ sat *beside* the tab rather than in it — two bezels a point apart, with the
+  next tab immediately to its right, which is what it looked like it would close. The ✕ is now drawn
+  inside the tab's own bezel, sized and coloured to the name beside it, and a tab with a job still
+  names the job, because that is the answer that decides it.
+
 - **Verify after copy reads half as much.** It read *both* files again once the copy was done and
   threw both checksums away, so a verified copy across volumes moved three gigabytes of reads where
   two would do. The copy now works out the source's checksum while it is reading the bytes it is

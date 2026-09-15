@@ -117,5 +117,5 @@ Pozabljanje ne spremeni ničesar pri mapah; izgine zapis o tem, kaj je bilo nare
 
 - **Po vsebini proti po datumu/velikosti.** Hitra primerjava ujema datoteke po velikosti in datumu spremembe, kar je hitro, a je mogoče prevarati, ko se časovni žigi razlikujejo za enake datoteke. Vklopite **po vsebini** za zanesljiv rezultat za ceno branja vsake datoteke.
 - **Podmape in filtri.** Okno za sinhronizacijo lahko sestopi v podmape in ga je mogoče omejiti z masko filtra, tako da lahko sinhronizirate le vrste datotek, ki vas zanimajo.
-- **Vi ohranite nadzor.** Sinhronizacija se nikoli ne izvaja sama — pregledate predlagane smeri v mreži rezultatov in lahko katero koli od njih spremenite, preden je karkoli kopirano.
-- **Prednastavitve.** Pogosto uporabljene nastavitve sinhronizacije je mogoče shraniti in ponovno uporabiti, tako da ne vnašate istih možnosti vsakič.
+- **Vi ohranite nadzor.** Sinhronizacija se nikoli ne izvaja sama — pregledate predlagane smeri v mreži rezultatov in lahko katero koli od njih spremenite, preden je karkoli kopirano. **Esc** ustavi primerjavo, ki teče, in zapre okno, kadar nič ne teče.
+- **Prednastavitve.** Pogosto uporabljene nastavitve sinhronizacije je mogoče shraniti in ponovno uporabiti, tako da ne vnašate istih možnosti vsakič. Prednastavitev si zapomni tudi, kaj kaže mreža rezultatov — filter smeri in **Skrij enake** — okno pa se odpre z nazadnje uporabljeno prednastavitvijo. Prednastavitev **Privzeto** je na voljo od prvega odprtja okna; shranite čeznjo, da postane vaša.

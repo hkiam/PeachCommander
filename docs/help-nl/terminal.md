@@ -26,7 +26,7 @@ De rest staat in het menu **Terminal**:
 | Terminal tonen | Klapt hem in en weer uit; de tabbladen en wat erin draait blijven zoals ze zijn |
 | Wisselen tussen paneel en terminal | Verplaatst de toetsenbordfocus, zonder verder iets te veranderen |
 | Nieuw terminaltabblad | Nog een shell, in dezelfde map |
-| Sluit het terminaltabblad | Sluit hem — en vraagt eerst of er nog iets in draait |
+| Sluit het terminaltabblad | Sluit hem — en vraagt eerst; draait er nog iets, dan wordt het benoemd |
 | Terminal splitsen | Twee shells naast elkaar in hetzelfde tabblad |
 | Ga naar de map van het paneel | Doet `cd` naar waar het actieve paneel staat |
 | Voeg de geselecteerde bestandsnamen in | Typt de geselecteerde namen op de prompt, tussen aanhalingstekens |
@@ -71,4 +71,4 @@ Tabbladen komen terug als u de app opnieuw start, in de mappen waar ze waren. Wa
 
 ## Bij afsluiten
 
-De app sluiten sluit de shells. Wat er nog in draait wordt beëindigd, zoals het sluiten van een Terminal-venster beëindigt wat erin zit. Daarom vraagt het sluiten van een tabblad waarin iets draait eerst om bevestiging.
+De app sluiten sluit de shells. Wat er nog in draait wordt beëindigd, zoals het sluiten van een Terminal-venster beëindigt wat erin zit. Ook het sluiten van één tabblad vraagt eerst om bevestiging en benoemt wat erin draait — een tabblad bevat bovendien alles wat de shell heeft afgedrukt, en de ✕ zit dicht bij het volgende tabblad.

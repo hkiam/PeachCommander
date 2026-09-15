@@ -26,7 +26,7 @@ Tout le reste se trouve dans le menu **Terminal** :
 | Afficher le terminal | Le replie et le déplie ; les onglets et ce qui y tourne restent tels quels |
 | Basculer entre le panneau et le terminal | Déplace le focus clavier, sans rien changer d’autre |
 | Nouvel onglet de terminal | Un autre shell, dans le même dossier |
-| Fermer l'onglet de terminal | Le ferme — en demandant d’abord si quelque chose y tourne encore |
+| Fermer l'onglet de terminal | Le ferme — en demandant d’abord ; si quelque chose y tourne encore, il est nommé |
 | Diviser le terminal | Deux shells côte à côte dans le même onglet |
 | Aller au dossier du panneau | Fait un `cd` du terminal vers l’emplacement du panneau actif |
 | Insérer les noms de fichiers sélectionnés | Tape les noms sélectionnés à l’invite, entre guillemets |
@@ -71,4 +71,4 @@ Les onglets reviennent au redémarrage de l’app, dans les dossiers où ils ét
 
 ## En quittant
 
-Fermer l’app ferme les shells. Ce qui y tourne encore est arrêté, comme fermer une fenêtre de Terminal arrête ce qu’elle contient. C’est pourquoi fermer un onglet où quelque chose tourne demande d’abord confirmation.
+Fermer l’app ferme les shells. Ce qui y tourne encore est arrêté, comme fermer une fenêtre de Terminal arrête ce qu’elle contient. Fermer un seul onglet demande également confirmation et nomme ce qui y tourne le cas échéant — un onglet contient aussi tout ce que le shell a affiché, et la ✕ est proche de l’onglet suivant.

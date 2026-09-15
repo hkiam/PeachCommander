@@ -27,7 +27,7 @@ Everything else is in the **Terminal** menu:
 | Show Terminal | Folds it away and brings it back; the tabs and whatever is running in them stay as they are |
 | Switch Between Panel and Terminal | Moves the keyboard focus, without changing anything |
 | New Terminal Tab | Another shell, in the same folder |
-| Close the Terminal Tab | Closes it — and asks first if something is still running in it |
+| Close the Terminal Tab | Closes it — and asks first, naming what is still running if anything is |
 | Split the Terminal | Two shells side by side in the same tab |
 | Go to the Panel's Folder | `cd`s the terminal to where the active panel is |
 | Insert the Selected File Names | Types the selected names at the prompt, quoted |
@@ -72,4 +72,4 @@ Tabs come back when you start the app again, in the folders they were in. What w
 
 ## When you quit
 
-Closing the app closes the shells. Anything still running in them is ended, the way closing a Terminal window ends what is in it. That is why closing a tab with something running in it asks first.
+Closing the app closes the shells. Anything still running in them is ended, the way closing a Terminal window ends what is in it. Closing a single tab asks first as well, and names what is running in it when something is — a tab also holds everything the shell has printed, and the ✕ sits close to the next tab.

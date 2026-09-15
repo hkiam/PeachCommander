@@ -141,5 +141,5 @@ only takes away an offer.
 
 - **By content vs. by date/size.** A quick comparison matches files by size and modification date, which is fast but can be fooled when timestamps differ for identical files. Turn on **by content** for a reliable result at the cost of reading every file.
 - **Subfolders and filters.** The synchronize window can descend into subfolders and can be limited with a filter mask, so you can sync just the file types you care about.
-- **You stay in control.** Synchronizing never runs on its own — you review the proposed directions in the result grid and can change any of them before anything is copied.
-- **Presets.** Frequently used synchronize setups can be saved and reused so you don't re-enter the same options each time.
+- **You stay in control.** Synchronizing never runs on its own — you review the proposed directions in the result grid and can change any of them before anything is copied. **Esc** stops a comparison that is running, and closes the window when nothing is.
+- **Presets.** Frequently used synchronize setups can be saved and reused so you don't re-enter the same options each time. A preset also carries what the result grid shows — the direction filter and **Hide identical** — and the window opens on the preset you used last. A **Default** preset is there from the first time you open the window; save over it to make it your own.

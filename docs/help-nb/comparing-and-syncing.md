@@ -118,6 +118,6 @@ De siste 200 kjøringene beholdes, eller 64 MB av dem, alt etter hva som kommer 
 
 - **Etter innhold kontra etter dato/størrelse.** En rask sammenligning samsvarer filer etter størrelse og endringsdato, noe som er raskt, men kan lures når tidsstempler avviker for identiske filer. Slå på **etter innhold** for et pålitelig resultat på bekostning av å lese hver fil.
 - **Undermapper og filtre.** Synkroniseringsvinduet kan stige ned i undermapper og kan begrenses med en filtermaske, slik at du kan synkronisere bare filtypene du bryr deg om.
-- **Du har kontrollen.** Synkronisering kjører aldri av seg selv — du ser gjennom de foreslåtte retningene i resultatrutenettet og kan endre hvilken som helst av dem før noe kopieres.
-- **Forhåndsinnstillinger.** Ofte brukte synkroniseringsoppsett kan lagres og gjenbrukes slik at du ikke skriver inn de samme alternativene hver gang.
+- **Du har kontrollen.** Synkronisering kjører aldri av seg selv — du ser gjennom de foreslåtte retningene i resultatrutenettet og kan endre hvilken som helst av dem før noe kopieres. **Esc** stopper en pågående sammenligning og lukker vinduet når ingenting kjører.
+- **Forhåndsinnstillinger.** Ofte brukte synkroniseringsoppsett kan lagres og gjenbrukes slik at du ikke skriver inn de samme alternativene hver gang. En forhåndsinnstilling husker også hva resultatrutenettet viser — retningsfilteret og **Skjul identiske** — og vinduet åpnes med forhåndsinnstillingen du sist brukte. En **Standard**-forhåndsinnstilling finnes fra første gang du åpner vinduet; lagre over den for å gjøre den til din egen.
 

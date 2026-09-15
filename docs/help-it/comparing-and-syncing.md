@@ -121,6 +121,6 @@ Dimenticare non cambia nulla nelle cartelle; ciò che se ne va è il registro di
 
 - **Per contenuto vs. per data/dimensione.** Un confronto rapido abbina i file per dimensione e data di modifica, il che è veloce ma può essere ingannato quando le date differiscono per file identici. Attivate **per contenuto** per un risultato affidabile, al costo della lettura di ogni file.
 - **Sottocartelle e filtri.** La finestra di sincronizzazione può scendere nelle sottocartelle e può essere limitata con una maschera di filtro, così potete sincronizzare solo i tipi di file che vi interessano.
-- **Restate al comando.** La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché.
-- **Preimpostazioni.** Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta.
+- **Restate al comando.** La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché. **Esc** interrompe un confronto in corso e chiude la finestra quando non ce n'è nessuno.
+- **Preimpostazioni.** Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta. Una preimpostazione ricorda anche ciò che mostra la griglia dei risultati — il filtro di direzione e **Nascondi gli identici** — e la finestra si apre sulla preimpostazione usata per ultima. Una preimpostazione **Predefinita** è presente fin dalla prima apertura della finestra; salvate sopra di essa per renderla vostra.
 

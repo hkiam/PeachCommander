@@ -26,7 +26,7 @@ Alt annet ligger i menyen **Terminal**:
 | Vis terminal | Folder den sammen og ut igjen; fanene og det som kjører i dem blir som de er |
 | Bytt mellom panel og terminal | Flytter tastaturfokus, uten å endre noe annet |
 | Ny terminalfane | Enda et skall, i samme mappe |
-| Lukk terminalfanen | Lukker den — og spør først hvis noe fortsatt kjører i den |
+| Lukk terminalfanen | Lukker den — og spør først; kjører noe i den, blir det navngitt |
 | Del terminalen | To skall side om side i samme fane |
 | Gå til panelets mappe | Gjør `cd` i terminalen dit det aktive panelet står |
 | Sett inn de valgte filnavnene | Skriver de valgte navnene ved ledeteksten, i anførselstegn |
@@ -71,4 +71,4 @@ Fanene kommer tilbake når du starter appen igjen, i mappene de var i. Det som *
 
 ## Når du avslutter
 
-Å lukke appen lukker skallene. Det som fortsatt kjører i dem, avsluttes, slik det å lukke et Terminal-vindu avslutter det som er i det. Derfor spør det først når du lukker en fane der noe kjører.
+Å lukke appen lukker skallene. Det som fortsatt kjører i dem, avsluttes, slik det å lukke et Terminal-vindu avslutter det som er i det. Å lukke én enkelt fane spør også først og navngir hva som kjører i den — en fane rommer dessuten alt skallet har skrevet ut, og ✕ ligger tett på neste fane.

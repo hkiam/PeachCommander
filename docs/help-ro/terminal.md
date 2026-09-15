@@ -26,7 +26,7 @@ Tot restul se află în meniul **Terminal**:
 | Arată terminalul | Îl pliază și îl desface din nou; filele și ce rulează în ele rămân cum sunt |
 | Comută între panou și terminal | Mută focalizarea tastaturii, fără să schimbe altceva |
 | Filă nouă de terminal | Încă un shell, în același dosar |
-| Închide fila de terminal | Îl închide — și întreabă întâi dacă mai rulează ceva în el |
+| Închide fila de terminal | Îl închide — și întreabă întâi; dacă mai rulează ceva, îl numește |
 | Împarte terminalul | Două shell-uri alăturate în aceeași filă |
 | Mergi în dosarul panoului | Face `cd` în terminal acolo unde se află panoul activ |
 | Inserează numele fișierelor selectate | Scrie numele selectate la prompt, între ghilimele |
@@ -71,4 +71,4 @@ Filele revin când porniți aplicația din nou, în dosarele în care erau. Ce *
 
 ## Când ieșiți
 
-Închiderea aplicației închide shell-urile. Ce mai rulează în ele este încheiat, așa cum închiderea unei ferestre Terminal încheie ce se află în ea. De aceea închiderea unei file în care rulează ceva întreabă întâi.
+Închiderea aplicației închide shell-urile. Ce mai rulează în ele este încheiat, așa cum închiderea unei ferestre Terminal încheie ce se află în ea. Și închiderea unei singure file întreabă întâi și numește ce rulează în ea — o filă conține în plus tot ce a afișat shell-ul, iar ✕ se află aproape de fila următoare.

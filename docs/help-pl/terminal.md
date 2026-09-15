@@ -26,7 +26,7 @@ Cała reszta jest w menu **Terminal**:
 | Pokaż terminal | Zwija go i rozwija ponownie; karty i to, co w nich działa, zostają bez zmian |
 | Przełącz między panelem a terminalem | Przenosi fokus klawiatury, nie zmieniając niczego więcej |
 | Nowa karta terminala | Kolejna powłoka, w tym samym folderze |
-| Zamknij kartę terminala | Zamyka ją — i pyta wcześniej, jeśli coś jeszcze w niej działa |
+| Zamknij kartę terminala | Zamyka ją — i pyta wcześniej; jeśli coś w niej działa, nazywa to |
 | Podziel terminal | Dwie powłoki obok siebie w tej samej karcie |
 | Przejdź do folderu panelu | Wykonuje w terminalu `cd` tam, gdzie stoi aktywny panel |
 | Wstaw zaznaczone nazwy plików | Wpisuje zaznaczone nazwy w wierszu zachęty, w cudzysłowach |
@@ -71,4 +71,4 @@ Karty wracają po ponownym uruchomieniu aplikacji, w folderach, w których były
 
 ## Przy zamykaniu
 
-Zamknięcie aplikacji zamyka powłoki. To, co jeszcze w nich działa, zostaje zakończone, tak jak zamknięcie okna Terminala kończy to, co jest w środku. Dlatego zamknięcie karty, w której coś działa, najpierw pyta.
+Zamknięcie aplikacji zamyka powłoki. To, co jeszcze w nich działa, zostaje zakończone, tak jak zamknięcie okna Terminala kończy to, co jest w środku. Zamknięcie pojedynczej karty też najpierw pyta i nazywa to, co w niej działa — w karcie jest ponadto wszystko, co powłoka wypisała, a ✕ leży blisko następnej karty.

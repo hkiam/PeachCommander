@@ -118,6 +118,6 @@ At glemme ændrer intet ved mapperne; det, der går, er optegnelsen over, hvad d
 
 - **Efter indhold vs. efter dato/størrelse.** En hurtig sammenligning matcher filer efter størrelse og ændringsdato, hvilket er hurtigt, men kan narres, når tidsstempler afviger for identiske filer. Slå **efter indhold** til for et pålideligt resultat på bekostning af at læse hver fil.
 - **Undermapper og filtre.** Synkroniseringsvinduet kan gå ned i undermapper og kan begrænses med en filtermaske, så du kun kan synkronisere de filtyper, du bekymrer dig om.
-- **Du bevarer kontrollen.** Synkronisering kører aldrig af sig selv — du gennemgår de foreslåede retninger i resultatgitteret og kan ændre enhver af dem, før noget kopieres.
-- **Forudindstillinger.** Ofte brugte synkroniseringsopsætninger kan gemmes og genbruges, så du ikke skal indtaste de samme indstillinger hver gang.
+- **Du bevarer kontrollen.** Synkronisering kører aldrig af sig selv — du gennemgår de foreslåede retninger i resultatgitteret og kan ændre enhver af dem, før noget kopieres. **Esc** stopper en igangværende sammenligning og lukker vinduet, når intet kører.
+- **Forudindstillinger.** Ofte brugte synkroniseringsopsætninger kan gemmes og genbruges, så du ikke skal indtaste de samme indstillinger hver gang. En forudindstilling husker også, hvad resultatgitteret viser — retningsfilteret og **Skjul identiske** — og vinduet åbner med den forudindstilling, du sidst brugte. En **Standard**-forudindstilling findes fra første gang, du åbner vinduet; gem hen over den for at gøre den til din egen.
 

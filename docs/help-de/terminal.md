@@ -26,7 +26,7 @@ Alles Weitere steht im Menü **Terminal**:
 | Terminal anzeigen | Klappt es ein und wieder aus; die Tabs und was darin läuft, bleiben, wie sie sind |
 | Zwischen Panel und Terminal wechseln | Bewegt den Tastaturfokus, ohne sonst etwas zu ändern |
 | Neuer Terminal-Tab | Noch eine Shell, im selben Ordner |
-| Terminal-Tab schließen | Schließt ihn — und fragt vorher, wenn darin noch etwas läuft |
+| Terminal-Tab schließen | Schließt ihn — und fragt vorher; läuft darin noch etwas, wird es benannt |
 | Terminal teilen | Zwei Shells nebeneinander im selben Tab |
 | In den Ordner des Panels wechseln | Führt im Terminal ein `cd` dorthin aus, wo das aktive Panel steht |
 | Ausgewählte Dateinamen einfügen | Tippt die ausgewählten Namen an der Eingabeaufforderung, in Anführungszeichen |
@@ -71,4 +71,4 @@ Tabs kommen beim nächsten Start der App zurück, in den Ordnern, in denen sie w
 
 ## Beim Beenden
 
-Das Schließen der App schließt die Shells. Was darin noch läuft, wird beendet, so wie das Schließen eines Terminal-Fensters beendet, was darin ist. Deshalb fragt das Schließen eines Tabs, in dem etwas läuft, vorher nach.
+Das Schließen der App schließt die Shells. Was darin noch läuft, wird beendet, so wie das Schließen eines Terminal-Fensters beendet, was darin ist. Auch das Schließen eines einzelnen Tabs fragt vorher nach und benennt dabei, was darin noch läuft — in einem Tab steht außerdem alles, was die Shell ausgegeben hat, und das ✕ sitzt dicht am nächsten Tab.

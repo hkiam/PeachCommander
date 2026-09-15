@@ -120,6 +120,6 @@ Uitarea nu schimbă nimic în dosare; ce dispare este consemnarea a ceea ce s-a 
 
 - **După conținut vs. după dată/dimensiune.** O comparație rapidă potrivește fișierele după dimensiune și dată de modificare, ceea ce este rapid, dar poate fi păcălită când marcajele de timp diferă pentru fișiere identice. Activați **după conținut** pentru un rezultat fiabil cu prețul citirii fiecărui fișier.
 - **Subfoldere și filtre.** Fereastra de sincronizare poate coborî în subfoldere și poate fi limitată cu o mască de filtru, astfel încât puteți sincroniza doar tipurile de fișiere care vă interesează.
-- **Rămâneți în control.** Sincronizarea nu rulează niciodată de la sine — examinați direcțiile propuse în grila de rezultate și puteți schimba oricare dintre ele înainte ca ceva să fie copiat.
-- **Presetări.** Configurările de sincronizare folosite frecvent pot fi salvate și reutilizate, astfel încât să nu reintroduceți aceleași opțiuni de fiecare dată.
+- **Rămâneți în control.** Sincronizarea nu rulează niciodată de la sine — examinați direcțiile propuse în grila de rezultate și puteți schimba oricare dintre ele înainte ca ceva să fie copiat. **Esc** oprește o comparație în curs și închide fereastra când nu rulează nimic.
+- **Presetări.** Configurările de sincronizare folosite frecvent pot fi salvate și reutilizate, astfel încât să nu reintroduceți aceleași opțiuni de fiecare dată. O presetare reține și ceea ce arată grila de rezultate — filtrul de direcție și **Ascunde identicele** — iar fereastra se deschide cu presetarea folosită ultima dată. O presetare **Implicită** există de la prima deschidere a ferestrei; salvați peste ea pentru a o face a dumneavoastră.
 

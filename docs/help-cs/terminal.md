@@ -26,7 +26,7 @@ Vše ostatní je v nabídce **Terminál**:
 | Zobrazit terminál | Sbalí jej a znovu rozbalí; karty a to, co v nich běží, zůstanou, jak jsou |
 | Přepnout mezi panelem a terminálem | Přesune zaměření klávesnice, jinak nezmění nic |
 | Nový panel terminálu | Další shell, ve stejné složce |
-| Zavřít panel terminálu | Zavře jej — a předtím se zeptá, pokud v něm ještě něco běží |
+| Zavřít panel terminálu | Zavře jej — a předtím se zeptá; pokud v něm něco běží, pojmenuje to |
 | Rozdělit terminál | Dva shelly vedle sebe v jedné kartě |
 | Přejít do složky panelu | Provede v terminálu `cd` tam, kde stojí aktivní panel |
 | Vložit vybrané názvy souborů | Napíše vybraná jména na příkazový řádek, v uvozovkách |
@@ -71,4 +71,4 @@ Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byl
 
 ## Při ukončení
 
-Zavření aplikace zavře shelly. To, co v nich ještě běží, se ukončí, stejně jako zavření okna Terminálu ukončí to, co je v něm. Proto se zavření karty, v níž něco běží, nejdřív zeptá.
+Zavření aplikace zavře shelly. To, co v nich ještě běží, se ukončí, stejně jako zavření okna Terminálu ukončí to, co je v něm. I zavření jedné karty se nejdřív zeptá a pojmenuje, co v ní běží — v kartě je navíc vše, co shell vypsal, a ✕ leží blízko sousední karty.
