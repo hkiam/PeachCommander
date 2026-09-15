@@ -10,35 +10,82 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>L'extension Git fait apparaître l'état d'un dépôt Git directement dans le panneau de fichiers — sans application séparée, sans terminal. Elle ajoute deux colonnes qui montrent le statut de chaque fichier dans l'arbre de travail et la branche courante, un sous-menu <strong>Git</strong> pour les commandes de tous les jours (statut, indexer, commit, pull, push), et elle utilise le <code>git</code> déjà installé sur votre Mac. C'est une extension, vous pouvez donc la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
-<h2 id="ce-quelle-ajoute">Ce qu'elle ajoute</h2>
+<p>L’extension Git fait apparaître l’état d’un dépôt Git directement dans le panneau de fichiers — pas
+d’application à part, pas de terminal. Elle ajoute deux colonnes, un sous-menu <strong>Git</strong>, un panneau ancré pour
+indexer et valider, et des fenêtres pour l’historique, le blâme, les branches, les conflits et le rebasage.
+Elle pilote le <code>git</code> déjà installé sur votre Mac. C’est une extension : vous pouvez la désactiver ou la
+supprimer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<h2 id="ce-quelle-ajoute">Ce qu’elle ajoute</h2>
 <ul>
-<li><strong>Deux colonnes dans la liste de fichiers</strong> — <em>Statut Git</em> et <em>Branche</em>. Dans un dépôt, chaque fichier affiche un mot de statut court (Modifié, Ajouté, Supprimé, Non suivi, Renommé, Copié, Conflit, Ignoré ou Changé) et le panneau affiche la branche courante. Activez les colonnes dans <strong>Configuration ▸ Colonnes…</strong> (voir <a href="view-modes-and-sorting.html">Modes d'affichage et tri</a>).</li>
-<li><strong>Un menu Git</strong> — sous <strong>Commandes ▸ Git</strong>, et dans le menu contextuel d'un fichier, avec : <strong>Statut Git…</strong>, <strong>Git Add (indexer)</strong>, <strong>Commit Git…</strong>, <strong>Git Pull</strong> et <strong>Git Push</strong>.</li>
+<li><strong>Deux colonnes de liste</strong> — <em>État Git</em> et <em>Branche</em>. Chaque fichier affiche une icône et un mot d’état
+  bref (Modifié, Ajouté, Supprimé, Non suivi, Renommé, Copié, Conflit, Ignoré, Type changé), avec <em>(indexé)</em>
+  lorsque la modification est déjà dans l’index ; la colonne <em>Branche</em> indique la branche sur laquelle se
+  trouve le dépôt de ce fichier. Activez les colonnes dans <strong>Configuration ▸ Colonnes…</strong> (voir
+  <a href="view-modes-and-sorting.html">Modes d’affichage et tri</a>).</li>
+<li><strong>Un menu Git</strong> — sous <strong>Commandes ▸ Git</strong>, et dans le menu contextuel d’un fichier.</li>
 </ul>
-<p><img alt="La boîte de dialogue Statut Git montrant la branche courante et les fichiers modifiés du dépôt" src="images/git-status.png" />
-<em>(Figure : Statut Git indique la branche et chaque changement de l'arbre de travail.)</em></p>
-<h2 id="verifier-le-statut">Vérifier le statut</h2>
-<ol>
-<li>Placez le curseur sur un fichier ou un dossier à l'intérieur d'un dépôt Git.</li>
-<li>Choisissez <strong>Commandes ▸ Git ▸ Statut Git…</strong> (ou clic droit ▸ <strong>Git ▸ Statut Git…</strong>).</li>
-<li>Un résumé apparaît : la branche courante (ou <em>(détachée)</em>), puis soit <em>Arbre de travail propre.</em> soit une liste de changements, chaque ligne montrant le statut et le chemin du fichier.</li>
-</ol>
-<p>Si le curseur n'est pas à l'intérieur d'un dépôt, l'extension indique simplement <em>Pas un dépôt Git.</em></p>
-<h2 id="indexer-committer-pull-push">Indexer, committer, pull, push</h2>
+<p><img alt="La fenêtre État Git montrant la branche courante et les fichiers modifiés du dépôt" src="images/git-status.png" />
+<em>(Figure : État Git indique la branche et chaque modification de la copie de travail.)</em></p>
+<h2 id="le-panneau-indexer-valider-synchroniser">Le panneau : indexer, valider, synchroniser</h2>
+<p><strong>Commandes ▸ Git ▸ Panneau</strong> ancre une vue qui groupe la copie de travail en <em>indexé</em>, <em>modifié</em> et <em>non
+suivi</em>. Sélectionnez des fichiers et utilisez <strong>Indexer</strong>, <strong>Désindexer</strong> ou <strong>Abandonner…</strong>, saisissez un
+message et appuyez sur <strong>Valider</strong> — avec <strong>Amender</strong> pour replier la modification dans la validation
+précédente. <strong>Tirer</strong> et <strong>Pousser</strong> sont juste à côté, là où la validation a lieu de toute façon ; les deux
+affichent leur progression et peuvent être annulés.</p>
+<p>La validation porte sur l’<em>index</em>, pas sur <code>git commit -a</code> : ce que vous avez indexé est ce qui est validé.</p>
+<h2 id="historique-blame-et-le-web">Historique, blâme et le web</h2>
 <ul>
-<li><strong>Git Add (indexer)</strong> indexe le fichier sous le curseur (<code>git add</code>).</li>
-<li><strong>Commit Git…</strong> demande un message de commit, puis committe tous les changements (<code>git commit -a</code>). La sortie combinée est affichée pour que vous voyiez exactement ce qui s'est passé.</li>
-<li><strong>Git Pull</strong> effectue un pull en fast-forward uniquement (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> pousse la branche courante (<code>git push</code>).</li>
+<li><strong>Historique…</strong> liste les validations avec un graphe en couloirs, les références qui pointent sur chacune
+  (<code>● main</code>, <code>↗ origin/main</code>, <code>⚑ v1.0</code>), et les fichiers que chaque validation a touchés. Entrée ou un
+  double-clic ouvre la version de ce fichier face à son parent dans la fenêtre de comparaison. <strong>Annuler la
+  validation</strong> et <strong>Picorer</strong> y sont, et tous deux refusent d’emblée si la copie de travail n’est pas propre.</li>
+<li><strong>Historique du fichier…</strong> est la même fenêtre pour un seul fichier.</li>
+<li><strong>Blâme (liste)…</strong> montre chaque ligne avec sa validation, son auteur et sa date. <strong>Blâme dans l’éditeur</strong>
+  met la même information dans la gouttière de l’éditeur, à côté des numéros de ligne : survolez une ligne
+  pour le message de la validation, cliquez pour l’ouvrir face à son parent.</li>
+<li><strong>Ouvrir sur le web</strong> ouvre le fichier, la validation ou la branche sur GitHub, GitLab, Bitbucket ou Azure
+  DevOps, à partir de l’URL du dépôt distant — pas de compte, pas de jeton. Pour un hôte dont elle ne connaît
+  pas la forme des liens, elle propose la page du dépôt plutôt que de deviner.</li>
 </ul>
-<p>Après une commande qui modifie le dépôt, le panneau actif se rafraîchit pour que les colonnes de statut restent à jour.</p>
+<h2 id="branches-remises-et-etiquettes">Branches, remises et étiquettes</h2>
+<p><strong>Branches, remises et étiquettes…</strong> liste les trois. Changer de branche, en créer, en fusionner ou en
+supprimer une ; pousser, dépiler ou jeter une remise ; créer, supprimer ou pousser une étiquette, ou basculer
+dessus — une étiquette n’est pas une branche, aussi est-il dit d’emblée que HEAD finira détaché. Récupérer,
+Tirer et Pousser sont dans la même fenêtre et peuvent être annulés en cours.</p>
+<p>Pousser une étiquette est une action distincte à dessein : <code>git push</code> n’emporte pas les étiquettes.</p>
+<h2 id="conflits">Conflits</h2>
+<p><strong>Résoudre le conflit…</strong> liste les régions en conflit du fichier sous le curseur et prend une décision pour
+chacune : <em>les nôtres</em>, <em>les leurs</em>, <em>les deux</em>, ou laisser ouvert. Puis <strong>Écrire le fichier</strong> ou <strong>Écrire et
+indexer</strong>. Elle refuse d’indexer tant qu’une région reste ouverte — Git validerait volontiers des marques
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> — et elle refuse de toucher un fichier dont elle ne sait pas lire les marques plutôt que de les
+deviner. Pour une région qui demande d’entrelacer les deux côtés à la main, <strong>Ouvrir dans l’éditeur</strong> est à
+un bouton.</p>
+<h2 id="rebasage">Rebasage</h2>
+<p><strong>Rebaser…</strong> liste les validations en avance sur l’amont — celles que personne d’autre n’a encore — et vous
+laisse les écraser, les corriger, les abandonner, les réordonner ou les reformuler avant de réécrire la
+branche. Si un rebasage s’arrête sur un conflit, la même fenêtre devient <strong>Continuer</strong> / <strong>Sauter la
+validation</strong> / <strong>Abandonner le rebasage</strong>, de sorte qu’un rebasage à moitié fait n’a pas à être terminé dans
+un terminal.</p>
+<h2 id="ignorer-des-fichiers-et-les-identifiants">Ignorer des fichiers, et les identifiants</h2>
+<ul>
+<li><strong>Ignorer ce fichier…</strong>, <strong>Ignorer ce type de fichier…</strong> et <strong>Ignorer ce dossier…</strong> ajoutent le motif qui
+  convient à <code>.gitignore</code> — ancré là où il doit l’être, pour qu’ignorer <em>ce</em> dossier <code>build</code> n’ignore pas
+  tous les dossiers nommés <code>build</code>.</li>
+<li><strong>Identifiants…</strong> indique comment ce dépôt s’authentifie : SSH ou HTTPS, si un assistant d’identifiants est
+  configuré, si un agent SSH tourne et détient une clé. Là où cela aide, elle propose une seule action —
+  laisser Git conserver les identifiants dans le trousseau de macOS. L’extension ne demande jamais de phrase
+  secrète, ne l’affiche pas et ne la conserve pas.</li>
+</ul>
 <h2 id="remarques">Remarques</h2>
 <ul>
-<li>L'extension utilise le Git système à <code>/usr/bin/git</code>. Si Git n'est pas installé, les commandes signalent que Git n'est pas disponible. (L'installation des Xcode Command Line Tools le fournit.)</li>
-<li>Le statut du dépôt est lu une fois par dossier et mis en cache, si bien que le défilement d'un gros dépôt reste rapide ; le cache se rafraîchit après toute commande qui modifie l'arbre.</li>
-<li>Le commit utilise <code>git commit -a</code>, qui committe les changements suivis ; les fichiers tout neufs nécessitent d'abord <strong>Git Add (indexer)</strong>.</li>
-<li>Les en-têtes des colonnes <em>Statut Git</em> et <em>Branche</em> s'affichent actuellement en anglais même dans d'autres langues d'interface ; les valeurs et les boîtes de dialogue sont localisées.</li>
+<li>L’extension utilise le Git du système, à <code>/usr/bin/git</code>. Si Git n’est pas installé, les commandes signalent
+  qu’il n’est pas disponible. (Les Xcode Command Line Tools le fournissent.)</li>
+<li>L’état du dépôt est lu une fois par dossier puis mis en cache, pour que le défilement d’un gros dépôt reste
+  rapide ; le cache se rafraîchit après toute commande qui modifie l’arbre, et suit une validation faite hors
+  de l’application.</li>
+<li>Les copies de travail liées et les sous-modules sont pris en charge : un fichier dans un sous-module montre
+  l’état et la branche <em>du sous-module</em>, pas ceux du dépôt parent.</li>
+<li>Chaque liste a un menu contextuel, <strong>Retour</strong> lance son action principale et <strong>Cmd+R</strong> recharge la fenêtre.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="view-modes-and-sorting.html">Modes d&#x27;affichage et tri</a></li></ul></section>
 </main>

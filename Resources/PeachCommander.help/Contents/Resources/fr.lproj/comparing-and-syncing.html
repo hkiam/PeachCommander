@@ -18,14 +18,11 @@
 <li>Définissez le degré de minutie de la comparaison : inclure les sous-dossiers, comparer <strong>par contenu</strong> (pas seulement par date et taille), ou ignorer la date de modification.</li>
 <li>Ajoutez un masque de filtre (par exemple <code>*.jpg;*.png</code>) si vous ne voulez synchroniser que certains fichiers.</li>
 <li>Examinez la grille de résultats. Chaque ligne affiche un fichier à gauche, une flèche de direction au milieu, et le fichier correspondant à droite. Les flèches indiquent ce qui va se passer : <strong>→</strong> copie de gauche à droite, <strong>←</strong> copie de droite à gauche, et <strong>=</strong> signifie que les deux sont identiques.</li>
-<li>Réduisez ce que la grille affiche avec <strong>Afficher</strong> : tout, seulement les lignes qui vont <strong>&#8594;</strong> vers la droite, ou seulement celles qui vont <strong>&#8592;</strong> vers la gauche. <strong>Masquer les identiques</strong> laisse de côté les fichiers déjà identiques des deux côtés ; la ligne sous la grille indique combien de lignes le filtre retient.</li>
-<li><strong>Tout sélectionner</strong> coche exactement ce qui est à l’écran et décoche tout ce que le filtre masque &mdash; choisissez un sens, cliquez, et l’exécution ne va que dans ce sens. <strong>Tout désélectionner</strong> vide chaque ligne, affichée ou non, si vous préférez choisir à la main.</li>
-<li>Chaque ligne affiche les deux horodatages en plus des deux tailles, si bien que l’on voit <em>pourquoi</em> une flèche pointe dans ce sens. Cliquez sur un en-tête de colonne pour trier, et double-cliquez sur une ligne pour ouvrir les deux fichiers côte à côte.</li>
-<li>Un <strong>&#8800;</strong> signale un conflit : deux fichiers du même âge qui diffèrent malgré tout, où Peach Commander refuse de deviner. Cliquez sur le signe pour choisir vous-même <strong>&#8594;</strong> ou <strong>&#8592;</strong> ; en continuant à cliquer, la ligne redevient un conflit et reste hors de l’exécution.</li>
 <li>Ajustez des lignes individuelles si vous n'êtes pas d'accord avec une direction proposée, puis cliquez sur le bouton de synchronisation pour appliquer les modifications.</li>
 </ol>
 <p><img alt="La fenêtre de synchronisation des dossiers avec deux chemins de dossiers et une grille de résultats de fichiers comportant des flèches gauche, égal et droite" src="images/sync-dialog.png" />
 <em>(Figure : la fenêtre Synchroniser les dossiers compare les deux côtés et propose une direction de copie pour chaque fichier.)</em></p>
+<p>Faites un clic droit sur une ligne pour regarder les fichiers qui sont derrière. <strong>Comparer</strong> ouvre les deux côtés l’un à côté de l’autre, tandis que <strong>Afficher le fichier de gauche</strong> et <strong>Afficher le fichier de droite</strong> ouvrent un seul côté dans la visionneuse — c’est la réponse pour une ligne qui n’existe que d’un côté, où il n’y a rien à comparer. Les entrées qui ne s’appliquent pas à la ligne cliquée sont grisées au lieu de ne rien faire. Un fichier situé dans un <code>.zip</code> ou sur un serveur est d’abord extrait ou téléchargé dans une copie temporaire en lecture seule ; l’original n’est jamais touché. Cela vaut aussi pour <strong>Comparer</strong> : un dossier peut donc être comparé à une archive ou à un serveur — et les boutons de fusion et d’enregistrement restent désactivés pour un tel côté, puisque ce qui y est ouvert est la copie.</p>
 <h2 id="comparer-deux-fichiers-par-contenu">Comparer deux fichiers par contenu</h2>
 <ol>
 <li>Sélectionnez un fichier dans chaque panneau (ou deux fichiers dans le même panneau).</li>
@@ -35,10 +32,65 @@
 </ol>
 <p><img alt="La fenêtre de comparaison affichant deux fichiers texte côte à côte avec les lignes différentes mises en évidence" src="images/diff-window.png" />
 <em>(Figure : comparaison de deux fichiers texte ; les lignes modifiées sont mises en évidence des deux côtés.)</em></p>
+<p>Lorsque les deux fichiers ne présentent aucune différence, la fenêtre le dit dans un bandeau coloré en haut, au lieu de vous laisser le déduire d’un tableau où rien n’est mis en évidence. Le bandeau apparaît aussi, dans une couleur d’avertissement, quand un fichier n’a pas pu être lu du tout : tout verdict sur les différences serait alors une affirmation sur une comparaison qui n’a jamais eu lieu. La comparaison octet par octet dit la même chose pour la même raison : deux fichiers qu’elle ne peut pas ouvrir ne sont pas deux fichiers identiques.</p>
 <h2 id="comparer-des-fichiers-octet-par-octet">Comparer des fichiers octet par octet</h2>
 <p>Lorsque deux fichiers semblent identiques mais que vous devez prouver qu'ils le sont réellement (ou trouver le seul octet qui diffère), utilisez la comparaison binaire. Elle affiche les deux fichiers dans une vue hexadécimale avec les octets non concordants marqués, ce qui est idéal pour vérifier des téléchargements, contrôler des données encodées ou confirmer une copie exacte.</p>
 <h2 id="comparer-les-listes-de-repertoires">Comparer les listes de répertoires</h2>
 <p>Pour repérer d'un coup d'œil les différences entre deux dossiers ouverts, choisissez <strong>Sélection ▸ Comparer les dossiers</strong> (Shift+F2). Peach Commander marque les fichiers qui diffèrent ou qui manquent de l'autre côté, afin que vous puissiez agir dessus avec les commandes habituelles de copie, déplacement et suppression.</p>
+<h2 id="restreindre-ce-quune-synchronisation-englobe">Restreindre ce qu’une synchronisation englobe</h2>
+<p>Le champ de masque contient une liste d’inclusion portant sur les noms de fichiers. Pour ce qu’il ne peut pas exprimer, <strong>Filtre…</strong> à côté ouvre une feuille à trois onglets. Ce qui y est défini s’applique à la comparaison <em>suivante</em>, et le bouton indique alors combien de critères sont actifs — un filtre que l’on ne voit pas, c’est ainsi qu’une sauvegarde finit incomplète alors que la fenêtre annonce qu’elle est terminée.</p>
+<ul>
+<li><strong>Exclure</strong> accepte des motifs séparés par <code>;</code> ou <code>|</code>. Un nom sans barre oblique correspond à n’importe quelle profondeur (<code>*.tmp</code>), une barre oblique finale désigne un dossier et tout ce qu’il contient (<code>node_modules/</code>), et un motif contenant une barre oblique correspond au chemin relatif (<code>src/*/generated</code>). La casse est ignorée.</li>
+<li>La <strong>taille</strong> et la <strong>date</strong> jugent une paire dans son ensemble : si un seul côté sort des limites, toute la paire est écartée. C’est voulu. Appliquée à un seul côté, une exclusion ferait paraître la paire unilatérale et se transformerait en copie dans le mauvais sens.</li>
+<li><strong>Au cours des N derniers jours</strong> se mesure à partir de chaque comparaison, non du moment où un préréglage a été enregistré : une tâche enregistrée continue donc de signifier « le mois dernier ».</li>
+<li>L’onglet <strong>Plugins</strong> interroge un plugin de contenu sur le côté depuis lequel un fichier serait copié. Il lui faut un vrai fichier, il n’est donc proposé que lorsque les deux côtés sont des dossiers de ce Mac.</li>
+</ul>
+<p>Un dossier exclu n’est pas non plus supprimé en mode miroir — un miroir ne retire que ce qu’il a réellement comparé. La ligne d’état indique combien d’entrées le filtre a écartées, à côté de ce que fera l’exécution. Un filtre est enregistré et chargé avec le préréglage de synchronisation auquel il appartient.</p>
+<h2 id="garder-deux-dossiers-identiques-dans-les-deux-sens">Garder deux dossiers identiques, dans les deux sens</h2>
+<p>Les deux modes d’origine ne savent pas distinguer une chose : un fichier présent d’un seul côté est
+soit <strong>nouveau ici</strong>, soit <strong>supprimé là-bas</strong>, et les deux se ressemblent. Le mode symétrique le
+recopie donc — supprimez quelque chose sur votre portable, synchronisez, et il revient de la
+sauvegarde — et le mode miroir supprime, mais dans un seul sens.</p>
+<p><strong>Bidirectionnel (mémoire)</strong> retient l’état des deux dossiers la dernière fois qu’ils concordaient.
+Avec cet enregistrement, une suppression d’un côté peut être reportée de l’autre.</p>
+<ul>
+<li>La <strong>première</strong> exécution d’une paire n’a pas d’enregistrement : elle se comporte comme avant et ne
+  supprime rien. Elle écrit l’enregistrement. Le mode agit à partir de la deuxième.</li>
+<li>Une suppression reportée s’affiche dans sa propre couleur avec <code>⇒🗑</code> et n’est <strong>pas cochée</strong> : c’est
+  la seule ligne qui vient de la mémoire de l’application. Un clic sur la flèche propose les autres
+  réponses : recopier le fichier, ou ne rien toucher.</li>
+<li>Modifié d’un côté et supprimé de l’autre est un <strong>conflit</strong>, jamais une suppression. De même pour un
+  fichier modifié des deux côtés.</li>
+<li>Rien n’est supprimé sur la foi d’une absence que la comparaison n’a pas pu confirmer — un dossier
+  illisible, ou un dossier que le filtre a retenu, ne prouve rien de ce qu’il contient.</li>
+<li>Deux dossiers de ce Mac uniquement. Ni serveur ni archive : une suppression dans une archive la
+  réécrit, une suppression sur un serveur est définitive, et ce mode n’est pas celui avec lequel
+  essayer cela.</li>
+</ul>
+<p><strong>Une suppression ne s’annule pas.</strong> Sur ce Mac le fichier va à la Corbeille et peut être remis depuis
+le Finder ; c’est tout le filet. <strong>Mémoire…</strong> dans la fenêtre liste chaque paire dont l’application se souvient, signale celle que vous regardez et permet d’en oublier n’importe laquelle — après quoi la comparaison suivante de ces dossiers se comporte de nouveau comme une première. Rien n’est jamais oublié tout seul : un dossier sur un disque démonté n’a pas disparu, il est seulement débranché.</p>
+<p>L’enregistrement vit avec les réglages : déplacer un des dossiers
+laisse la paire sans historique — et une exécution sans historique ne supprime rien.</p>
+<h2 id="ce-quune-execution-a-fait-et-ce-qui-peut-en-etre-repris">Ce qu’une exécution a fait, et ce qui peut en être repris</h2>
+<p>Chaque synchronisation est consignée. <strong>Exécutions…</strong> dans la fenêtre les liste, les plus récentes d’abord — quand, quels deux dossiers, quel mode, et combien de fichiers ont été copiés, supprimés ou retenus — et montre ce qu’il est advenu de chaque fichier de l’exécution que vous sélectionnez.</p>
+<p>C’est cette liste qui rend la Corbeille utilisable. Un fichier que ce Mac a supprimé est allé à la Corbeille, et l’exécution a noté <em>où</em>, ce qui compte plus qu’il n’y paraît : la Corbeille renomme en cas de collision, si bien qu’un second <code>notes.txt</code> y atterrit sous le nom <code>notes.txt 11-17-15-028.txt</code>, et le chercher par son nom fait tomber sur le mauvais. <strong>Afficher dans la Corbeille</strong> amène le Finder droit sur l’élément.</p>
+<p><strong>Remettre en place…</strong> ramène les fichiers qu’une exécution a supprimés hors de la Corbeille, aux chemins d’où ils ont été supprimés. Chacun est vérifié d’abord, et ce qui ne tient pas est refusé avec son motif plutôt que forcé :</p>
+<ul>
+<li>Quelque chose occupe de nouveau ce chemin. On n’y touche pas — une remise en place n’a jamais le droit d’écraser.</li>
+<li>L’élément n’est plus dans la Corbeille, ou il a été supprimé définitivement au lieu d’y être mis.</li>
+<li>Le côté était une archive ou un serveur. Une archive est réécrite entièrement, et un serveur n’a pas
+  de Corbeille : rien n’a donc été conservé.</li>
+<li>Le dossier dans lequel l’exécution a écrit a disparu, ou n’est plus le même dossier — un point de
+  montage réutilisé, par exemple. L’exécution entière est alors refusée plutôt que d’en appliquer une
+  partie.</li>
+<li>Il a déjà été remis en place. L’enregistrement le retient, une seconde tentative ne fait donc rien.</li>
+<li>Ou l’enregistrement lui-même est de ceux sur lesquels cette version ne peut agir — écrit par une
+  version plus récente de l’application, ou nommant un chemin en dehors des deux dossiers. Rare, et
+  refusé plutôt que deviné.</li>
+</ul>
+<p><strong>Une copie ne peut pas être reprise.</strong> L’enlever reviendrait à supprimer un fichier que vous avez peut-être modifié depuis, ce qui est l’échange inverse de celui d’une suppression remise en place ; l’application ne le propose donc pas — l’exécution vous dit quels fichiers elle a copiés et vous pouvez les supprimer vous-même. Un fichier qui a été <em>écrasé</em> est le seul vrai manque, et il est désormais petit : sur ce Mac la version remplacée va à la Corbeille comme un fichier supprimé, et <strong>Afficher dans la Corbeille</strong> la retrouve donc. Vers une archive, vers un serveur ou vers un volume sans Corbeille, ce n’est pas possible, et la confirmation le dit avant l’exécution.</p>
+<p>Les 200 dernières exécutions sont conservées, ou 64 Mo d’entre elles, selon ce qui arrive en premier ; au-delà, les plus anciennes disparaissent une à une à mesure que de nouvelles arrivent, et <strong>Oublier</strong> et <strong>Tout oublier</strong> les effacent sur-le-champ. Une très grosse exécution — plus de 20 000 fichiers — garde chaque problème et tout ce qu’elle a mis à la Corbeille, mais pas les copies qui se sont bien passées, et elle le dit au lieu de vous laisser le remarquer. Ses suppressions restent remettables en place : ce qui a été laissé de côté, ce sont les copies, et une copie n’aurait de toute façon pas pu être reprise.</p>
+<p>Oublier ne change rien aux dossiers ; ce qui part, c’est l’enregistrement de ce qui a été fait, et avec lui l’offre de remettre quoi que ce soit en place. Contrairement à la mémoire bidirectionnelle, ceci est jeté automatiquement — perdre la mémoire d’une <em>paire</em> changerait ce que fait l’exécution suivante, tandis que perdre l’enregistrement d’une exécution ne retire qu’une offre.</p>
 <h2 id="raccourcis">Raccourcis</h2>
 <table>
 <thead>
@@ -60,18 +112,18 @@
 <td>Synchroniser les répertoires</td>
 <td>Commandes ▸ Synchroniser les dossiers…</td>
 </tr>
+<tr>
+<td>Afficher un côté d’une ligne de synchronisation</td>
+<td>Clic droit sur la ligne ▸ Afficher le fichier de gauche / de droite</td>
+</tr>
 </tbody>
 </table>
 <h2 id="remarques">Remarques</h2>
 <ul>
 <li><strong>Par contenu ou par date/taille.</strong> Une comparaison rapide fait correspondre les fichiers par taille et date de modification, ce qui est rapide mais peut être trompé lorsque les horodatages diffèrent pour des fichiers identiques. Activez <strong>par contenu</strong> pour un résultat fiable, au prix de la lecture de chaque fichier.</li>
 <li><strong>Sous-dossiers et filtres.</strong> La fenêtre de synchronisation peut descendre dans les sous-dossiers et peut être limitée par un masque de filtre : vous pouvez ainsi synchroniser uniquement les types de fichiers qui vous intéressent.</li>
-<li><strong>Vous gardez le contrôle.</strong> La synchronisation ne s'exécute jamais toute seule — vous examinez les directions proposées dans la grille de résultats et pouvez en modifier n'importe laquelle avant qu'aucun fichier ne soit copié.</li>
-<li><strong>Une comparaison que l’on peut suivre, et arrêter.</strong> Parcourir deux grandes arborescences prend du temps : la fenêtre compte donc les entrées parcourues puis les fichiers comparés pendant qu’elle travaille, avec un indicateur à côté du compteur. Le bouton Comparer affiche <strong>Arrêter</strong> tant que l’analyse dure ; l’arrêter laisse le résultat précédent en place plutôt que d’afficher une arborescence à moitié lue.</li>
-<li><strong>Quel côté fait référence.</strong> La mise en miroir va de gauche à droite. <strong>Intervertir les côtés</strong> échange les deux dossiers : c’est ainsi que l’arborescence de droite devient celle qui l’emporte &mdash; et ainsi que l’on corrige des panneaux qui les avaient mis à l’envers.</li>
-<li><strong>Des horodatages pas tout à fait égaux.</strong> <strong>Ignorer un écart d’une heure</strong> absorbe le décalage qu’un volume FAT ou un changement d’heure impose à un fichier pourtant inchangé. <strong>Sensible à la casse</strong> décide si deux noms ne différant que par la casse sont le même fichier ; désactivé, ils le sont &mdash; ce qu’un volume Mac considère généralement.</li>
-<li><strong>Quand quelque chose échoue.</strong> La synchronisation indique sa progression et le bouton affiche <strong>Arrêter</strong> pendant l’exécution ; s’arrêter entre deux éléments laisse copié ce qui l’a été. Ce qui a échoué est listé par fichier et par motif dans la fenêtre des erreurs d’opération, au lieu d’être seulement compté. Supprimer sur un serveur est définitif &mdash; il n’y a pas de corbeille &mdash; et la confirmation le dit avant.</li>
-<li><strong>Préréglages.</strong> Les configurations de synchronisation fréquemment utilisées peuvent être enregistrées et réutilisées afin que vous n'ayez pas à ressaisir les mêmes options à chaque fois.</li>
+<li><strong>Vous gardez le contrôle.</strong> La synchronisation ne s'exécute jamais toute seule — vous examinez les directions proposées dans la grille de résultats et pouvez en modifier n'importe laquelle avant qu'aucun fichier ne soit copié. <strong>Échap</strong> interrompt une comparaison en cours et ferme la fenêtre lorsqu'il n'y en a aucune.</li>
+<li><strong>Préréglages.</strong> Les configurations de synchronisation fréquemment utilisées peuvent être enregistrées et réutilisées afin que vous n'ayez pas à ressaisir les mêmes options à chaque fois. Un préréglage retient aussi ce qu'affiche la grille de résultats — le filtre de direction et <strong>Masquer les identiques</strong> — et la fenêtre s'ouvre sur le préréglage utilisé en dernier. Un préréglage <strong>Par défaut</strong> est présent dès la première ouverture de la fenêtre ; enregistrez par-dessus pour en faire le vôtre.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Renommer plusieurs fichiers</a></li></ul></section>
 </main>

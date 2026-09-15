@@ -18,14 +18,11 @@
 <li>Nastavte, jak důkladné má porovnání být: zahrnout podsložky, porovnat <strong>podle obsahu</strong> (nejen podle data a velikosti) nebo ignorovat datum úpravy.</li>
 <li>Přidejte masku filtru (například <code>*.jpg;*.png</code>), pokud chcete synchronizovat jen určité soubory.</li>
 <li>Prohlédněte si výslednou mřížku. Každý řádek zobrazuje soubor vlevo, směrovou šipku uprostřed a odpovídající soubor vpravo. Šipky vám říkají, co se stane: <strong>→</strong> kopíruje zleva doprava, <strong>←</strong> kopíruje zprava doleva a <strong>=</strong> znamená, že jsou oba shodné.</li>
-<li>Pomocí <strong>Zobrazit</strong> zúžíte, co mřížka ukazuje: vše, jen řádky mířící <strong>&#8594;</strong> doprava, nebo jen ty mířící <strong>&#8592;</strong> doleva. <strong>Skrýt shodné</strong> vynechá soubory, které jsou na obou stranách už stejné; řádek pod mřížkou uvádí, kolik řádků filtr zadržuje.</li>
-<li><strong>Vybrat vše</strong> zaškrtne přesně to, co je vidět, a odškrtne vše, co filtr skrývá &mdash; zvolte směr, klikněte, a běh půjde jen tímto směrem. <strong>Zrušit výběr všeho</strong> vyprázdní každý řádek, zobrazený i ne, pokud raději vybíráte ručně.</li>
-<li>Každý řádek ukazuje vedle obou velikostí i obě data, takže je vidět, <em>proč</em> šipka míří právě tak. Kliknutím na záhlaví sloupce se podle něj seřadí, dvojklikem na řádek se oba soubory otevřou vedle sebe.</li>
-<li><strong>&#8800;</strong> značí konflikt: dva stejně staré soubory, které se přesto liší, kde Peach Commander odmítá hádat. Klikněte na značku a zvolte sami <strong>&#8594;</strong> nebo <strong>&#8592;</strong>; dalším klikáním se řádek zase stane konfliktem a zůstane mimo běh.</li>
 <li>Upravte jednotlivé řádky, pokud s navrženým směrem nesouhlasíte, a poté kliknutím na tlačítko synchronizace změny proveďte.</li>
 </ol>
 <p><img alt="Okno synchronizace adresářů se dvěma cestami ke složkám a výslednou mřížkou souborů se šipkami vlevo, rovná se a vpravo" src="images/sync-dialog.png" />
 <em>(Obrázek: Okno Synchronizovat adresáře porovnává obě strany a pro každý soubor navrhuje směr kopírování.)</em></p>
+<p>Klepnutím pravým tlačítkem na řádek se podíváte na soubory, které za ním stojí. <strong>Porovnat</strong> otevře obě strany vedle sebe, <strong>Zobrazit levý soubor</strong> a <strong>Zobrazit pravý soubor</strong> otevřou jednu stranu samostatně v prohlížeči — to je odpověď pro řádek, který existuje jen na jedné straně a kde není co porovnávat. Položky, které pro daný řádek nemají smysl, jsou zašedlé, místo aby nic nedělaly. Soubor v archivu <code>.zip</code> nebo na serveru se nejprve rozbalí či stáhne do temporární kopie určené jen ke čtení, takže originál zůstane nedotčen. Totéž platí pro <strong>Porovnat</strong>, takže složku lze porovnat s archivem či serverem — a tlačítka pro převzetí a uložení zůstanou pro takovou stranu vypnutá, protože otevřená je tam kopie.</p>
 <h2 id="porovnani-dvou-souboru-podle-obsahu">Porovnání dvou souborů podle obsahu</h2>
 <ol>
 <li>Vyberte jeden soubor v každém panelu (nebo dva soubory ve stejném panelu).</li>
@@ -35,10 +32,62 @@
 </ol>
 <p><img alt="Okno porovnání zobrazující dva textové soubory vedle sebe se zvýrazněnými odlišnými řádky" src="images/diff-window.png" />
 <em>(Obrázek: Porovnání dvou textových souborů; změněné řádky jsou zvýrazněny na obou stranách.)</em></p>
+<p>Pokud mezi soubory nejsou žádné rozdíly, okno to řekne barevným pásem v horní části, místo aby vás nechalo usoudit to z tabulky, v níž není nic zvýrazněno. Pás se objeví i ve výstražné barvě, když některý soubor nešlo vůbec přečíst — pak by jakýkoli verdikt o rozdílech byl tvrzení o porovnání, které se nikdy nekonalo. Porovnání po bajtech říká totéž ze stejného důvodu: dva soubory, které nelze otevřít, nejsou dva totožné soubory.</p>
 <h2 id="porovnani-souboru-bajt-po-bajtu">Porovnání souborů bajt po bajtu</h2>
 <p>Když dva soubory vypadají stejně, ale potřebujete dokázat, že jsou skutečně shodné (nebo najít ten jeden odlišný bajt), použijte binární porovnání. Zobrazí oba soubory v šestnáctkovém zobrazení s označenými neshodujícími se bajty, což je ideální k ověření stahování, kontrole zakódovaných dat nebo potvrzení přesné kopie.</p>
 <h2 id="porovnani-vypisu-adresaru">Porovnání výpisů adresářů</h2>
 <p>K rychlému odhalení rozdílů mezi dvěma otevřenými složkami zvolte <strong>Označit ▸ Porovnat adresáře</strong> (Shift+F2). Peach Commander označí soubory, které se liší nebo na druhé straně chybí, takže s nimi můžete pracovat pomocí obvyklých příkazů kopírování, přesunu a mazání.</p>
+<h2 id="omezeni-toho-co-synchronizace-zahrnuje">Omezení toho, co synchronizace zahrnuje</h2>
+<p>Pole masky nese jeden seznam zahrnutí přes jména souborů. Pro to, co se tím říci nedá, otevře <strong>Filtr…</strong> vedle něj list se třemi kartami. Co se tam nastaví, platí pro <em>následující</em> srovnání a tlačítko pak říká, kolik kritérií je aktivních — filtr, který není vidět, je způsob, jak záloha skončí neúplná, zatímco okno hlásí, že je hotovo.</p>
+<ul>
+<li><strong>Vynechat</strong> bere vzory oddělené <code>;</code> nebo <code>|</code>. Jméno bez lomítka platí v každé hloubce (<code>*.tmp</code>), lomítko na konci znamená složku i vše v ní (<code>node_modules/</code>) a vzor s lomítkem platí na relativní cestu (<code>src/*/generated</code>). Na velikosti písmen nezáleží.</li>
+<li><strong>Velikost</strong> a <strong>datum</strong> posuzují pár jako celek: vypadne-li jedna strana z rozsahu, zůstane mimo celý pár. Je to úmysl. Použito na jedinou stranu, vynechání by pár vypadalo jednostranně a změnilo by se v kopírování špatným směrem.</li>
+<li><strong>Za posledních N dní</strong> se měří od každého srovnání, ne od uložení předvolby — uložená úloha tedy dál znamená „poslední měsíc“.</li>
+<li>Karta <strong>Zásuvné moduly</strong> se ptá obsahového modulu na tu stranu, ze které by se soubor kopíroval. Potřebuje skutečný soubor, takže se nabízí jen tehdy, když jsou obě strany složkami na tomto Macu.</li>
+</ul>
+<p>Vynechaná složka se nemaže ani v režimu zrcadla — zrcadlo odstraňuje jen to, co skutečně srovnávalo. Stavový řádek říká, kolik položek filtr zadržel, vedle toho, co běh udělá. Filtr se ukládá a načítá spolu s předvolbou synchronizace, ke které patří.</p>
+<h2 id="drzet-dve-slozky-shodne-obema-smery">Držet dvě složky shodné, oběma směry</h2>
+<p>Dva původní režimy neumějí rozlišit jednu věc: soubor, který je jen na jedné straně, je buď <strong>zde
+nový</strong>, nebo <strong>tam smazaný</strong>, a obojí vypadá stejně. Symetrický režim jej proto zkopíruje — smažete
+něco na notebooku, synchronizujete, a vrátí se ze zálohy — a zrcadlový režim maže, ale jen v jednom
+směru.</p>
+<p><strong>Obousměrně (s pamětí)</strong> si pamatuje, jak obě složky vypadaly, když se naposledy shodovaly. S tímto
+záznamem lze smazání na jedné straně přenést na druhou.</p>
+<ul>
+<li><strong>První</strong> běh páru žádný záznam nemá: chová se jako dřív a nic nemaže. Záznam zapíše. Od druhého
+  běhu režim funguje.</li>
+<li>Přenesené smazání se zobrazí vlastní barvou s <code>⇒🗑</code> a <strong>není</strong> zaškrtnuté: je to jediný řádek, který
+  pochází z paměti aplikace. Kliknutí na šipku nabídne ostatní odpovědi: zkopírovat soubor zpět, nebo
+  ponechat obě strany být.</li>
+<li>Změněno na jedné straně a smazáno na druhé je <strong>konflikt</strong>, nikdy smazání. Stejně tak soubor
+  změněný na obou stranách.</li>
+<li>Nic se nemaže na základě nepřítomnosti, kterou srovnání nemohlo potvrdit — nečitelná složka nebo
+  složka, kterou zadržel filtr, nedokazuje nic o tom, co je uvnitř.</li>
+<li>Jen dvě složky na tomto Macu. Ne server a ne archiv: smazání v archivu jej přepíše, smazání na
+  serveru je nevratné, a tento režim není ten, se kterým to zkoušet.</li>
+</ul>
+<p><strong>Smazání nelze vzít zpět.</strong> Na tomto Macu jde soubor do Koše a lze jej vrátit ve Finderu; to je celá
+záchranná síť. <strong>Paměť…</strong> v okně vypíše každý pár, který si aplikace pamatuje, zvýrazní ten otevřený a umožní kterýkoli z nich zapomenout — poté se další srovnání těch složek zachová opět jako první. Samo se nikdy nic nezapomene: složka na odpojeném disku není pryč, jen není zapojená.</p>
+<p>Záznam leží u nastavení: přesunete-li jednu ze složek, pár už žádnou historii nemá — a
+běh bez historie nic nemaže.</p>
+<h2 id="co-beh-udelal-a-co-z-toho-lze-vzit-zpet">Co běh udělal a co z toho lze vzít zpět</h2>
+<p>Každá synchronizace se zapisuje. <strong>Běhy…</strong> v okně je vypisuje od nejnovějších — kdy, které dvě složky, který režim a kolik souborů bylo zkopírováno, smazáno nebo zadrženo — a u vybraného běhu ukazuje, co se stalo s každým souborem.</p>
+<p>Právě tento seznam dělá Koš použitelným. Soubor, který tento Mac smazal, skončil v Koši, a běh si zapsal <em>kde</em>, což znamená víc, než to zní: Koš při kolizi přejmenovává, takže druhá <code>notes.txt</code> přistane jako <code>notes.txt 11-17-15-028.txt</code>, a kdo ji hledá podle jména, najde tu špatnou. <strong>Zobrazit v Koši</strong> namíří Finder přímo na položku.</p>
+<p><strong>Vrátit zpět…</strong> přesune soubory, které běh smazal, z Koše na cesty, ze kterých byly smazány. Každý se nejdřív zkontroluje a to, co neplatí, je odmítnuto s vlastním důvodem místo vynucení:</p>
+<ul>
+<li>Na té cestě už zase něco je. Zůstane nedotčeno — vrácení nesmí nikdy přepsat.</li>
+<li>Položka už v Koši není, nebo byla smazána trvale místo toho, aby tam byla přesunuta.</li>
+<li>Strana byla archiv nebo server. Archiv se přepisuje celý a server žádný Koš nemá, takže se nic
+  neuchovalo.</li>
+<li>Složka, do které běh zapisoval, je pryč, nebo to už není tatáž složka — třeba znovu použitý
+  přípojný bod. Pak je odmítnut celý běh místo toho, aby se provedla jeho část.</li>
+<li>Už to bylo vráceno. Záznam si to pamatuje, takže druhý pokus neudělá nic.</li>
+<li>Nebo je sám záznam takový, se kterým tato verze neumí pracovat — zapsaný novější verzí aplikace,
+  nebo uvádí cestu mimo obě složky. Vzácné, a odmítnuté místo dohadování.</li>
+</ul>
+<p><strong>Kopii vzít zpět nelze.</strong> Odstranit ji by znamenalo smazat soubor, který jste mezitím mohli upravit, což je opačný obchod než vrácení smazání, takže to aplikace nenabízí — běh vám řekne, které soubory zkopíroval, a smazat je můžete sami. Soubor, který byl <em>přepsán</em>, je jediná skutečná mezera, a je už malá: na tomto Macu jde nahrazená verze do Koše jako smazaný soubor, takže ji <strong>Zobrazit v Koši</strong> najde. Do archivu, na server ani na svazek bez Koše to nejde, a potvrzení to řekne před během.</p>
+<p>Uchovává se posledních 200 běhů, nebo 64 MB z nich, podle toho, co nastane dřív; nad to nejstarší postupně odpadají, jak přibývají nové, a <strong>Zapomenout</strong> i <strong>Zapomenout vše</strong> je uklidí na místě. Velmi velký běh — přes 20 000 souborů — si ponechá každý problém a všechno, co dal do Koše, ale ne kopie, které prošly, a řekne to místo toho, aby vás to nechal zjistit. Jeho smazání lze stále vrátit: vynechány byly kopie, a kopii by stejně nešlo vzít zpět.</p>
+<p>Zapomenutí nemění nic na složkách; zmizí záznam o tom, co se udělalo, a s ním nabídka něco vrátit. Na rozdíl od oboustranné paměti se tohle zahazuje automaticky — ztratit paměť <em>dvojice</em> by změnilo, co udělá další běh, zatímco ztráta záznamu o běhu jen bere jednu nabídku.</p>
 <h2 id="klavesove-zkratky">Klávesové zkratky</h2>
 <table>
 <thead>
@@ -60,18 +109,18 @@
 <td>Synchronizovat adresáře</td>
 <td>Příkazy ▸ Synchronizovat adresáře…</td>
 </tr>
+<tr>
+<td>Zobrazit jednu stranu řádku synchronizace</td>
+<td>Pravé tlačítko na řádek ▸ Zobrazit levý soubor / Zobrazit pravý soubor</td>
+</tr>
 </tbody>
 </table>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
 <li><strong>Podle obsahu vs. podle data/velikosti.</strong> Rychlé porovnání srovnává soubory podle velikosti a data úpravy, což je rychlé, ale dá se oklamat, když se u shodných souborů liší časové značky. Zapněte <strong>podle obsahu</strong> pro spolehlivý výsledek za cenu čtení každého souboru.</li>
 <li><strong>Podsložky a filtry.</strong> Okno synchronizace umí sestoupit do podsložek a lze jej omezit maskou filtru, takže můžete synchronizovat jen typy souborů, na kterých vám záleží.</li>
-<li><strong>Máte vše pod kontrolou.</strong> Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit.</li>
-<li><strong>Porovnání, které je vidět a lze zastavit.</strong> Projít dva velké stromy trvá, a tak okno během práce počítá nejprve projité položky a poté porovnané soubory, s animací vedle počtu. Tlačítko Porovnat se po dobu prohledávání jmenuje <strong>Zastavit</strong>; zastavení nechá předchozí výsledek být, místo aby ukázalo půl stromu.</li>
-<li><strong>Která strana je předloha.</strong> Zrcadlení jde zleva doprava. <strong>Prohodit strany</strong> vymění obě složky: tak se pravý strom stane tím, který vyhrává &mdash; a tak se napraví, že je panely daly obráceně.</li>
-<li><strong>Data, která nejsou tak docela stejná.</strong> <strong>Ignorovat rozdíl 1 hodiny</strong> pohltí posun, který svazek FAT nebo změna času vnutí jinak nezměněnému souboru. <strong>Rozlišovat velikost písmen</strong> rozhoduje, zda dva názvy lišící se jen velikostí písmen jsou týž soubor; vypnuto jím jsou &mdash; což svazek na Macu obvykle tvrdí také.</li>
-<li><strong>Když se něco nepovede.</strong> Synchronizace hlásí svůj postup a tlačítko se po dobu běhu jmenuje <strong>Zastavit</strong>; zastavení mezi položkami nechá zkopírované zkopírovaným. Co selhalo, je vypsáno se souborem a důvodem v okně chyb operace, místo aby bylo jen spočítáno. Smazání na serveru je trvalé &mdash; koš tam není &mdash; a potvrzení to řekne předem.</li>
-<li><strong>Předvolby.</strong> Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti.</li>
+<li><strong>Máte vše pod kontrolou.</strong> Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit. <strong>Esc</strong> zastaví probíhající porovnání a zavře okno, když nic neběží.</li>
+<li><strong>Předvolby.</strong> Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti. Předvolba si pamatuje i to, co ukazuje výsledná mřížka — filtr směru a <strong>Skrýt shodné</strong> — a okno se otevře s naposledy použitou předvolbou. Předvolba <strong>Výchozí</strong> je k dispozici od prvního otevření okna; uložením přes ni si ji přizpůsobíte.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Přejmenování mnoha souborů</a></li></ul></section>
 </main>

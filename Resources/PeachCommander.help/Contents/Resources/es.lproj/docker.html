@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contenedores y volúmenes de Docker</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Contenedores y volúmenes de Docker</h1>
+<p>El sistema de archivos de un contenedor Docker se puede explorar en un panel como cualquier carpeta, y un volumen de Docker también. Elija <strong>Conectar con Docker…</strong> en el menú Red, o haga clic en la ficha <strong>Docker</strong> de la barra de unidades, y el motor aparecerá en el panel activo.</p>
+<p>Es un complemento y <strong>se entrega desactivado</strong>. Actívelo en <strong>Configuración ▸ Complementos…</strong>. Empieza desactivado porque una conexión al demonio de Docker tiene en su Mac los mismos permisos que usted; véase <em>A qué puede acceder</em> más abajo.</p>
+<h2 id="lo-que-ve">Lo que ve</h2>
+<p>El nivel superior son tres carpetas:</p>
+<ul>
+<li><strong>Compose Projects</strong> — todos los contenedores iniciados por Docker Compose, agrupados por proyecto y luego por servicio. Un servicio con un solo contenedor <em>es</em> ese contenedor: <code>my-stack/backend/etc</code> es el <code>/etc</code> del backend. Un servicio con varios conserva un nivel para ellos, una carpeta por contenedor.</li>
+<li><strong>Standalone Containers</strong> — todo lo demás, esté en ejecución o no.</li>
+<li><strong>Volumes</strong> — cada volumen de Docker, como una unidad por derecho propio.</li>
+</ul>
+<p>Debajo de eso está en un sistema de archivos real: F3 ve un archivo, F4 lo edita, F5 lo copia al otro panel, F7 crea una carpeta. El otro panel puede ser cualquier cosa: una carpeta local, un archivo comprimido, un bucket de S3.</p>
+<p>La agrupación se lee de las etiquetas que Compose pone a sus propios contenedores y volúmenes, así que es correcta incluso para una pila cuyo <code>docker-compose.yml</code> ya no está en esta máquina.</p>
+<p><strong>Los volúmenes se listan aparte a propósito.</strong> Un volumen sobrevive al contenedor que lo creó, lo pueden compartir varios contenedores y suele ser donde están realmente los datos que busca. Un volumen que ahora mismo no monta nadie sigue siendo explorable.</p>
+<h2 id="columnas">Columnas</h2>
+<p>Haga clic derecho en la cabecera de columna de un panel para añadir las columnas propias del proveedor:</p>
+<ul>
+<li><strong>Estado</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Acceso</strong> — <code>RW</code>, <code>RO</code> para un rootfs o un montaje de solo lectura, <code>VOL</code> para un volumen de Docker, <code>BIND</code> para una carpeta suya montada en el contenedor, <code>TMP</code> para un tmpfs.</li>
+<li><strong>Imagen</strong>, <strong>ID</strong>.</li>
+<li><strong>Montaje</strong> — en un directorio que en realidad es un montaje, qué es: <code>Volume: my-stack_db-data</code>, o la ruta del host detrás de un bind. Así encuentra qué volumen bajo <strong>Volumes</strong> contiene los datos de un contenedor.</li>
+</ul>
+<h2 id="contenedores-detenidos">Contenedores detenidos</h2>
+<p>Los contenedores detenidos se listan y sus sistemas de archivos se pueden leer y escribir. La API de archivos de Docker responde para un contenedor que lleva un mes sin ejecutarse, y eso es lo que hace que esto se parezca a una unidad y no a una lista de procesos.</p>
+<p>Dos cosas necesitan un contenedor realmente en ejecución: <strong>borrar</strong> y <strong>renombrar</strong>. La API del motor de Docker no ofrece ninguna operación para ninguna de las dos —la única forma de quitar o mover un archivo dentro de un contenedor es ejecutar algo en él— así que en un contenedor detenido ambas se rechazan en lugar de fingirse.</p>
+<h2 id="que-esperar">Qué esperar</h2>
+<p><strong>Las escrituras entran como <code>root</code>; los borrados van como el usuario propio del contenedor.</strong> Es el diseño de Docker, no una decisión tomada aquí: copiar un archivo hacia dentro usa la API de archivo del motor, que escribe como root; borrar o renombrar ejecuta una orden dentro del contenedor, que corre con el usuario que configuró la imagen. Por eso un borrado puede rechazarse con <em>permiso denegado</em> sobre un archivo que acababa de copiar. Peach Commander no lo sortea actuando como root: le dice lo que dijo el contenedor.</p>
+<p><strong>Un contenedor o un montaje de solo lectura rechaza la escritura</strong> y lo indica como error de permisos, no como un fallo.</p>
+<p><strong>Leer un enlace simbólico lee aquello a lo que apunta.</strong> El panel lo sigue mostrando como enlace en la columna Attr; F3 muestra el contenido del destino en lugar de un archivo vacío.</p>
+<p><strong>Puede que la raíz de un contenedor detenido grande no se pueda listar.</strong> Docker no tiene ninguna llamada que liste un directorio. Leer un directorio significa pedirlo como archivo comprimido, que contiene todo lo que hay debajo; en un contenedor detenido construido sobre una imagen completa eso pueden ser decenas de gigabytes, y el listado se rechaza en lugar de leerlo entero. Los directorios más internos no se ven afectados, y un contenedor <em>en ejecución</em> tampoco: un directorio demasiado grande para leerse como archivo lo lista el propio contenedor. Si solo quiere la vía del archivo, vea el ajuste de abajo.</p>
+<p><strong>Copiar un contenedor entero copia todo su sistema de archivos</strong>, incluidos <code>/proc</code> y <code>/dev</code>. Copie el directorio que quiere, no <code>/</code>.</p>
+<h2 id="a-que-puede-acceder">A qué puede acceder</h2>
+<p>El complemento habla con el mismo motor que alcanzaría desde una terminal: <code>DOCKER_HOST</code> si lo ha definido; si no, su <code>docker context</code> actual; si no, los sockets habituales de Docker Desktop, Colima, Rancher Desktop, Lima y Podman. Podman funciona porque sirve la misma API.</p>
+<p>El acceso a un demonio de Docker suele significar un acceso muy amplio a la máquina en la que corre. El complemento tiene exactamente sus permisos y no pide más: no guarda ninguna credencial, nunca toca los directorios propios de Docker en su disco y no realiza ninguna acción privilegiada en su nombre.</p>
+<p>Lo único que crea es un <strong>contenedor desechable</strong>, y solo para llegar a un volumen que ningún contenedor existente monta, ya que un volumen únicamente es visible desde dentro de algo que lo monta. Nunca se inicia, lleva la etiqueta de Peach Commander y se elimina al salir de la unidad.</p>
+<h2 id="acciones-sobre-un-contenedor-o-un-volumen">Acciones sobre un contenedor o un volumen</h2>
+<p>Un clic derecho sobre un contenedor o un volumen ofrece, en el submenú <strong>Docker</strong>, lo que una unidad por sí sola no puede decir:</p>
+<ul>
+<li><strong>Inspect</strong> — todo lo que el motor sabe de él, como JSON formateado, en una ventana por la que se
+  puede desplazar y de la que se puede copiar.</li>
+<li><strong>Show Logs</strong> — las últimas 500 líneas que ha escrito el contenedor.</li>
+<li><strong>Show Mounts</strong> — cada montaje que lleva, qué es cada uno y si se puede escribir en él.</li>
+<li><strong>Copy ID</strong> — el identificador completo del contenedor, o el nombre del volumen, al portapapeles.
+  El identificador <em>completo</em>, no los doce caracteres de la columna ID: esto es para pegarlo en un
+  comando <code>docker</code>, y un identificador corto es un prefijo que puede dejar de ser único.</li>
+<li><strong>Jump to Volume</strong> — en un directorio que en realidad es un volumen, ir a ese volumen bajo
+  <strong>Volumes</strong>. Es la otra mitad de la columna Montaje: la columna nombra el volumen, y esto lo lleva allí.</li>
+<li><strong>Open Compose Project</strong> — ir al proyecto al que pertenece el contenedor.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — estas cambian el contenedor en vez de
+  leerlo, así que preguntan antes. Start es además la salida de los dos rechazos de arriba: borrar y
+  renombrar necesitan un contenedor en ejecución.</li>
+</ul>
+<p>Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suya no están en absoluto.</p>
+<p><strong>El registro también es un archivo.</strong> La raíz de cada contenedor contiene <code>docker-logs.txt</code>, que no es un archivo del contenedor: leerlo le pide el registro al motor. F3 sobre él lo abre en el visor, así que la búsqueda del visor, su salto a una línea y su elección de codificación se aplican, que es lo que una ventana propia no puede dar. Un contenedor que realmente trae un archivo con ese nombre muestra el suyo, y en el virtual no se puede escribir nada.</p>
+<h2 id="ajustes">Ajustes</h2>
+<p><strong>Configuración ▸ Ajustes ▸ Docker</strong> tiene todo esto. Los mismos valores están en un archivo pequeño en <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, que es lo que hay que editar si prepara una máquina desde un script:</p>
+<ul>
+<li><code>Endpoint</code> — una dirección que usar en lugar de la encontrada.</li>
+<li><code>ExecFallback</code> — <code>0</code> hace que el complemento use la API de archivo de Docker y nada más: entonces nunca ejecutará nada dentro de un contenedor, a costa de no poder listar un directorio muy grande, ni borrar, ni renombrar.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — cuánto del archivo de un directorio merece la pena leer antes de recurrir a la alternativa o rendirse.</li>
+<li><code>HelperImage</code> — la imagen con la que se crea el contenedor desechable anterior (por omisión, cualquier imagen ya presente en la máquina).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> oculta los volúmenes a los que Docker puso un hash largo por nombre porque nadie más los nombró.</li>
+</ul>
+<h2 id="no-esta-en-esta-version">No está en esta versión</h2>
+<p>Motores remotos por SSH o TLS, un intérprete de comandos interactivo e imágenes como sistemas de archivos de solo lectura.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="amazon-s3.html">Amazon S3 y almacenamiento compatible con S3</a></li><li><a href="webdav.html">Servidores WebDAV</a></li><li><a href="copying-files.html">Copiar archivos</a></li><li><a href="privacy-and-security.html">Privacidad y seguridad</a></li></ul></section>
+</main>
+</body>
+</html>

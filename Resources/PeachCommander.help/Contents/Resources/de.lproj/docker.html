@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker-Container und -Volumes</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker-Container und -Volumes</h1>
+<p>Das Dateisystem eines Docker-Containers lässt sich in einem Panel durchsuchen wie jeder Ordner, und ein Docker-Volume ebenso. Wählen Sie <strong>Mit Docker verbinden…</strong> im Menü Netz, oder klicken Sie auf den Chip <strong>Docker</strong> in der Laufwerksleiste, und die Engine erscheint im aktiven Panel.</p>
+<p>Es ist ein Plugin, und es <strong>wird abgeschaltet ausgeliefert</strong>. Einschalten können Sie es unter <strong>Konfiguration ▸ Plugins…</strong>. Es beginnt abgeschaltet, weil eine Verbindung zum Docker-Daemon auf Ihrem Mac dieselben Rechte hat wie Sie selbst — siehe <em>Worauf es zugreifen kann</em> weiter unten.</p>
+<h2 id="was-sie-sehen">Was Sie sehen</h2>
+<p>Die oberste Ebene besteht aus drei Ordnern:</p>
+<ul>
+<li><strong>Compose Projects</strong> — jeder von Docker Compose gestartete Container, gruppiert nach Projekt und dann nach Service. Ein Service mit genau einem Container <em>ist</em> dieser Container: <code>my-stack/backend/etc</code> ist das <code>/etc</code> des Backends. Ein Service mit mehreren behält eine Ebene dafür, einen Ordner je Container.</li>
+<li><strong>Standalone Containers</strong> — alles Übrige, ob laufend oder nicht.</li>
+<li><strong>Volumes</strong> — jedes Docker-Volume, als eigenständiges Laufwerk.</li>
+</ul>
+<p>Darunter befinden Sie sich in einem echten Dateisystem: F3 zeigt eine Datei an, F4 bearbeitet sie, F5 kopiert sie ins andere Panel, F7 legt einen Ordner an. Das andere Panel kann alles sein — ein lokaler Ordner, ein Archiv, ein S3-Bucket.</p>
+<p>Die Gruppierung wird aus den Labels gelesen, die Compose seinen eigenen Containern und Volumes gibt. Sie stimmt deshalb auch bei einem Stack, dessen <code>docker-compose.yml</code> längst nicht mehr auf diesem Rechner liegt.</p>
+<p><strong>Volumes werden bewusst getrennt aufgeführt.</strong> Ein Volume überlebt den Container, der es angelegt hat, kann von mehreren Containern genutzt werden und enthält meist genau die Daten, derentwegen Sie gekommen sind. Ein Volume, das derzeit nirgends eingehängt ist, lässt sich trotzdem durchsuchen.</p>
+<h2 id="spalten">Spalten</h2>
+<p>Mit einem Rechtsklick auf die Spaltenüberschrift eines Panels fügen Sie die eigenen Spalten des Providers hinzu:</p>
+<ul>
+<li><strong>Status</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Zugriff</strong> — <code>RW</code>, <code>RO</code> bei schreibgeschütztem Rootfs oder Mount, <code>VOL</code> für ein Docker-Volume, <code>BIND</code> für einen Ihrer Ordner im Container, <code>TMP</code> für ein tmpfs.</li>
+<li><strong>Image</strong>, <strong>ID</strong>.</li>
+<li><strong>Mount</strong> — bei einem Verzeichnis, das in Wahrheit ein Mount ist: was es ist. <code>Volume: my-stack_db-data</code>, oder der Host-Pfad hinter einem Bind. So finden Sie, welches Volume unter <strong>Volumes</strong> die Daten eines Containers enthält.</li>
+</ul>
+<h2 id="gestoppte-container">Gestoppte Container</h2>
+<p>Gestoppte Container werden angezeigt, und ihre Dateisysteme lassen sich lesen und beschreiben. Dockers Datei-API antwortet auch für einen Container, der seit einem Monat nicht mehr gelaufen ist — das ist es, was sich hier wie ein Laufwerk anfühlt und nicht wie eine Prozessliste.</p>
+<p>Zwei Dinge brauchen einen tatsächlich laufenden Container: <strong>Löschen</strong> und <strong>Umbenennen</strong>. Die Docker-Engine-API kennt für beides keine Operation — der einzige Weg, eine Datei im Container zu entfernen oder zu verschieben, ist, darin etwas auszuführen — deshalb wird beides bei einem gestoppten Container abgelehnt statt vorgetäuscht.</p>
+<h2 id="was-sie-erwarten-konnen">Was Sie erwarten können</h2>
+<p><strong>Schreibvorgänge landen als <code>root</code> im Container, Löschvorgänge laufen als dessen eigener Benutzer.</strong> Das ist Dockers Aufbau, keine Entscheidung von hier: Eine Datei hineinzukopieren geht über die Archiv-API der Engine, die als root schreibt; Löschen oder Umbenennen führt einen Befehl im Container aus, und der läuft unter dem Benutzer, den das Image festgelegt hat. Ein Löschen kann deshalb mit <em>Zugriff verweigert</em> scheitern bei einer Datei, die Sie einen Moment vorher hineinkopieren konnten. Peach Commander umgeht das nicht, indem es als root arbeitet — es sagt Ihnen, was der Container gesagt hat.</p>
+<p><strong>Ein schreibgeschützter Container oder Mount verweigert Schreibvorgänge</strong> und meldet das als Rechtefehler, nicht als Fehlschlag.</p>
+<p><strong>Wird ein symbolischer Link gelesen, wird gelesen, worauf er zeigt.</strong> Das Panel zeigt ihn in der Spalte Attr weiterhin als Link; F3 zeigt den Inhalt des Ziels statt einer leeren Datei.</p>
+<p><strong>Die Wurzel eines großen gestoppten Containers lässt sich unter Umständen nicht auflisten.</strong> Docker hat keinen Aufruf, der ein Verzeichnis auflistet. Ein Verzeichnis zu lesen heißt, es als Archiv anzufordern, und das enthält alles darunter — bei einem gestoppten Container auf Basis eines vollwertigen Images können das zig Gigabyte sein, und die Auflistung wird dann abgelehnt, statt alles zu lesen. Tiefer liegende Verzeichnisse sind nicht betroffen, ein <em>laufender</em> Container ebenso wenig: Ein für das Archiv zu großes Verzeichnis listet der Container selbst auf. Wenn Sie ausschließlich den Archiv-Weg wollen, siehe die Einstellung unten.</p>
+<p><strong>Einen ganzen Container herauszukopieren kopiert sein gesamtes Dateisystem</strong> — einschließlich <code>/proc</code> und <code>/dev</code>. Kopieren Sie das Verzeichnis, das Sie brauchen, nicht <code>/</code>.</p>
+<h2 id="worauf-es-zugreifen-kann">Worauf es zugreifen kann</h2>
+<p>Das Plugin spricht mit derselben Engine, die Sie auch im Terminal erreichen: <code>DOCKER_HOST</code>, falls gesetzt, sonst Ihr aktueller <code>docker context</code>, sonst die üblichen Sockets von Docker Desktop, Colima, Rancher Desktop, Lima und Podman. Podman funktioniert, weil es dieselbe API anbietet.</p>
+<p>Zugriff auf einen Docker-Daemon bedeutet in aller Regel weitreichenden Zugriff auf den Rechner, auf dem er läuft. Das Plugin hat genau Ihre Rechte und verlangt keine weiteren: Es speichert keine Zugangsdaten, fasst Dockers eigene Verzeichnisse auf Ihrer Platte nie an und führt keine privilegierten Aktionen in Ihrem Namen aus.</p>
+<p>Das Einzige, was es anlegt, ist ein <strong>Wegwerf-Container</strong> — und zwar nur, um ein Volume zu erreichen, das kein vorhandener Container einhängt, denn ein Volume ist nur von innerhalb eines Containers sichtbar, der es einhängt. Er wird nie gestartet, ist als Peach Commanders Container gekennzeichnet und wird entfernt, sobald Sie das Laufwerk verlassen.</p>
+<h2 id="aktionen-auf-einem-container-oder-einem-volume">Aktionen auf einem Container oder einem Volume</h2>
+<p>Ein Rechtsklick auf einen Container oder ein Volume bietet im Untermenü <strong>Docker</strong>, was ein Laufwerk allein nicht sagen kann:</p>
+<ul>
+<li><strong>Inspect</strong> — alles, was die Engine darüber weiß, als formatiertes JSON in einem Fenster, das sich
+  scrollen und aus dem sich kopieren lässt.</li>
+<li><strong>Show Logs</strong> — die letzten 500 Zeilen, die der Container geschrieben hat.</li>
+<li><strong>Show Mounts</strong> — jeder Mount, den er trägt, mit dem, was er ist, und ob er beschreibbar ist.</li>
+<li><strong>Copy ID</strong> — die vollständige ID des Containers oder der Name des Volumes in die Zwischenablage.
+  Die vollständige ID, nicht die zwölf Zeichen der ID-Spalte: Das ist zum Einfügen in einen
+  <code>docker</code>-Befehl gedacht, und eine kurze ID ist ein Präfix, das aufhören kann, eindeutig zu sein.</li>
+<li><strong>Jump to Volume</strong> — bei einem Verzeichnis, das in Wahrheit ein Volume ist, zu diesem Volume unter
+  <strong>Volumes</strong> springen. Das ist die andere Hälfte der Mount-Spalte: Die Spalte nennt das Volume, das hier bringt Sie hin.</li>
+<li><strong>Open Compose Project</strong> — zu dem Projekt gehen, zu dem der Container gehört.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — diese verändern den Container, statt
+  ihn zu lesen, also fragen sie vorher. Start ist zugleich der Ausweg aus den beiden Ablehnungen
+  oben: Löschen und Umbenennen brauchen einen laufenden Container.</li>
+</ul>
+<p>Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigenen Ordner sind sie gar nicht vorhanden.</p>
+<p><strong>Das Log ist außerdem eine Datei.</strong> Im Wurzelverzeichnis jedes Containers liegt <code>docker-logs.txt</code> — die keine Datei im Container ist: Sie zu lesen fragt die Engine nach dem Log. F3 darauf öffnet sie im Betrachter, also greifen dessen Suche, das Springen zu einer Zeile und die Wahl der Kodierung — was ein eigenes Fenster nicht geben kann. Ein Container, der tatsächlich eine Datei dieses Namens mitbringt, zeigt seine eigene, und in die virtuelle lässt sich nichts schreiben.</p>
+<h2 id="einstellungen">Einstellungen</h2>
+<p><strong>Konfiguration ▸ Einstellungen ▸ Docker</strong> enthält alles davon. Dieselben Werte liegen in einer kleinen Datei unter <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, die Sie bearbeiten, wenn Sie einen Rechner per Skript einrichten:</p>
+<ul>
+<li><code>Endpoint</code> — eine Adresse, die statt der gefundenen verwendet wird.</li>
+<li><code>ExecFallback</code> — <code>0</code> lässt das Plugin ausschließlich Dockers Archiv-API verwenden: Es führt dann nie etwas in einem Container aus, um den Preis, sehr große Verzeichnisse nicht auflisten und nicht löschen oder umbenennen zu können.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — wie viel vom Archiv eines Verzeichnisses zu lesen sich lohnt, bevor zurückgefallen oder aufgegeben wird.</li>
+<li><code>HelperImage</code> — das Image, aus dem der obige Wegwerf-Container entsteht (standardmäßig irgendein bereits vorhandenes Image).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> blendet die Volumes aus, denen Docker einen langen Hash als Namen gegeben hat, weil sonst niemand sie benannt hat.</li>
+</ul>
+<h2 id="nicht-in-dieser-version">Nicht in dieser Version</h2>
+<p>Entfernte Engines über SSH oder TLS, eine interaktive Shell und Images als schreibgeschützte Dateisysteme.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="amazon-s3.html">Amazon S3 und S3-kompatible Speicher</a></li><li><a href="webdav.html">WebDAV-Server</a></li><li><a href="copying-files.html">Dateien kopieren</a></li><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li></ul></section>
+</main>
+</body>
+</html>

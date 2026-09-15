@@ -18,14 +18,11 @@
 <li>Ustaw, jak dokładne ma być porównanie: uwzględnij podfoldery, porównuj <strong>według zawartości</strong> (nie tylko według daty i rozmiaru) lub ignoruj datę modyfikacji.</li>
 <li>Dodaj maskę filtra (na przykład <code>*.jpg;*.png</code>), jeśli chcesz synchronizować tylko określone pliki.</li>
 <li>Przejrzyj siatkę wyników. Każdy wiersz pokazuje plik po lewej, strzałkę kierunku pośrodku i pasujący plik po prawej. Strzałki mówią, co się stanie: <strong>→</strong> kopiuje z lewej na prawą, <strong>←</strong> kopiuje z prawej na lewą, a <strong>=</strong> oznacza, że oba są identyczne.</li>
-<li>Zawęź to, co pokazuje siatka, za pomocą <strong>Pokaż</strong>: wszystko, tylko wiersze idące <strong>&#8594;</strong> w prawo albo tylko te idące <strong>&#8592;</strong> w lewo. <strong>Ukryj identyczne</strong> pomija pliki już takie same po obu stronach; wiersz pod siatką podaje, ile wierszy filtr zatrzymuje.</li>
-<li><strong>Zaznacz wszystko</strong> zaznacza dokładnie to, co widać, i odznacza wszystko, co filtr ukrywa &mdash; wybierz kierunek, kliknij, a przebieg pójdzie tylko w tę stronę. <strong>Odznacz wszystko</strong> czyści każdy wiersz, pokazany czy nie, jeśli wolisz wybierać ręcznie.</li>
-<li>Każdy wiersz pokazuje obie daty obok obu rozmiarów, więc widać, <em>dlaczego</em> strzałka wskazuje właśnie tak. Kliknij nagłówek kolumny, aby posortować, a dwukrotnie kliknij wiersz, aby otworzyć oba pliki obok siebie.</li>
-<li><strong>&#8800;</strong> oznacza konflikt: dwa pliki w tym samym wieku, które mimo to się różnią, gdzie Peach Commander odmawia zgadywania. Kliknij znak, aby samodzielnie wybrać <strong>&#8594;</strong> lub <strong>&#8592;</strong>; klikając dalej, wiersz znów staje się konfliktem i pozostaje poza przebiegiem.</li>
 <li>Dostosuj poszczególne wiersze, jeśli nie zgadzasz się z sugerowanym kierunkiem, a następnie kliknij przycisk synchronizacji, aby przeprowadzić zmiany.</li>
 </ol>
 <p><img alt="Okno synchronizacji katalogów z dwiema ścieżkami folderów i siatką wyników plików ze strzałkami w lewo, równości i w prawo" src="images/sync-dialog.png" />
 <em>(Rysunek: okno Synchronizuj katalogi porównuje obie strony i proponuje kierunek kopiowania dla każdego pliku.)</em></p>
+<p>Kliknij wiersz prawym przyciskiem myszy, aby zajrzeć do plików, które za nim stoją. <strong>Porównaj</strong> otwiera obie strony obok siebie, a <strong>Pokaż plik z lewej</strong> i <strong>Pokaż plik z prawej</strong> otwierają jedną stronę osobno w przeglądarce — to odpowiedź dla wiersza, który istnieje tylko po jednej stronie i w którym nie ma czego porównywać. Pozycje, których nie da się zastosować do klikniętego wiersza, są wyszarzone, zamiast nic nie robić. Plik w archiwum <code>.zip</code> lub na serwerze jest najpierw rozpakowywany albo pobierany do tylko do odczytu kopii tymczasowej, więc oryginał nigdy nie jest ruszany. To samo dotyczy <strong>Porównaj</strong>, więc folder można porównać z archiwum albo serwerem — a przyciski scalania i zapisu pozostają wyłączone dla takiej strony, bo otwarta jest tam kopia.</p>
 <h2 id="porownaj-dwa-pliki-wedug-zawartosci">Porównaj dwa pliki według zawartości</h2>
 <ol>
 <li>Zaznacz jeden plik w każdym panelu (lub dwa pliki w tym samym panelu).</li>
@@ -35,10 +32,62 @@
 </ol>
 <p><img alt="Okno porównania pokazujące dwa pliki tekstowe obok siebie z podświetlonymi różniącymi się wierszami" src="images/diff-window.png" />
 <em>(Rysunek: porównywanie dwóch plików tekstowych; zmienione wiersze są podświetlone po obu stronach.)</em></p>
+<p>Gdy między plikami nie ma żadnych różnic, okno mówi o tym kolorowym paskiem u góry, zamiast pozostawiać wniosek tabeli, w której nic nie jest wyróżnione. Pasek pojawia się także, w kolorze ostrzeżenia, gdy jakiegoś pliku nie udało się w ogóle odczytać — wtedy każdy wniosek o różnicach byłby twierdzeniem o porównaniu, które nigdy się nie odbyło. Porównanie bajt po bajcie mówi to samo z tego samego powodu: dwa pliki, których nie da się otworzyć, to nie dwa identyczne pliki.</p>
 <h2 id="porownaj-pliki-bajt-po-bajcie">Porównaj pliki bajt po bajcie</h2>
 <p>Gdy dwa pliki wyglądają tak samo, ale musisz udowodnić, że są naprawdę identyczne (lub znaleźć ten jeden różniący się bajt), użyj porównania binarnego. Pokazuje oba pliki w widoku szesnastkowym z zaznaczonymi niepasującymi bajtami, co jest idealne do weryfikacji pobranych plików, sprawdzania zakodowanych danych lub potwierdzania dokładnej kopii.</p>
 <h2 id="porownaj-listy-katalogow">Porównaj listy katalogów</h2>
 <p>Aby dostrzec różnice między dwoma otwartymi folderami na pierwszy rzut oka, wybierz <strong>Zaznacz ▸ Porównaj katalogi</strong> (Shift+F2). Peach Commander oznaczy pliki, które się różnią lub brakuje ich po drugiej stronie, dzięki czemu możesz na nich działać zwykłymi poleceniami kopiowania, przenoszenia i usuwania.</p>
+<h2 id="ograniczanie-tego-co-obejmuje-synchronizacja">Ograniczanie tego, co obejmuje synchronizacja</h2>
+<p>Pole maski zawiera jedną listę włączeń dotyczącą nazw plików. Dla tego, czego nie da się tak wyrazić, <strong>Filtr…</strong> obok otwiera arkusz z trzema kartami. To, co się tam ustawi, dotyczy <em>następnego</em> porównania, a przycisk mówi wtedy, ile kryteriów jest aktywnych — filtr, którego nie widać, to sposób, w jaki kopia zapasowa kończy się niepełna, podczas gdy okno melduje, że skończyło.</p>
+<ul>
+<li><strong>Pomiń</strong> przyjmuje wzorce rozdzielone <code>;</code> lub <code>|</code>. Nazwa bez ukośnika pasuje na każdej głębokości (<code>*.tmp</code>), ukośnik na końcu oznacza folder wraz z zawartością (<code>node_modules/</code>), a wzorzec z ukośnikiem pasuje do ścieżki względnej (<code>src/*/generated</code>). Wielkość liter nie ma znaczenia.</li>
+<li><strong>Rozmiar</strong> i <strong>data</strong> oceniają parę jako całość: jeśli jedna strona wypada spoza zakresu, pomijana jest cała para. To zamierzone. Zastosowane tylko do jednej strony, pominięcie sprawiłoby, że para wyglądałaby jednostronnie i zamieniłoby się w kopiowanie w złym kierunku.</li>
+<li><strong>W ciągu ostatnich N dni</strong> liczy się od każdego porównania, a nie od zapisania ustawienia — zapisane zadanie nadal znaczy więc „ostatni miesiąc”.</li>
+<li>Karta <strong>Wtyczki</strong> pyta wtyczkę treści o stronę, z której plik zostałby skopiowany. Potrzebuje prawdziwego pliku, więc jest dostępna tylko wtedy, gdy obie strony są folderami na tym Macu.</li>
+</ul>
+<p>Pominięty folder nie jest usuwany także w trybie lustra — lustro usuwa tylko to, co rzeczywiście porównało. Wiersz stanu mówi, ile pozycji wstrzymał filtr, obok tego, co zrobi przebieg. Filtr jest zapisywany i wczytywany razem z ustawieniem synchronizacji, do którego należy.</p>
+<h2 id="utrzymywac-dwa-foldery-jednakowe-w-obie-strony">Utrzymywać dwa foldery jednakowe, w obie strony</h2>
+<p>Dwa pierwotne tryby nie potrafią odróżnić jednej rzeczy: plik, który jest tylko po jednej stronie,
+jest albo <strong>tu nowy</strong>, albo <strong>tam usunięty</strong>, a wygląda to tak samo. Tryb symetryczny go więc kopiuje
+— usuń coś na laptopie, zsynchronizuj, i wraca z kopii zapasowej — a tryb lustra usuwa, ale tylko w
+jedną stronę.</p>
+<p><strong>W obie strony (z pamięcią)</strong> pamięta, jak oba foldery wyglądały, gdy ostatnio się zgadzały. Z tym
+zapisem usunięcie po jednej stronie może zostać przeniesione na drugą.</p>
+<ul>
+<li><strong>Pierwszy</strong> przebieg pary nie ma zapisu: zachowuje się jak dawniej i nic nie usuwa. Zapisuje dane.
+  Od drugiego przebiegu tryb działa.</li>
+<li>Przeniesione usunięcie pokazuje się we własnym kolorze z <code>⇒🗑</code> i <strong>nie</strong> jest zaznaczone: to jedyny
+  wiersz pochodzący z pamięci programu. Klik na strzałkę proponuje pozostałe odpowiedzi: skopiować
+  plik z powrotem albo zostawić obie strony.</li>
+<li>Zmienione po jednej stronie i usunięte po drugiej to <strong>konflikt</strong>, nigdy usunięcie. Tak samo plik
+  zmieniony po obu stronach.</li>
+<li>Nic nie jest usuwane na podstawie nieobecności, której porównanie nie mogło potwierdzić —
+  nieczytelny folder albo taki, który zatrzymał filtr, niczego nie dowodzi o swojej zawartości.</li>
+<li>Tylko dwa foldery na tym Macu. Nie serwer i nie archiwum: usunięcie w archiwum zapisuje je od
+  nowa, usunięcie na serwerze jest trwałe, a ten tryb nie jest tym, na którym warto to sprawdzać.</li>
+</ul>
+<p><strong>Usunięcia nie da się cofnąć.</strong> Na tym Macu plik idzie do Kosza i można go przywrócić w Finderze; to
+cała siatka. <strong>Pamięć…</strong> w oknie wypisuje każdą parę, którą program pamięta, wyróżnia tę otwartą i pozwala zapomnieć dowolną — po czym następne porównanie tych folderów zachowuje się znów jak pierwsze. Nic nie jest zapominane samo: folder na odłączonym dysku nie zniknął, tylko nie jest podłączony.</p>
+<p>Zapis leży przy ustawieniach: przeniesienie jednego z folderów pozbawia parę historii — a
+przebieg bez historii nic nie usuwa.</p>
+<h2 id="co-zrobi-przebieg-i-co-z-tego-da-sie-cofnac">Co zrobił przebieg i co z tego da się cofnąć</h2>
+<p>Każda synchronizacja jest zapisywana. <strong>Przebiegi…</strong> w oknie wypisują je od najnowszych — kiedy, które dwa foldery, który tryb i ile plików zostało skopiowanych, usuniętych lub zatrzymanych — a dla wybranego przebiegu pokazują, co stało się z każdym plikiem.</p>
+<p>To właśnie ta lista czyni Kosz użytecznym. Plik, który ten Mac usunął, trafił do Kosza, a przebieg zapisał <em>gdzie</em>, co znaczy więcej, niż brzmi: Kosz przy kolizji zmienia nazwę, więc druga <code>notes.txt</code> ląduje jako <code>notes.txt 11-17-15-028.txt</code>, a szukanie po nazwie trafia na niewłaściwą. <strong>Pokaż w Koszu</strong> kieruje Findera prosto na element.</p>
+<p><strong>Przywróć…</strong> przenosi pliki usunięte przez przebieg z Kosza na ścieżki, z których zostały usunięte. Każdy jest najpierw sprawdzany, a to, co się nie zgadza, zostaje odrzucone wraz z powodem, zamiast być wymuszone:</p>
+<ul>
+<li>Na tej ścieżce znowu coś jest. Zostaje nietknięte — przywrócenie nigdy nie może nadpisywać.</li>
+<li>Elementu nie ma już w Koszu albo został usunięty trwale, zamiast tam trafić.</li>
+<li>Strona była archiwum lub serwerem. Archiwum zapisuje się od nowa w całości, a serwer nie ma Kosza,
+  więc nic nie zostało zachowane.</li>
+<li>Folder, do którego przebieg zapisywał, zniknął albo nie jest już tym samym folderem — na przykład
+  ponownie użyty punkt montowania. Wtedy odrzucany jest cały przebieg, zamiast wykonać jego część.</li>
+<li>Zostało już przywrócone. Zapis to pamięta, więc druga próba nic nie robi.</li>
+<li>Albo sam zapis jest taki, na którym ta wersja nie potrafi działać — napisany przez nowszą wersję
+  programu lub wskazujący ścieżkę poza oboma folderami. Rzadkie, i odrzucane zamiast zgadywane.</li>
+</ul>
+<p><strong>Kopii nie da się cofnąć.</strong> Usunięcie jej oznaczałoby skasowanie pliku, który mogłeś od tego czasu edytować, a to odwrotna wymiana niż przywrócenie usunięcia, więc program tego nie oferuje — przebieg mówi, które pliki skopiował, a usunąć możesz je sam. Plik, który został <em>nadpisany</em>, to jedyna prawdziwa luka, i jest już niewielka: na tym Macu zastąpiona wersja trafia do Kosza jak plik usunięty, więc <strong>Pokaż w Koszu</strong> ją znajdzie. Do archiwum, na serwer ani na wolumin bez Kosza tak się nie da, i potwierdzenie mówi o tym przed przebiegiem.</p>
+<p>Przechowywanych jest ostatnich 200 przebiegów albo 64 MB z nich, zależnie od tego, co nastąpi pierwsze; powyżej tego najstarsze odpadają po kolei, w miarę jak przybywają nowe, a <strong>Zapomnij</strong> i <strong>Zapomnij wszystkie</strong> sprzątają je od razu. Bardzo duży przebieg — ponad 20 000 plików — zachowuje każdy problem i wszystko, co włożył do Kosza, ale nie kopie, które przeszły, i mówi o tym, zamiast zostawiać to twojej uwadze. Jego usunięcia wciąż da się przywrócić: pominięte zostały kopie, a kopii i tak nie dałoby się cofnąć.</p>
+<p>Zapomnienie niczego nie zmienia w folderach; znika zapis tego, co zrobiono, a wraz z nim oferta przywrócenia czegokolwiek. W odróżnieniu od pamięci dwukierunkowej to jest wyrzucane automatycznie — utrata pamięci <em>pary</em> zmieniłaby to, co zrobi następny przebieg, podczas gdy utrata zapisu przebiegu odbiera tylko ofertę.</p>
 <h2 id="skroty">Skróty</h2>
 <table>
 <thead>
@@ -60,18 +109,18 @@
 <td>Synchronizuj katalogi</td>
 <td>Polecenia ▸ Synchronizuj katalogi…</td>
 </tr>
+<tr>
+<td>Pokaż jedną stronę wiersza synchronizacji</td>
+<td>Prawy przycisk na wierszu ▸ Pokaż plik z lewej / z prawej</td>
+</tr>
 </tbody>
 </table>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
 <li><strong>Według zawartości a według daty/rozmiaru.</strong> Szybkie porównanie dopasowuje pliki według rozmiaru i daty modyfikacji, co jest szybkie, ale można je oszukać, gdy znaczniki czasu różnią się dla identycznych plików. Włącz <strong>według zawartości</strong> dla wiarygodnego wyniku kosztem odczytu każdego pliku.</li>
 <li><strong>Podfoldery i filtry.</strong> Okno synchronizacji może schodzić do podfolderów i można je ograniczyć maską filtra, więc możesz synchronizować tylko interesujące Cię typy plików.</li>
-<li><strong>Zachowujesz kontrolę.</strong> Synchronizacja nigdy nie działa sama — przeglądasz proponowane kierunki w siatce wyników i możesz zmienić dowolny z nich, zanim cokolwiek zostanie skopiowane.</li>
-<li><strong>Porównanie, które widać i można przerwać.</strong> Przejście dwóch dużych drzew trwa, więc okno liczy w trakcie pracy najpierw przejrzane wpisy, a potem porównane pliki, z animacją obok licznika. Przycisk Porównaj nosi nazwę <strong>Zatrzymaj</strong>, dopóki skanowanie trwa; zatrzymanie zostawia poprzedni wynik, zamiast pokazać pół drzewa.</li>
-<li><strong>Która strona jest wzorcem.</strong> Odbicie idzie od lewej do prawej. <strong>Zamień strony</strong> wymienia oba foldery: tak prawe drzewo staje się tym, które wygrywa &mdash; i tak poprawia się to, że panele ułożyły je odwrotnie.</li>
-<li><strong>Daty, które nie są całkiem równe.</strong> <strong>Ignoruj różnicę 1 godziny</strong> pochłania przesunięcie, jakie wolumin FAT albo zmiana czasu nakłada na skądinąd niezmieniony plik. <strong>Uwzględniaj wielkość liter</strong> rozstrzyga, czy dwie nazwy różniące się tylko wielkością liter to ten sam plik; wyłączone &mdash; są nim, co zwykle stwierdza też wolumin Maca.</li>
-<li><strong>Gdy coś pójdzie źle.</strong> Synchronizacja podaje swój postęp, a przycisk nosi nazwę <strong>Zatrzymaj</strong>, dopóki trwa; zatrzymanie między elementami zostawia skopiowane to, co skopiowano. To, co się nie powiodło, jest wypisane z plikiem i powodem w oknie błędów operacji, zamiast być tylko policzone. Usunięcie na serwerze jest nieodwracalne &mdash; nie ma tam kosza &mdash; i potwierdzenie mówi o tym wcześniej.</li>
-<li><strong>Ustawienia wstępne.</strong> Często używane konfiguracje synchronizacji można zapisać i użyć ponownie, dzięki czemu nie musisz za każdym razem wpisywać tych samych opcji.</li>
+<li><strong>Zachowujesz kontrolę.</strong> Synchronizacja nigdy nie działa sama — przeglądasz proponowane kierunki w siatce wyników i możesz zmienić dowolny z nich, zanim cokolwiek zostanie skopiowane. <strong>Esc</strong> przerywa trwające porównanie i zamyka okno, gdy nic nie działa.</li>
+<li><strong>Ustawienia wstępne.</strong> Często używane konfiguracje synchronizacji można zapisać i użyć ponownie, dzięki czemu nie musisz za każdym razem wpisywać tych samych opcji. Ustawienie wstępne zapamiętuje także to, co pokazuje siatka wyników — filtr kierunku i <strong>Ukryj identyczne</strong> — a okno otwiera się na ostatnio używanym ustawieniu. Ustawienie <strong>Domyślnie</strong> jest dostępne od pierwszego otwarcia okna; zapisz na nim własne, aby je dostosować.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Zmiana nazw wielu plików</a></li></ul></section>
 </main>

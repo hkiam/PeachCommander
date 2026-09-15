@@ -18,14 +18,11 @@
 <li>Indstil, hvor grundig sammenligningen skal være: inkludér undermapper, sammenlign <strong>efter indhold</strong> (ikke kun efter dato og størrelse) eller ignorér ændringsdatoen.</li>
 <li>Tilføj en filtermaske (for eksempel <code>*.jpg;*.png</code>), hvis du kun vil synkronisere bestemte filer.</li>
 <li>Gennemgå resultatgitteret. Hver række viser en fil til venstre, en retningspil i midten og den matchende fil til højre. Pilene fortæller dig, hvad der vil ske: <strong>→</strong> kopierer fra venstre til højre, <strong>←</strong> kopierer fra højre til venstre, og <strong>=</strong> betyder, at de to er identiske.</li>
-<li>Indsnævr hvad tabellen viser med <strong>Vis</strong>: alt, kun rækkerne der går <strong>&#8594;</strong> mod højre, eller kun dem der går <strong>&#8592;</strong> mod venstre. <strong>Skjul identiske</strong> udelader de filer, der allerede er ens på begge sider; linjen under tabellen siger, hvor mange rækker filteret holder tilbage.</li>
-<li><strong>Vælg alle</strong> markerer præcis det, der er på skærmen, og fjerner markeringen fra alt, filteret skjuler &mdash; vælg en retning, klik, og kørslen går kun den vej. <strong>Fravælg alle</strong> tømmer hver række, vist eller ej, hvis du hellere vil vælge i hånden.</li>
-<li>Hver række viser begge tidsstempler ved siden af begge størrelser, så man kan se <em>hvorfor</em> en pil peger, som den gør. Klik på en kolonneoverskrift for at sortere efter den, og dobbeltklik på en række for at åbne de to filer ved siden af hinanden.</li>
-<li>Et <strong>&#8800;</strong> markerer en konflikt: to lige gamle filer, der alligevel er forskellige, hvor Peach Commander nægter at gætte. Klik på tegnet for selv at vælge <strong>&#8594;</strong> eller <strong>&#8592;</strong>; klikker du videre, bliver rækken en konflikt igen og holdes uden for kørslen.</li>
 <li>Justér individuelle rækker, hvis du er uenig i en foreslået retning, og klik derefter på synkroniseringsknappen for at udføre ændringerne.</li>
 </ol>
 <p><img alt="Vinduet til synkronisering af mapper med to mappestier og et resultatgitter af filer med venstre-, lige- og højrepile" src="images/sync-dialog.png" />
 <em>(Figur: Vinduet Synkronisér mapper sammenligner begge sider og foreslår en kopieringsretning for hver fil.)</em></p>
+<p>Højreklik på en række for at se filerne bag den. <strong>Sammenlign</strong> åbner de to sider ved siden af hinanden, mens <strong>Vis venstre fil</strong> og <strong>Vis højre fil</strong> åbner én side alene i fremviseren — det er svaret for en række, der kun findes på den ene side, hvor der ikke er noget at sammenligne. Punkter, der ikke kan bruges på den række, du klikkede på, er grå i stedet for ikke at gøre noget. En fil inde i en <code>.zip</code> eller på en server pakkes ud eller hentes først til en skrivebeskyttet midlertidig kopi, så originalen aldrig berøres. Det gælder også <strong>Sammenlign</strong>, så en mappe kan sammenlignes med et arkiv eller en server — og knapperne til at flette og gemme forbliver slået fra for en sådan side, for det, der er åbent der, er kopien.</p>
 <h2 id="sammenlign-to-filer-efter-indhold">Sammenlign to filer efter indhold</h2>
 <ol>
 <li>Markér én fil i hvert panel (eller to filer i samme panel).</li>
@@ -35,10 +32,62 @@
 </ol>
 <p><img alt="Sammenligningsvinduet, der viser to tekstfiler side om side med afvigende linjer fremhævet" src="images/diff-window.png" />
 <em>(Figur: Sammenligning af to tekstfiler; ændrede linjer er fremhævet på begge sider.)</em></p>
+<p>Når de to filer slet ikke har nogen forskelle, siger vinduet det i et farvet bånd øverst i stedet for at lade dig slutte det ud fra en tabel, hvor intet er fremhævet. Båndet vises også i en advarselsfarve, når en fil slet ikke kunne læses — så ville enhver dom om forskelle være en påstand om en sammenligning, der aldrig fandt sted. Sammenligningen byte for byte siger det samme af samme grund: to filer, den ikke kan åbne, er ikke to identiske filer.</p>
 <h2 id="sammenlign-filer-byte-for-byte">Sammenlign filer byte for byte</h2>
 <p>Når to filer ser ens ud, men du har brug for at bevise, at de virkelig er identiske (eller finde den ene byte, der afviger), skal du bruge den binære sammenligning. Den viser begge filer i en hex-visning med afvigende bytes markeret, hvilket er ideelt til at verificere overførsler, kontrollere kodede data eller bekræfte en nøjagtig kopi.</p>
 <h2 id="sammenlign-mappelister">Sammenlign mappelister</h2>
 <p>For at få øje på forskelle mellem to åbne mapper med et enkelt blik skal du vælge <strong>Markér ▸ Sammenlign mapper</strong> (Shift+F2). Peach Commander markerer de filer, der afviger eller mangler på den anden side, så du kan handle på dem med de sædvanlige kommandoer til kopiering, flytning og sletning.</p>
+<h2 id="begrns-hvad-en-synkronisering-omfatter">Begræns hvad en synkronisering omfatter</h2>
+<p>Maskefeltet rummer én medtag-liste over filnavne. Til det, den ikke kan udtrykke, åbner <strong>Filter…</strong> ved siden af et ark med tre faneblade. Hvad der sættes dér, gælder den <em>næste</em> sammenligning, og knappen siger så, hvor mange kriterier der er aktive — et filter, man ikke kan se, er sådan en sikkerhedskopi ender ufuldstændig, mens vinduet melder, at den er færdig.</p>
+<ul>
+<li><strong>Udelad</strong> tager mønstre adskilt af <code>;</code> eller <code>|</code>. Et navn uden skråstreg passer i enhver dybde (<code>*.tmp</code>), en skråstreg til sidst betyder en mappe med alt i den (<code>node_modules/</code>), og et mønster med skråstreg passer på den relative sti (<code>src/*/generated</code>). Der ses ikke på store og små bogstaver.</li>
+<li><strong>Størrelse</strong> og <strong>dato</strong> bedømmer et par som helhed: falder én side uden for intervallet, holdes hele parret ude. Det er med vilje. Anvendt på kun én side ville en udeladelse få parret til at se ensidigt ud og blive en kopiering i den forkerte retning.</li>
+<li><strong>Inden for de sidste N dage</strong> måles fra hver sammenligning, ikke fra da forudindstillingen blev gemt — en gemt opgave betyder altså fortsat "den seneste måned".</li>
+<li>Fanebladet <strong>Plugins</strong> spørger et indholdsplugin om den side, en fil ville blive kopieret fra. Det kræver en rigtig fil, så det tilbydes kun, når begge sider er mapper på denne Mac.</li>
+</ul>
+<p>En udeladt mappe slettes heller ikke i spejltilstand — et spejl fjerner kun det, det faktisk har sammenlignet. Statuslinjen siger, hvor mange punkter filteret holdt ude, ved siden af hvad kørslen vil gøre. Et filter gemmes og indlæses sammen med den synk-forudindstilling, det hører til.</p>
+<h2 id="hold-to-mapper-ens-begge-veje">Hold to mapper ens, begge veje</h2>
+<p>De to oprindelige tilstande kan ikke skelne én ting: en fil, der kun findes på den ene side, er
+enten <strong>ny her</strong> eller <strong>slettet der</strong>, og det ser ens ud. Den symmetriske tilstand kopierer den
+derfor — slet noget på din bærbare, synkronisér, og den kommer tilbage fra sikkerhedskopien — og
+spejltilstanden sletter, men kun i én retning.</p>
+<p><strong>Tovejs (med hukommelse)</strong> husker, hvordan begge mapper så ud, sidst de stemte. Med den optegnelse
+kan en sletning på den ene side føres over til den anden.</p>
+<ul>
+<li>Den <strong>første</strong> kørsel for et par har ingen optegnelse: den opfører sig som før og sletter intet. Den
+  skriver optegnelsen. Fra anden kørsel virker tilstanden.</li>
+<li>En overført sletning vises i sin egen farve med <code>⇒🗑</code> og er <strong>ikke</strong> markeret: det er den eneste
+  række, der kommer fra appens hukommelse. Et klik på pilen tilbyder de andre svar: kopiér filen
+  tilbage i stedet, eller lad begge sider være.</li>
+<li>Ændret på den ene side og slettet på den anden er en <strong>konflikt</strong>, aldrig en sletning. Det samme
+  gælder en fil, der er ændret på begge sider.</li>
+<li>Intet slettes på grundlag af et fravær, som sammenligningen ikke kunne bekræfte — en ulæselig
+  mappe, eller en som filteret holdt tilbage, beviser intet om, hvad der er i den.</li>
+<li>Kun to mapper på denne Mac. Ikke en server og ikke et arkiv: en sletning i et arkiv skriver det
+  om, en sletning på en server er permanent, og denne tilstand er ikke den at prøve det med.</li>
+</ul>
+<p><strong>Der findes ingen fortryd for en sletning.</strong> På denne Mac ryger filen i Papirkurven og kan hentes
+tilbage i Finder; det er hele nettet. <strong>Hukommelse…</strong> i vinduet viser hvert par, appen husker, fremhæver det du ser på, og lader dig glemme et hvilket som helst af dem — derefter opfører næste sammenligning af de mapper sig igen som en første. Intet glemmes nogensinde af sig selv: en mappe på en afmonteret disk er ikke væk, kun ikke tilsluttet.</p>
+<p>Optegnelsen ligger sammen med indstillingerne: flytter du en af
+mapperne, har parret ingen historie mere — og en kørsel uden historie sletter intet.</p>
+<h2 id="hvad-en-krsel-gjorde-og-hvad-af-det-der-kan-tages-tilbage">Hvad en kørsel gjorde, og hvad af det der kan tages tilbage</h2>
+<p>Hver synkronisering skrives ned. <strong>Kørsler…</strong> i vinduet viser dem med de nyeste først — hvornår, hvilke to mapper, hvilken tilstand, og hvor mange filer der blev kopieret, slettet eller holdt tilbage — og viser, hvad der skete med hver fil i den kørsel, du vælger.</p>
+<p>Den liste er det, der gør papirkurven brugbar. En fil, som denne Mac slettede, røg i papirkurven, og kørslen noterede <em>hvor</em>, hvilket betyder mere, end det lyder: papirkurven omdøber ved sammenfald, så en anden <code>notes.txt</code> lander som <code>notes.txt 11-17-15-028.txt</code>, og at lede efter den ved navn finder den forkerte. <strong>Vis i papirkurv</strong> peger Finder direkte på emnet.</p>
+<p><strong>Læg tilbage…</strong> flytter de filer, en kørsel slettede, ud af papirkurven til de stier, de blev slettet fra. Hver enkelt tjekkes først, og alt, der ikke holder, afvises med sin begrundelse i stedet for at blive tvunget igennem:</p>
+<ul>
+<li>Der ligger noget på den sti igen. Det får lov at blive — en tilbagelægning må aldrig overskrive.</li>
+<li>Emnet er ikke i papirkurven længere, eller det blev slettet permanent i stedet for lagt derhen.</li>
+<li>Siden var et arkiv eller en server. Et arkiv skrives helt om, og en server har ingen papirkurv, så
+  intet blev gemt.</li>
+<li>Mappen, kørslen skrev til, er væk, eller er ikke den samme mappe længere — et genbrugt
+  monteringspunkt, for eksempel. Så afvises hele kørslen frem for at udføre en del af den.</li>
+<li>Det er allerede lagt tilbage. Optegnelsen husker det, så et andet forsøg gør ingenting.</li>
+<li>Eller optegnelsen selv er en, denne version ikke kan handle på — skrevet af en nyere version af
+  appen, eller den nævner en sti uden for begge mapper. Sjældent, og afvist frem for gættet på.</li>
+</ul>
+<p><strong>En kopi kan ikke tages tilbage.</strong> At fjerne en ville betyde at slette en fil, du måske har redigeret siden, hvilket er den omvendte handel af at lægge en sletning tilbage, så appen tilbyder det ikke — kørslen fortæller dig, hvilke filer den kopierede, og du kan slette dem selv. En fil, der blev <em>overskrevet</em>, er det ene rigtige hul, og det er nu lille: på denne Mac ryger den erstattede udgave i papirkurven som en slettet fil, så <strong>Vis i papirkurv</strong> finder den. Ind i et arkiv, op på en server eller til en enhed uden papirkurv kan den ikke, og bekræftelsen siger det inden kørslen.</p>
+<p>De seneste 200 kørsler gemmes, eller 64 MB af dem, alt efter hvad der kommer først; derudover falder de ældste fra én ad gangen, efterhånden som nye kommer til, og <strong>Glem</strong> og <strong>Glem alle</strong> rydder dem på stedet. En meget stor kørsel — mere end 20.000 filer — beholder hvert problem og alt, den lagde i papirkurven, men ikke de kopier, der gik igennem, og siger det i stedet for at lade dig opdage det. Dens sletninger kan stadig lægges tilbage: det, der blev udeladt, er kopierne, og en kopi kunne alligevel ikke tages tilbage.</p>
+<p>At glemme ændrer intet ved mapperne; det, der går, er optegnelsen over, hvad der blev gjort, og med den tilbuddet om at lægge noget tilbage. I modsætning til tovejshukommelsen smides dette væk automatisk — at miste hukommelsen om et <em>par</em> ville ændre, hvad den næste kørsel gør, mens tabet af optegnelsen om en kørsel kun tager et tilbud væk.</p>
 <h2 id="genveje">Genveje</h2>
 <table>
 <thead>
@@ -60,18 +109,18 @@
 <td>Synkronisér mapper</td>
 <td>Kommandoer ▸ Synkronisér mapper…</td>
 </tr>
+<tr>
+<td>Vis den ene side af en synkroniseringsrække</td>
+<td>Højreklik på rækken ▸ Vis venstre fil / Vis højre fil</td>
+</tr>
 </tbody>
 </table>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
 <li><strong>Efter indhold vs. efter dato/størrelse.</strong> En hurtig sammenligning matcher filer efter størrelse og ændringsdato, hvilket er hurtigt, men kan narres, når tidsstempler afviger for identiske filer. Slå <strong>efter indhold</strong> til for et pålideligt resultat på bekostning af at læse hver fil.</li>
 <li><strong>Undermapper og filtre.</strong> Synkroniseringsvinduet kan gå ned i undermapper og kan begrænses med en filtermaske, så du kun kan synkronisere de filtyper, du bekymrer dig om.</li>
-<li><strong>Du bevarer kontrollen.</strong> Synkronisering kører aldrig af sig selv — du gennemgår de foreslåede retninger i resultatgitteret og kan ændre enhver af dem, før noget kopieres.</li>
-<li><strong>En sammenligning, man kan følge og standse.</strong> At gennemgå to store træer tager tid, så vinduet tæller undervejs først de gennemgåede poster og derefter de sammenlignede filer, med en indikator ved siden af tallet. Knappen Sammenlign hedder <strong>Stop</strong>, så længe skanningen kører; at standse den lader det forrige resultat blive stående i stedet for at vise et halvt træ.</li>
-<li><strong>Hvilken side er forlægget.</strong> Spejling går fra venstre mod højre. <strong>Byt sider</strong> ombytter de to mapper: sådan bliver det højre træ det, der vinder &mdash; og sådan retter man op på, at panelerne lagde dem omvendt.</li>
-<li><strong>Tidsstempler, der ikke helt er ens.</strong> <strong>Ignorér en forskel på 1 time</strong> opsuger den forskydning, som et FAT-arkiv eller et sommertidsskift lægger på en ellers uændret fil. <strong>Forskel på store og små bogstaver</strong> afgør, om to navne, der kun adskiller sig dér, er den samme fil; slået fra er de &mdash; hvad et Mac-arkiv normalt også siger.</li>
-<li><strong>Når noget går galt.</strong> Synkroniseringen melder sit forløb, og knappen hedder <strong>Stop</strong>, mens den kører; at standse mellem to emner lader det kopierede være kopieret. Det, der mislykkedes, står med fil og årsag i vinduet med handlingsfejl i stedet for blot at blive talt. Sletning på en server er permanent &mdash; der er ingen papirkurv &mdash; og bekræftelsen siger det på forhånd.</li>
-<li><strong>Forudindstillinger.</strong> Ofte brugte synkroniseringsopsætninger kan gemmes og genbruges, så du ikke skal indtaste de samme indstillinger hver gang.</li>
+<li><strong>Du bevarer kontrollen.</strong> Synkronisering kører aldrig af sig selv — du gennemgår de foreslåede retninger i resultatgitteret og kan ændre enhver af dem, før noget kopieres. <strong>Esc</strong> stopper en igangværende sammenligning og lukker vinduet, når intet kører.</li>
+<li><strong>Forudindstillinger.</strong> Ofte brugte synkroniseringsopsætninger kan gemmes og genbruges, så du ikke skal indtaste de samme indstillinger hver gang. En forudindstilling husker også, hvad resultatgitteret viser — retningsfilteret og <strong>Skjul identiske</strong> — og vinduet åbner med den forudindstilling, du sidst brugte. En <strong>Standard</strong>-forudindstilling findes fra første gang, du åbner vinduet; gem hen over den for at gøre den til din egen.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Omdøbning af mange filer</a></li></ul></section>
 </main>

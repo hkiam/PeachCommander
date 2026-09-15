@@ -18,14 +18,11 @@
 <li>Állítsa be, mennyire legyen alapos az összehasonlítás: vonja be az almappákat, hasonlítson össze <strong>tartalom szerint</strong> (ne csak dátum és méret alapján), vagy hagyja figyelmen kívül a módosítási dátumot.</li>
 <li>Adjon hozzá egy szűrőmaszkot (például <code>*.jpg;*.png</code>), ha csak bizonyos fájlokat szeretne szinkronizálni.</li>
 <li>Tekintse át az eredményrácsot. Minden sor egy fájlt mutat a bal oldalon, egy irányjelző nyilat középen, és a hozzá illő fájlt a jobb oldalon. A nyilak megmondják, mi fog történni: a <strong>→</strong> balról jobbra másol, a <strong>←</strong> jobbról balra másol, az <strong>=</strong> pedig azt jelenti, hogy a kettő azonos.</li>
-<li>A <strong>Megjelenítés</strong> szűkíti, mit mutat a rács: mindent, csak a <strong>&#8594;</strong> jobbra tartó sorokat, vagy csak a <strong>&#8592;</strong> balra tartókat. Az <strong>Azonosak elrejtése</strong> kihagyja a mindkét oldalon már egyező fájlokat; a rács alatti sor megmondja, hány sort tart vissza a szűrő.</li>
-<li>A <strong>Mindet kijelöl</strong> pontosan azt jelöli be, ami látszik, és mindent kijelöletlenné tesz, amit a szűrő elrejt &mdash; válasszon irányt, kattintson, és a futás csak arrafelé megy. A <strong>Kijelölés megszüntetése</strong> minden sort kiürít, láthatót és rejtettet is, ha inkább kézzel válogatna.</li>
-<li>Minden sor a két méret mellett a két időbélyeget is mutatja, így látszik, <em>miért</em> mutat a nyíl arra. Egy oszlopfejlécre kattintva arra rendez, egy sorra duplán kattintva a két fájl egymás mellett nyílik meg.</li>
-<li>A <strong>&#8800;</strong> ütközést jelöl: két egyidős fájl, amely mégis eltér, ahol a Peach Commander nem akar találgatni. Kattintson a jelre, és válasszon maga <strong>&#8594;</strong> vagy <strong>&#8592;</strong> irányt; továbbkattintva a sor újra ütközés lesz, és kimarad a futásból.</li>
 <li>Módosítsa az egyes sorokat, ha nem ért egyet egy javasolt iránnyal, majd kattintson a szinkronizálás gombra a változtatások végrehajtásához.</li>
 </ol>
 <p><img alt="A könyvtárak szinkronizálása ablak két mappaútvonallal és egy eredményráccsal, amely bal, egyenlő és jobb nyilakkal jeleníti meg a fájlokat" src="images/sync-dialog.png" />
 <em>(Ábra: A Könyvtárak szinkronizálása ablak összehasonlítja mindkét oldalt, és minden fájlhoz javasol egy másolási irányt.)</em></p>
+<p>Kattintson a jobb gombbal egy sorra, hogy megnézze a mögötte lévő fájlokat. Az <strong>Összehasonlítás</strong> egymás mellett nyitja meg a két oldalt, a <strong>Bal oldali fájl megtekintése</strong> és a <strong>Jobb oldali fájl megtekintése</strong> pedig egyetlen oldalt nyit meg a megjelenítőben — ez a válasz arra a sorra, amely csak az egyik oldalon létezik, és ahol nincs mit összehasonlítani. Azok a menüpontok, amelyek az adott sorra nem alkalmazhatók, szürkék, nem pedig hatás nélküliek. A <code>.zip</code> fájlban vagy kiszolgálón lévő fájl előbb egy csak olvasható átmeneti példányba kerül kibontásra vagy letöltésre, így az eredetihez semmi nem nyúl hozzá. Ez az <strong>Összehasonlítás</strong>ra is áll, így egy mappa összevethető egy archívummal vagy kiszolgálóval — az ilyen oldalon pedig az átvétel és a mentés gombja kikapcsolva marad, mert ott a másolat van nyitva.</p>
 <h2 id="ket-fajl-osszehasonlitasa-tartalom-szerint">Két fájl összehasonlítása tartalom szerint</h2>
 <ol>
 <li>Jelöljön ki egy-egy fájlt mindegyik panelen (vagy két fájlt ugyanazon a panelen).</li>
@@ -35,10 +32,62 @@
 </ol>
 <p><img alt="Az összehasonlító ablak két szövegfájlt mutat egymás mellett, kiemelt eltérő sorokkal" src="images/diff-window.png" />
 <em>(Ábra: Két szövegfájl összehasonlítása; a megváltozott sorok mindkét oldalon ki vannak emelve.)</em></p>
+<p>Ha a két fájl között egyáltalán nincs különbség, az ablak ezt egy színes sávban közli a felső szélén, nem pedig Önre hagyja, hogy egy kiemelés nélküli táblázatból következtessen rá. A sáv figyelmeztető színben akkor is megjelenik, ha egy fájlt egyáltalán nem sikerült beolvasni — ilyenkor a különbségekről szóló bármely ítélet egy meg sem történt összehasonlításról szóló állítás lenne. A bájtonkénti összehasonlítás ugyanezt mondja ugyanezért: két fájl, amelyet nem tud megnyitni, nem két azonos fájl.</p>
 <h2 id="fajlok-osszehasonlitasa-bajtrol-bajtra">Fájlok összehasonlítása bájtról bájtra</h2>
 <p>Amikor két fájl egyformának tűnik, de bizonyítania kell, hogy valóban azonosak (vagy meg kell találnia azt az egy bájtot, amely eltér), használja a bináris összehasonlítást. Mindkét fájlt egy hexadecimális nézetben mutatja, az egyező nem lévő bájtokat megjelölve, ami ideális letöltések ellenőrzéséhez, kódolt adatok vizsgálatához vagy egy pontos másolat megerősítéséhez.</p>
 <h2 id="konyvtarlistak-osszehasonlitasa">Könyvtárlisták összehasonlítása</h2>
 <p>Ahhoz, hogy egy pillantással észrevegye két megnyitott mappa közötti eltéréseket, válassza a <strong>Kijelölés ▸ Könyvtárak összehasonlítása</strong> menüpontot (Shift+F2). A Peach Commander megjelöli azokat a fájlokat, amelyek eltérnek, vagy amelyek hiányoznak a másik oldalon, így a szokásos másolási, áthelyezési és törlési parancsokkal cselekedhet velük.</p>
+<h2 id="annak-korlatozasa-mit-fog-at-egy-szinkronizalas">Annak korlátozása, mit fog át egy szinkronizálás</h2>
+<p>A maszkmező egyetlen, fájlnevekre vonatkozó bevonási listát tartalmaz. Amit ezzel nem lehet kifejezni, ahhoz a mellette lévő <strong>Szűrő…</strong> nyit egy lapot három füllel. Amit ott beállít, a <em>következő</em> összehasonlításra érvényes, a gomb pedig megmondja, hány feltétel aktív — egy szűrő, amit nem látni, éppen így lesz egy biztonsági mentés hiányos, miközben az ablak azt jelenti, hogy elkészült.</p>
+<ul>
+<li>A <strong>Kihagyás</strong> minták vesz át, <code>;</code> vagy <code>|</code> választja el őket. A perjel nélküli név bármilyen mélységben illeszkedik (<code>*.tmp</code>), a végén álló perjel egy mappát jelent a teljes tartalmával (<code>node_modules/</code>), a perjelet tartalmazó minta pedig a relatív útvonalra illeszkedik (<code>src/*/generated</code>). A kis- és nagybetűk nem számítanak.</li>
+<li>A <strong>méret</strong> és a <strong>dátum</strong> a párt egészében ítéli meg: ha az egyik oldal kiesik a tartományból, az egész pár kimarad. Ez szándékos. Csak az egyik oldalra alkalmazva a kihagyás egyoldalúnak láttatná a párt, és rossz irányú másolássá változna.</li>
+<li>Az <strong>elmúlt N nap</strong> minden összehasonlítástól számít, nem az előbeállítás mentésétől — egy elmentett feladat tehát továbbra is „az elmúlt hónapot” jelenti.</li>
+<li>A <strong>Bővítmények</strong> fül egy tartalombővítménytől kérdez arról az oldalról, amelyről a fájl másolódna. Ehhez valódi fájl kell, ezért csak akkor jelenik meg, ha mindkét oldal ezen a Macen lévő mappa.</li>
+</ul>
+<p>A kihagyott mappát tükör módban sem törli — a tükör csak azt távolítja el, amit valóban összehasonlított. Az állapotsor megmondja, hány bejegyzést tartott vissza a szűrő, amellett, hogy mit fog tenni a futás. A szűrő azzal a szinkronizálási előbeállítással együtt kerül mentésre és betöltésre, amelyhez tartozik.</p>
+<h2 id="ket-mappat-mindket-iranyban-egyben-tartani">Két mappát mindkét irányban egyben tartani</h2>
+<p>A két eredeti mód egy dolgot nem tud megkülönböztetni: egy fájl, amely csak az egyik oldalon van,
+vagy <strong>itt új</strong>, vagy <strong>ott törölték</strong>, és a kettő ugyanúgy néz ki. A szimmetrikus mód ezért átmásolja
+— töröljön valamit a laptopon, szinkronizáljon, és visszatér a mentésből —, a tükör mód pedig töröl,
+de csak egy irányban.</p>
+<p><strong>Kétirányú (emlékezettel)</strong> megjegyzi, hogyan állt a két mappa, amikor utoljára egyezett. Ezzel a
+feljegyzéssel az egyik oldalon történt törlés átvihető a másikra.</p>
+<ul>
+<li>Egy pár <strong>első</strong> futásának nincs feljegyzése: úgy viselkedik, mint korábban, és nem töröl semmit.
+  Megírja a feljegyzést. A második futástól a mód működik.</li>
+<li>Az átvitt törlés saját színnel, <code>⇒🗑</code> jellel jelenik meg, és <strong>nincs</strong> bejelölve: ez az egyetlen sor,
+  amely az alkalmazás emlékezetéből jön. A nyílra kattintva a többi válasz is elérhető: másolja vissza
+  a fájlt, vagy hagyja békén mindkét oldalt.</li>
+<li>Az egyik oldalon módosítva, a másikon törölve <strong>ütközés</strong>, soha nem törlés. Ugyanígy a mindkét
+  oldalon módosított fájl.</li>
+<li>Semmi nem törlődik olyan hiány alapján, amit az összehasonlítás nem tudott megerősíteni — egy
+  olvashatatlan mappa, vagy amelyet a szűrő visszatartott, semmit sem bizonyít a tartalmáról.</li>
+<li>Csak a Mac két mappája. Sem kiszolgáló, sem archívum: az archívumon belüli törlés újraírja azt, a
+  kiszolgálón történő törlés végleges, és nem ez az a mód, amivel ezt érdemes megpróbálni.</li>
+</ul>
+<p><strong>A törlés nem vonható vissza.</strong> Ezen a Macen a fájl a Kukába kerül, és a Finderből visszatehető; ez a
+teljes védőháló. Az <strong>Emlékezet…</strong> az ablakban felsorolja minden párt, amelyre az alkalmazás emlékszik, kiemeli a most nyitottat, és bármelyiket elfelejtheti — utána azoknak a mappáknak a következő összehasonlítása ismét úgy viselkedik, mint egy első. Magától soha nem felejt el semmit: egy leválasztott lemezen lévő mappa nem tűnt el, csak nincs csatlakoztatva.</p>
+<p>A feljegyzés a beállítások mellett lakik: ha az egyik mappát elmozgatja, a párnak
+nincs többé előzménye — és előzmény nélküli futás semmit nem töröl.</p>
+<h2 id="mit-tett-egy-futtatas-es-mi-az-ami-visszaveheto-belole">Mit tett egy futtatás, és mi az, ami visszavehető belőle</h2>
+<p>Minden szinkronizálás fel van jegyezve. A <strong>Futtatások…</strong> az ablakban a legújabbaktól sorolja őket — mikor, melyik két mappa, melyik mód, és hány fájlt másolt, törölt vagy tartott vissza —, a kiválasztott futtatásnál pedig megmutatja, mi történt minden egyes fájllal.</p>
+<p>Ez a lista teszi használhatóvá a Kukát. Egy fájl, amit ez a Mac törölt, a Kukába került, és a futtatás feljegyezte, <em>hova</em>, ami többet számít, mint amennyinek hangzik: a Kuka ütközéskor átnevez, így egy második <code>notes.txt</code> <code>notes.txt 11-17-15-028.txt</code> néven landol, és a név alapján keresve a rosszat találja meg. A <strong>Megjelenítés a Kukában</strong> egyenesen az elemre irányítja a Findert.</p>
+<p>A <strong>Visszahelyezés…</strong> a futtatás által törölt fájlokat a Kukából arra az útvonalra mozgatja, ahonnan törölve lettek. Mindegyiket előbb ellenőrzi, és ami nem áll, azt az okával együtt elutasítja, nem pedig kikényszeríti:</p>
+<ul>
+<li>Azon az útvonalon megint van valami. Érintetlen marad — a visszahelyezés soha nem írhat felül.</li>
+<li>Az elem már nincs a Kukában, vagy véglegesen törölték ahelyett, hogy odakerült volna.</li>
+<li>Az oldal archívum vagy kiszolgáló volt. Egy archívum egészében újraíródik, egy kiszolgálónak pedig
+  nincs Kukája, tehát semmi sem maradt meg.</li>
+<li>A mappa, amelybe a futtatás írt, eltűnt, vagy már nem ugyanaz a mappa — mondjuk egy újrahasznált
+  csatolási pont. Ilyenkor a teljes futtatás elutasításra kerül, nem pedig egy része végrehajtásra.</li>
+<li>Már visszahelyezték. A feljegyzés ezt megőrzi, így egy második próbálkozás nem tesz semmit.</li>
+<li>Vagy maga a feljegyzés olyan, amivel ez a verzió nem tud mit kezdeni — az alkalmazás újabb verziója
+  írta, vagy a két mappán kívüli útvonalat nevez meg. Ritka, és elutasítjuk, nem találgatjuk.</li>
+</ul>
+<p><strong>Egy másolást nem lehet visszavenni.</strong> Eltávolítani azt jelentené, hogy olyan fájlt törlünk, amit azóta esetleg szerkesztett — ez az ellenkező alku, mint egy törlés visszahelyezése, ezért az alkalmazás nem kínálja fel: a futtatás megmondja, mely fájlokat másolta, és ezeket Ön törölheti. A <em>felülírt</em> fájl az egyetlen valódi hézag, és az mostanra kicsi: ezen a Macen a lecserélt változat úgy kerül a Kukába, mint egy törölt fájl, így a <strong>Megjelenítés a Kukában</strong> megtalálja. Archívumba, kiszolgálóra vagy Kuka nélküli kötetre ez nem megy, és a megerősítés ezt a futtatás előtt közli.</p>
+<p>Az utolsó 200 futtatás marad meg, vagy 64 MB belőlük, amelyik előbb bekövetkezik; ezen túl a legrégebbiek egyenként esnek ki, ahogy újak érkeznek, a <strong>Felejtés</strong> és a <strong>Mindet elfelejteni</strong> pedig azonnal kitakarítja őket. Egy nagyon nagy futtatás — több mint 20 000 fájl — minden problémát és mindent megőriz, amit a Kukába tett, de a rendben lefutott másolatokat nem, és ezt meg is mondja ahelyett, hogy Önre bízná az észrevételét. A törlései továbbra is visszahelyezhetők: ami kimaradt, azok a másolatok, és egy másolást amúgy sem lehetett volna visszavenni.</p>
+<p>A felejtés a mappákon semmit nem változtat; ami elvész, az annak feljegyzése, hogy mi történt, és vele az ajánlat bármi visszahelyezésére. A kétirányú memóriával ellentétben ez automatikusan eldobódik — egy <em>pár</em> emlékezetének elvesztése megváltoztatná, mit tesz a következő futtatás, míg egy futtatás feljegyzésének elvesztése csak egy lehetőséget vesz el.</p>
 <h2 id="billentyuparancsok">Billentyűparancsok</h2>
 <table>
 <thead>
@@ -60,18 +109,18 @@
 <td>Könyvtárak szinkronizálása</td>
 <td>Parancsok ▸ Könyvtárak szinkronizálása…</td>
 </tr>
+<tr>
+<td>Egy szinkronizálási sor egyik oldalának megtekintése</td>
+<td>Jobb gomb a soron ▸ Bal oldali fájl megtekintése / Jobb oldali fájl megtekintése</td>
+</tr>
 </tbody>
 </table>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
 <li><strong>Tartalom szerint vs. dátum/méret szerint.</strong> A gyors összehasonlítás méret és módosítási dátum alapján párosítja a fájlokat, ami gyors, de megtévesztő lehet, ha azonos fájlok időbélyegei eltérnek. Kapcsolja be a <strong>tartalom szerint</strong> lehetőséget a megbízható eredményért, azon az áron, hogy minden fájlt beolvas.</li>
 <li><strong>Almappák és szűrők.</strong> A szinkronizálási ablak leereszkedhet az almappákba, és korlátozható egy szűrőmaszkkal, így csak azokat a fájltípusokat szinkronizálhatja, amelyek fontosak Önnek.</li>
-<li><strong>Ön marad az irányítás alatt.</strong> A szinkronizálás soha nem fut le magától – Ön áttekinti a javasolt irányokat az eredményrácsban, és bármelyiket módosíthatja, mielőtt bármit is másolna.</li>
-<li><strong>Összehasonlítás, amit látni és megállítani lehet.</strong> Két nagy fa bejárása időbe telik, ezért az ablak munka közben előbb a bejárt bejegyzéseket, majd az összehasonlított fájlokat számolja, a számláló mellett forgó jelzéssel. Az Összehasonlítás gomb a vizsgálat idejére <strong>Leállítás</strong>ra vált; a leállítás meghagyja az előző eredményt ahelyett, hogy fél fát mutatna.</li>
-<li><strong>Melyik oldal a minta.</strong> A tükrözés balról jobbra megy. Az <strong>Oldalak felcserélése</strong> kicseréli a két mappát: így lesz a jobb oldali fa az, amelyik nyer &mdash; és így javítható, ha a panelek fordítva tették őket.</li>
-<li><strong>Nem egészen egyező időbélyegek.</strong> Az <strong>1 órás eltérés figyelmen kívül hagyása</strong> elnyeli azt az eltolódást, amit egy FAT-kötet vagy a nyári időszámítás rak egy egyébként változatlan fájlra. A <strong>Kis- és nagybetű különbözik</strong> dönti el, hogy a csak abban eltérő két név ugyanaz a fájl-e; kikapcsolva az &mdash; ezt mondja egy Mac-kötet is.</li>
-<li><strong>Ha valami félresikerül.</strong> A szinkronizálás jelzi a haladását, a gomb pedig futás közben <strong>Leállítás</strong>t mutat; a tételek közötti megállás meghagyja a már átmásoltat. Ami elbukott, fájllal és okkal szerepel a műveleti hibák ablakában, ahelyett hogy csak megszámolnák. A kiszolgálón a törlés végleges &mdash; ott nincs kuka &mdash;, és a megerősítés ezt előre megmondja.</li>
-<li><strong>Elődefiníciók.</strong> A gyakran használt szinkronizálási beállítások menthetők és újra felhasználhatók, így nem kell minden alkalommal újra megadnia ugyanazokat a beállításokat.</li>
+<li><strong>Ön marad az irányítás alatt.</strong> A szinkronizálás soha nem fut le magától – Ön áttekinti a javasolt irányokat az eredményrácsban, és bármelyiket módosíthatja, mielőtt bármit is másolna. Az <strong>Esc</strong> megszakítja a futó összehasonlítást, és bezárja az ablakot, ha semmi sem fut.</li>
+<li><strong>Elődefiníciók.</strong> A gyakran használt szinkronizálási beállítások menthetők és újra felhasználhatók, így nem kell minden alkalommal újra megadnia ugyanazokat a beállításokat. Egy elődefiníció azt is megjegyzi, mit mutat az eredményrács — az irányszűrőt és az <strong>Azonosak elrejtése</strong> beállítást —, és az ablak a legutóbb használt elődefinícióval nyílik meg. Egy <strong>Alapértelmezett</strong> elődefiníció az ablak első megnyitásától kezdve rendelkezésre áll; mentse felül, hogy a sajátjává tegye.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Sok fájl átnevezése</a></li></ul></section>
 </main>

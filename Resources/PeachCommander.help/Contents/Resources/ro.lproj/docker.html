@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Containere și volume Docker</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Containere și volume Docker</h1>
+<p>Sistemul de fișiere al unui container Docker poate fi parcurs într-un panou ca orice dosar, iar un volum Docker la fel. Alegeți <strong>Conectare la Docker…</strong> din meniul Rețea sau apăsați pastila <strong>Docker</strong> din bara de unități, iar motorul apare în panoul activ.</p>
+<p>Este un plugin și <strong>este livrat dezactivat</strong>. Activați-l din <strong>Configurare ▸ Pluginuri…</strong>. Pornește dezactivat pentru că o conexiune la demonul Docker are pe Mac-ul dumneavoastră aceleași drepturi ca dumneavoastră — vedeți <em>La ce are acces</em> mai jos.</p>
+<h2 id="ce-vedeti">Ce vedeți</h2>
+<p>Nivelul superior este format din trei dosare:</p>
+<ul>
+<li><strong>Compose Projects</strong> — fiecare container pornit de Docker Compose, grupat după proiect și apoi după serviciu. Un serviciu cu un singur container <em>este</em> acel container: <code>my-stack/backend/etc</code> este <code>/etc</code>-ul backendului. Un serviciu cu mai multe replici păstrează un nivel pentru ele, un dosar per container.</li>
+<li><strong>Standalone Containers</strong> — tot restul, pornit sau nu.</li>
+<li><strong>Volumes</strong> — fiecare volum Docker, ca unitate de sine stătătoare.</li>
+</ul>
+<p>Sub acestea vă aflați într-un sistem de fișiere real: F3 vizualizează un fișier, F4 îl editează, F5 îl copiază în celălalt panou, F7 creează un dosar. Celălalt panou poate fi orice — un dosar local, o arhivă, un bucket S3.</p>
+<p>Gruparea este citită din etichetele pe care Compose le pune pe propriile containere și volume, deci este corectă chiar și pentru o stivă al cărei <code>docker-compose.yml</code> a dispărut de mult de pe această mașină.</p>
+<p><strong>Volumele sunt listate separat în mod deliberat.</strong> Un volum supraviețuiește containerului care l-a creat, poate fi împărțit de mai multe containere și de obicei chiar în el se află datele pentru care ați venit. Un volum pe care nimic nu îl montează în acest moment poate fi totuși parcurs.</p>
+<h2 id="coloane">Coloane</h2>
+<p>Clic dreapta pe antetul de coloană al unui panou adaugă coloanele proprii ale furnizorului:</p>
+<ul>
+<li><strong>Stare</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Acces</strong> — <code>RW</code>, <code>RO</code> pentru un rootfs sau o montare doar în citire, <code>VOL</code> pentru un volum Docker, <code>BIND</code> pentru un dosar de-al dumneavoastră montat în container, <code>TMP</code> pentru un tmpfs.</li>
+<li><strong>Imagine</strong>, <strong>ID</strong>.</li>
+<li><strong>Montare</strong> — pe un director care în realitate este o montare, ce anume este: <code>Volume: my-stack_db-data</code> sau calea de pe gazdă din spatele unui bind. Așa aflați ce volum din <strong>Volumes</strong> conține datele unui container.</li>
+</ul>
+<h2 id="containere-oprite">Containere oprite</h2>
+<p>Containerele oprite sunt listate, iar sistemele lor de fișiere pot fi citite și scrise. API-ul de fișiere al Docker răspunde și pentru un container care nu a mai rulat de o lună, iar asta face ca totul să semene cu o unitate, nu cu o listă de procese.</p>
+<p>Două lucruri au nevoie de un container care rulează cu adevărat: <strong>ștergerea</strong> și <strong>redenumirea</strong>. API-ul motorului Docker nu are nicio operație pentru niciuna dintre ele — singura cale de a elimina sau muta un fișier dintr-un container este să rulezi ceva în el — așa că, pe un container oprit, ambele sunt refuzate în loc să fie simulate.</p>
+<h2 id="la-ce-sa-va-asteptati">La ce să vă așteptați</h2>
+<p><strong>Scrierile intră ca <code>root</code>, ștergerile rulează ca utilizatorul propriu al containerului.</strong> Aceasta este organizarea Docker, nu o alegere făcută aici: copierea unui fișier înăuntru folosește API-ul de arhivă al motorului, care scrie ca root; ștergerea sau redenumirea rulează o comandă în container, iar aceasta rulează sub utilizatorul configurat de imagine. O ștergere poate fi deci refuzată cu <em>permisiune refuzată</em> pentru un fișier pe care tocmai îl copiaserăți înăuntru. Peach Commander nu ocolește asta acționând ca root — vă spune ce a răspuns containerul.</p>
+<p><strong>Un container sau o montare doar în citire refuză scrierea</strong> și semnalează asta ca eroare de permisiuni, nu ca eșec.</p>
+<p><strong>Citirea unei legături simbolice citește ținta acesteia.</strong> Panoul o afișează în continuare ca legătură în coloana Attr; F3 arată conținutul țintei în loc de un fișier gol.</p>
+<p><strong>Rădăcina unui container oprit de mari dimensiuni s-ar putea să nu poată fi listată.</strong> Docker nu are niciun apel care să listeze un director. A citi un director înseamnă a-l cere sub formă de arhivă, iar aceasta conține tot ce se află sub el — pentru un container oprit construit pe o imagine completă pot fi zeci de gigaocteți, iar listarea este atunci refuzată în loc să se citească totul. Directoarele mai adânci nu sunt afectate, iar un container <em>pornit</em> la fel: un director prea mare pentru a fi citit ca arhivă este listat de containerul însuși. Dacă vreți doar calea prin arhivă, vedeți setarea de mai jos.</p>
+<p><strong>Copierea în afară a unui container întreg copiază tot sistemul lui de fișiere</strong> — inclusiv <code>/proc</code> și <code>/dev</code>. Copiați directorul care vă trebuie, nu <code>/</code>.</p>
+<h2 id="la-ce-are-acces">La ce are acces</h2>
+<p>Pluginul vorbește cu motorul pe care l-ați atinge dintr-un terminal: <code>DOCKER_HOST</code>, dacă l-ați setat, altfel <code>docker context</code>-ul curent, altfel socket-urile obișnuite ale Docker Desktop, Colima, Rancher Desktop, Lima și Podman. Podman funcționează pentru că oferă același API.</p>
+<p>Accesul la un demon Docker înseamnă de regulă acces foarte larg la mașina pe care rulează. Pluginul are exact drepturile dumneavoastră și nu cere altele: nu stochează nicio acreditare, nu atinge niciodată directoarele proprii ale Docker de pe discul dumneavoastră și nu execută nicio acțiune privilegiată în numele dumneavoastră.</p>
+<p>Singurul lucru pe care îl creează este un <strong>container de unică folosință</strong> — și doar pentru a ajunge la un volum pe care niciun container existent nu îl montează, de vreme ce un volum este vizibil numai din interiorul a ceva care îl montează. Nu este pornit niciodată, poartă eticheta Peach Commander și este șters când părăsiți unitatea.</p>
+<h2 id="actiuni-asupra-unui-container-sau-a-unui-volum">Acțiuni asupra unui container sau a unui volum</h2>
+<p>Un clic dreapta pe un container sau pe un volum oferă, în submeniul <strong>Docker</strong>, ceea ce o unitate singură nu poate spune:</p>
+<ul>
+<li><strong>Inspect</strong> — tot ce știe motorul despre el, ca JSON formatat, într-o fereastră prin care se poate
+  derula și din care se poate selecta.</li>
+<li><strong>Show Logs</strong> — ultimele 500 de rânduri scrise de container.</li>
+<li><strong>Show Mounts</strong> — fiecare montare pe care o poartă, ce este și dacă se poate scrie în ea.</li>
+<li><strong>Copy ID</strong> — identificatorul complet al containerului, sau numele volumului, în clipboard.
+  Identificatorul <em>complet</em>, nu cele douăsprezece caractere din coloana ID: este pentru a fi lipit
+  într-o comandă <code>docker</code>, iar un id scurt este un prefix care poate înceta să fie unic.</li>
+<li><strong>Jump to Volume</strong> — pe un dosar care este în realitate un volum, mergeți la acel volum sub
+  <strong>Volumes</strong>. Este cealaltă jumătate a coloanei Montare: coloana numește volumul, iar aceasta vă duce acolo.</li>
+<li><strong>Open Compose Project</strong> — mergeți la proiectul căruia îi aparține containerul.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — acestea schimbă containerul în loc să
+  îl citească, așa că întreabă înainte. Start este totodată ieșirea din cele două refuzuri de mai
+  sus: ștergerea și redenumirea au nevoie de un container pornit.</li>
+</ul>
+<p>Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavoastră nu sunt deloc.</p>
+<p><strong>Jurnalul este și un fișier.</strong> În rădăcina fiecărui container se află <code>docker-logs.txt</code> — care nu este un fișier din container: citirea lui cere jurnalul de la motor. F3 pe el îl deschide în vizualizator, deci căutarea acestuia, saltul la o linie și alegerea codificării se aplică toate, lucru pe care o fereastră separată nu îl poate oferi. Un container care chiar aduce un fișier cu acest nume îl arată pe al său, iar în cel virtual nu se poate scrie nimic.</p>
+<h2 id="setari">Setări</h2>
+<p><strong>Configurare ▸ Setări ▸ Docker</strong> conține tot. Aceleași valori se află într-un fișier mic în <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, pe care îl editați dacă pregătiți o mașină dintr-un script:</p>
+<ul>
+<li><code>Endpoint</code> — o adresă de folosit în locul celei găsite.</li>
+<li><code>ExecFallback</code> — <code>0</code> face pluginul să folosească exclusiv API-ul de arhivă al Docker: atunci nu va rula niciodată nimic într-un container, cu prețul de a nu putea lista un director foarte mare, de a nu putea șterge și de a nu putea redenumi.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — cât din arhiva unui director merită citit înainte de a recurge la alternativă sau de a renunța.</li>
+<li><code>HelperImage</code> — imaginea din care se face containerul de unică folosință de mai sus (implicit orice imagine deja prezentă pe mașină).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> ascunde volumele cărora Docker le-a dat drept nume o amprentă lungă pentru că nimeni altcineva nu le-a numit.</li>
+</ul>
+<h2 id="nu-este-in-aceasta-versiune">Nu este în această versiune</h2>
+<p>Motoare la distanță prin SSH sau TLS, un shell interactiv și imaginile ca sisteme de fișiere doar în citire.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="amazon-s3.html">Amazon S3 și stocări compatibile S3</a></li><li><a href="webdav.html">Servere WebDAV</a></li><li><a href="copying-files.html">Copierea fișierelor</a></li><li><a href="privacy-and-security.html">Confidențialitate și securitate</a></li></ul></section>
+</main>
+</body>
+</html>

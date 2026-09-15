@@ -18,14 +18,11 @@
 <li>Impostate quanto deve essere approfondito il confronto: includere le sottocartelle, confrontare <strong>per contenuto</strong> (non solo per data e dimensione) o ignorare la data di modifica.</li>
 <li>Aggiungete una maschera di filtro (ad esempio <code>*.jpg;*.png</code>) se volete sincronizzare solo determinati file.</li>
 <li>Esaminate la griglia dei risultati. Ogni riga mostra un file a sinistra, una freccia di direzione al centro e il file corrispondente a destra. Le frecce indicano cosa accadrà: <strong>→</strong> copia da sinistra a destra, <strong>←</strong> copia da destra a sinistra e <strong>=</strong> significa che i due sono identici.</li>
-<li>Restringi ciò che la griglia mostra con <strong>Mostra</strong>: tutto, solo le righe che vanno <strong>&#8594;</strong> verso destra o solo quelle che vanno <strong>&#8592;</strong> verso sinistra. <strong>Nascondi gli identici</strong> tralascia i file già uguali su entrambi i lati; la riga sotto la griglia dice quante righe il filtro sta trattenendo.</li>
-<li><strong>Seleziona tutto</strong> spunta esattamente ciò che è a schermo e toglie la spunta a tutto ciò che il filtro nasconde &mdash; scegli una direzione, premi, e l’esecuzione va solo in quel verso. <strong>Deseleziona tutto</strong> svuota ogni riga, mostrata o no, se preferisci scegliere a mano.</li>
-<li>Ogni riga mostra entrambe le date oltre a entrambe le dimensioni, così si vede <em>perché</em> una freccia punta in quel verso. Fai clic su un’intestazione di colonna per ordinare, e doppio clic su una riga per aprire i due file affiancati.</li>
-<li>Un <strong>&#8800;</strong> segnala un conflitto: due file della stessa età che differiscono comunque, dove Peach Commander si rifiuta di indovinare. Fai clic sul segno per scegliere tu <strong>&#8594;</strong> o <strong>&#8592;</strong>; continuando a fare clic la riga torna a essere un conflitto e resta fuori dall’esecuzione.</li>
 <li>Modificate le singole righe se non siete d'accordo con una direzione suggerita, poi fate clic sul pulsante di sincronizzazione per eseguire le modifiche.</li>
 </ol>
 <p><img alt="La finestra di sincronizzazione delle directory con due percorsi di cartella e una griglia di risultati di file con frecce sinistra, uguale e destra" src="images/sync-dialog.png" />
 <em>(Figura: la finestra Sincronizza directory confronta entrambi i lati e propone una direzione di copia per ogni file.)</em></p>
+<p>Fate clic con il tasto destro su una riga per guardare i file che stanno dietro. <strong>Confronta</strong> apre i due lati uno accanto all’altro, mentre <strong>Visualizza file sinistro</strong> e <strong>Visualizza file destro</strong> aprono un solo lato nel visualizzatore: è la risposta per una riga che esiste su un lato soltanto, dove non c’è nulla da confrontare. Le voci che non si applicano alla riga su cui avete fatto clic sono disattivate invece di non fare nulla. Un file dentro un <code>.zip</code> o su un server viene prima estratto o scaricato in una copia temporanea in sola lettura, così l’originale non viene mai toccato. Vale anche per <strong>Confronta</strong>, quindi una cartella può essere confrontata con un archivio o con un server — e i pulsanti di unione e salvataggio restano disattivati per quel lato, perché ciò che vi è aperto è la copia.</p>
 <h2 id="confrontare-due-file-per-contenuto">Confrontare due file per contenuto</h2>
 <ol>
 <li>Selezionate un file in ciascun pannello (oppure due file nello stesso pannello).</li>
@@ -35,10 +32,65 @@
 </ol>
 <p><img alt="La finestra di confronto che mostra due file di testo affiancati con le righe divergenti evidenziate" src="images/diff-window.png" />
 <em>(Figura: confronto di due file di testo; le righe modificate sono evidenziate su entrambi i lati.)</em></p>
+<p>Quando i due file non presentano differenze di alcun tipo, la finestra lo dice in una fascia colorata in alto, invece di lasciarvelo dedurre da una tabella in cui non c’è nulla di evidenziato. La fascia compare anche, in un colore di avviso, quando un file non è stato possibile leggerlo affatto: qualunque verdetto sulle differenze sarebbe allora un’affermazione su un confronto che non è mai avvenuto. Il confronto byte per byte dice la stessa cosa per la stessa ragione: due file che non riesce ad aprire non sono due file identici.</p>
 <h2 id="confrontare-i-file-byte-per-byte">Confrontare i file byte per byte</h2>
 <p>Quando due file sembrano uguali ma dovete dimostrare che sono davvero identici (o trovare l'unico byte che differisce), usate il confronto binario. Mostra entrambi i file in una vista esadecimale con i byte non corrispondenti contrassegnati, il che è ideale per verificare i download, controllare dati codificati o confermare una copia esatta.</p>
 <h2 id="confrontare-gli-elenchi-delle-directory">Confrontare gli elenchi delle directory</h2>
 <p>Per individuare a colpo d'occhio le differenze tra due cartelle aperte, scegliete <strong>Seleziona ▸ Confronta directory</strong> (Shift+F2). Peach Commander contrassegna i file che differiscono o che mancano sull'altro lato, così potete agire su di essi con i consueti comandi di copia, spostamento ed eliminazione.</p>
+<h2 id="limitare-cio-che-una-sincronizzazione-comprende">Limitare ciò che una sincronizzazione comprende</h2>
+<p>Il campo maschera contiene un elenco di inclusione sui nomi dei file. Per ciò che non riesce a esprimere, <strong>Filtro…</strong> accanto apre un foglio con tre schede. Quanto vi si imposta vale per il confronto <em>successivo</em>, e il pulsante indica poi quanti criteri sono attivi: un filtro che non si vede è il modo in cui un backup finisce incompleto mentre la finestra segnala di avere finito.</p>
+<ul>
+<li><strong>Escludi</strong> accetta modelli separati da <code>;</code> o <code>|</code>. Un nome senza barra corrisponde a qualsiasi profondità (<code>*.tmp</code>), una barra finale indica una cartella e tutto ciò che contiene (<code>node_modules/</code>), e un modello con una barra corrisponde al percorso relativo (<code>src/*/generated</code>). Le maiuscole non contano.</li>
+<li><strong>Dimensione</strong> e <strong>data</strong> giudicano una coppia nel suo insieme: se uno dei due lati esce dall’intervallo, l’intera coppia resta fuori. È voluto. Applicata a un solo lato, un’esclusione farebbe sembrare la coppia unilaterale e si trasformerebbe in una copia nella direzione sbagliata.</li>
+<li><strong>Negli ultimi N giorni</strong> si misura da ogni confronto, non da quando un preset è stato salvato: un compito salvato continua quindi a significare «l’ultimo mese».</li>
+<li>La scheda <strong>Plugin</strong> interroga un plugin di contenuto sul lato da cui un file verrebbe copiato. Gli serve un file reale, quindi è offerta solo quando entrambi i lati sono cartelle di questo Mac.</li>
+</ul>
+<p>Una cartella esclusa non viene eliminata nemmeno in modalità specchio: uno specchio rimuove solo ciò che ha effettivamente confrontato. La riga di stato indica quante voci il filtro ha trattenuto, accanto a ciò che l’esecuzione farà. Un filtro viene salvato e caricato con il preset di sincronizzazione a cui appartiene.</p>
+<h2 id="tenere-due-cartelle-uguali-in-entrambi-i-sensi">Tenere due cartelle uguali, in entrambi i sensi</h2>
+<p>Le due modalità originarie non distinguono una cosa: un file presente su un solo lato è <strong>nuovo qui</strong>
+oppure <strong>eliminato là</strong>, e i due casi sembrano identici. La modalità simmetrica lo ricopia — elimini
+qualcosa sul portatile, sincronizzi, e torna dal backup — e la modalità specchio elimina, ma in un
+solo senso.</p>
+<p><strong>Bidirezionale (con memoria)</strong> ricorda come erano le due cartelle l’ultima volta che concordavano.
+Con quel registro un’eliminazione su un lato può essere riportata sull’altro.</p>
+<ul>
+<li>La <strong>prima</strong> esecuzione di una coppia non ha registro: si comporta come prima e non elimina nulla.
+  Scrive il registro. La modalità agisce dalla seconda.</li>
+<li>Un’eliminazione riportata è mostrata con un colore proprio e <code>⇒🗑</code>, e <strong>non</strong> è spuntata: è l’unica
+  riga che viene dalla memoria dell’app. Un clic sulla freccia offre le altre risposte: ricopiare il
+  file, oppure lasciare entrambi i lati come sono.</li>
+<li>Modificato su un lato ed eliminato sull’altro è un <strong>conflitto</strong>, mai un’eliminazione. Così anche
+  un file modificato su entrambi i lati.</li>
+<li>Nulla viene eliminato in base a un’assenza che il confronto non ha potuto confermare — una
+  cartella illeggibile, o una trattenuta dal filtro, non prova nulla su ciò che contiene.</li>
+<li>Solo due cartelle di questo Mac. Né un server né un archivio: un’eliminazione in un archivio lo
+  riscrive, un’eliminazione su un server è definitiva, e questa modalità non è quella con cui
+  provarlo.</li>
+</ul>
+<p><strong>Un’eliminazione non si annulla.</strong> Su questo Mac il file va nel Cestino e si può rimettere dal
+Finder; è tutta la rete di sicurezza. <strong>Memoria…</strong> nella finestra elenca ogni coppia che l’app ricorda, segnala quella che stai guardando e consente di dimenticarne una qualsiasi; dopo di che il confronto successivo di quelle cartelle si comporta di nuovo come un primo. Nulla viene mai dimenticato da sé: una cartella su un disco smontato non è sparita, è solo scollegata.</p>
+<p>Il registro sta con le impostazioni: spostare una delle cartelle
+lascia la coppia senza storia — e un’esecuzione senza storia non elimina nulla.</p>
+<h2 id="che-cosa-ha-fatto-unesecuzione-e-che-cosa-se-ne-puo-riprendere">Che cosa ha fatto un’esecuzione, e che cosa se ne può riprendere</h2>
+<p>Ogni sincronizzazione viene annotata. <strong>Esecuzioni…</strong> nella finestra le elenca, le più recenti per prime — quando, quali due cartelle, quale modalità e quanti file sono stati copiati, eliminati o tenuti fuori — e mostra che cosa è successo a ciascun file dell’esecuzione selezionata.</p>
+<p>È quell’elenco a rendere utilizzabile il Cestino. Un file che questo Mac ha eliminato è finito nel Cestino, e l’esecuzione ha registrato <em>dove</em>, il che conta più di quanto sembri: il Cestino rinomina in caso di collisione, così un secondo <code>notes.txt</code> atterra come <code>notes.txt 11-17-15-028.txt</code>, e cercarlo per nome porta a quello sbagliato. <strong>Mostra nel Cestino</strong> porta il Finder dritto sull’elemento.</p>
+<p><strong>Rimetti a posto…</strong> sposta i file eliminati da un’esecuzione fuori dal Cestino, ai percorsi da cui erano stati eliminati. Ciascuno viene prima controllato, e ciò che non regge viene rifiutato con la sua motivazione anziché forzato:</p>
+<ul>
+<li>A quel percorso c’è di nuovo qualcosa. Viene lasciato stare — un rimettere a posto non può mai sovrascrivere.</li>
+<li>L’elemento non è più nel Cestino, oppure è stato eliminato definitivamente invece che messo lì.</li>
+<li>Il lato era un archivio o un server. Un archivio viene riscritto per intero, e un server non ha
+  Cestino: non è stato quindi conservato nulla.</li>
+<li>La cartella in cui l’esecuzione ha scritto non c’è più, o non è più la stessa cartella — un punto di
+  mount riutilizzato, per dire. Allora viene rifiutata l’intera esecuzione anziché agire su una sua
+  parte.</li>
+<li>È già stato rimesso a posto. Il registro lo ricorda, quindi un secondo tentativo non fa nulla.</li>
+<li>Oppure il registro stesso è uno su cui questa versione non può agire — scritto da una versione più
+  recente dell’app, o che nomina un percorso fuori da entrambe le cartelle. Raro, e rifiutato anziché
+  indovinato.</li>
+</ul>
+<p><strong>Una copia non si può riprendere.</strong> Toglierla significherebbe eliminare un file che potresti aver modificato nel frattempo, che è lo scambio opposto rispetto al rimettere a posto un’eliminazione: l’app quindi non lo offre — l’esecuzione ti dice quali file ha copiato e puoi eliminarli tu. Un file che è stato <em>sovrascritto</em> è l’unica vera lacuna, ed è ormai piccola: su questo Mac la versione sostituita finisce nel Cestino come un file eliminato, così <strong>Mostra nel Cestino</strong> la ritrova. Verso un archivio, verso un server o verso un volume senza Cestino non è possibile, e la conferma lo dice prima dell’esecuzione.</p>
+<p>Vengono conservate le ultime 200 esecuzioni, o 64 MB di esse, a seconda di che cosa arriva prima; oltre, le più vecchie cadono una alla volta man mano che ne arrivano di nuove, e <strong>Dimentica</strong> e <strong>Dimentica tutto</strong> le cancellano sul posto. Un’esecuzione molto grande — più di 20.000 file — conserva ogni problema e tutto ciò che ha messo nel Cestino, ma non le copie andate a buon fine, e lo dice invece di lasciartene accorgere. Le sue eliminazioni si possono comunque rimettere a posto: ciò che è stato lasciato fuori sono le copie, e una copia non si sarebbe potuta riprendere comunque.</p>
+<p>Dimenticare non cambia nulla nelle cartelle; ciò che se ne va è il registro di quanto è stato fatto, e con esso l’offerta di rimettere qualcosa a posto. A differenza della memoria bidirezionale, questo viene buttato via automaticamente — perdere la memoria di una <em>coppia</em> cambierebbe ciò che fa l’esecuzione successiva, mentre perdere il registro di un’esecuzione toglie solo un’offerta.</p>
 <h2 id="scorciatoie">Scorciatoie</h2>
 <table>
 <thead>
@@ -60,18 +112,18 @@
 <td>Sincronizzare le directory</td>
 <td>Comandi ▸ Sincronizza directory…</td>
 </tr>
+<tr>
+<td>Visualizzare un lato di una riga di sincronizzazione</td>
+<td>Clic destro sulla riga ▸ Visualizza file sinistro / destro</td>
+</tr>
 </tbody>
 </table>
 <h2 id="note">Note</h2>
 <ul>
 <li><strong>Per contenuto vs. per data/dimensione.</strong> Un confronto rapido abbina i file per dimensione e data di modifica, il che è veloce ma può essere ingannato quando le date differiscono per file identici. Attivate <strong>per contenuto</strong> per un risultato affidabile, al costo della lettura di ogni file.</li>
 <li><strong>Sottocartelle e filtri.</strong> La finestra di sincronizzazione può scendere nelle sottocartelle e può essere limitata con una maschera di filtro, così potete sincronizzare solo i tipi di file che vi interessano.</li>
-<li><strong>Restate al comando.</strong> La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché.</li>
-<li><strong>Un confronto che si può guardare e fermare.</strong> Percorrere due alberi grandi richiede tempo, perciò la finestra conta prima le voci percorse e poi i file confrontati mentre lavora, con un indicatore accanto al conteggio. Il pulsante Confronta dice <strong>Interrompi</strong> finché la scansione è in corso; interromperla lascia intatto il risultato precedente invece di mostrare mezzo albero.</li>
-<li><strong>Quale lato comanda.</strong> Il mirroring va da sinistra a destra. <strong>Scambia i lati</strong> scambia le due cartelle: è così che l’albero di destra diventa quello che vince &mdash; e così si corregge il fatto che i pannelli li abbiano messi al contrario.</li>
-<li><strong>Date non del tutto uguali.</strong> <strong>Ignora una differenza di 1 ora</strong> assorbe lo scarto che un volume FAT o l’ora legale impone a un file per il resto immutato. <strong>Maiuscole/minuscole</strong> decide se due nomi che differiscono solo per le maiuscole sono lo stesso file; disattivato, lo sono &mdash; che è quello che di solito dice un volume Mac.</li>
-<li><strong>Quando qualcosa va storto.</strong> La sincronizzazione riporta il suo avanzamento e il pulsante dice <strong>Interrompi</strong> mentre è in corso; fermarla tra un elemento e l’altro lascia copiato ciò che è già stato copiato. Ciò che è fallito è elencato per file e motivo nella finestra degli errori di operazione, invece di essere solo contato. Eliminare su un server è definitivo &mdash; lì non c’è cestino &mdash; e la conferma lo dice prima.</li>
-<li><strong>Preimpostazioni.</strong> Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta.</li>
+<li><strong>Restate al comando.</strong> La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché. <strong>Esc</strong> interrompe un confronto in corso e chiude la finestra quando non ce n'è nessuno.</li>
+<li><strong>Preimpostazioni.</strong> Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta. Una preimpostazione ricorda anche ciò che mostra la griglia dei risultati — il filtro di direzione e <strong>Nascondi gli identici</strong> — e la finestra si apre sulla preimpostazione usata per ultima. Una preimpostazione <strong>Predefinita</strong> è presente fin dalla prima apertura della finestra; salvate sopra di essa per renderla vostra.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Rinominare molti file</a></li></ul></section>
 </main>

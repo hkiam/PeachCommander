@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kontenery i wolumeny Dockera</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kontenery i wolumeny Dockera</h1>
+<p>System plików kontenera Dockera można przeglądać w panelu jak każdy folder, a wolumen Dockera tak samo. Wybierz <strong>Połącz z Dockerem…</strong> z menu Sieć albo kliknij przycisk <strong>Docker</strong> na pasku napędów, a silnik pojawi się w aktywnym panelu.</p>
+<p>To wtyczka i <strong>jest dostarczana wyłączona</strong>. Włącz ją w <strong>Konfiguracja ▸ Wtyczki…</strong>. Startuje wyłączona, ponieważ połączenie z demonem Dockera ma na Twoim Macu te same uprawnienia co Ty — zobacz <em>Do czego ma dostęp</em> poniżej.</p>
+<h2 id="co-widzisz">Co widzisz</h2>
+<p>Najwyższy poziom to trzy foldery:</p>
+<ul>
+<li><strong>Compose Projects</strong> — wszystkie kontenery uruchomione przez Docker Compose, pogrupowane według projektu, a następnie usługi. Usługa z jednym kontenerem <em>jest</em> tym kontenerem: <code>my-stack/backend/etc</code> to <code>/etc</code> backendu. Usługa z kilkoma zachowuje dla nich poziom, jeden folder na kontener.</li>
+<li><strong>Standalone Containers</strong> — cała reszta, działająca lub nie.</li>
+<li><strong>Volumes</strong> — każdy wolumen Dockera, jako osobny napęd.</li>
+</ul>
+<p>Poniżej znajdujesz się w prawdziwym systemie plików: F3 podgląda plik, F4 go edytuje, F5 kopiuje do drugiego panelu, F7 tworzy folder. Drugi panel może być czymkolwiek — folderem lokalnym, archiwum, zasobnikiem S3.</p>
+<p>Grupowanie odczytywane jest z etykiet, które Compose nadaje własnym kontenerom i wolumenom, jest więc poprawne nawet dla stosu, którego <code>docker-compose.yml</code> dawno zniknął z tej maszyny.</p>
+<p><strong>Wolumeny są wymienione osobno celowo.</strong> Wolumen przeżywa kontener, który go utworzył, może być współdzielony przez wiele kontenerów i zwykle to w nim naprawdę są dane, po które przyszedłeś. Wolumen, którego nic obecnie nie montuje, nadal można przeglądać.</p>
+<h2 id="kolumny">Kolumny</h2>
+<p>Kliknij prawym przyciskiem nagłówek kolumny panelu, aby dodać własne kolumny dostawcy:</p>
+<ul>
+<li><strong>Stan</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Dostęp</strong> — <code>RW</code>, <code>RO</code> dla systemu plików lub montowania tylko do odczytu, <code>VOL</code> dla wolumenu Dockera, <code>BIND</code> dla Twojego folderu zamontowanego w kontenerze, <code>TMP</code> dla tmpfs.</li>
+<li><strong>Obraz</strong>, <strong>ID</strong>.</li>
+<li><strong>Montowanie</strong> — na katalogu, który w rzeczywistości jest montowaniem: czym jest. <code>Volume: my-stack_db-data</code> albo ścieżka hosta za montowaniem bind. Tak znajdziesz, który wolumen w <strong>Volumes</strong> zawiera dane kontenera.</li>
+</ul>
+<h2 id="zatrzymane-kontenery">Zatrzymane kontenery</h2>
+<p>Zatrzymane kontenery są wymieniane, a ich systemy plików można czytać i zapisywać. Plikowe API Dockera odpowiada również dla kontenera, który nie działał od miesiąca, i to właśnie sprawia, że przypomina to napęd, a nie listę procesów.</p>
+<p>Dwie rzeczy wymagają naprawdę działającego kontenera: <strong>usuwanie</strong> i <strong>zmiana nazwy</strong>. API silnika Dockera nie ma operacji dla żadnej z nich — jedynym sposobem usunięcia lub przeniesienia pliku wewnątrz kontenera jest uruchomienie w nim czegoś — więc w zatrzymanym kontenerze obie są odrzucane zamiast udawane.</p>
+<h2 id="czego-sie-spodziewac">Czego się spodziewać</h2>
+<p><strong>Zapisy trafiają do środka jako <code>root</code>, usuwanie działa jako własny użytkownik kontenera.</strong> To układ Dockera, a nie decyzja podjęta tutaj: skopiowanie pliku do środka korzysta z archiwalnego API silnika, które zapisuje jako root; usunięcie lub zmiana nazwy uruchamia polecenie wewnątrz kontenera, działające jako użytkownik ustawiony przez obraz. Usunięcie może więc zostać odrzucone jako <em>brak uprawnień</em> dla pliku, który chwilę wcześniej udało się skopiować. Peach Commander nie obchodzi tego, działając jako root — mówi Ci, co powiedział kontener.</p>
+<p><strong>Kontener lub montowanie tylko do odczytu odmawia zapisu</strong> i zgłasza to jako błąd uprawnień, a nie jako niepowodzenie.</p>
+<p><strong>Odczyt dowiązania symbolicznego czyta to, na co ono wskazuje.</strong> Panel nadal pokazuje je jako dowiązanie w kolumnie Attr; F3 pokazuje treść celu, a nie pusty plik.</p>
+<p><strong>Katalogu głównego dużego zatrzymanego kontenera może nie dać się wyświetlić.</strong> Docker nie ma wywołania, które wypisuje zawartość katalogu. Odczyt katalogu oznacza pobranie go jako archiwum, które zawiera wszystko poniżej — dla zatrzymanego kontenera zbudowanego na pełnowymiarowym obrazie może to być wiele gigabajtów, a wypis jest wtedy odrzucany zamiast czytać całość. Głębsze katalogi pozostają nietknięte, podobnie jak <em>działający</em> kontener: katalog zbyt duży, by odczytać go jako archiwum, wypisuje sam kontener. Jeśli chcesz wyłącznie drogi archiwalnej, zobacz ustawienie poniżej.</p>
+<p><strong>Skopiowanie całego kontenera kopiuje cały jego system plików</strong> — łącznie z <code>/proc</code> i <code>/dev</code>. Kopiuj katalog, którego potrzebujesz, a nie <code>/</code>.</p>
+<h2 id="do-czego-ma-dostep">Do czego ma dostęp</h2>
+<p>Wtyczka rozmawia z tym silnikiem, do którego dotarłbyś z terminala: <code>DOCKER_HOST</code>, jeśli go ustawiłeś, w przeciwnym razie bieżący <code>docker context</code>, a dalej zwykłe gniazda Docker Desktop, Colimy, Rancher Desktop, Limy i Podmana. Podman działa, bo udostępnia to samo API.</p>
+<p>Dostęp do demona Dockera oznacza zwykle bardzo szeroki dostęp do maszyny, na której działa. Wtyczka ma dokładnie Twoje uprawnienia i nie prosi o więcej: nie przechowuje żadnych poświadczeń, nigdy nie dotyka własnych katalogów Dockera na Twoim dysku i nie wykonuje w Twoim imieniu żadnych uprzywilejowanych działań.</p>
+<p>Jedyne, co tworzy, to <strong>kontener jednorazowy</strong> — i tylko po to, by dotrzeć do wolumenu, którego nie montuje żaden istniejący kontener, ponieważ wolumen widać wyłącznie od wewnątrz czegoś, co go montuje. Nigdy nie jest uruchamiany, jest oznaczony jako należący do Peach Commandera i zostaje usunięty, gdy opuszczasz napęd.</p>
+<h2 id="dziaania-na-kontenerze-albo-wolumenie">Działania na kontenerze albo wolumenie</h2>
+<p>Kliknięcie prawym przyciskiem na kontenerze albo wolumenie oferuje w podmenu <strong>Docker</strong> to, czego sam napęd powiedzieć nie może:</p>
+<ul>
+<li><strong>Inspect</strong> — wszystko, co silnik o nim wie, jako sformatowany JSON w oknie, które można przewijać
+  i z którego można kopiować.</li>
+<li><strong>Show Logs</strong> — ostatnie 500 wierszy, które kontener zapisał.</li>
+<li><strong>Show Mounts</strong> — każde montowanie, które niesie, czym jest i czy da się w nim pisać.</li>
+<li><strong>Copy ID</strong> — pełny identyfikator kontenera albo nazwa wolumenu do schowka. <em>Pełny</em> identyfikator,
+  a nie dwanaście znaków z kolumny ID: to służy do wklejenia w polecenie <code>docker</code>, a krótki
+  identyfikator jest przedrostkiem, który może przestać być jednoznaczny.</li>
+<li><strong>Jump to Volume</strong> — na katalogu, który naprawdę jest wolumenem, przejść do tego wolumenu w
+  <strong>Volumes</strong>. To druga połowa kolumny Montowanie: kolumna nazywa wolumen, a to prowadzi do niego.</li>
+<li><strong>Open Compose Project</strong> — przejść do projektu, do którego kontener należy.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — te zmieniają kontener, zamiast go
+  czytać, więc najpierw pytają. Start jest zarazem wyjściem z dwóch odmów powyżej: usuwanie i zmiana
+  nazwy wymagają działającego kontenera.</li>
+</ul>
+<p>Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym folderem nie ma ich wcale.</p>
+<p><strong>Dziennik jest także plikiem.</strong> W katalogu głównym każdego kontenera leży <code>docker-logs.txt</code> — który nie jest plikiem w kontenerze: jego odczyt pyta silnik o dziennik. F3 na nim otwiera go w podglądzie, więc działa wyszukiwanie podglądu, skok do wiersza i wybór kodowania, czego osobne okno dać nie może. Kontener, który naprawdę niesie plik o tej nazwie, pokazuje własny, a do wirtualnego nic nie da się zapisać.</p>
+<h2 id="ustawienia">Ustawienia</h2>
+<p><strong>Konfiguracja ▸ Ustawienia ▸ Docker</strong> zawiera to wszystko. Te same wartości leżą w małym pliku w <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, który edytujesz, gdy przygotowujesz maszynę skryptem:</p>
+<ul>
+<li><code>Endpoint</code> — adres używany zamiast znalezionego.</li>
+<li><code>ExecFallback</code> — <code>0</code> sprawia, że wtyczka używa wyłącznie archiwalnego API Dockera: nigdy wtedy niczego nie uruchamia w kontenerze, kosztem niemożności wypisania bardzo dużego katalogu, usunięcia i zmiany nazwy.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — ile archiwum katalogu warto przeczytać, zanim nastąpi awaryjne przejście lub rezygnacja.</li>
+<li><code>HelperImage</code> — obraz, z którego powstaje powyższy kontener jednorazowy (domyślnie dowolny obraz już obecny na maszynie).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> ukrywa wolumeny, którym Docker nadał długi skrót jako nazwę, bo nikt inny ich nie nazwał.</li>
+</ul>
+<h2 id="nie-ma-w-tej-wersji">Nie ma w tej wersji</h2>
+<p>Zdalnych silników przez SSH lub TLS, interaktywnej powłoki oraz obrazów jako systemów plików tylko do odczytu.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="amazon-s3.html">Amazon S3 i magazyny zgodne z S3</a></li><li><a href="webdav.html">Serwery WebDAV</a></li><li><a href="copying-files.html">Kopiowanie plików</a></li><li><a href="privacy-and-security.html">Prywatność i bezpieczeństwo</a></li></ul></section>
+</main>
+</body>
+</html>

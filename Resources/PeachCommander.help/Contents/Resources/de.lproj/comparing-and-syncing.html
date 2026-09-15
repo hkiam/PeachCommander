@@ -18,14 +18,11 @@
 <li>Legen Sie fest, wie gründlich der Vergleich sein soll: Unterordner einbeziehen, <strong>nach Inhalt</strong> vergleichen (nicht nur nach Datum und Größe) oder das Änderungsdatum ignorieren.</li>
 <li>Fügen Sie eine Filtermaske hinzu (zum Beispiel <code>*.jpg;*.png</code>), wenn Sie nur bestimmte Dateien synchronisieren möchten.</li>
 <li>Prüfen Sie das Ergebnisraster. Jede Zeile zeigt eine Datei links, einen Richtungspfeil in der Mitte und die passende Datei rechts. Die Pfeile geben an, was passieren wird: <strong>→</strong> kopiert von links nach rechts, <strong>←</strong> kopiert von rechts nach links, und <strong>=</strong> bedeutet, dass beide identisch sind.</li>
-<li>Schränken Sie mit <strong>Anzeigen</strong> ein, was das Raster zeigt: alles, nur die Zeilen <strong>&#8594;</strong> nach rechts oder nur die <strong>&#8592;</strong> nach links. <strong>Gleiche ausblenden</strong> lässt die Dateien weg, die auf beiden Seiten schon gleich sind; die Zeile unter dem Raster nennt die Anzahl der Zeilen, die der Filter zurückhält.</li>
-<li><strong>Alle auswählen</strong> hakt genau das an, was zu sehen ist, und wählt alles ab, was der Filter ausblendet – Richtung wählen, klicken, und der Lauf geht nur in diese Richtung. <strong>Alle abwählen</strong> leert jede Zeile, angezeigt oder nicht, wenn Sie von Hand auswählen möchten.</li>
-<li>Jede Zeile zeigt beide Zeitstempel und beide Größen, sodass zu sehen ist, <em>warum</em> ein Pfeil so zeigt. Ein Klick auf eine Spaltenüberschrift sortiert danach, ein Doppelklick auf eine Zeile öffnet beide Dateien nebeneinander.</li>
-<li>Ein <strong>&#8800;</strong> steht für einen Konflikt: zwei gleich alte Dateien, die sich trotzdem unterscheiden, wo Peach Commander nicht raten will. Klicken Sie auf das Zeichen, um selbst <strong>&#8594;</strong> oder <strong>&#8592;</strong> zu wählen; klicken Sie darüber hinaus, bleibt die Zeile ein Konflikt und aus dem Lauf heraus.</li>
 <li>Passen Sie einzelne Zeilen an, wenn Sie mit einer vorgeschlagenen Richtung nicht einverstanden sind, und klicken Sie dann auf die Schaltfläche zum Synchronisieren, um die Änderungen durchzuführen.</li>
 </ol>
 <p><img alt="Das Fenster „Verzeichnisse synchronisieren&quot; mit zwei Ordnerpfaden und einem Ergebnisraster von Dateien mit Links-, Gleichheits- und Rechtspfeilen" src="images/sync-dialog.png" />
 <em>(Abbildung: Das Fenster „Verzeichnisse synchronisieren" vergleicht beide Seiten und schlägt für jede Datei eine Kopierrichtung vor.)</em></p>
+<p>Klicken Sie mit der rechten Maustaste auf eine Zeile, um sich die Dateien dahinter anzusehen. <strong>Vergleichen</strong> öffnet die beiden Seiten nebeneinander, <strong>Linke Datei ansehen</strong> und <strong>Rechte Datei ansehen</strong> öffnen jeweils eine Seite allein im Betrachter — das ist die Antwort für eine Zeile, die es nur auf einer Seite gibt und bei der es nichts zu vergleichen gibt. Einträge, die auf die angeklickte Zeile nicht zutreffen, sind ausgegraut, anstatt nichts zu tun. Eine Datei in einem <code>.zip</code> oder auf einem Server wird zuvor in eine schreibgeschützte temporäre Kopie entpackt oder heruntergeladen, das Original wird also nie angefasst. Das gilt auch für <strong>Vergleichen</strong>, ein Ordner lässt sich also mit einem Archiv oder einem Server vergleichen — und die Schaltflächen zum Übernehmen und Sichern bleiben für so eine Seite ausgeschaltet, denn geöffnet ist dort die Kopie.</p>
 <h2 id="zwei-dateien-nach-inhalt-vergleichen">Zwei Dateien nach Inhalt vergleichen</h2>
 <ol>
 <li>Wählen Sie in jedem Panel eine Datei aus (oder zwei Dateien im selben Panel).</li>
@@ -35,10 +32,69 @@
 </ol>
 <p><img alt="Das Vergleichsfenster zeigt zwei Textdateien nebeneinander mit hervorgehobenen abweichenden Zeilen" src="images/diff-window.png" />
 <em>(Abbildung: Zwei Textdateien im Vergleich; geänderte Zeilen sind auf beiden Seiten hervorgehoben.)</em></p>
+<p>Wenn die beiden Dateien überhaupt keine Unterschiede haben, sagt das Fenster das in einem farbigen Band am oberen Rand, anstatt es Ihnen aus einer Tabelle ohne Hervorhebungen zu überlassen. Das Band erscheint auch — in einer Warnfarbe —, wenn eine Datei überhaupt nicht gelesen werden konnte; dann wäre jede Aussage über Unterschiede eine Aussage über einen Vergleich, der nie stattgefunden hat. Der byteweise Vergleich sagt aus demselben Grund dasselbe: zwei Dateien, die er nicht öffnen kann, sind keine zwei identischen Dateien.</p>
 <h2 id="dateien-byte-fur-byte-vergleichen">Dateien Byte für Byte vergleichen</h2>
 <p>Wenn zwei Dateien gleich aussehen, Sie aber nachweisen müssen, dass sie wirklich identisch sind (oder das eine abweichende Byte finden möchten), verwenden Sie den binären Vergleich. Er zeigt beide Dateien in einer Hex-Ansicht mit markierten abweichenden Bytes, was ideal ist, um Downloads zu überprüfen, kodierte Daten zu kontrollieren oder eine exakte Kopie zu bestätigen.</p>
 <h2 id="verzeichnisauflistungen-vergleichen">Verzeichnisauflistungen vergleichen</h2>
 <p>Um Unterschiede zwischen zwei geöffneten Ordnern auf einen Blick zu erkennen, wählen Sie <strong>Markieren ▸ Verzeichnisse vergleichen</strong> (Shift+F2). Peach Commander markiert die Dateien, die sich unterscheiden oder auf der anderen Seite fehlen, sodass Sie sie mit den üblichen Kopier-, Verschiebe- und Löschbefehlen bearbeiten können.</p>
+<h2 id="einschranken-was-zu-einer-synchronisation-gehort">Einschränken, was zu einer Synchronisation gehört</h2>
+<p>Das Maskenfeld trägt eine Einschlussliste über Dateinamen. Für alles, was sich damit nicht sagen lässt, öffnet <strong>Filtern…</strong> daneben ein Blatt mit drei Reitern. Was dort gesetzt wird, gilt für den <em>nächsten</em> Vergleich, und der Knopf sagt dann, wie viele Kriterien aktiv sind – ein Filter, den man nicht sieht, ist der Weg zu einer unvollständigen Sicherung, die als fertig gemeldet wird.</p>
+<ul>
+<li><strong>Ausschließen</strong> nimmt Muster, getrennt durch <code>;</code> oder <code>|</code>. Ein Name ohne Schrägstrich trifft in jeder Tiefe (<code>*.tmp</code>), ein Schrägstrich am Ende meint einen Ordner samt Inhalt (<code>node_modules/</code>), und ein Muster mit Schrägstrich trifft den relativen Pfad (<code>src/*/generated</code>). Groß- und Kleinschreibung wird ignoriert.</li>
+<li><strong>Größe</strong> und <strong>Datum</strong> beurteilen ein Paar als Ganzes: fällt eine der beiden Seiten heraus, bleibt das ganze Paar draußen. Das ist Absicht. Nur auf eine Seite angewandt, ließe ein Ausschluss das Paar einseitig aussehen und würde zu einer Kopie in die falsche Richtung.</li>
+<li><strong>In den letzten N Tagen</strong> wird ab jedem Vergleich gemessen, nicht ab dem Speichern einer Vorlage – ein gespeicherter Auftrag bedeutet also weiterhin „der letzte Monat“.</li>
+<li>Der Reiter <strong>Plugins</strong> fragt ein Inhalts-Plugin nach der Seite, von der eine Datei kopiert würde. Dafür braucht es eine echte Datei, also wird er nur angeboten, wenn beide Seiten Ordner auf diesem Mac sind.</li>
+</ul>
+<p>Ein ausgeschlossener Ordner wird auch im Spiegelmodus nicht gelöscht – ein Spiegel entfernt nur, was er wirklich verglichen hat. Die Statuszeile sagt, wie viele Einträge der Filter zurückgehalten hat, neben dem, was der Lauf tun wird. Ein Filter wird mit der Sync-Vorlage gespeichert und geladen, zu der er gehört.</p>
+<h2 id="zwei-ordner-beidseitig-gleich-halten">Zwei Ordner beidseitig gleich halten</h2>
+<p>Die zwei ursprünglichen Modi können eines nicht unterscheiden: eine Datei, die nur auf einer Seite
+liegt, ist entweder <strong>hier neu</strong> oder <strong>dort gelöscht</strong>, und beides sieht gleich aus. Der symmetrische
+Modus kopiert sie deshalb – wer auf dem Notebook etwas löscht und synchronisiert, bekommt es aus der
+Sicherung zurück – und der Spiegelmodus löscht, aber nur in eine Richtung, sodass alles verloren ist,
+was auf der Zielseite entstanden ist.</p>
+<p><strong>Beidseitig (mit Gedächtnis)</strong> löst das, indem es sich merkt, wie beide Ordner aussahen, als sie
+zuletzt übereinstimmten. Mit diesem Datensatz kann eine Löschung auf einer Seite auf die andere
+übertragen werden.</p>
+<ul>
+<li>Der <strong>erste</strong> Lauf eines Paares hat keinen Datensatz, verhält sich also genau wie vorher und löscht
+  nichts. Er schreibt den Datensatz. Ab dem zweiten Lauf wirkt der Modus.</li>
+<li>Eine übertragene Löschung steht in eigener Farbe mit einem <code>⇒🗑</code> und ist <strong>nicht angehakt</strong>. Sie ist
+  die einzige Zeile, die aus dem Gedächtnis der App kommt und nicht aus etwas, das man in den beiden
+  Ordnern sehen kann – also haken Sie sie selbst an. Ein Klick auf den Pfeil bietet die anderen
+  Antworten: die Datei stattdessen zurückkopieren, oder beide Seiten lassen.</li>
+<li>Auf einer Seite geändert und auf der anderen gelöscht ist ein <strong>Konflikt</strong>, nie eine Löschung.
+  Ebenso eine Datei, die auf beiden Seiten geändert wurde.</li>
+<li>Nichts wird auf eine Abwesenheit hin gelöscht, die der Vergleich nicht bestätigen konnte – ein
+  unlesbarer Ordner oder einer, den der Filter zurückgehalten hat, beweist nichts über seinen Inhalt.</li>
+<li>Nur zwei Ordner auf diesem Mac. Kein Server und kein Archiv: eine Löschung in einem Archiv schreibt
+  es neu, eine Löschung auf einem Server ist endgültig, und dieser Modus ist nicht der, mit dem man
+  das versucht.</li>
+</ul>
+<p><strong>Für eine Löschung gibt es kein Rückgängig.</strong> Auf diesem Mac landet eine gelöschte Datei im
+Papierkorb und lässt sich im Finder zurückholen; das ist das ganze Netz. <strong>Gedächtnis…</strong> im Fenster listet jedes Paar auf, an das sich die App erinnert, hebt das gerade offene hervor und lässt jedes davon vergessen — danach verhält sich der nächste Vergleich dieser Ordner wieder wie ein erster. Von selbst wird nie etwas vergessen: ein Ordner auf einer ausgehängten Platte ist nicht weg, nur nicht angesteckt.</p>
+<p>Der Datensatz liegt bei den
+Einstellungen der App – verschiebt man einen der Ordner, hat das Paar keine Vorgeschichte mehr, und
+ein Lauf ohne Vorgeschichte löscht nichts. In diese Richtung soll dieser Ausfall auch zeigen.</p>
+<h2 id="was-ein-lauf-getan-hat-und-was-davon-zuruckgeholt-werden-kann">Was ein Lauf getan hat, und was davon zurückgeholt werden kann</h2>
+<p>Jede Synchronisation wird festgehalten. <strong>Läufe…</strong> im Fenster listet sie, die neuesten zuerst — wann, welche zwei Ordner, welcher Modus und wie viele Dateien kopiert, gelöscht oder zurückgehalten wurden — und zeigt zu dem ausgewählten Lauf, was mit jeder einzelnen Datei geschehen ist.</p>
+<p>Diese Liste ist es, die den Papierkorb brauchbar macht. Eine Datei, die dieser Mac gelöscht hat, ist im Papierkorb gelandet, und der Lauf hat festgehalten, <em>wo</em> — was mehr bedeutet, als es klingt: Der Papierkorb benennt bei Namensgleichheit um, eine zweite <code>notes.txt</code> landet also als <code>notes.txt 11-17-15-028.txt</code>, und wer nach dem Namen sucht, findet die falsche. <strong>Im Papierkorb zeigen</strong> führt den Finder direkt zu dem Objekt.</p>
+<p><strong>Zurücklegen…</strong> bewegt die von einem Lauf gelöschten Dateien aus dem Papierkorb an die Pfade zurück, von denen sie gelöscht wurden. Jede wird vorher geprüft, und was nicht zutrifft, wird mit seinem Grund abgelehnt statt erzwungen:</p>
+<ul>
+<li>An diesem Pfad liegt wieder etwas. Es bleibt unangetastet — ein Zurücklegen darf niemals überschreiben.</li>
+<li>Das Objekt ist nicht mehr im Papierkorb, oder es wurde dauerhaft gelöscht statt dorthin gelegt.</li>
+<li>Die Seite war ein Archiv oder ein Server. Ein Archiv wird ganz neu geschrieben, und ein Server
+  hat keinen Papierkorb, also wurde nichts aufbewahrt.</li>
+<li>Der Ordner, in den der Lauf geschrieben hat, ist verschwunden oder ist nicht mehr derselbe
+  Ordner — etwa ein wiederverwendeter Mountpunkt. Dann wird der ganze Lauf abgelehnt, statt einen
+  Teil davon auszuführen.</li>
+<li>Es wurde bereits zurückgelegt. Der Eintrag hält das fest, ein zweiter Versuch tut also nichts.</li>
+<li>Oder der Eintrag selbst ist einer, mit dem diese Version nichts anfangen kann — von einer neueren
+  Version der App geschrieben, oder er nennt einen Pfad außerhalb beider Ordner. Selten, und
+  abgelehnt statt geraten.</li>
+</ul>
+<p><strong>Eine Kopie lässt sich nicht zurücknehmen.</strong> Sie zu entfernen hieße, eine Datei zu löschen, die Sie seither bearbeitet haben könnten — das ist der umgekehrte Handel zum Zurücklegen einer Löschung, und deshalb bietet die App es nicht an: Der Lauf sagt Ihnen, welche Dateien er kopiert hat, und löschen können Sie sie selbst. Eine <em>überschriebene</em> Datei ist die eine echte Lücke, und sie ist inzwischen klein: Auf diesem Mac wandert die ersetzte Fassung wie eine gelöschte Datei in den Papierkorb, <strong>Im Papierkorb zeigen</strong> findet sie also. In ein Archiv, auf einen Server oder auf ein Volume ohne Papierkorb geht das nicht, und die Bestätigung sagt das vor dem Lauf.</p>
+<p>Die letzten 200 Läufe werden aufbewahrt, oder 64 MB davon, je nachdem, was zuerst eintritt; darüber hinaus fallen die ältesten einzeln weg, sobald neue hinzukommen, und <strong>Vergessen</strong> sowie <strong>Alle vergessen</strong> räumen sie sofort ab. Ein sehr großer Lauf — über 20.000 Dateien — behält jedes Problem und alles, was er in den Papierkorb gelegt hat, aber nicht die durchgelaufenen Kopien, und sagt das, statt es Sie bemerken zu lassen. Seine Löschungen lassen sich weiterhin zurücklegen: Weggelassen wurden die Kopien, und eine Kopie hätte sich ohnehin nicht zurücknehmen lassen.</p>
+<p>Vergessen ändert nichts an den Ordnern; weg ist der Eintrag darüber, was getan wurde, und mit ihm das Angebot, etwas zurückzulegen. Anders als das beidseitige Gedächtnis wird dies automatisch weggeworfen — das Gedächtnis eines <em>Paares</em> zu verlieren würde ändern, was der nächste Lauf tut, während der Verlust des Eintrags zu einem Lauf nur ein Angebot wegnimmt.</p>
 <h2 id="tastenkurzel">Tastenkürzel</h2>
 <table>
 <thead>
@@ -60,18 +116,18 @@
 <td>Verzeichnisse synchronisieren</td>
 <td>Befehle ▸ Verzeichnisse synchronisieren…</td>
 </tr>
+<tr>
+<td>Eine Seite einer Synchronisierungszeile ansehen</td>
+<td>Rechtsklick auf die Zeile ▸ Linke Datei ansehen / Rechte Datei ansehen</td>
+</tr>
 </tbody>
 </table>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
 <li><strong>Nach Inhalt vs. nach Datum/Größe.</strong> Ein schneller Vergleich gleicht Dateien nach Größe und Änderungsdatum ab, was schnell ist, aber sich täuschen lässt, wenn die Zeitstempel bei identischen Dateien abweichen. Aktivieren Sie <strong>nach Inhalt</strong> für ein verlässliches Ergebnis, um den Preis, jede Datei lesen zu müssen.</li>
 <li><strong>Unterordner und Filter.</strong> Das Synchronisierungsfenster kann in Unterordner absteigen und lässt sich mit einer Filtermaske einschränken, sodass Sie genau die Dateitypen synchronisieren können, die Ihnen wichtig sind.</li>
-<li><strong>Sie behalten die Kontrolle.</strong> Das Synchronisieren läuft nie von selbst – Sie prüfen die vorgeschlagenen Richtungen im Ergebnisraster und können jede davon ändern, bevor etwas kopiert wird.</li>
-<li><strong>Ein Vergleich, den man sehen und anhalten kann.</strong> Zwei große Bäume zu durchsuchen dauert, deshalb zählt das Fenster während der Arbeit erst die durchlaufenen Einträge und dann die verglichenen Dateien, mit einer laufenden Anzeige daneben. Die Schaltfläche <strong>Vergleichen</strong> heißt so lange <strong>Stopp</strong>, wie der Durchlauf läuft; ein Abbruch lässt das vorige Ergebnis stehen, statt einen halben Baum zu zeigen.</li>
-<li><strong>Welche Seite die Vorlage ist.</strong> Gespiegelt wird von links nach rechts. <strong>Seiten tauschen</strong> vertauscht die beiden Ordner &mdash; so wird der rechte Baum zu dem, der gewinnt, und so korrigieren Sie es, wenn die Panels sie verkehrt herum gelegt haben.</li>
-<li><strong>Zeitstempel, die nicht ganz gleich sind.</strong> <strong>Stundenunterschied ignorieren</strong> fängt die Abweichung ab, die ein FAT-Datenträger oder eine Zeitumstellung einer sonst unveränderten Datei aufdrückt. <strong>Groß-/Kleinschreibung beachten</strong> entscheidet, ob zwei nur darin verschiedene Namen dieselbe Datei sind; ausgeschaltet sind sie es &mdash; was ein Mac-Datenträger meist auch so sieht.</li>
-<li><strong>Wenn etwas schiefgeht.</strong> Das Synchronisieren meldet seinen Fortschritt, und die Schaltfläche heißt <strong>Stopp</strong>, solange es läuft; ein Abbruch zwischen zwei Einträgen lässt das Kopierte kopiert. Was fehlschlug, steht mit Datei und Grund im Fenster „Vorgangsfehler" statt nur gezählt zu werden. Löschen auf einem Server ist endgültig &mdash; dort gibt es keinen Papierkorb &mdash; und die Bestätigung sagt das vorher.</li>
-<li><strong>Voreinstellungen.</strong> Häufig verwendete Synchronisierungskonfigurationen können gespeichert und wiederverwendet werden, sodass Sie nicht jedes Mal dieselben Optionen erneut eingeben müssen.</li>
+<li><strong>Sie behalten die Kontrolle.</strong> Das Synchronisieren läuft nie von selbst – Sie prüfen die vorgeschlagenen Richtungen im Ergebnisraster und können jede davon ändern, bevor etwas kopiert wird. <strong>Esc</strong> bricht einen laufenden Vergleich ab und schließt das Fenster, wenn nichts läuft.</li>
+<li><strong>Voreinstellungen.</strong> Häufig verwendete Synchronisierungskonfigurationen können gespeichert und wiederverwendet werden, sodass Sie nicht jedes Mal dieselben Optionen erneut eingeben müssen. Eine Voreinstellung merkt sich auch, was das Ergebnisraster zeigt – den Richtungsfilter und <strong>Gleiche ausblenden</strong> – und das Fenster öffnet sich mit der zuletzt verwendeten Voreinstellung. Eine Voreinstellung <strong>Standard</strong> ist vom ersten Öffnen an vorhanden; überschreiben Sie sie, um sie zu Ihrer eigenen zu machen.</li>
 </ul>
 <section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="multi-rename.html">Viele Dateien umbenennen</a></li></ul></section>
 </main>

@@ -18,14 +18,11 @@
 <li>Nastavte, aké dôkladné má byť porovnanie: zahrnúť podpriečinky, porovnávať <strong>podľa obsahu</strong> (nielen podľa dátumu a veľkosti), alebo ignorovať dátum úpravy.</li>
 <li>Pridajte masku filtra (napríklad <code>*.jpg;*.png</code>), ak chcete synchronizovať iba určité súbory.</li>
 <li>Preskúmajte mriežku výsledkov. Každý riadok zobrazuje súbor vľavo, šípku smeru v strede a zhodujúci sa súbor vpravo. Šípky vám hovoria, čo sa stane: <strong>→</strong> kopíruje zľava doprava, <strong>←</strong> kopíruje sprava doľava a <strong>=</strong> znamená, že oba sú rovnaké.</li>
-<li>Pomocou <strong>Zobraziť</strong> zúžite, čo mriežka ukazuje: všetko, len riadky smerujúce <strong>&#8594;</strong> doprava, alebo len tie smerujúce <strong>&#8592;</strong> doľava. <strong>Skryť rovnaké</strong> vynechá súbory, ktoré sú na oboch stranách už rovnaké; riadok pod mriežkou uvádza, koľko riadkov filter zadržiava.</li>
-<li><strong>Vybrať všetko</strong> zaškrtne presne to, čo je vidieť, a odškrtne všetko, čo filter skrýva &mdash; zvoľte smer, kliknite, a beh pôjde len týmto smerom. <strong>Zrušiť výber všetkého</strong> vyprázdni každý riadok, zobrazený aj nie, ak radšej vyberáte ručne.</li>
-<li>Každý riadok ukazuje popri oboch veľkostiach aj obidva dátumy, takže vidieť, <em>prečo</em> šípka smeruje práve tak. Kliknutím na záhlavie stĺpca sa podľa neho zoradí, dvojklikom na riadok sa oba súbory otvoria vedľa seba.</li>
-<li><strong>&#8800;</strong> označuje konflikt: dva rovnako staré súbory, ktoré sa napriek tomu líšia, kde Peach Commander odmieta hádať. Kliknite na značku a zvoľte sami <strong>&#8594;</strong> alebo <strong>&#8592;</strong>; ďalším klikaním sa riadok opäť stane konfliktom a zostane mimo behu.</li>
 <li>Upravte jednotlivé riadky, ak nesúhlasíte s navrhovaným smerom, potom kliknite na tlačidlo synchronizácie na vykonanie zmien.</li>
 </ol>
 <p><img alt="Okno synchronizácie adresárov s dvoma cestami priečinkov a mriežkou výsledkov súborov so šípkami vľavo, rovnosti a vpravo" src="images/sync-dialog.png" />
 <em>(Obrázok: okno Synchronizovať adresáre porovnáva obe strany a navrhuje smer kopírovania pre každý súbor.)</em></p>
+<p>Kliknutím pravým tlačidlom na riadok sa pozriete na súbory, ktoré za ním stoja. <strong>Porovnať</strong> otvorí obe strany vedľa seba, <strong>Zobraziť ľavý súbor</strong> a <strong>Zobraziť pravý súbor</strong> otvoria jednu stranu samostatne v prehliadači — to je odpoveď pre riadok, ktorý existuje len na jednej strane a kde niet čo porovnávať. Položky, ktoré na daný riadok nemožno použiť, sú zosvetlené, namiesto toho aby nič nerobili. Súbor v archíve <code>.zip</code> alebo na serveri sa najprv rozbalí či stiahne do temporárnej kópie len na čítanie, takže originál sa nikdy nedotkne. To isté platí pre <strong>Porovnať</strong>, takže priečinok možno porovnať s archívom či serverom — a tlačidlá na prevzatie a uloženie zostanú pre takú stranu vypnuté, pretože otvorená je tam kópia.</p>
 <h2 id="porovnajte-dva-subory-podla-obsahu">Porovnajte dva súbory podľa obsahu</h2>
 <ol>
 <li>Vyberte jeden súbor v každom paneli (alebo dva súbory v tom istom paneli).</li>
@@ -35,10 +32,62 @@
 </ol>
 <p><img alt="Okno porovnania zobrazujúce dva textové súbory vedľa seba so zvýraznenými odlišnými riadkami" src="images/diff-window.png" />
 <em>(Obrázok: porovnávanie dvoch textových súborov; zmenené riadky sú zvýraznené na oboch stranách.)</em></p>
+<p>Keď medzi súbormi nie sú žiadne rozdiely, okno to povie farebným pásom v hornej časti, namiesto toho aby vás nechalo usúdiť to z tabuľky, v ktorej nič nie je zvýraznené. Pás sa objaví aj vo výstražnej farbe, keď sa niektorý súbor nepodarilo načítať vôbec — vtedy by akýkoľvek verdikt o rozdieloch bol tvrdením o porovnaní, ktoré sa nikdy nekonalo. Porovnanie bajt po bajte hovorí to isté z toho istého dôvodu: dva súbory, ktoré sa nedajú otvoriť, nie sú dva totožné súbory.</p>
 <h2 id="porovnajte-subory-bajt-po-bajte">Porovnajte súbory bajt po bajte</h2>
 <p>Keď dva súbory vyzerajú rovnako, ale musíte dokázať, že sú naozaj rovnaké (alebo nájsť ten jeden bajt, ktorý sa líši), použite binárne porovnanie. Zobrazí oba súbory v šestnástkovom zobrazení s označenými nezhodnými bajtmi, čo je ideálne na overovanie stiahnutí, kontrolu kódovaných údajov alebo potvrdenie presnej kópie.</p>
 <h2 id="porovnajte-zoznamy-adresarov">Porovnajte zoznamy adresárov</h2>
 <p>Na zbadanie rozdielov medzi dvoma otvorenými priečinkami na prvý pohľad vyberte <strong>Výber ▸ Porovnať adresáre</strong> (Shift+F2). Peach Commander označí súbory, ktoré sa líšia alebo chýbajú na druhej strane, takže na nich môžete konať bežnými príkazmi kopírovania, presúvania a mazania.</p>
+<h2 id="obmedzenie-toho-co-synchronizacia-zahrna">Obmedzenie toho, čo synchronizácia zahŕňa</h2>
+<p>Pole masky nesie jeden zoznam zahrnutia cez názvy súborov. Pre to, čo sa tým povedať nedá, otvorí <strong>Filter…</strong> vedľa neho list s tromi kartami. Čo sa tam nastaví, platí pre <em>nasledujúce</em> porovnanie a tlačidlo potom hovorí, koľko kritérií je aktívnych — filter, ktorý nie je vidieť, je spôsob, ako záloha skončí neúplná, kým okno hlási, že je hotovo.</p>
+<ul>
+<li><strong>Vynechať</strong> berie vzory oddelené <code>;</code> alebo <code>|</code>. Názov bez lomky platí v každej hĺbke (<code>*.tmp</code>), lomka na konci znamená priečinok aj všetko v ňom (<code>node_modules/</code>) a vzor s lomkou platí na relatívnu cestu (<code>src/*/generated</code>). Na veľkosti písmen nezáleží.</li>
+<li><strong>Veľkosť</strong> a <strong>dátum</strong> posudzujú pár ako celok: ak jedna strana vypadne z rozsahu, zostane mimo celý pár. Je to úmysel. Použité na jedinú stranu, vynechanie by pár nechalo vyzerať jednostranne a zmenilo by sa na kopírovanie nesprávnym smerom.</li>
+<li><strong>Za posledných N dní</strong> sa meria od každého porovnania, nie od uloženia predvoľby — uložená úloha teda ďalej znamená „posledný mesiac“.</li>
+<li>Karta <strong>Zásuvné moduly</strong> sa pýta obsahového modulu na tú stranu, z ktorej by sa súbor kopíroval. Potrebuje skutočný súbor, takže sa nabízí len vtedy, keď sú obe strany priečinkami na tomto Macu.</li>
+</ul>
+<p>Vynechaný priečinok sa nemaže ani v režime zrkadla — zrkadlo odstraňuje len to, čo skutočne porovnávalo. Stavový riadok hovorí, koľko položiek filter zadržal, vedľa toho, čo beh urobí. Filter sa ukladá a načítava spolu s predvoľbou synchronizácie, ku ktorej patrí.</p>
+<h2 id="drzat-dva-priecinky-zhodne-oboma-smermi">Držať dva priečinky zhodné, oboma smermi</h2>
+<p>Dva pôvodné režimy nedokážu rozlíšiť jednu vec: súbor, ktorý je len na jednej strane, je buď <strong>tu
+nový</strong>, alebo <strong>tam zmazaný</strong>, a oboje vyzerá rovnako. Symetrický režim ho preto skopíruje — zmažete
+niečo na notebooku, synchronizujete, a vráti sa zo zálohy — a zrkadlový režim maže, ale len v jednom
+smere.</p>
+<p><strong>Obojsmerne (s pamäťou)</strong> si pamätá, ako oba priečinky vyzerali, keď sa naposledy zhodovali. S týmto
+záznamom sa dá zmazanie na jednej strane preniesť na druhú.</p>
+<ul>
+<li><strong>Prvý</strong> beh páru žiadny záznam nemá: chová sa ako predtým a nič nemaže. Záznam zapíše. Od druhého
+  behu režim funguje.</li>
+<li>Prenesené zmazanie sa zobrazí vlastnou farbou s <code>⇒🗑</code> a <strong>nie je</strong> zaškrtnuté: je to jediný riadok,
+  ktorý pochádza z pamäti aplikácie. Kliknutie na šípku nabídne ostatné odpovede: skopírovať súbor
+  späť, alebo ponechať obe strany.</li>
+<li>Zmenené na jednej strane a zmazané na druhej je <strong>konflikt</strong>, nikdy zmazanie. Rovnako súbor zmenený
+  na oboch stranách.</li>
+<li>Nič sa nemaže na základe neprítomnosti, ktorú porovnanie nemohlo potvrdiť — nečitateľný priečinok
+  alebo priečinok, ktorý zadržal filter, nedokazuje nič o tom, čo je vnútri.</li>
+<li>Len dva priečinky na tomto Macu. Nie server a nie archív: zmazanie v archíve ho prepíše, zmazanie
+  na serveri je nezvratné, a tento režim nie je ten, s ktorým to skúšať.</li>
+</ul>
+<p><strong>Zmazanie sa nedá vrátiť.</strong> Na tomto Macu ide súbor do Koša a dá sa vrátiť vo Finderi; to je celá
+záchranná sieť. <strong>Pamäť…</strong> v okne vypíše každý pár, ktorý si aplikácia pamätá, zvýrazní ten otvorený a umožní ktorýkoľvek z nich zapomenúť — potom sa ďalšie porovnanie tých priečinkov zachová opäť ako prvé. Samo sa nikdy nič nezapomene: priečinok na odpojenom disku nie je stratený, len nie je zapojený.</p>
+<p>Záznam leží pri nastaveniach: ak presuniete jeden z priečinkov, pár už žiadnu históriu
+nemá — a beh bez histórie nič nemaže.</p>
+<h2 id="co-beh-urobil-a-co-sa-z-toho-da-vziat-spat">Čo beh urobil a čo sa z toho dá vziať späť</h2>
+<p>Každá synchronizácia sa zapisuje. <strong>Behy…</strong> v okne ich vypisujú od najnovších — kedy, ktoré dva priečinky, ktorý režim a koľko súborov sa skopírovalo, zmazalo alebo zadržalo — a pri vybranom behu ukazujú, čo sa stalo s každým súborom.</p>
+<p>Práve tento zoznam robí Kôš použiteľným. Súbor, ktorý tento Mac zmazal, skončil v Koši, a beh si zapísal <em>kde</em>, čo znamená viac, než to znie: Kôš pri kolízii premenúva, takže druhá <code>notes.txt</code> pristane ako <code>notes.txt 11-17-15-028.txt</code>, a kto ju hľadá podľa mena, nájde tú nesprávnu. <strong>Zobraziť v Koši</strong> namieri Finder priamo na položku.</p>
+<p><strong>Vrátiť späť…</strong> presunie súbory, ktoré beh zmazal, z Koša na cesty, z ktorých boli zmazané. Každý sa najprv skontroluje a to, čo neplatí, je odmietnuté s vlastným dôvodom namiesto vynútenia:</p>
+<ul>
+<li>Na tej ceste je zase niečo. Zostane nedotknuté — vrátenie nesmie nikdy prepísať.</li>
+<li>Položka už v Koši nie je, alebo bola zmazaná natrvalo namiesto toho, aby tam bola presunutá.</li>
+<li>Strana bola archív alebo server. Archív sa prepisuje celý a server žiadny Kôš nemá, takže sa nič
+  neuchovalo.</li>
+<li>Priečinok, do ktorého beh zapisoval, je preč, alebo to už nie je ten istý priečinok — napríklad
+  znovu použitý prípojný bod. Potom je odmietnutý celý beh namiesto toho, aby sa vykonala jeho časť.</li>
+<li>Už to bolo vrátené. Záznam si to pamätá, takže druhý pokus neurobí nič.</li>
+<li>Alebo je sám záznam taký, s ktorým táto verzia nevie pracovať — zapísaný novšou verziou aplikácie,
+  alebo uvádza cestu mimo oboch priečinkov. Zriedkavé, a odmietnuté namiesto hádania.</li>
+</ul>
+<p><strong>Kópiu vziať späť nemožno.</strong> Odstrániť ju by znamenalo zmazať súbor, ktorý ste medzitým mohli upraviť, čo je opačný obchod než vrátenie zmazania, takže to aplikácia neponúka — beh vám povie, ktoré súbory skopíroval, a zmazať ich môžete sami. Súbor, ktorý bol <em>prepísaný</em>, je jediná skutočná medzera, a je už malá: na tomto Macu ide nahradená verzia do Koša ako zmazaný súbor, takže ju <strong>Zobraziť v Koši</strong> nájde. Do archívu, na server ani na zväzok bez Koša to nejde, a potvrdenie to povie pred behom.</p>
+<p>Uchováva sa posledných 200 behov, alebo 64 MB z nich, podľa toho, čo nastane skôr; nad to najstaršie postupne odpadajú, ako pribúdajú nové, a <strong>Zabudnúť</strong> aj <strong>Zabudnúť všetko</strong> ich upracú na mieste. Veľmi veľký beh — vyše 20 000 súborov — si ponechá každý problém a všetko, čo dal do Koša, ale nie kópie, ktoré prešli, a povie to namiesto toho, aby vás to nechal zistiť. Jeho zmazania sa stále dajú vrátiť: vynechané boli kópie, a kópiu by sa aj tak nedalo vziať späť.</p>
+<p>Zabudnutie nemení nič na priečinkoch; zmizne záznam o tom, čo sa urobilo, a s ním ponuka niečo vrátiť. Na rozdiel od obojstrannej pamäte sa toto zahadzuje automaticky — stratiť pamäť <em>dvojice</em> by zmenilo, čo urobí ďalší beh, zatiaľ čo strata záznamu o behu berie len jednu ponuku.</p>
 <h2 id="skratky">Skratky</h2>
 <table>
 <thead>
@@ -60,18 +109,18 @@
 <td>Synchronizovať adresáre</td>
 <td>Príkazy ▸ Synchronizovať adresáre…</td>
 </tr>
+<tr>
+<td>Zobraziť jednu stranu riadku synchronizácie</td>
+<td>Pravé tlačidlo na riadok ▸ Zobraziť ľavý súbor / pravý súbor</td>
+</tr>
 </tbody>
 </table>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
 <li><strong>Podľa obsahu vs. podľa dátumu/veľkosti.</strong> Rýchle porovnanie zhoduje súbory podľa veľkosti a dátumu úpravy, čo je rýchle, ale možno oklamať, keď sa časové značky líšia pre rovnaké súbory. Zapnite <strong>podľa obsahu</strong> pre spoľahlivý výsledok za cenu čítania každého súboru.</li>
 <li><strong>Podpriečinky a filtre.</strong> Okno synchronizácie môže zostúpiť do podpriečinkov a možno ho obmedziť maskou filtra, takže môžete synchronizovať iba typy súborov, ktoré vás zaujímajú.</li>
-<li><strong>Zostávate pod kontrolou.</strong> Synchronizácia nikdy nebeží sama — preskúmate navrhované smery v mriežke výsledkov a ktorýkoľvek z nich môžete zmeniť pred tým, ako sa čokoľvek skopíruje.</li>
-<li><strong>Porovnanie, ktoré vidieť a dá sa zastaviť.</strong> Prejsť dva veľké stromy trvá, a tak okno počas práce počíta najprv prejdené položky a potom porovnané súbory, s animáciou vedľa počtu. Tlačidlo Porovnať sa počas prehľadávania volá <strong>Zastaviť</strong>; zastavenie nechá predchádzajúci výsledok tak, namiesto toho, aby ukázalo pol stromu.</li>
-<li><strong>Ktorá strana je predloha.</strong> Zrkadlenie ide zľava doprava. <strong>Vymeniť strany</strong> vymení obidva priečinky: tak sa pravý strom stane tým, ktorý vyhráva &mdash; a tak sa napraví, že ich panely dali naopak.</li>
-<li><strong>Dátumy, ktoré nie sú celkom rovnaké.</strong> <strong>Ignorovať rozdiel 1 hodiny</strong> pohltí posun, ktorý zväzok FAT alebo zmena času vnúti inak nezmenenému súboru. <strong>Rozlišovať veľkosť písmen</strong> rozhoduje, či dva názvy líšiace sa len veľkosťou písmen sú ten istý súbor; vypnuté ním sú &mdash; čo zväzok na Macu zvyčajne tvrdí tiež.</li>
-<li><strong>Keď sa niečo nepodarí.</strong> Synchronizácia hlási svoj postup a tlačidlo sa počas behu volá <strong>Zastaviť</strong>; zastavenie medzi položkami nechá skopírované skopírovaným. Čo zlyhalo, je vypísané so súborom a dôvodom v okne chýb operácie, namiesto toho, aby bolo len spočítané. Zmazanie na serveri je trvalé &mdash; kôš tam nie je &mdash; a potvrdenie to povie vopred.</li>
-<li><strong>Predvoľby.</strong> Často používané nastavenia synchronizácie možno uložiť a znovu použiť, takže nezadávate tie isté možnosti zakaždým.</li>
+<li><strong>Zostávate pod kontrolou.</strong> Synchronizácia nikdy nebeží sama — preskúmate navrhované smery v mriežke výsledkov a ktorýkoľvek z nich môžete zmeniť pred tým, ako sa čokoľvek skopíruje. <strong>Esc</strong> zastaví prebiehajúce porovnanie a zavrie okno, keď nič nebeží.</li>
+<li><strong>Predvoľby.</strong> Často používané nastavenia synchronizácie možno uložiť a znovu použiť, takže nezadávate tie isté možnosti zakaždým. Predvoľba si pamätá aj to, čo ukazuje mriežka výsledkov — filter smeru a <strong>Skryť rovnaké</strong> — a okno sa otvorí s naposledy použitou predvoľbou. Predvoľba <strong>Predvolené</strong> je k dispozícii od prvého otvorenia okna; uložením cez ňu si ju prispôsobíte.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Premenovanie mnohých súborov</a></li></ul></section>
 </main>

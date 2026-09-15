@@ -10,35 +10,78 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Vtičnik Git prikaže stanje odložišča Git kar znotraj podokna z datotekami — brez ločene aplikacije, brez terminala. Doda dva stolpca, ki prikazujeta stanje delovnega drevesa vsake datoteke in trenutno vejo, podmeni <strong>Git</strong> za vsakodnevne ukaze (stanje, priprava, uveljavitev, prenos, potisk) ter uporablja <code>git</code>, ki je že nameščen na vašem Macu. Ker gre za vtičnik, ga lahko izklopite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<p>Vtičnik Git prikaže stanje skladišča Git naravnost v pladnju datotek — brez ločene aplikacije in brez
+terminala. Doda dva stolpca, podmeni <strong>Git</strong>, zasidran pladenj za pripravo in objavo sprememb ter okna za
+zgodovino, blame, veje, spore in prestavljanje. Uporablja <code>git</code>, ki je na vašem Macu že nameščen. Je vtičnik,
+zato ga lahko izklopite ali odstranite v <strong>Nastavitve ▸ Vtičniki…</strong>.</p>
 <h2 id="kaj-doda">Kaj doda</h2>
 <ul>
-<li><strong>Dva stolpca v seznamu datotek</strong> — <em>Git Status</em> in <em>Branch</em>. V odložišču vsaka datoteka prikaže kratko besedo o stanju (Spremenjeno, Dodano, Izbrisano, Nesledeno, Preimenovano, Kopirano, Spor, Prezrto ali Predelano), podokno pa prikaže trenutno vejo. Stolpca vklopite v <strong>Konfiguracija ▸ Stolpci…</strong> (glejte <a href="view-modes-and-sorting.html">Načini pogleda in razvrščanje</a>).</li>
-<li><strong>Meni Git</strong> — pod <strong>Ukazi ▸ Git</strong> in v priročnem meniju datoteke, z: <strong>Stanje Git…</strong>, <strong>Git dodaj (pripravi)</strong>, <strong>Git uveljavi…</strong>, <strong>Git potegni</strong> in <strong>Git potisni</strong>.</li>
+<li><strong>Dva stolpca seznama datotek</strong> — <em>Stanje Git</em> in <em>Veja</em>. Vsaka datoteka prikaže ikono in kratko besedo
+  stanja (Spremenjeno, Dodano, Izbrisano, Nesledeno, Preimenovano, Kopirano, Spor, Prezrto, Spremenjen tip), z
+  <em>(pripravljeno)</em>, ko je sprememba že v kazalu; stolpec <em>Veja</em> prikaže vejo, na kateri stoji skladišče te
+  datoteke. Stolpca vklopite v <strong>Nastavitve ▸ Stolpci…</strong> (glejte
+  <a href="view-modes-and-sorting.html">Načini prikaza in razvrščanje</a>).</li>
+<li><strong>Meni Git</strong> — pod <strong>Ukazi ▸ Git</strong> in v kontekstnem meniju datoteke.</li>
 </ul>
-<p><img alt="Pogovorno okno Stanje Git, ki prikazuje trenutno vejo in spremenjene datoteke v odložišču" src="images/git-status.png" />
-<em>(Slika: Stanje Git prikaže vejo in vsako spremembo v delovnem drevesu.)</em></p>
-<h2 id="preverjanje-stanja">Preverjanje stanja</h2>
-<ol>
-<li>Postavite kazalec na datoteko ali mapo znotraj odložišča Git.</li>
-<li>Izberite <strong>Ukazi ▸ Git ▸ Stanje Git…</strong> (ali desni klik ▸ <strong>Git ▸ Stanje Git…</strong>).</li>
-<li>Pojavi se povzetek: trenutna veja (ali <em>(ločeno)</em>), nato bodisi <em>Delovno drevo je čisto.</em> bodisi seznam sprememb, kjer vsaka vrstica prikazuje stanje in pot datoteke.</li>
-</ol>
-<p>Če kazalec ni znotraj odložišča, vtičnik preprosto sporoči <em>Ni odložišče Git.</em></p>
-<h2 id="priprava-uveljavitev-prenos-potisk">Priprava, uveljavitev, prenos, potisk</h2>
+<p><img alt="Okno Stanje Git s trenutno vejo in spremenjenimi datotekami v skladišču" src="images/git-status.png" />
+<em>(Slika: Stanje Git navede vejo in vsako spremembo v delovnem drevesu.)</em></p>
+<h2 id="pladenj-pripraviti-objaviti-uskladiti">Pladenj: pripraviti, objaviti, uskladiti</h2>
+<p><strong>Ukazi ▸ Git ▸ Pladenj</strong> zasidra pogled, ki delovno drevo razdeli na <em>pripravljeno</em>, <em>spremenjeno</em> in
+<em>nesledeno</em>. Izberite datoteke in uporabite <strong>Pripravi</strong>, <strong>Umakni iz priprave</strong> ali <strong>Zavrzi…</strong>, vpišite
+sporočilo in pritisnite <strong>Objavi</strong> — z <strong>Popravi</strong> se sprememba zloži v prejšnjo objavo. <strong>Potegni</strong> in
+<strong>Potisni</strong> sta zraven, tam, kjer objava tako ali tako poteka; oba kažeta napredek in ju je mogoče prekiniti.</p>
+<p>Objavi se <em>kazalo</em>, ne <code>git commit -a</code>: objavljeno je tisto, kar ste pripravili.</p>
+<h2 id="zgodovina-blame-in-splet">Zgodovina, blame in splet</h2>
 <ul>
-<li><strong>Git dodaj (pripravi)</strong> pripravi datoteko pod kazalcem (<code>git add</code>).</li>
-<li><strong>Git uveljavi…</strong> zahteva sporočilo uveljavitve, nato uveljavi vse spremembe (<code>git commit -a</code>). Prikaže se združen izpis, tako da natančno vidite, kaj se je zgodilo.</li>
-<li><strong>Git potegni</strong> izvede prenos samo s hitrim previjanjem (<code>git pull --ff-only</code>).</li>
-<li><strong>Git potisni</strong> potisne trenutno vejo (<code>git push</code>).</li>
+<li><strong>Zgodovina…</strong> našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), in datoteke, ki se jih je vsaka objava dotaknila. Return ali dvojni klik odpre
+  različico te datoteke proti njeni predhodnici v oknu za primerjavo. <strong>Razveljavi objavo</strong> in <strong>Cherry-pick</strong>
+  sta tam in oba vnaprej odklonita, če delovno drevo ni čisto.</li>
+<li><strong>Zgodovina datoteke…</strong> je isto okno za eno samo datoteko.</li>
+<li><strong>Blame (seznam)…</strong> prikaže vsako vrstico z njeno objavo, avtorjem in datumom. <strong>Blame v urejevalniku</strong>
+  zapiše isto informacijo na rob urejevalnika, ob številke vrstic: kazalec na vrstici pokaže sporočilo objave,
+  klik jo odpre proti njeni predhodnici.</li>
+<li><strong>Odpri na spletu</strong> odpre datoteko, objavo ali vejo na GitHubu, GitLabu, Bitbucketu ali Azure DevOps,
+  sestavljeno iz naslova oddaljenega skladišča — brez računa in brez žetona. Pri gostitelju, katerega oblike
+  povezav ne pozna, ponudi stran skladišča, namesto da bi ugibal.</li>
 </ul>
-<p>Po ukazu, ki spremeni odložišče, se dejavno podokno osveži, tako da stolpca stanja ostaneta ažurna.</p>
+<h2 id="veje-odlozisca-in-oznake">Veje, odložišča in oznake</h2>
+<p><strong>Veje, odložišča in oznake…</strong> našteje vse troje. Preklopiti, ustvariti, spojiti ali izbrisati vejo; potisniti,
+vzeti ali zavreči odložišče; ustvariti, izbrisati ali potisniti oznako ali preklopiti nanjo — oznaka ni veja,
+zato vnaprej pove, da bo HEAD odklopljen. Prenos, Potegni in Potisni so v istem oknu in jih je mogoče med
+tekom prekiniti.</p>
+<p>Potisniti oznako je namenoma svoje dejanje: <code>git push</code> oznak ne vzame s seboj.</p>
+<h2 id="spori">Spori</h2>
+<p><strong>Razreši spor…</strong> našteje sporna območja datoteke pod kazalcem in za vsako sprejme odločitev: <em>naše</em>, <em>njihovo</em>,
+<em>oboje</em> — ali pusti odprto. Nato <strong>Zapiši datoteko</strong> ali <strong>Zapiši in pripravi</strong>. Priprave ne dovoli, dokler je
+katero območje odprto — Git oznake <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> objavi brez pomisleka — in se datoteke, katere oznak ne zna
+prebrati, raje ne dotakne, kot da bi ugibal. Za območje, ki ga je treba ročno prepletati z obeh strani, je
+<strong>Odpri v urejevalniku</strong> en gumb stran.</p>
+<h2 id="prestavljanje">Prestavljanje</h2>
+<p><strong>Prestavi…</strong> našteje objave pred protitokom — tiste, ki jih nihče drug še nima — in vam jih pusti stisniti,
+pripeti kot popravek, zavreči, prerazporediti ali preubesediti, preden se veja prepiše. Če se prestavljanje
+ustavi ob sporu, isto okno postane <strong>Nadaljuj</strong> / <strong>Preskoči objavo</strong> / <strong>Prekini prestavljanje</strong>, da
+napol opravljenega prestavljanja ni treba dokončati v terminalu.</p>
+<h2 id="prezrtje-datotek-in-poverilnice">Prezrtje datotek in poverilnice</h2>
+<ul>
+<li><strong>Prezri to datoteko…</strong>, <strong>Prezri to vrsto datotek…</strong> in <strong>Prezri to mapo…</strong> vpišejo pravi vzorec v
+  <code>.gitignore</code> — zasidran tam, kamor sodi, da prezrtje <em>te</em> mape <code>build</code> ne prezre vsake mape z imenom
+  <code>build</code>.</li>
+<li><strong>Poverilnice…</strong> povedo, kako se to skladišče overi: SSH ali HTTPS, ali je nastavljen pomočnik za
+  poverilnice, ali teče agent SSH in drži ključ. Kjer to pomaga, ponudijo natanko eno dejanje — pustiti Gitu,
+  da poverilnice hrani v ključavnici macOS. Vtičnik nikoli ne vpraša po geslu ključa, ga ne pokaže in ne
+  shrani.</li>
+</ul>
 <h2 id="opombe">Opombe</h2>
 <ul>
-<li>Vtičnik uporablja sistemski Git na <code>/usr/bin/git</code>. Če Git ni nameščen, ukazi sporočijo, da Git ni na voljo. (Zagotovi ga namestitev orodij Xcode Command Line Tools.)</li>
-<li>Stanje odložišča se prebere enkrat na mapo in shrani v predpomnilnik, tako da drsenje po velikem odložišču ostane hitro; predpomnilnik se osveži po vsakem ukazu, ki spremeni drevo.</li>
-<li>Uveljavitev uporablja <code>git commit -a</code>, ki uveljavi sledene spremembe; povsem nove datoteke še vedno najprej potrebujejo <strong>Git dodaj (pripravi)</strong>.</li>
-<li>Glavi stolpcev <em>Git Status</em> in <em>Branch</em> se trenutno prikazujeta v angleščini tudi v drugih jezikih vmesnika; vrednosti in pogovorna okna so prevedeni.</li>
+<li>Vtičnik uporablja sistemski Git v <code>/usr/bin/git</code>. Če Gita ni, ukazi sporočijo, da Git ni na voljo. (Prinesejo
+  ga Xcode Command Line Tools.)</li>
+<li>Stanje skladišča se prebere enkrat na mapo in shrani v predpomnilnik, da listanje po velikem skladišču
+  ostane hitro; predpomnilnik se osveži po vsakem ukazu, ki spremeni drevo, in sledi tudi objavi, narejeni
+  zunaj aplikacije.</li>
+<li>Povezana delovna drevesa in podmoduli so podprti: datoteka v podmodulu prikaže stanje in vejo <em>podmodula</em>,
+  ne nadrejenega skladišča.</li>
+<li>Vsak seznam ima kontekstni meni, <strong>Return</strong> izvede njegovo glavno dejanje in <strong>Cmd+R</strong> znova naloži okno.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="view-modes-and-sorting.html">Načini pogleda in razvrščanje</a></li></ul></section>
 </main>

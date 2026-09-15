@@ -10,35 +10,77 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Git-programtillegget viser tilstanden til et Git-depot rett i filpanelet – ingen egen app, ingen terminal. Det legger til to kolonner som viser hver fils status i arbeidstreet og gjeldende gren, en <strong>Git</strong>-undermeny for de daglige kommandoene (status, klargjøring, innsjekking, pull, push), og det bruker <code>git</code> som allerede er installert på Mac-en din. Det er et programtillegg, så du kan slå det av eller fjerne det i <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<p>Git-programtillegget viser tilstanden til et Git-arkiv rett i filpanelet — ingen egen app, ingen terminal. Det
+legger til to kolonner, en undermeny <strong>Git</strong>, et festet panel for å klargjøre og committe, og vinduer for
+historikk, blame, grener, konflikter og rebasing. Det bruker den <code>git</code> som allerede er installert på Macen
+din. Det er et programtillegg, så du kan slå det av eller fjerne det under <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
 <h2 id="hva-det-legger-til">Hva det legger til</h2>
 <ul>
-<li><strong>To kolonner i fillisten</strong> – <em>Git Status</em> og <em>Branch</em>. I et depot viser hver fil et kort statusord (Endret, Lagt til, Slettet, Usporet, Omdøpt, Kopiert, Konflikt, Ignorert eller Forandret) og panelet viser gjeldende gren. Slå på kolonnene i <strong>Konfigurasjon ▸ Kolonner…</strong> (se <a href="view-modes-and-sorting.html">Visningsmoduser og sortering</a>).</li>
-<li><strong>En Git-meny</strong> – under <strong>Kommandoer ▸ Git</strong>, og i høyreklikkmenyen til en fil, med: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> og <strong>Git Push</strong>.</li>
+<li><strong>To kolonner i fillisten</strong> — <em>Git-status</em> og <em>Gren</em>. Hver fil viser et ikon og et kort statusord (Endret,
+  Lagt til, Slettet, Ikke sporet, Omdøpt, Kopiert, Konflikt, Ignorert, Type endret), med <em>(klargjort)</em> når
+  endringen allerede ligger i indeksen; kolonnen <em>Gren</em> viser grenen som filens arkiv står på. Slå på
+  kolonnene under <strong>Konfigurasjon ▸ Kolonner…</strong> (se
+  <a href="view-modes-and-sorting.html">Visningsmoduser og sortering</a>).</li>
+<li><strong>En Git-meny</strong> — under <strong>Kommandoer ▸ Git</strong>, og i høyreklikkmenyen til en fil.</li>
 </ul>
-<p><img alt="Git Status-dialogen som viser gjeldende gren og de endrede filene i depotet" src="images/git-status.png" />
-<em>(Figur: Git Status rapporterer grenen og hver endring i arbeidstreet.)</em></p>
-<h2 id="sjekk-statusen">Sjekk statusen</h2>
-<ol>
-<li>Sett markøren på en fil eller mappe inne i et Git-depot.</li>
-<li>Velg <strong>Kommandoer ▸ Git ▸ Git Status…</strong> (eller høyreklikk ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Et sammendrag vises: gjeldende gren (eller <em>(frakoblet)</em>), deretter enten <em>Arbeidstreet er rent.</em> eller en liste over endringer, der hver linje viser statusen og filstien.</li>
-</ol>
-<p>Hvis markøren ikke er inne i et depot, sier programtillegget ganske enkelt <em>Ikke et Git-depot.</em></p>
-<h2 id="klargjr-sjekk-inn-pull-og-push">Klargjør, sjekk inn, pull og push</h2>
+<p><img alt="Vinduet Git-status med gjeldende gren og de endrede filene i arkivet" src="images/git-status.png" />
+<em>(Figur: Git-status nevner grenen og hver endring i arbeidstreet.)</em></p>
+<h2 id="panelet-klargjre-committe-synkronisere">Panelet: klargjøre, committe, synkronisere</h2>
+<p><strong>Kommandoer ▸ Git ▸ Panel</strong> fester en visning som grupperer arbeidstreet i <em>klargjort</em>, <em>endret</em> og <em>ikke
+sporet</em>. Velg filer og bruk <strong>Klargjør</strong>, <strong>Fjern klargjøring</strong> eller <strong>Forkast…</strong>, skriv en melding og trykk
+<strong>Commit</strong> — med <strong>Amend</strong> foldes endringen inn i forrige commit i stedet. <strong>Pull</strong> og <strong>Push</strong> ligger ved
+siden av, der committen uansett skjer; begge viser framdrift og kan avbrytes.</p>
+<p>Det er <em>indeksen</em> som committes, ikke <code>git commit -a</code>: det du har klargjort, er det som blir committet.</p>
+<h2 id="historikk-blame-og-nettet">Historikk, blame og nettet</h2>
 <ul>
-<li><strong>Git Add (stage)</strong> klargjør filen under markøren (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> ber om en innsjekkingsmelding og sjekker deretter inn alle endringer (<code>git commit -a</code>). Den kombinerte utdataen vises, så du kan se nøyaktig hva som skjedde.</li>
-<li><strong>Git Pull</strong> gjør en pull med kun fast-forward (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> dytter gjeldende gren (<code>git push</code>).</li>
+<li><strong>Historikk…</strong> lister commitene med en banegraf, refene som peker på hver av dem (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), og filene hver commit har rørt. Retur eller dobbeltklikk åpner filens versjon
+  mot forgjengeren i sammenligningsvinduet. <strong>Angre commit</strong> og <strong>Cherry-pick</strong> ligger der, og begge nekter på
+  forhånd hvis arbeidstreet ikke er rent.</li>
+<li><strong>Filhistorikk…</strong> er det samme vinduet for én fil.</li>
+<li><strong>Blame (liste)…</strong> viser hver linje med commit, forfatter og dato. <strong>Blame i editoren</strong> skriver den samme
+  informasjonen i editorens marg, ved siden av linjenumrene: pek på en linje for commit-meldingen, klikk for
+  å åpne den commiten mot forgjengeren.</li>
+<li><strong>Åpne på nettet</strong> åpner filen, commiten eller grenen på GitHub, GitLab, Bitbucket eller Azure DevOps,
+  bygget fra URL-en til fjernarkivet — ingen konto, ingen token. For en vert hvis lenkeoppbygning det ikke
+  kjenner, tilbyr det arkivsiden i stedet for å gjette.</li>
 </ul>
-<p>Etter en kommando som endrer depotet, oppdateres det aktive panelet slik at statuskolonnene holder seg oppdaterte.</p>
+<h2 id="grener-stasher-og-merkelapper">Grener, stasher og merkelapper</h2>
+<p><strong>Grener, stasher og merkelapper…</strong> lister alle tre. Bytt, opprett, flett eller slett en gren; push, pop eller
+forkast en stash; opprett, slett eller push en merkelapp, eller bytt til den — en merkelapp er ingen gren, så
+det sies på forhånd at HEAD havner frakoblet. Fetch, Pull og Push ligger i samme vindu og kan avbrytes mens de
+går.</p>
+<p>Å pushe en merkelapp er en egen handling med hensikt: <code>git push</code> tar ikke med merkelapper.</p>
+<h2 id="konflikter">Konflikter</h2>
+<p><strong>Løs konflikt…</strong> lister de konfliktrammede områdene i filen under markøren og tar en avgjørelse for hvert av
+dem: <em>våre</em>, <em>deres</em>, <em>begge</em> — eller la det stå åpent. Deretter <strong>Skriv fil</strong> eller <strong>Skriv og klargjør</strong>.
+Det nekter å klargjøre så lenge et område står åpent — Git committer <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>-merker uten å blunke — og det
+rører ikke en fil hvis merker det ikke kan lese, framfor å gjette på dem. For et område der begge sider må
+flettes for hånd, er <strong>Åpne i editor</strong> én knapp unna.</p>
+<h2 id="rebasing">Rebasing</h2>
+<p><strong>Rebase…</strong> lister commitene som ligger foran upstream — de ingen andre har ennå — og lar deg squashe, legge
+til som fixup, forkaste, omordne eller omformulere dem før grenen skrives om. Stopper en rebase i en konflikt,
+blir det samme vinduet til <strong>Fortsett</strong> / <strong>Hopp over commit</strong> / <strong>Avbryt rebase</strong>, slik at en halvferdig
+rebase ikke må fullføres i en terminal.</p>
+<h2 id="a-ignorere-filer-og-legitimasjon">Å ignorere filer, og legitimasjon</h2>
+<ul>
+<li><strong>Ignorer denne filen…</strong>, <strong>Ignorer denne filtypen…</strong> og <strong>Ignorer denne mappen…</strong> skriver riktig mønster i
+  <code>.gitignore</code> — forankret der det hører hjemme, slik at <em>denne</em> <code>build</code>-mappen ignoreres og ikke enhver mappe
+  som heter <code>build</code>.</li>
+<li><strong>Legitimasjon…</strong> forteller hvordan dette arkivet autentiserer seg: SSH eller HTTPS, om en credential helper
+  er satt opp, om en SSH-agent kjører og holder en nøkkel. Der det hjelper, tilbyr det nøyaktig én handling —
+  la Git ta vare på legitimasjonen i macOS-nøkkelringen. Programtillegget spør aldri om en passordfrase, viser
+  den ikke og lagrer den ikke.</li>
+</ul>
 <h2 id="merknader">Merknader</h2>
 <ul>
-<li>Programtillegget bruker systemets Git på <code>/usr/bin/git</code>. Hvis Git ikke er installert, rapporterer kommandoene at Git ikke er tilgjengelig. (Å installere Xcode Command Line Tools gir deg det.)</li>
-<li>Depotstatus leses én gang per mappe og bufres, så det å bla i et stort depot forblir raskt; bufferet oppdateres etter enhver kommando som endrer treet.</li>
-<li>Innsjekking bruker <code>git commit -a</code>, som sjekker inn sporede endringer; helt nye filer trenger fortsatt <strong>Git Add (stage)</strong> først.</li>
-<li>Kolonneoverskriftene <em>Git Status</em> og <em>Branch</em> vises for øyeblikket på engelsk selv i andre grensesnittspråk; verdiene og dialogene er oversatt.</li>
+<li>Programtillegget bruker systemets Git i <code>/usr/bin/git</code>. Mangler Git, melder kommandoene at Git ikke er
+  tilgjengelig. (Xcode Command Line Tools har den med.)</li>
+<li>Arkivstatusen leses én gang per mappe og mellomlagres, slik at det går raskt å bla i et stort arkiv; hurtig-
+  lageret fornyes etter enhver kommando som endrer treet, og følger også en commit gjort utenfor appen.</li>
+<li>Tilknyttede arbeidstrær og undermoduler støttes: en fil i en undermodul viser <em>undermodulens</em> status og
+  gren, ikke det overordnede arkivets.</li>
+<li>Hver liste har en kontekstmeny, <strong>Retur</strong> kjører hovedhandlingen og <strong>Cmd+R</strong> laster vinduet på nytt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="view-modes-and-sorting.html">Visningsmoduser og sortering</a></li></ul></section>
 </main>

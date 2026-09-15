@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker 容器与卷</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker 容器与卷</h1>
+<p>Docker 容器的文件系统可以像任何文件夹一样在面板中浏览，Docker 卷也一样。在网络菜单中选择<strong>连接到 Docker…</strong>，或点击驱动器栏中的 <strong>Docker</strong> 标签，引擎便会出现在活动面板中。</p>
+<p>这是一个插件，并且<strong>出厂时是关闭的</strong>。请在<strong>配置 ▸ 插件…</strong>中开启。它默认关闭，是因为与 Docker 守护进程的连接在这台 Mac 上拥有与你相同的权限——见下文的<em>它能访问什么</em>。</p>
+<h2 id="_1">你会看到什么</h2>
+<p>顶层是三个文件夹：</p>
+<ul>
+<li><strong>Compose Projects</strong> — 由 Docker Compose 启动的全部容器，先按项目、再按服务分组。只有一个容器的服务<em>就是</em>那个容器：<code>my-stack/backend/etc</code> 就是后端的 <code>/etc</code>。有多个副本的服务会为它们保留一层，每个容器一个文件夹。</li>
+<li><strong>Standalone Containers</strong> — 其余的一切，无论是否在运行。</li>
+<li><strong>Volumes</strong> — 每个 Docker 卷，各自作为一个驱动器。</li>
+</ul>
+<p>再往下就是真正的文件系统：F3 查看文件，F4 编辑，F5 复制到另一个面板，F7 新建文件夹。另一个面板可以是任何东西——本地文件夹、压缩包、S3 存储桶。</p>
+<p>分组是从 Compose 给自己容器和卷打的标签中读取的，因此即使某个栈的 <code>docker-compose.yml</code> 早已不在这台机器上，分组依然正确。</p>
+<p><strong>卷单独列出是有意为之。</strong> 卷的寿命长于创建它的容器，可以被多个容器共享，而你要找的数据通常正是在卷里。当前没有任何容器挂载的卷同样可以浏览。</p>
+<h2 id="_2">列</h2>
+<p>右键点击面板的列标题，即可添加此提供程序自己的列：</p>
+<ul>
+<li><strong>状态</strong> — <code>● running</code>、<code>○ stopped</code>、<code>◌ paused</code>、<code>! restarting</code>。</li>
+<li><strong>访问</strong> — <code>RW</code>；只读根文件系统或只读挂载为 <code>RO</code>；Docker 卷为 <code>VOL</code>；挂载进容器的你自己的文件夹为 <code>BIND</code>；tmpfs 为 <code>TMP</code>。</li>
+<li><strong>镜像</strong>、<strong>ID</strong>。</li>
+<li><strong>挂载</strong> — 对于实际上是挂载点的目录，说明它是什么：<code>Volume: my-stack_db-data</code>，或 bind 背后的主机路径。你就是这样找到 <strong>Volumes</strong> 下的哪个卷存放着某个容器的数据。</li>
+</ul>
+<h2 id="_3">已停止的容器</h2>
+<p>已停止的容器同样会列出，其文件系统可读可写。Docker 的文件 API 对一个月没运行过的容器也会作答，这正是它像驱动器而非进程列表的原因。</p>
+<p>有两件事需要真正在运行的容器：<strong>删除</strong>和<strong>重命名</strong>。Docker Engine API 对这两者都没有相应操作——在容器内删除或移动文件的唯一办法就是在其中执行些什么——因此对已停止的容器，两者都会被拒绝，而不是佯装成功。</p>
+<h2 id="_4">该期待什么</h2>
+<p><strong>写入以 <code>root</code> 身份进入，删除则以容器自身的用户身份执行。</strong> 这是 Docker 的安排，而非此处的选择：把文件复制进去使用引擎的归档 API，它以 root 写入；删除或重命名则在容器内执行命令，而该命令以镜像配置的用户身份运行。因此，刚刚还能复制进去的文件，删除时可能因<em>权限被拒绝</em>而失败。Peach Commander 不会以 root 身份去绕过这一点，而是把容器说的话告诉你。</p>
+<p><strong>只读的容器或挂载会拒绝写入</strong>，并将其报告为权限错误而非失败。</p>
+<p><strong>读取符号链接读到的是它指向的内容。</strong> 面板在 Attr 列中仍将其显示为链接；F3 显示目标的内容，而不是一个空文件。</p>
+<p><strong>较大的已停止容器，其根目录可能无法列出。</strong> Docker 没有任何用于列出目录的调用。读取一个目录意味着把它作为归档取回，而归档包含其下的一切——对于基于完整镜像构建的已停止容器，这可能是数十 GB，因此列出会被拒绝，而不是把全部读完。更深层的目录不受影响，<em>正在运行</em>的容器也不受影响：过大而无法作为归档读取的目录由容器自己列出。若你只想走归档这条路，请见下面的设置。</p>
+<p><strong>把整个容器复制出来，就是复制它的整个文件系统</strong>——包括 <code>/proc</code> 和 <code>/dev</code>。请复制你需要的目录，而不是 <code>/</code>。</p>
+<h2 id="_5">它能访问什么</h2>
+<p>此插件与你在终端里会连到的引擎对话：若你设置了 <code>DOCKER_HOST</code> 就用它，否则用当前的 <code>docker context</code>，再否则用 Docker Desktop、Colima、Rancher Desktop、Lima 和 Podman 的常见套接字。Podman 之所以可用，是因为它提供同样的 API。</p>
+<p>访问 Docker 守护进程通常意味着对其所在机器的广泛访问。此插件拥有的权限与你完全相同，并且不多要一分：它不保存任何凭据，从不触碰你磁盘上 Docker 自己的目录，也不代表你执行任何特权操作。</p>
+<p>它唯一会创建的是一个<strong>一次性容器</strong>——而且只是为了访问没有任何现存容器挂载的卷，因为卷只有从挂载它的东西内部才看得见。该容器从不启动，带有 Peach Commander 的标签，并在你离开该驱动器时被移除。</p>
+<h2 id="_6">对容器或卷的操作</h2>
+<p>右键点击容器或卷，<strong>Docker</strong> 子菜单会提供驱动器本身说不出来的东西：</p>
+<ul>
+<li><strong>Inspect</strong> — 引擎所知道的关于它的一切，以格式化的 JSON 显示在一个可以滚动、可以选取的窗口
+  里。</li>
+<li><strong>Show Logs</strong> — 该容器写出的最后 500 行。</li>
+<li><strong>Show Mounts</strong> — 它所带的每一个挂载、各自是什么，以及能否写入。</li>
+<li><strong>Copy ID</strong> — 把容器的完整 id 或卷的名字放到剪贴板。是<em>完整</em>的 id，不是 ID 列显示的那十二个字符：
+  这是为了粘贴进 <code>docker</code> 命令，而短 id 只是一个前缀，可能有一天不再唯一。</li>
+<li><strong>Jump to Volume</strong> — 在一个实际上是卷的目录上，前往 <strong>Volumes</strong> 下的那个卷。这是挂载列的另一半：
+  列告诉你是哪个卷，这一项把你带过去。</li>
+<li><strong>Open Compose Project</strong> — 前往该容器所属的项目。</li>
+<li><strong>Start</strong>、<strong>Stop</strong>、<strong>Restart</strong>、<strong>Pause</strong>、<strong>Unpause</strong> — 这些是改变容器而不是读取它，所以会先
+  询问。Start 也是上面那两条拒绝的出口：删除和重命名需要一个正在运行的容器。</li>
+</ul>
+<p>这些条目只在 Docker 驱动器内出现；在你自己的文件夹上根本不存在。</p>
+<p><strong>日志同时也是一个文件。</strong> 每个容器的根目录下都有 <code>docker-logs.txt</code>——它并不是容器里的文件：读取它是向引擎索取日志。在它上面按 F3 会在查看器中打开，于是查看器的搜索、跳转到某一行和编码选择都适用，这是单独一个窗口给不了的。真正带有同名文件的容器显示它自己的那个，而虚拟的这个无法写入。</p>
+<h2 id="_7">设置</h2>
+<p><strong>配置 ▸ 设置 ▸ Docker</strong> 里有全部这些。同样的值也在 <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> 的一个小文件里——用脚本准备机器时改的就是它：</p>
+<ul>
+<li><code>Endpoint</code> — 用来代替自动找到的地址。</li>
+<li><code>ExecFallback</code> — 设为 <code>0</code> 时，插件只使用 Docker 的归档 API：它便绝不会在容器内执行任何东西，代价是无法列出非常大的目录，也无法删除和重命名。</li>
+<li><code>ProbeBudgetMB</code>、<code>MaxBudgetMB</code>、<code>MaxBudgetSeconds</code> — 在退而求其次或放弃之前，一个目录的归档值得读取多少。</li>
+<li><code>HelperImage</code> — 上述一次性容器所用的镜像（默认为机器上已有的任意镜像）。</li>
+<li><code>ShowAnonymousVolumes</code> — 设为 <code>0</code> 时，隐藏那些因无人命名而被 Docker 用长哈希当作名字的卷。</li>
+</ul>
+<h2 id="_8">此版本中没有的</h2>
+<p>通过 SSH 或 TLS 连接的远程引擎、交互式 shell，以及作为只读文件系统的镜像。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="amazon-s3.html">Amazon S3 与 S3 兼容存储</a></li><li><a href="webdav.html">WebDAV 服务器</a></li><li><a href="copying-files.html">复制文件</a></li><li><a href="privacy-and-security.html">隐私与安全</a></li></ul></section>
+</main>
+</body>
+</html>

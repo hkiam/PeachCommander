@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker-konténerek és -kötetek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker-konténerek és -kötetek</h1>
+<p>Egy Docker-konténer fájlrendszere ugyanúgy böngészhető egy panelben, mint bármelyik mappa, és ez a Docker-kötetekre is igaz. Válassza a <strong>Kapcsolódás a Dockerhez…</strong> parancsot a Hálózat menüből, vagy kattintson a <strong>Docker</strong> gombra a meghajtósávon, és a motor megjelenik az aktív panelben.</p>
+<p>Ez egy bővítmény, és <strong>kikapcsolva kerül szállításra</strong>. Kapcsolja be a <strong>Beállítások ▸ Bővítmények…</strong> ablakban. Azért indul kikapcsolva, mert a Docker-démonhoz való kapcsolat ugyanazokkal a jogokkal rendelkezik az Ön Macjén, mint Ön maga — lásd <em>Mihez fér hozzá</em> alább.</p>
+<h2 id="amit-lat">Amit lát</h2>
+<p>A legfelső szint három mappa:</p>
+<ul>
+<li><strong>Compose Projects</strong> — minden, a Docker Compose által indított konténer, projekt, majd szolgáltatás szerint csoportosítva. Az egyetlen konténerből álló szolgáltatás <em>maga</em> az a konténer: a <code>my-stack/backend/etc</code> a backend <code>/etc</code> könyvtára. A több példányos szolgáltatás megtart egy szintet nekik, konténerenként egy mappát.</li>
+<li><strong>Standalone Containers</strong> — minden más, akár fut, akár nem.</li>
+<li><strong>Volumes</strong> — minden Docker-kötet, önálló meghajtóként.</li>
+</ul>
+<p>Ezek alatt már valódi fájlrendszerben van: az F3 megjelenít egy fájlt, az F4 szerkeszti, az F5 átmásolja a másik panelbe, az F7 mappát hoz létre. A másik panel bármi lehet — helyi mappa, archívum, S3-tároló.</p>
+<p>A csoportosítás azokból a címkékből olvasható ki, amelyeket a Compose a saját konténereire és köteteire tesz, ezért akkor is helyes, ha a <code>docker-compose.yml</code> már régen nincs ezen a gépen.</p>
+<p><strong>A kötetek szándékosan külön szerepelnek.</strong> Egy kötet túléli a konténert, amely létrehozta, több konténer is használhatja, és rendszerint épp benne vannak azok az adatok, amelyekért jött. Az a kötet is böngészhető, amelyet jelenleg semmi sem csatol.</p>
+<h2 id="oszlopok">Oszlopok</h2>
+<p>Kattintson a jobb gombbal a panel oszlopfejlécére, hogy hozzáadja a szolgáltató saját oszlopait:</p>
+<ul>
+<li><strong>Állapot</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Hozzáférés</strong> — <code>RW</code>, <code>RO</code> írásvédett gyökér vagy csatolás esetén, <code>VOL</code> Docker-kötethez, <code>BIND</code> a konténerbe csatolt saját mappájához, <code>TMP</code> a tmpfs-hez.</li>
+<li><strong>Lemezkép</strong>, <strong>Azonosító</strong>.</li>
+<li><strong>Csatolás</strong> — egy olyan könyvtárnál, amely valójában csatolás: hogy mi az. <code>Volume: my-stack_db-data</code>, vagy a bind mögötti gazdagép-útvonal. Így találja meg, melyik kötet tartalmazza a <strong>Volumes</strong> alatt egy konténer adatait.</li>
+</ul>
+<h2 id="leallitott-kontenerek">Leállított konténerek</h2>
+<p>A leállított konténerek megjelennek, fájlrendszerük olvasható és írható. A Docker fájl-API-ja olyan konténerre is válaszol, amely egy hónapja nem futott, és ettől érződik ez inkább meghajtónak, mint folyamatlistának.</p>
+<p>Két dologhoz valóban futó konténer kell: a <strong>törléshez</strong> és az <strong>átnevezéshez</strong>. A Docker Engine API-ja egyikre sem kínál műveletet — a konténeren belüli fájl eltávolításának vagy áthelyezésének egyetlen módja az, ha futtatunk benne valamit —, ezért leállított konténernél mindkettőt elutasítja ahelyett, hogy színlelné.</p>
+<h2 id="mire-szamitson">Mire számítson</h2>
+<p><strong>Az írások <code>root</code>-ként jutnak be, a törlések a konténer saját felhasználójaként futnak.</strong> Ez a Docker berendezkedése, nem itt hozott döntés: egy fájl bemásolása a motor archívum-API-ját használja, amely rootként ír; a törlés vagy átnevezés viszont parancsot futtat a konténerben, az pedig a lemezkép által beállított felhasználóként fut. Ezért fordulhat elő, hogy egy törlést <em>hozzáférés megtagadva</em> miatt utasít vissza olyan fájlnál, amelyet egy pillanattal korábban be tudott másolni. A Peach Commander nem kerüli meg ezt azzal, hogy rootként lép fel — megmondja, mit válaszolt a konténer.</p>
+<p><strong>Az írásvédett konténer vagy csatolás visszautasítja az írást</strong>, és ezt jogosultsági hibaként jelzi, nem kudarcként.</p>
+<p><strong>A szimbolikus hivatkozás olvasásakor az olvasódik, amire mutat.</strong> A panel az Attr oszlopban továbbra is hivatkozásként mutatja; az F3 a célpont tartalmát jeleníti meg, nem üres fájlt.</p>
+<p><strong>Egy nagy, leállított konténer gyökere nem feltétlenül listázható.</strong> A Dockernek nincs olyan hívása, amely kilistáz egy könyvtárat. Egy könyvtár olvasása azt jelenti, hogy archívumként kérjük le, az pedig mindent tartalmaz alatta — egy teljes értékű lemezképre épülő, leállított konténernél ez több gigabájt is lehet, és a listázás ilyenkor elutasításra kerül ahelyett, hogy mindent beolvasna. A mélyebb könyvtárakat ez nem érinti, és a <em>futó</em> konténert sem: az archívumként túl nagy könyvtárat maga a konténer listázza ki. Ha kizárólag az archívum útját szeretné, lásd az alábbi beállítást.</p>
+<p><strong>Egy egész konténer kimásolása a teljes fájlrendszerét másolja</strong> — beleértve a <code>/proc</code> és <code>/dev</code> könyvtárakat is. Azt a könyvtárat másolja, amelyikre szüksége van, ne a <code>/</code> gyökeret.</p>
+<h2 id="mihez-fer-hozza">Mihez fér hozzá</h2>
+<p>A bővítmény azzal a motorral beszél, amelyet terminálból is elérne: <code>DOCKER_HOST</code>, ha beállította, egyébként az aktuális <code>docker context</code>, egyébként a Docker Desktop, a Colima, a Rancher Desktop, a Lima és a Podman szokásos socketjei. A Podman azért működik, mert ugyanazt az API-t szolgáltatja.</p>
+<p>Egy Docker-démonhoz való hozzáférés általában igen messzemenő hozzáférést jelent ahhoz a géphez, amelyen fut. A bővítménynek pontosan az Ön jogai vannak, és nem kér többet: nem tárol semmilyen hitelesítő adatot, soha nem nyúl a Docker saját könyvtáraihoz a lemezén, és nem hajt végre az Ön nevében privilegizált műveletet.</p>
+<p>Az egyetlen, amit létrehoz, egy <strong>eldobható konténer</strong> — és csak azért, hogy elérjen egy olyan kötetet, amelyet egyetlen létező konténer sem csatol, hiszen egy kötet kizárólag belülről látható valamiből, ami csatolja. Soha nem indul el, a Peach Commander címkéjét viseli, és eltávolításra kerül, amikor elhagyja a meghajtót.</p>
+<h2 id="muveletek-konteneren-vagy-koteten">Műveletek konténeren vagy köteten</h2>
+<p>Egy konténerre vagy kötetre jobb gombbal kattintva a <strong>Docker</strong> almenü azt kínálja, amit egy meghajtó önmagában nem tud megmondani:</p>
+<ul>
+<li><strong>Inspect</strong> — mindent, amit a motor tud róla, formázott JSON-ként, görgethető és másolható
+  ablakban.</li>
+<li><strong>Show Logs</strong> — az utolsó 500 sor, amit a konténer írt.</li>
+<li><strong>Show Mounts</strong> — minden csatolás, amit hordoz, hogy mi az, és hogy írható-e.</li>
+<li><strong>Copy ID</strong> — a konténer teljes azonosítója vagy a kötet neve a vágólapra. A <em>teljes</em> azonosító,
+  nem az ID oszlop tizenkét karaktere: ez egy <code>docker</code> parancsba való beillesztésre való, és egy
+  rövid azonosító olyan előtag, amely megszűnhet egyedi lenni.</li>
+<li><strong>Jump to Volume</strong> — olyan könyvtárnál, amely valójában kötet, ugrás arra a kötetre a <strong>Volumes</strong>
+  alatt. Ez a Csatolás oszlop másik fele: az oszlop megnevezi a kötetet, ez pedig odavisz.</li>
+<li><strong>Open Compose Project</strong> — ugrás ahhoz a projekthez, amelyhez a konténer tartozik.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — ezek nem olvassák a konténert, hanem
+  megváltoztatják, ezért előbb kérdeznek. A Start egyben a fenti két elutasításból is kivezet: a
+  törléshez és az átnevezéshez futó konténer kell.</li>
+</ul>
+<p>A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött egyáltalán nincsenek ott.</p>
+<p><strong>A napló egyben fájl is.</strong> Minden konténer gyökerében ott van a <code>docker-logs.txt</code> — amely nem a konténer fájlja: az olvasása a motortól kéri el a naplót. Az F3 megnyitja a megjelenítőben, így annak keresése, sorra ugrása és kódolásválasztása mind érvényes, amit egy saját ablak nem tud megadni. Az a konténer, amely valóban hoz egy ilyen nevű fájlt, a sajátját mutatja, a virtuálisba pedig nem lehet írni.</p>
+<h2 id="beallitasok">Beállítások</h2>
+<p>A <strong>Beállítások ▸ Beállítások ▸ Docker</strong> mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:</p>
+<ul>
+<li><code>Endpoint</code> — a megtalált helyett használandó cím.</li>
+<li><code>ExecFallback</code> — a <code>0</code> hatására a bővítmény kizárólag a Docker archívum-API-ját használja: ekkor soha nem futtat semmit egy konténerben, annak árán, hogy nem tud kilistázni nagyon nagy könyvtárat, törölni vagy átnevezni.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — mennyit érdemes beolvasni egy könyvtár archívumából, mielőtt tartalékmegoldásra vált vagy feladja.</li>
+<li><code>HelperImage</code> — az a lemezkép, amelyből a fenti eldobható konténer készül (alapértelmezés szerint bármely, a gépen már meglévő lemezkép).</li>
+<li><code>ShowAnonymousVolumes</code> — a <code>0</code> elrejti azokat a köteteket, amelyeknek a Docker hosszú lenyomatot adott névként, mert más nem nevezte el őket.</li>
+</ul>
+<h2 id="ebben-a-valtozatban-nincs-benne">Ebben a változatban nincs benne</h2>
+<p>Távoli motorok SSH-n vagy TLS-en át, interaktív parancsértelmező, valamint a lemezképek írásvédett fájlrendszerként.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="amazon-s3.html">Amazon S3 és S3-kompatibilis tárolók</a></li><li><a href="webdav.html">WebDAV-kiszolgálók</a></li><li><a href="copying-files.html">Fájlok másolása</a></li><li><a href="privacy-and-security.html">Adatvédelem és biztonság</a></li></ul></section>
+</main>
+</body>
+</html>

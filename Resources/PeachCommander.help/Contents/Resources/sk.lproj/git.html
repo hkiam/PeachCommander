@@ -10,35 +10,78 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Zásuvný modul Git prináša stav úložiska Git priamo do panela súborov — žiadna samostatná aplikácia, žiadny terminál. Pridáva dva stĺpce, ktoré zobrazujú stav pracovného stromu každého súboru a aktuálnu vetvu, podponuku <strong>Git</strong> pre každodenné príkazy (stav, pripraviť, commit, pull, push), a používa <code>git</code>, ktorý je už nainštalovaný na vašom Macu. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
+<p>Zásuvný modul Git ukazuje stav repozitára Git priamo v paneli súborov — bez samostatnej aplikácie a bez
+terminálu. Pridáva dva stĺpce, podponuku <strong>Git</strong>, ukotvený panel na prípravu a zápis zmien a okná pre
+históriu, blame, vetvy, konflikty a preskladanie. Používa <code>git</code>, ktorý je na vašom Macu už nainštalovaný. Je
+to zásuvný modul, takže ho môžete vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
 <h2 id="co-pridava">Čo pridáva</h2>
 <ul>
-<li><strong>Dva stĺpce v zozname súborov</strong> — <em>Git Status</em> a <em>Branch</em>. V úložisku každý súbor zobrazuje krátke stavové slovo (Upravené, Pridané, Odstránené, Nesledované, Premenované, Skopírované, Konflikt, Ignorované alebo Zmenené) a panel zobrazuje aktuálnu vetvu. Stĺpce zapnite v <strong>Konfigurácia ▸ Stĺpce…</strong> (pozri <a href="view-modes-and-sorting.html">Režimy zobrazenia a triedenie</a>).</li>
-<li><strong>Ponuka Git</strong> — pod <strong>Príkazy ▸ Git</strong> a v kontextovej ponuke súboru, s: <strong>Git Status…</strong>, <strong>Git Add (pripraviť)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> a <strong>Git Push</strong>.</li>
+<li><strong>Dva stĺpce zoznamu súborov</strong> — <em>Stav Gitu</em> a <em>Vetva</em>. Každý súbor ukazuje ikonu a krátke slovo stavu
+  (Zmenené, Pridané, Zmazané, Nesledované, Premenované, Skopírované, Konflikt, Ignorované, Zmenený typ), s
+  <em>(pripravené)</em>, keď je zmena už v indexe; stĺpec <em>Vetva</em> ukazuje vetvu, na ktorej stojí repozitár daného
+  súboru. Stĺpce zapnete v <strong>Konfigurácia ▸ Stĺpce…</strong> (pozri
+  <a href="view-modes-and-sorting.html">Režimy zobrazenia a triedenie</a>).</li>
+<li><strong>Ponuka Git</strong> — v <strong>Príkazy ▸ Git</strong> a v kontextovej ponuke súboru.</li>
 </ul>
-<p><img alt="Dialóg Git Status zobrazujúci aktuálnu vetvu a zmenené súbory v úložisku" src="images/git-status.png" />
-<em>(Obrázok: Git Status hlási vetvu a každú zmenu v pracovnom strome.)</em></p>
-<h2 id="kontrola-stavu">Kontrola stavu</h2>
-<ol>
-<li>Umiestnite kurzor na súbor alebo priečinok vnútri úložiska Git.</li>
-<li>Vyberte <strong>Príkazy ▸ Git ▸ Git Status…</strong> (alebo pravý klik ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Objaví sa súhrn: aktuálna vetva (alebo <em>(odpojené)</em>), potom buď <em>Pracovný strom je čistý.</em>, alebo zoznam zmien, kde každý riadok zobrazuje stav a cestu súboru.</li>
-</ol>
-<p>Ak kurzor nie je vnútri úložiska, zásuvný modul jednoducho oznámi <em>Nie je úložisko Git.</em></p>
-<h2 id="pripravit-commit-pull-push">Pripraviť, commit, pull, push</h2>
+<p><img alt="Okno Stav Gitu s aktuálnou vetvou a zmenenými súbormi v repozitári" src="images/git-status.png" />
+<em>(Obrázok: Stav Gitu uvádza vetvu a každú zmenu v pracovnom strome.)</em></p>
+<h2 id="panel-pripravit-zapisat-synchronizovat">Panel: pripraviť, zapísať, synchronizovať</h2>
+<p><strong>Príkazy ▸ Git ▸ Panel</strong> ukotví pohľad, ktorý delí pracovný strom na <em>pripravené</em>, <em>zmenené</em> a <em>nesledované</em>.
+Vyberte súbory a použite <strong>Pripraviť</strong>, <strong>Zrušiť prípravu</strong> alebo <strong>Zahodiť…</strong>, napíšte správu a stlačte
+<strong>Zapísať</strong> — s <strong>Opraviť</strong> sa zmena vloží do predošlého zápisu. <strong>Stiahnuť</strong> a <strong>Odoslať</strong> ležia vedľa, tam,
+kde sa aj tak zapisuje; obe ukazujú postup a dajú sa prerušiť.</p>
+<p>Zapisuje sa <em>index</em>, nie <code>git commit -a</code>: zapíše sa to, čo ste pripravili.</p>
+<h2 id="historia-blame-a-web">História, blame a web</h2>
 <ul>
-<li><strong>Git Add (pripraviť)</strong> pripraví súbor pod kurzorom (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> požiada o správu commitu, potom odovzdá všetky zmeny (<code>git commit -a</code>). Zobrazí sa kombinovaný výstup, takže presne vidíte, čo sa stalo.</li>
-<li><strong>Git Pull</strong> vykoná pull iba typu fast-forward (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> odošle aktuálnu vetvu (<code>git push</code>).</li>
+<li><strong>História…</strong> vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (<code>● main</code>, <code>↗ origin/main</code>,
+  <code>⚑ v1.0</code>), a súbory, ktorých sa každý zápis dotkol. Return alebo dvojklik otvorí verziu toho súboru proti
+  jeho predchodcovi v okne porovnania. <strong>Vrátiť zápis</strong> a <strong>Cherry-pick</strong> sú tam tiež a oba vopred odmietnu,
+  ak pracovný strom nie je čistý.</li>
+<li><strong>História súboru…</strong> je to isté okno pre jeden súbor.</li>
+<li><strong>Blame (zoznam)…</strong> ukazuje každý riadok s jeho zápisom, autorom a dátumom. <strong>Blame v editore</strong> píše tú istú
+  informáciu na okraj editora, vedľa čísel riadkov: ukázanie na riadok zobrazí správu zápisu, kliknutie ho
+  otvorí proti jeho predchodcovi.</li>
+<li><strong>Otvoriť na webe</strong> otvorí súbor, zápis alebo vetvu na GitHube, GitLabe, Bitbuckete či Azure DevOps,
+  zostavené z URL vzdialeného repozitára — bez účtu, bez tokenu. Pri serveri, ktorého podobu odkazov nepozná,
+  ponúkne stránku repozitára, namiesto toho aby hádal.</li>
 </ul>
-<p>Po príkaze, ktorý mení úložisko, sa aktívny panel obnoví, takže stavové stĺpce zostanú aktuálne.</p>
+<h2 id="vetvy-odlozene-zmeny-a-znacky">Vetvy, odložené zmeny a značky</h2>
+<p><strong>Vetvy, odložené zmeny a značky…</strong> vypisuje všetky tri. Prepnúť, založiť, zlúčiť alebo zmazať vetvu; odoslať,
+vybrať alebo zahodiť odložené zmeny; založiť, zmazať či odoslať značku alebo na ňu prepnúť — značka nie je
+vetva, a tak sa vopred povie, že HEAD skončí odpojený. Načítanie, Stiahnuť a Odoslať sú v tom istom okne a dá
+sa ich prerušiť počas behu.</p>
+<p>Odoslať značku je zámerne samostatná akcia: <code>git push</code> značky so sebou neberie.</p>
+<h2 id="konflikty">Konflikty</h2>
+<p><strong>Vyriešiť konflikt…</strong> vypisuje konfliktné oblasti súboru pod kurzorom a pre každú prijme rozhodnutie: <em>naše</em>,
+<em>ich</em>, <em>oboje</em> — alebo ju nechať otvorenú. Potom <strong>Zapísať súbor</strong> alebo <strong>Zapísať a pripraviť</strong>. Odmieta
+pripraviť, kým je niektorá oblasť otvorená — Git značky <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> zapíše bez mihnutia oka — a radšej sa
+nedotkne súboru, ktorého značky nevie prečítať, než aby ich hádal. Pre oblasť, ktorú treba prepliesť ručne z
+oboch strán, je <strong>Otvoriť v editore</strong> jedno tlačidlo ďaleko.</p>
+<h2 id="preskladanie">Preskladanie</h2>
+<p><strong>Preskladať…</strong> vypisuje zápisy pred prúdom — tie, ktoré nikto iný ešte nemá — a nechá vás ich zlúčiť,
+pripojiť ako opravu, zahodiť, preskladať alebo prepísať ich správu, než sa vetva prepíše. Ak sa preskladanie
+zastaví na konflikte, z toho istého okna sa stane <strong>Pokračovať</strong> / <strong>Preskočiť zápis</strong> / <strong>Prerušiť
+preskladanie</strong>, aby sa rozrobené preskladanie nemuselo dokončovať v termináli.</p>
+<h2 id="ignorovanie-suborov-a-prihlasovacie-udaje">Ignorovanie súborov a prihlasovacie údaje</h2>
+<ul>
+<li><strong>Ignorovať tento súbor…</strong>, <strong>Ignorovať tento typ súboru…</strong> a <strong>Ignorovať tento priečinok…</strong> zapíšu správny
+  vzor do <code>.gitignore</code> — ukotvený tam, kam patrí, aby ignorovanie <em>tohto</em> priečinka <code>build</code> neignorovalo každý
+  priečinok s názvom <code>build</code>.</li>
+<li><strong>Prihlasovacie údaje…</strong> hlásia, ako sa tento repozitár overuje: SSH, alebo HTTPS, či je nastavený pomocník
+  pre prihlasovacie údaje, či beží agent SSH a drží kľúč. Kde to pomôže, ponúknu presne jednu akciu — nechať
+  Git uchovávať údaje v zväzku kľúčov macOS. Zásuvný modul sa nikdy nepýta na heslo kľúča, nezobrazuje ho ani
+  neukladá.</li>
+</ul>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Zásuvný modul používa systémový Git na <code>/usr/bin/git</code>. Ak Git nie je nainštalovaný, príkazy oznámia, že Git nie je k dispozícii. (Inštalácia Xcode Command Line Tools ho poskytne.)</li>
-<li>Stav úložiska sa načíta raz na priečinok a uloží do vyrovnávacej pamäte, takže posúvanie veľkého úložiska zostáva rýchle; vyrovnávacia pamäť sa obnoví po každom príkaze, ktorý zmení strom.</li>
-<li>Commit používa <code>git commit -a</code>, ktorý odovzdá sledované zmeny; úplne nové súbory stále najprv potrebujú <strong>Git Add (pripraviť)</strong>.</li>
-<li>Hlavičky stĺpcov <em>Git Status</em> a <em>Branch</em> sa momentálne zobrazujú v angličtine aj v iných jazykoch rozhrania; hodnoty a dialógy sú lokalizované.</li>
+<li>Zásuvný modul používa systémový Git v <code>/usr/bin/git</code>. Ak Git chýba, príkazy oznámia, že Git nie je k
+  dispozícii. (Prinášajú ho Xcode Command Line Tools.)</li>
+<li>Stav repozitára sa číta raz na priečinok a ukladá do vyrovnávacej pamäte, aby prechádzanie veľkého
+  repozitára zostalo rýchle; pamäť sa obnoví po každom príkaze, ktorý zmení strom, a sleduje aj zápis
+  urobený mimo aplikácie.</li>
+<li>Pripojené pracovné stromy a podmoduly sú podporované: súbor vnútri podmodulu ukazuje stav a vetvu
+  <em>podmodulu</em>, nie nadradeného repozitára.</li>
+<li>Každý zoznam má kontextovú ponuku, <strong>Return</strong> spustí jeho hlavnú akciu a <strong>Cmd+R</strong> okno znova načíta.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="view-modes-and-sorting.html">Režimy zobrazenia a triedenie</a></li></ul></section>
 </main>

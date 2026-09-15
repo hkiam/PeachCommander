@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker-containrar och -volymer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker-containrar och -volymer</h1>
+<p>En Docker-containers filsystem kan bläddras i en panel som vilken mapp som helst, och det gäller även en Docker-volym. Välj <strong>Anslut till Docker…</strong> i menyn Nätverk, eller klicka på brickan <strong>Docker</strong> i enhetslisten, så visas motorn i den aktiva panelen.</p>
+<p>Det är ett insticksprogram och det <strong>levereras avstängt</strong>. Slå på det under <strong>Konfiguration ▸ Insticksprogram…</strong>. Det börjar avstängt eftersom en anslutning till Docker-tjänsten har samma rättigheter på din Mac som du själv — se <em>Vad det når</em> nedan.</p>
+<h2 id="vad-du-ser">Vad du ser</h2>
+<p>Den översta nivån är tre mappar:</p>
+<ul>
+<li><strong>Compose Projects</strong> — alla containrar som Docker Compose har startat, grupperade efter projekt och sedan efter tjänst. En tjänst med en enda container <em>är</em> den containern: <code>my-stack/backend/etc</code> är backendens <code>/etc</code>. En tjänst med flera behåller en nivå för dem, en mapp per container.</li>
+<li><strong>Standalone Containers</strong> — allt övrigt, oavsett om det körs eller inte.</li>
+<li><strong>Volumes</strong> — varje Docker-volym, som en egen enhet.</li>
+</ul>
+<p>Under dem befinner du dig i ett riktigt filsystem: F3 visar en fil, F4 redigerar den, F5 kopierar den till den andra panelen, F7 skapar en mapp. Den andra panelen kan vara vad som helst — en lokal mapp, ett arkiv, en S3-bucket.</p>
+<p>Grupperingen läses ur de etiketter som Compose sätter på sina egna containrar och volymer, så den stämmer även för en stack vars <code>docker-compose.yml</code> sedan länge är borta från den här maskinen.</p>
+<p><strong>Volymer listas separat med avsikt.</strong> En volym överlever den container som skapade den, kan delas av flera containrar och innehåller oftast just de data du kom för. En volym som inget monterar just nu går ändå att bläddra i.</p>
+<h2 id="kolumner">Kolumner</h2>
+<p>Högerklicka på en panels kolumnrubrik för att lägga till leverantörens egna kolumner:</p>
+<ul>
+<li><strong>Status</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Åtkomst</strong> — <code>RW</code>, <code>RO</code> för ett skrivskyddat rootfs eller en skrivskyddad montering, <code>VOL</code> för en Docker-volym, <code>BIND</code> för en av dina egna mappar monterad i containern, <code>TMP</code> för ett tmpfs.</li>
+<li><strong>Image</strong>, <strong>ID</strong>.</li>
+<li><strong>Montering</strong> — på en katalog som i själva verket är en montering: vad den är. <code>Volume: my-stack_db-data</code>, eller värdsökvägen bakom en bind-montering. Så hittar du vilken volym under <strong>Volumes</strong> som innehåller en containers data.</li>
+</ul>
+<h2 id="stoppade-containrar">Stoppade containrar</h2>
+<p>Stoppade containrar listas och deras filsystem går att läsa och skriva. Dockers fil-API svarar för en container som inte har körts på en månad, och det är det som gör att detta känns som en enhet i stället för en processlista.</p>
+<p>Två saker kräver en container som verkligen körs: <strong>radera</strong> och <strong>byta namn</strong>. Docker Engine-API:et har ingen operation för någotdera — det enda sättet att ta bort eller flytta en fil inuti en container är att köra något i den — så på en stoppad container avvisas båda i stället för att låtsas.</p>
+<h2 id="vad-du-kan-forvanta-dig">Vad du kan förvänta dig</h2>
+<p><strong>Skrivningar går in som <code>root</code>, raderingar körs som containerns egen användare.</strong> Det är Dockers upplägg, inte ett val som gjorts här: att kopiera in en fil använder motorns arkiv-API, som skriver som root; att radera eller byta namn kör ett kommando inuti containern, som körs som den användare avbilden angett. En radering kan därför avvisas med <em>åtkomst nekad</em> på en fil du kunde kopiera in ett ögonblick tidigare. Peach Commander kringgår inte det genom att uppträda som root — det berättar vad containern sade.</p>
+<p><strong>En skrivskyddad container eller montering avvisar skrivning</strong> och rapporterar det som ett rättighetsfel, inte som ett misslyckande.</p>
+<p><strong>Att läsa en symbolisk länk läser det den pekar på.</strong> Panelen visar den fortfarande som en länk i kolumnen Attr; F3 visar målets innehåll i stället för en tom fil.</p>
+<p><strong>Roten i en stor stoppad container går kanske inte att lista.</strong> Docker har inget anrop som listar en katalog. Att läsa en katalog innebär att begära den som ett arkiv, vilket innehåller allt under den — för en stoppad container byggd på en fullstor avbild kan det vara många gigabyte, och listningen avvisas i stället för att läsa alltihop. Djupare kataloger påverkas inte, och en <em>körande</em> container inte heller: en katalog som är för stor för att läsas som arkiv listas av containern själv. Vill du bara ha arkivvägen, se inställningen nedan.</p>
+<p><strong>Att kopiera ut en hel container kopierar hela dess filsystem</strong> — inklusive <code>/proc</code> och <code>/dev</code>. Kopiera den katalog du vill ha, inte <code>/</code>.</p>
+<h2 id="vad-det-nar">Vad det når</h2>
+<p>Insticksprogrammet talar med samma motor som du skulle nå från en terminal: <code>DOCKER_HOST</code> om du har satt den, annars din aktuella <code>docker context</code>, annars de vanliga socketarna för Docker Desktop, Colima, Rancher Desktop, Lima och Podman. Podman fungerar eftersom det erbjuder samma API.</p>
+<p>Åtkomst till en Docker-tjänst innebär i regel mycket långtgående åtkomst till maskinen den körs på. Insticksprogrammet har exakt dina rättigheter och begär inga fler: det sparar inga inloggningsuppgifter, rör aldrig Dockers egna kataloger på din disk och utför inga privilegierade åtgärder för din räkning.</p>
+<p>Det enda det skapar är en <strong>engångscontainer</strong> — och bara för att nå en volym som ingen befintlig container monterar, eftersom en volym bara syns inifrån något som monterar den. Den startas aldrig, den är märkt som Peach Commanders och den tas bort när du lämnar enheten.</p>
+<h2 id="atgarder-pa-en-container-eller-en-volym">Åtgärder på en container eller en volym</h2>
+<p>Ett högerklick på en container eller en volym erbjuder i undermenyn <strong>Docker</strong> det som en enhet ensam inte kan säga:</p>
+<ul>
+<li><strong>Inspect</strong> — allt motorn vet om den, som formaterad JSON i ett fönster som går att rulla och
+  markera i.</li>
+<li><strong>Show Logs</strong> — de senaste 500 raderna containern har skrivit.</li>
+<li><strong>Show Mounts</strong> — varje montering den bär, vad den är och om det går att skriva i den.</li>
+<li><strong>Copy ID</strong> — containerns fullständiga id, eller volymens namn, till urklipp. Det <em>fullständiga</em>
+  id:t, inte de tolv tecknen i ID-kolumnen: det här är till för att klistras in i ett <code>docker</code>-kommando,
+  och ett kort id är ett prefix som kan sluta vara unikt.</li>
+<li><strong>Jump to Volume</strong> — på en katalog som egentligen är en volym, gå till den volymen under
+  <strong>Volumes</strong>. Det är den andra halvan av Montering-kolumnen: kolumnen namnger volymen, det här tar dig dit.</li>
+<li><strong>Open Compose Project</strong> — gå till projektet containern hör till.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — dessa ändrar containern i stället för
+  att läsa den, så de frågar först. Start är också vägen ut ur de två avslagen ovan: radera och byta
+  namn kräver en körande container.</li>
+</ul>
+<p>Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls.</p>
+<p><strong>Loggen är också en fil.</strong> I roten av varje container ligger <code>docker-logs.txt</code> — som inte är en fil i containern: att läsa den ber motorn om loggen. F3 på den öppnar den i visaren, så dess sökning, hopp till en rad och val av teckenkodning gäller alla, vilket ett eget fönster inte kan ge. En container som verkligen har en fil med det namnet visar sin egen, och till den virtuella går det inte att skriva.</p>
+<h2 id="installningar">Inställningar</h2>
+<p><strong>Konfiguration ▸ Inställningar ▸ Docker</strong> innehåller allt detta. Samma värden finns i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som är den du redigerar om du sätter upp en maskin från ett skript:</p>
+<ul>
+<li><code>Endpoint</code> — en adress att använda i stället för den som hittades.</li>
+<li><code>ExecFallback</code> — <code>0</code> gör att insticksprogrammet bara använder Dockers arkiv-API: det kör då aldrig något inuti en container, till priset av att inte kunna lista en mycket stor katalog, radera eller byta namn.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — hur mycket av en katalogs arkiv som är värt att läsa innan det faller tillbaka eller ger upp.</li>
+<li><code>HelperImage</code> — den avbild engångscontainern ovan skapas av (som standard vilken avbild som helst som redan finns på maskinen).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> döljer de volymer som Docker gav en lång hash som namn därför att ingen annan namngav dem.</li>
+</ul>
+<h2 id="inte-med-i-den-har-versionen">Inte med i den här versionen</h2>
+<p>Fjärrmotorer över SSH eller TLS, ett interaktivt skal, och avbilder som skrivskyddade filsystem.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="amazon-s3.html">Amazon S3 och S3-kompatibel lagring</a></li><li><a href="webdav.html">WebDAV-servrar</a></li><li><a href="copying-files.html">Kopiera filer</a></li><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

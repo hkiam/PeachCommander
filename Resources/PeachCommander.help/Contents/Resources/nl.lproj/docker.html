@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker-containers en -volumes</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker-containers en -volumes</h1>
+<p>Het bestandssysteem van een Docker-container is in een venster te doorzoeken als elke andere map, en een Docker-volume ook. Kies <strong>Verbinden met Docker…</strong> in het menu Netwerk, of klik op de knop <strong>Docker</strong> in de schijvenbalk, en de engine verschijnt in het actieve venster.</p>
+<p>Het is een plug-in en wordt <strong>uitgeschakeld geleverd</strong>. Zet hem aan bij <strong>Configuratie ▸ Plug-ins…</strong>. Hij begint uitgeschakeld omdat een verbinding met de Docker-daemon op uw Mac dezelfde rechten heeft als u — zie <em>Waar hij bij kan</em> verderop.</p>
+<h2 id="wat-u-ziet">Wat u ziet</h2>
+<p>Het bovenste niveau bestaat uit drie mappen:</p>
+<ul>
+<li><strong>Compose Projects</strong> — elke container die door Docker Compose is gestart, gegroepeerd per project en daarna per service. Een service met één container <em>is</em> die container: <code>my-stack/backend/etc</code> is de <code>/etc</code> van de backend. Een service met meerdere houdt daarvoor een niveau, één map per container.</li>
+<li><strong>Standalone Containers</strong> — al het overige, actief of niet.</li>
+<li><strong>Volumes</strong> — elk Docker-volume, als een schijf op zichzelf.</li>
+</ul>
+<p>Daaronder bevindt u zich in een echt bestandssysteem: F3 toont een bestand, F4 bewerkt het, F5 kopieert het naar het andere venster, F7 maakt een map. Het andere venster kan van alles zijn — een lokale map, een archief, een S3-bucket.</p>
+<p>De groepering wordt gelezen uit de labels die Compose op zijn eigen containers en volumes zet, dus klopt ze ook voor een stack waarvan de <code>docker-compose.yml</code> allang niet meer op deze machine staat.</p>
+<p><strong>Volumes worden bewust apart vermeld.</strong> Een volume overleeft de container die het maakte, kan door meerdere containers worden gedeeld en bevat meestal precies de gegevens waarvoor u kwam. Een volume dat op dit moment nergens is gekoppeld, blijft doorzoekbaar.</p>
+<h2 id="kolommen">Kolommen</h2>
+<p>Klik met de rechtermuisknop op de kolomkop van een venster om de eigen kolommen van de provider toe te voegen:</p>
+<ul>
+<li><strong>Status</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Toegang</strong> — <code>RW</code>, <code>RO</code> bij een alleen-lezen rootfs of koppeling, <code>VOL</code> voor een Docker-volume, <code>BIND</code> voor een van uw mappen in de container, <code>TMP</code> voor een tmpfs.</li>
+<li><strong>Image</strong>, <strong>ID</strong>.</li>
+<li><strong>Koppeling</strong> — bij een map die in werkelijkheid een koppeling is: wat het is. <code>Volume: my-stack_db-data</code>, of het hostpad achter een bind. Zo vindt u welk volume onder <strong>Volumes</strong> de gegevens van een container bevat.</li>
+</ul>
+<h2 id="gestopte-containers">Gestopte containers</h2>
+<p>Gestopte containers worden getoond en hun bestandssystemen kunnen worden gelezen en beschreven. De bestands-API van Docker antwoordt ook voor een container die al een maand niet heeft gedraaid, en dat is wat dit op een schijf laat lijken in plaats van op een procestabel.</p>
+<p>Twee dingen vereisen een werkelijk draaiende container: <strong>verwijderen</strong> en <strong>hernoemen</strong>. De Docker Engine-API kent voor geen van beide een bewerking — de enige manier om een bestand in een container te verwijderen of te verplaatsen is er iets in uit te voeren — dus bij een gestopte container worden beide geweigerd in plaats van voorgewend.</p>
+<h2 id="wat-u-ervan-mag-verwachten">Wat u ervan mag verwachten</h2>
+<p><strong>Schrijfacties komen binnen als <code>root</code>, verwijderingen lopen als de eigen gebruiker van de container.</strong> Dat is Dockers indeling, geen keuze die hier is gemaakt: een bestand naar binnen kopiëren gaat via de archief-API van de engine, die als root schrijft; verwijderen of hernoemen voert een opdracht uit in de container, onder de gebruiker die het image heeft ingesteld. Een verwijdering kan daardoor met <em>toegang geweigerd</em> mislukken bij een bestand dat u even daarvoor wél kon kopiëren. Peach Commander omzeilt dat niet door als root te werken — het meldt u wat de container zei.</p>
+<p><strong>Een alleen-lezen container of koppeling weigert schrijfacties</strong> en meldt dat als een rechtenfout, niet als een mislukking.</p>
+<p><strong>Een symbolische koppeling lezen leest waar hij naar wijst.</strong> Het venster toont hem nog steeds als koppeling in de kolom Attr; F3 toont de inhoud van het doel in plaats van een leeg bestand.</p>
+<p><strong>De hoofdmap van een grote gestopte container is mogelijk niet op te vragen.</strong> Docker heeft geen aanroep die een map opsomt. Een map lezen betekent haar als archief opvragen, en dat bevat alles eronder — bij een gestopte container op basis van een volwaardig image kan dat tientallen gigabytes zijn, en dan wordt de opsomming geweigerd in plaats van alles te lezen. Dieper gelegen mappen hebben er geen last van, en een <em>draaiende</em> container evenmin: een map die te groot is om als archief te lezen wordt door de container zelf opgesomd. Wilt u uitsluitend de archiefweg, zie dan de instelling hieronder.</p>
+<p><strong>Een hele container naar buiten kopiëren kopieert zijn volledige bestandssysteem</strong> — inclusief <code>/proc</code> en <code>/dev</code>. Kopieer de map die u nodig hebt, niet <code>/</code>.</p>
+<h2 id="waar-hij-bij-kan">Waar hij bij kan</h2>
+<p>De plug-in praat met dezelfde engine die u vanuit een terminal zou bereiken: <code>DOCKER_HOST</code> als u die hebt gezet, anders uw huidige <code>docker context</code>, anders de gebruikelijke sockets van Docker Desktop, Colima, Rancher Desktop, Lima en Podman. Podman werkt omdat het dezelfde API aanbiedt.</p>
+<p>Toegang tot een Docker-daemon betekent doorgaans verstrekkende toegang tot de machine waarop hij draait. De plug-in heeft precies uw rechten en vraagt er geen meer: hij bewaart geen inloggegevens, raakt Dockers eigen mappen op uw schijf nooit aan en voert geen bevoorrechte handelingen namens u uit.</p>
+<p>Het enige dat hij aanmaakt is een <strong>wegwerpcontainer</strong> — en alleen om een volume te bereiken dat geen bestaande container koppelt, want een volume is alleen zichtbaar van binnenuit iets dat het koppelt. Hij wordt nooit gestart, draagt het label van Peach Commander en wordt verwijderd zodra u de schijf verlaat.</p>
+<h2 id="acties-op-een-container-of-een-volume">Acties op een container of een volume</h2>
+<p>Een rechterklik op een container of een volume biedt in het submenu <strong>Docker</strong> wat een schijf alleen niet kan zeggen:</p>
+<ul>
+<li><strong>Inspect</strong> — alles wat de engine ervan weet, als opgemaakte JSON, in een venster waarin u kunt
+  scrollen en selecteren.</li>
+<li><strong>Show Logs</strong> — de laatste 500 regels die de container heeft geschreven.</li>
+<li><strong>Show Mounts</strong> — elke koppeling die hij draagt, wat elk ervan is en of erin geschreven kan worden.</li>
+<li><strong>Copy ID</strong> — de volledige id van de container, of de naam van het volume, op het klembord.
+  De <em>volledige</em> id, niet de twaalf tekens van de ID-kolom: dit is bedoeld om in een <code>docker</code>-opdracht
+  te plakken, en een korte id is een voorvoegsel dat kan ophouden uniek te zijn.</li>
+<li><strong>Jump to Volume</strong> — op een map die in werkelijkheid een volume is, naar dat volume onder
+  <strong>Volumes</strong> gaan. Dat is de andere helft van de kolom Koppeling: de kolom noemt het volume, dit brengt u erheen.</li>
+<li><strong>Open Compose Project</strong> — naar het project gaan waar de container bij hoort.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — deze veranderen de container in plaats
+  van hem te lezen, dus vragen ze eerst. Start is ook de uitweg uit de twee weigeringen hierboven:
+  verwijderen en hernoemen vereisen een draaiende container.</li>
+</ul>
+<p>De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn ze er helemaal niet.</p>
+<p><strong>Het logboek is ook een bestand.</strong> In de hoofdmap van elke container staat <code>docker-logs.txt</code> — geen bestand in de container: het lezen ervan vraagt de engine om het logboek. F3 erop opent het in de weergave, dus de zoekfunctie, het springen naar een regel en de keuze van codering gelden allemaal, wat een eigen venster niet kan geven. Een container die werkelijk een bestand met die naam meebrengt, toont het zijne, en naar het virtuele kan niets worden geschreven.</p>
+<h2 id="instellingen">Instellingen</h2>
+<p><strong>Configuratie ▸ Instellingen ▸ Docker</strong> bevat dit alles. Dezelfde waarden staan in een klein bestand op <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, dat u bewerkt als u een machine vanuit een script inricht:</p>
+<ul>
+<li><code>Endpoint</code> — een adres dat in plaats van het gevonden adres wordt gebruikt.</li>
+<li><code>ExecFallback</code> — <code>0</code> laat de plug-in uitsluitend Dockers archief-API gebruiken: hij voert dan nooit iets uit in een container, ten koste van het opsommen van een zeer grote map, verwijderen en hernoemen.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — hoeveel van het archief van een map het waard is te lezen voordat wordt teruggevallen of opgegeven.</li>
+<li><code>HelperImage</code> — het image waarvan de bovengenoemde wegwerpcontainer wordt gemaakt (standaard een willekeurig image dat al aanwezig is).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> verbergt de volumes waaraan Docker een lange hash als naam gaf omdat niemand anders ze een naam gaf.</li>
+</ul>
+<h2 id="niet-in-deze-versie">Niet in deze versie</h2>
+<p>Externe engines via SSH of TLS, een interactieve shell, en images als alleen-lezen bestandssystemen.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="amazon-s3.html">Amazon S3 en S3-compatibele opslag</a></li><li><a href="webdav.html">WebDAV-servers</a></li><li><a href="copying-files.html">Bestanden kopiëren</a></li><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li></ul></section>
+</main>
+</body>
+</html>

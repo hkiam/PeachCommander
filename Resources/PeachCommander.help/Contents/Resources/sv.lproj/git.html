@@ -10,35 +10,79 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Git-insticksprogrammet visar tillståndet för ett Git-arkiv direkt i filpanelen — ingen separat app, ingen terminal. Det lägger till två kolumner som visar varje fils status i arbetsträdet och den aktuella grenen, en undermeny <strong>Git</strong> för de vardagliga kommandona (status, köa, checka in, hämta, skicka), och det använder det <code>git</code> som redan är installerat på din Mac. Det är ett insticksprogram, så du kan slå av det eller ta bort det i <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
-<h2 id="vad-det-tillfor">Vad det tillför</h2>
+<p>Git-insticksprogrammet visar tillståndet i ett Git-arkiv direkt i filpanelen — ingen separat app, ingen
+terminal. Det lägger till två kolumner, en undermeny <strong>Git</strong>, en dockad panel för att köa och checka in, och
+fönster för historik, blame, grenar, konflikter och ombasering. Det använder den <code>git</code> som redan är
+installerad på din Mac. Det är ett insticksprogram, så du kan stänga av det eller ta bort det under
+<strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="vad-det-lagger-till">Vad det lägger till</h2>
 <ul>
-<li><strong>Två fillistkolumner</strong> — <em>Git Status</em> och <em>Branch</em>. I ett arkiv visar varje fil ett kort statusord (Ändrad, Tillagd, Borttagen, Ospårad, Namnbytt, Kopierad, Konflikt, Ignorerad eller Förändrad) och panelen visar den aktuella grenen. Slå på kolumnerna i <strong>Konfiguration ▸ Kolumner…</strong> (se <a href="view-modes-and-sorting.html">Visningslägen och sortering</a>).</li>
-<li><strong>En Git-meny</strong> — under <strong>Kommandon ▸ Git</strong>, och i högerklicksmenyn för en fil, med: <strong>Git Status…</strong>, <strong>Git Add (köa)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> och <strong>Git Push</strong>.</li>
+<li><strong>Två kolumner i fillistan</strong> — <em>Git-status</em> och <em>Gren</em>. Varje fil visar en ikon och ett kort statusord
+  (Ändrad, Tillagd, Borttagen, Ospårad, Omdöpt, Kopierad, Konflikt, Ignorerad, Typ ändrad), med <em>(köad)</em> när
+  ändringen redan ligger i indexet; kolumnen <em>Gren</em> visar den gren som filens arkiv står på. Slå på
+  kolumnerna under <strong>Konfiguration ▸ Kolumner…</strong> (se
+  <a href="view-modes-and-sorting.html">Visningslägen och sortering</a>).</li>
+<li><strong>En Git-meny</strong> — under <strong>Kommandon ▸ Git</strong>, och i en fils högerklicksmeny.</li>
 </ul>
-<p><img alt="Dialogen Git Status som visar den aktuella grenen och de ändrade filerna i arkivet" src="images/git-status.png" />
-<em>(Figur: Git Status rapporterar grenen och varje ändring i arbetsträdet.)</em></p>
-<h2 id="kontrollera-statusen">Kontrollera statusen</h2>
-<ol>
-<li>Placera markören på en fil eller mapp inuti ett Git-arkiv.</li>
-<li>Välj <strong>Kommandon ▸ Git ▸ Git Status…</strong> (eller högerklicka ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>En sammanfattning visas: den aktuella grenen (eller <em>(detached)</em>), sedan antingen <em>Working tree clean.</em> eller en lista över ändringar, där varje rad visar statusen och filsökvägen.</li>
-</ol>
-<p>Om markören inte är inuti ett arkiv säger insticksprogrammet helt enkelt <em>Not a Git repository.</em></p>
-<h2 id="koa-checka-in-hamta-skicka">Köa, checka in, hämta, skicka</h2>
+<p><img alt="Fönstret Git-status med aktuell gren och de ändrade filerna i arkivet" src="images/git-status.png" />
+<em>(Figur: Git-status anger grenen och varje ändring i arbetsträdet.)</em></p>
+<h2 id="panelen-koa-checka-in-synkronisera">Panelen: köa, checka in, synkronisera</h2>
+<p><strong>Kommandon ▸ Git ▸ Panel</strong> dockar en vy som grupperar arbetsträdet i <em>köad</em>, <em>ändrad</em> och <em>ospårad</em>. Välj
+filer och använd <strong>Köa</strong>, <strong>Avköa</strong> eller <strong>Kasta…</strong>, skriv ett meddelande och tryck på <strong>Checka in</strong> — med
+<strong>Amend</strong> viks ändringen i stället in i föregående incheckning. <strong>Pull</strong> och <strong>Push</strong> ligger bredvid, där
+incheckningen ändå sker; båda visar förlopp och kan avbrytas.</p>
+<p>Det är <em>indexet</em> som checkas in, inte <code>git commit -a</code>: det du har köat är det som checkas in.</p>
+<h2 id="historik-blame-och-webben">Historik, blame och webben</h2>
 <ul>
-<li><strong>Git Add (köa)</strong> köar filen under markören (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> ber om ett incheckningsmeddelande och checkar sedan in alla ändringar (<code>git commit -a</code>). Den kombinerade utdatan visas så att du kan se exakt vad som hände.</li>
-<li><strong>Git Pull</strong> gör en fast-forward-only-hämtning (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> skickar den aktuella grenen (<code>git push</code>).</li>
+<li><strong>Historik…</strong> listar incheckningarna med en filgraf, referenserna som pekar på var och en (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), och filerna varje incheckning rört. Retur eller ett dubbelklick öppnar filens
+  version mot sin föregångare i jämförelsefönstret. <strong>Ångra incheckning</strong> och <strong>Cherry-pick</strong> finns där, och
+  båda vägrar i förväg om arbetsträdet inte är rent.</li>
+<li><strong>Filhistorik…</strong> är samma fönster för en enda fil.</li>
+<li><strong>Blame (lista)…</strong> visar varje rad med incheckning, författare och datum. <strong>Blame i redigeraren</strong> skriver
+  samma information i redigerarens marginal, bredvid radnumren: peka på en rad för incheckningens meddelande,
+  klicka för att öppna den mot sin föregångare.</li>
+<li><strong>Öppna på webben</strong> öppnar filen, incheckningen eller grenen på GitHub, GitLab, Bitbucket eller Azure
+  DevOps, byggd ur fjärrarkivets URL — inget konto, ingen token. För en värd vars länkform det inte känner
+  till erbjuder det arkivsidan i stället för att gissa.</li>
 </ul>
-<p>Efter ett kommando som ändrar arkivet uppdateras den aktiva panelen så att statuskolumnerna hålls aktuella.</p>
+<h2 id="grenar-stashar-och-taggar">Grenar, stashar och taggar</h2>
+<p><strong>Grenar, stashar och taggar…</strong> listar alla tre. Byta, skapa, sammanfoga eller ta bort en gren; pusha, poppa
+eller kasta en stash; skapa, ta bort eller pusha en tagg, eller byta till den — en tagg är ingen gren, så det
+sägs i förväg att HEAD hamnar frikopplat. Fetch, Pull och Push finns i samma fönster och kan avbrytas medan de
+körs.</p>
+<p>Att pusha en tagg är avsiktligt en egen åtgärd: <code>git push</code> tar inte med taggar.</p>
+<h2 id="konflikter">Konflikter</h2>
+<p><strong>Lös konflikt…</strong> listar de konfliktdrabbade områdena i filen under markören och fattar ett beslut för vart
+och ett: <em>våra</em>, <em>deras</em>, <em>båda</em> — eller lämna öppet. Sedan <strong>Skriv fil</strong> eller <strong>Skriv och köa</strong>. Det vägrar
+köa så länge ett område står öppet — Git checkar glatt in <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>-markörer — och det rör inte en fil vars
+markörer det inte kan läsa i stället för att gissa sig till dem. För ett område där båda sidor måste vävas
+samman för hand är <strong>Öppna i redigeraren</strong> en knapp bort.</p>
+<h2 id="ombasering">Ombasering</h2>
+<p><strong>Ombasera…</strong> listar incheckningarna som ligger före uppströms — de som ingen annan har ännu — och låter dig
+squasha, lägga till som fixup, kasta, ordna om eller formulera om dem innan grenen skrivs om. Stannar en
+ombasering i en konflikt blir samma fönster <strong>Fortsätt</strong> / <strong>Hoppa över incheckning</strong> / <strong>Avbryt ombasering</strong>,
+så att en halvfärdig ombasering inte måste avslutas i en terminal.</p>
+<h2 id="att-ignorera-filer-och-inloggningsuppgifter">Att ignorera filer, och inloggningsuppgifter</h2>
+<ul>
+<li><strong>Ignorera den här filen…</strong>, <strong>Ignorera den här filtypen…</strong> och <strong>Ignorera den här mappen…</strong> skriver rätt
+  mönster i <code>.gitignore</code> — förankrat där det hör hemma, så att <em>den här</em> <code>build</code>-mappen ignoreras och inte
+  varje mapp som heter <code>build</code>.</li>
+<li><strong>Inloggningsuppgifter…</strong> berättar hur det här arkivet autentiserar sig: SSH eller HTTPS, om en credential
+  helper är uppsatt, om en SSH-agent kör och håller en nyckel. Där det hjälper erbjuder det exakt en åtgärd —
+  låta Git förvara uppgifterna i macOS nyckelring. Insticksprogrammet frågar aldrig efter en lösenordsfras,
+  visar den inte och sparar den inte.</li>
+</ul>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Insticksprogrammet använder systemets Git på <code>/usr/bin/git</code>. Om Git inte är installerat rapporterar kommandona att Git inte är tillgängligt. (Att installera Xcode Command Line Tools tillhandahåller det.)</li>
-<li>Arkivstatusen läses en gång per mapp och cachas, så att bläddring i ett stort arkiv förblir snabb; cachen uppdateras efter varje kommando som ändrar trädet.</li>
-<li>Incheckning använder <code>git commit -a</code>, som checkar in spårade ändringar; helt nya filer behöver fortfarande <strong>Git Add (köa)</strong> först.</li>
-<li>Kolumnrubrikerna <em>Git Status</em> och <em>Branch</em> visas för närvarande på engelska även i andra gränssnittsspråk; värdena och dialogerna är lokaliserade.</li>
+<li>Insticksprogrammet använder systemets Git i <code>/usr/bin/git</code>. Saknas Git meddelar kommandona att Git inte är
+  tillgängligt. (Xcode Command Line Tools innehåller det.)</li>
+<li>Arkivets status läses en gång per mapp och cachas, så att bläddra i ett stort arkiv förblir snabbt; cachen
+  förnyas efter varje kommando som ändrar trädet, och följer även en incheckning som gjorts utanför
+  programmet.</li>
+<li>Länkade arbetsträd och undermoduler stöds: en fil i en undermodul visar <em>undermodulens</em> status och gren,
+  inte det överordnade arkivets.</li>
+<li>Varje lista har en kontextmeny, <strong>Retur</strong> kör dess huvudåtgärd och <strong>Cmd+R</strong> laddar om fönstret.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="view-modes-and-sorting.html">Visningslägen och sortering</a></li></ul></section>
 </main>

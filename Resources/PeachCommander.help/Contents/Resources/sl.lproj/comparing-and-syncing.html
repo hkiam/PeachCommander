@@ -18,14 +18,11 @@
 <li>Nastavite, kako temeljita naj bo primerjava: vključi podmape, primerjaj <strong>po vsebini</strong> (ne le po datumu in velikosti), ali prezri datum spremembe.</li>
 <li>Dodajte masko filtra (na primer <code>*.jpg;*.png</code>), če želite sinhronizirati le določene datoteke.</li>
 <li>Preglejte mrežo rezultatov. Vsaka vrstica prikazuje datoteko na levi, puščico smeri na sredini in ujemajočo datoteko na desni. Puščice vam povedo, kaj se bo zgodilo: <strong>→</strong> kopira z leve na desno, <strong>←</strong> kopira z desne na levo, <strong>=</strong> pa pomeni, da sta oba enaka.</li>
-<li>S <strong>Prikaži</strong> zožite, kaj mreža kaže: vse, samo vrstice, ki gredo <strong>&#8594;</strong> na desno, ali samo tiste, ki gredo <strong>&#8592;</strong> na levo. <strong>Skrij enake</strong> izpusti datoteke, ki so na obeh straneh že enake; vrstica pod mrežo pove, koliko vrstic filter zadržuje.</li>
-<li><strong>Izberi vse</strong> označi točno to, kar je na zaslonu, in odznači vse, kar filter skriva &mdash; izberite smer, kliknite, in tek gre samo v to smer. <strong>Odznači vse</strong> izprazni vsako vrstico, prikazano ali ne, če raje izbirate ročno.</li>
-<li>Vsaka vrstica poleg obeh velikosti kaže tudi oba datuma, tako da je vidno, <em>zakaj</em> puščica kaže prav tako. S klikom na glavo stolpca se razvrsti po njem, z dvoklikom na vrstico se datoteki odpreta drug ob drugem.</li>
-<li><strong>&#8800;</strong> označuje spor: dve enako stari datoteki, ki se kljub temu razlikujeta, kjer Peach Commander noče ugibati. Kliknite znak in sami izberite <strong>&#8594;</strong> ali <strong>&#8592;</strong>; z nadaljnjim klikanjem vrstica spet postane spor in ostane zunaj teka.</li>
 <li>Prilagodite posamezne vrstice, če se ne strinjate s predlagano smerjo, nato kliknite gumb za sinhronizacijo, da izvedete spremembe.</li>
 </ol>
 <p><img alt="Okno za sinhronizacijo imenikov z dvema potema map in mrežo rezultatov datotek s puščicami levo, enako in desno" src="images/sync-dialog.png" />
 <em>(Slika: okno Sinhroniziraj imenike primerja obe strani in predlaga smer kopiranja za vsako datoteko.)</em></p>
+<p>Z desnim klikom na vrstico si oglejte datoteki za njo. <strong>Primerjaj</strong> odpre obe strani eno ob drugi, <strong>Prikaži levo datoteko</strong> in <strong>Prikaži desno datoteko</strong> pa odpreta samo eno stran v pregledovalniku — to je odgovor za vrstico, ki obstaja le na eni strani, kjer ni česa primerjati. Vnosi, ki jih na kliknjeni vrstici ni mogoče uporabiti, so zatemnjeni, namesto da ne bi naredili nič. Datoteka v arhivu <code>.zip</code> ali na strežniku se najprej razpakira oziroma prenese v začasno kopijo samo za branje, tako da izvirnika nič ne spremeni. Isto velja za <strong>Primerjaj</strong>, tako da je mapo mogoče primerjati z arhivom ali strežnikom — gumba za prevzem in shranjevanje pa za tako stran ostaneta izklopljena, saj je tam odprta kopija.</p>
 <h2 id="primerjajte-dve-datoteki-po-vsebini">Primerjajte dve datoteki po vsebini</h2>
 <ol>
 <li>Izberite eno datoteko v vsakem podoknu (ali dve datoteki v istem podoknu).</li>
@@ -35,10 +32,61 @@
 </ol>
 <p><img alt="Okno za primerjavo, ki prikazuje dve besedilni datoteki drug ob drugem s poudarjenimi različnimi vrsticami" src="images/diff-window.png" />
 <em>(Slika: primerjava dveh besedilnih datotek; spremenjene vrstice so poudarjene na obeh straneh.)</em></p>
+<p>Kadar med datotekama ni nobene razlike, okno to pove v obarvanem traku na vrhu, namesto da bi to prepustilo vašemu sklepanju iz tabele, v kateri ni nič poudarjeno. Trak se v opozorilni barvi pokaže tudi, kadar kakšne datoteke ni bilo mogoče prebrati sploh — takrat bi bila vsaka sodba o razlikah trditev o primerjavi, ki se nikoli ni zgodila. Primerjava bajt za bajtom pove isto iz istega razloga: dve datoteki, ki jih ne more odpreti, nista dve enaki datoteki.</p>
 <h2 id="primerjajte-datoteke-bajt-za-bajtom">Primerjajte datoteke bajt za bajtom</h2>
 <p>Ko dve datoteki izgledata enako, a morate dokazati, da sta res enaki (ali najti tisti en bajt, ki se razlikuje), uporabite dvojiško primerjavo. Prikaže obe datoteki v šestnajstiškem pogledu z označenimi neujemajočimi bajti, kar je idealno za preverjanje prenosov, preverjanje kodiranih podatkov ali potrjevanje natančne kopije.</p>
 <h2 id="primerjajte-sezname-imenikov">Primerjajte sezname imenikov</h2>
 <p>Za odkritje razlik med dvema odprtima mapama na prvi pogled izberite <strong>Izbor ▸ Primerjaj imenike</strong> (Shift+F2). Peach Commander označi datoteke, ki se razlikujejo ali manjkajo na drugi strani, tako da lahko na njih delujete z običajnimi ukazi kopiranja, premikanja in brisanja.</p>
+<h2 id="omejitev-tega-kar-usklajevanje-zajema">Omejitev tega, kar usklajevanje zajema</h2>
+<p>Polje maske vsebuje en seznam vključitev po imenih datotek. Za to, česar z njim ni mogoče povedati, <strong>Filter…</strong> ob njem odpre list s tremi zavihki. Kar se tam nastavi, velja za <em>naslednjo</em> primerjavo, gumb pa nato pove, koliko meril je dejavnih — filter, ki ga ni videti, je način, kako varnostna kopija ostane nepopolna, medtem ko okno sporoča, da je končala.</p>
+<ul>
+<li><strong>Izpusti</strong> sprejme vzorce, ločene z <code>;</code> ali <code>|</code>. Ime brez poševnice velja na vsaki globini (<code>*.tmp</code>), poševnica na koncu pomeni mapo z vsem, kar je v njej (<code>node_modules/</code>), vzorec s poševnico pa velja za relativno pot (<code>src/*/generated</code>). Velikost črk ni pomembna.</li>
+<li><strong>Velikost</strong> in <strong>datum</strong> presojata par kot celoto: če ena stran pade izven obsega, ostane zunaj cel par. To je namerno. Uporabljeno le na eni strani bi izpustitev naredila par videti enostranski in bi postala kopiranje v napačno smer.</li>
+<li><strong>V zadnjih N dneh</strong> se meri od vsake primerjave, ne od shranjevanja prednastavitve — shranjeno opravilo torej še naprej pomeni »zadnji mesec«.</li>
+<li>Zavihek <strong>Vstavki</strong> vpraša vsebinski vstavek o strani, s katere bi bila datoteka kopirana. Potrebuje resnično datoteko, zato je na voljo le, kadar sta obe strani mapi na tem Macu.</li>
+</ul>
+<p>Izpuščena mapa se ne izbriše niti v zrcalnem načinu — zrcalo odstrani samo tisto, kar je res primerjalo. Vrstica stanja pove, koliko vnosov je filter zadržal, poleg tega, kaj bo izvedba naredila. Filter se shrani in naloži skupaj s prednastavitvijo usklajevanja, ki ji pripada.</p>
+<h2 id="dve-mapi-drzati-enaki-v-obe-smeri">Dve mapi držati enaki, v obe smeri</h2>
+<p>Prvotna načina ne moreta ločiti ene stvari: datoteka, ki je le na eni strani, je bodisi <strong>tu nova</strong>
+bodisi <strong>tam izbrisana</strong>, in oboje izgleda enako. Simetrični način jo zato kopira — izbrišete nekaj na
+prenosniku, uskladite, in se vrne iz varnostne kopije — zrcalni način pa briše, a le v eno smer.</p>
+<p><strong>Dvosmerno (s pomnjenjem)</strong> si zapomni, kako sta mapi izgledali, ko sta se nazadnje ujemali. S tem
+zapisom je mogoče izbris na eni strani prenesti na drugo.</p>
+<ul>
+<li><strong>Prvi</strong> zagon para nima zapisa: obnaša se kot prej in ne izbriše ničesar. Zapis zapiše. Od drugega
+  zagona naprej način deluje.</li>
+<li>Prenesen izbris je prikazan v svoji barvi z <code>⇒🗑</code> in <strong>ni</strong> označen: je edina vrstica, ki prihaja iz
+  spomina programa. Klik na puščico ponudi druge odgovore: datoteko kopirati nazaj ali pustiti obe
+  strani pri miru.</li>
+<li>Spremenjeno na eni strani in izbrisano na drugi je <strong>spor</strong>, nikoli izbris. Enako datoteka,
+  spremenjena na obeh straneh.</li>
+<li>Nič se ne izbriše na podlagi odsotnosti, ki je primerjava ni mogla potrditi — neberljiva mapa ali
+  taka, ki jo je zadržal filter, ne dokazuje ničesar o tem, kaj je v njej.</li>
+<li>Le dve mapi na tem Macu. Ne strežnik in ne arhiv: izbris v arhivu ga prepiše, izbris na strežniku
+  je dokončen, in ta način ni tisti, s katerim to poskušati.</li>
+</ul>
+<p><strong>Izbrisa ni mogoče razveljaviti.</strong> Na tem Macu gre datoteka v Koš in jo je mogoče vrniti v Finderju;
+to je vsa varnostna mreža. <strong>Spomin…</strong> v oknu našteje vsak par, ki si ga program zapomni, označi tistega, ki ga gledate, in omogoča pozabiti kateregakoli — nato se naslednja primerjava tistih map spet obnaša kot prva. Nič se nikoli ne pozabi samo: mapa na odklopljenem disku ni izgubljena, le ni priključena.</p>
+<p>Zapis leži pri nastavitvah: če eno od map premaknete, par nima več
+zgodovine — in zagon brez zgodovine ne izbriše ničesar.</p>
+<h2 id="kaj-je-zagon-naredil-in-kaj-od-tega-je-mogoce-vzeti-nazaj">Kaj je zagon naredil in kaj od tega je mogoče vzeti nazaj</h2>
+<p>Vsaka uskladitev se zabeleži. <strong>Zagoni…</strong> v oknu jih naštejejo, najnovejše najprej — kdaj, kateri dve mapi, kateri način in koliko datotek je bilo kopiranih, izbrisanih ali zadržanih — pri izbranem zagonu pa pokažejo, kaj se je zgodilo z vsako datoteko.</p>
+<p>Prav ta seznam naredi Koš uporaben. Datoteka, ki jo je ta Mac izbrisal, je pristala v Košu, zagon pa je zabeležil <em>kje</em>, kar pomeni več, kot se sliši: Koš ob trku preimenuje, tako da druga <code>notes.txt</code> pristane kot <code>notes.txt 11-17-15-028.txt</code>, in iskanje po imenu najde napačno. <strong>Pokaži v Košu</strong> usmeri Finder naravnost na element.</p>
+<p><strong>Vrni nazaj…</strong> premakne datoteke, ki jih je zagon izbrisal, iz Koša na poti, s katerih so bile izbrisane. Vsaka se najprej preveri, in kar ne drži, je zavrnjeno z razlogom, namesto da bi bilo vsiljeno:</p>
+<ul>
+<li>Na tej poti je spet nekaj. Ostane pri miru — vračanje ne sme nikoli prepisati.</li>
+<li>Elementa ni več v Košu ali pa je bil trajno izbrisan, namesto da bi bil premaknjen vanj.</li>
+<li>Stran je bila arhiv ali strežnik. Arhiv se prepiše v celoti, strežnik pa Koša nima, zato ni bilo
+  ničesar shranjenega.</li>
+<li>Mapa, v katero je zagon pisal, je izginila ali ni več ista mapa — na primer ponovno uporabljena
+  priklopna točka. Tedaj je zavrnjen celoten zagon, namesto da bi se izvedel njegov del.</li>
+<li>Že je bilo vrnjeno. Zapis si to zapomni, zato drugi poskus ne naredi ničesar.</li>
+<li>Ali pa je sam zapis tak, s katerim ta različica ne zna ravnati — napisala ga je novejša različica
+  programa ali pa navaja pot zunaj obeh map. Redko, in zavrnjeno namesto ugibano.</li>
+</ul>
+<p><strong>Kopije ni mogoče vzeti nazaj.</strong> Odstraniti jo bi pomenilo izbrisati datoteko, ki ste jo morda medtem uredili, kar je nasprotna menjava od vračanja izbrisa, zato program tega ne ponuja — zagon vam pove, katere datoteke je kopiral, izbrišete pa jih lahko sami. Datoteka, ki je bila <em>prepisana</em>, je edina prava vrzel, in je zdaj majhna: na tem Macu gre zamenjana različica v Koš kot izbrisana datoteka, zato jo <strong>Pokaži v Košu</strong> najde. V arhiv, na strežnik ali na nosilec brez Koša to ne gre, in potrditev to pove pred zagonom.</p>
+<p>Ohrani se zadnjih 200 zagonov ali 64 MB teh, kar nastopi prej; nad tem najstarejši odpadajo drug za drugim, ko prihajajo novi, <strong>Pozabi</strong> in <strong>Pozabi vse</strong> pa jih pospravita takoj. Zelo velik zagon — več kot 20.000 datotek — obdrži vsako težavo in vse, kar je dal v Koš, ne pa kopij, ki so šle skozi, in to pove, namesto da bi vam prepustil, da opazite. Njegove izbrise je še vedno mogoče vrniti: izpuščene so bile kopije, kopije pa tako ali tako ne bi bilo mogoče vzeti nazaj.</p>
+<p>Pozabljanje ne spremeni ničesar pri mapah; izgine zapis o tem, kaj je bilo narejeno, in z njim ponudba, da se kaj vrne. Za razliko od dvosmernega spomina se to zavrže samodejno — izguba spomina o <em>paru</em> bi spremenila, kaj naredi naslednji zagon, medtem ko izguba zapisa o zagonu odvzame le ponudbo.</p>
 <h2 id="bliznjice">Bližnjice</h2>
 <table>
 <thead>
@@ -60,18 +108,18 @@
 <td>Sinhroniziraj imenike</td>
 <td>Ukazi ▸ Sinhroniziraj imenike…</td>
 </tr>
+<tr>
+<td>Prikaz ene strani vrstice usklajevanja</td>
+<td>Desni klik na vrstico ▸ Prikaži levo datoteko / desno datoteko</td>
+</tr>
 </tbody>
 </table>
 <h2 id="opombe">Opombe</h2>
 <ul>
 <li><strong>Po vsebini proti po datumu/velikosti.</strong> Hitra primerjava ujema datoteke po velikosti in datumu spremembe, kar je hitro, a je mogoče prevarati, ko se časovni žigi razlikujejo za enake datoteke. Vklopite <strong>po vsebini</strong> za zanesljiv rezultat za ceno branja vsake datoteke.</li>
 <li><strong>Podmape in filtri.</strong> Okno za sinhronizacijo lahko sestopi v podmape in ga je mogoče omejiti z masko filtra, tako da lahko sinhronizirate le vrste datotek, ki vas zanimajo.</li>
-<li><strong>Vi ohranite nadzor.</strong> Sinhronizacija se nikoli ne izvaja sama — pregledate predlagane smeri v mreži rezultatov in lahko katero koli od njih spremenite, preden je karkoli kopirano.</li>
-<li><strong>Primerjava, ki jo je mogoče gledati in ustaviti.</strong> Prehod dveh velikih dreves traja, zato okno med delom šteje najprej prehojene vnose in nato primerjane datoteke, z vrtavko ob števcu. Gumb Primerjaj se, dokler pregledovanje teče, imenuje <strong>Ustavi</strong>; ustavitev pusti prejšnji rezultat pri miru, namesto da bi pokazala pol drevesa.</li>
-<li><strong>Katera stran je predloga.</strong> Zrcaljenje gre z leve na desno. <strong>Zamenjaj strani</strong> zamenja mapi: tako desno drevo postane tisto, ki zmaga &mdash; in tako se popravi, da sta ju pulta postavila narobe.</li>
-<li><strong>Datumi, ki niso čisto enaki.</strong> <strong>Prezri razliko 1 ure</strong> vsrka zamik, ki ga nosilec FAT ali poletni čas naloži sicer nespremenjeni datoteki. <strong>Razlikuj velike in male črke</strong> odloči, ali sta imeni, ki se razlikujeta le po velikosti črk, ista datoteka; izklopljeno sta &mdash; kar nosilec na Macu običajno tudi pravi.</li>
-<li><strong>Ko gre kaj narobe.</strong> Usklajevanje sporoča svoj napredek, gumb pa se med tekom imenuje <strong>Ustavi</strong>; ustavitev med vnosi pusti prekopirano prekopirano. Kar je spodletelo, je z datoteko in razlogom navedeno v oknu napak opravila, namesto da bi bilo le prešteto. Brisanje na strežniku je dokončno &mdash; koša tam ni &mdash; in potrditev to pove vnaprej.</li>
-<li><strong>Prednastavitve.</strong> Pogosto uporabljene nastavitve sinhronizacije je mogoče shraniti in ponovno uporabiti, tako da ne vnašate istih možnosti vsakič.</li>
+<li><strong>Vi ohranite nadzor.</strong> Sinhronizacija se nikoli ne izvaja sama — pregledate predlagane smeri v mreži rezultatov in lahko katero koli od njih spremenite, preden je karkoli kopirano. <strong>Esc</strong> ustavi primerjavo, ki teče, in zapre okno, kadar nič ne teče.</li>
+<li><strong>Prednastavitve.</strong> Pogosto uporabljene nastavitve sinhronizacije je mogoče shraniti in ponovno uporabiti, tako da ne vnašate istih možnosti vsakič. Prednastavitev si zapomni tudi, kaj kaže mreža rezultatov — filter smeri in <strong>Skrij enake</strong> — okno pa se odpre z nazadnje uporabljeno prednastavitvijo. Prednastavitev <strong>Privzeto</strong> je na voljo od prvega odprtja okna; shranite čeznjo, da postane vaša.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Preimenovanje mnogih datotek</a></li></ul></section>
 </main>

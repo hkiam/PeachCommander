@@ -10,35 +10,79 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>De Git-plug-in toont de status van een Git-repository rechtstreeks in het bestandspaneel — geen aparte app, geen terminal. Hij voegt twee kolommen toe die per bestand de status in de werkboom en de huidige branch tonen, een <strong>Git</strong>-submenu voor de alledaagse opdrachten (status, stagen, committen, pullen, pushen), en gebruikt de <code>git</code> die al op je Mac is geïnstalleerd. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
-<h2 id="wat-het-toevoegt">Wat het toevoegt</h2>
+<p>De Git-plug-in laat de toestand van een Git-repository rechtstreeks in het bestandspaneel zien — geen aparte
+app, geen terminal. Hij voegt twee kolommen toe, een submenu <strong>Git</strong>, een vastgezet paneel om te stagen en te
+committen, en vensters voor geschiedenis, blame, branches, conflicten en rebasen. Hij gebruikt de <code>git</code> die al
+op uw Mac staat. Het is een plug-in, dus u kunt hem uitschakelen of verwijderen in <strong>Configuratie ▸
+Plug-ins…</strong>.</p>
+<h2 id="wat-hij-toevoegt">Wat hij toevoegt</h2>
 <ul>
-<li><strong>Twee kolommen in de bestandslijst</strong> — <em>Git Status</em> en <em>Branch</em>. In een repository toont elk bestand een kort statuswoord (Gewijzigd, Toegevoegd, Verwijderd, Niet gevolgd, Hernoemd, Gekopieerd, Conflict, Genegeerd of Veranderd) en toont het paneel de huidige branch. Zet de kolommen aan via <strong>Configuratie ▸ Kolommen…</strong> (zie <a href="view-modes-and-sorting.html">Weergavemodi &amp; sorteren</a>).</li>
-<li><strong>Een Git-menu</strong> — onder <strong>Opdrachten ▸ Git</strong> en in het rechtsklikmenu van een bestand, met: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> en <strong>Git Push</strong>.</li>
+<li><strong>Twee kolommen in de bestandslijst</strong> — <em>Git-status</em> en <em>Branch</em>. Elk bestand toont een pictogram en een
+  kort statuswoord (Gewijzigd, Toegevoegd, Verwijderd, Niet gevolgd, Hernoemd, Gekopieerd, Conflict,
+  Genegeerd, Type gewijzigd), met <em>(gestaged)</em> als de wijziging al in de index zit; de kolom <em>Branch</em> toont de
+  branch waarop de repository van dat bestand staat. Zet de kolommen aan in <strong>Configuratie ▸ Kolommen…</strong> (zie
+  <a href="view-modes-and-sorting.html">Weergavemodi &amp; sorteren</a>).</li>
+<li><strong>Een Git-menu</strong> — onder <strong>Opdrachten ▸ Git</strong>, en in het contextmenu van een bestand.</li>
 </ul>
-<p><img alt="Het dialoogvenster Git Status met de huidige branch en de gewijzigde bestanden in de repository" src="images/git-status.png" />
-<em>(Afbeelding: Git Status meldt de branch en elke wijziging in de werkboom.)</em></p>
-<h2 id="de-status-controleren">De status controleren</h2>
-<ol>
-<li>Zet de cursor op een bestand of map binnen een Git-repository.</li>
-<li>Kies <strong>Opdrachten ▸ Git ▸ Git Status…</strong> (of rechtsklik ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Er verschijnt een samenvatting: de huidige branch (of <em>(losgekoppeld)</em>), gevolgd door ofwel <em>Werkboom schoon.</em> ofwel een lijst met wijzigingen, waarbij elke regel de status en het bestandspad toont.</li>
-</ol>
-<p>Als de cursor niet in een repository staat, meldt de plug-in simpelweg <em>Geen Git-repository.</em></p>
-<h2 id="stagen-committen-pullen-pushen">Stagen, committen, pullen, pushen</h2>
+<p><img alt="Het venster Git-status met de huidige branch en de gewijzigde bestanden in de repository" src="images/git-status.png" />
+<em>(Afbeelding: Git-status noemt de branch en elke wijziging in de werkmap.)</em></p>
+<h2 id="het-paneel-stagen-committen-synchroniseren">Het paneel: stagen, committen, synchroniseren</h2>
+<p><strong>Opdrachten ▸ Git ▸ Paneel</strong> zet een weergave vast die de werkmap groepeert in <em>gestaged</em>, <em>gewijzigd</em> en
+<em>niet gevolgd</em>. Selecteer bestanden en gebruik <strong>Stage</strong>, <strong>Unstage</strong> of <strong>Weggooien…</strong>, typ een bericht en
+druk op <strong>Commit</strong> — met <strong>Amend</strong> om de wijziging in de vorige commit te vouwen. <strong>Pull</strong> en <strong>Push</strong> staan
+ernaast, waar de commit toch al plaatsvindt; beide tonen voortgang en kunnen worden afgebroken.</p>
+<p>Er wordt de <em>index</em> gecommit, niet <code>git commit -a</code>: wat u hebt gestaged, is wat er wordt gecommit.</p>
+<h2 id="geschiedenis-blame-en-het-web">Geschiedenis, blame en het web</h2>
 <ul>
-<li><strong>Git Add (stage)</strong> zet het bestand onder de cursor klaar (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> vraagt om een commitbericht en legt vervolgens alle wijzigingen vast (<code>git commit -a</code>). De gecombineerde uitvoer wordt getoond, zodat je precies ziet wat er is gebeurd.</li>
-<li><strong>Git Pull</strong> doet een pull met alleen fast-forward (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> pusht de huidige branch (<code>git push</code>).</li>
+<li><strong>Geschiedenis…</strong> toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), en de bestanden die elke commit heeft geraakt. Return of een dubbelklik opent de
+  versie van dat bestand tegenover zijn voorganger in het vergelijkvenster. <strong>Commit terugdraaien</strong> en
+  <strong>Cherry-pick</strong> staan er, en beide weigeren vooraf als de werkmap niet schoon is.</li>
+<li><strong>Bestandsgeschiedenis…</strong> is hetzelfde venster voor één bestand.</li>
+<li><strong>Blame (lijst)…</strong> toont elke regel met commit, auteur en datum. <strong>Blame in de editor</strong> zet dezelfde
+  informatie in de kantlijn van de editor, naast de regelnummers: wijs een regel aan voor het commitbericht,
+  klik erop om die commit tegenover zijn voorganger te openen.</li>
+<li><strong>Openen op het web</strong> opent het bestand, de commit of de branch op GitHub, GitLab, Bitbucket of Azure
+  DevOps, opgebouwd uit de URL van de remote — geen account, geen token. Bij een host waarvan hij de vorm van
+  de links niet kent, biedt hij de repositorypagina aan in plaats van te gokken.</li>
 </ul>
-<p>Na een opdracht die de repository wijzigt, wordt het actieve paneel vernieuwd zodat de statuskolommen actueel blijven.</p>
+<h2 id="branches-stashes-en-tags">Branches, stashes en tags</h2>
+<p><strong>Branches, stashes &amp; tags…</strong> toont alle drie. Een branch wisselen, aanmaken, samenvoegen of verwijderen; een
+stash pushen, poppen of weggooien; een tag aanmaken, verwijderen of pushen, of ernaartoe wisselen — een tag is
+geen branch, dus wordt vooraf gezegd dat HEAD daarna losgekoppeld is. Fetch, Pull en Push staan in hetzelfde
+venster en kunnen tijdens het lopen worden afgebroken.</p>
+<p>Een tag pushen is met opzet een aparte actie: <code>git push</code> neemt tags niet mee.</p>
+<h2 id="conflicten">Conflicten</h2>
+<p><strong>Conflict oplossen…</strong> toont de conflicterende gebieden van het bestand onder de cursor en neemt voor elk een
+beslissing: <em>de onze</em>, <em>de hunne</em>, <em>beide</em>, of open laten. Daarna <strong>Bestand schrijven</strong> of <strong>Schrijven en
+stagen</strong>. Hij weigert te stagen zolang een gebied open staat — Git commit <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>-markeringen zonder morren
+— en hij raakt een bestand waarvan hij de markeringen niet kan lezen niet aan in plaats van ernaar te raden.
+Voor een gebied waarin beide kanten met de hand verweven moeten worden, is <strong>In editor openen</strong> één knop ver.</p>
+<h2 id="rebasen">Rebasen</h2>
+<p><strong>Rebasen…</strong> toont de commits die vóór de upstream liggen — die nog niemand anders heeft — en laat u ze
+squashen, als fixup toevoegen, weggooien, herordenen of hernoemen voordat de branch wordt herschreven. Loopt
+een rebase vast op een conflict, dan wordt hetzelfde venster <strong>Doorgaan</strong> / <strong>Commit overslaan</strong> / <strong>Rebase
+afbreken</strong>, zodat een half afgemaakte rebase niet in een terminal hoeft te worden voltooid.</p>
+<h2 id="bestanden-negeren-en-inloggegevens">Bestanden negeren, en inloggegevens</h2>
+<ul>
+<li><strong>Dit bestand negeren…</strong>, <strong>Dit bestandstype negeren…</strong> en <strong>Deze map negeren…</strong> zetten het juiste patroon
+  in <code>.gitignore</code> — verankerd waar het hoort, zodat het negeren van <em>deze</em> map <code>build</code> niet elke map met de
+  naam <code>build</code> negeert.</li>
+<li><strong>Inloggegevens…</strong> meldt hoe deze repository zich authenticeert: SSH of HTTPS, of er een credential helper
+  is ingesteld, of er een SSH-agent draait die een sleutel vasthoudt. Waar het helpt, biedt hij precies één
+  actie aan — Git de inloggegevens in de macOS-sleutelhanger laten bewaren. De plug-in vraagt nooit om een
+  wachtwoordzin, toont die niet en bewaart die niet.</li>
+</ul>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
-<li>De plug-in gebruikt de systeem-Git op <code>/usr/bin/git</code>. Als Git niet is geïnstalleerd, melden de opdrachten dat Git niet beschikbaar is. (Installatie van de Xcode Command Line Tools levert het.)</li>
-<li>De repositorystatus wordt één keer per map gelezen en in de cache bewaard, zodat het scrollen door een grote repo snel blijft; de cache wordt vernieuwd na elke opdracht die de boom wijzigt.</li>
-<li>Commit gebruikt <code>git commit -a</code>, wat gevolgde wijzigingen vastlegt; gloednieuwe bestanden moeten eerst nog via <strong>Git Add (stage)</strong>.</li>
-<li>De kolomkoppen <em>Git Status</em> en <em>Branch</em> worden momenteel in het Engels weergegeven, ook in andere interfacetalen; de waarden en dialoogvensters zijn gelokaliseerd.</li>
+<li>De plug-in gebruikt de Git van het systeem op <code>/usr/bin/git</code>. Ontbreekt Git, dan melden de opdrachten dat
+  Git niet beschikbaar is. (De Xcode Command Line Tools leveren hem mee.)</li>
+<li>De status van een repository wordt één keer per map gelezen en bewaard, zodat het bladeren door een grote
+  repository snel blijft; de cache ververst na elke opdracht die de boom verandert, en volgt ook een commit
+  die buiten de app is gemaakt.</li>
+<li>Gekoppelde worktrees en submodules worden ondersteund: een bestand in een submodule toont de status en de
+  branch <em>van de submodule</em>, niet die van de bovenliggende repository.</li>
+<li>Elke lijst heeft een contextmenu, <strong>Return</strong> voert de hoofdactie uit en <strong>Cmd+R</strong> laadt het venster opnieuw.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="view-modes-and-sorting.html">Weergavemodi &amp; sorteren</a></li></ul></section>
 </main>

@@ -10,35 +10,80 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>El complemento Git muestra el estado de un repositorio Git directamente en el panel de archivos: sin una app aparte, sin terminal. Añade dos columnas que indican el estado del árbol de trabajo de cada archivo y la rama actual, un submenú <strong>Git</strong> para los comandos cotidianos (estado, preparar, confirmar, pull, push), y usa el <code>git</code> que ya está instalado en su Mac. Al ser un complemento, puede desactivarlo o eliminarlo desde <strong>Configuración ▸ Complementos…</strong>.</p>
+<p>El complemento Git muestra el estado de un repositorio Git directamente en el panel de archivos: sin una
+aplicación aparte y sin terminal. Añade dos columnas, un submenú <strong>Git</strong>, un panel acoplado para preparar y
+confirmar, y ventanas para el historial, la autoría, las ramas, los conflictos y el rebase. Usa el <code>git</code> que
+ya está instalado en su Mac. Es un complemento, así que puede desactivarlo o quitarlo en <strong>Configuración ▸
+Complementos…</strong>.</p>
 <h2 id="que-anade">Qué añade</h2>
 <ul>
-<li><strong>Dos columnas en la lista de archivos</strong> — <em>Git Status</em> y <em>Branch</em>. En un repositorio, cada archivo muestra una palabra de estado breve (Modificado, Añadido, Eliminado, Sin seguimiento, Renombrado, Copiado, Conflicto, Ignorado o Cambiado) y el panel muestra la rama actual. Active las columnas en <strong>Configuración ▸ Columnas…</strong> (consulte <a href="view-modes-and-sorting.html">Modos de vista y ordenación</a>).</li>
-<li><strong>Un menú Git</strong> — bajo <strong>Comandos ▸ Git</strong>, y en el menú contextual de un archivo, con: <strong>Git Status…</strong>, <strong>Git Add (preparar)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> y <strong>Git Push</strong>.</li>
+<li><strong>Dos columnas en la lista</strong> — <em>Estado de Git</em> y <em>Rama</em>. Cada archivo muestra un icono y una palabra de
+  estado breve (Modificado, Añadido, Borrado, Sin seguimiento, Renombrado, Copiado, Conflicto, Ignorado, Tipo
+  cambiado), con <em>(preparado)</em> cuando el cambio ya está en el índice; la columna <em>Rama</em> indica la rama en la
+  que está el repositorio de ese archivo. Active las columnas en <strong>Configuración ▸ Columnas…</strong> (véase
+  <a href="view-modes-and-sorting.html">Modos de vista y orden</a>).</li>
+<li><strong>Un menú Git</strong> — en <strong>Comandos ▸ Git</strong>, y en el menú contextual de un archivo.</li>
 </ul>
-<p><img alt="El cuadro de diálogo Git Status mostrando la rama actual y los archivos modificados del repositorio" src="images/git-status.png" />
-<em>(Figura: Git Status informa de la rama y de cada cambio en el árbol de trabajo.)</em></p>
-<h2 id="comprobar-el-estado">Comprobar el estado</h2>
-<ol>
-<li>Sitúe el cursor sobre un archivo o carpeta dentro de un repositorio Git.</li>
-<li>Elija <strong>Comandos ▸ Git ▸ Git Status…</strong> (o menú contextual ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Aparece un resumen: la rama actual (o <em>(desacoplada)</em>), y luego, o bien <em>Árbol de trabajo limpio.</em>, o bien una lista de cambios, cada línea con el estado y la ruta del archivo.</li>
-</ol>
-<p>Si el cursor no está dentro de un repositorio, el complemento simplemente indica <em>No es un repositorio Git.</em></p>
-<h2 id="preparar-confirmar-pull-push">Preparar, confirmar, pull, push</h2>
+<p><img alt="La ventana Estado de Git con la rama actual y los archivos modificados del repositorio" src="images/git-status.png" />
+<em>(Figura: Estado de Git indica la rama y cada cambio del árbol de trabajo.)</em></p>
+<h2 id="el-panel-preparar-confirmar-sincronizar">El panel: preparar, confirmar, sincronizar</h2>
+<p><strong>Comandos ▸ Git ▸ Panel</strong> acopla una vista que agrupa el árbol de trabajo en <em>preparado</em>, <em>modificado</em> y
+<em>sin seguimiento</em>. Seleccione archivos y use <strong>Preparar</strong>, <strong>Quitar de preparación</strong> o <strong>Descartar…</strong>,
+escriba un mensaje y pulse <strong>Confirmar</strong> — con <strong>Enmendar</strong> para plegar el cambio en la confirmación
+anterior. <strong>Traer</strong> y <strong>Enviar</strong> están al lado, donde la confirmación ocurre de todos modos; ambos muestran
+progreso y pueden cancelarse.</p>
+<p>Se confirma el <em>índice</em>, no <code>git commit -a</code>: lo que preparó es lo que se confirma.</p>
+<h2 id="historial-autoria-y-la-web">Historial, autoría y la web</h2>
 <ul>
-<li><strong>Git Add (preparar)</strong> prepara el archivo situado bajo el cursor (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> pide un mensaje de confirmación y luego confirma todos los cambios (<code>git commit -a</code>). Se muestra la salida combinada para que vea exactamente qué ocurrió.</li>
-<li><strong>Git Pull</strong> realiza un pull solo de avance rápido (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> envía la rama actual (<code>git push</code>).</li>
+<li><strong>Historial…</strong> enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una
+  (<code>● main</code>, <code>↗ origin/main</code>, <code>⚑ v1.0</code>) y los archivos que cada una tocó. Intro o un doble clic abre la
+  versión de ese archivo frente a su antecesora en la ventana de comparación. <strong>Revertir confirmación</strong> y
+  <strong>Cherry-pick</strong> están ahí, y ambos se niegan de antemano si el árbol de trabajo no está limpio.</li>
+<li><strong>Historial del archivo…</strong> es la misma ventana para un solo archivo.</li>
+<li><strong>Autoría (lista)…</strong> muestra cada línea con su confirmación, autor y fecha. <strong>Autoría en el editor</strong> pone
+  la misma información en el margen del editor, junto a los números de línea: pase el puntero por una línea
+  para ver el mensaje, haga clic para abrirla frente a su antecesora.</li>
+<li><strong>Abrir en la web</strong> abre el archivo, la confirmación o la rama en GitHub, GitLab, Bitbucket o Azure DevOps,
+  construido a partir de la URL del remoto: sin cuenta y sin token. Con un servidor cuya forma de enlace no
+  conoce, ofrece la página del repositorio en vez de adivinar.</li>
 </ul>
-<p>Tras un comando que modifica el repositorio, el panel activo se actualiza para que las columnas de estado se mantengan al día.</p>
+<h2 id="ramas-guardados-y-etiquetas">Ramas, guardados y etiquetas</h2>
+<p><strong>Ramas, guardados y etiquetas…</strong> enumera las tres cosas. Cambiar de rama, crearla, fusionarla o borrarla;
+enviar, sacar o descartar un guardado; crear, borrar o enviar una etiqueta, o cambiar a ella — una etiqueta no
+es una rama, así que avisa de antemano de que HEAD quedará desacoplado. Recuperar, Traer y Enviar están en la
+misma ventana y pueden cancelarse mientras corren.</p>
+<p>Enviar una etiqueta es una acción aparte a propósito: <code>git push</code> no se lleva las etiquetas.</p>
+<h2 id="conflictos">Conflictos</h2>
+<p><strong>Resolver conflicto…</strong> enumera las regiones en conflicto del archivo bajo el cursor y toma una decisión para
+cada una: <em>las nuestras</em>, <em>las suyas</em>, <em>ambas</em>, o dejarla abierta. Luego <strong>Escribir archivo</strong> o <strong>Escribir y
+preparar</strong>. Se niega a preparar mientras quede una región abierta — Git confirmaría tan contento unas marcas
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> — y se niega a tocar un archivo cuyas marcas no puede leer en vez de adivinarlas. Para una región
+que necesita entrelazar ambos lados a mano, <strong>Abrir en el editor</strong> está a un botón.</p>
+<h2 id="rebase">Rebase</h2>
+<p><strong>Rebase…</strong> enumera las confirmaciones por delante del upstream — las que nadie más tiene aún — y le permite
+aplastarlas, corregirlas, descartarlas, reordenarlas o reescribir su mensaje antes de reescribir la rama. Si
+un rebase se detiene en un conflicto, la misma ventana pasa a <strong>Continuar</strong> / <strong>Saltar confirmación</strong> /
+<strong>Abortar rebase</strong>, de modo que un rebase a medias no tiene que terminarse en un terminal.</p>
+<h2 id="ignorar-archivos-y-las-credenciales">Ignorar archivos, y las credenciales</h2>
+<ul>
+<li><strong>Ignorar este archivo…</strong>, <strong>Ignorar este tipo de archivo…</strong> e <strong>Ignorar esta carpeta…</strong> añaden el patrón
+  adecuado a <code>.gitignore</code> — anclado donde corresponde, para que ignorar <em>esta</em> carpeta <code>build</code> no ignore
+  todas las carpetas llamadas <code>build</code>.</li>
+<li><strong>Credenciales…</strong> informa de cómo se autentica este repositorio: SSH o HTTPS, si hay un ayudante de
+  credenciales configurado, si hay un agente SSH en marcha con una clave. Donde ayuda, ofrece una única
+  acción: dejar que Git guarde las credenciales en el Llavero de macOS. El complemento nunca pide, muestra ni
+  guarda una frase de contraseña.</li>
+</ul>
 <h2 id="notas">Notas</h2>
 <ul>
-<li>El complemento usa el Git del sistema en <code>/usr/bin/git</code>. Si Git no está instalado, los comandos informan de que Git no está disponible. (Instalar las Herramientas de Línea de Comandos de Xcode lo proporciona.)</li>
-<li>El estado del repositorio se lee una vez por carpeta y se almacena en caché, de modo que desplazarse por un repositorio grande sigue siendo rápido; la caché se actualiza tras cualquier comando que modifique el árbol.</li>
-<li>La confirmación usa <code>git commit -a</code>, que confirma los cambios con seguimiento; los archivos completamente nuevos todavía necesitan <strong>Git Add (preparar)</strong> primero.</li>
-<li>Las cabeceras de columna <em>Git Status</em> y <em>Branch</em> aparecen actualmente en inglés incluso en otros idiomas de la interfaz; los valores y los cuadros de diálogo están localizados.</li>
+<li>El complemento usa el Git del sistema, en <code>/usr/bin/git</code>. Si Git no está instalado, los comandos informan
+  de que no está disponible. (Las Xcode Command Line Tools lo traen.)</li>
+<li>El estado del repositorio se lee una vez por carpeta y se guarda en caché, para que desplazarse por un
+  repositorio grande siga siendo rápido; la caché se refresca tras cualquier comando que cambie el árbol, y
+  sigue a una confirmación hecha fuera de la aplicación.</li>
+<li>Los árboles de trabajo enlazados y los submódulos están soportados: un archivo dentro de un submódulo
+  muestra el estado y la rama <em>del submódulo</em>, no los del repositorio padre.</li>
+<li>Cada lista tiene un menú contextual, <strong>Retorno</strong> ejecuta su acción principal y <strong>Cmd+R</strong> recarga la ventana.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="view-modes-and-sorting.html">Modos de vista y ordenación</a></li></ul></section>
 </main>

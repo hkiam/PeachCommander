@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker-containere og -volumer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Docker-containere og -volumer</h1>
+<p>Filsystemet til en Docker-container kan bla gjennom i et panel som en hvilken som helst mappe, og det samme gjelder et Docker-volum. Velg <strong>Koble til Docker…</strong> i Nettverk-menyen, eller klikk på <strong>Docker</strong>-brikken i stasjonslinjen, og motoren vises i det aktive panelet.</p>
+<p>Dette er et programtillegg, og det <strong>leveres avslått</strong>. Slå det på under <strong>Konfigurasjon ▸ Programtillegg…</strong>. Det starter avslått fordi en tilkobling til Docker-tjenesten har de samme rettighetene på Macen din som du selv har — se <em>Hva det når</em> nedenfor.</p>
+<h2 id="hva-du-ser">Hva du ser</h2>
+<p>Øverste nivå er tre mapper:</p>
+<ul>
+<li><strong>Compose Projects</strong> — alle containere startet av Docker Compose, gruppert etter prosjekt og deretter etter tjeneste. En tjeneste med én container <em>er</em> den containeren: <code>my-stack/backend/etc</code> er backendens <code>/etc</code>. En tjeneste med flere beholder et nivå for dem, én mappe per container.</li>
+<li><strong>Standalone Containers</strong> — alt annet, enten det kjører eller ikke.</li>
+<li><strong>Volumes</strong> — hvert Docker-volum, som en stasjon i seg selv.</li>
+</ul>
+<p>Under disse er du i et ekte filsystem: F3 viser en fil, F4 redigerer den, F5 kopierer den til det andre panelet, F7 lager en mappe. Det andre panelet kan være hva som helst — en lokal mappe, et arkiv, en S3-bøtte.</p>
+<p>Grupperingen leses fra etikettene Compose setter på sine egne containere og volumer, så den stemmer også for en stakk hvis <code>docker-compose.yml</code> for lengst er borte fra denne maskinen.</p>
+<p><strong>Volumer listes separat med vilje.</strong> Et volum overlever containeren som laget det, kan deles av flere containere, og inneholder som regel nettopp de dataene du kom for. Et volum som ingenting monterer akkurat nå, kan fortsatt utforskes.</p>
+<h2 id="kolonner">Kolonner</h2>
+<p>Høyreklikk på kolonneoverskriften i et panel for å legge til leverandørens egne kolonner:</p>
+<ul>
+<li><strong>Status</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Tilgang</strong> — <code>RW</code>, <code>RO</code> for et skrivebeskyttet rootfs eller monteringspunkt, <code>VOL</code> for et Docker-volum, <code>BIND</code> for en av dine egne mapper montert inn i containeren, <code>TMP</code> for et tmpfs.</li>
+<li><strong>Image</strong>, <strong>ID</strong>.</li>
+<li><strong>Montering</strong> — på en mappe som egentlig er en montering: hva den er. <code>Volume: my-stack_db-data</code>, eller vertsstien bak en bind-montering. Slik finner du hvilket volum under <strong>Volumes</strong> som inneholder dataene til en container.</li>
+</ul>
+<h2 id="stoppede-containere">Stoppede containere</h2>
+<p>Stoppede containere vises, og filsystemene deres kan leses og skrives. Dockers fil-API svarer for en container som ikke har kjørt på en måned, og det er det som gjør at dette føles som en stasjon og ikke som en prosessliste.</p>
+<p>To ting krever en container som faktisk kjører: <strong>sletting</strong> og <strong>endring av navn</strong>. Docker Engine-API-et har ingen operasjon for noen av delene — den eneste måten å fjerne eller flytte en fil inne i en container på, er å kjøre noe i den — så på en stoppet container avvises begge i stedet for å bli foregitt.</p>
+<h2 id="hva-du-kan-forvente">Hva du kan forvente</h2>
+<p><strong>Skriving kommer inn som <code>root</code>, sletting går som containerens egen bruker.</strong> Det er Dockers oppsett, ikke et valg tatt her: å kopiere en fil inn bruker motorens arkiv-API, som skriver som root; å slette eller gi nytt navn kjører en kommando inne i containeren, som kjører som den brukeren imaget har satt opp. En sletting kan derfor avvises med <em>tilgang nektet</em> på en fil du fikk kopiert inn et øyeblikk før. Peach Commander omgår ikke dette ved å opptre som root — det forteller deg hva containeren sa.</p>
+<p><strong>En skrivebeskyttet container eller montering avviser skriving</strong>, og melder det som en rettighetsfeil, ikke som en feilet handling.</p>
+<p><strong>Å lese en symbolsk lenke leser det den peker på.</strong> Panelet viser den fortsatt som en lenke i Attr-kolonnen; F3 viser innholdet i målet i stedet for en tom fil.</p>
+<p><strong>Roten til en stor stoppet container lar seg kanskje ikke liste.</strong> Docker har ingen kall som lister en mappe. Å lese en mappe betyr å be om den som et arkiv, og det inneholder alt under den — for en stoppet container bygd på et fullverdig image kan det være mange gigabyte, og listingen avvises i stedet for å lese alt. Dypere mapper er upåvirket, og en <em>kjørende</em> container likeså: en mappe som er for stor til å leses som arkiv, listes av containeren selv. Vil du bare ha arkivveien, se innstillingen nedenfor.</p>
+<p><strong>Å kopiere ut en hel container kopierer hele filsystemet dens</strong> — inkludert <code>/proc</code> og <code>/dev</code>. Kopier mappen du vil ha, ikke <code>/</code>.</p>
+<h2 id="hva-det-nar">Hva det når</h2>
+<p>Programtillegget snakker med den motoren du ville nådd fra et terminalvindu: <code>DOCKER_HOST</code> hvis du har satt den, ellers din nåværende <code>docker context</code>, ellers de vanlige socketene til Docker Desktop, Colima, Rancher Desktop, Lima og Podman. Podman virker fordi det tilbyr det samme API-et.</p>
+<p>Tilgang til en Docker-tjeneste betyr som regel vidtrekkende tilgang til maskinen den kjører på. Programtillegget har nøyaktig dine rettigheter og ber ikke om flere: det lagrer ingen påloggingsdetaljer, rører aldri Dockers egne kataloger på disken din, og utfører ingen privilegerte handlinger på dine vegne.</p>
+<p>Det eneste det oppretter, er en <strong>engangscontainer</strong> — og bare for å nå et volum ingen eksisterende container monterer, siden et volum bare er synlig innenfra noe som monterer det. Den startes aldri, den er merket som Peach Commanders, og den fjernes når du forlater stasjonen.</p>
+<h2 id="handlinger-pa-en-container-eller-et-volum">Handlinger på en container eller et volum</h2>
+<p>Et høyreklikk på en container eller et volum tilbyr i undermenyen <strong>Docker</strong> det en stasjon alene ikke kan si:</p>
+<ul>
+<li><strong>Inspect</strong> — alt motoren vet om den, som formatert JSON i et vindu som kan rulles og merkes
+  i.</li>
+<li><strong>Show Logs</strong> — de siste 500 linjene containeren har skrevet.</li>
+<li><strong>Show Mounts</strong> — hver montering den bærer, hva den er, og om det kan skrives i den.</li>
+<li><strong>Copy ID</strong> — containerens fulle id, eller volumets navn, på utklippstavlen. Den <em>fulle</em> id-en,
+  ikke de tolv tegnene i ID-kolonnen: dette er ment for å limes inn i en <code>docker</code>-kommando, og en kort
+  id er et prefiks som kan slutte å være entydig.</li>
+<li><strong>Jump to Volume</strong> — på en mappe som egentlig er et volum, gå til det volumet under <strong>Volumes</strong>.
+  Det er den andre halvdelen av Montering-kolonnen: kolonnen navngir volumet, dette tar deg dit.</li>
+<li><strong>Open Compose Project</strong> — gå til prosjektet containeren hører til.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — disse endrer containeren i stedet for å
+  lese den, så de spør først. Start er også veien ut av de to avvisningene over: sletting og
+  navnebytte krever en kjørende container.</li>
+</ul>
+<p>Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de ikke der i det hele tatt.</p>
+<p><strong>Loggen er også en fil.</strong> I roten av hver container ligger <code>docker-logs.txt</code> — som ikke er en fil i containeren: å lese den ber motoren om loggen. F3 på den åpner den i fremviseren, så søket, hoppet til en linje og valget av tegnsett gjelder alle, noe et eget vindu ikke kan gi. En container som faktisk har en fil med det navnet, viser sin egen, og til den virtuelle kan ingenting skrives.</p>
+<h2 id="innstillinger">Innstillinger</h2>
+<p><strong>Konfigurasjon ▸ Innstillinger ▸ Docker</strong> inneholder alt dette. De samme verdiene ligger i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som er den du redigerer hvis du setter opp en maskin fra et skript:</p>
+<ul>
+<li><code>Endpoint</code> — en adresse som skal brukes i stedet for den som ble funnet.</li>
+<li><code>ExecFallback</code> — <code>0</code> gjør at programtillegget bare bruker Dockers arkiv-API: det kjører da aldri noe inne i en container, mot at det ikke kan liste en svært stor mappe, slette eller gi nytt navn.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — hvor mye av en mappes arkiv det er verdt å lese før det faller tilbake eller gir opp.</li>
+<li><code>HelperImage</code> — imaget engangscontaineren over lages av (som standard et hvilket som helst image som allerede finnes på maskinen).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> skjuler volumene Docker ga en lang hash som navn fordi ingen andre navnga dem.</li>
+</ul>
+<h2 id="ikke-med-i-denne-versjonen">Ikke med i denne versjonen</h2>
+<p>Eksterne motorer over SSH eller TLS, et interaktivt skall, og images som skrivebeskyttede filsystemer.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="amazon-s3.html">Amazon S3 og S3-kompatibel lagring</a></li><li><a href="webdav.html">WebDAV-tjenere</a></li><li><a href="copying-files.html">Kopiere filer</a></li><li><a href="privacy-and-security.html">Personvern og sikkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

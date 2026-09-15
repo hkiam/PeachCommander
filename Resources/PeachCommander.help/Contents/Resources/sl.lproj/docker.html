@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dockerjevi vsebniki in nosilci</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dockerjevi vsebniki in nosilci</h1>
+<p>Datotečni sistem Dockerjevega vsebnika lahko brskate v pultu kakor katero koli mapo, in enako velja za Dockerjev nosilec. Izberite <strong>Poveži se z Dockerjem…</strong> v meniju Omrežje ali kliknite ploščico <strong>Docker</strong> v vrstici pogonov in pogon se prikaže v dejavnem pultu.</p>
+<p>To je vtičnik in <strong>dobavljen je izklopljen</strong>. Vklopite ga v <strong>Nastavitve ▸ Vtičniki…</strong>. Začne izklopljen, ker ima povezava z Dockerjevim strežnikom na vašem Macu enake pravice kot vi sami — glejte <em>Do česa dostopa</em> spodaj.</p>
+<h2 id="kaj-vidite">Kaj vidite</h2>
+<p>Najvišjo raven sestavljajo tri mape:</p>
+<ul>
+<li><strong>Compose Projects</strong> — vsak vsebnik, ki ga je zagnal Docker Compose, združen po projektu in nato po storitvi. Storitev z enim samim vsebnikom <em>je</em> ta vsebnik: <code>my-stack/backend/etc</code> je <code>/etc</code> zaledja. Storitev z več vsebniki zanje ohrani raven, eno mapo na vsebnik.</li>
+<li><strong>Standalone Containers</strong> — vse ostalo, naj teče ali ne.</li>
+<li><strong>Volumes</strong> — vsak Dockerjev nosilec kot samostojen pogon.</li>
+</ul>
+<p>Pod njimi ste v pravem datotečnem sistemu: F3 prikaže datoteko, F4 jo uredi, F5 jo kopira v drugi pult, F7 ustvari mapo. Drugi pult je lahko karkoli — krajevna mapa, arhiv, vedro S3.</p>
+<p>Združevanje se prebere iz oznak, ki jih Compose doda svojim vsebnikom in nosilcem, zato drži tudi za sklad, katerega <code>docker-compose.yml</code> že zdavnaj ni več na tem računalniku.</p>
+<p><strong>Nosilci so navedeni posebej namenoma.</strong> Nosilec preživi vsebnik, ki ga je ustvaril, deli si ga lahko več vsebnikov in običajno so prav v njem podatki, po katere ste prišli. Nosilec, ki ga trenutno nič ne priklaplja, je še vedno mogoče brskati.</p>
+<h2 id="stolpci">Stolpci</h2>
+<p>Z desnim klikom na glavo stolpca v pultu dodate ponudnikove lastne stolpce:</p>
+<ul>
+<li><strong>Stanje</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Dostop</strong> — <code>RW</code>, <code>RO</code> za koren ali priklop samo za branje, <code>VOL</code> za Dockerjev nosilec, <code>BIND</code> za vašo mapo, priklopljeno v vsebnik, <code>TMP</code> za tmpfs.</li>
+<li><strong>Slika</strong>, <strong>ID</strong>.</li>
+<li><strong>Priklop</strong> — pri imeniku, ki je v resnici priklop, kaj je: <code>Volume: my-stack_db-data</code> ali pot na gostitelju za priklopom bind. Tako najdete, kateri nosilec pod <strong>Volumes</strong> vsebuje podatke vsebnika.</li>
+</ul>
+<h2 id="ustavljeni-vsebniki">Ustavljeni vsebniki</h2>
+<p>Ustavljeni vsebniki so navedeni, njihove datotečne sisteme pa je mogoče brati in pisati. Dockerjev datotečni API odgovori tudi za vsebnik, ki ni tekel že mesec dni, in prav to daje občutek pogona in ne seznama procesov.</p>
+<p>Dvoje potrebuje res delujoč vsebnik: <strong>brisanje</strong> in <strong>preimenovanje</strong>. API Dockerjevega pogona za nobeno od njiju nima operacije — edini način, da datoteko znotraj vsebnika odstranite ali premaknete, je, da v njem nekaj zaženete — zato sta pri ustavljenem vsebniku obe zavrnjeni in ne le navidezno izvedeni.</p>
+<h2 id="kaj-pricakovati">Kaj pričakovati</h2>
+<p><strong>Pisanje vstopa kot <code>root</code>, brisanje teče kot vsebnikov lastni uporabnik.</strong> To je Dockerjeva ureditev, ne odločitev, sprejeta tukaj: kopiranje datoteke noter uporablja arhivski API pogona, ki piše kot root; brisanje ali preimenovanje pa zažene ukaz znotraj vsebnika, ki teče kot uporabnik, ki ga je nastavila slika. Brisanje je zato lahko zavrnjeno z <em>dostop zavrnjen</em> pri datoteki, ki ste jo trenutek prej lahko kopirali noter. Peach Commander tega ne zaobide tako, da bi nastopil kot root — pove vam, kaj je rekel vsebnik.</p>
+<p><strong>Vsebnik ali priklop samo za branje zavrne pisanje</strong> in to sporoči kot napako pravic, ne kot neuspeh.</p>
+<p><strong>Branje simbolne povezave prebere to, na kar kaže.</strong> Pult jo v stolpcu Attr še naprej prikazuje kot povezavo; F3 prikaže vsebino cilja namesto prazne datoteke.</p>
+<p><strong>Korena velikega ustavljenega vsebnika morda ne bo mogoče izpisati.</strong> Docker nima klica, ki bi izpisal imenik. Brati imenik pomeni zahtevati ga kot arhiv, ta pa vsebuje vse pod njim — pri ustavljenem vsebniku, zgrajenem na polni sliki, je to lahko več gigabajtov, in izpis je tedaj zavrnjen, namesto da bi se prebralo vse. Globlji imeniki so nedotaknjeni, prav tako <em>delujoč</em> vsebnik: imenik, prevelik za branje kot arhiv, izpiše vsebnik sam. Če želite le arhivsko pot, glejte nastavitev spodaj.</p>
+<p><strong>Kopiranje celotnega vsebnika ven pomeni kopiranje celotnega datotečnega sistema</strong> — vključno z <code>/proc</code> in <code>/dev</code>. Kopirajte imenik, ki ga potrebujete, ne <code>/</code>.</p>
+<h2 id="do-cesa-dostopa">Do česa dostopa</h2>
+<p>Vtičnik govori s tistim pogonom, ki bi ga dosegli iz terminala: <code>DOCKER_HOST</code>, če ste ga nastavili, sicer vaš trenutni <code>docker context</code>, sicer običajni vtiči Docker Desktopa, Colime, Rancher Desktopa, Lime in Podmana. Podman deluje, ker ponuja isti API.</p>
+<p>Dostop do Dockerjevega strežnika praviloma pomeni zelo širok dostop do računalnika, na katerem teče. Vtičnik ima natanko vaše pravice in ne zahteva več: ne shranjuje nobenih poverilnic, nikoli se ne dotakne Dockerjevih lastnih imenikov na vašem disku in v vašem imenu ne izvaja nobenih privilegiranih dejanj.</p>
+<p>Edino, kar ustvari, je <strong>enkratni vsebnik</strong> — in to le zato, da doseže nosilec, ki ga noben obstoječi vsebnik ne priklaplja, saj je nosilec viden le od znotraj nečesa, kar ga priklaplja. Nikoli se ne zažene, označen je kot vsebnik Peach Commanderja in je odstranjen, ko pogon zapustite.</p>
+<h2 id="dejanja-na-vsebniku-ali-nosilcu">Dejanja na vsebniku ali nosilcu</h2>
+<p>Desni klik na vsebnik ali nosilec v podmeniju <strong>Docker</strong> ponudi tisto, česar pogon sam ne more povedati:</p>
+<ul>
+<li><strong>Inspect</strong> — vse, kar pogon o njem ve, kot oblikovan JSON v oknu, po katerem se da drsati in iz
+  katerega se da kopirati.</li>
+<li><strong>Show Logs</strong> — zadnjih 500 vrstic, ki jih je vsebnik zapisal.</li>
+<li><strong>Show Mounts</strong> — vsak priklop, ki ga nosi, kaj je in ali je vanj mogoče pisati.</li>
+<li><strong>Copy ID</strong> — polni id vsebnika ali ime nosilca na odložišče. <em>Polni</em> id, ne dvanajst znakov iz
+  stolpca ID: namenjen je lepljenju v ukaz <code>docker</code>, kratek id pa je predpona, ki lahko preneha biti
+  enolična.</li>
+<li><strong>Jump to Volume</strong> — pri imeniku, ki je v resnici nosilec, skočiti na ta nosilec pod <strong>Volumes</strong>.
+  To je druga polovica stolpca Priklop: stolpec nosilec poimenuje, to pa vas pripelje do njega.</li>
+<li><strong>Open Compose Project</strong> — iti k projektu, ki mu vsebnik pripada.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — ta vsebnik spreminjajo, namesto da bi
+  ga brala, zato prej vprašajo. Start je hkrati izhod iz obeh zavrnitev zgoraj: brisanje in
+  preimenovanje potrebujeta delujoč vsebnik.</li>
+</ul>
+<p>Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.</p>
+<p><strong>Dnevnik je tudi datoteka.</strong> V korenu vsakega vsebnika leži <code>docker-logs.txt</code> — ki ni datoteka v vsebniku: njeno branje vpraša pogon za dnevnik. F3 nanjo jo odpre v pregledovalniku, zato veljajo njegovo iskanje, skok na vrstico in izbira kodiranja, česar lastno okno ne more dati. Vsebnik, ki datoteko tega imena res prinaša, pokaže svojo, v navidezno pa ni mogoče ničesar zapisati.</p>
+<h2 id="nastavitve">Nastavitve</h2>
+<p><strong>Nastavitve ▸ Nastavitve ▸ Docker</strong> vsebuje vse to. Iste vrednosti so v majhni datoteki v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ki jo uredite, če računalnik pripravljate s skriptom:</p>
+<ul>
+<li><code>Endpoint</code> — naslov, ki naj se uporabi namesto najdenega.</li>
+<li><code>ExecFallback</code> — <code>0</code> doseže, da vtičnik uporablja izključno Dockerjev arhivski API: takrat v vsebniku nikoli ničesar ne zažene, za ceno tega, da ne more izpisati zelo velikega imenika, brisati ali preimenovati.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — koliko arhiva nekega imenika se splača prebrati, preden se zateče k nadomestni poti ali obupa.</li>
+<li><code>HelperImage</code> — slika, iz katere nastane zgornji enkratni vsebnik (privzeto katera koli slika, ki je že na računalniku).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> skrije nosilce, ki jim je Docker dal za ime dolg izvleček, ker jih ni poimenoval nihče drug.</li>
+</ul>
+<h2 id="ni-v-tej-razlicici">Ni v tej različici</h2>
+<p>Oddaljeni pogoni prek SSH ali TLS, interaktivna lupina in slike kot datotečni sistemi samo za branje.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="amazon-s3.html">Amazon S3 in shrambe, združljive s S3</a></li><li><a href="webdav.html">Strežniki WebDAV</a></li><li><a href="copying-files.html">Kopiranje datotek</a></li><li><a href="privacy-and-security.html">Zasebnost in varnost</a></li></ul></section>
+</main>
+</body>
+</html>

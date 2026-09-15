@@ -18,14 +18,11 @@
 <li>Ställ in hur noggrann jämförelsen ska vara: inkludera undermappar, jämför <strong>efter innehåll</strong> (inte bara efter datum och storlek), eller ignorera ändringsdatumet.</li>
 <li>Lägg till en filtermask (till exempel <code>*.jpg;*.png</code>) om du bara vill synkronisera vissa filer.</li>
 <li>Granska resultatrutnätet. Varje rad visar en fil till vänster, en riktningspil i mitten, och den matchande filen till höger. Pilarna berättar vad som kommer att hända: <strong>→</strong> kopierar vänster till höger, <strong>←</strong> kopierar höger till vänster, och <strong>=</strong> betyder att de två är identiska.</li>
-<li>Begränsa vad rutnätet visar med <strong>Visa</strong>: allt, bara raderna som går <strong>&#8594;</strong> åt höger, eller bara de som går <strong>&#8592;</strong> åt vänster. <strong>Dölj identiska</strong> utelämnar filerna som redan är lika på båda sidor; raden under rutnätet säger hur många rader filtret håller tillbaka.</li>
-<li><strong>Markera alla</strong> kryssar i exakt det som syns och avmarkerar allt som filtret döljer &mdash; välj en riktning, klicka, och körningen går bara åt det hållet. <strong>Avmarkera alla</strong> tömmer varje rad, visad eller inte, om du hellre väljer för hand.</li>
-<li>Varje rad visar båda tidsstämplarna vid sidan av båda storlekarna, så att man ser <em>varför</em> en pil pekar som den gör. Klicka på en kolumnrubrik för att sortera efter den, och dubbelklicka på en rad för att öppna de två filerna sida vid sida.</li>
-<li>Ett <strong>&#8800;</strong> markerar en konflikt: två lika gamla filer som ändå skiljer sig, där Peach Commander vägrar gissa. Klicka på tecknet för att själv välja <strong>&#8594;</strong> eller <strong>&#8592;</strong>; klickar du vidare blir raden en konflikt igen och hålls utanför körningen.</li>
 <li>Justera enskilda rader om du inte håller med om en föreslagen riktning, och klicka sedan på synkroniseringsknappen för att genomföra ändringarna.</li>
 </ol>
 <p><img alt="Fönstret för att synkronisera kataloger med två mappsökvägar och ett resultatrutnät av filer med vänster-, likhets- och högerpilar" src="images/sync-dialog.png" />
 <em>(Figur: Fönstret Synkronisera kataloger jämför båda sidorna och föreslår en kopieringsriktning för varje fil.)</em></p>
+<p>Högerklicka på en rad för att titta på filerna bakom den. <strong>Jämför</strong> öppnar de två sidorna intill varandra, medan <strong>Visa vänster fil</strong> och <strong>Visa höger fil</strong> öppnar en sida för sig i visaren — det är svaret för en rad som bara finns på en sida, där det inte finns något att jämföra. Poster som inte går att använda på raden du klickade på är gråmarkerade i stället för att inte göra något. En fil inuti en <code>.zip</code> eller på en server packas upp eller hämtas först till en skrivskyddad tillfällig kopia, så originalet berörs aldrig. Detsamma gäller <strong>Jämför</strong>, så en mapp kan jämföras med ett arkiv eller en server — och knapparna för att slå samman och spara förblir avstängda för en sådan sida, eftersom det som är öppet där är kopian.</p>
 <h2 id="jamfor-tva-filer-efter-innehall">Jämför två filer efter innehåll</h2>
 <ol>
 <li>Markera en fil i varje panel (eller två filer i samma panel).</li>
@@ -35,10 +32,64 @@
 </ol>
 <p><img alt="Jämförelsefönstret som visar två textfiler sida vid sida med avvikande rader markerade" src="images/diff-window.png" />
 <em>(Figur: Jämförelse av två textfiler; ändrade rader är markerade på båda sidorna.)</em></p>
+<p>När de två filerna inte har några skillnader alls säger fönstret det i ett färgat fält längst upp, i stället för att låta dig sluta dig till det från en tabell där ingenting är markerat. Fältet visas också, i en varningsfärg, när en fil inte kunde läsas alls — då skulle varje utlåtande om skillnader vara ett påstående om en jämförelse som aldrig ägde rum. Jämförelsen byte för byte säger detsamma av samma skäl: två filer som den inte kan öppna är inte två identiska filer.</p>
 <h2 id="jamfor-filer-byte-for-byte">Jämför filer byte för byte</h2>
 <p>När två filer ser likadana ut men du behöver bevisa att de verkligen är identiska (eller hitta den enda byte som skiljer sig), använd den binära jämförelsen. Den visar båda filerna i en hex-vy med avvikande byte markerade, vilket är idealiskt för att verifiera nedladdningar, kontrollera kodad data eller bekräfta en exakt kopia.</p>
 <h2 id="jamfor-kataloglistor">Jämför kataloglistor</h2>
 <p>För att upptäcka skillnader mellan två öppna mappar med en blick, välj <strong>Markera ▸ Jämför kataloger</strong> (Shift+F2). Peach Commander markerar filerna som skiljer sig eller saknas på den andra sidan, så att du kan agera på dem med de vanliga kommandona för kopiera, flytta och ta bort.</p>
+<h2 id="begransa-vad-en-synkronisering-omfattar">Begränsa vad en synkronisering omfattar</h2>
+<p>Maskfältet innehåller en ta-med-lista över filnamn. För det som inte går att uttrycka där öppnar <strong>Filter…</strong> intill ett ark med tre flikar. Det som ställs in där gäller den <em>nästa</em> jämförelsen, och knappen säger sedan hur många kriterier som är aktiva — ett filter man inte ser är hur en säkerhetskopia slutar ofullständig medan fönstret rapporterar att den är klar.</p>
+<ul>
+<li><strong>Uteslut</strong> tar mönster åtskilda med <code>;</code> eller <code>|</code>. Ett namn utan snedstreck träffar på varje djup (<code>*.tmp</code>), ett snedstreck sist betyder en mapp med allt i den (<code>node_modules/</code>), och ett mönster med snedstreck träffar den relativa sökvägen (<code>src/*/generated</code>). Skillnad på stora och små bokstäver görs inte.</li>
+<li><strong>Storlek</strong> och <strong>datum</strong> bedömer ett par som helhet: faller en sida utanför intervallet hålls hela paret utanför. Det är avsiktligt. Tillämpad på bara en sida skulle en uteslutning få paret att se ensidigt ut och bli en kopiering i fel riktning.</li>
+<li><strong>Under de senaste N dagarna</strong> mäts från varje jämförelse, inte från när en förinställning sparades — ett sparat jobb betyder alltså fortfarande "den senaste månaden".</li>
+<li>Fliken <strong>Tillägg</strong> frågar ett innehållstillägg om den sida en fil skulle kopieras från. Det behöver en verklig fil, så den erbjuds bara när båda sidorna är mappar på den här Mac-datorn.</li>
+</ul>
+<p>En utesluten mapp tas inte bort i spegelläge heller — en spegel tar bara bort det den verkligen har jämfört. Statusraden säger hur många poster filtret undanhöll, intill vad körningen kommer att göra. Ett filter sparas och läses in med den synk-förinställning det hör till.</p>
+<h2 id="hall-tva-mappar-lika-i-bada-riktningarna">Håll två mappar lika, i båda riktningarna</h2>
+<p>De två ursprungliga läggena kan inte skilja på en sak: en fil som bara finns på den ena sidan är
+antingen <strong>ny här</strong> eller <strong>borttagen där</strong>, och det ser likadant ut. Det symmetriska läget kopierar
+den därför — ta bort något på den bärbara, synkronisera, och den kommer tillbaka från säkerhets-
+kopian — och spegelläget tar bort, men bara i en riktning.</p>
+<p><strong>Tvåvägs (med minne)</strong> minns hur båda mapparna såg ut senast de stämde. Med den uppgiften kan en
+borttagning på den ena sidan föras över till den andra.</p>
+<ul>
+<li>Den <strong>första</strong> körningen för ett par har ingen uppgift: den beter sig som förut och tar inte bort
+  något. Den skriver uppgiften. Från andra körningen gör läget sitt arbete.</li>
+<li>En överförd borttagning visas i egen färg med <code>⇒🗑</code> och är <strong>inte</strong> ikryssad: det är den enda raden
+  som kommer från appens minne. Ett klick på pilen erbjuder de andra svaren: kopiera tillbaka filen i
+  stället, eller låta båda sidor vara.</li>
+<li>Ändrad på den ena sidan och borttagen på den andra är en <strong>konflikt</strong>, aldrig en borttagning. Samma
+  gäller en fil som ändrats på båda sidor.</li>
+<li>Inget tas bort på grund av en frånvaro som jämförelsen inte kunde bekräfta — en oläsbar mapp,
+  eller en som filtret höll tillbaka, bevisar ingenting om vad som finns i den.</li>
+<li>Bara två mappar på den här Mac-datorn. Inte en server och inte ett arkiv: en radering i ett arkiv
+  skriver om det, en radering på en server är permanent, och det här läget är inte det att pröva
+  det med.</li>
+</ul>
+<p><strong>Det finns ingen ångra för en borttagning.</strong> På den här datorn hamnar filen i Papperskorgen och kan
+hämtas tillbaka i Finder; det är hela skyddsnätet. <strong>Minne…</strong> i fönstret listar varje par appen minns, markerar det du tittar på och låter dig glömma vilket som helst av dem — därefter beter sig nästa jämförelse av de mapparna som en första igen. Ingenting glöms av sig själv: en mapp på en avmonterad disk är inte borta, bara inte ansluten.</p>
+<p>Uppgiften ligger med inställningarna: flyttar du en
+av mapparna har paret ingen historia längre — och en körning utan historia tar inte bort något.</p>
+<h2 id="vad-en-korning-gjorde-och-vad-av-det-som-kan-tas-tillbaka">Vad en körning gjorde, och vad av det som kan tas tillbaka</h2>
+<p>Varje synkronisering skrivs ned. <strong>Körningar…</strong> i fönstret listar dem med de senaste först — när, vilka två mappar, vilket läge, och hur många filer som kopierades, raderades eller hölls tillbaka — och visar vad som hände med varje fil i den körning du väljer.</p>
+<p>Den listan är det som gör papperskorgen användbar. En fil som den här Mac-datorn raderade hamnade i papperskorgen, och körningen antecknade <em>var</em>, vilket betyder mer än det låter: papperskorgen döper om vid krock, så en andra <code>notes.txt</code> hamnar som <code>notes.txt 11-17-15-028.txt</code>, och att leta efter den på namn ger fel fil. <strong>Visa i papperskorgen</strong> pekar Finder rakt på objektet.</p>
+<p><strong>Lägg tillbaka…</strong> flyttar de filer en körning raderade ut ur papperskorgen till de sökvägar de raderades från. Varje enskild kontrolleras först, och det som inte håller avvisas med sitt skäl i stället för att tvingas igenom:</p>
+<ul>
+<li>Det ligger något på den sökvägen igen. Det lämnas i fred — ett tillbakaläggande får aldrig skriva över.</li>
+<li>Objektet finns inte i papperskorgen längre, eller det raderades permanent i stället för att läggas dit.</li>
+<li>Sidan var ett arkiv eller en server. Ett arkiv skrivs om i sin helhet, och en server har ingen
+  papperskorg, så ingenting sparades.</li>
+<li>Mappen körningen skrev till är borta, eller är inte samma mapp längre — en återanvänd
+  monteringspunkt, säg. Då avvisas hela körningen i stället för att någon del av den utförs.</li>
+<li>Det har redan lagts tillbaka. Noteringen minns det, så ett andra försök gör ingenting.</li>
+<li>Eller noteringen själv är en som den här versionen inte kan agera på — skriven av en nyare version
+  av appen, eller så namnger den en sökväg utanför båda mapparna. Ovanligt, och avvisat i stället för
+  gissat.</li>
+</ul>
+<p><strong>En kopia kan inte tas tillbaka.</strong> Att ta bort en skulle innebära att radera en fil du kan ha redigerat sedan dess, vilket är den omvända bytesaffären mot att lägga tillbaka en radering, så appen erbjuder det inte — körningen talar om vilka filer den kopierade och du kan radera dem själv. En fil som <em>skrevs över</em> är den enda riktiga luckan, och den är numera liten: på den här Mac-datorn hamnar den ersatta versionen i papperskorgen som en raderad fil, så <strong>Visa i papperskorgen</strong> hittar den. In i ett arkiv, upp på en server eller till en volym utan papperskorg går det inte, och bekräftelsen säger det före körningen.</p>
+<p>De senaste 200 körningarna behålls, eller 64 MB av dem, vilket som kommer först; därutöver faller de äldsta bort en i taget allteftersom nya kommer till, och <strong>Glöm</strong> och <strong>Glöm alla</strong> rensar dem på stället. En mycket stor körning — mer än 20 000 filer — behåller varje problem och allt den lade i papperskorgen, men inte de kopior som gick igenom, och säger det i stället för att låta dig upptäcka det. Dess raderingar går fortfarande att lägga tillbaka: det som utelämnades är kopiorna, och en kopia hade ändå inte kunnat tas tillbaka.</p>
+<p>Att glömma ändrar ingenting i mapparna; det som försvinner är noteringen om vad som gjordes, och med den erbjudandet att lägga tillbaka något. Till skillnad från tvåvägsminnet slängs detta automatiskt — att förlora minnet av ett <em>par</em> skulle ändra vad nästa körning gör, medan att förlora noteringen om en körning bara tar bort ett erbjudande.</p>
 <h2 id="kortkommandon">Kortkommandon</h2>
 <table>
 <thead>
@@ -60,18 +111,18 @@
 <td>Synkronisera kataloger</td>
 <td>Kommandon ▸ Synkronisera kataloger…</td>
 </tr>
+<tr>
+<td>Visa den ena sidan av en synkroniseringsrad</td>
+<td>Högerklicka på raden ▸ Visa vänster fil / Visa höger fil</td>
+</tr>
 </tbody>
 </table>
 <h2 id="anteckningar">Anteckningar</h2>
 <ul>
 <li><strong>Efter innehåll kontra efter datum/storlek.</strong> En snabb jämförelse matchar filer efter storlek och ändringsdatum, vilket är snabbt men kan luras när tidsstämplar skiljer sig för identiska filer. Slå på <strong>efter innehåll</strong> för ett tillförlitligt resultat på bekostnad av att varje fil läses.</li>
 <li><strong>Undermappar och filter.</strong> Synkroniseringsfönstret kan gå ned i undermappar och kan begränsas med en filtermask, så att du kan synkronisera bara de filtyper du bryr dig om.</li>
-<li><strong>Du behåller kontrollen.</strong> Synkronisering körs aldrig av sig själv – du granskar de föreslagna riktningarna i resultatrutnätet och kan ändra vilken som helst av dem innan något kopieras.</li>
-<li><strong>En jämförelse man kan följa och stoppa.</strong> Att gå igenom två stora träd tar tid, så fönstret räknar under arbetet först de genomgångna posterna och sedan de jämförda filerna, med en indikator bredvid räknaren. Knappen Jämför heter <strong>Stoppa</strong> så länge genomsökningen pågår; att stoppa den låter det förra resultatet stå kvar i stället för att visa ett halvt träd.</li>
-<li><strong>Vilken sida är förlagan.</strong> Speglingen går från vänster till höger. <strong>Byt sidor</strong> växlar de två mapparna: så blir det högra trädet det som vinner &mdash; och så rättar man till att panelerna lade dem tvärtom.</li>
-<li><strong>Tidsstämplar som inte är riktigt lika.</strong> <strong>Ignorera en skillnad på 1 timme</strong> tar upp den förskjutning som en FAT-volym eller en sommartidsändring lägger på en i övrigt oförändrad fil. <strong>Skiftlägeskänslig</strong> avgör om två namn som bara skiljer sig där är samma fil; avstängt är de det &mdash; vilket en Mac-volym vanligtvis också säger.</li>
-<li><strong>När något går fel.</strong> Synkroniseringen rapporterar sitt förlopp och knappen heter <strong>Stoppa</strong> medan den pågår; att stoppa mellan två poster låter det kopierade förbli kopierat. Det som misslyckades listas med fil och orsak i fönstret för åtgärdsfel i stället för att bara räknas. Radering på en server är permanent &mdash; det finns ingen papperskorg där &mdash; och bekräftelsen säger det i förväg.</li>
-<li><strong>Förinställningar.</strong> Ofta använda synkroniseringsuppsättningar kan sparas och återanvändas så att du slipper ange samma alternativ varje gång.</li>
+<li><strong>Du behåller kontrollen.</strong> Synkronisering körs aldrig av sig själv – du granskar de föreslagna riktningarna i resultatrutnätet och kan ändra vilken som helst av dem innan något kopieras. <strong>Esc</strong> avbryter en pågående jämförelse och stänger fönstret när ingen pågår.</li>
+<li><strong>Förinställningar.</strong> Ofta använda synkroniseringsuppsättningar kan sparas och återanvändas så att du slipper ange samma alternativ varje gång. En förinställning minns även vad resultatrutnätet visar — riktningsfiltret och <strong>Dölj identiska</strong> — och fönstret öppnas med den förinställning du använde senast. En förinställning <strong>Standard</strong> finns från första gången du öppnar fönstret; spara över den för att göra den till din egen.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Byta namn på många filer</a></li></ul></section>
 </main>

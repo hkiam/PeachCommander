@@ -18,14 +18,11 @@
 <li>Stel in hoe grondig de vergelijking moet zijn: submappen opnemen, vergelijken <strong>op inhoud</strong> (niet alleen op datum en grootte), of de wijzigingsdatum negeren.</li>
 <li>Voeg een filtermasker toe (bijvoorbeeld <code>*.jpg;*.png</code>) als je alleen bepaalde bestanden wilt synchroniseren.</li>
 <li>Bekijk het resultatenraster. Elke rij toont een bestand links, een richtingspijl in het midden en het overeenkomende bestand rechts. De pijlen vertellen je wat er zal gebeuren: <strong>→</strong> kopieert van links naar rechts, <strong>←</strong> kopieert van rechts naar links, en <strong>=</strong> betekent dat de twee identiek zijn.</li>
-<li>Beperk wat het raster toont met <strong>Weergeven</strong>: alles, alleen de rijen die <strong>&#8594;</strong> naar rechts gaan, of alleen die <strong>&#8592;</strong> naar links gaan. <strong>Identieke verbergen</strong> laat de bestanden weg die aan beide kanten al gelijk zijn; de regel onder het raster noemt hoeveel rijen het filter tegenhoudt.</li>
-<li><strong>Selecteer alles</strong> vinkt precies aan wat in beeld is en vinkt alles uit wat het filter verbergt &mdash; kies een richting, klik, en de uitvoering gaat alleen die kant op. <strong>Deselecteer alles</strong> leegt elke rij, weergegeven of niet, als u liever met de hand kiest.</li>
-<li>Elke rij toont beide tijdstempels naast beide groottes, zodat te zien is <em>waarom</em> een pijl die kant op wijst. Klik op een kolomkop om erop te sorteren, en dubbelklik op een rij om beide bestanden naast elkaar te openen.</li>
-<li>Een <strong>&#8800;</strong> markeert een conflict: twee even oude bestanden die toch verschillen, waar Peach Commander weigert te gokken. Klik op het teken om zelf <strong>&#8594;</strong> of <strong>&#8592;</strong> te kiezen; klikt u door, dan blijft de rij een conflict en buiten de uitvoering.</li>
 <li>Pas individuele rijen aan als je het niet eens bent met een voorgestelde richting, en klik vervolgens op de synchroniseerknop om de wijzigingen uit te voeren.</li>
 </ol>
 <p><img alt="Het venster Mappen synchroniseren met twee mappaden en een resultatenraster van bestanden met linker-, gelijk- en rechterpijlen" src="images/sync-dialog.png" />
 <em>(Afbeelding: Het venster Mappen synchroniseren vergelijkt beide kanten en stelt voor elk bestand een kopieerrichting voor.)</em></p>
+<p>Klik met de rechtermuisknop op een rij om naar de bestanden erachter te kijken. <strong>Vergelijk</strong> opent de twee kanten naast elkaar, terwijl <strong>Linkerbestand weergeven</strong> en <strong>Rechterbestand weergeven</strong> één kant op zichzelf in de weergave openen — dat is het antwoord voor een rij die maar aan één kant bestaat, waar niets te vergelijken is. Items die niet op de aangeklikte rij van toepassing zijn, zijn grijs in plaats van niets te doen. Een bestand in een <code>.zip</code> of op een server wordt eerst uitgepakt of gedownload naar een alleen-lezen tijdelijke kopie, zodat het origineel nooit wordt aangeraakt. Dat geldt ook voor <strong>Vergelijk</strong>, dus een map kan met een archief of een server worden vergeleken — en de knoppen voor samenvoegen en bewaren blijven uit voor zo’n kant, want wat daar openstaat is de kopie.</p>
 <h2 id="twee-bestanden-op-inhoud-vergelijken">Twee bestanden op inhoud vergelijken</h2>
 <ol>
 <li>Selecteer één bestand in elk paneel (of twee bestanden in hetzelfde paneel).</li>
@@ -35,10 +32,66 @@
 </ol>
 <p><img alt="Het vergelijkvenster met twee tekstbestanden naast elkaar met verschillende regels gemarkeerd" src="images/diff-window.png" />
 <em>(Afbeelding: Twee tekstbestanden vergelijken; gewijzigde regels worden aan beide kanten gemarkeerd.)</em></p>
+<p>Als de twee bestanden helemaal geen verschillen hebben, zegt het venster dat in een gekleurde balk aan de bovenkant, in plaats van u het te laten opmaken uit een tabel waarin niets is gemarkeerd. De balk verschijnt ook, in een waarschuwingskleur, wanneer een bestand helemaal niet gelezen kon worden — dan zou elk oordeel over verschillen een uitspraak zijn over een vergelijking die nooit heeft plaatsgevonden. De byte-voor-byte-vergelijking zegt hetzelfde om dezelfde reden: twee bestanden die het niet kan openen zijn geen twee identieke bestanden.</p>
 <h2 id="bestanden-byte-voor-byte-vergelijken">Bestanden byte voor byte vergelijken</h2>
 <p>Wanneer twee bestanden er hetzelfde uitzien maar je moet bewijzen dat ze werkelijk identiek zijn (of de ene byte vinden die verschilt), gebruik je de binaire vergelijking. Deze toont beide bestanden in een hex-weergave met niet-overeenkomende bytes gemarkeerd, wat ideaal is om downloads te verifiëren, gecodeerde gegevens te controleren of een exacte kopie te bevestigen.</p>
 <h2 id="mappenlijsten-vergelijken">Mappenlijsten vergelijken</h2>
 <p>Om in één oogopslag verschillen tussen twee open mappen te ontdekken, kies je <strong>Markeren ▸ Mappen vergelijken</strong> (Shift+F2). Peach Commander markeert de bestanden die verschillen of aan de andere kant ontbreken, zodat je erop kunt inwerken met de gebruikelijke kopieer-, verplaats- en verwijderopdrachten.</p>
+<h2 id="beperken-wat-een-synchronisatie-omvat">Beperken wat een synchronisatie omvat</h2>
+<p>Het maskerveld bevat één insluitlijst over bestandsnamen. Voor wat daarmee niet te zeggen is, opent <strong>Filter…</strong> ernaast een blad met drie tabbladen. Wat daar wordt ingesteld geldt voor de <em>volgende</em> vergelijking, en de knop laat dan zien hoeveel criteria actief zijn — een filter dat je niet ziet is de manier waarop een back-up onvolledig eindigt terwijl het venster meldt dat het klaar is.</p>
+<ul>
+<li><strong>Uitsluiten</strong> neemt patronen, gescheiden door <code>;</code> of <code>|</code>. Een naam zonder schuine streep past op elke diepte (<code>*.tmp</code>), een schuine streep aan het eind betekent een map met alles erin (<code>node_modules/</code>), en een patroon met een schuine streep past op het relatieve pad (<code>src/*/generated</code>). Hoofdletters doen niet mee.</li>
+<li><strong>Grootte</strong> en <strong>datum</strong> beoordelen een paar als geheel: valt één kant buiten het bereik, dan blijft het hele paar weg. Dat is opzet. Op één kant toegepast zou een uitsluiting het paar eenzijdig laten lijken en een kopie de verkeerde kant op worden.</li>
+<li><strong>In de laatste N dagen</strong> wordt gemeten vanaf elke vergelijking, niet vanaf het bewaren van een voorinstelling — een bewaarde taak blijft dus "de laatste maand" betekenen.</li>
+<li>Het tabblad <strong>Plug-ins</strong> vraagt een inhouds-plug-in naar de kant waarvan een bestand gekopieerd zou worden. Daarvoor is een echt bestand nodig, dus het wordt alleen aangeboden als beide kanten mappen op deze Mac zijn.</li>
+</ul>
+<p>Een uitgesloten map wordt ook in spiegelmodus niet verwijderd — een spiegel haalt alleen weg wat hij werkelijk heeft vergeleken. De statusregel zegt hoeveel items het filter heeft weggehouden, naast wat de uitvoering gaat doen. Een filter wordt bewaard en geladen met de sync-voorinstelling waar het bij hoort.</p>
+<h2 id="twee-mappen-aan-beide-kanten-gelijk-houden">Twee mappen aan beide kanten gelijk houden</h2>
+<p>De twee oorspronkelijke modi kunnen één ding niet onderscheiden: een bestand dat maar aan één kant
+staat is óf <strong>hier nieuw</strong> óf <strong>daar verwijderd</strong>, en dat ziet er hetzelfde uit. De symmetrische modus
+kopieert het dus — verwijder iets op je laptop, synchroniseer, en het komt terug uit de back-up — en de
+spiegelmodus verwijdert, maar maar in één richting.</p>
+<p><strong>Tweezijdig (met geheugen)</strong> onthoudt hoe beide mappen eruitzagen toen ze voor het laatst
+overeenkwamen. Met die gegevens kan een verwijdering aan de ene kant naar de andere worden gebracht.</p>
+<ul>
+<li>De <strong>eerste</strong> keer voor een paar is er niets bewaard: het gedraagt zich als voorheen en verwijdert
+  niets. Het bewaart de gegevens. Vanaf de tweede keer doet de modus zijn werk.</li>
+<li>Een overgenomen verwijdering staat in een eigen kleur met <code>⇒🗑</code> en is <strong>niet</strong> aangevinkt: het is de
+  enige regel die uit het geheugen van de app komt. Klikken op de pijl biedt de andere antwoorden:
+  het bestand terugkopiëren, of beide kanten laten.</li>
+<li>Aan de ene kant gewijzigd en aan de andere verwijderd is een <strong>conflict</strong>, nooit een verwijdering.
+  Net als een bestand dat aan beide kanten is gewijzigd.</li>
+<li>Er wordt niets verwijderd op grond van een afwezigheid die de vergelijking niet kon bevestigen —
+  een onleesbare map, of een die het filter tegenhield, bewijst niets over wat erin zit.</li>
+<li>Alleen twee mappen op deze Mac. Geen server en geen archief: een verwijdering in een archief
+  herschrijft het, een verwijdering op een server is definitief, en deze modus is niet die om dat
+  mee te proberen.</li>
+</ul>
+<p><strong>Voor een verwijdering is er geen ongedaan maken.</strong> Op deze Mac gaat het bestand naar de Prullenmand
+en kan het via de Finder terug; dat is het hele net. <strong>Geheugen…</strong> in het venster toont elk paar dat de app onthoudt, markeert het paar dat je bekijkt en laat er elk van vergeten — daarna gedraagt de volgende vergelijking van die mappen zich weer als een eerste. Er wordt nooit iets vanzelf vergeten: een map op een ontkoppelde schijf is niet weg, alleen niet aangesloten.</p>
+<p>De gegevens staan bij de instellingen: verplaats
+je een van de mappen, dan heeft het paar geen geschiedenis meer — en zonder geschiedenis verwijdert
+een run niets.</p>
+<h2 id="wat-een-uitvoering-deed-en-wat-daarvan-is-terug-te-halen">Wat een uitvoering deed, en wat daarvan is terug te halen</h2>
+<p>Elke synchronisatie wordt vastgelegd. <strong>Uitvoeringen…</strong> in het venster somt ze op, de nieuwste eerst — wanneer, welke twee mappen, welke modus, en hoeveel bestanden zijn gekopieerd, verwijderd of tegengehouden — en toont wat er met elk bestand is gebeurd in de uitvoering die u kiest.</p>
+<p>Die lijst is wat de Prullenmand bruikbaar maakt. Een bestand dat deze Mac verwijderde ging naar de Prullenmand, en de uitvoering noteerde <em>waar</em>, wat meer uitmaakt dan het klinkt: de Prullenmand hernoemt bij een botsing, dus een tweede <code>notes.txt</code> belandt er als <code>notes.txt 11-17-15-028.txt</code>, en zoeken op naam levert de verkeerde op. <strong>Toon in Prullenmand</strong> wijst de Finder recht op het onderdeel.</p>
+<p><strong>Terugzetten…</strong> haalt de bestanden die een uitvoering verwijderde uit de Prullenmand terug naar de paden waarvandaan ze zijn verwijderd. Elk ervan wordt eerst gecontroleerd, en wat niet klopt wordt met zijn reden geweigerd in plaats van geforceerd:</p>
+<ul>
+<li>Er staat weer iets op dat pad. Dat blijft met rust — terugzetten mag nooit overschrijven.</li>
+<li>Het onderdeel zit niet meer in de Prullenmand, of het is permanent verwijderd in plaats van daarheen verplaatst.</li>
+<li>De zijde was een archief of een server. Een archief wordt in zijn geheel herschreven, en een server
+  heeft geen Prullenmand, dus er is niets bewaard.</li>
+<li>De map waarin de uitvoering schreef is weg, of is niet meer dezelfde map — een hergebruikt
+  koppelpunt bijvoorbeeld. Dan wordt de hele uitvoering geweigerd in plaats van er een deel van uit te
+  voeren.</li>
+<li>Het is al teruggezet. Het verslag houdt dat bij, dus een tweede poging doet niets.</li>
+<li>Of het verslag zelf is er een waarop deze versie niet kan handelen — geschreven door een nieuwere
+  versie van de app, of het noemt een pad buiten beide mappen. Zeldzaam, en geweigerd in plaats van
+  geraden.</li>
+</ul>
+<p><strong>Een kopie kan niet worden teruggenomen.</strong> Die weghalen zou betekenen dat u een bestand verwijdert dat u sindsdien bewerkt kunt hebben, en dat is de omgekeerde ruil van het terugzetten van een verwijdering; de app biedt het dus niet aan — de uitvoering vertelt u welke bestanden ze kopieerde en u kunt ze zelf verwijderen. Een bestand dat is <em>overschreven</em> is het enige echte gat, en het is inmiddels klein: op deze Mac gaat de vervangen versie net als een verwijderd bestand naar de Prullenmand, dus <strong>Toon in Prullenmand</strong> vindt haar. Naar een archief, naar een server of naar een volume zonder Prullenmand kan dat niet, en de bevestiging zegt dat vóór de uitvoering.</p>
+<p>De laatste 200 uitvoeringen worden bewaard, of 64 MB ervan, wat het eerst komt; daarna vallen de oudste er één voor één af naarmate er nieuwe bij komen, en <strong>Vergeten</strong> en <strong>Alles vergeten</strong> ruimen ze meteen op. Een zeer grote uitvoering — meer dan 20.000 bestanden — bewaart elk probleem en alles wat ze in de Prullenmand legde, maar niet de kopieën die goed gingen, en zegt dat in plaats van het u te laten opmerken. Haar verwijderingen zijn nog altijd terug te zetten: wat is weggelaten zijn de kopieën, en een kopie had toch niet kunnen worden teruggenomen.</p>
+<p>Vergeten verandert niets aan de mappen; wat verdwijnt is het verslag van wat er is gedaan, en daarmee het aanbod om iets terug te zetten. Anders dan het tweerichtingsgeheugen wordt dit automatisch weggegooid — het geheugen van een <em>paar</em> kwijtraken zou veranderen wat de volgende uitvoering doet, terwijl het kwijtraken van het verslag van een uitvoering alleen een aanbod wegneemt.</p>
 <h2 id="sneltoetsen">Sneltoetsen</h2>
 <table>
 <thead>
@@ -60,18 +113,18 @@
 <td>Mappen synchroniseren</td>
 <td>Opdrachten ▸ Mappen synchroniseren…</td>
 </tr>
+<tr>
+<td>Eén kant van een synchronisatierij weergeven</td>
+<td>Rechtsklik op de rij ▸ Linkerbestand weergeven / Rechterbestand weergeven</td>
+</tr>
 </tbody>
 </table>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
 <li><strong>Op inhoud versus op datum/grootte.</strong> Een snelle vergelijking koppelt bestanden op grootte en wijzigingsdatum, wat snel is maar misleid kan worden wanneer tijdstempels verschillen voor identieke bestanden. Zet <strong>op inhoud</strong> aan voor een betrouwbaar resultaat ten koste van het lezen van elk bestand.</li>
 <li><strong>Submappen en filters.</strong> Het synchroniseervenster kan in submappen afdalen en kan met een filtermasker worden beperkt, zodat je alleen de bestandstypen kunt synchroniseren die je interesseren.</li>
-<li><strong>Jij houdt de controle.</strong> Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd.</li>
-<li><strong>Een vergelijking die u kunt volgen en stoppen.</strong> Twee grote bomen doorlopen kost tijd, dus telt het venster tijdens het werk eerst de doorlopen items en daarna de vergeleken bestanden, met een indicator naast de teller. De knop Vergelijken heet <strong>Stoppen</strong> zolang de scan loopt; stoppen laat het vorige resultaat staan in plaats van een halve boom te tonen.</li>
-<li><strong>Welke kant de baas is.</strong> Spiegelen gaat van links naar rechts. <strong>Kanten omwisselen</strong> verwisselt de twee mappen: zo wordt de rechterboom degene die wint &mdash; en zo corrigeert u panelen die ze verkeerd om hadden gezet.</li>
-<li><strong>Tijdstempels die niet helemaal gelijk zijn.</strong> <strong>Verschil van 1 uur negeren</strong> vangt de afwijking op die een FAT-volume of een zomertijdwissel oplegt aan een verder ongewijzigd bestand. <strong>Hoofdlettergevoelig</strong> bepaalt of twee namen die alleen in hoofdletters verschillen hetzelfde bestand zijn; uit staan ze dat wel &mdash; wat een Mac-volume meestal ook zegt.</li>
-<li><strong>Als er iets misgaat.</strong> Het synchroniseren meldt zijn voortgang en de knop heet <strong>Stoppen</strong> zolang het loopt; stoppen tussen twee items laat gekopieerd wat gekopieerd is. Wat mislukte staat met bestand en reden in het venster met bewerkingsfouten, in plaats van alleen geteld te worden. Verwijderen op een server is definitief &mdash; daar is geen prullenmand &mdash; en de bevestiging zegt dat vooraf.</li>
-<li><strong>Voorinstellingen.</strong> Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert.</li>
+<li><strong>Jij houdt de controle.</strong> Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd. <strong>Esc</strong> stopt een lopende vergelijking en sluit het venster wanneer er niets loopt.</li>
+<li><strong>Voorinstellingen.</strong> Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert. Een voorinstelling onthoudt ook wat het resultatenraster toont — het richtingfilter en <strong>Identieke verbergen</strong> — en het venster opent met de voorinstelling die je het laatst gebruikte. Een voorinstelling <strong>Standaard</strong> is er vanaf de eerste keer dat je het venster opent; sla eroverheen op om er je eigen van te maken.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Veel bestanden hernoemen</a></li></ul></section>
 </main>

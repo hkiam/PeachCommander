@@ -10,35 +10,80 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Pluginul Git aduce starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată, fără terminal. Adaugă două coloane care arată starea din arborele de lucru a fiecărui fișier și ramura curentă, un submeniu <strong>Git</strong> pentru comenzile de zi cu zi (status, pregătire, commit, pull, push), și folosește <code>git</code>-ul deja instalat pe Mac-ul dvs. Fiind un plugin, îl puteți dezactiva sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+<p>Pluginul Git arată starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată și fără
+terminal. Adaugă două coloane, un submeniu <strong>Git</strong>, un panou andocat pentru pregătire și comitere și ferestre
+pentru istoric, blame, ramuri, conflicte și rebazare. Folosește <code>git</code>-ul deja instalat pe Mac-ul
+dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
 <h2 id="ce-adauga">Ce adaugă</h2>
 <ul>
-<li><strong>Două coloane în lista de fișiere</strong> — <em>Git Status</em> și <em>Branch</em>. Într-un depozit, fiecare fișier arată un cuvânt de stare scurt (Modificat, Adăugat, Șters, Neurmărit, Redenumit, Copiat, Conflict, Ignorat sau Schimbat), iar panoul arată ramura curentă. Activați coloanele în <strong>Configurare ▸ Coloane…</strong> (vedeți <a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a>).</li>
-<li><strong>Un meniu Git</strong> — în <strong>Comenzi ▸ Git</strong>, și în meniul cu clic dreapta al unui fișier, cu: <strong>Git Status…</strong>, <strong>Git Add (pregătire)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> și <strong>Git Push</strong>.</li>
+<li><strong>Două coloane în lista de fișiere</strong> — <em>Stare Git</em> și <em>Ramură</em>. Fiecare fișier arată o pictogramă și un
+  cuvânt scurt de stare (Modificat, Adăugat, Șters, Neurmărit, Redenumit, Copiat, Conflict, Ignorat, Tip
+  schimbat), cu <em>(pregătit)</em> când modificarea este deja în index; coloana <em>Ramură</em> arată ramura pe care se
+  află depozitul acelui fișier. Activați coloanele din <strong>Configurare ▸ Coloane…</strong> (vedeți
+  <a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a>).</li>
+<li><strong>Un meniu Git</strong> — sub <strong>Comenzi ▸ Git</strong> și în meniul contextual al unui fișier.</li>
 </ul>
-<p><img alt="Dialogul Git Status care arată ramura curentă și fișierele modificate din depozit" src="images/git-status.png" />
-<em>(Figura: Git Status raportează ramura și fiecare modificare din arborele de lucru.)</em></p>
-<h2 id="verificarea-starii">Verificarea stării</h2>
-<ol>
-<li>Puneți cursorul pe un fișier sau folder din interiorul unui depozit Git.</li>
-<li>Alegeți <strong>Comenzi ▸ Git ▸ Git Status…</strong> (sau clic dreapta ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Apare un rezumat: ramura curentă (sau <em>(detașat)</em>), apoi fie <em>Arbore de lucru curat.</em>, fie o listă de modificări, fiecare linie arătând starea și calea fișierului.</li>
-</ol>
-<p>Dacă cursorul nu este în interiorul unui depozit, pluginul spune pur și simplu <em>Nu este un depozit Git.</em></p>
-<h2 id="pregatire-commit-pull-push">Pregătire, commit, pull, push</h2>
+<p><img alt="Fereastra Stare Git cu ramura curentă și fișierele modificate din depozit" src="images/git-status.png" />
+<em>(Figură: Starea Git indică ramura și fiecare modificare din arborele de lucru.)</em></p>
+<h2 id="panoul-pregatire-comitere-sincronizare">Panoul: pregătire, comitere, sincronizare</h2>
+<p><strong>Comenzi ▸ Git ▸ Panou</strong> andochează o vedere care grupează arborele de lucru în <em>pregătit</em>, <em>modificat</em> și
+<em>neurmărit</em>. Selectați fișiere și folosiți <strong>Pregătește</strong>, <strong>Retrage din pregătire</strong> sau <strong>Renunță…</strong>,
+scrieți un mesaj și apăsați <strong>Comite</strong> — cu <strong>Amendează</strong>, modificarea este pliată în comiterea precedentă.
+<strong>Trage</strong> și <strong>Împinge</strong> sunt alături, acolo unde comiterea are loc oricum; ambele arată progresul și pot fi
+anulate.</p>
+<p>Se comite <em>indexul</em>, nu <code>git commit -a</code>: ce ați pregătit este ce se comite.</p>
+<h2 id="istoric-blame-si-web">Istoric, blame și web</h2>
 <ul>
-<li><strong>Git Add (pregătire)</strong> pregătește fișierul de sub cursor (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> cere un mesaj de commit, apoi înregistrează toate modificările (<code>git commit -a</code>). Ieșirea combinată este afișată, astfel încât să vedeți exact ce s-a întâmplat.</li>
-<li><strong>Git Pull</strong> face un pull doar de tip fast-forward (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> trimite ramura curentă (<code>git push</code>).</li>
+<li><strong>Istoric…</strong> listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>) și fișierele atinse de fiecare comitere. Return sau un dublu clic deschide
+  versiunea acelui fișier față de predecesoarea ei în fereastra de comparare. <strong>Anulează comiterea</strong> și
+  <strong>Cherry-pick</strong> sunt acolo, și ambele refuză din start dacă arborele de lucru nu este curat.</li>
+<li><strong>Istoricul fișierului…</strong> este aceeași fereastră pentru un singur fișier.</li>
+<li><strong>Blame (listă)…</strong> arată fiecare linie cu comiterea, autorul și data ei. <strong>Blame în editor</strong> scrie aceeași
+  informație pe marginea editorului, lângă numerele de linie: treceți peste o linie pentru mesajul comiterii,
+  faceți clic pentru a o deschide față de predecesoarea ei.</li>
+<li><strong>Deschide pe web</strong> deschide fișierul, comiterea sau ramura pe GitHub, GitLab, Bitbucket sau Azure DevOps,
+  construit din URL-ul depozitului la distanță — fără cont, fără jeton. Pentru o gazdă a cărei formă a
+  legăturilor nu o cunoaște, oferă pagina depozitului în loc să ghicească.</li>
 </ul>
-<p>După o comandă care modifică depozitul, panoul activ se reîmprospătează, astfel încât coloanele de stare rămân actuale.</p>
-<h2 id="note">Note</h2>
+<h2 id="ramuri-stive-si-etichete">Ramuri, stive și etichete</h2>
+<p><strong>Ramuri, stive și etichete…</strong> le listează pe toate trei. Comutarea, crearea, îmbinarea sau ștergerea unei
+ramuri; împingerea, scoaterea sau aruncarea unei stive; crearea, ștergerea sau împingerea unei etichete ori
+comutarea pe ea — o etichetă nu este o ramură, așa că se spune din start că HEAD va rămâne detașat. Aducerea,
+Trage și Împinge sunt în aceeași fereastră și pot fi anulate în timpul rulării.</p>
+<p>Împingerea unei etichete este intenționat o acțiune separată: <code>git push</code> nu duce etichetele cu el.</p>
+<h2 id="conflicte">Conflicte</h2>
+<p><strong>Rezolvă conflictul…</strong> listează regiunile în conflict ale fișierului de sub cursor și ia o decizie pentru
+fiecare: <em>ale noastre</em>, <em>ale lor</em>, <em>ambele</em> — sau lasă deschis. Apoi <strong>Scrie fișierul</strong> sau <strong>Scrie și
+pregătește</strong>. Refuză pregătirea cât timp o regiune rămâne deschisă — Git ar comite fără ezitare marcajele
+<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> — și refuză să atingă un fișier ale cărui marcaje nu le poate citi, în loc să le ghicească. Pentru o
+regiune care cere împletirea manuală a ambelor părți, <strong>Deschide în editor</strong> este la un buton distanță.</p>
+<h2 id="rebazare">Rebazare</h2>
+<p><strong>Rebazează…</strong> listează comiterile aflate înaintea ramurii din amonte — cele pe care nimeni altcineva nu le
+are încă — și vă lasă să le comprimați, să le atașați ca reparație, să le aruncați, să le reordonați sau să le
+reformulați înainte ca ramura să fie rescrisă. Dacă o rebazare se oprește într-un conflict, aceeași fereastră
+devine <strong>Continuă</strong> / <strong>Sari peste comitere</strong> / <strong>Abandonează</strong>, astfel încât o rebazare pe jumătate făcută nu
+trebuie încheiată într-un terminal.</p>
+<h2 id="ignorarea-fisierelor-si-datele-de-autentificare">Ignorarea fișierelor și datele de autentificare</h2>
 <ul>
-<li>Pluginul folosește Git-ul de sistem de la <code>/usr/bin/git</code>. Dacă Git nu este instalat, comenzile raportează că Git nu este disponibil. (Instalarea Xcode Command Line Tools îl furnizează.)</li>
-<li>Starea depozitului este citită o singură dată pentru fiecare folder și memorată în cache, astfel încât parcurgerea unui depozit mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care modifică arborele.</li>
-<li>Commit folosește <code>git commit -a</code>, care înregistrează modificările urmărite; fișierele complet noi tot au nevoie mai întâi de <strong>Git Add (pregătire)</strong>.</li>
-<li>Antetele coloanelor <em>Git Status</em> și <em>Branch</em> apar deocamdată în engleză chiar și în alte limbi ale interfeței; valorile și dialogurile sunt localizate.</li>
+<li><strong>Ignoră acest fișier…</strong>, <strong>Ignoră acest tip de fișier…</strong> și <strong>Ignoră acest dosar…</strong> adaugă tiparul potrivit
+  în <code>.gitignore</code> — ancorat unde trebuie, astfel încât ignorarea <em>acestui</em> dosar <code>build</code> să nu ignore orice
+  dosar numit <code>build</code>.</li>
+<li><strong>Date de autentificare…</strong> raportează cum se autentifică acest depozit: SSH sau HTTPS, dacă este configurat
+  un asistent de acreditări, dacă rulează un agent SSH care ține o cheie. Unde ajută, oferă exact o acțiune —
+  să lase Git să păstreze datele în brelocul macOS. Pluginul nu cere niciodată o frază de acces, nu o afișează
+  și nu o păstrează.</li>
+</ul>
+<h2 id="observatii">Observații</h2>
+<ul>
+<li>Pluginul folosește Git-ul sistemului, de la <code>/usr/bin/git</code>. Dacă Git lipsește, comenzile raportează că Git
+  nu este disponibil. (Xcode Command Line Tools îl aduc.)</li>
+<li>Starea depozitului este citită o dată per dosar și păstrată în cache, astfel încât derularea într-un depozit
+  mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care schimbă arborele și urmărește și o
+  comitere făcută în afara aplicației.</li>
+<li>Arborii de lucru legați și submodulele sunt acceptate: un fișier dintr-un submodul arată starea și ramura
+  <em>submodulului</em>, nu pe cele ale depozitului părinte.</li>
+<li>Fiecare listă are meniu contextual, <strong>Return</strong> rulează acțiunea principală și <strong>Cmd+R</strong> reîncarcă fereastra.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a></li></ul></section>
 </main>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Container e volumi Docker</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Container e volumi Docker</h1>
+<p>Il filesystem di un container Docker si sfoglia in un pannello come una cartella qualsiasi, e lo stesso vale per un volume Docker. Scegli <strong>Connetti a Docker…</strong> dal menu Rete, oppure fai clic sulla targhetta <strong>Docker</strong> nella barra dei volumi, e il motore compare nel pannello attivo.</p>
+<p>È un plugin ed è <strong>fornito disattivato</strong>. Attivalo in <strong>Configurazione ▸ Plugin…</strong>. Parte spento perché una connessione al demone Docker ha sul tuo Mac gli stessi diritti che hai tu — vedi <em>A cosa può accedere</em> più sotto.</p>
+<h2 id="che-cosa-vedi">Che cosa vedi</h2>
+<p>Il livello superiore è composto da tre cartelle:</p>
+<ul>
+<li><strong>Compose Projects</strong> — tutti i container avviati da Docker Compose, raggruppati per progetto e poi per servizio. Un servizio con un solo container <em>è</em> quel container: <code>my-stack/backend/etc</code> è l’<code>/etc</code> del backend. Un servizio con più repliche mantiene un livello per esse, una cartella per container.</li>
+<li><strong>Standalone Containers</strong> — tutto il resto, in esecuzione o no.</li>
+<li><strong>Volumes</strong> — ogni volume Docker, come un disco a sé.</li>
+</ul>
+<p>Sotto di essi sei in un filesystem vero: F3 visualizza un file, F4 lo modifica, F5 lo copia nell’altro pannello, F7 crea una cartella. L’altro pannello può essere qualsiasi cosa: una cartella locale, un archivio, un bucket S3.</p>
+<p>Il raggruppamento è letto dalle etichette che Compose applica ai propri container e volumi, quindi è corretto anche per uno stack il cui <code>docker-compose.yml</code> non è più su questa macchina.</p>
+<p><strong>I volumi sono elencati a parte di proposito.</strong> Un volume sopravvive al container che lo ha creato, può essere condiviso da più container ed è di solito dove stanno davvero i dati che cerchi. Un volume che al momento nessuno monta resta comunque sfogliabile.</p>
+<h2 id="colonne">Colonne</h2>
+<p>Fai clic con il tasto destro sull’intestazione di colonna di un pannello per aggiungere le colonne proprie del provider:</p>
+<ul>
+<li><strong>Stato</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Accesso</strong> — <code>RW</code>, <code>RO</code> per un rootfs o un mount di sola lettura, <code>VOL</code> per un volume Docker, <code>BIND</code> per una tua cartella montata nel container, <code>TMP</code> per un tmpfs.</li>
+<li><strong>Immagine</strong>, <strong>ID</strong>.</li>
+<li><strong>Mount</strong> — su una directory che è in realtà un mount, che cos’è: <code>Volume: my-stack_db-data</code>, oppure il percorso host dietro un bind. È così che trovi quale volume sotto <strong>Volumes</strong> contiene i dati di un container.</li>
+</ul>
+<h2 id="container-fermi">Container fermi</h2>
+<p>I container fermi sono elencati e i loro filesystem si possono leggere e scrivere. L’API file di Docker risponde anche per un container che non gira da un mese, ed è questo che rende il tutto simile a un disco e non a un elenco di processi.</p>
+<p>Due cose richiedono un container effettivamente in esecuzione: <strong>eliminare</strong> e <strong>rinominare</strong>. L’API del motore Docker non offre alcuna operazione per nessuna delle due — l’unico modo di togliere o spostare un file dentro un container è eseguirvi qualcosa — perciò su un container fermo entrambe vengono rifiutate anziché simulate.</p>
+<h2 id="che-cosa-aspettarsi">Che cosa aspettarsi</h2>
+<p><strong>Le scritture entrano come <code>root</code>, le eliminazioni passano per l’utente del container.</strong> È l’impostazione di Docker, non una scelta fatta qui: copiare un file all’interno usa l’API di archivio del motore, che scrive come root; eliminare o rinominare esegue un comando nel container, che gira con l’utente configurato dall’immagine. Un’eliminazione può quindi essere rifiutata con <em>permesso negato</em> su un file che un attimo prima sei riuscito a copiare. Peach Commander non aggira la cosa agendo da root: ti riferisce ciò che ha detto il container.</p>
+<p><strong>Un container o un mount di sola lettura rifiuta la scrittura</strong> e lo segnala come errore di permessi, non come un fallimento.</p>
+<p><strong>Leggere un collegamento simbolico legge ciò a cui punta.</strong> Il pannello continua a mostrarlo come collegamento nella colonna Attr; F3 mostra il contenuto della destinazione invece di un file vuoto.</p>
+<p><strong>La radice di un container fermo di grandi dimensioni potrebbe non essere elencabile.</strong> Docker non ha alcuna chiamata che elenchi una directory. Leggere una directory significa richiederla come archivio, che contiene tutto ciò che sta sotto — per un container fermo costruito su un’immagine completa possono essere decine di gigabyte, e l’elenco viene rifiutato anziché leggere tutto. Le directory più interne non sono interessate, e un container <em>in esecuzione</em> nemmeno: una directory troppo grande per essere letta come archivio la elenca il container stesso. Se vuoi solo la via dell’archivio, vedi l’impostazione più sotto.</p>
+<p><strong>Copiare fuori un intero container copia tutto il suo filesystem</strong> — compresi <code>/proc</code> e <code>/dev</code>. Copia la directory che ti serve, non <code>/</code>.</p>
+<h2 id="a-cosa-puo-accedere">A cosa può accedere</h2>
+<p>Il plugin parla con il motore che raggiungeresti da un terminale: <code>DOCKER_HOST</code> se lo hai impostato, altrimenti il tuo <code>docker context</code> corrente, altrimenti i socket abituali di Docker Desktop, Colima, Rancher Desktop, Lima e Podman. Podman funziona perché espone la stessa API.</p>
+<p>L’accesso a un demone Docker comporta di norma un accesso molto ampio alla macchina su cui gira. Il plugin ha esattamente i tuoi diritti e non ne chiede altri: non conserva alcuna credenziale, non tocca mai le directory proprie di Docker sul tuo disco e non compie alcuna azione privilegiata per tuo conto.</p>
+<p>L’unica cosa che crea è un <strong>container usa e getta</strong> — e solo per raggiungere un volume che nessun container esistente monta, dato che un volume è visibile soltanto dall’interno di qualcosa che lo monta. Non viene mai avviato, porta l’etichetta di Peach Commander e viene rimosso quando lasci il disco.</p>
+<h2 id="azioni-su-un-container-o-su-un-volume">Azioni su un container o su un volume</h2>
+<p>Un clic destro su un container o su un volume offre, nel sottomenu <strong>Docker</strong>, quello che un disco da solo non può dire:</p>
+<ul>
+<li><strong>Inspect</strong> — tutto ciò che il motore sa di esso, come JSON formattato, in una finestra che si può
+  scorrere e da cui si può copiare.</li>
+<li><strong>Show Logs</strong> — le ultime 500 righe scritte dal container.</li>
+<li><strong>Show Mounts</strong> — ogni mount che porta, che cosa è e se è scrivibile.</li>
+<li><strong>Copy ID</strong> — l’identificativo completo del container, o il nome del volume, negli appunti.
+  L’identificativo <em>completo</em>, non i dodici caratteri della colonna ID: serve per incollarlo in un
+  comando <code>docker</code>, e un id breve è un prefisso che può smettere di essere univoco.</li>
+<li><strong>Jump to Volume</strong> — su una cartella che è in realtà un volume, andare a quel volume sotto
+  <strong>Volumes</strong>. È l’altra metà della colonna Mount: la colonna nomina il volume, questo ti ci porta.</li>
+<li><strong>Open Compose Project</strong> — andare al progetto a cui il container appartiene.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — queste cambiano il container invece di
+  leggerlo, quindi chiedono prima. Start è anche la via d’uscita dai due rifiuti qui sopra: eliminare
+  e rinominare richiedono un container in esecuzione.</li>
+</ul>
+<p>Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono affatto.</p>
+<p><strong>Il log è anche un file.</strong> La radice di ogni container contiene <code>docker-logs.txt</code>, che non è un file del container: leggerlo chiede il log al motore. F3 su di esso lo apre nel visualizzatore, quindi la sua ricerca, il salto a una riga e la scelta della codifica valgono — cosa che una finestra a sé non può dare. Un container che porta davvero un file con quel nome mostra il proprio, e nel file virtuale non si può scrivere nulla.</p>
+<h2 id="impostazioni">Impostazioni</h2>
+<p><strong>Configurazione ▸ Impostazioni ▸ Docker</strong> contiene tutto questo. Gli stessi valori stanno in un piccolo file in <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, che è ciò da modificare se prepari una macchina da uno script:</p>
+<ul>
+<li><code>Endpoint</code> — un indirizzo da usare al posto di quello trovato.</li>
+<li><code>ExecFallback</code> — <code>0</code> fa usare al plugin soltanto l’API di archivio di Docker: non eseguirà mai nulla dentro un container, al prezzo di non poter elencare una directory molto grande, né eliminare, né rinominare.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — quanta parte dell’archivio di una directory valga la pena leggere prima di ripiegare o rinunciare.</li>
+<li><code>HelperImage</code> — l’immagine da cui nasce il container usa e getta di cui sopra (per impostazione predefinita una qualsiasi immagine già presente).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> nasconde i volumi a cui Docker ha dato per nome un lungo hash perché nessun altro li ha nominati.</li>
+</ul>
+<h2 id="non-in-questa-versione">Non in questa versione</h2>
+<p>Motori remoti via SSH o TLS, una shell interattiva e le immagini come filesystem di sola lettura.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="amazon-s3.html">Amazon S3 e storage compatibili con S3</a></li><li><a href="webdav.html">Server WebDAV</a></li><li><a href="copying-files.html">Copiare i file</a></li><li><a href="privacy-and-security.html">Privacy e sicurezza</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -10,35 +10,79 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelbe hozza — nincs külön app, nincs terminál. Két oszlopot ad hozzá, amelyek minden fájl munkafa-állapotát és az aktuális branchet mutatják, egy <strong>Git</strong> almenüt a hétköznapi parancsokhoz (státusz, előkészítés, commit, pull, push), és a Macre már telepített <code>git</code>-et használja. Mivel bővítményről van szó, a <strong>Konfiguráció ▸ Bővítmények…</strong> menüpontból kikapcsolhatja vagy eltávolíthatja.</p>
+<p>A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelen mutatja meg — külön alkalmazás és terminál
+nélkül. Két oszlopot, egy <strong>Git</strong> almenüt, egy dokkolt panelt az előkészítéshez és a véglegesítéshez, valamint
+előzmény-, blame-, ág-, ütközés- és újraalapozó ablakokat ad hozzá. A Macen már meglévő <code>git</code>-et használja.
+Bővítmény, így kikapcsolható vagy eltávolítható a <strong>Beállítások ▸ Bővítmények…</strong> alatt.</p>
 <h2 id="mit-ad-hozza">Mit ad hozzá</h2>
 <ul>
-<li><strong>Két fájllista-oszlop</strong> — <em>Git Status</em> és <em>Branch</em>. Egy tárolóban minden fájl egy rövid állapotszót mutat (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Figyelmen kívül hagyva vagy Megváltozva), a panel pedig az aktuális branchet mutatja. Kapcsolja be az oszlopokat a <strong>Konfiguráció ▸ Oszlopok…</strong> menüpontban (lásd <a href="view-modes-and-sorting.html">Nézetmódok és rendezés</a>).</li>
-<li><strong>Egy Git menü</strong> — a <strong>Parancsok ▸ Git</strong> alatt, valamint egy fájl jobb gombos menüjében, a következőkkel: <strong>Git Status…</strong>, <strong>Git Add (előkészítés)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> és <strong>Git Push</strong>.</li>
+<li><strong>Két oszlop a fájllistában</strong> — <em>Git-állapot</em> és <em>Ág</em>. Minden fájl egy ikont és egy rövid állapotszót mutat
+  (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Mellőzve, Típus változott),
+  <em>(előkészítve)</em> jelöléssel, ha a változás már az indexben van; az <em>Ág</em> oszlop azt az ágat mutatja, amelyen a
+  fájl tárolója áll. Az oszlopokat a <strong>Beállítások ▸ Oszlopok…</strong> alatt kapcsolhatja be (lásd
+  <a href="view-modes-and-sorting.html">Nézetmódok és rendezés</a>).</li>
+<li><strong>Egy Git menü</strong> — a <strong>Parancsok ▸ Git</strong> alatt és a fájl helyi menüjében.</li>
 </ul>
-<p><img alt="A Git Status párbeszéd az aktuális branchet és a tárolóban módosított fájlokat mutatja" src="images/git-status.png" />
-<em>(Ábra: a Git Status jelenti a branchet és a munkafa minden változását.)</em></p>
-<h2 id="az-allapot-ellenorzese">Az állapot ellenőrzése</h2>
-<ol>
-<li>Vigye a kurzort egy Git-tárolón belüli fájlra vagy mappára.</li>
-<li>Válassza a <strong>Parancsok ▸ Git ▸ Git Status…</strong> lehetőséget (vagy jobb kattintás ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Megjelenik egy összefoglaló: az aktuális branch (vagy <em>(leválasztott)</em>), majd vagy <em>A munkafa tiszta.</em>, vagy a változások listája, ahol minden sor az állapotot és a fájl útvonalát mutatja.</li>
-</ol>
-<p>Ha a kurzor nincs egy tárolón belül, a bővítmény egyszerűen azt írja: <em>Nem Git-tároló.</em></p>
-<h2 id="elokeszites-commit-pull-push">Előkészítés, commit, pull, push</h2>
+<p><img alt="A Git-állapot ablak az aktuális ággal és a tároló módosított fájljaival" src="images/git-status.png" />
+<em>(Ábra: a Git-állapot megnevezi az ágat és a munkafa minden változását.)</em></p>
+<h2 id="a-panel-elokeszites-veglegesites-szinkron">A panel: előkészítés, véglegesítés, szinkron</h2>
+<p>A <strong>Parancsok ▸ Git ▸ Panel</strong> olyan nézetet dokkol, amely a munkafát <em>előkészített</em>, <em>módosított</em> és <em>nem
+követett</em> csoportokra bontja. Jelöljön ki fájlokat, és használja az <strong>Előkészítés</strong>, <strong>Visszavonás</strong> vagy
+<strong>Eldobás…</strong> gombot, írjon üzenetet, és nyomja meg a <strong>Véglegesítés</strong> gombot — a <strong>Módosítás</strong> az előző
+véglegesítésbe hajtja bele a változást. A <strong>Letöltés</strong> és a <strong>Feltöltés</strong> mellette van, ott, ahol a
+véglegesítés amúgy is történik; mindkettő mutatja a haladást, és megszakítható.</p>
+<p>Az <em>index</em> kerül véglegesítésre, nem a <code>git commit -a</code>: az kerül be, amit előkészített.</p>
+<h2 id="elozmenyek-blame-es-a-web">Előzmények, blame és a web</h2>
 <ul>
-<li>A <strong>Git Add (előkészítés)</strong> előkészíti a kurzor alatti fájlt (<code>git add</code>).</li>
-<li>A <strong>Git Commit…</strong> egy commit-üzenetet kér, majd az összes változást committolja (<code>git commit -a</code>). Az összesített kimenet megjelenik, így pontosan látja, mi történt.</li>
-<li>A <strong>Git Pull</strong> egy csak fast-forward pullt hajt végre (<code>git pull --ff-only</code>).</li>
-<li>A <strong>Git Push</strong> az aktuális branchet pusholja (<code>git push</code>).</li>
+<li>Az <strong>Előzmények…</strong> sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>) és az általuk érintett fájlokkal. A Return vagy dupla kattintás az adott fájl
+  változatát nyitja meg az elődjével szemben az összehasonlító ablakban. A <strong>Véglegesítés visszavonása</strong> és a
+  <strong>Cherry-pick</strong> is ott van, és mindkettő előre elutasít, ha a munkafa nem tiszta.</li>
+<li>A <strong>Fájl előzményei…</strong> ugyanaz az ablak egyetlen fájlra.</li>
+<li>A <strong>Blame (lista)…</strong> minden sort megmutat a véglegesítésével, szerzőjével és dátumával. A <strong>Blame a
+  szerkesztőben</strong> ugyanezt az információt a szerkesztő margójára írja, a sorszámok mellé: egy sorra mutatva
+  megjelenik az üzenet, kattintásra megnyílik az elődjével szemben.</li>
+<li>A <strong>Megnyitás a weben</strong> a fájlt, a véglegesítést vagy az ágat nyitja meg a GitHubon, GitLabon, Bitbucketen
+  vagy az Azure DevOpson, a távoli tároló URL-jéből felépítve — fiók és token nélkül. Olyan kiszolgálónál,
+  amelynek hivatkozásformáját nem ismeri, a tároló oldalát ajánlja fel, ahelyett hogy találgatna.</li>
 </ul>
-<p>Egy olyan parancs után, amely megváltoztatja a tárolót, az aktív panel frissül, hogy az állapotoszlopok naprakészek maradjanak.</p>
+<h2 id="agak-felretett-munkak-es-cimkek">Ágak, félretett munkák és címkék</h2>
+<p>Az <strong>Ágak, félretett munkák és címkék…</strong> mindhármat felsorolja. Ágat váltani, létrehozni, egyesíteni vagy
+törölni; félretett munkát feltölteni, visszavenni vagy eldobni; címkét létrehozni, törölni, feltölteni vagy
+ráváltani — a címke nem ág, ezért előre közli, hogy a HEAD leválasztva marad. A Letöltés, a Beolvasás és a
+Feltöltés ugyanabban az ablakban van, és futás közben megszakítható.</p>
+<p>A címke feltöltése szándékosan külön művelet: a <code>git push</code> nem viszi magával a címkéket.</p>
+<h2 id="utkozesek">Ütközések</h2>
+<p>Az <strong>Ütközés feloldása…</strong> felsorolja a kurzor alatti fájl ütköző szakaszait, és mindegyikre döntést hoz: <em>a
+miénk</em>, <em>az övék</em>, <em>mindkettő</em> — vagy hagyja nyitva. Utána <strong>Fájl írása</strong> vagy <strong>Írás és előkészítés</strong>.
+Elutasítja az előkészítést, amíg egy szakasz nyitva van — a Git zokszó nélkül véglegesíti a <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> jeleket
+—, és inkább hozzá sem nyúl ahhoz a fájlhoz, amelynek a jeleit nem tudja elolvasni, semmint találgasson. Ha
+egy szakaszhoz kézzel kell összefésülni a két oldalt, a <strong>Megnyitás a szerkesztőben</strong> egy gombnyira van.</p>
+<h2 id="ujraalapozas">Újraalapozás</h2>
+<p>Az <strong>Újraalapozás…</strong> felsorolja a felsőbb ág előtti véglegesítéseket — azokat, amelyek másnál még nincsenek
+meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, átrendezni vagy átfogalmazni, mielőtt az ág
+újraíródik. Ha az újraalapozás ütközésen akad meg, ugyanaz az ablak <strong>Folytatás</strong> / <strong>Véglegesítés kihagyása</strong>
+/ <strong>Megszakítás</strong> lesz, hogy a félbehagyott újraalapozást ne kelljen terminálban befejezni.</p>
+<h2 id="fajlok-mellozese-es-a-hitelesito-adatok">Fájlok mellőzése és a hitelesítő adatok</h2>
+<ul>
+<li><strong>Ezt a fájlt mellőzni…</strong>, <strong>Ezt a fájltípust mellőzni…</strong> és <strong>Ezt a mappát mellőzni…</strong> a megfelelő mintát
+  írja a <code>.gitignore</code> fájlba — oda horgonyozva, ahová való, hogy <em>ennek</em> a <code>build</code> mappának a mellőzése ne
+  mellőzzön minden <code>build</code> nevű mappát.</li>
+<li>A <strong>Hitelesítő adatok…</strong> arról számol be, hogyan hitelesíti magát ez a tároló: SSH vagy HTTPS, be van-e
+  állítva hitelesítési segéd, fut-e SSH-ügynök, és tart-e kulcsot. Ahol ez segít, pontosan egy műveletet
+  ajánl: hagyni, hogy a Git a macOS kulcskarikáján tartsa az adatokat. A bővítmény soha nem kér jelmondatot,
+  nem mutatja és nem tárolja.</li>
+</ul>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>A bővítmény a rendszer Gitjét használja a <code>/usr/bin/git</code> alatt. Ha a Git nincs telepítve, a parancsok jelzik, hogy a Git nem érhető el. (Az Xcode Command Line Tools telepítése biztosítja.)</li>
-<li>A tároló állapota mappánként egyszer olvasódik be és gyorsítótárazódik, így egy nagy tároló görgetése gyors marad; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát.</li>
-<li>A commit a <code>git commit -a</code>-t használja, amely a követett változásokat committolja; a vadonatúj fájlokhoz továbbra is előbb a <strong>Git Add (előkészítés)</strong> szükséges.</li>
-<li>A <em>Git Status</em> és <em>Branch</em> oszlopfejlécek jelenleg más felületnyelveken is angolul jelennek meg; az értékek és a párbeszédek honosítottak.</li>
+<li>A bővítmény a rendszer Gitjét használja a <code>/usr/bin/git</code> útvonalon. Ha a Git hiányzik, a parancsok jelzik,
+  hogy a Git nem érhető el. (Az Xcode Command Line Tools tartalmazza.)</li>
+<li>A tároló állapotát mappánként egyszer olvassa be és gyorsítótárazza, hogy egy nagy tárolóban a görgetés
+  gyors maradjon; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát, és követi az
+  alkalmazáson kívül készült véglegesítést is.</li>
+<li>A csatolt munkafák és az almodulok támogatottak: egy almodulon belüli fájl <em>az almodul</em> állapotát és ágát
+  mutatja, nem a szülő tárolóét.</li>
+<li>Minden listának van helyi menüje, a <strong>Return</strong> a fő műveletet futtatja, a <strong>Cmd+R</strong> újratölti az ablakot.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="view-modes-and-sorting.html">Nézetmódok és rendezés</a></li></ul></section>
 </main>

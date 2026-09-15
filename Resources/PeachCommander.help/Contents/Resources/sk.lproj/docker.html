@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kontajnery a zväzky Dockeru</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kontajnery a zväzky Dockeru</h1>
+<p>Súborový systém kontajnera Dockeru možno prezerať v paneli ako ktorýkoľvek priečinok a to isté platí pre zväzok Dockeru. Zvoľte <strong>Pripojiť k Dockeru…</strong> v ponuke Sieť alebo kliknite na štítok <strong>Docker</strong> v lište jednotiek a stroj sa objaví v aktívnom paneli.</p>
+<p>Je to zásuvný modul a <strong>dodáva sa vypnutý</strong>. Zapnite ho v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>. Začína vypnutý, pretože spojenie s démonom Dockeru má na vašom Macu rovnaké práva ako vy sami — pozri <em>K čomu má prístup</em> nižšie.</p>
+<h2 id="co-uvidite">Čo uvidíte</h2>
+<p>Najvyššiu úroveň tvoria tri priečinky:</p>
+<ul>
+<li><strong>Compose Projects</strong> — každý kontajner spustený nástrojom Docker Compose, zoskupený podľa projektu a ďalej podľa služby. Služba s jediným kontajnerom <em>je</em> tým kontajnerom: <code>my-stack/backend/etc</code> je <code>/etc</code> backendu. Služba s viacerými si pre ne úroveň ponecháva, jeden priečinok na kontajner.</li>
+<li><strong>Standalone Containers</strong> — všetko ostatné, či už beží, alebo nie.</li>
+<li><strong>Volumes</strong> — každý zväzok Dockeru ako samostatná jednotka.</li>
+</ul>
+<p>Pod nimi ste v skutočnom súborovom systéme: F3 zobrazí súbor, F4 ho upraví, F5 ho skopíruje do druhého panela, F7 vytvorí priečinok. Druhý panel môže byť čokoľvek — miestny priečinok, archív, kontajner S3.</p>
+<p>Zoskupenie sa číta zo značiek, ktoré Compose dáva svojim vlastným kontajnerom a zväzkom, takže platí aj pre stack, ktorého <code>docker-compose.yml</code> už dávno na tomto stroji nie je.</p>
+<p><strong>Zväzky sú vypísané osobitne zámerne.</strong> Zväzok prežije kontajner, ktorý ho vytvoril, môže ho zdieľať viac kontajnerov a zvyčajne sú práve v ňom údaje, kvôli ktorým ste prišli. Zväzok, ktorý práve nič nepripája, sa dá aj tak prezerať.</p>
+<h2 id="stlpce">Stĺpce</h2>
+<p>Kliknutím pravým tlačidlom na záhlavie stĺpca panela pridáte vlastné stĺpce poskytovateľa:</p>
+<ul>
+<li><strong>Stav</strong> — <code>● running</code>, <code>○ stopped</code>, <code>◌ paused</code>, <code>! restarting</code>.</li>
+<li><strong>Prístup</strong> — <code>RW</code>, <code>RO</code> pre rootfs alebo pripojenie len na čítanie, <code>VOL</code> pre zväzok Dockeru, <code>BIND</code> pre váš priečinok pripojený do kontajnera, <code>TMP</code> pre tmpfs.</li>
+<li><strong>Image</strong>, <strong>ID</strong>.</li>
+<li><strong>Pripojenie</strong> — pri adresári, ktorý je v skutočnosti pripojením, čo to je: <code>Volume: my-stack_db-data</code>, alebo cesta na hostiteľovi za bind-pripojením. Takto zistíte, ktorý zväzok v <strong>Volumes</strong> obsahuje údaje kontajnera.</li>
+</ul>
+<h2 id="zastavene-kontajnery">Zastavené kontajnery</h2>
+<p>Zastavené kontajnery sa vypisujú a ich súborové systémy sa dajú čítať aj zapisovať. Súborové API Dockeru odpovedá aj pre kontajner, ktorý mesiac nebežal, a práve vďaka tomu to pôsobí ako jednotka, a nie ako zoznam procesov.</p>
+<p>Dve veci vyžadujú naozaj bežiaci kontajner: <strong>mazanie</strong> a <strong>premenovanie</strong>. API stroja Dockeru pre ne nemá žiadnu operáciu — jediný spôsob, ako súbor vnútri kontajnera odstrániť alebo presunúť, je niečo v ňom spustiť — takže pri zastavenom kontajneri sú obe odmietnuté, nie predstierané.</p>
+<h2 id="co-od-toho-cakat">Čo od toho čakať</h2>
+<p><strong>Zápisy idú dovnútra ako <code>root</code>, mazanie beží pod vlastným používateľom kontajnera.</strong> To je usporiadanie Dockeru, nie rozhodnutie urobené tu: skopírovanie súboru dovnútra používa archívne API stroja, ktoré zapisuje ako root; zmazanie alebo premenovanie spúšťa príkaz vnútri kontajnera, a ten beží pod používateľom, ktorého nastavil image. Mazanie preto môže byť odmietnuté ako <em>prístup zamietnutý</em> pri súbore, ktorý ste pred chvíľou dokázali skopírovať dovnútra. Peach Commander to neobchádza tým, že by vystupoval ako root — povie vám, čo povedal kontajner.</p>
+<p><strong>Kontajner alebo pripojenie len na čítanie zápis odmietne</strong> a ohlási to ako chybu oprávnení, nie ako zlyhanie.</p>
+<p><strong>Čítanie symbolického odkazu číta to, na čo ukazuje.</strong> Panel ho v stĺpci Attr naďalej zobrazuje ako odkaz; F3 ukáže obsah cieľa namiesto prázdneho súboru.</p>
+<p><strong>Koreň veľkého zastaveného kontajnera sa nemusí dať vypísať.</strong> Docker nemá žiadne volanie, ktoré by vypísalo adresár. Čítať adresár znamená vyžiadať si ho ako archív, a ten obsahuje všetko pod ním — pri zastavenom kontajneri postavenom na plnohodnotnom image to môžu byť mnohé gigabajty, a výpis je potom odmietnutý namiesto toho, aby sa všetko čítalo. Hlbšie adresáre to neovplyvňuje a <em>bežiaci</em> kontajner tiež nie: adresár príliš veľký na čítanie ako archív vypíše sám kontajner. Ak chcete iba archívnu cestu, pozri nastavenie nižšie.</p>
+<p><strong>Skopírovať von celý kontajner znamená skopírovať celý jeho súborový systém</strong> — vrátane <code>/proc</code> a <code>/dev</code>. Kopírujte adresár, ktorý potrebujete, nie <code>/</code>.</p>
+<h2 id="k-comu-ma-pristup">K čomu má prístup</h2>
+<p>Zásuvný modul hovorí s tým strojom, ku ktorému by ste sa dostali z terminálu: <code>DOCKER_HOST</code>, ak ho máte nastavený, inak váš súčasný <code>docker context</code>, inak obvyklé sokety Docker Desktopu, Colimy, Rancher Desktopu, Limy a Podmanu. Podman funguje, lebo ponúka to isté API.</p>
+<p>Prístup k démonovi Dockeru spravidla znamená veľmi rozsiahly prístup k stroju, na ktorom beží. Zásuvný modul má presne vaše práva a o žiadne ďalšie nežiada: neukladá žiadne prihlasovacie údaje, nikdy sa nedotýka vlastných adresárov Dockeru na vašom disku a nevykonáva za vás žiadne privilegované operácie.</p>
+<p>Jediné, čo vytvára, je <strong>jednorazový kontajner</strong> — a to len preto, aby sa dostal k zväzku, ktorý žiadny existujúci kontajner nepripája, keďže zväzok vidno iba zvnútra niečoho, čo ho pripája. Nikdy sa nespúšťa, je označený ako kontajner Peach Commanderu a je odstránený, len čo jednotku opustíte.</p>
+<h2 id="akcie-nad-kontajnerom-alebo-zvazkom">Akcie nad kontajnerom alebo zväzkom</h2>
+<p>Kliknutie pravým tlačidlom na kontajner alebo zväzok ponúkne v podponuke <strong>Docker</strong> to, čo jednotka sama povedať nedokáže:</p>
+<ul>
+<li><strong>Inspect</strong> — všetko, čo o ňom engine vie, ako formátovaný JSON v okne, v ktorom sa dá rolovať a
+  vyberať.</li>
+<li><strong>Show Logs</strong> — posledných 500 riadkov, ktoré kontajner zapísal.</li>
+<li><strong>Show Mounts</strong> — každé pripojenie, ktoré nesie, čím je a či sa doň dá zapisovať.</li>
+<li><strong>Copy ID</strong> — úplné id kontajnera alebo meno zväzku do schránky. <em>Úplné</em> id, nie dvanásť znakov zo
+  stĺpca ID: je to určené na vloženie do príkazu <code>docker</code>, a krátke id je predpona, ktorá môže
+  prestať byť jednoznačná.</li>
+<li><strong>Jump to Volume</strong> — pri adresári, ktorý je v skutočnosti zväzkom, prejsť na tento zväzok do
+  <strong>Volumes</strong>. To je druhá polovica stĺpca Pripojenie: stĺpec zväzok pomenuje, toto vás k nemu zavedie.</li>
+<li><strong>Open Compose Project</strong> — prejsť k projektu, ku ktorému kontajner patrí.</li>
+<li><strong>Start</strong>, <strong>Stop</strong>, <strong>Restart</strong>, <strong>Pause</strong>, <strong>Unpause</strong> — tieto kontajner menia, namiesto aby ho
+  čítali, takže sa najprv opýtajú. Start je zároveň východisko z oboch odmietnutí vyššie: mazanie a
+  premenovanie potrebujú bežiaci kontajner.</li>
+</ul>
+<p>Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam nie sú vôbec.</p>
+<p><strong>Protokol je zároveň súbor.</strong> V koreni každého kontajnera leží <code>docker-logs.txt</code> — ktorý nie je súborom v kontajneri: jeho čítanie si vyžiada protokol od enginu. F3 naň ho otvorí v prehliadači, takže platí jeho hľadanie, skok na riadok aj voľba kódovania — čo samostatné okno dať nemôže. Kontajner, ktorý súbor toho mena naozaj nesie, ukáže svoj vlastný, a do virtuálneho sa nedá nič zapísať.</p>
+<h2 id="nastavenia">Nastavenia</h2>
+<p><strong>Konfigurácia ▸ Nastavenia ▸ Docker</strong> obsahuje všetko z toho. Tie isté hodnoty ležia v malom súbore v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ktorý upravíte, keď stroj pripravujete skriptom:</p>
+<ul>
+<li><code>Endpoint</code> — adresa, ktorá sa použije namiesto nájdenej.</li>
+<li><code>ExecFallback</code> — <code>0</code> spôsobí, že modul používa výhradne archívne API Dockeru: nikdy potom vnútri kontajnera nič nespustí, za cenu toho, že nedokáže vypísať veľmi veľký adresár, mazať ani premenovávať.</li>
+<li><code>ProbeBudgetMB</code>, <code>MaxBudgetMB</code>, <code>MaxBudgetSeconds</code> — koľko z archívu adresára sa oplatí prečítať, než sa ustúpi k náhradnému postupu alebo to modul vzdá.</li>
+<li><code>HelperImage</code> — image, z ktorého vzniká vyššie spomenutý jednorazový kontajner (predvolene ľubovoľný image, ktorý už na stroji je).</li>
+<li><code>ShowAnonymousVolumes</code> — <code>0</code> skryje zväzky, ktorým Docker dal za meno dlhý odtlačok, pretože ich nikto iný nepomenoval.</li>
+</ul>
+<h2 id="nie-je-v-tejto-verzii">Nie je v tejto verzii</h2>
+<p>Vzdialené stroje cez SSH alebo TLS, interaktívny shell a image ako súborové systémy len na čítanie.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="amazon-s3.html">Amazon S3 a úložiská kompatibilné s S3</a></li><li><a href="webdav.html">Servery WebDAV</a></li><li><a href="copying-files.html">Kopírovanie súborov</a></li><li><a href="privacy-and-security.html">Súkromie a bezpečnosť</a></li></ul></section>
+</main>
+</body>
+</html>
