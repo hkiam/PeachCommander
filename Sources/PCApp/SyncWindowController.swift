@@ -333,7 +333,6 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             let delBtn = NSButton(title: String(localized: "Delete Preset"), target: self, action: #selector(deletePreset))
             for b in [saveBtn, delBtn] { b.bezelStyle = .rounded; presetRow.addArrangedSubview(b) }
             root.addArrangedSubview(presetRow)
-            reloadPresetPopup()
         }
 
         let buttons = NSStackView()
@@ -490,6 +489,11 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
             window.setContentSize(NSSize(width: max(current.width, floor.width),
                                          height: max(current.height, floor.height)))
         }
+
+        // Last, once every control it writes into exists — and after the measurement above, which is
+        // about what the window can be shrunk to and must not depend on which preset happens to be in
+        // force.
+        restoreLastPreset()
     }
 
     private func options() -> SyncOptions {
@@ -547,12 +551,32 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     // MARK: - Presets (F-194)
 
     /// Rebuild the popup: a placeholder row + one item per saved preset.
-    private func reloadPresetPopup() {
+    private func reloadPresetPopup(selecting name: String? = nil) {
         guard let store = presetStore else { return }
         presetPopup.removeAllItems()
         presetPopup.addItem(withTitle: String(localized: "(none)"))
         for p in store.load() { presetPopup.addItem(withTitle: p.name) }
-        presetPopup.selectItem(at: 0)
+        if let name, presetPopup.itemTitles.contains(name) {
+            presetPopup.selectItem(withTitle: name)
+        } else {
+            presetPopup.selectItem(at: 0)
+        }
+    }
+
+    /// Open on the preset that was last used, and give an installation that has none the shipped one.
+    ///
+    /// Called once, at the end of `buildUI`, so every control it writes into exists and so the zip
+    /// side's forced settings — applied in `showWindow`, afterwards — still win: an archive's
+    /// timestamps are unreliable whatever a saved preset says about them.
+    ///
+    /// Silent, with no "loaded X" in the status line. The popup shows which preset is in force, which
+    /// is the same answer in the place somebody would look for it.
+    private func restoreLastPreset() {
+        guard let store = presetStore else { return }
+        store.seedIfMissing(named: String(localized: "Default"))
+        guard let preset = store.lastUsed() else { reloadPresetPopup(); return }
+        reloadPresetPopup(selecting: preset.name)
+        apply(preset)
     }
 
     // MARK: - The advanced filter
@@ -650,7 +674,18 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         SyncPreset(name: name, options: options(),
                    fileMask: maskField.stringValue, withSubdirs: subdirsButton.state == .on,
                    ignoreHidden: ignoreHiddenButton.state == .on,
-                   filter: filter.isActive ? filter : nil)
+                   filter: filter.isActive ? filter : nil,
+                   resultFilter: selectedResultFilter, hideEqual: hideEqualButton.state == .on,
+                   lastUsed: Date())
+    }
+
+    /// What the "Show:" popup is set to, as the thing that gets written down.
+    private var selectedResultFilter: SyncResultFilter {
+        switch filterPopup.indexOfSelectedItem {
+        case 1: return .toRight
+        case 2: return .toLeft
+        default: return .all
+        }
     }
 
     /// Push a preset's settings into the controls.
@@ -674,12 +709,30 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         // already, for two options the store round-tripped while the window dropped them.
         filter = preset.filter ?? SyncFilter()
         updateFilterButton()
+        // And what the grid shows. Applied to the controls *and* to the rows already on screen, which
+        // is the opposite of what the advanced filter does two lines up and right for the same reason:
+        // this one re-reads a comparison that has already happened, so there is nothing stale to warn
+        // about — `filterChanged` is the same call the two controls make when a person moves them.
+        switch preset.resultFilter {
+        case .all:     filterPopup.selectItem(at: 0)
+        case .toRight: filterPopup.selectItem(at: 1)
+        case .toLeft:  filterPopup.selectItem(at: 2)
+        }
+        hideEqualButton.state = preset.hideEqual ? .on : .off
+        filterChanged()
     }
 
     @objc private func presetSelected() {
         guard let store = presetStore, presetPopup.indexOfSelectedItem > 0 else { return }
         let name = presetPopup.titleOfSelectedItem ?? ""
-        if let preset = store.load().first(where: { $0.name == name }) { apply(preset) }
+        if let preset = store.load().first(where: { $0.name == name }) {
+            apply(preset)
+            // Written down here and not in `apply`: `apply` is also what `restoreLastPreset` calls,
+            // and opening the window would then re-stamp the preset it opened on — which is a use in
+            // the sense that matters, but it would also make "last used" mean "last opened" and bury
+            // a preset somebody chose deliberately one window ago.
+            store.markUsed(name: name)
+        }
     }
 
     @objc private func savePreset() {
@@ -706,6 +759,25 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     // MARK: - Actions
+
+    /// Escape: stop what is running, or close the window.
+    ///
+    /// The window had no keyboard way out at all — Return compares, and the only way back was the
+    /// red button. It is an NSWindowController, so it sits in the responder chain behind the window
+    /// and AppKit routes `cancelOperation(_:)` here once nothing in front of it wants the key.
+    ///
+    /// Two meanings, in the order that cannot lose work: while a scan or a synchronization is
+    /// running, Escape is the Stop button — pressing it to get out of a dialog and closing the window
+    /// mid-copy instead is the one outcome worth designing around, even though `windowWillClose`
+    /// would cancel both anyway. A second press, with nothing running, closes.
+    override func cancelOperation(_ sender: Any?) {
+        if compareTask != nil || syncTask != nil {
+            compareTask?.cancel()
+            syncTask?.cancel()
+            return
+        }
+        window?.performClose(nil)
+    }
 
     /// Trigger the comparison programmatically (used by automation, F-192).
     func compareNow() { compare() }
@@ -817,6 +889,56 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
     /// Set mirror mode before an automated compare. It is the only mode that deletes today, so it
     /// is the one a guard scenario has to be able to switch on.
     func automationSetAsymmetric(_ on: Bool) { asymmetricButton.state = on ? .on : .off }
+
+    /// What the preset row offers, which one is in force, and the controls a preset now carries.
+    ///
+    /// The display half is reported next to the criteria half on purpose: "the preset was loaded"
+    /// and "the grid is showing what the preset said" are different claims, and the one that used to
+    /// fail silently is the second.
+    func automationPresetReport() -> String {
+        var out = "presets=\(presetPopup.itemTitles.dropFirst().joined(separator: ","))\n"
+        out += "selected=\(presetPopup.titleOfSelectedItem ?? "none")\n"
+        out += "resultFilter=\(selectedResultFilter.rawValue)\n"
+        out += "hideEqual=\(hideEqualButton.state == .on)\n"
+        out += "mask=\(maskField.stringValue)\n"
+        out += "subdirs=\(subdirsButton.state == .on)\n"
+        out += "ignoreHidden=\(ignoreHiddenButton.state == .on)\n"
+        out += "byContent=\(byContentButton.state == .on)\n"
+        out += "visibleRows=\(visibleRows.count)/\(results.count)\n"
+        return out
+    }
+
+    /// Move the two display controls the way a person does, without comparing again.
+    func automationSetDisplay(filter: String, hideEqual: Bool) {
+        filterPopup.selectItem(at: filter == "right" ? 1 : filter == "left" ? 2 : 0)
+        hideEqualButton.state = hideEqual ? .on : .off
+        filterChanged()
+    }
+
+    /// Save the window as a preset under this name, skipping the name dialog a script cannot answer.
+    func automationSavePreset(_ name: String) {
+        guard let store = presetStore else { return }
+        _ = store.upsert(currentPreset(name: name))
+        reloadPresetPopup(selecting: name)
+    }
+
+    /// Choose a preset from the popup, exactly as clicking it does.
+    func automationSelectPreset(_ name: String) {
+        guard presetPopup.itemTitles.contains(name) else { return }
+        presetPopup.selectItem(withTitle: name)
+        presetSelected()
+    }
+
+    /// Press Escape at the window, and say whether it is still there afterwards.
+    ///
+    /// Through `cancelOperation` rather than through a key event: what is being checked is that the
+    /// window answers the command AppKit sends for that key, and a synthesized key press would also
+    /// be answered by whatever field happens to hold focus — which is the case this is not about.
+    func automationEscape() -> String {
+        let running = compareTask != nil || syncTask != nil
+        cancelOperation(nil)
+        return "wasRunning=\(running)\nvisible=\(window?.isVisible == true)\n"
+    }
 
     /// Put filter criteria in as though the sheet had been filled in and confirmed, and report what
     /// the window makes of them.

@@ -39,12 +39,19 @@
 //   mainshot <out.png>[|<title>]  a PNG of the key window, or of the window whose title contains
 //                                 <title> — the key window is not reliably the one you opened
 //   refreshblock on|off   pretend a dialog is up, so the watcher has to postpone its refresh
-//   windowlayout <title|key>[|<W>x<H>]|<out>  resize a window and report the frame of every view
-//                                            under its content view (a layout that does not scale)
+//   windowlayout <title|key>[|<W>x<H>][|depth=N]|<out>  resize a window and report the frame of every
+//                                            view under its content view (a layout that does not
+//                                            scale). `depth=N` walks further down than the default 2
+//                                            levels, which is what a row inside a tab page needs.
 //   syncopen <left>|<right>   open the sync window WITHOUT comparing (syncdemo races the scan)
 //   synccompare               press its Compare button
 //   syncbusy <out>[|stop]     whether it shows that it is working; `stop` then cancels the scan
 //   syncfilter <all|right|left>|<0|1>|<out>  set the result filter (+ hide identical), dump the grid
+//   syncpresets <out>         which presets exist, which is in force, and what it set
+//   syncdisplay <all|right|left>|<0|1>|<out>  move the display controls only, then dump the presets
+//   syncpresetsave <name>[|<out>]   save the window as a preset, skipping the name dialog
+//   syncpresetload <name>[|<out>]   choose a preset from the popup
+//   syncesc <out>             press Escape at the sync window; reports whether it is still open
 //   syncselect <all|none>|<out>  include/exclude every VISIBLE row, dump the grid
 //   syncrow <visible row>|<out>  click that row's arrow (reverse, or give a conflict a direction)
 //   syncsort <column id>|<0|1>|<out>  sort the grid as clicking a header does
@@ -1324,6 +1331,42 @@ extension MainWindowController {
                 if !arg.isEmpty, let win = automationSyncWindows.last {
                     try? win.automationFilterSheetReport().write(toFile: arg, atomically: true, encoding: .utf8)
                 }
+            case "syncpresets":                            // syncpresets <out> (F-194)
+                // What the popup offers and what is in force, plus the display controls a preset now
+                // carries — the second half is the one that used to be dropped on load.
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    try? win.automationPresetReport().write(toFile: arg, atomically: true, encoding: .utf8)
+                }
+            case "syncdisplay":                            // syncdisplay <all|right|left>|<0|1>|<out>
+                // Move the two display controls without comparing again, so a preset saved right
+                // afterwards records a state somebody could actually have set by hand.
+                let d = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if d.count == 3, let win = automationSyncWindows.last {
+                    win.automationSetDisplay(filter: d[0], hideEqual: d[1] == "1")
+                    try? win.automationPresetReport().write(toFile: d[2], atomically: true, encoding: .utf8)
+                }
+            case "syncpresetsave":                         // syncpresetsave <name>[|<out>] (F-194)
+                let p = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if let win = automationSyncWindows.last, let name = p.first, !name.isEmpty {
+                    win.automationSavePreset(name)
+                    if p.count > 1 {
+                        try? win.automationPresetReport().write(toFile: p[1], atomically: true, encoding: .utf8)
+                    }
+                }
+            case "syncpresetload":                         // syncpresetload <name>[|<out>] (F-194)
+                let p = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if let win = automationSyncWindows.last, let name = p.first, !name.isEmpty {
+                    win.automationSelectPreset(name)
+                    if p.count > 1 {
+                        try? win.automationPresetReport().write(toFile: p[1], atomically: true, encoding: .utf8)
+                    }
+                }
+            case "syncesc":                                // syncesc <out>: Escape at the sync window
+                if let win = automationSyncWindows.last, !arg.isEmpty {
+                    let out = win.automationEscape()
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "syncasym":                               // syncasym <0|1> (F-192): mirror mode
                 automationSyncWindows.last?.automationSetAsymmetric(arg.trimmingCharacters(in: .whitespaces) == "1")
             case "synctwoway":                             // synctwoway <0|1> (F-192): remember mode
@@ -1588,6 +1631,30 @@ extension MainWindowController {
                     try? await Task.sleep(nanoseconds: 300_000_000)
                     try? (findWindow?.automationOptionsDump() ?? "ERROR: no find window\n")
                         .write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
+            case "finddir":                                // finddir <path>|<out>: put a folder in
+                // "Search in" and report the criteria form's measurements — the shape a field too
+                // short for its own text is caught in, which no screenshot of a short path shows.
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 2 {
+                    if findWindow == nil {
+                        showFindFiles()
+                        try? await Task.sleep(nanoseconds: 700_000_000)
+                    }
+                    findWindow?.automationSetDirectory(a[0])
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    try? (findWindow?.automationOptionsDump() ?? "ERROR: no find window\n")
+                        .write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
+            case "findreturn":                             // findreturn <out>: Return in "Search in"
+                if findWindow == nil {
+                    showFindFiles()
+                    try? await Task.sleep(nanoseconds: 700_000_000)
+                }
+                if !arg.isEmpty {
+                    let out = findWindow?.automationReturnInSearchIn() ?? "ERROR: no find window\n"
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
                 }
             case "findviewhit":                            // findviewhit <mask>|<text>|<dir>|<out> (F-407)
                 // A content search, then View on its first result, then what the viewer's own search
@@ -2733,6 +2800,14 @@ extension MainWindowController {
                 .write(toFile: out, atomically: true, encoding: .utf8)
             return
         }
+        // `depth=N` anywhere among the middle parts: how far down the view tree to walk. Two levels
+        // is enough to see "the window grew and the table did not", and not enough to see a row
+        // inside a tab page — which is where a field too short for its own text lives.
+        var maxDepth = 2
+        if let i = parts.firstIndex(where: { $0.lowercased().hasPrefix("depth=") }) {
+            maxDepth = Int(parts[i].dropFirst(6)) ?? 2
+            parts.remove(at: i)
+        }
         if let size = parts.first {
             let wh = size.split(separator: "x").compactMap { Double($0) }
             if wh.count == 2 { window.setContentSize(NSSize(width: wh[0], height: wh[1])) }
@@ -2746,7 +2821,7 @@ extension MainWindowController {
                 let f = sub.frame
                 text += String(repeating: "  ", count: depth)
                     + "\(type(of: sub))=\(Int(f.width))x\(Int(f.height))@\(Int(f.minX)),\(Int(f.minY))\n"
-                if depth < 2 { walk(sub, depth + 1) }
+                if depth < maxDepth { walk(sub, depth + 1) }
             }
         }
         walk(content, 0)

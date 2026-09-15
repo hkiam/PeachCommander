@@ -201,8 +201,25 @@ public final class FindFilesWindowController: NSWindowController {
         let shown = form.rowLabels.filter { label in page.map(label.isDescendant(of:)) ?? false }
         let fits = shown.allSatisfy { $0.frame.width + 0.5 >= $0.fittingSize.width }
         let measured = shown.map { "\($0.stringValue)=\(Int($0.frame.width))/\(Int($0.fittingSize.width))" }
+        // The same comparison one dimension over, for the three entry controls. A field shorter than
+        // the text it holds shows the middle band of its own letters, which reads as a rendering
+        // glitch rather than as a layout fault, and no label measurement can see it: the labels next
+        // to it are 16 pt tall and fit at any of these heights.
+        let entries: [(String, NSView)] = [("searchFor", nameMaskField), ("searchIn", startDirField),
+                                           ("findText", findTextField)]
+        let fieldsFit = entries.allSatisfy { $0.1.frame.height + 0.5 >= $0.1.fittingSize.height }
+        let fieldSizes = entries.map { "\($0.0)=\(Int($0.1.frame.height))/\(Int($0.1.fittingSize.height))" }
         return "labelColumn=\(Int(shown.map(\.frame.width).max() ?? 0))\nlabelsFit=\(fits)\n"
             + "labels=\(measured.joined(separator: " "))\n"
+            + "fieldsFit=\(fieldsFit)\n"
+            + "fieldHeights=\(fieldSizes.joined(separator: " "))\n"
+            // The row the multi-line field sits in, not only the field: a control given more height
+            // inside a row that kept its own is clipped by the row, and the field's own measurement
+            // above cannot see that. Height only — the widths here depend on the label column, which
+            // is measured from the longest label and so differs per language (94 pt in English, 103
+            // in German), and an assertion about one of them fails in the other.
+            + "searchInRow=\(Int(startDirField.superview?.frame.height ?? 0))\n"
+            + "searchInText=[\(startDirField.stringValue)]\n"
             + "typed=[\(findTextField.stringValue)]\nfieldEnabled=\(findTextField.isEnabled)\n"
             + "case=\(state(caseSensitiveCheckbox))\nregex=\(state(regexCheckbox))\n"
             + "hex=\(state(hexCheckbox))\nwholeWord=\(state(wholeWordCheckbox))\n"
@@ -213,6 +230,28 @@ public final class FindFilesWindowController: NSWindowController {
     /// Point a scripted search at a directory (automation).
     public func automationSetDirectory(_ path: String) {
         startDirField.stringValue = path
+    }
+
+    /// Press Return in "Search in", the way a keypress reaches it, and say what came of it.
+    ///
+    /// `doCommand(by:)` and not `insertNewline(nil)`: the first is what `interpretKeyEvents` calls
+    /// after turning the key into a command, and it is the step that consults the field's delegate.
+    /// Calling the editor's own method instead would bypass exactly the code this is about.
+    ///
+    /// Worth a verb of its own because the failure is invisible. The field wraps now, so its editor
+    /// is a real multi-line one and Return is swallowed there rather than reaching the default
+    /// button; a build without `control(_:textView:doCommandBy:)` answers this with a field that has
+    /// quietly gained a blank line and a search that never started — and a screenshot of a field with
+    /// a blank line in it looks like a field.
+    public func automationReturnInSearchIn() -> String {
+        window?.makeFirstResponder(startDirField)
+        guard let editor = window?.fieldEditor(false, for: startDirField) as? NSTextView else {
+            return "ERROR: no field editor\n"
+        }
+        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
+        return "searching=\(isSearching)\n"
+            + "editorHasNewline=\(editor.string.contains { $0.isNewline })\n"
+            + "searchInText=[\(startDirField.stringValue)]\n"
     }
 
     /// "View" on the first result, exactly as the button does — the path a hit takes into the viewer,
@@ -340,6 +379,29 @@ public final class FindFilesWindowController: NSWindowController {
         startDirField.stringValue = startDirectory
         startDirField.font = Fonts.system13
         startDirField.toolTip = String(localized: "One or more folders, separated by “;”, are each searched (F-150).")
+        // Three lines, and the text wraps. One line was this field's shape since it was written, and
+        // it is the wrong shape for what goes in it: a single ordinary path already runs off the end
+        // with nothing to say so — measured, a field 379 pt wide showed
+        // "/Users/maik1/Sources/github/PeachCommander/Sources/" and stopped — and the field takes
+        // *several* paths at once. "Where am I searching" was then a question only the tooltip
+        // answered, and nobody opens a tooltip to read what they typed.
+        startDirField.usesSingleLineMode = false
+        // By character, not by word: a path has no spaces to break at, so word wrapping puts one long
+        // component on a line of its own and leaves the rest of the line empty.
+        startDirField.lineBreakMode = .byCharWrapping
+        startDirField.cell?.wraps = true
+        startDirField.cell?.isScrollable = false
+        startDirField.maximumNumberOfLines = 0
+        // Return has to keep starting the search. A wrapping field's editor is a real multi-line one,
+        // so the key that used to reach the default button now inserts a newline instead — see
+        // `control(_:textView:doCommandBy:)`, which puts it back.
+        startDirField.delegate = self
+        // Three lines of 13 pt text plus the cell's own insets. A floor rather than a fixed height:
+        // the row must be free to grow if a future language or control size needs more, and the
+        // stack it sits in hands out the leftover height to whatever hugs least.
+        let startDirHeight = startDirField.heightAnchor.constraint(greaterThanOrEqualToConstant: 57)
+        startDirHeight.priority = .init(999)
+        startDirHeight.isActive = true
 
         // No checkbox in front of the content term (F-407): the field decides. Something in it is
         // searched for, an empty one is not — which is what the tick box said anyway, one click later,
@@ -947,6 +1009,24 @@ extension FindFilesWindowController: NSComboBoxDelegate {
     /// field's value is the new one — hence the hop through the main queue.
     public func comboBoxSelectionDidChange(_ notification: Notification) {
         DispatchQueue.main.async { [weak self] in self?.updateOptionAvailability() }
+    }
+
+    /// Return in the (now multi-line) "Search in" field starts the search, as it always did.
+    ///
+    /// The default button's `keyEquivalent` no longer sees that key: a wrapping field gets a real
+    /// multi-line field editor, and its `insertNewline(_:)` is handled by the editor itself before
+    /// the key ever reaches the window. Without this, Return in the one field whose whole job is to
+    /// be typed into silently added a blank line instead of starting the search.
+    public func control(_ control: NSControl, textView: NSTextView,
+                        doCommandBy commandSelector: Selector) -> Bool {
+        guard control === startDirField,
+              commandSelector == #selector(NSResponder.insertNewline(_:)) else { return false }
+        // Commit what is in the editor first: `stringValue` is still the pre-edit value until the
+        // field gives up first responder, so starting the search from here without this searched the
+        // folder the field held before the user typed.
+        window?.makeFirstResponder(nil)
+        handleStartStop()
+        return true
     }
 }
 

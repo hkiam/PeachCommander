@@ -4006,10 +4006,32 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     let fs = panel.currentFileSystem
                     self.lastSearchFS = fs
 
+                    // Multiple start directories (F-150): ";"-separated in the field. A line break
+                    // counts as a separator too, and a stray one is trimmed off either end: the field
+                    // is three lines tall and wraps, so a pasted list arrives with newlines in it and
+                    // ";"-splitting alone would have handed the walker a path with a "\n" on it.
+                    //
+                    // Split here rather than below the Spotlight branch, which is where it used to
+                    // happen: Spotlight was handed the raw field, so "a;b" searched a folder named
+                    // "a;b" and found nothing, with no sign that the second folder had been dropped.
+                    let roots = dir.split(whereSeparator: { $0 == ";" || $0.isNewline })
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+
                     // Spotlight mode: only for indexed local folders (ignores regex,
                     // depth and selection scope). Falls back if we're not on LocalFS.
                     if useSpotlight, fs is LocalFS {
-                        let paths = await self.spotlightSearch.search(nameMask: template.nameMask, contentText: template.contentText, in: dir)
+                        var paths: [String] = []
+                        var seen = Set<String>()
+                        for root in (roots.isEmpty ? [dir] : roots) {
+                            // Per root, not only once at the end: Stop during a three-folder search
+                            // would otherwise still query the other two before noticing.
+                            guard !Task.isCancelled else { win.searchFinished(); return }
+                            for path in await self.spotlightSearch.search(nameMask: template.nameMask,
+                                                                          contentText: template.contentText,
+                                                                          in: root) where seen.insert(path).inserted {
+                                paths.append(path)
+                            }
+                        }
                         guard !Task.isCancelled else { win.searchFinished(); return }
                         for path in paths { win.addResult(path) }
                         // Spotlight answers a different question from the walker: it has no notion of a
@@ -4028,8 +4050,6 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     }
 
                     let scope: [String]? = inSelectionOnly ? await panel.selectedOrCursorPaths() : nil
-                    // Multiple start directories (F-150): ";"-separated in the field.
-                    let roots = dir.split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
                     var query = template.makeQuery(startDirectory: roots.first ?? dir, scopePaths: scope)
                     query.extraStartDirectories = scope == nil ? Array(roots.dropFirst()) : []
                     query.searchArchives = searchArchives

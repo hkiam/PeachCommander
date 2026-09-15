@@ -501,6 +501,58 @@ enum TerminalPool {
 
 // MARK: - The view
 
+/// One tab in the strip: its name, and the ✕ that closes it *inside the same bezel*.
+///
+/// The close button used to be a second control in a stack beside the tab. Two bezels a point apart
+/// read as one and a half tabs: the ✕ belonged to the tab on its left only by being nearer to it, and
+/// the thing immediately to its right was the *next tab* — which is what it looked like it would
+/// close. Inside the tab there is nothing for it to belong to but the tab it is in.
+///
+/// An NSButton with a subview rather than a view drawn from scratch, so the strip keeps the recessed
+/// look it was matched to the panel's own tab bar with, and goes on answering `state` — which is what
+/// says a session is on screen in one of the panes.
+private final class TerminalTabButton: NSButton {
+    /// Room reserved at the trailing edge for the ✕, and the gap it keeps from the bezel.
+    private static let closeWidth: CGFloat = 14
+    private static let closeInset: CGFloat = 3
+
+    let closeButton = NSButton(title: "", target: nil, action: nil)
+
+    init(title: String) {
+        super.init(frame: .zero)
+        self.title = title
+        bezelStyle = .recessed
+        setButtonType(.pushOnPushOff)
+        font = .systemFont(ofSize: 11)
+        // The name starts at the leading edge and the ✕ sits at the trailing one: a centred title in
+        // a bezel widened for the ✕ drifts right by half of it, and the strip then reads as a row of
+        // tabs each nudged out of line with its neighbour.
+        alignment = .left
+        closeButton.bezelStyle = .accessoryBarAction
+        closeButton.isBordered = false
+        closeButton.imageScaling = .scaleProportionallyDown
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(closeButton)
+        NSLayoutConstraint.activate([
+            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.closeInset),
+            closeButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            closeButton.widthAnchor.constraint(equalToConstant: Self.closeWidth),
+            closeButton.heightAnchor.constraint(equalToConstant: Self.closeWidth),
+        ])
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    /// What the title needs, plus the room the ✕ was given. Without it the two overlap: the bezel is
+    /// sized from the title alone while the ✕ is pinned to its trailing edge, so a tab whose folder
+    /// name fills it wears the ✕ over its last letter.
+    override var intrinsicContentSize: NSSize {
+        var size = super.intrinsicContentSize
+        size.width += Self.closeWidth + Self.closeInset * 2
+        return size
+    }
+}
+
 /// A tab strip over one session at a time.
 ///
 /// Sized and coloured to match the panel's own tab bar, so the dock does not look like a different
@@ -659,12 +711,16 @@ final class TerminalContainerView: NSView {
 
     /// Close the tab, and with it the session — the one place a session ends by request.
     ///
-    /// Asks first when something is still running in it. Only here: quitting the app and switching
-    /// the plugin off go through `teardown`, and a second dialog on the way out would be asking the
-    /// user to confirm a decision they already made.
+    /// Asks first, always. It used to ask only when something was running in the tab, on the grounds
+    /// that an idle shell is worth nothing; but the tab is also where the scrollback lives, and a ✕
+    /// two points from the next tab's edge is easy to hit by accident. What it asks differs: a tab
+    /// with a job names the job, because that is the answer that decides it.
+    ///
+    /// Only here: quitting the app and switching the plugin off go through `teardown`, and a second
+    /// dialog on the way out would be asking the user to confirm a decision they already made.
     func closeTab(_ index: Int, confirm: Bool = true) {
         guard tabs.indices.contains(index) else { return }
-        if confirm, let job = tabs[index].foregroundJob, !shouldClose(runningJob: job) { return }
+        if confirm, !shouldClose(tabs[index]) { return }
         TerminalPool.close(tabs.remove(at: index))
         if tabs.isEmpty { panes = [0]; focused = 0; newTab(); return }
         // Panes pointing past the end, or at the tab that just went, fall back to a neighbour rather
@@ -673,18 +729,28 @@ final class TerminalContainerView: NSView {
         rebuildPanes()
     }
 
-    /// "`make` is still running in this tab. Close it anyway?"
+    /// "`make` is still running in this tab. Close it anyway?", or just "Close this tab?".
     ///
     /// Modal and blocking, deliberately: the alternative is closing the tab and telling the user
     /// afterwards, which is not a question. Cancel is the default button, because the expensive
     /// mistake is the one that discards work.
-    private func shouldClose(runningJob job: String) -> Bool {
+    private func shouldClose(_ session: TerminalSession) -> Bool {
+        // Asked once and kept: `foregroundJob` runs `/bin/ps`, and reading it again for the button
+        // title would both cost a second process and let the two halves of one dialog disagree — a
+        // job that ends between the two reads would be named in the message over a button saying
+        // "Close Tab".
+        let job = session.foregroundJob
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = String(format: L("“%@” is still running in this tab."), job)
-        alert.informativeText = L("Closing the tab stops it.")
+        if let job {
+            alert.messageText = String(format: L("“%@” is still running in this tab."), job)
+            alert.informativeText = L("Closing the tab stops it.")
+        } else {
+            alert.messageText = String(format: L("Close the tab “%@”?"), session.title)
+            alert.informativeText = L("Its shell ends and everything it has printed is lost.")
+        }
         alert.addButton(withTitle: L("Cancel"))
-        alert.addButton(withTitle: L("Close Anyway"))
+        alert.addButton(withTitle: job != nil ? L("Close Anyway") : L("Close Tab"))
         return alert.runModal() == .alertSecondButtonReturn
     }
 
@@ -794,34 +860,35 @@ final class TerminalContainerView: NSView {
         for view in tabStrip.arrangedSubviews { tabStrip.removeArrangedSubview(view); view.removeFromSuperview() }
         let shown = Set(panes)
         for (i, tab) in tabs.enumerated() {
-            let button = NSButton(title: tab.title, target: self, action: #selector(tabPressed(_:)))
+            let button = TerminalTabButton(title: tab.title)
+            button.target = self
+            button.action = #selector(tabPressed(_:))
             button.tag = i
-            button.bezelStyle = .recessed
-            button.setButtonType(.pushOnPushOff)
             // On when the tab is on screen at all, so a split shows both of its sessions as current —
             // marking only the focused one would say the other had gone somewhere.
             button.state = shown.contains(i) ? .on : .off
-            button.font = .systemFont(ofSize: 11)
 
             // A close button on every tab, not only the selected one. Hover-only would be tidier and
             // is how Terminal.app does it; always-visible is how anyone finds it without being told,
             // and the strip has the room. There was no way to close a tab at all before this —
             // `closeTab` existed and nothing called it.
-            let close = NSButton(title: "", target: self, action: #selector(closeTabPressed(_:)))
+            let close = button.closeButton
             close.tag = i
-            close.bezelStyle = .accessoryBarAction
-            close.isBordered = false
-            close.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: L("Close this tab"))
-            close.imageScaling = .scaleProportionallyDown
+            close.target = self
+            close.action = #selector(closeTabPressed(_:))
+            close.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: L("Close this tab"))?
+                // Sized against the 11 pt tab name it sits beside. At its natural weight the glyph
+                // came out taller than the word "zsh" next to it, which reads as the tab's main
+                // control rather than as the way out of it.
+                .withSymbolConfiguration(.init(pointSize: 9, weight: .medium))
             close.toolTip = L("Close this tab")
-            close.contentTintColor = theme.secondaryText
-            close.setContentHuggingPriority(.required, for: .horizontal)
+            // The same colour the tab's own title is drawn in. A recessed button that is "on" is
+            // filled with the accent colour and titled in white, so a ✕ tinted with the theme's
+            // secondary text sat dark-on-blue in the one tab a user is most likely to close.
+            close.contentTintColor = button.state == .on
+                ? .alternateSelectedControlTextColor : theme.secondaryText
 
-            let cell = NSStackView(views: [button, close])
-            cell.orientation = .horizontal
-            cell.spacing = 1
-            cell.alignment = .centerY
-            tabStrip.addArrangedSubview(cell)
+            tabStrip.addArrangedSubview(button)
         }
         splitButton.toolTip = isSplit ? L("Use the whole area for one terminal") : L("Split the terminal")
         // One line a scenario can assert on without a parser, and a line a user can read: which pane of
@@ -993,6 +1060,10 @@ final class TerminalContainerView: NSView {
         layer?.backgroundColor = theme.windowBackground.cgColor
         status.textColor = theme.secondaryText
         for tab in tabs { tab.applyTheme(theme) }
+        // The strip is themed where it is built, so a theme change has to rebuild it. Without this
+        // the ✕ on every tab kept the tint of the theme that was in force when the tab was made —
+        // which after a switch from a light theme to a dark one is a grey nobody can see.
+        refreshChrome()
         needsDisplay = true
     }
 

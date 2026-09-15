@@ -148,6 +148,20 @@ SCENARIOS = [
                          "previewtabsdump /Users/admin/side-tabs.txt", "wait 400"], 22),
     ("find-files", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                     "findtab 0", "wait 2000"], 10),
+    # "Search in" takes several folders separated by ";" and was one line tall, so a single ordinary
+    # path ran off its end with nothing to say so. It wraps over three lines now, and the claim is a
+    # *measurement*: `fieldsFit` compares each entry control's frame against its fitting height, which
+    # is the only way to see a field too short for its own text — a screenshot of a short path shows
+    # nothing, and the label measurements next to it fit at any height.
+    ("find-searchin", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "findtab 0", "wait 1500",
+                       "finddir /Users/admin/pc-demo;/Users/admin/Library/Application Support"
+                       "|/Users/admin/find-searchin.txt", "wait 600",
+                       # Return still starts the search, which a wrapping field breaks by default:
+                       # its editor is a real multi-line one and swallows the key the default button
+                       # used to get. Measured both ways — with the delegate hook removed the same
+                       # verb answers `searching=false`.
+                       "findreturn /Users/admin/find-return.txt", "wait 1500"], 12),
     # The advanced sync filter (F-192). Two things a screenshot and a text dump have to cover between
     # them: the sheet's own layout, which no dump can show, and that the *window* says a filter is
     # active, which no screenshot of the sheet can — the whole safety claim is that a filter is
@@ -175,6 +189,34 @@ SCENARIOS = [
                      "syncselect all|/Users/admin/twowaysel.txt", "wait 500",
                      "syncrun", "wait 2200",
                      "syncstate /Users/admin/twoway.txt"], 12),
+    # Presets carry what the *grid* shows, the window opens on the one last used, and an installation
+    # that has never saved one still finds something in the popup (F-194).
+    #
+    # Two openings in one script, because the whole claim is about what the second window knows that
+    # the first was never told. The first seeds the shipped default, moves the two display controls,
+    # and saves that as a preset; the second is built from nothing but the file on disk.
+    #
+    # `syncdisplay` and not `syncfilter`: they do the same thing to the controls, but this scenario is
+    # about what a preset remembers rather than about the grid, and using the verb whose report is the
+    # preset row keeps the before/after readable in one file.
+    ("sync-presets", ["active left", "left /Users/admin/preset-a", "wait 1200",
+                      "syncopen /Users/admin/preset-a|/Users/admin/preset-b|/Users/admin/sync-presets.json",
+                      "wait 1400",
+                      "syncpresets /Users/admin/preset-shipped.txt", "wait 300",
+                      "synccompare", "wait 1600",
+                      "syncdisplay right|1|/Users/admin/preset-set.txt", "wait 500",
+                      "syncpresetsave Nightly|/Users/admin/preset-saved.txt", "wait 600",
+                      # Escape, not the red button: the window had no keyboard way out at all, and
+                      # this is also what closes it for the second opening below.
+                      "syncesc /Users/admin/preset-esc.txt", "wait 800",
+                      "syncopen /Users/admin/preset-a|/Users/admin/preset-b|/Users/admin/sync-presets.json",
+                      "wait 1400",
+                      "syncpresets /Users/admin/preset-restored.txt", "wait 300",
+                      "synccompare", "wait 1600",
+                      # After a comparison, because "the controls say hideEqual" and "the grid is
+                      # actually holding rows back" are different claims and only the second matters.
+                      "syncpresets /Users/admin/preset-grid.txt", "wait 400",
+                      "syncesc /Users/admin/preset-esc2.txt", "wait 600"], 14),
     # Mirror mode with a left root that cannot be read. Before the guard this produced a delete row
     # for *every* file on the right, pre-ticked, one confirmation click away — a typo in the path
     # field was enough. The claim here is not that the rows are gone (the comparison did produce
@@ -1143,14 +1185,24 @@ SCENARIOS = [
                             "modaldump /Users/admin/close-alert.txt",
                             "termnotify plugin.terminal.view|closeTab|1", "wait 3000",
                             "dockdump /Users/admin/close-after.txt", "wait 500",
-                            # …and then a tab that has nothing running closes without ceremony,
-                            # through the command the ✕ on the tab and the menu both call. Two tabs
-                            # first, so there is something to count.
+                            # …and then a tab with nothing running, which now asks as well. It used
+                            # to close without ceremony, on the grounds that an idle shell is worth
+                            # nothing — but the tab is also where the scrollback lives, and the ✕
+                            # sits a few points from the next tab's edge. Two tabs first, so there
+                            # is something to count.
                             "cmd cm_TerminalNewTab", "wait 2500",
                             # Between the two, or the "one tab afterwards" claim is true before the
                             # close as well and proves nothing.
                             "dockdump /Users/admin/close-two.txt", "wait 400",
+                            "modaldump /Users/admin/close-idle.txt",
                             "cmd cm_TerminalCloseTab", "wait 2000",
+                            # An aborted modal is neither button, so this one has to still be there
+                            # too — which is the half that would fail if the question were cosmetic.
+                            "dockdump /Users/admin/close-kept.txt", "wait 500",
+                            # And it does go when the answer is yes. `closeTabForce` is the path a
+                            # host takes when it has already asked, so what this proves is the
+                            # closing itself rather than the dialog a second time.
+                            "termnotify plugin.terminal.view|closeTabForce|2", "wait 1500",
                             "dockdump /Users/admin/close-gone.txt", "wait 500"], 27),
     # ⌘C in the terminal copies text, not files. Both the panel and the terminal implement `copy:`,
     # and the Edit menu sends it to whatever is focused — so this is the one place where the file
@@ -2635,6 +2687,32 @@ REPORTS = {
     # read off the wrong thing.
     "sync-occupied-path": ("/Users/admin/putback-busy.txt",
                              ["putBack=0", "refused=1", "at that path again", "!ERROR"]),
+    # An installation that has never saved a preset still finds one, and the window opens on it. A
+    # "(none)" selection here would mean the popup exists and does nothing, which is how the feature
+    # looked until now.
+    "sync-presets-shipped": ("/Users/admin/preset-shipped.txt",
+                             ["presets=Default", "selected=Default",
+                              "resultFilter=all", "hideEqual=false"]),
+    # The two display controls moved, and the grid moved with them: one of the three rows left.
+    "sync-presets-set": ("/Users/admin/preset-set.txt",
+                         ["resultFilter=toRight", "hideEqual=true", "visibleRows=1/3"]),
+    "sync-presets-saved": ("/Users/admin/preset-saved.txt",
+                           ["presets=Default,Nightly", "selected=Nightly",
+                            "resultFilter=toRight", "hideEqual=true"]),
+    # Escape closed it. `wasRunning=false` says that is what Escape did rather than stopping a scan.
+    "sync-presets-esc": ("/Users/admin/preset-esc.txt", ["wasRunning=false", "visible=false"]),
+    # A second window, built from nothing but the file on disk, opens on the preset last used —
+    # display settings included. This is the whole feature in one file.
+    "sync-presets-restored": ("/Users/admin/preset-restored.txt",
+                              ["selected=Nightly", "resultFilter=toRight", "hideEqual=true"]),
+    # …and it is not only the controls: the comparison that window ran shows the rows the preset asks
+    # for. `visibleRows=1/3` is the half a restored checkbox with a grid ignoring it would fail.
+    "sync-presets-grid": ("/Users/admin/preset-grid.txt",
+                          ["selected=Nightly", "resultFilter=toRight", "hideEqual=true",
+                           "visibleRows=1/3"]),
+    # Last written, so it is the one the guest waits for: Escape closes the second window too, which
+    # is also what keeps the script from ending with a window still up.
+    "sync-presets": ("/Users/admin/preset-esc2.txt", ["wasRunning=false", "visible=false"]),
     # `syncEnabled=false` is the load-bearing line: the plan is visible and cannot be run. The
     # reason has to name which side to look at, because "something was wrong" does not tell anybody
     # which path field they mistyped. And the shell check afterwards is the real proof — the twelve
@@ -2899,8 +2977,15 @@ REPORTS = {
     "terminal-close-ask-two": ("/Users/admin/close-two.txt", ["tab 2/2"]),
     "terminal-close-ask-kept": ("/Users/admin/close-after.txt",
                                 ["panels=plugin.terminal.view", "!exited", "!tab "]),
-    # The other half: a tab with nothing running closes, and the count goes back to one — which is
-    # what "no tab bookkeeping in the status line" means once there is a single tab again.
+    # An idle tab is asked about too, and the question names the tab rather than a job — there is no
+    # job. "still running" must NOT be in it: the two halves of `shouldClose` are one dialog with two
+    # texts, and the way that breaks is by showing the running-job wording over an idle tab.
+    "terminal-close-ask-idle": ("/Users/admin/close-idle.txt",
+                                ["modal=true", "Close the tab", "!still running"]),
+    # …and Cancel — which is what an aborted modal amounts to — leaves both tabs alone.
+    "terminal-close-ask-idlekept": ("/Users/admin/close-kept.txt", ["tab 2/2"]),
+    # The other half: the tab does close once the answer is yes, and the count goes back to one —
+    # which is what "no tab bookkeeping in the status line" means once there is a single tab again.
     "terminal-close-ask": ("/Users/admin/close-gone.txt",
                            ["panels=plugin.terminal.view", "!tab ", "!exited"]),
     # The scrollback is on the clipboard as text, and no file went with it: "fileURLs=0" is the half
@@ -3560,6 +3645,22 @@ REPORTS = {
     "find-text-field-empty": ("/Users/admin/ft-empty.txt",
                               ["typed=[]", "fieldEnabled=true", "contentTerm=-", "labelsFit=true",
                                "!ERROR"]),
+    # The measurement the "text only half visible" report needed, and the one no screenshot could
+    # make: `fieldsFit` is each entry control's frame height against its fitting height, and the
+    # height itself is asserted because `fieldsFit` alone is satisfied by the one-line field it was
+    # before — a one-line field fits one line of text perfectly, and truncates the rest sideways.
+    # `searchInRow` is the second half: a field given more height inside a row that kept its own is
+    # clipped by the row, which the field's own measurement cannot see. Heights only — the widths in
+    # this dialog follow the label column, which is measured from the longest label and so differs per
+    # language (94 pt in English, 103 in German). A width assertion passed here and failed in the VM.
+    "find-searchin-field": ("/Users/admin/find-searchin.txt",
+                            ["fieldsFit=true", "searchIn=57/", "searchInRow=57", "labelsFit=true",
+                             "Application Support", "!ERROR"]),
+    # Return in the field still starts the search, and no blank line was added instead. Last written,
+    # so it is the one the guest waits for — and measured the other way: with the delegate hook
+    # removed this same verb answers `searching=false`.
+    "find-searchin": ("/Users/admin/find-return.txt",
+                      ["searching=true", "editorHasNewline=false", "!ERROR"]),
     "find-text-field-typed": ("/Users/admin/ft-typed.txt",
                               ["typed=[superseded]", "contentTerm=superseded", "hex=on",
                                "wholeWord=on", "notContaining=on", "comments=on", "!ERROR"]),
@@ -3809,6 +3910,20 @@ def boot(app: str, run: str):
                   "rm -rf ~/twoway-a ~/twoway-b && mkdir -p ~/twoway-a ~/twoway-b && "
                   "printf 'keep\\n' > ~/twoway-a/keep.txt && "
                   "printf 'gone\\n' > ~/twoway-a/gone.txt && "
+                  # A pair for the preset scenario, and the preset file itself removed: what that
+                  # scenario asserts first is what an installation which has *never* saved a preset
+                  # finds in the popup, and a file left behind by an earlier run would answer the
+                  # question with somebody else's list.
+                  "rm -f ~/sync-presets.json && "
+                  "rm -rf ~/preset-a ~/preset-b && mkdir -p ~/preset-a ~/preset-b && "
+                  "printf 'same\\n' > ~/preset-a/same.txt && "
+                  "printf 'same\\n' > ~/preset-b/same.txt && "
+                  # One row of each kind, so "show only what goes right, hide the identical ones"
+                  # leaves exactly one of three and neither control can be the one doing nothing:
+                  # without the tick it is two (the identical row comes back), without the direction
+                  # it is two as well (the right-only row comes back).
+                  "printf 'only on the left\\n' > ~/preset-a/onlyleft.txt && "
+                  "printf 'only on the right\\n' > ~/preset-b/onlyright.txt && "
                   # A pair for the run-log scenario. Its own tree, for the same reason the filter
                   # pair has one: `sync-sftp` asserts `compared=3` over `sync-src`. It holds one
                   # file to create, one to overwrite, and one only on the right for the mirror to

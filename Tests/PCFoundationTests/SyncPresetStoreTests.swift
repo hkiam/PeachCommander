@@ -128,4 +128,95 @@ final class SyncPresetStoreTests: XCTestCase {
         _ = store.upsert(SyncPreset(name: "Quiet", options: SyncOptions(), ignoreHidden: true))
         XCTAssertEqual(store.load().first?.ignoreHidden, true)
     }
+
+    // MARK: - What the grid shows, and which preset to come back to
+
+    /// The two display controls the window had and the preset did not, which is what made a loaded
+    /// preset come back with "Hide identical" unticked however it had been saved.
+    func test_displaySettings_roundTrip() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "OneWay", options: SyncOptions(),
+                                    resultFilter: .toRight, hideEqual: true))
+        XCTAssertEqual(store.load().first?.resultFilter, .toRight)
+        XCTAssertEqual(store.load().first?.hideEqual, true)
+    }
+
+    /// A preset written before the display settings existed keeps working, and reads as the window's
+    /// own defaults rather than as something nobody chose.
+    func test_aPresetWithoutDisplaySettingsReadsAsTheDefaults() throws {
+        try writeRaw("""
+        [{"name":"Old","options":{"byContent":true}}]
+        """)
+        let loaded = SyncPresetStore(url: url).load()
+        XCTAssertEqual(loaded.first?.resultFilter, .all)
+        XCTAssertEqual(loaded.first?.hideEqual, false)
+        XCTAssertNil(loaded.first?.lastUsed)
+    }
+
+    /// The shipped default appears in an installation that has none.
+    func test_seed_writesTheShippedDefaultOnce() {
+        let store = SyncPresetStore(url: url)
+        XCTAssertEqual(store.seedIfMissing(named: "Default").map(\.name), ["Default"])
+        XCTAssertEqual(store.load().map(\.name), ["Default"])
+    }
+
+    /// …and does not come back after it has been deleted. Seeding on "the list is empty" rather than
+    /// on "there is no file" would put it back for ever, which is the one thing a deletable item may
+    /// not do — and the failure would look like the delete button not working.
+    func test_seed_doesNotResurrectADeletedDefault() {
+        let store = SyncPresetStore(url: url)
+        store.seedIfMissing(named: "Default")
+        _ = store.remove(name: "Default")
+        XCTAssertEqual(store.seedIfMissing(named: "Default"), [])
+        XCTAssertEqual(store.load(), [])
+    }
+
+    /// Nor does it touch a list somebody already has.
+    func test_seed_leavesAnExistingListAlone() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "Mine", options: SyncOptions()))
+        XCTAssertEqual(store.seedIfMissing(named: "Default").map(\.name), ["Mine"])
+    }
+
+    /// The window comes back to the preset last chosen, not to the first one in the file.
+    func test_lastUsed_isTheMostRecentlyMarked() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "First", options: SyncOptions()))
+        _ = store.upsert(SyncPreset(name: "Second", options: SyncOptions()))
+        store.markUsed(name: "Second", at: Date(timeIntervalSince1970: 1_000))
+        XCTAssertEqual(store.lastUsed()?.name, "Second")
+        store.markUsed(name: "First", at: Date(timeIntervalSince1970: 2_000))
+        XCTAssertEqual(store.lastUsed()?.name, "First")
+    }
+
+    /// With nothing ever marked, the first one is the answer — and never nil for a non-empty list,
+    /// which is what makes "open on the last preset" safe to call unconditionally.
+    func test_lastUsed_fallsBackToTheFirst() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "Only", options: SyncOptions()))
+        XCTAssertEqual(store.lastUsed()?.name, "Only")
+        XCTAssertNil(SyncPresetStore(url: url.appendingPathExtension("gone")).lastUsed())
+    }
+
+    /// Marking a preset used records the date and nothing else: the settings on disk are the ones
+    /// that get the stamp, not whatever a window has been changed to since it was loaded.
+    func test_markUsed_doesNotRewriteTheSettings() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "Keep", options: SyncOptions(byContent: true),
+                                    fileMask: "*.log", hideEqual: true))
+        store.markUsed(name: "Keep", at: Date(timeIntervalSince1970: 5_000))
+        let loaded = store.load().first
+        XCTAssertEqual(loaded?.options.byContent, true)
+        XCTAssertEqual(loaded?.fileMask, "*.log")
+        XCTAssertEqual(loaded?.hideEqual, true)
+        XCTAssertEqual(loaded?.lastUsed, Date(timeIntervalSince1970: 5_000))
+    }
+
+    /// Marking one that is not there does nothing rather than creating it.
+    func test_markUsed_ofAnUnknownNameIsANoOp() {
+        let store = SyncPresetStore(url: url)
+        _ = store.upsert(SyncPreset(name: "Real", options: SyncOptions()))
+        store.markUsed(name: "Ghost")
+        XCTAssertEqual(store.load().map(\.name), ["Real"])
+    }
 }
