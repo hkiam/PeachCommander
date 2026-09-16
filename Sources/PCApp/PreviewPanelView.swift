@@ -45,6 +45,7 @@ final class PreviewPanelView: NSView {
         case .info: return String(localized: "Info")
         case .activities: return String(localized: "Activities")
         case .log: return String(localized: "Log")
+        case .stash: return String(localized: "Stash")
         }
     }
 
@@ -100,7 +101,9 @@ final class PreviewPanelView: NSView {
     private let activitiesText = NSTextView()
     private let activitiesScroll = NSScrollView()
     private let logText = NSTextView()
+    private let stashText = NSTextView()
     private let logScroll = NSScrollView()
+    private let stashScroll = NSScrollView()
 
     /// The built-in page showing, or nil when a plugin view or the empty state is.
     ///
@@ -168,7 +171,8 @@ final class PreviewPanelView: NSView {
         infoScroll.translatesAutoresizingMaskIntoConstraints = false
         addSubview(infoScroll)
 
-        for (tv, scroll) in [(activitiesText, activitiesScroll), (logText, logScroll)] {
+        for (tv, scroll) in [(activitiesText, activitiesScroll), (logText, logScroll),
+                             (stashText, stashScroll)] {
             tv.isEditable = false
             tv.drawsBackground = false
             tv.font = Fonts.monospacedDigit13
@@ -259,7 +263,7 @@ final class PreviewPanelView: NSView {
         // the VM to see it: a *collapsed* panel is `width == 0`, and a scroll view pinned to both edges
         // as a required rule cannot also give its vertical scroller the 17 pt its clip view demands.
         // Seven conflicts, every time the panel was closed — invisible until a scenario closed one.
-        for area in [infoScroll, activitiesScroll, logScroll, pluginContainer] {
+        for area in [infoScroll, activitiesScroll, logScroll, stashScroll, pluginContainer] {
             let sides = [
                 area.leadingAnchor.constraint(equalTo: leadingAnchor),
                 area.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -412,6 +416,7 @@ final class PreviewPanelView: NSView {
         infoScroll.isHidden = page != .info
         activitiesScroll.isHidden = page != .activities
         logScroll.isHidden = page != .log
+        stashScroll.isHidden = page != .stash
         pluginContainer.isHidden = pluginId == nil
         emptyLabel.isHidden = tab != nil
         if let pluginId {
@@ -672,6 +677,11 @@ final class PreviewPanelView: NSView {
     func setLog(_ text: String) {
         logText.string = text
         logText.textColor = Theme.current.listText
+    }
+
+    func setStash(_ text: String) {
+        stashText.string = text
+        stashText.textColor = Theme.current.listText
     }
 
     func applyTheme() {

@@ -147,6 +147,13 @@ final class TerminalSettings {
         try? JSONEncoder().encode(all).write(to: sessionURL)
     }
 
+    /// Drop one key, for the one-time move of a pre-workspaces entry onto its workspace (F-499).
+    func forgetTabs(container: String) {
+        var all = restoredTabs()
+        guard all.removeValue(forKey: container) != nil else { return }
+        try? JSONEncoder().encode(all).write(to: sessionURL)
+    }
+
     func restoredTabs() -> [String: [String]] {
         (try? Data(contentsOf: sessionURL)).flatMap {
             try? JSONDecoder().decode([String: [String]].self, from: $0)
@@ -584,6 +591,26 @@ final class TerminalContainerView: NSView {
     /// Which pane the tab strip and keyboard act on.
     private var focused = 0
 
+    /// The workspace this view is currently showing (F-499). Empty until the host says otherwise,
+    /// which is also what an older host that never sends the key leaves it as — and then everything
+    /// below behaves exactly as it did before workspaces existed.
+    private var workspace = ""
+
+    /// What the other workspaces had open here.
+    ///
+    /// **Parked, not closed.** The sessions stay in the pool with their pseudo-terminals, their child
+    /// processes and their scrollback intact; only their views leave the screen. That is the same
+    /// promise this file opens with — switching tabs must not restart `top` — extended one level out:
+    /// switching *workspaces* must not either. An `rsync` started in "clean up backups" keeps running
+    /// and filling its buffer while you sort applicant documents, and is still there when you come
+    /// back.
+    private struct Parked {
+        var tabs: [TerminalSession]
+        var panes: [Int]
+        var focused: Int
+    }
+    private var parked: [String: Parked] = [:]
+
     private let tabStrip = NSStackView()
     private let addButton = NSButton(title: "+", target: nil, action: nil)
     private let splitButton = NSButton(title: "", target: nil, action: nil)
@@ -663,8 +690,15 @@ final class TerminalContainerView: NSView {
             status.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1),
             status.heightAnchor.constraint(equalToConstant: Self.statusHeight),
         ])
-        // Bring back the folders the tabs were in, or open one where the panel is looking.
-        let remembered = TerminalSettings.shared.restoredTabs()[container] ?? []
+        // Which workspace this view was built in (F-499). Asked of the host rather than waited for:
+        // the notification that announces a switch cannot arrive before the view exists, and the very
+        // first thing this view does is read back the folders its tabs were in — under a key that
+        // depends on the answer.
+        workspace = hostContext("workspace") ?? ""
+        // Bring back the folders the tabs were in, or open one where the panel is looking. The plain
+        // container is the fallback, which is what an installation from before workspaces has.
+        let saved = TerminalSettings.shared.restoredTabs()
+        let remembered = saved[rememberKey] ?? saved[container] ?? []
         if remembered.isEmpty {
             newTab()
         } else {
@@ -681,12 +715,16 @@ final class TerminalContainerView: NSView {
 
     /// The folder the active panel is looking at, asked freshly so a *new* tab opens where the user is
     /// now rather than where they were when the dock opened.
-    private func hostDirectory() -> String? {
+    private func hostDirectory() -> String? { hostContext("dir") }
+
+    /// Read one value out of the host's context table. Nil when the host does not know the key, which
+    /// is also what an older host answers for a key it has never heard of.
+    private func hostContext(_ key: String) -> String? {
         guard let svc = services, let fn = svc.getContext else { return nil }
         var buf = [CChar](repeating: 0, count: 4096)
-        guard "dir".withCString({ fn(svc.host, $0, &buf, 4096) }) != 0 else { return nil }
-        let path = String(cString: buf)
-        return path.isEmpty ? nil : path
+        guard key.withCString({ fn(svc.host, $0, &buf, 4096) }) != 0 else { return nil }
+        let value = String(cString: buf)
+        return value.isEmpty ? nil : value
     }
 
     @discardableResult
@@ -943,6 +981,7 @@ final class TerminalContainerView: NSView {
             // means is exactly what may have changed.
             theme = PluginTheme(services)
             applyTheme()
+        case "workspace": switchWorkspace(to: value)
         default:          break
         }
     }
@@ -954,7 +993,57 @@ final class TerminalContainerView: NSView {
     /// arrangement around them.
     private func rememberTabs() {
         let directories = tabs.filter { !$0.isCommandTab }.compactMap(\.directory)
-        TerminalSettings.shared.rememberTabs(directories, container: container)
+        TerminalSettings.shared.rememberTabs(directories, container: rememberKey)
+    }
+
+    /// Where this view's tabs are written down: the container, and the workspace when there is one.
+    ///
+    /// Old keys have no separator in them and still decode as the container they name, so an
+    /// installation that had two terminals open before this existed does not lose them on upgrade.
+    private var rememberKey: String {
+        workspace.isEmpty ? container : "\(container)|\(workspace)"
+    }
+
+    /// Park what is on screen and adopt what belongs to `id` (F-499).
+    ///
+    /// Nothing is closed here, and nothing may be: `TerminalPool.close` is the only place a process
+    /// ends, which is what makes "switching workspaces does not kill your shell" true rather than
+    /// hoped for. Taking a view out of the hierarchy leaves its reader thread and its child alone.
+    private func switchWorkspace(to id: String) {
+        guard id != workspace else { return }
+        // The first time the host names one, these tabs *belong* to it — they were opened in it. This
+        // is not a switch away from anything, and parking them would leave the user staring at a fresh
+        // shell one moment after their own tabs were restored.
+        if workspace.isEmpty {
+            workspace = id
+            rememberTabs()
+            // The entry these tabs were read from belongs to this workspace now. Left behind it is
+            // dead weight that the fallback in `init` would keep finding on every later launch.
+            TerminalSettings.shared.forgetTabs(container: container)
+            refreshChrome()
+            return
+        }
+        rememberTabs()
+        if !workspace.isEmpty || !tabs.isEmpty {
+            parked[workspace] = Parked(tabs: tabs, panes: panes, focused: focused)
+        }
+        for tab in tabs { tab.view.removeFromSuperview() }
+
+        workspace = id
+        if let resumed = parked.removeValue(forKey: id) {
+            tabs = resumed.tabs
+            panes = resumed.panes
+            focused = resumed.focused
+        } else {
+            tabs = []
+            panes = [0]
+            focused = 0
+        }
+        // A workspace with nothing open here gets a shell in its own folder, which is what the view
+        // does when it is first built too. Better than an empty frame that looks broken.
+        if tabs.isEmpty { _ = newTab() }
+        rebuildPanes()
+        refreshChrome()
     }
 
     /// Take the active panel to where the shell says it is — if the user asked for that.
@@ -1078,6 +1167,13 @@ final class TerminalContainerView: NSView {
         // No questions here: the app is quitting or the plugin is being switched off, and both are
         // decisions the user has already taken.
         for tab in tabs { TerminalPool.close(tab) }
+        // The workspaces this view is not currently showing. Their sessions are alive and off screen,
+        // so nothing else would ever close them: quitting would leave a shell — and whatever it
+        // started — running with no window and no way back to it (F-499).
+        for (_, group) in parked {
+            for tab in group.tabs { TerminalPool.close(tab) }
+        }
+        parked.removeAll()
         tabs.removeAll()
         panes = [0]
     }

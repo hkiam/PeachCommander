@@ -9,6 +9,7 @@
 
 import AppKit
 import PCAutomation
+import PCFoundation
 import PCOperations
 
 @MainActor
@@ -72,6 +73,16 @@ final class TransferManager {
     func enqueue(_ kind: OperationKind, title: String, startHeld: Bool = false,
                  onComplete: (@MainActor ([String]) -> Void)? = nil,
                  onFinish: (@MainActor (Bool) -> Void)? = nil) {
+        // The backstop for the workspace scope (F-499). The panels ask before they get here, so this
+        // never fires for them — which is the point: it is here to catch a *future* caller that
+        // enqueues work without going through a panel at all. Refused rather than asked, and logged
+        // with the job's own title, because the right fix is to add the check where that caller builds
+        // its operation, and a dialog from nowhere would only teach people to click through it.
+        if !WorkspaceScopeGate.backstopAllows(kind: kind) {
+            PCFoundationLogger.logger.error(
+                "workspace scope refused a transfer that bypassed the panels: \(title)")
+            return
+        }
         let queue = TransferQueue()
         let job = Job(title: title, kind: kind, control: queue.control, onComplete: onComplete,
                       onFinish: onFinish)

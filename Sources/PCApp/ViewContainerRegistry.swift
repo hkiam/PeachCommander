@@ -74,6 +74,14 @@ final class PluginViewMount {
         }
         guard let ptr else { return nil }
         viewPtr = ptr
+        // The workspace, right after building — the same place `move(to:)` tells a view about its new
+        // container, and for the same reason. A view built *after* a switch has never heard the
+        // current id: the broadcast that announced it happened while this view did not exist. Without
+        // this line, opening the dock in the second workspace gives it the first one's terminal tabs,
+        // and nothing about that looks like a missed notification (F-499).
+        if !ViewContainerRegistry.shared.currentWorkspace.isEmpty {
+            notify(key: "workspace", value: ViewContainerRegistry.shared.currentWorkspace)
+        }
         return Unmanaged<NSView>.fromOpaque(ptr).takeUnretainedValue()
     }
 
@@ -347,6 +355,27 @@ final class ViewContainerRegistry {
 
     func notifyViews(key: String, value: String) {
         for m in live.values { m.notify(key: key, value: value) }
+    }
+
+    /// Which workspace the window is showing (F-499).
+    ///
+    /// Held here rather than passed around because a view can be built at any moment — long after the
+    /// switch that changed this — and `makeView` reads it to tell a newborn view where it has landed.
+    private(set) var currentWorkspace = ""
+
+    /// Tell every mounted view that the workspace changed.
+    ///
+    /// One string, one way, and nothing comes back: that is all `PcNotifyView` can do, and it is
+    /// enough. The host cannot hold a plugin's live sessions and should not try — a pseudo-terminal
+    /// belongs to the plugin that opened it. What the host owes it is the fact that the context moved,
+    /// in time to park what it has and adopt what belongs here.
+    ///
+    /// Both shipping plugins end their `notify` switch with a `default` that does nothing, so a new
+    /// key is additive by construction and needs no ABI version bump.
+    func setWorkspace(_ id: String) {
+        guard id != currentWorkspace else { return }
+        currentWorkspace = id
+        notifyViews(key: "workspace", value: id)
     }
 
     /// Push a value to one view rather than all of them.

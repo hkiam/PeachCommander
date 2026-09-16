@@ -194,6 +194,16 @@ public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<
                 vc.focusInput()
             }
         }
+    case "workspace":
+        // Rebind the transcript to this workspace's conversations. Deliberately not a teardown: the
+        // request lives in the session actor, so an answer still streaming in the workspace you just
+        // left finishes and is waiting when you go back (F-499).
+        guard let value else { return }
+        let id = String(cString: value)
+        MainActor.assumeIsolated {
+            guard let vc = liveChatVC else { return }
+            Task { @MainActor in await vc.setWorkspace(id) }
+        }
     default:
         return
     }

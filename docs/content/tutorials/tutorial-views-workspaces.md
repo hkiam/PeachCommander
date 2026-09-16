@@ -91,29 +91,30 @@ Tabs keep several folders one click apart inside a single panel. Set up the tabs
 
 Tip: if there is a folder you keep coming back to, select its tab and choose **View > Lock Tab**. A lock icon appears, and navigating elsewhere opens a new tab instead of moving the pinned one. See [Tabs](panels-and-tabs.md) for the full set of tab actions.
 
-## Step 8: Save the arrangement as a workspace
+## Step 8: Make the arrangement a workspace
 
-Now capture the whole setup, both panels and all their tabs, so you can return to it later.
+Now give the whole setup a name, so you can leave it and come back to it.
 
 1. Make one last check that both panels show what you want: the left as a date-sorted gallery with your review and destination tabs, the right as a name-sorted detailed list with your project tabs.
-2. Click the panel you want focused when the workspace reopens (say, the left one).
-3. Open the **Go** menu and choose **Save Workspace…** (shortcut **Cmd+Ctrl+S**).
-4. Type a name, for example `Photo import`, and confirm.
+2. Open the **Go** menu and choose **Workspaces…**, then **New Workspace…**.
+3. Type a name, for example `Photo import`, and confirm.
 
-The snapshot stores the folders each panel shows, every open tab, which tab is active on each side, and which panel is focused. It does not store the files themselves, so it stays valid as the folders' contents change.
+A strip of coloured chips appears across the top of the window, and a **Workspace** menu appears in the menu bar. Until this moment there was nothing of either to see — one workspace is the quiet state, and most people never leave it.
 
-## Step 9: Restore the workspace later
+The workspace records the folders each panel shows, every open tab, which tab is active on each side, the view mode and the folder tree. It does not record the files themselves, so it stays valid as the folders' contents change.
 
-1. Open the **Go** menu and choose **Workspaces…**.
-2. In the pop-up list, click **Photo import**. Both panels, all their tabs, and the active side snap back into place.
-3. Your first nine saved workspaces get quick-select number keys **1**–**9**, so once you have a few, you can switch with a single keystroke.
+## Step 9: Work in it, and come back later
 
-To remove a workspace, open **Workspaces…**, point at **Delete**, and choose its name from the submenu.
+Carry on importing. Open tabs, navigate, change the sort order — the workspace keeps up with you, and there is nothing to save.
 
-Loading a workspace replaces the tabs in both panels with the saved set, so anything you had open but did not save is not kept. If you want to keep your current layout too, save it as its own workspace first.
+1. Make a second workspace for a different job, say `Backups`, with your source folder on one side and a backup drive on the other.
+2. Click a chip, or press **Ctrl+1** and **Ctrl+2**, to move between them. Both panels, all their tabs, the view mode and the back/forward history switch with you.
+3. Come back to `Photo import` tomorrow and it is exactly as you left it — not as you last saved it, because you never had to.
+
+If an afternoon of wandering has taken a workspace somewhere you did not intend, **Workspace ▸ Reset to Saved State** puts it back the way you set it up. **Save Current State to Workspace** (**Cmd+Ctrl+S**) makes wherever you are now the state it goes back to.
 
 ## What to try next
 
-- Build a second workspace for a different job, for example a "Backups" layout with your source folder on one side and a backup drive on the other, so you can flip between projects in one keystroke.
+- Give each workspace a colour from the chip's context menu, so you can tell them apart at a glance when the window is narrow.
 - Add the folders you open most often to your favorites so new tabs are quicker to fill; see [Favorites](favorites.md).
-- Explore the rest of the view options, including natural (numeric) sorting and the Tree mode, in [View modes & sorting](view-modes-and-sorting.md), and the finer points of saving and restoring layouts in [Workspaces](workspaces.md).
+- Explore the rest of the view options, including natural (numeric) sorting and the Tree mode, in [View modes & sorting](view-modes-and-sorting.md), and the rest of what a workspace carries in [Workspaces](workspaces.md).

@@ -33,7 +33,23 @@ final class CommandMenuBar: NSMenu {
 enum AppMenu {
     /// Build the application's main menu. `commandAction` is invoked for command
     /// items with `sender.representedObject` set to the cm_* name.
-    static func build(target: AnyObject, commandAction: Selector) -> NSMenu {
+    /// One entry of the dynamic workspace list. Empty means the feature is latent or off, and then
+    /// the Workspace menu is not built at all — which is what "you see nothing until you make a
+    /// second one" actually means in the menu bar (F-499).
+    struct WorkspaceMenuEntry {
+        let name: String
+        let active: Bool
+    }
+
+    /// - Parameters:
+    ///   - workspacesEnabled: is the feature switched on at all? When false there is no workspace
+    ///     entry anywhere in the bar — not even the two in Go that are its only surface while it is
+    ///     latent. "Off" has to mean nothing to see, or it is not off.
+    ///   - workspaces: the dynamic list. Empty while latent, which leaves the Workspace menu out but
+    ///     keeps the Go entries as the way in.
+    static func build(target: AnyObject, commandAction: Selector,
+                      workspacesEnabled: Bool = true,
+                      workspaces: [WorkspaceMenuEntry] = []) -> NSMenu {
         let main = CommandMenuBar()
 
         // Application menu
@@ -350,16 +366,86 @@ enum AppMenu {
                                key: "", mask: [], target: target, action: commandAction))
         goMenu.addItem(command(String(localized: "Right = Left"), cmd: "cm_RightEqualsLeft",
                                key: "", mask: [], target: target, action: commandAction))
-        goMenu.addItem(.separator())
-        goMenu.addItem(command(String(localized: "Workspaces…"), cmd: "cm_Workspaces",
-                               key: "", mask: [], target: target, action: commandAction))
-        goMenu.addItem(command(String(localized: "Save Workspace…"), cmd: "cm_SaveWorkspace",
-                               key: "s", mask: [.command, .control], target: target, action: commandAction))
+        // The feature's whole surface while it is **latent** — and these two have been in this menu
+        // since before it was rebuilt, so somebody who never makes a second workspace sees exactly
+        // what they saw before (F-499).
+        //
+        // They step aside once the Workspace menu exists, and that is not tidiness: ⌘⌃S would
+        // otherwise be on two items, AppKit would silently take the first, and `check-hotkeys.py`
+        // would be right to call it a lie. One command, one place, one key.
+        if workspacesEnabled && workspaces.isEmpty {
+            goMenu.addItem(.separator())
+            goMenu.addItem(command(String(localized: "Workspaces…"), cmd: "cm_Workspaces",
+                                   key: "", mask: [], target: target, action: commandAction))
+            goMenu.addItem(command(String(localized: "Save Workspace…"), cmd: "cm_SaveWorkspace",
+                                   key: "s", mask: [.command, .control], target: target, action: commandAction))
+        }
 
         // NOTE: the per-window "Viewer"/"Editor"/… menu is no longer a permanent menu
         // here. It is inserted contextually (see WindowContextMenuProviding /
         // setWindowContextMenu) only while the matching tool window is key, so the
         // main window doesn't show an out-of-place Viewer menu (TODOS #189).
+
+        // Workspace menu (F-499) — only once there is a second workspace to switch to.
+        //
+        // Deliberately its own top-level menu rather than more entries under Go: Go is about *places*
+        // and a workspace is a *mode*, and filing a mode list under "Go" is exactly the mislabel that
+        // left the old feature undiscovered. Equally deliberately absent while the feature is latent,
+        // because a menu nobody needs is the most visible thing an unused feature can own.
+        var workspaceItem: NSMenuItem?
+        if !workspaces.isEmpty {
+            let item = NSMenuItem()
+            let workspaceMenu = NSMenu(title: String(localized: "Workspace"))
+            item.submenu = workspaceMenu
+            workspaceItem = item
+            for (i, entry) in workspaces.prefix(9).enumerated() {
+                let item = command(entry.name, cmd: "cm_Workspace\(i + 1)",
+                                   key: "\(i + 1)", mask: .control, target: target, action: commandAction)
+                item.state = entry.active ? .on : .off
+                workspaceMenu.addItem(item)
+            }
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Next Workspace"), cmd: "cm_NextWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Previous Workspace"), cmd: "cm_PrevWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "New Workspace…"), cmd: "cm_NewWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Rename Workspace…"), cmd: "cm_RenameWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Delete Workspace…"), cmd: "cm_DeleteWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Manage Workspaces…"), cmd: "cm_Workspaces",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Save Current State to Workspace"),
+                                          cmd: "cm_SaveWorkspace", key: "s", mask: [.command, .control],
+                                          target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Reset to Saved State"), cmd: "cm_ResetWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Add Selection to Stash"), cmd: "cm_StashAdd",
+                                          key: "a", mask: [.command, .control],
+                                          target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Copy Stash to Other Panel"), cmd: "cm_StashCopyTo",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Move Stash to Other Panel"), cmd: "cm_StashMoveTo",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Clear Stash"), cmd: "cm_StashClear",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Journal…"), cmd: "cm_WorkspaceJournal",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Export Workspace…"), cmd: "cm_ExportWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(command(String(localized: "Import Workspace…"), cmd: "cm_ImportWorkspace",
+                                          key: "", mask: [], target: target, action: commandAction))
+            workspaceMenu.addItem(.separator())
+            workspaceMenu.addItem(command(String(localized: "Show Workspace Bar"), cmd: "cm_WorkspaceBar",
+                                          key: "", mask: [], target: target, action: commandAction))
+        }
 
         // Configuration menu (I13 §3)
         let configItem = NSMenuItem()
@@ -559,8 +645,17 @@ enum AppMenu {
         // Terminal sits after View because that is where the eye goes looking for it — it is about
         // what the window shows — and before Configuration, which is where settings live rather than
         // things you do.
-        let ordered = [appItem, fileItem, editItem, markItem, cmdItem, netItem,
-                       goItem, viewItem, terminalItem, configItem, startItem, windowItem, helpItem]
+        // The Workspace menu goes straight after Go, and it is optional — nil while the feature is
+        // latent or switched off, which is how "you see nothing until you make a second workspace"
+        // reaches the menu bar.
+        //
+        // **It has to be in this list to exist at all.** The bar is emptied and rebuilt from `ordered`
+        // a line below, so a menu merely added above is silently discarded — which is exactly what
+        // happened to this one first time round, and the symptom (built, logged, and absent) looks
+        // nothing like the cause.
+        let ordered = ([appItem, fileItem, editItem, markItem, cmdItem, netItem, goItem]
+                       + [workspaceItem].compactMap { $0 }
+                       + [viewItem, terminalItem, configItem, startItem, windowItem, helpItem])
         main.removeAllItems()
         for item in ordered { main.addItem(item) }
         return main
@@ -570,6 +665,9 @@ enum AppMenu {
     /// standard App and Edit menus, then the given command menus, then the standard
     /// Window and Help menus. Keeps the AppKit essentials (About/Quit, Undo/Copy/
     /// Paste, window list) working while the middle of the bar is data-driven.
+    /// The `.mnu` variant builds App/Edit/<user menus>/Window/Help and nothing else, so it takes no
+    /// workspace list: somebody who supplies their own menu file decides what is in their menu bar,
+    /// and the workspace commands are available to them there by name like every other `cm_`.
     static func build(target: AnyObject, commandAction: Selector, commandMenus: [NSMenu]) -> NSMenu {
         let main = CommandMenuBar()   // a user `.mnu` carries the same bare-key commands
         main.addItem(appMenuItem(target: target, commandAction: commandAction))

@@ -56,9 +56,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// A file opened through the Finder, the Dock or `open(1)`.
     ///
-    /// Only one type is declared in Info.plist — the `.pcplug` plugin package — and only that one
-    /// is acted on here. Anything else is ignored rather than guessed at: this is a file manager,
-    /// and "opened a file" is a much bigger promise than it needs to make.
+    /// Two types are declared in Info.plist — the `.pcplug` plugin package and the `.pcworkspace`
+    /// workspace — and only those are acted on here. Anything else is ignored rather than guessed at:
+    /// this is a file manager, and "opened a file" is a much bigger promise than it needs to make.
     func application(_ application: NSApplication, open urls: [URL]) {
         guard mainWindow != nil else {
             pendingOpenURLs.append(contentsOf: urls)
@@ -76,15 +76,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func handle(_ urls: [URL]) {
         guard let controller = mainWindow else { return }
+        // Partitioned rather than filtered, because there are two kinds now and selecting one of
+        // each in the Finder is a thing people do.
         let packages = urls.filter(PluginPackage.isPackage)
-        guard !packages.isEmpty else { return }
-        // One task for all of them, awaiting each in turn. A task per URL would put every
+        let workspaces = urls.filter { $0.pathExtension == WorkspaceExchange.fileExtension }
+        guard !packages.isEmpty || !workspaces.isEmpty else { return }
+        // Still one task for all of them, awaiting each in turn. A task per URL would put every
         // confirmation up at once — selecting two packages in the Finder and pressing Return is
         // enough to do it — and each one runs a nested modal session on top of the last, so the
         // user answers them inside out.
         Task { @MainActor in
             for url in packages {
                 await controller.installPluginPackage(at: url)
+            }
+            // All of them in one call, so two workspace files produce one report rather than two
+            // dialogs. It adds and tells; it does not switch the window somebody is working in.
+            if !workspaces.isEmpty {
+                await controller.importWorkspaceFiles(workspaces)
             }
         }
     }

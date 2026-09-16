@@ -14,7 +14,96 @@ does not have.
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- **Workspaces are named work contexts now, not saved layouts** (F-499). A workspace — "clean up
+  backups", "sort applicant documents" — remembers both panels, every tab, the active side, the view
+  mode, the folder tree and the back/forward history, and switching restores the other one exactly as
+  it was left. It never asks whether to save, because a workspace never ends; what the old feature
+  did on every load — "anything you had open but did not save is not kept" — was the reason it was
+  worth rebuilding rather than extending.
+
+  **The whole window switches**, not just the folders: both panels and their tabs, the view mode, the
+  folder tree, the back/forward history, **which files you had marked**, the quick filter, the cursor,
+  and the window's arrangement — the side panel, the dock and which plugin view it shows, every bar,
+  the panel layout and where the divider sits. Change any of those and you have changed *this*
+  workspace, not a global setting.
+
+  **The terminal and the assistant follow too, and nothing running dies.** The tabs of the workspace
+  you leave are set aside with their shells alive rather than closed — a `make` or an `rsync` started
+  in one workspace keeps running while you work in another, and is still there when you come back. The
+  assistant keeps a separate conversation per workspace; an answer still arriving when you switch away
+  finishes and is waiting for you. Chats from before this existed belong to no workspace and appear
+  everywhere, so nothing is hidden by the upgrade.
+
+  **And a basket per workspace, for what actually happens while tidying up.** Three folders deep in the
+  backups you find something that belongs to an entirely different job: drag it onto that job's chip
+  and it lands in *its* stash. You do not switch, nothing is copied or moved, the chip's counter goes
+  up and you carry on. ⌥ copies into that workspace's folder instead and ⌘ moves; Ctrl+Cmd+A adds the
+  selection to the current one; the Stash page in the side panel shows what is in it; and Copy/Move
+  Stash to Other Panel does the whole basket in one operation, through the same background transfer,
+  overwrite handling and undo as every other copy. Files deleted in the meantime are shown as missing
+  rather than dropped, and a bulk operation offers to skip them or take them out first.
+
+  **A workspace can also be limited to a folder**, which is the safety net for a tool that deletes.
+  Right-click its chip, Limit to Folder, and choose whether operations outside it are allowed, asked
+  about, or refused — "clean up backups" covering `/Volumes/Backup` then asks before F8 takes something
+  from your Desktop. Checked before a delete, a copy, a move, a rename or a new folder reaches outside,
+  and asked *before* the delete confirmation rather than after it. **Navigating is never restricted**
+  (ADR-013): a file manager that refuses to show you a folder is broken, and a guard that gets in the
+  way while you are only looking is one people switch off before the moment it was built for.
+
+  **And each workspace keeps a journal** — folders visited, operations carried out, shell lines run,
+  and anything the folder limit refused. Workspace ▸ Journal… shows it newest day first, with a
+  **Problems** filter for everything that failed or was stopped; the refusals are recorded nowhere
+  else in the application. Return repeats a row under the history's rule — only a copy or a move goes
+  with one keystroke, a shell line is filled into the command line rather than run. It is a log rather
+  than a filter over the global history, because that one ranks by frequency and collapses repeats,
+  and "what did I do here" needs the order and the whole of it. Deleted with its workspace, kept
+  indefinitely otherwise, and switchable off in Settings ▸ Tabs.
+
+  **And a workspace is a file you can hand over.** Workspace ▸ Export Workspace… writes a
+  `.pcworkspace`; Import Workspace…, or a double-click in the Finder, reads one back. The storage
+  format *is* the export format, so there is no second schema to drift apart from it, and paths inside
+  your home are written shortened so the file opens in the *other* person's home. What travels is the
+  workspace's saved starting point, with its name, colour, folder limit and stash. What deliberately
+  does not: **anything that could be a credential** — a tab on a connection or a mounted plugin drive
+  is removed rather than cleaned up, and counted in the report, so there is nothing about a connection
+  in the file to leak — and **the journal**, which records what you did and names folders on your
+  machine. An import always adds a workspace and never switches by itself; a file somebody sent should
+  not move the window you are working in. Folders that are not on this Mac open at the nearest one
+  that is, stash entries keep their paths and show greyed, and a folder limit set to refuse whose
+  folder is missing is kept but asks instead — a refusal nobody can act on is worse than a question.
+
+  Each chip carries a **✕** at its right-hand end, so putting a workspace away does not mean finding
+  a context menu first. It leads into the same confirmation as everywhere else, because a workspace is
+  deleted rather than closed and its stash and journal go with it; the last remaining one has no ✕ at
+  all, and a chip too narrow to spare the room keeps its name instead.
+
+  Marked files are the part worth stating plainly: come back to a workspace two days later and the
+  forty files you had ticked are still ticked. Anything deleted in the meantime is quietly no longer
+  in the selection rather than a phantom entry. Undo is per workspace too, but only while the app is
+  running — an undo step carries the action that reverses it, and that cannot be written to disk.
+
+  Switch from a strip of coloured chips across the top of the window, from the Workspace menu, or with
+  Ctrl+1…Ctrl+9. Each workspace also keeps the arrangement it was set up as, so Cmd+Ctrl+S ("save the
+  layout" in the old feature) now means "make this the state I reset to", and Reset to Saved State
+  goes back there.
+
+  **None of it is visible until you make a second workspace**: no chip strip, no menu, no shortcuts —
+  and the whole feature can be switched off in Settings ▸ Tabs, which also takes the two Go entries
+  away. Switching it off keeps your workspaces; they come back unchanged.
+
+  Upgrading loses nothing: workspaces saved with the old feature become chips, the session you were in
+  becomes the first one, and `workspaces.ini` is kept as `workspaces.ini.migrated`. Each workspace is
+  now its own `workspaces/<id>.json`, so one unreadable file costs only itself and a workspace can be
+  handed to somebody else.
+
+### Fixed
+
+- A tab's cursor position survived loading a saved workspace but not restarting the app: the session
+  and the workspace format had drifted apart, and only one of them wrote it down. There is one
+  serializer now, and it does (F-499).
 
 ## [0.9.1] — 2026-09-15
 

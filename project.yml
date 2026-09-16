@@ -275,12 +275,29 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - pcplug
+          # A workspace as a file you can hand over (F-499). Plain JSON with its own extension, so it
+          # conforms to public.json and stays readable in every editor — the storage format *is* the
+          # exchange format. Declaring it is what makes a double-click mean "add this workspace"
+          # rather than opening it in a text editor.
+          - UTTypeIdentifier: com.peachcommander.workspace
+            UTTypeDescription: Peach Commander Workspace
+            UTTypeConformsTo:
+              - public.json
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - pcworkspace
         CFBundleDocumentTypes:
           - CFBundleTypeName: Peach Commander Plugin Package
             CFBundleTypeRole: Viewer
             LSHandlerRank: Owner
             LSItemContentTypes:
               - com.peachcommander.plugin-package
+          - CFBundleTypeName: Peach Commander Workspace
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes:
+              - com.peachcommander.workspace
 
   # Golden tests on the default palettes. Compiles Sources/PCApp/Theme.swift directly instead
   # of hosting PCApp: Theme only imports AppKit, so this needs no test host and stays fast.

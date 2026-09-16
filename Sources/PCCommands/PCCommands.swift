@@ -354,10 +354,37 @@ public protocol WindowControllerProtocol: AnyObject {
     /// Unpack the archive under the cursor (or the one we are inside) to a
     /// destination folder — cm_UnpackFiles.
     func showUnpackFiles()
-    /// Workspaces hub: load/delete/save named panel layouts — cm_Workspaces.
+    /// Workspaces hub: switch, create, rename, delete — cm_Workspaces.
     func showWorkspaces()
-    /// Save the current two-panel layout as a named workspace — cm_SaveWorkspace.
+    /// Make the current arrangement the state this workspace resets to — cm_SaveWorkspace.
     func showSaveWorkspace()
+    /// Create a workspace from the window as it stands — cm_NewWorkspace.
+    func showNewWorkspace()
+    /// Rename the current workspace — cm_RenameWorkspace.
+    func showRenameWorkspace()
+    /// Delete the current workspace, after confirming — cm_DeleteWorkspace.
+    func showDeleteWorkspace()
+    /// Put the current workspace back the way it was set up — cm_ResetWorkspace.
+    func resetWorkspaceToBaseline()
+    /// Move to the next/previous workspace — cm_NextWorkspace / cm_PrevWorkspace.
+    func nextWorkspace()
+    func previousWorkspace()
+    /// Switch to the nth workspace, 1-based as the chips read — cm_Workspace1…9.
+    func switchWorkspace(toIndex index: Int)
+    /// Show or hide the chip strip — cm_WorkspaceBar.
+    func toggleWorkspaceBar()
+    /// Put the panel's selection in this workspace's basket — cm_StashAdd.
+    func addSelectionToStash()
+    /// Empty the basket — cm_StashClear.
+    func clearStashCommand()
+    /// Copy or move the whole basket into the other panel — cm_StashCopyTo / cm_StashMoveTo.
+    func runStashOperation(move: Bool)
+    /// What was done in this workspace — cm_WorkspaceJournal.
+    func showWorkspaceJournal()
+    /// Write the current workspace to a `.pcworkspace` — cm_ExportWorkspace.
+    func exportWorkspaceCommand()
+    /// Add a workspace from a `.pcworkspace` somebody sent — cm_ImportWorkspace.
+    func importWorkspaceCommand()
     /// Toggle the right-hand preview/info sidebar (Info/Activities/Log) — cm_PreviewPanel.
     func togglePreviewPanel()
     /// Switch the side panel's Info page on or off — cm_SidePanelInfo (F-476).
@@ -751,6 +778,31 @@ public actor CommandRegistry {
     // MARK: - Default Commands Registration
 
     /// Register all default commands (must be called from an actor context)
+    /// The workspace commands, registered only while the feature is switched on.
+    ///
+    /// Not registering beats registering-and-disabling: `KeymapMenu.apply` already greys out a menu
+    /// item whose command is unknown, the command browser lists what is registered, and a key bound to
+    /// a name nothing answers to is simply dead. So "off" needs no special case anywhere else.
+    public func registerWorkspaceCommands() {
+        register(Self.cm_Workspaces)
+        register(Self.cm_SaveWorkspace)
+        register(Self.cm_NewWorkspace)
+        register(Self.cm_RenameWorkspace)
+        register(Self.cm_DeleteWorkspace)
+        register(Self.cm_NextWorkspace)
+        register(Self.cm_PrevWorkspace)
+        register(Self.cm_WorkspaceBar)
+        register(Self.cm_ResetWorkspace)
+        register(Self.cm_StashAdd)
+        register(Self.cm_StashClear)
+        register(Self.cm_StashCopyTo)
+        register(Self.cm_StashMoveTo)
+        register(Self.cm_WorkspaceJournal)
+        register(Self.cm_ExportWorkspace)
+        register(Self.cm_ImportWorkspace)
+        for command in Self.workspaceIndexCommands { register(command) }
+    }
+
     public func registerDefaultCommands() {
         // Navigation commands (I01)
         register(Self.cm_GoToParent)
@@ -888,8 +940,6 @@ public actor CommandRegistry {
         register(Self.cm_FullDiskAccess)
         register(Self.cm_TestArchive)
         register(Self.cm_UnpackFiles)
-        register(Self.cm_Workspaces)
-        register(Self.cm_SaveWorkspace)
         register(Self.cm_PreviewPanel)
         register(Self.cm_SidePanelInfo)
         register(Self.cm_SidePanelActivities)
@@ -1088,12 +1138,80 @@ public actor CommandRegistry {
     static let cm_UnpackFiles = PCCommand(id: 30103, name: "cm_UnpackFiles", category: "Files",
         help: "Unpack archive(s) to a destination folder (Alt+F9)",
         handler: { ctx in ctx.windowController?.showUnpackFiles() })
+    // MARK: - Workspaces (F-499)
+    //
+    // Registered by `registerWorkspaceCommands()` rather than with the built-ins, because the feature
+    // can be switched off entirely — and "off" has to mean no command in the browser, no assignable
+    // key and no menu item, not a row of things that quietly do nothing.
+    //
+    // `cm_Workspaces` and `cm_SaveWorkspace` keep their ids, their names and ⌘⌃S. People have that
+    // shortcut in `keymap-user.ini`, on `.bar` buttons and in their fingers; what changed is what the
+    // second one means, since a living workspace has no "save the layout" to perform.
+
     static let cm_Workspaces = PCCommand(id: 30098, name: "cm_Workspaces", category: "Configuration",
-        help: "Workspaces: load, delete, or save a named panel layout",
+        help: "Workspaces: switch, create, rename or delete",
         handler: { ctx in ctx.windowController?.showWorkspaces() })
     static let cm_SaveWorkspace = PCCommand(id: 30099, name: "cm_SaveWorkspace", category: "Configuration",
-        help: "Save the current layout as a named workspace",
+        help: "Make the current arrangement the state this workspace resets to",
         handler: { ctx in ctx.windowController?.showSaveWorkspace() })
+    static let cm_NewWorkspace = PCCommand(id: 30133, name: "cm_NewWorkspace", category: "Configuration",
+        help: "Create a workspace from the current arrangement",
+        handler: { ctx in ctx.windowController?.showNewWorkspace() })
+    static let cm_RenameWorkspace = PCCommand(id: 30134, name: "cm_RenameWorkspace", category: "Configuration",
+        help: "Rename the current workspace",
+        handler: { ctx in ctx.windowController?.showRenameWorkspace() })
+    static let cm_DeleteWorkspace = PCCommand(id: 30135, name: "cm_DeleteWorkspace", category: "Configuration",
+        help: "Delete the current workspace",
+        handler: { ctx in ctx.windowController?.showDeleteWorkspace() })
+    static let cm_NextWorkspace = PCCommand(id: 30136, name: "cm_NextWorkspace", category: "Configuration",
+        help: "Switch to the next workspace",
+        handler: { ctx in ctx.windowController?.nextWorkspace() })
+    static let cm_PrevWorkspace = PCCommand(id: 30137, name: "cm_PrevWorkspace", category: "Configuration",
+        help: "Switch to the previous workspace",
+        handler: { ctx in ctx.windowController?.previousWorkspace() })
+    static let cm_WorkspaceBar = PCCommand(id: 30138, name: "cm_WorkspaceBar", category: "View",
+        help: "Show or hide the workspace bar",
+        handler: { ctx in ctx.windowController?.toggleWorkspaceBar() })
+    static let cm_ResetWorkspace = PCCommand(id: 30139, name: "cm_ResetWorkspace", category: "Configuration",
+        help: "Put this workspace back the way it was set up",
+        handler: { ctx in ctx.windowController?.resetWorkspaceToBaseline() })
+
+    static let cm_StashAdd = PCCommand(id: 30149, name: "cm_StashAdd", category: "Files",
+        help: "Add the selected files to this workspace's stash",
+        handler: { ctx in ctx.windowController?.addSelectionToStash() })
+    static let cm_StashClear = PCCommand(id: 30150, name: "cm_StashClear", category: "Files",
+        help: "Empty this workspace's stash",
+        handler: { ctx in ctx.windowController?.clearStashCommand() })
+
+    static let cm_StashCopyTo = PCCommand(id: 30151, name: "cm_StashCopyTo", category: "Files",
+        help: "Copy everything in the stash into the other panel",
+        handler: { ctx in ctx.windowController?.runStashOperation(move: false) })
+    static let cm_StashMoveTo = PCCommand(id: 30152, name: "cm_StashMoveTo", category: "Files",
+        help: "Move everything in the stash into the other panel",
+        handler: { ctx in ctx.windowController?.runStashOperation(move: true) })
+
+    static let cm_WorkspaceJournal = PCCommand(id: 30153, name: "cm_WorkspaceJournal",
+        category: "Configuration",
+        help: "What was done in this workspace",
+        handler: { ctx in ctx.windowController?.showWorkspaceJournal() })
+
+    static let cm_ExportWorkspace = PCCommand(id: 30154, name: "cm_ExportWorkspace",
+        category: "Configuration",
+        help: "Write this workspace to a file you can pass on",
+        handler: { ctx in ctx.windowController?.exportWorkspaceCommand() })
+    static let cm_ImportWorkspace = PCCommand(id: 30155, name: "cm_ImportWorkspace",
+        category: "Configuration",
+        help: "Add a workspace from a file somebody sent",
+        handler: { ctx in ctx.windowController?.importWorkspaceCommand() })
+
+    /// Nine separate commands rather than one that takes a number, for the reason
+    /// `cm_SrcByName`/`ByExt`/`BySize`/`ByDateTime` are four: `Keymap` maps a key to a command *name*
+    /// and `PCCommand` carries no arguments.
+    static let workspaceIndexCommands: [PCCommand] = (1...9).map { n in
+        PCCommand(id: 30139 + n, name: "cm_Workspace\(n)", category: "Configuration",
+                  help: "Switch to workspace \(n)",
+                  handler: { ctx in ctx.windowController?.switchWorkspace(toIndex: n - 1) })
+    }
     static let cm_PreviewPanel = PCCommand(id: 30102, name: "cm_PreviewPanel", category: "View",
         help: "Toggle the preview/info sidebar (Info, Activities, Log)",
         handler: { ctx in ctx.windowController?.togglePreviewPanel() })

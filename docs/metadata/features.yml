@@ -695,11 +695,36 @@ features:
     name: Arbeitsbereiche (Workspaces)
     name_en: Workspaces
     category: customization
-    audiences: [expert]
+    audiences: [user, expert]
     status: stable
-    ui: { menus: [Go], shortcuts: ["Cmd+Ctrl+S"], commands: [cm_Workspaces, cm_SaveWorkspace] }
-    source: { modules: [PCApp], types: [MainWindowController] }
+    ui:
+      menus: [Go, Workspace]
+      shortcuts: ["Ctrl+1…Ctrl+9", "Cmd+Ctrl+S", "Ctrl+Cmd+A"]
+      commands: [cm_Workspaces, cm_SaveWorkspace, cm_NewWorkspace, cm_RenameWorkspace,
+                 cm_DeleteWorkspace, cm_NextWorkspace, cm_PrevWorkspace, cm_ResetWorkspace,
+                 cm_WorkspaceBar, cm_StashAdd, cm_StashClear, cm_StashCopyTo, cm_StashMoveTo,
+                 cm_WorkspaceJournal, cm_ExportWorkspace, cm_ImportWorkspace]
+    source:
+      modules: [PCFoundation, PCApp]
+      types: [Workspace, WorkspaceState, WindowChromeState, WorkspaceStore, WorkspaceMigration,
+              WorkspaceStash, WorkspaceScope, ScopeCheck, WorkspaceScopeGate, WorkspaceJournal,
+              WorkspaceJournalWindowController, WorkspaceBarView, WorkspaceTint, WorkspaceExchange,
+              WorkspaceFilePrompt, WorkspaceChipHit, MainWindowController]
     documentation: { integrated_help: true, website: true }
+    notes: >-
+      Named work contexts, not saved layouts: switching restores the other one exactly as it was left
+      and asks nothing (F-499). Latent until a second one exists — no bar, no menu, no shortcuts — and
+      switchable off entirely in Settings ▸ Tabs. One `<id>.json` per workspace; a `workspaces.ini`
+      from the previous, snapshot-based feature migrates on first launch. Carries the whole window
+      arrangement, the marks and quick filter, the terminal's tabs and the assistant's conversations —
+      nothing running is stopped by a switch — plus a per-workspace stash that files dropped on another
+      workspace's chip land in, and an optional folder limit that asks or refuses before an operation
+      writes outside it (ADR-013: writes only, never navigation), and a per-workspace journal whose
+      "Problems" filter is the only record in the app that a scope stopped something. A workspace
+      exports to a `.pcworkspace` — the storage format *is* the exchange format, tilde-abbreviated —
+      that a double-click imports; tabs on a connection or a plugin mount are removed rather than
+      sanitised and the journal never leaves the Mac, so there is nothing about a connection in the
+      file to leak.
 
   - id: theming
     name: Darstellung (Hell/Dunkel, Farben, Schrift)

@@ -26,6 +26,467 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-09-16 — "the switch feels slow": what the measurement said, and what it did not (F-499)
+
+Reported from the first hands-on session: switching loads one panel after the other and it shows. The
+answer asked for was parallelism. **The measurement says parallelism makes it worse**, and says the
+real cost is somewhere else entirely.
+
+Method: two workspaces, four folders, the `workspace` verb (which awaits the switch), so the gap to
+the next line in the automation log *is* the switch. Seven switches per run, first one dropped.
+
+| | median |
+|---|---|
+| sequential, as shipped | **685 ms** |
+| both panes with `async let` | **829 ms** |
+
+21 % *slower*, so that change is out. Both `applyPane` calls are `@MainActor`; they do not overlap,
+they interleave — and interleaving two partial-painting directory loads on one actor makes them
+contend rather than share.
+
+**Then the measurement that reframed the whole thing:** 50 files per folder cost 678 ms, 4,000 files
+cost 685 ms. The cost is not in the listing at all; it is almost entirely fixed. Instrumenting
+`applyPane` found where: `restoreMarks` — ~210 ms per panel, with an *empty* mark list. Inside it,
+`clearSelection()` ~135 ms and `refreshSelectionMirror()` ~68 ms, while `reloadData()` of a 4,000-row
+table cost 0. Two actor hops, no work.
+
+**The fix was a return value that was being thrown away.** `SelectionState.clearSelection()` has
+always answered whether anything *was* marked; `restoreMarks` discarded it with `_ =` and then did a
+full second pass over a table `importTabs` had already drawn. With nothing to put back and nothing to
+take away, there is nothing to do:
+
+| folder size | before | after |
+|---|---|---|
+| 50 files | 678 ms | **576 ms** |
+| 500 files | 769 ms | **558 ms** |
+
+The two sizes landing on the same number is the same finding again: what is left is fixed cost, not
+listing cost.
+
+**And one more measurement explained the rest, and retracted my own diagnosis.** I had put the ~135 ms
+down to the `clearSelection` hop. Two probes at the same point say otherwise: a real actor round-trip
+that does nothing costs **1 ms**, while a bare `await Task.yield()` costs **113 ms**. The actor was
+never slow. The main actor is *congested*: yielding is the first moment the work the directory load
+queued — layout, drawing, the tab bar, the watcher — gets to run, and the `await` that happened to be
+first in the queue wore the cost.
+
+That closes the loop on the parallel result too. The main-actor queue **is** the bottleneck, so
+starting both panes together adds to the queue rather than overlapping anything — which is exactly
+the 21 % that was measured. Making a switch materially faster from here means making a directory load
+schedule less main-actor work, which is a different and much larger piece of work than was asked for
+and is not confined to workspaces: every navigation pays it.
+
+**And the new scenario was hollow.** `chipclose 2` names a *position*, and the guest's config persists
+between scenarios, so behind its neighbours it deleted a stranger while `workspace-close` still
+reported green — "Wegwerf is still in the list" was true for the wrong reason. The verb takes a name
+now, as `workspace` already did. Caught only by running the scenarios as a group, which is the second
+time in this feature that running them alone was the thing that hid the defect.
+
+## 2026-09-16 — a ✕ on the chip, asked for while testing (F-499)
+
+Reported straight out of the first hands-on session: putting a workspace away meant opening a context
+menu first. So each chip carries a ✕ now — but a workspace is **deleted**, not closed, with its stash
+and its journal, so the glyph leads *into* the single confirmation this feature has rather than past
+it. Middle-click still does nothing, for the same reason it always did.
+
+**The correctness is the order the hit regions are tested in**, and nothing else. This strip is drawn,
+so the ✕ is pixels: it lies *inside* its chip, and testing the chip first gives a glyph that is drawn,
+looks clickable and only ever switches workspace — which compiles, runs, and no screenshot can see.
+F-385 shipped exactly that with the drive bar's eject. `WorkspaceChipHit.region` therefore lives in
+PCFoundation with a test that asserts the *wrong* order really would swallow a reachable point.
+
+Three details taken from the terminal's own tab ✕, each of which it paid for: the room comes out of
+the name's rectangle rather than being drawn over it (there, the glyph sat on the last letter of a
+long folder name); the glyph is drawn small, because `xmark` at its natural weight is taller than the
+name and reads as the chip's main control; and it takes the name's colour, which is already
+contrast-checked against the fill — a secondary-text tint is dark-on-blue in the *current* chip, the
+one most likely to be clicked. `surface-colours` agrees: 28 windows, no findings.
+
+It is not offered where it cannot work: the last remaining workspace has no ✕, the rule the "+"
+already followed, and a chip too narrow to spare the width keeps its name instead of its glyph.
+
+**Two scenarios, because either alone is green with the glyph wired to nothing.** `workspace-close`
+clicks it with the confirmation unanswered and finds the workspace still there — that is the claim
+that the ✕ is not a one-click destroyer a pixel below the window's top edge. `workspace-delete`
+answers and finds it gone, asserted negatively. The second also tidies up after the first, which
+matters on a guest whose config persists and whose list is capped at nine. Naming them cost a round:
+a scenario owns every report key starting with its own name and a hyphen, so calling the second one
+`workspace-close-confirmed` handed both its reports to the first, which runs earlier and had not
+written them.
+
+## 2026-09-16 — the full harness run, and the defect only it could find (F-499)
+
+Seven workspace scenarios green said the feature worked. The **full** run — 179 scenarios, which I had
+not done once across eight stages — exited 1 with fourteen failures in rename, comment, background copy
+and the whole history palette. None of them go near a workspace. All of them were mine.
+
+`workspacescope |ask` is the line in two scenarios that *clears* the scope afterwards. Swift's `split`
+drops empty subsequences by default, so `"|ask"` parses as the single part `"ask"` — and that became
+the scope **root**. `ScopeCheck.contains` matches normalised path components, so a relative root
+matches nothing, and matching nothing does not mean protecting nothing: it means every path is
+outside. Every rename, copy and delete in every scenario after that one on the same guest — the config
+persists between them — stopped on a confirmation sheet with no `PC_SCOPE` set to answer it. The
+harness reported "the report was never written", which is a long way from the cause.
+
+**Three fixes, because the parsing bug is the shallowest of them.**
+
+1. The verb parses with `omittingEmptySubsequences: false`. The first attempt at this patched the
+   *wrong verb*: that exact line appears a dozen times in `AutomationRunner`, a replace-first landed on
+   `typeahead`, and the bug sat untouched behind a comment describing it. Caught by driving the verb in
+   the app and reading `scopeRoot` back rather than trusting the edit — the dump still said `ask`.
+2. **A root that is not an absolute path is not a scope** (`isSet`). A scope that refuses everything is
+   not a strict scope, it is a workspace nobody can work in, naming a folder that was never one. This
+   is the rule that makes the class of defect unreachable rather than this instance of it.
+3. **The sheet can no longer hang a scripted run at all.** With no `PC_SCOPE` configured it now refuses
+   and logs why, instead of opening a modal — the answer a person clicking Cancel would give.
+
+**Rule 2 immediately caught its own consequence**, which is why it is worth having: an exported
+`.pcworkspace` writes its root tilde-abbreviated so it lands in the *receiving* user's home, and
+`~/Backups` is not absolute — so the new rule would have silently dropped the folder limit on import,
+which is worse than what it fixed. The two questions are now separate: `isSet` is "enforceable here",
+`hasRoot` is "one of the two shapes worth writing down" (absolute or tilde). Everything guarding an
+operation asks the first; the codec and the exchange ask the second.
+
+And **two encoder gates had the same bug**, one in `WorkspaceScope.encode` and one in
+`Workspace.encode` above it — fixing only the inner one fixes nothing. My existing tests all passed
+through it, because they called `forExport`/`forImport` directly and never went through the bytes.
+There is now a test that does the whole round trip through a file, which is the version that matters.
+
+## 2026-09-16 — a workspace as a file you can hand over (F-499, stage 8 of 8)
+
+The last stage, and it was put last on purpose: the format could not be frozen before the stash and
+the scope existed, or there would have been a v2 inside a month.
+
+**The storage format *is* the export format.** No writer, no second schema, nothing to drift — only the
+two adjustments a file needs to leave this Mac (tilde-abbreviate, drop what must not travel) and to
+arrive on another one (expand against the receiver's home, land the tabs that are missing).
+
+**What is left out is left out, not sanitised.** A tab pointing at a connection or a plugin mount is
+*removed* and counted in the report, rather than carrying a site name and hoping. That is stronger than
+cleaning, and it is the version of the claim a test can make: `workspace-file` exports on a real
+machine and then greps the bytes for the host, the user, the port and both sentinels. Nothing to find,
+because nothing about a connection is written. The unit test puts the defect back to prove the grep is
+sharp — with the filter removed it fails.
+
+**Exporting the baseline, not the live state**, which is what a baseline is for and has a property
+worth having: exporting the same workspace twice a week apart produces the same bytes, because it does
+not pick up the temp folder somebody wandered into. ⌘⌃S is how you change what gets sent, and the
+export report says so — otherwise the difference is discovered at the other end.
+
+**The file said everything twice, so it stopped.** `live` is now omitted whenever it equals `baseline`
+— the rule every other field in this format already follows — and an absent `live` decodes as the
+baseline. In an exported file the two are equal by construction, so there is structurally no
+divergence to leak rather than two identical blocks and a promise that they match. It halved the file
+and shrank ordinary workspace files too.
+
+**An import adds; it never replaces and never switches.** A file somebody mailed you is not a command,
+so a double-click opens the workspace as a new chip and offers the switch as a button. The id always
+steps aside for one already here (`shared-copy` → `shared-copy-2`), which is what the VM scenario
+asserts: both ids in the dump, the created one named first so the precondition is asserted rather than
+inherited from whatever the previous scenario left on the guest.
+
+**The one judgement call in the import** is a `refuse` scope whose root is not on this Mac. Dropping it
+would throw away what the sender meant; keeping it would refuse every operation in the workspace with a
+reason the user cannot act on. It is kept and forced to `ask`, and the report says so in its own
+sentence.
+
+**The defect the unit tests could not have found**, and it was in the launch path. Double-clicking a
+`.pcworkspace` while the app is *not* running delivers the file from `applicationDidFinishLaunching`,
+and `loadWorkspaces()` runs later, inside the asynchronous session restore. Measured by putting the
+defect back: the import landed first, its `save()` created the `workspaces/` directory, and the
+one-time migration is triggered by that directory's *absence* — so the run came up with `count=1` and
+the only workspace was the imported one. Somebody upgrading would have lost their saved layouts, and
+their session, to a file a colleague sent them. The import now waits for the list to be non-empty,
+bounded at ten seconds; an in-app import never waits at all.
+
+**One gap found by reading rather than running.** In the **latent** state there is no Workspace menu,
+so Export and Import were reachable only from the command browser or the Finder — somebody who was
+mailed a `.pcworkspace` had to go and find the file. Both now sit in the `cm_Workspaces` hub popup,
+which is the feature's whole surface while latent, and importing one is the second way out of latency
+alongside "New Workspace…". Adding them cost no new strings: they are the ones already written for the
+Workspace menu. That popup also had `autoenablesItems` left on, so AppKit recomputed every item from
+the responder chain and overwrote the greying — which had been quietly wrong since stage 1, where "New
+Workspace…" at nine workspaces read as available and did nothing (the F-385 lesson, one room over).
+The popup is the one surface here **not** verified at runtime: `NSMenu.popUp` is modal and would hang a
+scripted run, which is why no scenario opens it.
+
+`PC_WORKSPACE_EXPORT`/`_IMPORT` are the escape hatches, because a save panel in a headless run is a
+nested runloop nothing gets out of (F-436) — and setting either also puts the report dialogs into their
+logging form, so neither end of the round trip waits for a click.
+
+Verified: 15 new unit tests (one proved sharp by reintroducing the defect), the round trip run against
+the real app on a fresh config root, both Finder paths driven for real — warm, where the workspace is
+added and the window is *not* moved, and cold, where it arrives behind the session — `workspace-file`
+in the harness with an external check on the bytes, all seven workspace scenarios green at zero
+conflicts, all seven gates green, 22 new strings in 18 languages and an export section in the help page
+in all 19.
+
+## 2026-09-16 — what did I actually do here (F-499, stage 7 of 8)
+
+Stage 7: a journal per workspace — visits, operations, shell lines, and the refusals. Measured on the
+running app: three visits recorded as three (out and back is not one), and a scope refusal with its
+reason, which is the row nothing else in the application keeps.
+
+**A log, not a filter over `GlobalHistory`**, and the three reasons are about what that type *is*:
+it de-duplicates by identity, so the same copy twice becomes one row saying "2 times"; it evicts by
+score rather than age, out of 500 shared by every workspace, so one busy afternoon evicts last week;
+and retention has to be per workspace, which in a shared list is a filtering pass and a class of orphan
+bug. Frecency answers "where do I usually go"; a log answers "what happened here".
+
+**Its own file, `<id>.journal.json`, beside the workspace rather than inside it.** The workspace file
+is rewritten on every navigation — that is where the live panel state lives — and a thousand entries
+riding along would mean writing a hundred kilobytes each time somebody presses Return on a folder. The
+listing had to learn to skip `.journal.json`, or it would read one as a workspace and report it as a
+problem on every launch.
+
+**One coalescing rule and no others**: two *consecutive* navigations to the same folder are one, because
+walking in and out says nothing a single line does not. A repeated copy stays two rows — it was two
+copies, and "2×" answers a different question.
+
+**Retention is "forever" by default**, deliberately unlike the history's ninety days. A history is a
+convenience and may forget; a record of what was done to somebody's files should not forget by itself.
+
+`payload` is `HistoryOperation`'s own encoding, so Repeat cost nothing new — and inherits the rule that
+only copy and move are repeatable from a list somebody is reading, with a shell line filled into the
+command line rather than run.
+
+Verified: 4104 unit tests, a `workspace-journal` scenario asserting `problems=1` and the refusal row,
+all gates green, 11 new strings in 18 languages and a journal section in the help page in all 19.
+
+## 2026-09-16 — a workspace can be fenced (F-499, stage 6 of 8)
+
+Stage 6: an optional folder limit, checked before a delete, a copy, a move, a rename or a new folder
+reaches outside it. **Proved by putting the defect back** — the VM scenario was run once with the scope
+set to `allow`, it failed, and the file it is about was gone. A safety net is worth exactly what its
+proof is worth.
+
+**Containment is by path component, never by prefix.** `/Users/m/Backups2` is not inside
+`/Users/m/Backups`, and `hasPrefix` says it is. A warning that never fires for the folder next door is
+worse than no warning, because it is trusted.
+
+**Navigation is never checked, and that is now an ADR** (ADR-013) rather than an omission somebody
+will helpfully fix. The value of this feature is entirely in the moment before F8; a limit that stops
+you *looking* costs something on every keystroke and protects nothing, and the failure mode is not a
+bug report but silence — it gets switched off within a day, and then it is not there for the delete
+either.
+
+**The check sits on the `OperationKind`, not on the callers.** F5, F6, drag-and-drop, paste,
+same-panel copy, adding to an archive, repeating from the history and the stash's bulk operation are
+eight call sites that all funnel through `runTransfer` or `enqueueBackground`. Two guards instead of
+eight to remember — and the one that was forgotten would have been the one that mattered. Rename and
+new-folder build no kind and ask for themselves; `TransferManager.enqueue` is a silent backstop that
+refuses and logs, to catch a future caller that bypasses the panels entirely.
+
+**One ordering defect the test found rather than the code review.** The check lived in `runTransfer`,
+which for a delete is one dialog too late: the user confirms the delete, and *then* learns it reaches
+outside the workspace — two questions in a row, the second contradicting the first. It asks before the
+confirmation now. The symptom that exposed it was a hung automation run, not a wrong result.
+
+`deleteSelection` was split into `delete(items:permanent:)` — the one invasive change the plan
+predicted — so that something other than the panel's own selection can be deleted, and so the scope
+check has one place to stand for every delete in the application.
+
+Verified: 4097 unit tests, a `workspace-scope` scenario that fails when the scope is removed, all
+gates green, 13 new strings in 18 languages and a scope section in the help page in all 19.
+
+## 2026-09-16 — a basket per workspace (F-499, stage 5 of 8)
+
+Stage 5: the stash, and the gesture the whole feature is sold on — drag a file onto another workspace's
+chip and it lands in that workspace's basket without switching to it. Verified end to end: the file
+arrives in the other basket, this one is untouched, and the chip's counter moves.
+
+**The counter on the chip is the feedback, and it is feedback in the right place.** A status line would
+say it once, somewhere else, about a workspace that is not on screen. The number going up is on the
+thing the files went to. The one case that needed a sound is the one where the number does *not* move,
+because everything dropped was already in the basket — a counter that stays put looks exactly like a
+drop that missed.
+
+**Paths, not security-scoped bookmarks**, and that is the whole design in one decision: a bookmark
+silently follows a file to a new name and a new folder, which is right for most features and wrong for
+a basket somebody will run a delete from. Nothing is ever pruned automatically either — a file missing
+because a volume is not mounted has to come back when it is, so it is shown struck through and waits.
+
+**The bulk operation goes through the panel's own drop**, one job rather than a loop, which is what
+buys the background transfer, the overwrite resolver, the privileged-copy fallback, the undo entry and
+the history record without writing any of them again. Destination is the other panel — what F5 and F6
+already mean here; a folder chooser would have made this the one operation in the app that asks.
+
+**Counted nouns were written out of three strings rather than translated into nineteen languages'
+plural categories** — "In the stash: 12", not "12 items". The house rule, applied before the
+translations were written rather than after.
+
+**A scenario failed for a reason that is new since this feature landed.** `workspace-switch` asserts
+`preview=false` in the first workspace, and it failed behind `preview-panel`: the side panel's state
+belongs to the *workspace* now, and the guest's config persists between scenarios, so whichever one ran
+first decided the answer. It asserts its precondition instead of inheriting it — the lesson
+`terminal-teardown` already carried, which this stage gave new teeth.
+
+Verified: 4089 unit tests, the new `workspace-stash` scenario plus the existing ones at zero conflicts,
+all gates green, 13 new strings translated into all 18 languages and a stash section added to the help
+page in all 19.
+
+## 2026-09-16 — the terminal and the chat follow, and nothing dies (F-499, stage 4 of 8)
+
+Stage 4. Measured by hand on this machine: a background job started in one workspace was still in the
+process table while another workspace was on screen, and was reaped only at quit. In the VM, the tab
+strip says the same thing — two tabs, one fresh tab, two again, **with the same session number**,
+which a close-and-reopen could not produce.
+
+**No new ABI entry point.** Both shipping plugins end their `notify` switch with a `default` that does
+nothing, so a new `PcNotifyView` key is additive by construction. One string, one way, nothing comes
+back — and that is enough, because the host should not be holding a plugin's pseudo-terminals anyway.
+What it owes them is the fact that the context moved, in time to park what they have.
+
+**Three things were missing before it worked, and each was invisible in the panels.**
+
+  * **`createWorkspace` never announced itself.** It sets `activeWorkspaceID` directly rather than
+    going through `switchWorkspace`, so the plugins heard about every switch except the one that
+    creates a workspace — and the symptom was the new workspace inheriting the old one's terminal tabs.
+    Nothing about that looks like a missed notification.
+  * **A view built after a switch has never heard the current id**, because the broadcast happened
+    while it did not exist. `makeView` now notifies right after building, next to where `move(to:)`
+    already notifies about the container.
+  * **The workspace has to be readable at build time**, which no notification can provide: the very
+    first thing a terminal view does is read back the folders its tabs were in, under a key that
+    depends on the answer. It is a plugin *context* value now (`getContext("workspace")`), beside
+    `dir`. Without it the tabs froze at whatever they were on the day of the upgrade.
+
+`teardown` closes the parked sessions too. Without that, quitting leaves a shell — and whatever it
+started — running with no window and no way back to it, which is precisely the leak `terminal-orphan`
+exists to catch and would not have caught.
+
+**A gate had to be re-aimed, not relaxed.** `terminal-restore` asked how many folders were under the
+key `bottom`; the key now carries the workspace as well. It asks how many the bottom dock wrote down,
+whatever it filed them under — the promise is unchanged and the storage is not its business.
+
+**And a scenario had to retreat to a claim it can actually make.** The first version asked the process
+table whether a job survived the switch, and reported "the switch killed it" twice when the truth was
+"it never started": `termsend` needs a live prompt, and on a cold guest the shell is not ready when the
+script says it is. From the process table those two are the same answer. It asserts the tab strip
+instead — same mechanism, and a fact the app can state the moment the view exists.
+
+Verified: 4083 unit tests, ten terminal scenarios plus the new one at zero conflicts, all gates green,
+help page updated in nineteen languages.
+
+## 2026-09-16 — a workspace keeps your selection (F-499, stage 3 of 8)
+
+Stage 3: marks, the quick filter and the cursor ride along in the active tab; the undo stack was
+already per workspace from stage 1. Verified on the running app — two files marked, a switch away and
+back, both still marked; and a file deleted while the workspace was away is simply no longer in the
+selection rather than a phantom.
+
+**The test found a defect in the feature, not in the test.** `markedNames()` walked `visibleEntries`,
+which is what `selectedItemPaths()` does and is right for it — that one answers "what would this
+command act on", so seeing only what the quick filter shows is correct. Writing a selection *down* is
+the opposite case: with a filter on, walking the visible rows silently drops every mark the filter is
+hiding. It reads `selectedPaths` now, and restoring walks the whole directory rather than the filtered
+rows — the same mistake mirrored.
+
+**Two ordering rules, each of which produces a silent loss when broken.** Marks go on *after* the
+directory is loaded, because `SelectionState.setEntries` intersects the marked set with the new
+listing — applied first, the load that was meant to bring them back wipes them, and the workspace
+looks as though it never stored a selection. And the cursor goes on after the filter, which decides
+which rows exist at all.
+
+That intersection is also what makes the deleted-file case correct without any code of its own: a name
+that is not in the directory any more simply does not match.
+
+`automationSetFilter` became `setQuickFilter` with the automation name kept as a one-line caller. It
+was always the production path in waiting; only its name said otherwise.
+
+Verified: 4081 unit tests plus two new ones, `workspace-switch` now asserts `marked=2` after a round
+trip (no screenshot shows a selection and no layout report mentions one), zero conflicts, all gates
+green, help page updated in nineteen languages.
+
+## 2026-09-16 — the whole window switches with a workspace (F-499, stage 2 of 8)
+
+Stage 2: the window's arrangement — side panel, dock and its chosen plugin view, every bar, the panel
+layout, the divider — belongs to the workspace rather than to `peachcmd.ini`. Verified on screen: the
+side panel opened in one workspace only, and it follows the switch in both directions.
+
+**The no-defaults rule paid for itself twice in ten minutes.** Adding `chrome` to `WorkspaceState`
+broke the build at exactly the two places that construct one — the migration and `captureWorkspaceState`
+— and each error was one line from its own fix. The migration's answer was not the obvious one: a
+layout saved by the old feature carried no chrome at all, and giving it the *factory* arrangement
+would open it without the bars the user has had switched on for years, which reads as the upgrade
+having broken something. It inherits their current arrangement instead.
+
+**Three things this stage had to fix before it could apply anything.**
+
+  * **`togglePreviewPanel` had no absolute twin**, which is why the startup path carried a note that a
+    second pass would be safe for every setter it used except that one. A switch is a second pass, and
+    a fortieth. Four call sites had already worked around it with `if !previewIsVisible { toggle() }`.
+  * **A `defer` inside an `if` fires at the end of the `if`**, not of the function. The compiler warns
+    about it, and the warning was worth reading: scheduling the workspace save there would have
+    captured the arrangement *before* the change was applied, leaving every workspace one edit behind
+    for ever.
+  * **`splitView` in an extension resolves to the delegate method**, not the property, because this
+    type is its own `NSSplitViewDelegate`. The error says a function has no member `setPosition`,
+    which is true and points nowhere near the cause. There is a `panelSplitView` accessor now.
+
+**Two things are deliberately not per workspace**, and the reason is the same for both: they belong to
+the screen rather than to the job. The **window frame** — a window that jumps to a new size and
+position on every chip click is hostile, and the size you want is decided by the display. And **which
+side-panel pages exist**, which is a preference about what the panel offers at all. Which page is
+*showing* is closer to context and arrives with the plugin views in stage 4.
+
+Verified: 4081 unit tests, both VM scenarios at zero conflicts with the arrangement asserted on both
+sides of a switch, all seven gates green, the help page's list of what a workspace carries updated in
+all nineteen languages.
+
+## 2026-09-15 — workspaces stop being saved layouts (F-499, stage 1 of 8)
+
+The feature called "Workspaces" already existed and was the weak version of itself: six fields per
+tab, an explicit save, and its own help page stating the defect — *"anything you had open but did not
+save is not kept"*. That is a preset. What was wanted is a work context you leave and come back to,
+and the sentence the rest follows from is **a workspace is never saved, because it never ends**.
+
+Stage 1 of eight is in: the model, the store, the migration, the chip strip, the menu, ⌃1…⌃9, and the
+latency rule. Stages 2–8 (chrome, marks/filter/undo, terminal and chat, stash, scope, journal,
+`.pcworkspace`) are planned but not built.
+
+**Three things carry it, and each exists because of a specific way this goes wrong.**
+
+  * **Capture is total by the compiler.** `WorkspaceState`, `PaneState` and friends are public structs
+    with explicit initializers and *no default values*, so there is exactly one way to build one and
+    exactly one caller. A new field breaks the build at the line that has to read it off the window.
+    Without that, a forgotten field is one workspace's value showing up in another — the hardest
+    defect here to notice and the easiest to create.
+  * **Apply is total by a runtime round-trip.** No compiler sees the opposite mistake, a field that
+    capture reads and apply ignores. DEBUG compares what a switch applied against what is on screen a
+    moment later (`Mirror`-based, so it needs no maintenance), and the `workspace-switch` scenario
+    asserts `ghost=0`.
+  * **Three interlocks on the save path.** The 0.3 s debounce is the trap: a timer armed 0.29 s before
+    a switch fires 0.01 s after it and would write the outgoing workspace's panels into the incoming
+    one's file. So the workspace id is captured when the timer is *armed*, `isSwitchingWorkspace`
+    gates the whole save, and a generation counter lets a slow switch stand down when a newer one has
+    taken over.
+
+**"Switched off" is a state of the list, not a second code path.** The session always runs through
+exactly one workspace, whose file *is* what `session.ini`'s panel blocks used to be. Off takes the
+surface away and nothing else. A second format is precisely what produced the bug this work also
+fixed: a tab's cursor survived loading a saved workspace but not restarting the app, because
+`saveTabs` and `WorkspaceCodec` had drifted and only one of them wrote it down.
+
+**Two findings worth keeping, both of which looked like something else.**
+
+  * **A menu can be built, logged, and still absent.** `AppMenu.build` ends by emptying the bar and
+    rebuilding it from a fixed `ordered` list (F-251, Total Commander order). A menu added above that
+    line is discarded without a word. The symptom — the code runs, the log says two entries, the dump
+    shows nothing — points at the wrong half of the function; the reordering is four hundred lines
+    below where the menu is created.
+  * **`check-hotkeys.py` was about to be green having audited a menu bar that could not contain the
+    shortcuts in question.** It reads one dump, produced by `keys-main`, which runs with a single
+    workspace — where the Workspace menu deliberately does not exist. The `workspace-switch` scenario
+    now contributes a second dump and the gate reads it. The first attempt *merged* the two and
+    immediately reported ⌘⌃S as a collision: the two bars are states the app is in at different times,
+    never at once, so each is audited on its own. Merging mutually exclusive states is its own bug.
+
+Verified: 4075 unit tests, both new VM scenarios at zero conflicts (`workspace-latent` asserts the
+*absence* of the strip, the menu and ⌃1…⌃9), the migration exercised from a real `workspaces.ini`, and
+all seven gates green. 29 new UI strings translated into all 18 languages, the help page rewritten in
+all 19, and the tutorial no longer describes a snapshot.
+
 ## 2026-09-15 — cutting 0.9.1, and the two things that went wrong on the way out
 
 The release itself is unremarkable and is in CHANGELOG. What is worth keeping is how it failed

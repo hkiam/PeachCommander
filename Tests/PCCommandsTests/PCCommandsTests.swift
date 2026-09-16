@@ -108,9 +108,44 @@ final class PCCommandsTests: XCTestCase {
         // Macro commands (`mc_*`) are deliberately NOT in this number: they come from the user's
         // macros.json through `setMacroCommands`, not from the source, so counting them here would make
         // this test depend on a file that is empty in a fresh installation.
-        XCTAssertEqual(commands.count, 183,
+        //
+        // The workspace commands (`cm_Workspace*`, F-499) are not in this number either, and for a
+        // related reason: they are registered by `registerWorkspaceCommands()` only when the feature
+        // is switched on, because "off" has to mean no command in the browser and no assignable key
+        // rather than a row of entries that quietly do nothing. They have their own count below.
+        XCTAssertEqual(commands.count, 181,
                        "a command defined in the source did not reach the registry — most likely two "
                        + "of them share an id, and the dictionary kept one")
+    }
+
+    func testTheWorkspaceCommandsRegisterAsOneBlock() async {
+        // The other half of the count above. Without this, moving a command out of the default set is
+        // indistinguishable from deleting it: both make the first test pass at a lower number.
+        let registry = CommandRegistry()
+        await registry.registerDefaultCommands()
+        let before = await registry.getAllCommands().count
+        await registry.registerWorkspaceCommands()
+        let after = await registry.getAllCommands()
+
+        XCTAssertEqual(after.count - before, 25,
+                       "nine workspace commands, four stash, the journal, export and import, "
+                       + "plus cm_Workspace1…9")
+        // The two that were kept rather than replaced: people have ⌘⌃S in their fingers, in
+        // `keymap-user.ini`, on `.bar` buttons and in `.mnu` files, so the ids and names outlive the
+        // change in what they do.
+        let names = Set(after.map(\.name))
+        XCTAssertTrue(names.contains("cm_Workspaces"))
+        XCTAssertTrue(names.contains("cm_SaveWorkspace"))
+        for n in 1...9 { XCTAssertTrue(names.contains("cm_Workspace\(n)"), "missing cm_Workspace\(n)") }
+        // The stash rides with the workspace commands rather than with the built-ins: switching the
+        // feature off has to take the basket's commands away too, or the command browser offers four
+        // entries that address something the user cannot see (F-499).
+        for n in ["cm_StashAdd", "cm_StashClear", "cm_StashCopyTo", "cm_StashMoveTo",
+                  "cm_WorkspaceJournal", "cm_ExportWorkspace", "cm_ImportWorkspace"] {
+            XCTAssertTrue(names.contains(n), "missing \(n)")
+        }
+        // Registering twice is what a settings change would do; it must not trap or duplicate.
+        XCTAssertEqual(Set(after.map(\.id)).count, after.count, "two commands share an id")
     }
 
     func testEveryCommandIsNamedLikeACommand() async {

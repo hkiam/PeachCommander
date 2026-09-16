@@ -22,6 +22,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private let logger = PCFoundationLogger.logger
 
     private let splitView = PanelSplitView()
+
+    /// The same view under a name that cannot be mistaken for a delegate method.
+    ///
+    /// This type is its own `NSSplitViewDelegate`, so in an extension the bare name `splitView`
+    /// resolves to `splitView(_:constrainSplitPosition:ofSubviewAt:)` — and the compiler then says a
+    /// function has no member `setPosition`, which is true and points nowhere near the cause.
+    var panelSplitView: PanelSplitView { splitView }
     /// One tree for both panels, to the left of them (F-015). Separate from the per-panel tree column:
     /// Total Commander offers either, and they answer different questions — "where am I in this panel"
     /// versus "one place to steer both panels from".
@@ -48,12 +55,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private static let previewWidth: CGFloat = 300
     /// Plugin views docked across the bottom of the window (F-381), between the panels and the
     /// command line. Width is what a terminal or a build log needs, and the window is widest here.
-    private let bottomDock = BottomDockView()
+    /// Internal, not private: `applyChrome` selects the remembered panel in it (F-499).
+    let bottomDock = BottomDockView()
     private let dockResizer = DockResizeHandle()
     private var dockHeightConstraint: NSLayoutConstraint?
     private var dockResizerHeightConstraint: NSLayoutConstraint?
     /// The height to restore when the dock is opened again, kept across a close.
-    private var preferredDockHeight: CGFloat = BottomDockView.defaultHeight
+    var preferredDockHeight: CGFloat = BottomDockView.defaultHeight
     #if DEBUG
     /// Diagnostic: the bottom dock, i.e. the host's "bottom" plugin view container (F-381).
     func bottomDockForAutomation() -> BottomDockView? { bottomDock }
@@ -187,7 +195,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     // FTP default keep-alive interval in seconds (Options page; 0 = off). Read by
     // connectToSite; per-site keepalive overrides it.
     private var ftpKeepAliveSeconds = 0
-    private let commandLine = CommandLineView()
+    /// Internal, not private: the journal's "repeat" fills it rather than running a shell line off a
+    /// list somebody is only reading (F-499).
+    let commandLine = CommandLineView()
     private let buttonBarView = ButtonBarView()
     private var buttonBarHeightConstraint: NSLayoutConstraint?   // active when horizontal
     private var buttonBarWidthConstraint: NSLayoutConstraint?    // active when vertical (F-011)
@@ -267,7 +277,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         editorWindows.removeAll()
     }
     private var hexEditorWindows: [HexEditorWindowController] = []
-    private var pathDialog: InputDialog?
+    /// Internal, not private: the workspace extension's name prompts need to keep the dialog alive
+    /// the same way every other caller here does (F-499).
+    var pathDialog: InputDialog?
     private var attributesDialog: AttributesDialog?
     private var hotlistManager: HotlistManagerWindowController?
     /// The global history palette (F-402); one at a time.
@@ -301,7 +313,58 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         backends: [PCXArchiveBackend(pluginManager: pluginManager), NativeArchiveBackend()])
 
     private var pluginsWindow: PluginsWindowController?
-    private lazy var workspaceStore = WorkspaceStore(url: configPaths.workspaces)
+    // MARK: - Workspaces (F-499)
+
+    /// One `<id>.json` per workspace, with the old `workspaces.ini` as the one-time source.
+    lazy var workspaceStore = WorkspaceStore(directory: configPaths.workspacesDirectory,
+                                             legacyFile: configPaths.legacyWorkspaces)
+
+    /// Every workspace, in chip order. Never empty once `loadWorkspaces()` has run: the session is
+    /// always *in* a workspace, which is what makes "the feature is switched off" a state of this
+    /// list (exactly one) rather than a second code path that writes a different file.
+    var workspaces: [Workspace] = []
+
+    /// The one the window is currently showing.
+    var activeWorkspaceID: String = ""
+
+    /// Undo is per workspace but lives only as long as the app: `UndoableOp` carries a closure and
+    /// cannot be written down. Parked here on the way out of a workspace and taken back on the way in.
+    var parkedUndoStacks: [String: [UndoableOp]] = [:]
+
+    /// True for the duration of a switch. Read by `scheduleSaveState`, which must not write the
+    /// outgoing workspace's panels into the incoming one while the panes are being rebuilt.
+    var isSwitchingWorkspace = false
+
+    /// Bumped on every switch, so a slow directory load belonging to an older one can tell that it has
+    /// been superseded and stand down instead of fighting the newer switch for the panels.
+    var workspaceSwitchGeneration: UInt64 = 0
+
+    /// Is the whole feature switched on? `[Workspaces] Enabled`, read before the first paint.
+    ///
+    /// Off is not a second code path — the session still runs through a single workspace — it only
+    /// takes the surface away: no chip strip, no menu, no commands, no keys.
+    var workspacesEnabled = true
+
+    /// User's preference for the chip strip, independent of the feature switch: somebody who moves
+    /// between workspaces with ⌃1…⌃9 may not want the row of chips.
+    var workspaceBarVisible = true
+
+    /// The chip strip. Zero points tall until there is a second workspace to switch to.
+    let workspaceBar = WorkspaceBarView()
+    var workspaceBarHeightConstraint: NSLayoutConstraint?
+
+    /// The journals, read lazily and kept per workspace for the life of the window (F-499).
+    var journalCache: [String: WorkspaceJournal] = [:]
+    var journalSaveScheduled = false
+    /// `[Workspaces] Journal`, read before the first paint like the other two.
+    var journalEnabled = true
+    var journalWindow: WorkspaceJournalWindowController?
+
+    #if DEBUG
+    /// Fields that differed between what the last switch applied and what was on screen afterwards.
+    /// Empty is the only correct value; the automation report prints it so a VM scenario can say so.
+    var workspaceGhostFields: [String] = []
+    #endif
     /// Content-field registry (rebuilt when enabled PDX plugins change) + the
     /// plugin fields available as columns.
     /// Not private: the automation extension builds a sync window and has to hand it the same
@@ -319,13 +382,22 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     // Undo stack for the last file operations (F-101). Each op carries a label +
     // an inverse action; removals on undo go to the Trash (never a hard delete).
-    private struct UndoableOp { let label: String; let run: () async -> [UndoProblem] }
-    private var undoStack: [UndoableOp] = []
+    /// Internal, not private: the workspace extension parks one stack per workspace (F-499). The
+    /// closure is also why those stacks are never written to disk — an inverse action cannot be
+    /// serialised, so undo follows a workspace only for as long as the app is running.
+    struct UndoableOp { let label: String; let run: () async -> [UndoProblem] }
+    /// Internal, not private: parked and swapped per workspace by the workspace extension (F-499).
+    var undoStack: [UndoableOp] = []
 
     /// The config as it was at launch, read synchronously so the first frame is already correct (F-360).
     /// Read-only and never written: `mainConfig`/`session` stay the owners of the files.
-    private let startupConfig: ConfigSnapshot
-    private let startupSession: ConfigSnapshot
+    ///
+    /// Internal, not private: the workspace extension reads the old `[Layout]` keys out of it for a
+    /// configuration that predates workspaces (F-499).
+    let startupConfig: ConfigSnapshot
+    /// Internal, not private: `loadWorkspaces()` reads the remembered workspace id out of it before
+    /// the first paint, for the same reason everything else here is read from a snapshot (F-499).
+    let startupSession: ConfigSnapshot
 
     init() {
         configPaths = ConfigPaths.resolve()
@@ -396,6 +468,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         container.addSubview(sharedTree)
         sharedTree.translatesAutoresizingMaskIntoConstraints = false
         sharedTreeWidthConstraint = sharedTree.widthAnchor.constraint(equalToConstant: 0)
+        container.addSubview(workspaceBar)
         container.addSubview(splitView)
         container.addSubview(previewPanel)
         container.addSubview(previewHandle)
@@ -406,6 +479,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         container.addSubview(functionKeyBar)
         bottomDock.translatesAutoresizingMaskIntoConstraints = false
         dockResizer.translatesAutoresizingMaskIntoConstraints = false
+        workspaceBar.translatesAutoresizingMaskIntoConstraints = false
+        // Zero until `applyWorkspaceBarHeight` says otherwise, so a window whose owner has never made
+        // a second workspace never paints a strip at all — not even for one frame.
+        workspaceBarHeightConstraint = workspaceBar.heightAnchor.constraint(equalToConstant: 0)
         dockHeightConstraint = bottomDock.heightAnchor.constraint(equalToConstant: 0)  // shut by default
         // The divider collapses with the dock: a drag handle for something that is not there would be
         // a dead strip across the window, exactly as it would beside a closed preview panel.
@@ -444,7 +521,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Constraints that never change (button-bar top-left anchor, the preview
         // column on the right, the command line + function bar across the bottom).
         NSLayoutConstraint.activate([
-            buttonBarView.topAnchor.constraint(equalTo: container.topAnchor),
+            workspaceBar.topAnchor.constraint(equalTo: container.topAnchor),
+            workspaceBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            workspaceBar.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            workspaceBarHeightConstraint!,
+            buttonBarView.topAnchor.constraint(equalTo: workspaceBar.bottomAnchor),
             buttonBarView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             // The resizer sits between the file panels and the preview column, which is where a
             // divider belongs — the toggle chevron stays out at the window edge.
@@ -497,13 +578,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         buttonBarGroupV = [
             buttonBarView.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
             buttonBarWidthConstraint!,
-            splitView.topAnchor.constraint(equalTo: container.topAnchor),
+            splitView.topAnchor.constraint(equalTo: workspaceBar.bottomAnchor),
             sharedTree.leadingAnchor.constraint(equalTo: buttonBarView.trailingAnchor),
             splitView.leadingAnchor.constraint(equalTo: sharedTree.trailingAnchor),
-            previewPanel.topAnchor.constraint(equalTo: container.topAnchor),
-            previewHandle.topAnchor.constraint(equalTo: container.topAnchor),
+            previewPanel.topAnchor.constraint(equalTo: workspaceBar.bottomAnchor),
+            previewHandle.topAnchor.constraint(equalTo: workspaceBar.bottomAnchor),
         ]
         NSLayoutConstraint.activate(buttonBarGroupH)
+        connectWorkspaceBar()
         functionKeyBar.onRun = { [weak self] cmd in self?.runCommandNamed(cmd) }
         loadExternalPlugins()
         window?.minSize = NSSize(width: 640, height: 400)
@@ -545,6 +627,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task.detached(priority: .utility) { ArchiveTempSweeper.sweep() }
         Task { @MainActor in
             await self.commandRegistry.registerDefaultCommands()
+            // Only while the feature is on. Off means no command in the browser, no assignable key
+            // and no menu item — not a row of things that quietly do nothing (F-499).
+            if self.workspacesEnabled { await self.commandRegistry.registerWorkspaceCommands() }
             // After the built-ins, not before: the macro ids are allocated around whatever is already
             // taken, and `registeredCommandNames` below is what decides whether a menu item is enabled
             // — a macro registered before this line would be missing from both (F-478).
@@ -639,6 +724,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         splitView.adjustSubviews()
         centerDivider()
         setMenuCheck(cmd: "cm_HorizontalPanels", on: horizontalPanels)
+    }
+
+    /// Side by side or stacked. Absolute, and it does nothing when the arrangement already matches —
+    /// `adjustSubviews` and `centerDivider` would otherwise throw away a divider position that was
+    /// just restored (F-499).
+    func setPanelArrangement(horizontal: Bool, persist: Bool = true) {
+        guard horizontal != horizontalPanels else { return }
+        horizontalPanels = horizontal
+        applyPanelArrangement()
+        if persist { Task { await mainConfig.setBool(horizontal, "Layout", "HorizontalPanels") } }
+        if persist { scheduleSaveState() }
     }
 
     /// Toggle horizontal panel arrangement, persist it, and re-lay-out.
@@ -787,18 +883,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         preferredPreviewWidth = max(PreviewResizeHandle.minWidth, CGFloat(savedWidth))
         // Before the panel is opened, not after: the tab strip is part of the first frame, and applying
         // this afterwards would show the three-tab panel for one paint and then collapse it (F-476).
+        // Both read before the first paint, and that is not a detail: a chip strip applied after the
+        // first frame blinks into view and collapses again, which is exactly what somebody who
+        // switched this feature off must not see on every launch (the same reason the side panel's
+        // pages are read here, F-476).
+        workspacesEnabled = config.bool("Workspaces", "Enabled", default: true)
+        workspaceBarVisible = config.bool("Layout", "WorkspaceBar", default: true)
+        journalEnabled = config.bool("Workspaces", "Journal", default: true)
         visibleSidePanelPages = Self.visibleSidePanelPages(config)
         previewPanel.setVisibleBuiltins(visibleSidePanelPages)
-        if config.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
-        horizontalPanels = config.bool("Layout", "HorizontalPanels", default: false)
-        if horizontalPanels { applyPanelArrangement() }
-        setCommandLineVisible(config.bool("Layout", "CommandLine", default: true))
-        setFunctionBarVisible(config.bool("Layout", "FunctionKeys", default: true))
-        setButtonBarVisible(config.bool("Layout", "ButtonBar", default: true))
-        setDriveBarVisible(config.bool("Layout", "DriveBar", default: true))
-        setStatusBarVisible(config.bool("Layout", "StatusBar", default: true))
-        setTabBarVisible(config.bool("Layout", "TabBar", default: true))
-        setPathBarVisible(config.bool("Layout", "PathBar", default: true))
         if let mode = PanelViewMode(rawValue: config.string("Layout", "LeftViewMode",
                                                            default: "details")) {
             leftPanelController?.setViewMode(mode)
@@ -809,25 +902,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         if config.bool("Layout", "LeftTree", default: false) { leftPanelController?.setTreeVisible(true) }
         if config.bool("Layout", "RightTree", default: false) { rightPanelController?.setTreeVisible(true) }
-        if config.bool("Layout", "SharedTree", default: false) { setSharedTreeVisible(true, persist: false) }
-        // The dock (F-381). Its height is restored whether or not it is open, so reopening it later
-        // gives back the size it had rather than the factory one.
         loadViewPlacements(config)
-        preferredDockHeight = max(BottomDockView.minHeight,
-                                  CGFloat(config.int("Layout", "DockHeight",
-                                                     default: Int(BottomDockView.defaultHeight))))
-        let panel = config.string("Layout", "DockPanel", default: "")
-        rememberedDockPanel = panel.isEmpty ? nil : panel
-        if let rememberedDockPanel { bottomDock.selectProvider(id: rememberedDockPanel) }
-        // Shut by default: opening it needs a plugin to have something to show, and closing it again
-        // when nothing does is handled where the providers arrive — which is also where it is opened
-        // *back* up once one does, since the plugins are still loading at this point. The wish is set
-        // here without persisting it: this is the config being read, not the user choosing again.
-        dockWantedVisible = config.bool("Layout", "DockVisible", default: false)
-        if dockWantedVisible { setBottomDockVisible(true, persist: false) }
         runCommandLineInTerminal = config.bool("Terminal", "RunCommandLine", default: false)
         setMenuCheck(cmd: "cm_TerminalRunCommandLine", on: runCommandLineInTerminal)
-        if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
+
+        // The window's whole arrangement, in one call, from the workspace the session was left in —
+        // falling back to the old `[Layout]` keys when there is no workspace yet (F-499). The same
+        // function a workspace switch uses, so the first frame and every switch afterwards cannot
+        // disagree about what an arrangement means.
+        //
+        // The dock is the one part with a wrinkle worth keeping: it is opened here only as a wish,
+        // because the plugins are still loading and it has nothing to show yet. Where the providers
+        // arrive is what opens it for real.
+        applyChrome(startupChrome())
         // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
         loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
 
@@ -956,6 +1043,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
         let active = await session.string("Window", "Active", default: "left")
         if active == "right" { activateRightPanel() } else { activateLeftPanel() }
+        // After the panels are filled and the active side is set, because the session as it stands is
+        // what the first workspace is made of — including for somebody upgrading, who must find the
+        // app exactly as they left it (F-499).
+        loadWorkspaces()
         // The window became key while this restore was still running, and that is when AppKit built the
         // Tab order — so it was built around panels that were still being filled in. Measured: the loop
         // stopped at the left panel's scroller and fourteen controls were unreachable, every launch,
@@ -1155,90 +1246,6 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in await activePanel?.loadDirectory(path) }
     }
 
-
-    // MARK: - Workspaces (named layouts)
-
-    /// Popup hub: load a saved workspace, delete one, or save the current layout.
-    func showWorkspaces() {
-        guard let panel = activePanel else { return }
-        Task { @MainActor in
-            let names = await workspaceStore.names()
-            let menu = NSMenu(title: String(localized: "Workspaces"))
-            if names.isEmpty {
-                let empty = NSMenuItem(title: String(localized: "(no saved workspaces)"), action: nil, keyEquivalent: "")
-                empty.isEnabled = false
-                menu.addItem(empty)
-            } else {
-                for (i, name) in names.enumerated() {
-                    let item = NSMenuItem(title: name, action: #selector(self.loadWorkspaceMenu(_:)),
-                                          keyEquivalent: i < 9 ? "\(i + 1)" : "")
-                    item.representedObject = name
-                    item.target = self
-                    menu.addItem(item)
-                }
-                menu.addItem(.separator())
-                let delete = NSMenuItem(title: String(localized: "Delete"), action: nil, keyEquivalent: "")
-                let deleteMenu = NSMenu()
-                for name in names {
-                    let d = NSMenuItem(title: name, action: #selector(self.deleteWorkspaceMenu(_:)), keyEquivalent: "")
-                    d.representedObject = name
-                    d.target = self
-                    deleteMenu.addItem(d)
-                }
-                delete.submenu = deleteMenu
-                menu.addItem(delete)
-            }
-            menu.addItem(.separator())
-            let save = NSMenuItem(title: String(localized: "Save Current as Workspace…"),
-                                  action: #selector(self.saveWorkspacePrompt), keyEquivalent: "")
-            save.target = self
-            menu.addItem(save)
-            let point = NSPoint(x: 12, y: panel.view.bounds.height - 36)
-            menu.popUp(positioning: nil, at: point, in: panel.view)
-        }
-    }
-
-    /// Prompt for a name and save the current two-panel layout.
-    func showSaveWorkspace() {
-        let dialog = InputDialog(title: String(localized: "Save Workspace"),
-                                 prompt: String(localized: "Workspace name:"), initialValue: "")
-        dialog.onConfirm = { [weak self] name in
-            let trimmed = name.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty else { return }
-            Task { @MainActor in await self?.saveCurrentWorkspace(named: trimmed) }
-        }
-        self.pathDialog = dialog
-        dialog.runModalDialog()
-    }
-
-    @objc private func saveWorkspacePrompt() { showSaveWorkspace() }
-
-    @objc private func loadWorkspaceMenu(_ sender: NSMenuItem) {
-        guard let name = sender.representedObject as? String else { return }
-        Task { @MainActor in await self.loadWorkspace(name) }
-    }
-
-    @objc private func deleteWorkspaceMenu(_ sender: NSMenuItem) {
-        guard let name = sender.representedObject as? String else { return }
-        Task { await self.workspaceStore.delete(name) }
-    }
-
-    private func saveCurrentWorkspace(named name: String) async {
-        guard let left = leftPanelController, let right = rightPanelController else { return }
-        let (l, la) = left.exportTabs()
-        let (r, ra) = right.exportTabs()
-        let layout = WorkspaceLayout(left: l, leftActive: la, right: r, rightActive: ra,
-                                     activeSide: activePanel === right ? "right" : "left")
-        await workspaceStore.save(name, layout: layout)
-    }
-
-    private func loadWorkspace(_ name: String) async {
-        guard let layout = await workspaceStore.load(name) else { return }
-        await leftPanelController?.importTabs(layout.left, activeIndex: layout.leftActive)
-        await rightPanelController?.importTabs(layout.right, activeIndex: layout.rightActive)
-        if layout.activeSide == "right" { activateRightPanel() } else { activateLeftPanel() }
-        updateCommandLinePrompt()
-    }
 
     // MARK: - Lister (I07)
 
@@ -4469,6 +4476,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         case .info: return "PreviewTabInfo"
         case .activities: return "PreviewTabActivities"
         case .log: return "PreviewTabLog"
+        case .stash: return "PreviewTabStash"
         }
     }
 
@@ -4522,7 +4530,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// The width to restore the panel to. Starts at the built-in default and follows the user's
     /// last drag, so re-opening the panel does not undo the resize.
-    private var preferredPreviewWidth: CGFloat = MainWindowController.previewWidth
+    var preferredPreviewWidth: CGFloat = MainWindowController.previewWidth
 
     /// Re-link the window's Tab order after part of the layout appeared or disappeared.
     ///
@@ -4538,8 +4546,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private func rebuildKeyLoopAfterLayoutChange() { KeyboardLoop.rebuild(for: window) }
 
     func togglePreviewPanel() {
+        setPreviewPanelVisible(!previewIsVisible)
+    }
+
+    /// Open or close the side panel. **Absolute, not a toggle** — which matters for more than tidiness.
+    ///
+    /// A toggle cannot be used to *apply* a remembered state: applying it twice closes the panel it
+    /// just opened, which is why `applyVisualStateBeforeFirstPaint` had to carry a note saying a second
+    /// pass would be safe for every setter here except this one. Restoring a workspace is exactly such
+    /// an apply, and it happens on every switch rather than once at launch (F-499).
+    ///
+    /// Four call sites already worked around its absence with `if !previewIsVisible { toggle() }`.
+    func setPreviewPanelVisible(_ show: Bool, persist: Bool = true) {
         guard let c = previewWidthConstraint else { return }
-        let show = c.constant == 0
+        guard show != previewIsVisible else { return }
         c.constant = show ? preferredPreviewWidth : 0
         previewResizerWidthConstraint?.constant = show ? PreviewResizeHandle.width : 0
         previewResizer.panelWidth = preferredPreviewWidth
@@ -4547,7 +4567,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         previewResizer.isHidden = !show
         previewHandle.isPanelOpen = show
         previewPanel.applyTheme()
-        Task { await mainConfig.setBool(show, "Layout", "PreviewPanel") }
+        if persist { Task { await mainConfig.setBool(show, "Layout", "PreviewPanel") } }
+        if persist { scheduleSaveState() }
         rebuildKeyLoopAfterLayoutChange()
         updateTerminalMenuState()   // the sidebar may be where the terminal lives (F-388)
         previewTimer?.invalidate(); previewTimer = nil
@@ -4582,6 +4603,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             previewPanel.setLog(done.isEmpty
                 ? String(localized: "No completed transfers yet.")
                 : done.map { "\($0.title): \($0.status.rawValue)\($0.errorText.map { " — \($0)" } ?? "")" }.joined(separator: "\n"))
+        case .stash:
+            previewPanel.setStash(stashPageText())
         }
     }
 
@@ -4746,11 +4769,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     func scheduleSaveState() {
         refreshWindowTitle()   // navigation and tab changes come through here too (F-012)
-        guard didRestore, !saveScheduled else { return }
+        // Not while a workspace switch is rebuilding the panes: every `loadPath` in there fires
+        // `onStateChanged`, and saving half-applied state would write the incoming workspace down
+        // while it is still half the outgoing one (F-499).
+        guard didRestore, !saveScheduled, !isSwitchingWorkspace else { return }
         saveScheduled = true
+        // The workspace is captured when the timer is ARMED, not when it fires. A timer set 0.29 s
+        // before a switch fires 0.01 s after it, and would otherwise write the old workspace's panels
+        // into the new one.
+        let target = activeWorkspaceID
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self else { return }
             self.saveScheduled = false
+            guard !self.isSwitchingWorkspace, self.activeWorkspaceID == target else { return }
             Task { await self.saveState() }
         }
     }
@@ -4767,6 +4798,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         let leftWidth = leftPanelController?.view.frame.width ?? 0
         if leftWidth > 50 { await session.setDouble(Double(leftWidth), "Window", "LeftWidth") }
+        // The silent autosave the whole feature rests on: the active workspace's live state is simply
+        // what the panels are showing, written down whenever the session is (F-499).
+        persistActiveWorkspace()
     }
 
     private func saveTabs(_ panel: PanelController, prefix: String) async {
@@ -4790,6 +4824,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Persist and flush synchronously-awaitable (called from applicationShouldTerminate).
     func persistNow() async {
         await saveState()
+        persistActiveWorkspace(flush: true)
+        flushAllJournals()
         await session.flush()
         await mainConfig.flush()
         // A recording that was still running is put down here rather than thrown away, so that quitting
@@ -4973,6 +5009,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         hostEventBus.emit(.configChanged(key: keyPath))
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setBool(value, section, key) }
+        // A `[Layout]` change is a change to the *workspace's* arrangement now, so it has to be
+        // written down as one. Still written to `peachcmd.ini` as well, for one release: that is what
+        // paints the first frame for an installation that has no workspace file yet (F-499).
+        //
+        // Deferred to the end of the function, not run here: the capture has to see the arrangement
+        // *after* the switch below has applied it. Scheduled before, it would write the state the
+        // window was in a moment ago — and the workspace would be one change behind, for ever.
+        defer { if section == "Layout" { scheduleSaveState() } }
         switch keyPath {
         case "History.Enabled":
             HistoryService.shared.setEnabled(value)
@@ -5195,29 +5239,47 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     /// Layout (TC "Layout"): collapse the command line / function-key bar to zero height.
-    private func setCommandLineVisible(_ visible: Bool) {
+    // The window's own bars, likewise read off the views (F-499).
+    var commandLineVisible: Bool { !commandLine.isHidden }
+    var functionBarVisible: Bool { !functionKeyBar.isHidden }
+    /// These four are per panel in the views and one setting in the UI, so the left panel answers for
+    /// both — which is what the setters above already assume.
+    var driveBarVisible: Bool { leftPanelController?.view.isDriveBarVisible ?? true }
+    var statusBarVisible: Bool { leftPanelController?.view.isStatusBarVisible ?? true }
+    var tabBarVisible: Bool { leftPanelController?.view.isTabBarVisible ?? true }
+    var pathBarVisible: Bool { leftPanelController?.view.isPathBarVisible ?? true }
+    var panelsAreHorizontal: Bool { horizontalPanels }
+    var buttonBarIsVertical: Bool { buttonBarVertical }
+    var buttonBarIsVisible: Bool { buttonBarVisible }
+    var previewPanelIsVisible: Bool { previewIsVisible }
+    var dockIsVisible: Bool { dockWantedVisible }
+
+    // Internal, not private: `applyChrome` in the workspace extension puts a remembered
+    // arrangement back through exactly these, and it must use the same entry points the menu does
+    // rather than a second set that can drift from them (F-499).
+    func setCommandLineVisible(_ visible: Bool) {
         commandLine.isHidden = !visible
         commandLineHeightConstraint?.constant = visible ? Metrics.commandLineHeight : 0
     }
-    private func setFunctionBarVisible(_ visible: Bool) {
+    func setFunctionBarVisible(_ visible: Bool) {
         functionKeyBar.isHidden = !visible
         functionBarHeightConstraint?.constant = visible ? FunctionKeyBar.barHeight : 0
     }
 
     /// Show/hide the per-panel drive bar / status bar in both panels (F-270).
-    private func setDriveBarVisible(_ visible: Bool) {
+    func setDriveBarVisible(_ visible: Bool) {
         leftPanelController?.setDriveBarVisible(visible)
         rightPanelController?.setDriveBarVisible(visible)
     }
-    private func setStatusBarVisible(_ visible: Bool) {
+    func setStatusBarVisible(_ visible: Bool) {
         leftPanelController?.setStatusBarVisible(visible)
         rightPanelController?.setStatusBarVisible(visible)
     }
-    private func setTabBarVisible(_ visible: Bool) {
+    func setTabBarVisible(_ visible: Bool) {
         leftPanelController?.setTabBarVisible(visible)
         rightPanelController?.setTabBarVisible(visible)
     }
-    private func setPathBarVisible(_ visible: Bool) {
+    func setPathBarVisible(_ visible: Bool) {
         leftPanelController?.setPathBarVisible(visible)
         rightPanelController?.setPathBarVisible(visible)
     }
@@ -5597,6 +5659,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if visible { revealActivePathInSharedTree() }
         rebuildKeyLoopAfterLayoutChange()
         if persist { Task { await mainConfig.setBool(visible, "Layout", "SharedTree") } }
+        if persist { scheduleSaveState() }
     }
 
     @objc func toggleSharedTree() { setSharedTreeVisible(!sharedTreeVisible) }
@@ -5604,7 +5667,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     // MARK: - The bottom dock (F-381)
 
     /// Which docked panel was on screen last time, restored once the plugin providing it turns up.
-    private var rememberedDockPanel: String?
+    var rememberedDockPanel: String?
 
     /// Is the plugin dock across the bottom of the window open?
     var bottomDockVisible: Bool { (dockHeightConstraint?.constant ?? 0) > 0 }
@@ -5705,7 +5768,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             if !bottomDockVisible { setBottomDockVisible(true) }
             bottomDock.selectProvider(id: viewId)
         case "sidebar":
-            if !previewIsVisible { togglePreviewPanel() }
+            setPreviewPanelVisible(true)
             previewPanel.selectPluginView(id: viewId)
         default:
             break   // "titlebar" and "settings" are always where they are; there is nothing to open
@@ -5733,7 +5796,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         guard terminalIsShowing else { focusTerminal(); return }
         switch container {
         case "bottom":  setBottomDockVisible(false)
-        case "sidebar": if previewIsVisible { togglePreviewPanel() }
+        case "sidebar": setPreviewPanelVisible(false)
         default:        break
         }
         // The keyboard cannot stay in a view that is no longer on screen.
@@ -6162,7 +6225,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Build the menu bar from AppMenu and inject the active plugins' menu
     /// contributions. Swaps the live bar only if the main bar is currently active
     /// (so a tool window's transient bar isn't clobbered).
-    private func rebuildMainMenu() {
+    func rebuildMainMenu() {
         let wasActive = fullMainMenu == nil || NSApp.mainMenu === fullMainMenu
         let menu: NSMenu
         if let loaded = loadUserMenuFile() {
@@ -6174,7 +6237,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                  commandMenus: built.menus)
             reportMenuFileProblems(loaded.problems, unresolved: built.unresolved)
         } else {
-            menu = AppMenu.build(target: self, commandAction: #selector(runMenuCommand(_:)))
+            menu = AppMenu.build(target: self, commandAction: #selector(runMenuCommand(_:)),
+                                 workspacesEnabled: workspacesEnabled,
+                                 workspaces: workspaceMenuEntries)
         }
         contribMenuValidator = ContributionMenuInjector.inject(
             into: menu, registry: .shared, target: self, action: #selector(runMenuCommand(_:)),
@@ -8654,6 +8719,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
                 // The per-panel history keeps them, because there the mount is still there.
                 if fs is LocalFS {
                     HistoryService.shared.recordFolder(path, panel: position.isLeft ? .left : .right)
+                    (view.window?.windowController as? MainWindowController)?
+                        .journal(.navigation, label: (path as NSString).abbreviatingWithTildeInPath,
+                                 directory: path)
                 }
             }
             scheduleStatusRefresh()
@@ -9076,10 +9144,17 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     /// Restore tabs from a saved session and display the active one.
-    func importTabs(_ states: [PanelTabState], activeIndex: Int) async {
-        guard !states.isEmpty else { return }
+    ///
+    /// Returns false when there was nothing to restore. A workspace switch needs to know, because a
+    /// pane it could not fill is a pane still showing the *previous* workspace's folder under the new
+    /// workspace's name — and carrying on to restore the marks and the history on top of that would
+    /// dress the mistake up as success.
+    @discardableResult
+    func importTabs(_ states: [PanelTabState], activeIndex: Int) async -> Bool {
+        guard !states.isEmpty else { return false }
         tabs = PanelTabs(tabs: states, activeIndex: activeIndex)
         await switchToActiveTab()
+        return true
     }
 
     static func descriptor(from column: String, ascending: Bool) -> DirectoryModel.SortDescriptor {
@@ -9847,6 +9922,13 @@ final class PanelView: NSView {
     private var pathBarHeightConstraint: NSLayoutConstraint!
 
     /// Show/hide the drive bar (F-270); collapses its height so no gap remains.
+    // Read off the views rather than from a mirrored flag, so what is captured into a workspace is
+    // what is on screen rather than what somebody remembered to write down (F-499).
+    var isDriveBarVisible: Bool { !driveBar.isHidden }
+    var isStatusBarVisible: Bool { !statusBar.isHidden }
+    var isTabBarVisible: Bool { !tabBar.isHidden }
+    var isPathBarVisible: Bool { !pathBar.isHidden }
+
     func setDriveBarVisible(_ visible: Bool) {
         driveBar.isHidden = !visible
         driveBarHeightConstraint.constant = visible ? 24 : 0
@@ -10873,7 +10955,7 @@ extension MainWindowController: ContributionHost {
     func contribPresentSidebarView(viewId: String, root: String) {
         diskMapRoot = root
         ViewContainerRegistry.shared.refresh(host: self)   // `when` now passes → mounted
-        if !previewIsVisible { togglePreviewPanel() }
+        setPreviewPanelVisible(true)
         previewPanel.selectPluginView(id: viewId)
     }
 
@@ -10948,6 +11030,10 @@ extension MainWindowController: ContributionHost {
         context.set("diskMapActive", diskMapRoot != nil)
         context.set("sidebarViewRoot", diskMapRoot)
         context.set("dir", cachedActiveCwd)
+        // Which workspace the window is in (F-499). A view needs this at the moment it is *built* —
+        // the notification that announces a switch necessarily arrives after that — and without it a
+        // terminal rebuilt on the next launch reads back the wrong workspace's folders.
+        context.set("workspace", activeWorkspaceID.isEmpty ? nil : activeWorkspaceID)
         // Which filesystem the active panel is showing: "file" locally, "zip" in an archive, and a
         // plugin mount's own connection id ("docker:Colima", "s3:127.0.0.1:9000") inside one.
         //

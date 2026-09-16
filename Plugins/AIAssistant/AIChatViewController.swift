@@ -118,12 +118,48 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     /// reopen the same one instead of dropping the user into the first in the list.
     var currentSessionIdentifier: String? { currentSessionId }
 
+    /// Which workspace this chat belongs to (F-499). Empty until the host says, and empty means the
+    /// old behaviour: one flat list of every conversation.
+    private var workspace = ""
+
+    /// The conversations that belong here. Chats from before workspaces existed have no workspace of
+    /// their own and appear in every list, because hiding them would look exactly like the upgrade
+    /// having deleted somebody's history.
+    private func listForWorkspace() async -> [SessionInfo] {
+        workspace.isEmpty ? await manager.list() : await manager.list(workspace: workspace)
+    }
+
+    /// The host says the window moved to another workspace.
+    ///
+    /// **The transcript is rebound; nothing is cancelled.** An answer streaming in "clean up backups"
+    /// finishes while you are sorting applicant documents and is waiting when you come back — the
+    /// request lives in the session actor, not in this view, and the only thing that changes here is
+    /// which session is on screen.
+    func setWorkspace(_ id: String) async {
+        guard id != workspace else { return }
+        workspace = id
+        var list = await listForWorkspace()
+        if list.isEmpty {
+            _ = await manager.create(title: Self.newChatTitle, workspace: id)
+            list = await listForWorkspace()
+        }
+        sessions = list
+        rebuildPopup()
+        // Stay where we are when this conversation belongs here too — a chat with no workspace is in
+        // every list, and switching away from it for no reason would lose the user's place.
+        if let current = currentSessionId, list.contains(where: { $0.id == current }) { return }
+        if let first = list.first { await switchTo(id: first.id) }
+    }
+
     /// Load the session index (creating one if none), select `resuming` if it is still there,
     /// otherwise the first, and render it.
     func start(resuming sessionId: String? = nil) async {
         await manager.loadIndex()
-        var list = await manager.list()
-        if list.isEmpty { _ = await manager.create(title: Self.newChatTitle); list = await manager.list() }
+        var list = await listForWorkspace()
+        if list.isEmpty {
+            _ = await manager.create(title: Self.newChatTitle, workspace: workspace.isEmpty ? nil : workspace)
+            list = await listForWorkspace()
+        }
         sessions = list
         rebuildPopup()
         if let sessionId, list.contains(where: { $0.id == sessionId }) {
@@ -138,7 +174,8 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     func panelDidHide() {
         cancelActiveRun()
         let keep = currentSessionId
-        Task { await manager.deleteEmptySessions(keeping: keep); sessions = await manager.list(); rebuildPopup() }
+        Task { await manager.deleteEmptySessions(keeping: keep)
+               sessions = await self.listForWorkspace(); rebuildPopup() }
     }
 
     func focusInput() { view.window?.makeFirstResponder(input) }
@@ -373,8 +410,8 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     @objc private func newChatTapped() {
         Task {
-            let session = await manager.create(title: Self.newChatTitle)
-            sessions = await manager.list()
+            let session = await manager.create(title: Self.newChatTitle, workspace: workspace.isEmpty ? nil : workspace)
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: session.id)
             focusInput()
@@ -395,7 +432,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         guard !title.isEmpty else { return }
         Task {
             await manager.rename(id: id, to: title)
-            sessions = await manager.list()
+            sessions = await listForWorkspace()
             rebuildPopup()
         }
     }
@@ -412,8 +449,11 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         cancelActiveRun()
         Task {
             await manager.delete(id: id)
-            var list = await manager.list()
-            if list.isEmpty { _ = await manager.create(title: Self.newChatTitle); list = await manager.list() }
+            var list = await listForWorkspace()
+            if list.isEmpty {
+                _ = await manager.create(title: Self.newChatTitle, workspace: workspace.isEmpty ? nil : workspace)
+                list = await listForWorkspace()
+            }
             sessions = list
             rebuildPopup()
             if let first = list.first { await switchTo(id: first.id) }
@@ -438,8 +478,8 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         cancelActiveRun()
         Task {
             await manager.deleteAll()
-            let fresh = await manager.create(title: Self.newChatTitle)
-            sessions = await manager.list()
+            let fresh = await manager.create(title: Self.newChatTitle, workspace: workspace.isEmpty ? nil : workspace)
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: fresh.id)
         }
@@ -450,7 +490,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     func sendInNewChat(_ prompt: String, title: String) {
         Task {
             let session = await manager.create(title: title)
-            sessions = await manager.list()
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: session.id)
             await submit(prompt)
@@ -677,7 +717,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         Task {
             let session = await manager.create(title: String(
                 format: String(localized: "Name: %@", comment: "AI: rename chat title"), displayName))
-            sessions = await manager.list()
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: session.id)
             append(role: youLabel, text: String(
@@ -700,7 +740,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         guard !busy else { NSSound.beep(); return }
         Task {
             let session = await manager.create(title: request.title)
-            sessions = await manager.list()
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: session.id)
             guard let agent = currentSession, let id = currentSessionId else { return }
@@ -754,7 +794,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     func sendTableRequest(path: String, displayName: String) {
         Task {
             let session = await manager.create(title: String(format: String(localized: "Table: %@", comment: "AI: table chat title"), displayName))
-            sessions = await manager.list()
+            sessions = await listForWorkspace()
             rebuildPopup()
             await switchTo(id: session.id)
             append(role: youLabel, text: String(format: String(localized: "Make a table from %@", comment: "AI: table request"), displayName))

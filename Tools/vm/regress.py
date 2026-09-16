@@ -195,6 +195,72 @@ SCENARIOS = [
     # `syncdisplay` and not `syncfilter`: they do the same thing to the controls, but this scenario is
     # about what a preset remembers rather than about the grid, and using the verb whose report is the
     # preset row keeps the before/after readable in one file.
+    # Workspaces (F-499). Two scenarios, and the first one asserts an absence.
+    #
+    # **`workspace-latent` is the claim this feature is sold on**: somebody who never makes a second
+    # workspace sees nothing of it. No chip strip, no Workspace menu, no ⌃1…⌃9. That is the kind of
+    # claim a screenshot cannot make and that breaks silently the moment a later stage adds one line
+    # of surface — so it is asserted on the menu dump and the bar's own report rather than on a
+    # picture. `enabled=true` is part of it: the feature is *on* and still invisible, which is the
+    # difference between latent and switched off.
+    ("workspace-latent", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "workspacedump /Users/admin/ws-latent.txt", "wait 300",
+                          "menudump /Users/admin/ws-latent-menu.txt"], 8),
+
+    # And the other half: make a second one and everything appears at once. Then switch away, switch
+    # back, and check that the panel came with — `ghost=0` is the assertion no other tool can make,
+    # since a field that a switch applies but never reads back leaves the *previous* workspace's value
+    # on screen under the new workspace's name.
+    #
+    # The two `dump`s are the model-versus-view check: `path=` comes from the panel's model and the
+    # rows from its table, so a panel that switched and did not repaint fails here and nowhere else.
+    ("workspace-switch", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          # Assert the precondition instead of inheriting it, the lesson
+                          # `terminal-teardown` already carries — and since F-499 it bites harder: the
+                          # side panel's state belongs to the *workspace* now and persists in the
+                          # guest's config, so whichever scenario ran before this one decided whether
+                          # `preview=false` below was true. It failed exactly that way behind
+                          # `preview-panel`.
+                          "previewpanel off", "wait 800",
+                          "workspace new Second", "wait 1200",
+                          "left /Users/admin/pc-demo/sub", "wait 1400",
+                          # The side panel is opened in the *second* workspace only. It is the part of
+                          # the arrangement that is impossible to miss on screen and equally impossible
+                          # to see in a report unless it is asked for, so both sides of the switch are
+                          # checked: open here, shut in the first, open again on the way back.
+                          "previewpanel on", "wait 1200",
+                          "dump /Users/admin/ws-second-panel.txt", "wait 300",
+                          "workspace 1", "wait 1800",
+                          # Marks are the part of "nothing is lost" that people actually notice, and
+                          # the only witness is `seldump` — no screenshot shows a selection reliably
+                          # and no layout report mentions one. Marked here, in the first workspace,
+                          # then read back after a round trip through the second.
+                          #
+                          # Its own two files rather than the demo tree's: `pc-demo` is shared by every
+                          # scenario in the suite and `macro-confirm` deletes `notes.txt` out of it, so
+                          # marking what happens to be lying there makes this scenario's result depend
+                          # on which ones ran before it.
+                          "mkfile /Users/admin/pc-demo/ws-mark-a.txt", "wait 200",
+                          "mkfile /Users/admin/pc-demo/ws-mark-b.txt", "wait 400",
+                          "marknames ws-mark-a.txt,ws-mark-b.txt", "wait 700",
+                          "seldump /Users/admin/ws-marked.txt", "wait 300",
+                          "workspacedump /Users/admin/ws-first.txt", "wait 300",
+                          "dump /Users/admin/ws-back-panel.txt", "wait 300",
+                          "workspace 2", "wait 1800",
+                          "workspace 1", "wait 1800",
+                          # The claim: the same two files are still marked after two switches. A
+                          # selection that survives being left is what separates a workspace from the
+                          # saved layout this feature used to be.
+                          "seldump /Users/admin/ws-marked-back.txt", "wait 300",
+                          "workspace 2", "wait 1800",
+                          # Collected into docs/generated/layout-regression/ for `check-hotkeys.py`.
+                          # The gate's usual dump comes from `keys-main`, which runs with one
+                          # workspace — so without this the ⌃1…⌃9 bindings would never be audited at
+                          # all, and the gate would be green having looked at a menu bar that does not
+                          # contain them.
+                          "menudump /Users/admin/menu-workspaces.txt", "wait 300",
+                          "workspacedump /Users/admin/ws-switch.txt"], 9),
+
     ("sync-presets", ["active left", "left /Users/admin/preset-a", "wait 1200",
                       "syncopen /Users/admin/preset-a|/Users/admin/preset-b|/Users/admin/sync-presets.json",
                       "wait 1400",
@@ -973,6 +1039,154 @@ SCENARIOS = [
                          "termsend plugin.terminal.view|sleep 391 &\\n", "wait 1200",
                          "termsend plugin.terminal.view|sleep 392\\n", "wait 1500",
                          "quit", "wait 4000"], 19),
+    # **A workspace switch must not kill a shell** (F-499). The claim this stage exists for, and the
+    # process table is the only witness: the terminal's own status line would say the same thing
+    # whether the session was parked or restarted, because both leave a running shell on screen.
+    #
+    # `sleep 393` is started in the first workspace, a second workspace is created and switched into —
+    # which parks the first one's tabs — and the external check then asks whether the process is still
+    # there. Parking takes the view out of the hierarchy; closing would take the pseudo-terminal with
+    # it, and `TerminalPool.close` is deliberately the only thing that does.
+    #
+    # The journal (F-499). What makes it worth opening is the entry nothing else in the application
+    # records: a scope refusal. The global history has no such row — it keeps what happened, and this
+    # keeps what was *stopped* — so the `problems=1` line below is the whole claim.
+    #
+    # Navigation is also checked, because the one coalescing rule is easy to get wrong in the direction
+    # that loses information: out and back is two visits, not one.
+    ("workspace-journal", ["setbool Operation.ConfirmDelete|0", "wait 300",
+                           "active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "left /Users/admin/pc-demo/sub", "wait 1200",
+                           "left /Users/admin/pc-demo", "wait 1200",
+                           "mkfile /Users/admin/pc-demo/ws-journal-victim.txt", "wait 400",
+                           "workspacescope /Users/admin/pc-demo/sub|refuse", "wait 500",
+                           "marknames ws-journal-victim.txt", "wait 700",
+                           "cmd cm_Delete", "wait 2000",
+                           "journaldump /Users/admin/ws-journal.txt", "wait 400",
+                           "workspacescope |ask", "wait 300",
+                           "setbool Operation.ConfirmDelete|1", "wait 300"], 9),
+
+    # The scope (F-499). A safety net is worth exactly as much as the proof that it fires, and the
+    # proof has to be the file still being there afterwards — no report, no dialog text and no log line
+    # says as much as an intact file.
+    #
+    # `PC_SCOPE=deny` answers the sheet the way a person clicking Cancel would, so the run does not
+    # hang on a modal (F-436). `ConfirmDelete` is switched off and back on, because the guest's config
+    # persists between scenarios and leaving it off would quietly change a later one — the mistake this
+    # file's own comments record having made once.
+    ("workspace-scope", ["setbool Operation.ConfirmDelete|0", "wait 300",
+                         "active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "mkfile /Users/admin/pc-demo/ws-scope-victim.txt", "wait 400",
+                         # The workspace is limited to a folder this file is *not* in.
+                         "workspacescope /Users/admin/pc-demo/sub|refuse", "wait 500",
+                         "workspacedump /Users/admin/ws-scope.txt", "wait 300",
+                         "marknames ws-scope-victim.txt", "wait 700",
+                         "cmd cm_Delete", "wait 2000",
+                         "dump /Users/admin/ws-scope-after.txt", "wait 400",
+                         "workspacescope |ask", "wait 300",
+                         "setbool Operation.ConfirmDelete|1", "wait 300"], 9),
+
+    # The stash (F-499). The gesture the feature is sold on is a drag, which cannot be scripted — so
+    # `chipdrop` calls the same handler `performDragOperation` does, and everything below AppKit's
+    # delivery of the gesture is exercised.
+    #
+    # The claim worth making here is the one a user would phrase as "I found something that belongs to
+    # the other job": the file lands in the *other* workspace's basket, this workspace's own basket is
+    # untouched, and nothing switched.
+    ("workspace-stash", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "workspace new Elsewhere", "wait 1500",
+                         "workspace 1", "wait 1800",
+                         "mkfile /Users/admin/pc-demo/ws-stash-a.txt", "wait 200",
+                         "mkfile /Users/admin/pc-demo/ws-stash-b.txt", "wait 400",
+                         "marknames ws-stash-a.txt", "wait 700",
+                         "cmd cm_StashAdd", "wait 900",
+                         "stashdump /Users/admin/ws-stash-own.txt", "wait 300",
+                         # Onto the *other* chip, without switching to it.
+                         "chipdrop 2|/Users/admin/pc-demo/ws-stash-b.txt", "wait 900",
+                         "stashdump /Users/admin/ws-stash-still-own.txt", "wait 300",
+                         "workspace 2", "wait 1800",
+                         "stashdump /Users/admin/ws-stash-other.txt", "wait 300"], 9),
+
+    # **The ✕ on a chip deletes, and it asks first** (F-499). Two runs' worth of claim in one
+    # scenario, which is why the probe is set for only the second half of it: the first click is
+    # refused because nothing answered the confirmation, and the workspace is still there — that *is*
+    # the proof that the ✕ is not a one-click destroyer sitting a pixel below the window's top edge.
+    #
+    # `chipclose` rather than a click, for the reason `chipdrop` exists: the glyph is drawn, not a
+    # control, so AppKit's delivery of the click is the only part not exercised. **By name, never by
+    # position**: the guest's config persists, so "the second chip" is whatever earlier scenarios left
+    # there — the first version of this said `chipclose 2`, deleted a stranger, and still reported
+    # green because "Wegwerf is still in the list" was true for the wrong reason.
+    ("workspace-close", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "workspace new Wegwerf", "wait 1800",
+                         "workspacedump /Users/admin/ws-close-before.txt", "wait 400",
+                         # Nothing answers the confirmation, so nothing happens.
+                         "chipclose Wegwerf", "wait 1500",
+                         "workspacedump /Users/admin/ws-close-asked.txt", "wait 400"], 9),
+
+    # The counter-proof, and it is needed: the scenario above would be just as green if `chipclose`
+    # did nothing at all. This one answers the confirmation and deletes the workspace the one above
+    # left behind — so between them they pin both halves, that the ✕ is wired and that it asks. It
+    # also tidies up after its neighbour, which matters on a guest whose config persists and whose
+    # workspace list is capped at nine.
+    #
+    # **Not** called `workspace-close-confirmed`: a scenario owns every REPORTS key beginning with its
+    # own name and a hyphen, so that name would have handed this scenario's two reports to
+    # `workspace-close` above — which runs first, has not written them yet, and fails with "the report
+    # was never written". The neighbouring name has to be one that is not a prefix.
+    ("workspace-delete",
+     ["active left", "left /Users/admin/pc-demo", "wait 1200",
+      "workspacedump /Users/admin/ws-delete-still.txt", "wait 400",
+      "chipclose Wegwerf", "wait 1800",
+      "workspacedump /Users/admin/ws-delete-gone.txt", "wait 400"], 9),
+
+    # A workspace as a file you can hand over (F-499). Three things only a real machine can answer:
+    # that the command writes a file at all, that the bytes on disk are clean, and that opening one
+    # *adds* a workspace rather than replacing the one you are standing in.
+    #
+    # `PC_WORKSPACE_EXPORT`/`_IMPORT` answer the save and open panels, which in a headless run are a
+    # nested runloop nothing gets out of (F-436) — and setting them also puts the report dialogs into
+    # their logging form, so neither end of the round trip waits for a click.
+    #
+    # The baseline is moved to the subfolder first and saved, because that is what travels: a scenario
+    # that skipped `cm_SaveWorkspace` would pass while carrying the folder the workspace was *created*
+    # in, and never notice the difference.
+    #
+    # The precondition is asserted rather than inherited — `id=shared-copy` has to be in the dump. On
+    # a guest that already had one, the created workspace would be `shared-copy-2` and the import
+    # `shared-copy-3`, and a scenario that only looked for `-2` would go green having measured the
+    # leftovers of the previous run.
+    ("workspace-file", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "workspace new Shared Copy", "wait 1800",
+                        "left /Users/admin/pc-demo/sub", "wait 1400",
+                        "cmd cm_SaveWorkspace", "wait 900",
+                        "cmd cm_ExportWorkspace", "wait 1800",
+                        "cmd cm_ImportWorkspace", "wait 2500",
+                        "workspacedump /Users/admin/ws-file.txt", "wait 400"], 9),
+
+    # **A workspace switch parks the terminal's tabs; it does not close them** (F-499).
+    #
+    # Asserted on the tab strip rather than on the process table, and that is a deliberate retreat:
+    # `termsend` needs a live prompt, and on a cold guest the shell is not ready when the script says
+    # it is — this scenario twice reported "the switch killed the job" when the truth was "the job
+    # never started", and from the process table those are the same answer. The tab strip is a fact the
+    # app can state as soon as the view exists.
+    #
+    # What it proves is the same mechanism: two tabs in the first workspace, **one fresh tab** in the
+    # second — the first one's are parked, not closed — and two again on the way back. A close would
+    # leave one tab on return, since closing takes the sessions with it. (The process itself surviving
+    # was measured by hand on the development machine: a background job kept running across the switch
+    # and was reaped only at quit.)
+    ("workspace-terminal", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "placeview plugin.terminal.view|default", "wait 800",
+                            "dock on", "wait 5000",
+                            "termnotify plugin.terminal.view|newTab|", "wait 2000",
+                            "dockdump /Users/admin/ws-term-two.txt", "wait 400",
+                            "workspace new Parked", "wait 3000",
+                            "dockdump /Users/admin/ws-term-fresh.txt", "wait 400",
+                            "workspace 1", "wait 3000",
+                            "dockdump /Users/admin/ws-term-back.txt", "wait 400"], 19),
+
     # Does PcCloseView actually reach the child processes (plan §5)? The quit scenario cannot answer
     # that — after the app exits everything dies from the master fd closing, so teardown and cleanup
     # look identical. This takes the same teardown path with the app still running, and then asks the
@@ -2317,7 +2531,20 @@ EXTERNAL_CHECKS = {
     "keys-probe": ("test -s ~/probe-loop.txt && echo written || echo nothing", "written"),
     # Asked of the machine after the app is gone, because that is when the question makes sense: two
     # tabs were open, and the file that survives the app has to name both of their folders.
-    "terminal-restore": ("python3 -c \"import json;print(len(json.load(open('$HOME/pc-cfg/terminal/session.json'))['bottom']))\" 2>/dev/null || echo 0", "2"),
+    # Asked as "how many folders did the bottom dock write down", not "what is under the key `bottom`":
+    # since F-499 the key carries the workspace as well (`bottom|<id>`), because two workspaces have
+    # two sets of tabs in the same container. The promise being checked is unchanged — two tabs were
+    # open, and the file that outlives the app names both of their folders.
+    "terminal-restore": ("python3 -c \"import json;d=json.load(open('$HOME/pc-cfg/terminal/session.json'));print(max([len(v) for k,v in d.items() if k.split('|')[0]=='bottom'] or [0]))\" 2>/dev/null || echo 0", "2"),
+    # **The claim the export exists to make, asked of the bytes on a real machine.** A unit test makes
+    # the same assertion against a fixture; this one asks it of the file a running app actually wrote,
+    # which is the only version of the question a user would recognise. Two answers in one line: the
+    # sender's home came out tilde-abbreviated, and the literal home path is nowhere in the file — so a
+    # workspace handed to a colleague lands in *their* folders and does not name the sender's.
+    "workspace-file": ("python3 -c \"t=open('$HOME/ws-exported.pcworkspace').read();"
+                       "print('tilde' if '~/pc-demo/sub' in t else 'NO-TILDE',"
+                       "'clean' if '/Users/admin' not in t else 'LEAKED')\" 2>/dev/null || echo missing",
+                       "tilde clean"),
     # Is the OSC 7 hook the settings page describes actually in the guest's .zshrc? Asked over ssh
     # after the app is dead, because the probe that was supposed to answer this from inside the app
     # never produced a file at all — and a question about the fixture should not be routed through the
@@ -2328,6 +2555,7 @@ EXTERNAL_CHECKS = {
     # group, so it dies only because the shell hups its jobs) and the foreground one (the terminal's
     # group, HUPed by the kernel when the master fd closes). Either route failing is a leak.
     "terminal-orphan": ("pgrep -f 'sleep 39[12]' | wc -l | tr -d ' '", "0"),
+
     # The files, on the server, asked of the shell — including the one in a subfolder, because creating
     # the parent is the part a server does not do for you.
     # The app is gone by the time this runs, so it is the disk that answers: every one of the twelve
@@ -2452,6 +2680,12 @@ KEYBOARD_GATES = {
 
 KEYBOARD_REPORTS = {
     "keys-main": ["menu.txt", "keyloop-main.txt", "a11y-main.txt"],
+    # Not a keyboard scenario, but the same collection: this is the only menu bar in the suite that
+    # has the Workspace menu in it, and `check-hotkeys.py` needs it to see ⌃1…⌃9 (F-499).
+    "workspace-switch": ["menu-workspaces.txt"],
+    # Kept for the record: these three dumps are the whole of the parking claim, and a reader should
+    # be able to see the tab counts rather than trust a green line (F-499).
+    "workspace-terminal": ["ws-term-two.txt", "ws-term-fresh.txt", "ws-term-back.txt"],
     "keys-find": ["keyloop-find.txt", "a11y-find.txt"],
     "keys-settings": ["keyloop-settings.txt", "a11y-settings.txt"],
     "keys-editor": ["keyloop-editor.txt", "a11y-editor.txt"],
@@ -2706,6 +2940,33 @@ REPORTS = {
     "sync-presets-grid": ("/Users/admin/preset-grid.txt",
                           ["selected=Nightly", "resultFilter=toRight", "hideEqual=true",
                            "visibleRows=1/3"]),
+    # One workspace, the feature switched on, and nothing on screen. `visible=false` is the whole
+    # scenario (F-499).
+    "workspace-latent": ("/Users/admin/ws-latent.txt",
+                         ["count=1", "enabled=true", "visible=false", "ghost=0"]),
+    # The menu bar, and this is the assertion that will catch a later stage adding surface by accident:
+    # no Workspace menu and no ⌃-digit anywhere. The two Go entries are the exception and are asserted
+    # present, because while the feature is latent they are its only way in — and they have been in
+    # that menu since before it was rebuilt, so their absence would be the regression.
+    "workspace-latent-menu": ("/Users/admin/ws-latent-menu.txt",
+                              ["[cm_Workspaces]", "[cm_SaveWorkspace]",
+                               "!# Workspace", "!cm_Workspace1", "!key=C+1"]),
+    # Switched back to the second workspace, whose left panel is the subfolder it was left in — and no
+    # field drifted between what the switch applied and what is on screen afterwards.
+    "workspace-switch": ("/Users/admin/ws-switch.txt",
+                         ["count=2", "active=second", "visible=true", "ghost=0", "preview=true"]),
+    # The panel itself, after switching back to the first workspace: its model and its rows agree, and
+    # both say the folder this workspace was left in rather than the one the other workspace moved to.
+    "workspace-switch-panel": ("/Users/admin/ws-back-panel.txt", ["path=/Users/admin/pc-demo"]),
+    # The first workspace never had the side panel opened, and switching into it must shut it again.
+    # This is the assertion that fails if `applyChrome` stops being called on a switch — a failure that
+    # otherwise shows up only as "the window looks wrong", which no report says.
+    # Deliberately not asserting the workspace *id* here: it is derived from the localized default
+    # name ("Arbeitsbereich 1" on a German guest), so pinning it would make this a test of the
+    # translation. `count=2` plus the arrangement is the claim that matters.
+    "workspace-switch-chrome": ("/Users/admin/ws-first.txt", ["count=2", "preview=false"]),
+    "workspace-switch-marks": ("/Users/admin/ws-marked-back.txt",
+                               ["marked=2", "name=ws-mark-a.txt", "name=ws-mark-b.txt"]),
     # Last written, so it is the one the guest waits for: Escape closes the second window too, which
     # is also what keeps the script from ending with a window still up.
     "sync-presets": ("/Users/admin/preset-esc2.txt", ["wasRunning=false", "visible=false"]),
@@ -2877,6 +3138,54 @@ REPORTS = {
                                ["panels=plugin.terminal.view", "zsh ·", "!·  0×0"]),
     "terminal-teardown-before": ("/Users/admin/before.txt", ["2"]),
     "terminal-teardown": ("/Users/admin/after.txt", ["0", "!2"]),
+    # Three visits (out and back is two, not one) and the refusal that nothing else records.
+    # It was made…
+    "workspace-close-before": ("/Users/admin/ws-close-before.txt", ["workspace=Wegwerf|"]),
+    # …and the ✕ did not take it, because the question went unanswered. A ✕ that deleted on the click
+    # would show this file without the row — which is the whole claim.
+    "workspace-close": ("/Users/admin/ws-close-asked.txt", ["workspace=Wegwerf|"]),
+
+    # Still there when the next scenario starts…
+    "workspace-delete-still": ("/Users/admin/ws-delete-still.txt", ["workspace=Wegwerf|"]),
+    # …and gone once the confirmation is answered. A negative assertion, because "it is not in the
+    # list" is the whole claim and any positive one would be about something else.
+    "workspace-delete": ("/Users/admin/ws-delete-gone.txt", ["!workspace=Wegwerf|"]),
+
+    # The round trip. `shared-copy` is the one this scenario made (the precondition, asserted rather
+    # than assumed); `shared-copy-2` is the one that came back out of the file — proof that an import
+    # adds and never replaces, which is the property that makes these files safe to double-click.
+    # The folder is the saved starting point, written `~/pc-demo/sub` in the file and landed again in
+    # the importing user's home.
+    "workspace-file": ("/Users/admin/ws-file.txt",
+                       ["workspace=Shared Copy|id=shared-copy|",
+                        "workspace=Shared Copy|id=shared-copy-2|",
+                        "left=/Users/admin/pc-demo/sub"]),
+
+    "workspace-journal": ("/Users/admin/ws-journal.txt",
+                          ["problems=1", "entry=scope|", "refused=", "entry=navigation|"]),
+
+    # The scope is what the dump says it is…
+    "workspace-scope-set": ("/Users/admin/ws-scope.txt", ["scopeMode=refuse"]),
+    # …and the file outside it is still in the listing after F8. The panel's own rows are the witness:
+    # a delete that went through would have taken it out of them.
+    "workspace-scope": ("/Users/admin/ws-scope-after.txt", ["ws-scope-victim.txt"]),
+
+    # One file added here by command…
+    "workspace-stash-own": ("/Users/admin/ws-stash-own.txt",
+                            ["count=1", "item=ws-stash-a.txt|live"]),
+    # …and dropping another onto the other workspace's chip leaves this basket alone. A drop that
+    # quietly landed here instead would still show "count=1" if it replaced rather than added, which
+    # is why the file name is asserted and not only the number.
+    "workspace-stash-still-own": ("/Users/admin/ws-stash-still-own.txt",
+                                  ["count=1", "item=ws-stash-a.txt|live", "!ws-stash-b.txt"]),
+    # The other workspace has exactly the dropped file, and it was never switched to until now.
+    "workspace-stash": ("/Users/admin/ws-stash-other.txt",
+                        ["count=1", "item=ws-stash-b.txt|live", "!ws-stash-a.txt"]),
+
+    # The second workspace gets a terminal of its own rather than the first one's tabs.
+    "workspace-terminal-fresh": ("/Users/admin/ws-term-fresh.txt", ["terminalShowing=true", "!tab 2/2"]),
+    # And the first one's two tabs are still there on the way back — parked, not closed.
+    "workspace-terminal": ("/Users/admin/ws-term-back.txt", ["tab 2/2"]),
     # One tab, session 1, a shell with a real size.
     # One tab and one pane, so the status line carries no bookkeeping at all — which is the claim:
     # "tab 1/1 · session 1" is noise and must not be there.
@@ -4280,6 +4589,18 @@ PLUGINS_ON = {
 # runloop and `quit` never lands, so the scenario does not fail — it hangs. Which is why every macro
 # scenario below sets one, and why a new one must.
 SCENARIO_ENV = {
+    # Answers the scope sheet the way somebody clicking Cancel would, so a refusal is measured rather
+    # than waited on (F-499).
+    "workspace-scope": {"PC_SCOPE": "deny"},
+    "workspace-journal": {"PC_SCOPE": "deny"},
+    # Both ends of the round trip answered from the environment: a save panel and an open panel are
+    # each a modal a headless run never returns from (F-436). Same path for both, which is the point —
+    # the file the app just wrote is the file it is then handed back.
+    # The only scenario allowed to answer "yes" to deleting a workspace. Everywhere else the question
+    # goes unanswered and the workspace survives, which is what the ✕ has to be worth.
+    "workspace-delete": {"PC_WORKSPACE_DELETE": "yes"},
+    "workspace-file": {"PC_WORKSPACE_EXPORT": "/Users/admin/ws-exported.pcworkspace",
+                       "PC_WORKSPACE_IMPORT": "/Users/admin/ws-exported.pcworkspace"},
     "macro-confirm": {"PC_MACRO_CONFIRM_DUMP": "/Users/admin/macro-confirm.txt"},
     # The answer, and then the plan it has to appear in — the whole point of asking before the plan
     # is built rather than when the step is reached.

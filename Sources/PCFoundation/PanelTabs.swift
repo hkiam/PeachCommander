@@ -4,6 +4,17 @@
 // A pure, testable model tracking the set of open tabs for a single panel and
 // which one is active. Each tab remembers its own path, sort order, lock
 // state and cursor position so switching tabs restores the prior view.
+//
+// It is also the shape a workspace is stored and handed around in, which is why the `Codable`
+// conformance below is written out rather than synthesised. Two properties matter for a file people
+// can open, edit and send to somebody else:
+//
+//   * **Short, stable keys.** `sort`, not `sortColumn`. They are the file format now; renaming a
+//     Swift property must not rewrite everybody's stored workspaces.
+//   * **Defaults are not written.** An ordinary tab is `{"path": "/Users/me"}` and nothing else, so a
+//     workspace file stays readable at a glance instead of being five-sixths noise. The decoder
+//     supplies the same defaults the initializer does, so a tab written before a field existed reads
+//     back as a tab without it — the rule `WorkspaceCodec` already had, kept across the move to JSON.
 
 import Foundation
 
@@ -24,13 +35,32 @@ public struct PanelTabState: Sendable, Equatable {
     /// the same tab. The volume is what the tab is on; the path only says where inside it.
     public var driveVolume: String?
 
+    /// Marked entry NAMES relative to `path`, not full paths.
+    ///
+    /// Names rather than paths for three reasons, and the third is the one that decides it: they are
+    /// shorter, they are readable in a file somebody opens, and a workspace handed to a colleague
+    /// whose folder is mounted somewhere else still marks the right files. Restored by intersecting
+    /// with what is actually in the directory, which is also what makes a file deleted in the
+    /// meantime disappear from the selection instead of resurrecting as a phantom.
+    ///
+    /// Only the active tab of a panel can have live marks — `SelectionState.setEntries` intersects
+    /// the marked set with the new directory on every load, so switching tabs already destroys the
+    /// previous tab's marks. Storing them per tab is therefore honest about what is kept, not a
+    /// promise the panel cannot hold.
+    public var marked: [String]?
+
+    /// The quick filter that was showing (`PanelListView.filterText`), nil when there was none.
+    public var filterText: String?
+
     public init(
         path: String,
         sortColumn: String = "name",
         sortAscending: Bool = true,
         locked: Bool = false,
         cursorName: String? = nil,
-        driveVolume: String? = nil
+        driveVolume: String? = nil,
+        marked: [String]? = nil,
+        filterText: String? = nil
     ) {
         self.path = path
         self.sortColumn = sortColumn
@@ -38,6 +68,45 @@ public struct PanelTabState: Sendable, Equatable {
         self.locked = locked
         self.cursorName = cursorName
         self.driveVolume = driveVolume
+        self.marked = marked
+        self.filterText = filterText
+    }
+}
+
+// MARK: - Codable
+
+extension PanelTabState: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case path, sort, asc, locked, cursor, drive, marked, filter
+    }
+
+    /// Defaults are omitted. See the note at the top of this file.
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(path, forKey: .path)
+        if sortColumn != "name" { try c.encode(sortColumn, forKey: .sort) }
+        if !sortAscending { try c.encode(false, forKey: .asc) }
+        if locked { try c.encode(true, forKey: .locked) }
+        try c.encodeIfPresent(cursorName, forKey: .cursor)
+        try c.encodeIfPresent(driveVolume, forKey: .drive)
+        // An empty list is not a list: it would say "nothing is marked here" in a file where the
+        // absence of the key says the same thing more quietly.
+        if let marked, !marked.isEmpty { try c.encode(marked, forKey: .marked) }
+        if let filterText, !filterText.isEmpty { try c.encode(filterText, forKey: .filter) }
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            path: try c.decode(String.self, forKey: .path),
+            sortColumn: try c.decodeIfPresent(String.self, forKey: .sort) ?? "name",
+            sortAscending: try c.decodeIfPresent(Bool.self, forKey: .asc) ?? true,
+            locked: try c.decodeIfPresent(Bool.self, forKey: .locked) ?? false,
+            cursorName: try c.decodeIfPresent(String.self, forKey: .cursor),
+            driveVolume: try c.decodeIfPresent(String.self, forKey: .drive),
+            marked: try c.decodeIfPresent([String].self, forKey: .marked),
+            filterText: try c.decodeIfPresent(String.self, forKey: .filter)
+        )
     }
 }
 

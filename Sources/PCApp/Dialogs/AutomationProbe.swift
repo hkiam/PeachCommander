@@ -33,6 +33,15 @@ enum AutomationProbe {
         return fromArguments
     }
 
+    /// Is this an automation run at all?
+    ///
+    /// For the guards that must not put up a modal even when no probe answers for them: a nested
+    /// runloop in a headless run is one the script never gets out of, and the failure reads as "the
+    /// app never finished" rather than as the dialog it is (F-436).
+    static var isScriptedRun: Bool {
+        UserDefaults.standard.string(forKey: "AutomationScript") != nil
+    }
+
     /// Whether a flag-shaped probe is on. `"0"` is off, so a scenario can turn one off explicitly.
     static func isOn(_ name: String) -> Bool {
         guard let raw = value(name) else { return false }

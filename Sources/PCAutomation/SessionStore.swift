@@ -42,6 +42,12 @@ public struct SessionStore: Sendable {
 public struct SessionInfo: Sendable, Equatable, Identifiable {
     public let id: String
     public let title: String
+    /// nil for a conversation that predates workspaces, which is why it appears in every list.
+    public var workspaceId: String?
+
+    public init(id: String, title: String, workspaceId: String? = nil) {
+        self.id = id; self.title = title; self.workspaceId = workspaceId
+    }
 }
 
 /// Manages multiple live, parallel AI chat sessions + their persistence.
@@ -54,6 +60,8 @@ public actor SessionManager {
     private var live: [String: AgentSession] = [:]
     private var order: [String] = []
     private var titles: [String: String] = [:]
+    /// Which workspace each session belongs to; nil for a chat from before workspaces existed (F-499).
+    private var workspaces: [String: String] = [:]
 
     /// - Parameter makeSession: factory building an AgentSession, either fresh (nil)
     ///   or restored from a snapshot. The app injects the core + provider here.
@@ -75,22 +83,46 @@ public actor SessionManager {
         for snap in store.loadAll().sorted(by: { $0.id < $1.id }) {
             if titles[snap.id] == nil { order.append(snap.id) }
             titles[snap.id] = snap.title
+            workspaces[snap.id] = snap.workspaceId
         }
     }
 
     public func list() -> [SessionInfo] {
-        order.map { SessionInfo(id: $0, title: titles[$0] ?? "Chat") }
+        order.map { SessionInfo(id: $0, title: titles[$0] ?? "Chat", workspaceId: workspaces[$0]) }
+    }
+
+    /// The conversations that belong in `workspace`.
+    ///
+    /// A chat with no workspace of its own is in every list rather than in none: those are the ones
+    /// that existed before this dimension did, and hiding them would look exactly like the upgrade
+    /// having deleted somebody's history (F-499).
+    public func list(workspace: String) -> [SessionInfo] {
+        list().filter { $0.workspaceId == nil || $0.workspaceId == workspace }
+    }
+
+    /// Attach a session to a workspace, or detach it with nil.
+    public func setWorkspace(id: String, to workspace: String?) async {
+        workspaces[id] = workspace
+        if let s = live[id] {
+            await s.setWorkspace(workspace)
+            try? store.save(await s.snapshot())
+        } else if var snap = store.load(id: id) {
+            snap.workspaceId = workspace
+            try? store.save(snap)
+        }
     }
 
     /// Open a new live session and persist it.
     @discardableResult
-    public func create(title: String = "New chat") async -> AgentSession {
+    public func create(title: String = "New chat", workspace: String? = nil) async -> AgentSession {
         let session = makeSession(nil)
         let id = await session.id
         await session.rename(title)
+        await session.setWorkspace(workspace)
         live[id] = session
         if !order.contains(id) { order.append(id) }
         titles[id] = title
+        workspaces[id] = workspace
         try? store.save(await session.snapshot())
         return session
     }
@@ -103,6 +135,7 @@ public actor SessionManager {
         live[id] = s
         if !order.contains(id) { order.append(id) }
         titles[id] = snap.title
+        workspaces[id] = snap.workspaceId
         return s
     }
 
@@ -120,6 +153,7 @@ public actor SessionManager {
     public func delete(id: String) {
         live[id] = nil
         titles[id] = nil
+        workspaces[id] = nil
         order.removeAll { $0 == id }
         store.delete(id: id)
     }

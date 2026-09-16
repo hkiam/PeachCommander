@@ -40,8 +40,21 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("history.ini")
     }
 
-    /// Saved workspaces: named panel layouts (tabs + locations).
-    public var workspaces: URL {
+    /// Saved workspaces — one `<id>.json` per workspace (F-499).
+    ///
+    /// A directory rather than one file, for the reason `macrosDirectory` below gives: a workspace is
+    /// a thing people hand to each other — `.pcworkspace` *is* this file — and getting one out of a
+    /// single store meant editing by hand. It also makes a workspace that will not parse cost only
+    /// itself, which matters more here than for macros: the workspace that fails to load may be the
+    /// one holding the session.
+    public var workspacesDirectory: URL {
+        root.appendingPathComponent("workspaces", isDirectory: true)
+    }
+
+    /// The `workspaces.ini` the directory above replaced, read once so its contents can be moved
+    /// across and then renamed out of the way. Nothing writes it any more. (Mirrors
+    /// `legacyMacrosFile`; the reader is `WorkspaceCodec`, which is kept for exactly this.)
+    public var legacyWorkspaces: URL {
         root.appendingPathComponent("workspaces.ini")
     }
 

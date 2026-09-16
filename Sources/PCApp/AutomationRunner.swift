@@ -711,6 +711,72 @@ extension MainWindowController {
                 setBottomDockVisible(arg.lowercased() != "off")
             case "dockdump":                            // dockdump <out> (F-381)
                 dumpBottomDock(arg)
+            case "workspace":                           // workspace new <name> | <name|index> (F-499)
+                // *Set*, never cycle, for the reason `previewpanel` above gives: a scenario that
+                // steps through workspaces depends on what the previous one left behind.
+                let parts = arg.split(separator: " ", maxSplits: 1).map(String.init)
+                if parts.count == 2, parts[0] == "new" {
+                    createWorkspace(named: parts[1])
+                } else if let index = Int(arg), workspaces.indices.contains(index - 1) {
+                    await switchWorkspace(to: workspaces[index - 1].id)   // 1-based, as the chips read
+                } else if let match = workspaces.first(where: { $0.name == arg || $0.id == arg }) {
+                    await switchWorkspace(to: match.id)
+                }
+            case "workspacedump":                       // workspacedump <out> (F-499)
+                dumpWorkspaces(arg)
+            case "chipdrop":                            // chipdrop <index>|<path>[|copy|move] (F-499)
+                // The drag itself cannot be scripted, so this is the same entry point the drop
+                // handler calls — everything below `performDragOperation` is exercised, and only
+                // AppKit's delivery of the gesture is not.
+                let d = arg.split(separator: "|").map(String.init)
+                if d.count >= 2, let index = Int(d[0]) {
+                    let intent: WorkspaceBarView.DropIntent =
+                        d.count > 2 && d[2] == "copy" ? .copyIntoActiveFolder
+                        : d.count > 2 && d[2] == "move" ? .moveIntoActiveFolder : .stash
+                    handleChipDrop(index: index - 1, paths: [d[1]], intent: intent)  // 1-based, as the chips read
+                }
+            case "chipclose":                           // chipclose <name|index> (F-499)
+                // The ✕ is drawn rather than a control, so a click on it cannot be scripted — this is
+                // the same entry point the mouse handler reaches, exactly as `chipdrop` is for the
+                // drag. Everything below AppKit's delivery of the click is exercised, including the
+                // confirmation, which a scripted run answers from `PC_WORKSPACE_DELETE`.
+                //
+                // **A name, not just a position.** The guest's config persists between scenarios, so
+                // which workspace is second depends on what ran before — a scenario naming a position
+                // deletes whatever happens to be standing there, and its assertion about the one it
+                // meant passes for the wrong reason. `workspace` above takes a name for the same
+                // reason; this follows it.
+                if let match = workspaces.first(where: { $0.name == arg || $0.id == arg }) {
+                    confirmDeleteWorkspace(id: match.id)
+                } else if let index = Int(arg), workspaces.indices.contains(index - 1) {
+                    confirmDeleteWorkspace(id: workspaces[index - 1].id)   // 1-based, as the chips read
+                } else {
+                    NSLog("[automation] chipclose: no workspace named \(arg)")
+                }
+            case "stashdump":                           // stashdump <out> (F-499)
+                dumpStash(arg)
+            case "journaldump":                         // journaldump <out> (F-499)
+                var out = "count=\(activeJournal.count)\n"
+                out += "problems=\(activeJournal.filtered(problemsOnly: true).count)\n"
+                for entry in activeJournal.entries {
+                    out += "entry=\(entry.kind.rawValue)|\(entry.label)"
+                    if let reason = entry.reason { out += "|refused=\(reason)" }
+                    out += "\n"
+                }
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "workspacescope":                      // workspacescope <path>|<allow|ask|refuse> (F-499)
+                // `omittingEmptySubsequences: false`, or `workspacescope |ask` — the form that
+                // *clears* the scope — parses as the single part "ask", which then becomes the root.
+                // That leaked a scope matching nothing into every later scenario on the same guest,
+                // and fourteen of them hung on a confirmation sheet (F-499).
+                let a = arg.split(separator: "|", maxSplits: 1,
+                                  omittingEmptySubsequences: false).map(String.init)
+                if let index = activeWorkspaceIndex, !a.isEmpty {
+                    let mode = a.count > 1 ? (ScopeEnforcement(rawValue: a[1]) ?? .ask) : .ask
+                    workspaces[index].scope = a[0].isEmpty ? WorkspaceScope()
+                                                           : WorkspaceScope(root: a[0], enforcement: mode)
+                    workspaceStore.save(workspaces[index])
+                }
             case "refreshviews":                        // refreshviews (F-381)
                 // The exact entry point a plugin being enabled or disabled reaches. Nothing about the
                 // *contributions* changes here, which is the whole question: a refresh that changes
@@ -2640,6 +2706,53 @@ extension MainWindowController {
     ///
     /// So the four edges are measured against each other and the verdict is written next to them. The
     /// numbers stay in the dump because a verdict alone tells you nothing about *how* it went wrong.
+    /// The workspaces as the chips read them, plus the two claims a scenario needs to make.
+    ///
+    /// `ghost=` is the one that cannot be seen any other way: a field that a switch applied but did
+    /// not read back is a value from the workspace you just left, still on screen under the new
+    /// workspace's name. Nothing else in the app would say so.
+    private func dumpWorkspaces(_ path: String) {
+        var out = "count=\(workspaces.count)\n"
+        out += "active=\(activeWorkspaceID)\n"
+        out += "enabled=\(workspacesEnabled)\n"
+        if let scope = activeWorkspace?.scope {
+            out += "scopeRoot=\(scope.root)\n"
+            out += "scopeMode=\(scope.isSet ? scope.enforcement.rawValue : "none")\n"
+        }
+        out += "visible=\(workspacesAreVisible)\n"
+        #if DEBUG
+        out += "ghost=\(workspaceGhostFields.count)\n"
+        if !workspaceGhostFields.isEmpty {
+            out += "ghostFields=\(workspaceGhostFields.joined(separator: ","))\n"
+        }
+        #endif
+        if let chrome = activeWorkspace?.live.chrome {
+            out += "preview=\(chrome.previewVisible)\n"
+            out += "dock=\(chrome.dockVisible)\n"
+            out += "sharedTree=\(chrome.sharedTreeVisible)\n"
+            out += "horizontal=\(chrome.horizontalPanels)\n"
+        }
+        for w in workspaces {
+            out += "workspace=\(w.name)|id=\(w.id)|tint=\(w.tint)|order=\(w.order)"
+            out += "|left=\(w.live.left.tabs.map(\.path).joined(separator: ","))"
+            out += "|right=\(w.live.right.tabs.map(\.path).joined(separator: ","))"
+            out += "|side=\(w.live.activeSide.rawValue)\n"
+        }
+        try? out.write(toFile: path, atomically: true, encoding: .utf8)
+    }
+
+    /// The active workspace's basket, and which of it is still on disk.
+    private func dumpStash(_ path: String) {
+        let split = partitionStash()
+        var out = "count=\(activeStash.count)\n"
+        out += "live=\(split.live.count)\nstale=\(split.stale.count)\n"
+        for item in activeStash.items {
+            let exists = FileManager.default.fileExists(atPath: item.path)
+            out += "item=\(item.name)|\(exists ? "live" : "stale")|\(item.path)\n"
+        }
+        try? out.write(toFile: path, atomically: true, encoding: .utf8)
+    }
+
     private func dumpBottomDock(_ file: String) {
         guard let dock = bottomDockForAutomation() else {
             try? "ERROR: no dock\n".write(toFile: file, atomically: true, encoding: .utf8)

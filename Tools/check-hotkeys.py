@@ -32,6 +32,13 @@ SCHEMES = [REPO / "Sources/PCApp/Resources/keymap-tc-classic.ini",
            REPO / "Sources/PCApp/Resources/keymap-macos.ini"]
 DEFAULT_MENU = REPO / "docs/generated/layout-regression/menu.txt"
 
+# A second menu bar, dumped by the `workspace-switch` VM scenario while a second workspace exists
+# (F-499). The Workspace menu and its ⌃1…⌃9 bindings are in no other dump, because every other
+# scenario runs with one workspace — where the menu deliberately does not exist. Without this the gate
+# would pass having audited a menu bar that never contained the shortcuts in question, which is the
+# exact failure mode this whole file was written to prevent.
+EXTRA_MENUS = [REPO / "docs/generated/layout-regression/menu-workspaces.txt"]
+
 # Combinations macOS reserves; an app can bind them and they will not arrive (or will do the system's
 # thing as well). Spelled in the schemes' own notation.
 RESERVED = {
@@ -185,6 +192,29 @@ def main():
         notes.append(f"no menu dump at {args.menu} — run Tools/vm/regress.py to compare against the "
                      f"menu bar (checks 3 and 4 skipped)")
     else:
+        # Each alternative menu bar is checked **on its own**, never merged into this one.
+        #
+        # They are states the app is in at different times — one workspace or several — and a key may
+        # perfectly well mean the same command in both. Merging them reports that as a collision and
+        # is wrong: ⌘⌃S is in the Go menu while the feature is latent and in the Workspace menu once
+        # it is not, and there is no moment at which both are on screen. What must hold is the thing
+        # AppKit actually decides: within one menu bar, one key belongs to one command.
+        for extra in EXTRA_MENUS:
+            more = read_menu(extra)
+            if more is None:
+                notes.append(f"no menu dump at {extra} — the menus only that state has were not "
+                             f"audited (run Tools/vm/regress.py)")
+                continue
+            for key, entries in sorted(more.items()):
+                if len(entries) > 1:
+                    where = "; ".join(f"{m} ▸ {t}" for m, t, _ in entries)
+                    report("menu", key,
+                           f"menu ({extra.name}): {key} is on {len(entries)} items — AppKit takes "
+                           f"the first: {where}")
+                if key in RESERVED:
+                    report("menu", key,
+                           f"menu ({extra.name}): {key} is {RESERVED[key]} — "
+                           f"{entries[0][0]} ▸ {entries[0][1]} never receives it")
         for key, entries in sorted(menu.items()):
             if len(entries) > 1:
                 where = "; ".join(f"{m} ▸ {t}" for m, t, _ in entries)

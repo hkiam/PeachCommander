@@ -348,9 +348,6 @@ final class DroppableButton: NSButton {
     }
 
     fileprivate static func files(from sender: NSDraggingInfo) -> [String] {
-        guard let urls = sender.draggingPasteboard.readObjects(
-            forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true]) as? [URL] else { return [] }
-        return urls.map(\.path)
+        FileDragPasteboard.paths(from: sender)
     }
 }

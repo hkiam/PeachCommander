@@ -1021,11 +1021,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     func toggleQuickFilter() { toggleFilterMode() }
 
     /// Apply a quick filter without typing it, so a check can ask what the filter actually keeps.
-    func automationSetFilter(_ text: String) {
-        filterMode = true
-        filterText = text
-        applyFilterLive()
-    }
+    func automationSetFilter(_ text: String) { setQuickFilter(text) }
 
     private func toggleFilterMode() {
         filterMode.toggle()
@@ -1589,6 +1585,75 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         visibleEntries
             .filter { $0.name != ".." && selectedPaths.contains(fullPath(of: $0)) }
             .map { fullPath(of: $0) }
+    }
+
+    /// The marked entries' leaf names, for writing into a workspace (F-499).
+    ///
+    /// **No cursor fallback.** `selectedOrCursorPathsSync` answers with the cursor item when nothing
+    /// is marked, which is right for "what would this command act on" and wrong here: it would turn a
+    /// merely-positioned cursor into a real selection on the way back into the workspace.
+    ///
+    /// Names rather than paths, to match what `PanelTabState.marked` stores and why.
+    ///
+    /// Read from `selectedPaths` rather than by walking `visibleEntries`, and that is the difference
+    /// between this and `selectedItemPaths()`. That one answers "what would a command act on", so it
+    /// is right for it to see only what the quick filter is showing. This one is writing the selection
+    /// down to bring it back — and with a filter on, walking the visible rows would quietly drop every
+    /// mark the filter happens to be hiding.
+    func markedNames() -> [String] {
+        selectedPaths.map { ($0 as NSString).lastPathComponent }.sorted()
+    }
+
+    /// Put a stored selection back. Awaitable, and it does not touch the selection history.
+    ///
+    /// Two differences from `markNames`, both deliberate. It can be awaited, so a workspace switch
+    /// knows the marks are on before it reports itself finished. And restoring is not an *action* the
+    /// user took, so it must not push onto the Num-/ history — otherwise arriving in a workspace
+    /// silently arms an "undo selection" for something nobody did.
+    ///
+    /// Names that are not in the directory any more are dropped, which is the whole reason the
+    /// intersection with `visibleEntries` is right here rather than a defect: a file deleted while the
+    /// workspace was away must not come back as a phantom mark.
+    func restoreMarks(names: [String]) async {
+        guard let state = selectionState else { return }
+        // The return value says whether anything was actually marked, and it was being thrown away.
+        // With nothing to put back *and* nothing that was there to take away, everything below is a
+        // second pass over a table `importTabs` has already drawn correctly — and the mirror already
+        // says empty. Measured on a workspace switch: this is the common case by far, and the hop it
+        // saves cost ~70 ms per panel whatever the folder held (F-499).
+        let hadMarks = await state.clearSelection()
+        if names.isEmpty, !hadMarks { return }
+        if !names.isEmpty {
+            let wanted = Set(names)
+            // Every entry in the directory, not only the rows the filter is showing — the mirror image
+            // of the note on `markedNames()`. Restoring against the visible rows would drop exactly
+            // the marks that were hidden when the workspace was left.
+            for entry in (snapshot?.entries ?? visibleEntries) where wanted.contains(entry.name) {
+                _ = await state.select(fullPath(of: entry))
+            }
+        }
+        await refreshSelectionMirror()
+        reloadData()
+        notifyChanged()
+    }
+
+    /// The quick filter that is showing, or nil when there is none (F-499).
+    var quickFilterText: String? {
+        filterText.isEmpty ? nil : filterText
+    }
+
+    /// Put a quick filter back, or clear it when `text` is nil.
+    ///
+    /// The same entry point `automationSetFilter` had, under a name that says what it is for: it is
+    /// the production path now, not only a way for a scenario to type without typing.
+    func setQuickFilter(_ text: String?) {
+        guard let text, !text.isEmpty else {
+            if filterMode || !filterText.isEmpty { clearFilter() }
+            return
+        }
+        filterMode = true
+        filterText = text
+        applyFilterLive()
     }
 
     /// Select exactly the entries whose leaf name is in `names` (Compare Directories).

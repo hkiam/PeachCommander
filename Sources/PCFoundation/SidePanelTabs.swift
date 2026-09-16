@@ -43,6 +43,9 @@ public enum SidePanelPage: String, CaseIterable, Sendable {
     case info
     case activities
     case log
+    /// The workspace's collecting basket (F-499). Off by default, like activities and log: it is
+    /// useful to the people who collect files across an afternoon and invisible to everybody else.
+    case stash
 }
 
 /// One tab of the side panel: a built-in page, or a plugin view by its id.

@@ -65,12 +65,27 @@ public actor AgentSession {
         public var id: String
         public var title: String
         public var messages: [ModelMessage]
-        public init(id: String, title: String, messages: [ModelMessage]) {
+        /// Which workspace this conversation belongs to (F-499).
+        ///
+        /// Optional, and it stays nil for every chat that existed before workspaces did — those show
+        /// up everywhere rather than being hidden from the workspace somebody happens to be in, which
+        /// is the only behaviour that cannot lose somebody's chat on upgrade.
+        public var workspaceId: String?
+
+        public init(id: String, title: String, messages: [ModelMessage], workspaceId: String? = nil) {
             self.id = id; self.title = title; self.messages = messages
+            self.workspaceId = workspaceId
         }
     }
 
-    public func snapshot() -> Snapshot { Snapshot(id: id, title: title, messages: history) }
+    /// The workspace this session was opened in, when it was opened in one.
+    public private(set) var workspaceId: String?
+
+    public func setWorkspace(_ id: String?) { workspaceId = id }
+
+    public func snapshot() -> Snapshot {
+        Snapshot(id: id, title: title, messages: history, workspaceId: workspaceId)
+    }
 
     /// One plan awaiting user confirmation before it runs.
     public struct PendingPlan: Sendable, Equatable {

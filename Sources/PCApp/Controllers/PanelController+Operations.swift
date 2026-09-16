@@ -833,6 +833,7 @@ extension PanelController {
     /// is new: names the batch could not deliver used to be dropped without a word (F-175).
     @discardableResult
     func performRenames(dir: String, pairs: [(old: String, new: String)]) -> [(from: String, to: String)] {
+        guard scopeAllowsWriting(in: dir) else { return [] }
         // A mount renames through its own file system. `RenameBatchEngine` is `FileManager`, so on a
         // server or plugin panel every rename failed against a path that exists nowhere on this Mac —
         // and the failures were then reported as if the files had refused. `PfxRenMov` is a
@@ -977,6 +978,7 @@ extension PanelController {
 
     func makeDirectory() async {
         let parent = await getCurrentPath()
+        guard scopeAllowsWriting(in: parent) else { return }
         let dialog = InputDialog(title: String(localized: "New Folder"),
                                  prompt: String(localized: "Create directory (use / to nest, | for several):"),
                                  initialValue: "")
@@ -1097,6 +1099,22 @@ extension PanelController {
     func deleteSelection(permanent explicitPermanent: Bool) async {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }
+        await delete(items: items, permanent: explicitPermanent)
+    }
+
+    /// Delete `items`, whatever chose them.
+    ///
+    /// Split out of `deleteSelection` so that something other than the panel's own selection can be
+    /// deleted — the workspace stash, and anything that comes after it (F-499). Equally important, it
+    /// gives the scope check one place to stand for every delete in the application rather than one
+    /// per caller, which is the difference between a safety net and a suggestion.
+    func delete(items: [String], permanent explicitPermanent: Bool) async {
+        guard !items.isEmpty else { return }
+        // **Before the confirmation, not after it.** The scope check sits in `runTransfer` for every
+        // other operation, which for a delete would be one dialog too late: the user would confirm the
+        // delete and only then be told it reaches outside the workspace. Two questions in a row, the
+        // second contradicting the first (F-499).
+        guard scopeAllows(.delete(items: items)) else { return }
         // A *real* archive, not merely "not the local disk". `isInArchive` is defined as
         // `!(fs is LocalFS)`, so every server and every plugin mount arrived in the archive branch
         // and was told it was a read-only archive — which is what TaskManager's "Quit Process"
@@ -1282,9 +1300,60 @@ extension PanelController {
         return []
     }
 
+    /// Does the active workspace's scope allow this operation? (F-499)
+    ///
+    /// Asked here and in `enqueueBackground`, which between them are every file operation the panels
+    /// start: F5, F6, drag-and-drop, paste, same-panel copy, adding to an archive, repeating from the
+    /// history and the stash's bulk operation. Putting it on each of those instead would be a dozen
+    /// places to remember, and the one that was forgotten would be the one that mattered.
+    private func scopeAllows(_ kind: OperationKind) -> Bool {
+        guard let wc = view.window?.windowController as? MainWindowController,
+              let workspace = wc.activeWorkspace, workspace.scope.isSet else { return true }
+        let allowed = WorkspaceScopeGate.allows(kind: kind, scope: workspace.scope,
+                                                workspaceName: workspace.name)
+        if !allowed {
+            // The journal entry with no counterpart in the global history, and the one that makes the
+            // journal worth opening: nothing else in the application records that a scope stopped
+            // something (F-499).
+            wc.journal(.scope, label: Self.describe(kind), directory: Self.directory(of: kind),
+                       outcome: .refused(String(localized: "outside this workspace")))
+        }
+        return allowed
+    }
+
+    /// A short name for an operation, for the journal's row.
+    private static func describe(_ kind: OperationKind) -> String {
+        switch kind {
+        case .copy(let items, _, _): return String(localized: "Copy \(items.count) item(s)")
+        case .move(let items, _, _): return String(localized: "Move \(items.count) item(s)")
+        case .trash(let items): return String(localized: "Move \(items.count) item(s) to Trash")
+        case .delete(let items): return String(localized: "Delete \(items.count) item(s)")
+        case .custom: return String(localized: "Operation")
+        }
+    }
+
+    private static func directory(of kind: OperationKind) -> String {
+        switch kind {
+        case .copy(_, let dest, _), .move(_, let dest, _): return dest
+        case .trash(let items), .delete(let items):
+            return (items.first as NSString?)?.deletingLastPathComponent ?? ""
+        case .custom: return ""
+        }
+    }
+
+    /// The rename and new-folder paths build no `OperationKind`, so they ask directly. Both are writes
+    /// inside a folder, so the folder is what is judged.
+    func scopeAllowsWriting(in folder: String) -> Bool {
+        guard let wc = view.window?.windowController as? MainWindowController,
+              let workspace = wc.activeWorkspace, workspace.scope.isSet else { return true }
+        return WorkspaceScopeGate.allows(scope: workspace.scope, workspaceName: workspace.name,
+                                         destination: folder)
+    }
+
     func runTransfer(_ kind: OperationKind, title: String,
                      trashSink: (@Sendable ([TrashedItem]) -> Void)? = nil,
                      mergedSink: (@Sendable ([String]) -> Void)? = nil) async {
+        guard scopeAllows(kind) else { return }
         let queue = TransferQueue()
         queue.trashSink = trashSink
         queue.mergedSink = mergedSink
@@ -1367,6 +1436,7 @@ extension PanelController {
     /// belongs for a background transfer, and where it was simply not happening (F-090).
     private func enqueueBackground(_ kind: OperationKind, title: String, startHeld: Bool = false,
                                    onFinished: (@MainActor () async -> Void)? = nil) {
+        guard scopeAllows(kind) else { return }
         TransferManager.shared.enqueue(kind, title: title, startHeld: startHeld) { [weak self] done in
             guard let self else { return }
             Task { @MainActor in
@@ -1429,8 +1499,12 @@ extension PanelController {
         let side: HistoryPanelSide = position.isLeft ? .left : .right
         HistoryService.shared.recordOperation(label: label, directory: directory, payload: payload,
                                              panel: side)
-        (view.window?.windowController as? MainWindowController)?
-            .noteForMacroRecording(label: label, directory: directory, payload: payload, panel: side)
+        let wc = view.window?.windowController as? MainWindowController
+        wc?.noteForMacroRecording(label: label, directory: directory, payload: payload, panel: side)
+        // One line, and the workspace journal has every completed operation with the payload already
+        // assembled. This is the choke point `HistoryService`'s own header describes as "the same
+        // places that register an undo" (F-499).
+        wc?.journal(.operation, label: label, directory: directory, payload: payload)
     }
 
     /// The same, for a queued operation described by its `OperationKind`.

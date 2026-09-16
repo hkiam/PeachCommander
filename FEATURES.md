@@ -112,7 +112,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Start menu & user commands | expert | — | ✅ |
 | The app's own windows follow the colour theme | user | — | ✅ |
 | User-supplied color themes (themes/*.ini) | user, expert | — | ✅ |
-| Workspaces | expert | Cmd+Ctrl+S | ✅ |
+| Workspaces | user, expert | Ctrl+1…Ctrl+9, Cmd+Ctrl+S, Ctrl+Cmd+A | ✅ |
 | macOS integration | user | — | ✅ |
 
 ## Settings

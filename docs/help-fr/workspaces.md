@@ -6,30 +6,105 @@ order: 118
 related: [settings, panels-and-tabs]
 ---
 
-Un espace de travail est un instantané enregistré de vos deux panneaux : les dossiers qu'ils affichent, chaque onglet ouvert, quel onglet est actif de chaque côté et quel panneau a le focus. Enregistrez une fois l'agencement que vous utilisez pour une tâche, et vous pourrez tout ramener d'un seul choix plus tard. Les espaces de travail sont idéaux pour les configurations par projet, de sorte que vous pouvez passer directement des dossiers et onglets d'un travail à ceux d'un autre sans rien rouvrir à la main.
+Un espace de travail est un contexte nommé dans lequel vous travaillez : « Ranger les sauvegardes », « Trier les candidatures ». Chacun retient les deux panneaux, tous les onglets ouverts, l’onglet actif de chaque côté, le mode d’affichage, l’arborescence, l’historique précédent/suivant et les fichiers que vous aviez marqués, le filtre rapide et la disposition de la fenêtre : le panneau latéral, le dock, les barres et la position du séparateur. Basculer coûte un clic, et rien ne se perd en chemin — un espace de travail n’est jamais enregistré, parce qu’il ne s’arrête jamais.
+
+Tant que vous n’en créez pas un deuxième, il n’y a rien à voir. Pas de barre, pas de menu, pas de raccourcis.
 
 ## Comment faire
 
-1. Configurez les deux panneaux comme vous le voulez : ouvrez les dossiers, ajoutez les onglets et sélectionnez le panneau que vous voulez actif.
-2. Ouvrez le menu **Aller** et choisissez **Enregistrer l'espace de travail…**.
-3. Saisissez un nom pour l'espace de travail et confirmez. La disposition actuelle des deux panneaux est stockée sous ce nom.
-4. Pour revenir à une disposition enregistrée plus tard, ouvrez le menu **Aller** et choisissez **Espaces de travail…**.
-5. Dans la liste contextuelle, cliquez sur l'espace de travail voulu. Les deux panneaux, leurs onglets et le côté actif sont restaurés.
-6. Pour retirer un espace de travail, ouvrez **Espaces de travail…**, pointez sur **Supprimer** et choisissez le nom dans le sous-menu.
+1. Disposez les deux panneaux pour la tâche en cours : ouvrez les dossiers, ajoutez les onglets, choisissez l’affichage voulu.
+2. Ouvrez le menu **Aller** et choisissez **Espaces de travail…**, puis **Nouvel espace de travail…**. Donnez-lui un nom.
+3. Une bande de pastilles colorées apparaît en haut de la fenêtre, et le menu **Espace de travail** apparaît dans la barre des menus. Le nouvel espace de travail débute comme une copie de la disposition où vous étiez.
+4. Disposez le nouvel espace de travail pour sa propre tâche. Celui d’où vous venez garde ce qu’il avait.
+5. Cliquez sur une pastille pour basculer, ou appuyez sur **Ctrl+1** à **Ctrl+9**. Tout bascule avec.
 
-## Raccourcis
+## Revenir à un point de départ
+
+Chaque espace de travail retient aussi la disposition avec laquelle il a été créé. **Espace de travail ▸ Enregistrer l’état actuel dans l’espace de travail** (Cmd+Ctrl+S) fait de la disposition actuelle ce point de départ, et **Rétablir l’état enregistré** y ramène après un après-midi d’errance.
+
+C’est indépendant de la mémorisation continue : vous n’avez jamais à enregistrer pour ne pas perdre votre place.
+
+## Le panier
+
+Chaque espace de travail a un panier — pour ce qui arrive réellement pendant un rangement : trois
+dossiers plus bas dans les sauvegardes, vous trouvez quelque chose qui appartient à un tout autre
+travail. **Faites glisser des fichiers sur la pastille d’un autre espace** et ils atterrissent dans
+*son* panier : vous ne basculez pas, et rien n’est copié ni déplacé ; le compteur de la pastille
+augmente et vous continuez. Maintenez **⌥** en déposant pour copier dans le dossier de cet espace, ou
+**⌘** pour déplacer. **Ctrl+Cmd+A** met la sélection dans le panier de l’espace actuel, la page
+**Panier** du panneau latéral en montre le contenu, et **Espace de travail ▸ Copier le panier dans
+l’autre panneau** traite tout le panier en une seule opération.
+
+Les fichiers supprimés depuis, ou sur un volume non monté, sont affichés comme manquants plutôt que
+retirés, et une opération groupée propose de les ignorer ou de les sortir d’abord. Un déplacement vide
+le panier de ce qu’il a déplacé ; une copie le laisse tel quel.
 
 | Action | Raccourci |
 | --- | --- |
-| Enregistrer la disposition actuelle comme espace de travail | Cmd+Ctrl+S |
+| Basculer vers l’espace de travail 1 à 9 | Ctrl+1 … Ctrl+9 |
+| Faire de la disposition actuelle le point de départ | Cmd+Ctrl+S |
 
 ## Astuces
 
-- Dans la liste contextuelle **Espaces de travail…**, vos neuf premiers espaces de travail enregistrés obtiennent des touches numériques de sélection rapide de 1 à 9, pour que vous puissiez basculer d'une seule frappe.
-- Vous pouvez aussi enregistrer un nouvel espace de travail depuis la liste contextuelle **Espaces de travail…** avec **Enregistrer l'actuel comme espace de travail…**, sans quitter la liste.
-- Nommez les espaces de travail d'après le travail qu'ils soutiennent (« Site web », « Import photos », « Sauvegardes ») pour que la liste reste facile à parcourir.
+- Faites un clic droit sur une pastille pour la renommer, lui donner une couleur ou la supprimer — ou cliquez sur le **✕** à son extrémité droite, qui supprime l’espace de travail après confirmation. La couleur est ce qui vous permet de distinguer les espaces de travail d’un coup d’œil quand la fenêtre est étroite et que les noms ne tiennent plus.
+- Neuf est la limite, afin que chaque pastille reste reconnaissable.
+- **Affichage ▸ Afficher la barre des espaces de travail** masque la bande sans désactiver la fonction, pour qui passe d’un espace à l’autre au clavier.
+- Les espaces de travail peuvent être entièrement désactivés dans **Réglages ▸ Onglets**. Vos espaces de travail sont conservés et reviennent inchangés lorsque vous réactivez la fonction.
+
+## Limiter un espace de travail à un dossier
+
+On peut dire à un espace de travail de quoi il s’occupe ; il vérifie alors avant qu’une opération ne
+déborde. Clic droit sur sa pastille, **Limiter à un dossier ▸ Définir sur le dossier actif**, puis
+choisissez si les opérations à l’extérieur sont autorisées, soumises à une question, ou refusées.
+
+La vérification a lieu avant qu’une suppression ne prenne des fichiers de l’extérieur, avant qu’une
+copie ou un déplacement n’atterrisse à l’extérieur, et avant qu’un renommage ou un nouveau dossier
+n’écrive à l’extérieur. **La navigation n’est jamais restreinte** : un gestionnaire de fichiers qui
+refuse de montrer un dossier est cassé, et toute la valeur est dans l’instant qui précède F8. Les
+enregistrements de l’éditeur ne sont pas couverts non plus ; ils se font dans leur propre fenêtre.
+
+## Le journal
+
+Chaque espace de travail tient un relevé de ce qui y a été fait — dossiers visités, opérations
+effectuées, lignes de shell saisies, et tout ce qu’une limite de dossier a refusé. **Espace de travail
+▸ Journal…** l’affiche, jour le plus récent en premier, avec un filtre **Problèmes** pour tout ce qui a
+échoué ou a été arrêté.
+
+Retour répète la ligne sélectionnée, sous la même règle que l’historique : seule une copie ou un
+déplacement se répète d’une touche, et une ligne de shell est insérée dans la ligne de commande plutôt
+qu’exécutée. Le journal est délibérément distinct de l’historique global : celui-ci répond à « où
+vais-je d’habitude » et classe par fréquence ; celui-là répond à « que s’est-il passé ici » et conserve
+l’ordre. Il est supprimé avec son espace de travail, conservé sans limite sinon, et peut être désactivé
+dans **Réglages ▸ Onglets**.
+
+## Transmettre un espace de travail
+
+**Espace de travail ▸ Exporter l’espace de travail…** écrit l’espace de travail courant dans un
+fichier `.pcworkspace` que vous pouvez envoyer à quelqu’un ou garder dans un dossier de projet.
+**Importer un espace de travail…** le relit, et un double-clic dans le Finder aussi.
+
+Ce qui voyage, c’est le **point de départ enregistré** de l’espace de travail — appuyez d’abord sur
+⌘⌃S si vous voulez l’agencement que vous avez sous les yeux — avec son nom, sa couleur, sa limite de
+dossier et son panier. Les dossiers situés sous votre dossier personnel sont écrits en abrégé, pour
+que le fichier s’ouvre dans le dossier personnel de l’*autre* et non dans un dossier portant votre
+nom.
+
+Ce qui délibérément ne voyage pas :
+
+- **Tout ce qui pourrait être un identifiant.** Les onglets pointant vers une connexion ou un volume de module monté sont retirés à l’export, et le rapport en donne le nombre. Il n’y a rien à perdre, puisque rien concernant une connexion n’est écrit.
+- **Le journal.** Il consigne ce que vous avez fait et nomme des dossiers de votre machine. Il reste ici.
+- Les positions du curseur, l’historique d’annulation, la taille de la fenêtre, ainsi que les fenêtres de visualisation, d’édition, de recherche et de synchronisation ouvertes.
+- Les onglets du terminal et les conversations avec l’assistant. Ils appartiennent à ce Mac ; un fichier d’espace de travail porte *où* travailler, pas ce qui tourne.
+
+Un import **ajoute** toujours un espace de travail ; il ne remplace jamais celui dans lequel vous
+êtes et ne bascule jamais de lui-même — un fichier envoyé par quelqu’un ne doit pas déplacer votre
+fenêtre. Les dossiers absents de ce Mac s’ouvrent au plus proche qui existe, les éléments du panier
+gardent leurs chemins et apparaissent en grisé, et une limite de dossier dont le dossier manque est
+conservée mais passe à « demander » au lieu de « refuser ». Un rapport énumère tout cela.
 
 ## Remarques
 
-- Charger un espace de travail remplace les onglets des deux panneaux par le jeu enregistré. Tout ce que vous aviez ouvert mais non enregistré n'est pas conservé, alors enregistrez d'abord votre disposition actuelle si vous voulez y revenir.
-- Un espace de travail enregistre les emplacements des dossiers et les onglets, pas les fichiers qu'ils contiennent. Si un dossier enregistré a été déplacé ou supprimé, cet onglet se rouvre là où il le peut.
+- Basculer ne demande jamais s’il faut enregistrer et ne ferme jamais rien. Les opérations de fichiers en cours se poursuivent, et tout ce qui tourne dans un terminal aussi : les onglets de l’espace que vous quittez sont mis de côté avec leurs shells vivants, pas fermés. Les conversations de l’assistant suivent également l’espace de travail.
+- L’annulation suit un espace de travail uniquement tant que l’application tourne : une étape d’annulation porte l’action qui l’inverse, et celle-ci ne peut pas être écrite sur le disque.
+- Un espace de travail retient des emplacements de dossiers, pas les fichiers qu’ils contiennent. Si un dossier enregistré a été déplacé ou supprimé, cet onglet s’ouvre sur le dossier existant le plus proche.
+- Lors d’une mise à niveau depuis une version antérieure : les espaces de travail que vous aviez enregistrés deviennent des pastilles, et la session dans laquelle vous étiez devient le premier. Rien n’est perdu, et l’ancien `workspaces.ini` est conservé sous le nom `workspaces.ini.migrated`.

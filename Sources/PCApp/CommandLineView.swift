@@ -140,7 +140,10 @@ final class CommandLineView: NSView, NSTextFieldDelegate {
         // Also into the global history (F-402), which outlives this window's own Up/Down list — that one
         // is per session and per command line, and a command worth running again is usually one from
         // yesterday.
-        HistoryService.shared.recordCommand(line, directory: cwdProvider?() ?? NSHomeDirectory())
+        let cwd = cwdProvider?() ?? NSHomeDirectory()
+        HistoryService.shared.recordCommand(line, directory: cwd)
+        (window?.windowController as? MainWindowController)?
+            .journal(.command, label: line, directory: cwd)
         field.stringValue = ""
         onExecute?(line)
     }

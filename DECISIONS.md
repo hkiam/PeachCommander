@@ -100,3 +100,26 @@ it (never rewrite history). Keep each ADR short: Context / Decision / Consequenc
   no offset, so there is no range read and no resume. Large objects are therefore
   expensive to view (the host materialises them), and a streaming entry point in
   `pfx.h` is the way out if that becomes the binding limit.
+
+## ADR-013: A workspace scope governs what is written, never what is shown
+- **Context:** a workspace can be limited to a folder (F-499), so that "clean up
+  backups" warns — or refuses — when an operation reaches outside `/Volumes/Backup`.
+  The obvious next step is to restrict navigation to that folder too: it would make
+  the workspace feel like a sandbox, and it is what people ask for when they first
+  hear the word "scope".
+- **Decision:** the scope is checked for **writes only** — the destination of a copy,
+  the sources of a delete, both for a move, and the folder of a rename or a new
+  folder. Listing, entering, searching and viewing are never restricted.
+- **Why:** a file manager that refuses to show a folder is broken. The panels are how
+  you find out what is where, and a limit that stops you *looking* costs something on
+  every keystroke while protecting nothing — nobody has ever lost data by reading a
+  directory. The value is entirely in the moment before F8, and that is where the
+  question belongs.
+- **The failure mode this avoids** is not a bug report, it is silence: a guard that
+  gets in the way during ordinary navigation is switched off within a day, and then it
+  is not there for the delete either. A guard people keep is worth more than a stricter
+  one they turn off.
+- **Consequences:** a scope cannot be used as a sandbox, and should not be described as
+  one — the help page says "operations", not "access". Editor saves are outside the
+  check too, for now: they happen in another window with its own path, and pretending
+  otherwise would make the promise less true than it reads.

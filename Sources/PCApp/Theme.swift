@@ -675,6 +675,9 @@ public struct Fonts {
     /// Bold font for headers
     public static let bold13 = NSFont.boldSystemFont(ofSize: 13)
 
+    /// Small bold, for a count that has to fit inside a 14-point pill (F-499).
+    public static let bold11 = NSFont.boldSystemFont(ofSize: 11)
+
     /// Configurable panel-list font size (F-272), applied to the name/text cells.
     /// A global (all panels share one size, a Display option); read on the main thread.
     nonisolated(unsafe) public static var panelSize: CGFloat = 13
