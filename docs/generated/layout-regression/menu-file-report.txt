@@ -146,9 +146,32 @@
   Target = Source  [cm_TargetEqualSource]  key=C+=
   Left = Right  [cm_LeftEqualsRight]
   Right = Left  [cm_RightEqualsLeft]
+# Workspace
+  Workspace 1  [cm_Workspace1]  key=C+1
+  Second  [cm_Workspace2]  key=C+2
   ----
-  Workspaces…  [cm_Workspaces]
-  Save Workspace…  [cm_SaveWorkspace]  key=C+W+S
+  Next Workspace  [cm_NextWorkspace]
+  Previous Workspace  [cm_PrevWorkspace]
+  ----
+  New Workspace…  [cm_NewWorkspace]
+  Rename Workspace…  [cm_RenameWorkspace]
+  Delete Workspace…  [cm_DeleteWorkspace]
+  Manage Workspaces…  [cm_Workspaces]
+  ----
+  Save Current State to Workspace  [cm_SaveWorkspace]  key=C+W+S
+  Reset to Saved State  [cm_ResetWorkspace]
+  ----
+  Add Selection to Stash  [cm_StashAdd]  key=C+W+A
+  Copy Stash to Other Panel  [cm_StashCopyTo]
+  Move Stash to Other Panel  [cm_StashMoveTo]
+  Clear Stash  [cm_StashClear]
+  ----
+  Journal…  [cm_WorkspaceJournal]
+  ----
+  Export Workspace…  [cm_ExportWorkspace]
+  Import Workspace…  [cm_ImportWorkspace]
+  ----
+  Show Workspace Bar  [cm_WorkspaceBar]
 # View
   Show Hidden Files  [cm_SwitchHidSys]  key=C+H
   Calculate All Directory Sizes  [cm_CalcAllDirSizes]
@@ -221,4 +244,4 @@
   ----
   Open Source & Third-Party Software…  [cm_OpenSourceNotices]
   ----
-  Version 0.9.0 (18)  disabled
+  Version 0.9.1 (19)  disabled

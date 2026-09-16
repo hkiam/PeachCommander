@@ -1,8 +1,21 @@
 window: ~/pc-demo
 AXUnknown
-  AXScrollArea
-    AXOutline | Folder tree
-    AXScrollBar = 0
+  AXTabGroup | Workspaces
+    AXRadioButton | Workspace 1 = 1
+    AXRadioButton | Second = 0
+    AXRadioButton | Elsewhere = 0
+    AXRadioButton | Wegwerf = 0
+    AXRadioButton | Shared Copy = 0
+    AXRadioButton | Shared Copy = 0
+    AXRadioButton | Parked = 0
+    AXButton | Delete workspace “Workspace 1”
+    AXButton | Delete workspace “Second”
+    AXButton | Delete workspace “Elsewhere”
+    AXButton | Delete workspace “Wegwerf”
+    AXButton | Delete workspace “Shared Copy”
+    AXButton | Delete workspace “Shared Copy”
+    AXButton | Delete workspace “Parked”
+    AXButton | New Workspace
   AXSplitGroup
     AXScrollArea
       AXTable | File list, left panel
@@ -25,7 +38,7 @@ AXUnknown
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, Startup disk, 17.46 GB free
+      AXButton | Macintosh HD, Startup disk, 17.42 GB free
       AXButton | TaskManager, Plugin drive
       AXButton | S3Fixture, Plugin drive
     AXSplitter = 351
@@ -49,12 +62,9 @@ AXUnknown
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, Startup disk, 17.46 GB free
+      AXButton | Macintosh HD, Startup disk, 17.42 GB free
       AXButton | TaskManager, Plugin drive
       AXButton | S3Fixture, Plugin drive
   AXScrollArea
     AXScrollBar = 1
   AXSplitter | Preview panel width = 300
-  AXSplitter | Dock height = 220
-  AXSplitGroup
-    AXScrollBar = 0

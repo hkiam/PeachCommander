@@ -1,0 +1,2 @@
+python3 -c "t=open('$HOME/ws-exported.pcworkspace').read();print('tilde' if '~/pc-demo/sub' in t else 'NO-TILDE','clean' if '/Users/admin' not in t else 'LEAKED')" 2>/dev/null || echo missing
+tilde clean
