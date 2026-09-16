@@ -835,6 +835,13 @@ final class WorkspaceTests: XCTestCase {
         XCTAssertNil(WorkspaceExchange.decode(Data("not json at all".utf8)))
     }
 
+    func test_exchange_refusesAFileTooLargeToBeOne() {
+        // Refused on its size before it is parsed: these arrive from other people, and a real one is
+        // a couple of kilobytes.
+        let huge = Data(repeating: 0x20, count: WorkspaceExchange.maximumFileSize + 1)
+        XCTAssertNil(WorkspaceExchange.decode(huge))
+    }
+
     func test_exchange_decodeRefusesAFileFromANewerVersion() throws {
         var ws = workspace()
         ws.formatVersion = Workspace.currentFormatVersion + 1

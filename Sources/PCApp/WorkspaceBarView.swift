@@ -62,7 +62,12 @@ final class WorkspaceBarView: NSView {
     var onContextMenu: ((Int?, NSEvent) -> Void)?
     /// The ✕ was clicked. The caller asks before anything happens — a workspace is deleted, not
     /// closed, and its stash and journal go with it.
-    var onCloseWorkspace: ((Int) -> Void)?
+    ///
+    /// The **id**, where `onSelect` above passes an index, and the difference is deliberate: an index
+    /// is only as good as the strip being in step with the list it was built from, and switching to
+    /// the wrong workspace is a click to undo while deleting the wrong one is not. The chip knows its
+    /// own id; there is no reason for the destructive path to look one up by position.
+    var onCloseWorkspace: ((String) -> Void)?
 
     /// What a drop onto a chip should do.
     enum DropIntent { case stash, copyIntoActiveFolder, moveIntoActiveFolder }
@@ -326,7 +331,8 @@ final class WorkspaceBarView: NSView {
                   let close = WorkspaceChipHit.closeRect(in: chipFrames[index],
                                                          showsClose: showsClose(index)),
                   close.contains(point) else { return }
-            onCloseWorkspace?(index)
+            guard chips.indices.contains(index) else { return }
+            onCloseWorkspace?(chips[index].id)
             return
         }
 
@@ -432,7 +438,9 @@ final class WorkspaceBarView: NSView {
             out.append(AccessibleHotspot(
                 label: String(format: String(localized: "Delete workspace “%@”"), chips[index].name),
                 role: .button, selected: false, frameInView: close, parent: self) {
-                    [weak self] in self?.onCloseWorkspace?(index)
+                    [weak self] in
+                    guard let self, self.chips.indices.contains(index) else { return }
+                    self.onCloseWorkspace?(self.chips[index].id)
                 })
         }
         if plusFrame != .zero {

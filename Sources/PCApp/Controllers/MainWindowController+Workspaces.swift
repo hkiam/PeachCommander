@@ -401,9 +401,8 @@ extension MainWindowController {
         // is destructive and takes the stash and the journal with it, so the ✕ saves the trip through
         // the context menu and nothing else — one dialog, written in one place, or the copies drift
         // and it is always the copy that stopped asking that nobody notices.
-        workspaceBar.onCloseWorkspace = { [weak self] index in
-            guard let self, self.workspaces.indices.contains(index) else { return }
-            self.confirmDeleteWorkspace(id: self.workspaces[index].id)
+        workspaceBar.onCloseWorkspace = { [weak self] id in
+            self?.confirmDeleteWorkspace(id: id)
         }
     }
 

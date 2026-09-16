@@ -148,10 +148,18 @@ public enum WorkspaceExchange {
         return (data, report)
     }
 
+    /// The most a `.pcworkspace` may be before it is refused unread.
+    ///
+    /// A real one is a couple of kilobytes; nine workspaces with full stashes do not approach this.
+    /// It exists because these arrive from other people — a double-click on a mail attachment — and
+    /// `Data(contentsOf:)` is happy to pull a gigabyte of anything into memory before the first
+    /// question about it is asked.
+    public static let maximumFileSize = 8 * 1024 * 1024
+
     /// Read a `.pcworkspace` somebody sent. Nil when it is not one, never a throw: this is a file a
     /// person picked in an open panel, and half of what lands there will be the wrong file.
     public static func decode(_ data: Data) -> Workspace? {
-        guard !data.isEmpty,
+        guard !data.isEmpty, data.count <= maximumFileSize,
               let workspace = try? WorkspaceStore.decoder.decode(Workspace.self, from: data),
               workspace.formatVersion <= Workspace.currentFormatVersion
         else { return nil }
