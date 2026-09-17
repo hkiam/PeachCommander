@@ -20,8 +20,9 @@ Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a 
 ## A lista szűrése (gyorsszűrő)
 
 1. Az aktív panelben nyomja meg a Ctrl+S-t a gyorsszűrő bekapcsolásához.
-2. Írjon be egy szűrőmaszkot. A panel élőben szűkül a megfelelő elemekre, ahogy gépel.
-3. Nyomja meg az Esc-et a szűrő törléséhez és mindennek újbóli megjelenítéséhez.
+2. Gépeljen be egy szűrőmaszkot. A panel gépelés közben élőben szűkül a megfelelő elemekre, és a kurzor azon az elemen marad, amelyet nézett, ameddig a szűkebb maszk megtartja.
+3. Az eredményben a ↑ és ↓ billentyűkkel mozoghat. Szűrt listában a nyilak körbeérnek, így az utolsó elem visszavezet az elejére, és egy rövid eredmény a végeihez ütközés nélkül körbejárható.
+4. Nyomja meg az Esc-et a szűrő törléséhez és mindennek újbóli megjelenítéséhez. A kurzor azon marad, amit megtalált, most a szomszédai között.
 
 A szűrő többféle maszkot fogad el:
 

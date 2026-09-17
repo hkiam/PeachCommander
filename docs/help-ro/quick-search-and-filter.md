@@ -20,8 +20,9 @@ Implicit, literele simple merg la linia de comandă, iar căutarea rapidă este 
 ## Filtrarea listei (filtru rapid)
 
 1. În panoul activ, apăsați Ctrl+S pentru a activa filtrul rapid.
-2. Tastați o mască de filtru. Panoul se îngustează live la elementele care se potrivesc pe măsură ce tastați.
-3. Apăsați Esc pentru a șterge filtrul și a afișa din nou totul.
+2. Tastați o mască de filtru. Panoul se restrânge live la elementele care se potrivesc pe măsură ce tastați, iar cursorul rămâne pe elementul privit atât timp cât masca mai strâmtă îl păstrează.
+3. Parcurgeți rezultatul cu ↑ și ↓. Într-o listă filtrată săgețile se rotesc, așa că ultimul element duce înapoi la început, iar un rezultat scurt poate fi parcurs în cerc fără a se opri la capete.
+4. Apăsați Esc pentru a șterge filtrul și a afișa din nou totul. Cursorul rămâne pe ceea ce ați găsit, acum afișat printre vecinii săi.
 
 Filtrul acceptă mai multe tipuri de măști:
 

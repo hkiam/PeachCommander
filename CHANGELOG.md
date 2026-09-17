@@ -107,7 +107,27 @@ does not have.
   taken: Shift+Arrow still extends the selection, Alt+Down is still the history dropdown, and once the
   indicator has timed out Up and Down move one row again.
 
+- **A filtered list cycles, and keeps its cursor while you narrow it** (F-395). The quick filter hides
+  what does not match, so ↑ and ↓ already walked only over hits — but they stopped at the ends, and
+  every keystroke threw the cursor back to the first row. Now the arrows wrap (`..` is part of the
+  cycle: in filter mode Backspace edits the mask, so the parent row is reachable by arrow and by
+  nothing else), and refining a mask leaves the cursor on the item you were aiming at for as long as
+  the narrower mask keeps it. Clearing the filter keeps it too — you filter to find one file and press
+  Esc to see it among its neighbours. Marking is deliberately left alone: Shift+Arrow and Insert still
+  stop at the ends, because a mark run that wrapped would come back round and untoggle what it had
+  just set.
+
 ### Fixed
+
+- **The quick filter's count was one keystroke behind its text** (F-395). `applyFilterLive` reported
+  to the indicator before rebuilding the list, so `🔍 rep  7/1217` showed the new mask beside the
+  previous mask's number — and a mask that had just narrowed to nothing still claimed the hits it no
+  longer had. Counted after the rebuild now.
+
+- **Ctrl+S in the middle of a quick search left the search's prefix behind.** The filter took the
+  keyboard while the type-ahead's buffer and its indicator stayed up for the rest of the two-second
+  window — and since the arrows now step between a search's matches, they would have been taken from
+  a list that prefix no longer describes. Entering the filter ends the search.
 
 - A tab's cursor position survived loading a saved workspace but not restarting the app: the session
   and the workspace format had drifted apart, and only one of them wrote it down. There is one

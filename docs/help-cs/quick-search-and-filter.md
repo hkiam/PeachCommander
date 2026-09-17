@@ -20,8 +20,9 @@ Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a ry
 ## Filtrování seznamu (rychlý filtr)
 
 1. V aktivním panelu stiskem Ctrl+S zapněte rychlý filtr.
-2. Zadejte masku filtru. Panel se za psaní živě zúží na odpovídající položky.
-3. Stiskem Esc filtr vymažete a znovu zobrazíte vše.
+2. Napište filtrovací masku. Panel se při psaní živě zužuje na odpovídající položky a kurzor zůstává na položce, kterou jste sledovali, dokud ji užší maska ponechává.
+3. Výsledkem se pohybujte pomocí ↑ a ↓. Ve filtrovaném seznamu se šipky otáčejí, takže poslední položka vede zpět na začátek a krátký výsledek lze procházet dokola bez narážení na konce.
+4. Stiskem Esc filtr vymažete a znovu zobrazíte vše. Kurzor zůstává na nalezené položce, nyní zobrazené mezi sousedy.
 
 Filtr přijímá několik druhů masek:
 

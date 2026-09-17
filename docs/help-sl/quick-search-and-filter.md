@@ -20,8 +20,9 @@ Privzeto navadne črke gredo v ukazno vrstico, hitro iskanje pa se sproži s Ctr
 ## Filtriranje seznama (hitri filter)
 
 1. V dejavnem podoknu pritisnite Ctrl+S, da vklopite hitri filter.
-2. Vnesite masko filtra. Podokno se med tipkanjem v živo zoži na ujemajoče elemente.
-3. Pritisnite Esc, da počistite filter in znova prikažete vse.
+2. Vnesite masko filtra. Panel se med tipkanjem sproti zoži na ustrezajoče elemente, kurzor pa ostane na elementu, ki ste ga gledali, dokler ga ožja maska ohranja.
+3. Po rezultatu se premikajte s ↑ in ↓. V filtriranem seznamu se puščici ovijeta, tako da zadnji element vodi nazaj na začetek in kratek rezultat lahko krožno pregledate, ne da bi obtičali na koncih.
+4. Pritisnite Esc, da počistite filter in znova prikažete vse. Kurzor ostane na najdenem elementu, zdaj prikazanem med sosedi.
 
 Filter sprejema več vrst mask:
 

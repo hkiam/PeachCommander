@@ -29,6 +29,8 @@
 //   rowdump <file>        every visible column of the cursor row, as id + rendered text
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
+//   panelarrow <up|down>|<out>  press Up/Down in the active panel (the real keyDown path), then
+//                           report the cursor — the filter's wrap-around is only visible this way
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
 //   listermenudump <out>  the viewer's own document menus (menudump only sees the main bar)
 //   listermarkstep <term>|<steps>|<out>  Mark All, then step through the marks; reports where
@@ -1039,6 +1041,15 @@ extension MainWindowController {
                 activePanel?.tableView.automationSortByPluginColumn(arg)
             case "filter":                             // filter <text> (F-395): apply the quick filter
                 activePanel?.tableView.automationSetFilter(arg)
+            case "panelarrow":                         // panelarrow <up|down>|<out>
+                let pa = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if let panel = activePanel, pa.count == 2, pa[0] == "up" || pa[0] == "down" {
+                    panel.tableView.automationArrow(down: pa[0] == "down")
+                    try? panel.tableView.automationViewport()
+                        .write(toFile: pa[1], atomically: true, encoding: .utf8)
+                } else {
+                    NSLog("[automation] panelarrow needs <up|down>|<out> and an active panel")
+                }
             case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
                 try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)

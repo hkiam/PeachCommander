@@ -22,8 +22,9 @@ Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactive
 ## De lijst filteren (snelfilter)
 
 1. Druk in het actieve paneel op Ctrl+S om het snelfilter aan te zetten.
-2. Typ een filtermasker. Het paneel wordt live versmald tot overeenkomende items terwijl je typt.
-3. Druk op Esc om het filter te wissen en weer alles te tonen.
+2. Typ een filtermasker. Het paneel versmalt live tot overeenkomende items terwijl je typt, en de cursor blijft op het item waar je naar keek zolang het smallere masker het behoudt.
+3. Loop met ↑ en ↓ door het resultaat. In een gefilterde lijst lopen de pijlen rond, dus het laatste item leidt terug naar boven en een kort resultaat kun je rondlopen zonder aan de uiteinden te blijven steken.
+4. Druk op Esc om het filter te wissen en weer alles te tonen. De cursor blijft op wat je had gevonden, nu getoond tussen zijn buren.
 
 Het filter accepteert verschillende soorten maskers:
 

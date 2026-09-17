@@ -20,8 +20,9 @@ Per impostazione predefinita, le lettere semplici vanno alla riga di comando e l
 ## Filtra l'elenco (filtro rapido)
 
 1. Nel pannello attivo, premi Ctrl+S per attivare il filtro rapido.
-2. Digita una maschera di filtro. Il pannello si restringe in tempo reale agli elementi corrispondenti mentre digiti.
-3. Premi Esc per cancellare il filtro e mostrare di nuovo tutto.
+2. Digita una maschera di filtro. Il pannello si restringe in tempo reale agli elementi corrispondenti mentre digiti, e il cursore resta sull'elemento che stavi guardando finché la maschera più stretta lo mantiene.
+3. Scorri il risultato con ↑ e ↓. In un elenco filtrato le frecce girano in tondo, così l'ultimo elemento riporta all'inizio e un risultato breve si può percorrere in ciclo senza fermarsi alle estremità.
+4. Premi Esc per cancellare il filtro e mostrare di nuovo tutto. Il cursore resta su ciò che avevi trovato, ora mostrato tra i suoi vicini.
 
 Il filtro accetta diversi tipi di maschere:
 

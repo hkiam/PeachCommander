@@ -109,6 +109,7 @@ as standard function keys" hint in onboarding, or users press Fn.
 | Alt+Shift+Enter | Calculate all dir sizes in view |
 | Letter keys | Command line (default) / quick search per config; Ctrl+Alt+Letter = quick search (TC default) |
 | Up / Down (during quick search) | Previous / next match of the typed prefix, wrapping; bare arrows only |
+| Up / Down (in a filtered list) | Previous / next item, wrapping at both ends (`..` is part of the cycle) |
 | Esc | Cancel dialog / clear command line / close Quick View |
 
 ## macOS-reserved conflicts (handle in keymap)

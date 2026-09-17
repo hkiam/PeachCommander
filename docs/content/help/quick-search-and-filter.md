@@ -23,8 +23,9 @@ By default, plain letters go to the command line and quick search is triggered w
 ## Filter the list (quick filter)
 
 1. In the active panel, press Ctrl+S to turn on the quick filter.
-2. Type a filter mask. The panel narrows live to matching items as you type.
-3. Press Esc to clear the filter and show everything again.
+2. Type a filter mask. The panel narrows live to matching items as you type, and the cursor stays on the item you were looking at for as long as the narrower mask keeps it.
+3. Move through the result with ↑ and ↓. In a filtered list they wrap around, so the last item leads back to the top and a short result can be cycled without stopping at its ends.
+4. Press Esc to clear the filter and show everything again. The cursor stays on what you had found, now shown among its neighbours.
 
 The filter accepts several kinds of masks:
 

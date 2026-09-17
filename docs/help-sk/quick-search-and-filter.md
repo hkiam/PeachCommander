@@ -20,8 +20,9 @@ Predvolene obyčajné písmená idú do príkazového riadka a rýchle hľadanie
 ## Filtrovanie zoznamu (rýchly filter)
 
 1. V aktívnom paneli stlačte Ctrl+S na zapnutie rýchleho filtra.
-2. Zadajte masku filtra. Panel sa počas písania naživo zúži na zhodné položky.
-3. Stlačte Esc na vymazanie filtra a opätovné zobrazenie všetkého.
+2. Napíšte filtrovaciu masku. Panel sa počas písania živo zužuje na zodpovedajúce položky a kurzor zostáva na položke, ktorú ste sledovali, kým ju užšia maska ponecháva.
+3. Výsledkom sa pohybujte klávesmi ↑ a ↓. Vo filtrovanom zozname sa šípky otáčajú, takže posledná položka vedie späť na začiatok a krátky výsledok možno obchádzať dokola bez narážania na konce.
+4. Stlačte Esc na vymazanie filtra a opätovné zobrazenie všetkého. Kurzor zostáva na nájdenej položke, teraz zobrazenej medzi susedmi.
 
 Filter prijíma niekoľko druhov masiek:
 

@@ -22,8 +22,9 @@ Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnel
 ## Die Liste filtern (Schnellfilter)
 
 1. Drücken Sie im aktiven Panel Ctrl+S, um den Schnellfilter einzuschalten.
-2. Tippen Sie eine Filtermaske. Das Panel grenzt sich beim Tippen live auf passende Objekte ein.
-3. Drücken Sie Esc, um den Filter zu löschen und wieder alles anzuzeigen.
+2. Tippen Sie eine Filtermaske. Das Panel grenzt sich beim Tippen live auf passende Objekte ein, und der Cursor bleibt auf dem Objekt, das Sie im Blick hatten, solange die engere Maske es behält.
+3. Bewegen Sie sich mit ↑ und ↓ durch das Ergebnis. In einer gefilterten Liste laufen die Pfeile um, sodass das letzte Objekt wieder zum Anfang führt und ein kurzes Ergebnis durchlaufen werden kann, ohne an den Enden anzustoßen.
+4. Drücken Sie Esc, um den Filter zu löschen und wieder alles anzuzeigen. Der Cursor bleibt auf dem Gefundenen, das nun zwischen seinen Nachbarn steht.
 
 Der Filter akzeptiert mehrere Arten von Masken:
 

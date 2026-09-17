@@ -22,8 +22,9 @@ Domyślnie zwykłe litery trafiają do wiersza poleceń, a szybkie wyszukiwanie 
 ## Filtrowanie listy (szybki filtr)
 
 1. W aktywnym panelu naciśnij Ctrl+S, aby włączyć szybki filtr.
-2. Wpisz maskę filtra. Panel na żywo zawęża się do pasujących elementów w miarę pisania.
-3. Naciśnij Esc, aby wyczyścić filtr i ponownie pokazać wszystko.
+2. Wpisz maskę filtra. Panel zawęża się na żywo do pasujących elementów w trakcie pisania, a kursor pozostaje na oglądanym elemencie, dopóki węższa maska go zachowuje.
+3. Poruszaj się po wyniku klawiszami ↑ i ↓. Na przefiltrowanej liście strzałki zawijają się, więc ostatni element prowadzi z powrotem na początek, a krótki wynik można obchodzić w kółko bez zatrzymywania się na końcach.
+4. Naciśnij Esc, aby wyczyścić filtr i ponownie pokazać wszystko. Kursor pozostaje na znalezionym elemencie, teraz pokazanym wśród sąsiadów.
 
 Filtr przyjmuje kilka rodzajów masek:
 

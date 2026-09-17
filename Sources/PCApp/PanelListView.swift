@@ -1026,6 +1026,11 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func toggleFilterMode() {
         filterMode.toggle()
         if filterMode {
+            // A type-ahead still running is over the moment the filter takes the keyboard: its prefix
+            // would otherwise keep its indicator up for the rest of the window, and — since the arrows
+            // step between its matches — quietly take Up and Down away from a list it no longer
+            // describes. Ctrl+S is reachable in the middle of a search, so this is not hypothetical.
+            endTypeAhead()
             filterText = ""
             onFilterChanged?("", visibleEntries.count, allEntryCount)
         } else {
@@ -1035,11 +1040,20 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     private func clearFilter() {
         endTypeAhead()
+        let keep = cursorEntryName()
         filterMode = false
         filterText = ""
         onFilterChanged?(nil, visibleEntries.count, allEntryCount)
         rebuildVisibleEntries()
-        cursorRow = visibleEntries.isEmpty ? -1 : 0
+        // The same reason the live filter keeps its cursor, at the other end of the job: you filter to
+        // find one file and press Esc to see it among its neighbours. Sending the cursor to the top
+        // there loses exactly the thing the filter was for — and the entry cannot have gone anywhere,
+        // since clearing a filter only ever widens the list.
+        if let keep, let idx = visibleEntries.firstIndex(where: { $0.name == keep }) {
+            cursorRow = idx
+        } else {
+            cursorRow = visibleEntries.isEmpty ? -1 : 0
+        }
         reloadData()
         Task { await self.syncEntriesToSelectionState(); notifyChanged() }
     }
@@ -1061,9 +1075,21 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
 
     private func applyFilterLive() {
-        onFilterChanged?(filterText, visibleEntries.count, allEntryCount)
+        let keep = cursorEntryName()
         rebuildVisibleEntries()
-        cursorRow = visibleEntries.isEmpty ? -1 : 0
+        // Counted after the rebuild, not before it. `visibleEntries` still held the *previous* mask's
+        // result at the old call site, so the indicator showed the new text beside the old number —
+        // one keystroke behind the list it claims to describe, and wrong in the direction that
+        // matters: a mask that has just narrowed to nothing still reported the hits it no longer has.
+        onFilterChanged?(filterText, visibleEntries.count, allEntryCount)
+        // Stay on the item you were looking at as long as the narrower mask still keeps it. Refining
+        // a filter is done *to* something you can see; sending the cursor back to the top on every
+        // keystroke means the item you are aiming at walks away while you type its name.
+        if let keep, let idx = visibleEntries.firstIndex(where: { $0.name == keep }) {
+            cursorRow = idx
+        } else {
+            cursorRow = visibleEntries.isEmpty ? -1 : 0
+        }
         reloadData()
         Task { await self.syncEntriesToSelectionState(); notifyChanged() }
     }
@@ -1415,6 +1441,24 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Move the cursor to a visible-entry index and open it (icon-grid double-click/Enter).
     func activateVisibleIndex(_ index: Int) { moveCursor(to: index); handleEnter() }
 
+    /// True while the panel shows a filtered subset — one being typed, or one frozen with Enter.
+    /// Both are short result lists, which is what makes wrapping worth having; the full listing keeps
+    /// its ends, where stopping is the answer that tells you there is no more.
+    private var listIsFiltered: Bool { !filterText.isEmpty }
+
+    /// Up/Down over a filtered list, wrapping at both ends.
+    ///
+    /// The cycle runs over the panel's rows with `..` included. It is not a filter hit, but in filter
+    /// mode Backspace edits the mask and Home lands on the first entry, so the parent row is reachable
+    /// by arrow and by nothing else — a cycle that skipped it would stand between you and the way out
+    /// of the folder.
+    private func moveCursorWrapping(down: Bool) {
+        let span = visibleEntries.count + 1          // rows -1 (`..`) ... count-1
+        guard span > 1 else { return }
+        let current = cursorRow + 1                  // 0 ... count
+        moveCursor(to: (current + (down ? 1 : span - 1)) % span - 1)
+    }
+
     func moveCursorUp() { moveCursor(to: cursorRow - 1) }
     func moveCursorDown() { moveCursor(to: cursorRow + 1) }
     func moveCursorTop() { moveCursor(to: visibleEntries.isEmpty ? -1 : 0) }
@@ -1651,6 +1695,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             if filterMode || !filterText.isEmpty { clearFilter() }
             return
         }
+        endTypeAhead()            // same reason as `toggleFilterMode`, for the scripted/command route
         filterMode = true
         filterText = text
         applyFilterLive()
@@ -2073,10 +2118,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         // Navigation and actions.
         switch code {
         case 126: // Up
-            mods.contains(.shift) ? rangeToggle(moveDown: false) : moveCursorUp()
+            if mods.contains(.shift) { rangeToggle(moveDown: false) }
+            else if listIsFiltered { moveCursorWrapping(down: false) }
+            else { moveCursorUp() }
         case 125: // Down (Alt+Down = history dropdown)
             if mods.contains(.option) { onRunCommand?("cm_HistoryList") }
             else if mods.contains(.shift) { rangeToggle(moveDown: true) }
+            else if listIsFiltered { moveCursorWrapping(down: true) }
             else { moveCursorDown() }
         case 116: // Page Up (Ctrl+PageUp leaves the current dir/archive)
             mods.contains(.control) ? navigateUp() : moveCursorPageUp()
@@ -2155,6 +2203,21 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             NSSound.beep()
         }
         publishTypeAhead()
+    }
+
+    /// Press Up or Down in the panel exactly as the keyboard does — the whole `keyDown` switch,
+    /// including what the quick filter and a running type-ahead make of the key.
+    ///
+    /// Calling `moveCursorUp()` would prove nothing about either: both behaviours live in the
+    /// *dispatch*, which is precisely the part a direct call skips.
+    func automationArrow(down: Bool) {
+        let chars = down ? "\u{F701}" : "\u{F700}"
+        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+                                           timestamp: ProcessInfo.processInfo.systemUptime,
+                                           windowNumber: window?.windowNumber ?? 0, context: nil,
+                                           characters: chars, charactersIgnoringModifiers: chars,
+                                           isARepeat: false, keyCode: down ? 125 : 126) else { return }
+        keyDown(with: event)
     }
 
     /// Drive the type-ahead from the automation runner: `chars` is typed one character at a time,

@@ -22,8 +22,9 @@ Som standard går rene bokstaver til kommandolinjen, og hurtigsøk utløses med 
 ## Filtrer listen (hurtigfilter)
 
 1. I det aktive panelet trykker du Ctrl+S for å slå på hurtigfilteret.
-2. Skriv en filtermaske. Panelet snevres inn i sanntid til samsvarende elementer mens du skriver.
-3. Trykk Esc for å fjerne filteret og vise alt igjen.
+2. Skriv en filtermaske. Panelet snevres inn live til treffende elementer mens du skriver, og markøren blir stående på elementet du så på så lenge den snevrere masken beholder det.
+3. Beveg deg gjennom resultatet med ↑ og ↓. I en filtrert liste går pilene rundt, så det siste elementet fører tilbake til toppen, og et kort resultat kan gås gjennom i ring uten å stoppe ved endene.
+4. Trykk Esc for å fjerne filteret og vise alt igjen. Markøren blir stående på det du fant, nå vist blant naboene sine.
 
 Filteret godtar flere typer masker:
 

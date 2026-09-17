@@ -22,8 +22,9 @@ Par défaut, les lettres simples vont dans la ligne de commande et la recherche 
 ## Filtrer la liste (filtre rapide)
 
 1. Dans le panneau actif, appuyez sur Ctrl+S pour activer le filtre rapide.
-2. Saisissez un masque de filtre. Le panneau se réduit en direct aux éléments correspondants au fur et à mesure que vous saisissez.
-3. Appuyez sur Esc pour effacer le filtre et afficher de nouveau tout.
+2. Saisissez un masque de filtre. Le panneau se réduit en direct aux éléments correspondants pendant la saisie, et le curseur reste sur l'élément que vous regardiez tant que le masque plus étroit le conserve.
+3. Parcourez le résultat avec ↑ et ↓. Dans une liste filtrée, les flèches bouclent : le dernier élément ramène au début, et un résultat court se parcourt en boucle sans buter sur ses extrémités.
+4. Appuyez sur Esc pour effacer le filtre et afficher de nouveau tout. Le curseur reste sur ce que vous aviez trouvé, désormais affiché parmi ses voisins.
 
 Le filtre accepte plusieurs sortes de masques :
 
