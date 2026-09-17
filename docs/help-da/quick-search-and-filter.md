@@ -22,7 +22,8 @@ Som standard går almindelige bogstaver til kommandolinjen, og hurtigsøgning ud
 1. I det aktive panel skal du trykke på Ctrl+S for at slå hurtigfilteret til.
 2. Skriv en filtermaske. Panelet indsnævres live til matchende emner, mens du skriver, og markøren bliver på det emne, du så på, så længe den snævrere maske beholder det.
 3. Bevæg dig gennem resultatet med ↑ og ↓. I en filtreret liste går pilene rundt, så det sidste emne fører tilbage til toppen, og et kort resultat kan gennemløbes uden at støde mod enderne.
-4. Tryk på Esc for at rydde filteret og vise alt igen. Markøren bliver på det, du fandt, nu vist blandt sine naboer.
+4. Tryk på Enter for at beholde resultatet og stoppe filtreringen. Masken bliver ved med at gælde, og bogstaverne går tilbage til panelet, så du derefter kan skrive for at springe inden for det, der er tilbage — filteret og hurtigsøgningen viser hver sin indikator side om side.
+5. Tryk på Esc for at rydde filteret og vise alt igen. Markøren bliver på det, du fandt, nu vist blandt sine naboer.
 
 Filteret accepterer flere slags masker:
 
@@ -41,6 +42,7 @@ Tryk på Ctrl+H, eller vælg kommandoen fra Vis-menuen, for at skifte skjulte em
 | Hurtigsøgning (klassisk tilstand) | Ctrl+Option+bogstav |
 | Forrige / næste match (under hurtigsøgning) | ↑ / ↓ |
 | Hurtigfilter til/fra | Ctrl+S |
+| Behold resultatet, stop filtreringen | Enter |
 | Ryd filter / annullér | Esc |
 | Vis/skjul skjulte filer | Ctrl+H |
 

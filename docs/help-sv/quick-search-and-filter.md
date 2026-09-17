@@ -24,7 +24,8 @@ Som standard går vanliga bokstäver till kommandoraden och snabbsökning utlös
 1. Tryck på Ctrl+S i den aktiva panelen för att slå på snabbfiltret.
 2. Skriv en filtermask. Panelen smalnar av live till matchande objekt medan du skriver, och markören stannar på objektet du tittade på så länge den smalare masken behåller det.
 3. Gå genom resultatet med ↑ och ↓. I en filtrerad lista går pilarna runt, så det sista objektet leder tillbaka till toppen och ett kort resultat kan gås igenom i ring utan att stanna vid ändarna.
-4. Tryck på Esc för att rensa filtret och visa allt igen. Markören stannar på det du hittat, nu visat bland sina grannar.
+4. Tryck på Enter för att behålla resultatet och sluta filtrera. Masken gäller fortfarande och bokstäverna går tillbaka till panelen, så du kan sedan skriva för att hoppa inom det som återstår — filtret och snabbsökningen visar var sin indikator sida vid sida.
+5. Tryck på Esc för att rensa filtret och visa allt igen. Markören stannar på det du hittat, nu visat bland sina grannar.
 
 Filtret godtar flera slags masker:
 
@@ -43,6 +44,7 @@ Tryck på Ctrl+H, eller välj kommandot från Visa-menyn, för att växla dolda 
 | Snabbsökning (klassiskt läge) | Ctrl+Option+bokstav |
 | Föregående / nästa träff (under snabbsökning) | ↑ / ↓ |
 | Snabbfilter på/av | Ctrl+S |
+| Behåll resultatet, sluta filtrera | Enter |
 | Rensa filter / avbryt | Esc |
 | Visa/dölj dolda filer | Ctrl+H |
 

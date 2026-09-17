@@ -22,7 +22,8 @@ Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a 
 1. Az aktív panelben nyomja meg a Ctrl+S-t a gyorsszűrő bekapcsolásához.
 2. Gépeljen be egy szűrőmaszkot. A panel gépelés közben élőben szűkül a megfelelő elemekre, és a kurzor azon az elemen marad, amelyet nézett, ameddig a szűkebb maszk megtartja.
 3. Az eredményben a ↑ és ↓ billentyűkkel mozoghat. Szűrt listában a nyilak körbeérnek, így az utolsó elem visszavezet az elejére, és egy rövid eredmény a végeihez ütközés nélkül körbejárható.
-4. Nyomja meg az Esc-et a szűrő törléséhez és mindennek újbóli megjelenítéséhez. A kurzor azon marad, amit megtalált, most a szomszédai között.
+4. Az Enterrel megtartja az eredményt és befejezi a szűrést. A maszk érvényben marad, a betűk pedig visszakerülnek a panelhez, így utána gépeléssel ugrálhat a megmaradtak között — a szűrő és a gyorskeresés egymás mellett mutatja a saját jelzését.
+5. Nyomja meg az Esc-et a szűrő törléséhez és mindennek újbóli megjelenítéséhez. A kurzor azon marad, amit megtalált, most a szomszédai között.
 
 A szűrő többféle maszkot fogad el:
 
@@ -41,6 +42,7 @@ Nyomja meg a Ctrl+H-t, vagy válassza a parancsot a Nézet menüből, a rejtett 
 | Gyorskeresés (klasszikus mód) | Ctrl+Option+betű |
 | Előző / következő találat (gyorskeresés közben) | ↑ / ↓ |
 | Gyorsszűrő be/ki | Ctrl+S |
+| Eredmény megtartása, szűrés befejezése | Enter |
 | Szűrő törlése / mégse | Esc |
 | Rejtett fájlok megjelenítése/elrejtése | Ctrl+H |
 

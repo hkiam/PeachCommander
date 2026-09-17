@@ -22,7 +22,8 @@ Por omisión, las letras normales van a la línea de comandos y la búsqueda rá
 1. En el panel activo, pulsa Ctrl+S para activar el filtro rápido.
 2. Escribe una máscara de filtro. El panel se reduce en vivo a los elementos coincidentes mientras escribes, y el cursor permanece en el elemento que estabas mirando mientras la máscara más estrecha lo conserve.
 3. Recorre el resultado con ↑ y ↓. En una lista filtrada las flechas dan la vuelta, así que el último elemento lleva de nuevo al principio y un resultado corto se puede recorrer en ciclo sin chocar con los extremos.
-4. Pulsa Esc para borrar el filtro y volver a mostrar todo. El cursor permanece en lo que habías encontrado, ahora mostrado entre sus vecinos.
+4. Pulsa Enter para conservar el resultado y dejar de filtrar. La máscara sigue en vigor y las letras vuelven al panel, así que después puedes escribir para saltar dentro de lo que queda: el filtro y la búsqueda rápida muestran sus propios indicadores uno al lado del otro.
+5. Pulsa Esc para borrar el filtro y volver a mostrar todo. El cursor permanece en lo que habías encontrado, ahora mostrado entre sus vecinos.
 
 El filtro admite varios tipos de máscara:
 
@@ -41,6 +42,7 @@ Pulsa Ctrl+H, o elige el comando en el menú Visualización, para alternar los e
 | Búsqueda rápida (modo clásico) | Ctrl+Option+letra |
 | Coincidencia anterior / siguiente (durante la búsqueda rápida) | ↑ / ↓ |
 | Filtro rápido activado/desactivado | Ctrl+S |
+| Conservar el resultado, dejar de filtrar | Enter |
 | Borrar filtro / cancelar | Esc |
 | Mostrar/ocultar archivos ocultos | Ctrl+H |
 

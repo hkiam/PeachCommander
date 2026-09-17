@@ -24,7 +24,8 @@ Par défaut, les lettres simples vont dans la ligne de commande et la recherche 
 1. Dans le panneau actif, appuyez sur Ctrl+S pour activer le filtre rapide.
 2. Saisissez un masque de filtre. Le panneau se réduit en direct aux éléments correspondants pendant la saisie, et le curseur reste sur l'élément que vous regardiez tant que le masque plus étroit le conserve.
 3. Parcourez le résultat avec ↑ et ↓. Dans une liste filtrée, les flèches bouclent : le dernier élément ramène au début, et un résultat court se parcourt en boucle sans buter sur ses extrémités.
-4. Appuyez sur Esc pour effacer le filtre et afficher de nouveau tout. Le curseur reste sur ce que vous aviez trouvé, désormais affiché parmi ses voisins.
+4. Appuyez sur Entrée pour conserver le résultat et arrêter de filtrer. Le masque reste en vigueur et les lettres reviennent au panneau : vous pouvez alors saisir pour sauter à l'intérieur de ce qui reste — le filtre et la recherche rapide affichent chacun leur indicateur, côte à côte.
+5. Appuyez sur Esc pour effacer le filtre et afficher de nouveau tout. Le curseur reste sur ce que vous aviez trouvé, désormais affiché parmi ses voisins.
 
 Le filtre accepte plusieurs sortes de masques :
 
@@ -43,6 +44,7 @@ Appuyez sur Ctrl+H, ou choisissez la commande dans le menu Affichage, pour bascu
 | Recherche rapide (mode classique) | Ctrl+Option+lettre |
 | Correspondance précédente / suivante (pendant la recherche rapide) | ↑ / ↓ |
 | Activer/désactiver le filtre rapide | Ctrl+S |
+| Conserver le résultat, arrêter de filtrer | Entrée |
 | Effacer le filtre / annuler | Esc |
 | Afficher/masquer les fichiers cachés | Ctrl+H |
 

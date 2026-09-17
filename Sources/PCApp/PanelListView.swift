@@ -2205,19 +2205,28 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         publishTypeAhead()
     }
 
-    /// Press Up or Down in the panel exactly as the keyboard does — the whole `keyDown` switch,
-    /// including what the quick filter and a running type-ahead make of the key.
+    /// Press one of the panel's plain navigation keys exactly as the keyboard does — the whole
+    /// `keyDown` switch, including what the quick filter and a running type-ahead make of the key.
     ///
     /// Calling `moveCursorUp()` would prove nothing about either: both behaviours live in the
-    /// *dispatch*, which is precisely the part a direct call skips.
-    func automationArrow(down: Bool) {
-        let chars = down ? "\u{F701}" : "\u{F700}"
-        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+    /// *dispatch*, which is precisely the part a direct call skips. Enter is here for the same
+    /// reason and a stronger one — Enter on a filter *freezes* it (the mask stays, the typing stops),
+    /// and that state was reachable from no script at all, so nothing about it was ever measured.
+    func automationKey(_ name: String) -> Bool {
+        // characters *and* key code, because the panel switches on the code while anything that reads
+        // the character (a field editor taking over, the type-ahead's own gate) reads the string.
+        let keys: [String: (UInt16, String)] = [
+            "up": (126, "\u{F700}"), "down": (125, "\u{F701}"),
+            "enter": (36, "\r"), "esc": (53, "\u{1B}"), "backspace": (51, "\u{8}"),
+        ]
+        guard let (code, chars) = keys[name],
+              let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
                                            timestamp: ProcessInfo.processInfo.systemUptime,
                                            windowNumber: window?.windowNumber ?? 0, context: nil,
                                            characters: chars, charactersIgnoringModifiers: chars,
-                                           isARepeat: false, keyCode: down ? 125 : 126) else { return }
+                                           isARepeat: false, keyCode: code) else { return false }
         keyDown(with: event)
+        return true
     }
 
     /// Drive the type-ahead from the automation runner: `chars` is typed one character at a time,

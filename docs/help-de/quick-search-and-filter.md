@@ -24,7 +24,8 @@ Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnel
 1. Drücken Sie im aktiven Panel Ctrl+S, um den Schnellfilter einzuschalten.
 2. Tippen Sie eine Filtermaske. Das Panel grenzt sich beim Tippen live auf passende Objekte ein, und der Cursor bleibt auf dem Objekt, das Sie im Blick hatten, solange die engere Maske es behält.
 3. Bewegen Sie sich mit ↑ und ↓ durch das Ergebnis. In einer gefilterten Liste laufen die Pfeile um, sodass das letzte Objekt wieder zum Anfang führt und ein kurzes Ergebnis durchlaufen werden kann, ohne an den Enden anzustoßen.
-4. Drücken Sie Esc, um den Filter zu löschen und wieder alles anzuzeigen. Der Cursor bleibt auf dem Gefundenen, das nun zwischen seinen Nachbarn steht.
+4. Mit Enter behalten Sie das Ergebnis und beenden das Filtern. Die Maske bleibt in Kraft, und die Buchstaben gehen wieder ans Panel, sodass Sie anschließend durch Tippen innerhalb des Übriggebliebenen springen können — Filter und Schnellsuche zeigen ihre eigenen Anzeigen nebeneinander.
+5. Drücken Sie Esc, um den Filter zu löschen und wieder alles anzuzeigen. Der Cursor bleibt auf dem Gefundenen, das nun zwischen seinen Nachbarn steht.
 
 Der Filter akzeptiert mehrere Arten von Masken:
 
@@ -43,6 +44,7 @@ Drücken Sie Ctrl+H oder wählen Sie den Befehl aus dem Menü Ansicht, um verbor
 | Schnellsuche (klassischer Modus) | Ctrl+Option+Buchstabe |
 | Voriger / nächster Treffer (während der Schnellsuche) | ↑ / ↓ |
 | Schnellfilter ein/aus | Ctrl+S |
+| Ergebnis behalten, Filtern beenden | Enter |
 | Filter löschen / abbrechen | Esc |
 | Verborgene Dateien ein-/ausblenden | Ctrl+H |
 

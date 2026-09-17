@@ -22,7 +22,8 @@ Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a ry
 1. V aktivním panelu stiskem Ctrl+S zapněte rychlý filtr.
 2. Napište filtrovací masku. Panel se při psaní živě zužuje na odpovídající položky a kurzor zůstává na položce, kterou jste sledovali, dokud ji užší maska ponechává.
 3. Výsledkem se pohybujte pomocí ↑ a ↓. Ve filtrovaném seznamu se šipky otáčejí, takže poslední položka vede zpět na začátek a krátký výsledek lze procházet dokola bez narážení na konce.
-4. Stiskem Esc filtr vymažete a znovu zobrazíte vše. Kurzor zůstává na nalezené položce, nyní zobrazené mezi sousedy.
+4. Stiskem Enter výsledek zachováte a filtrování ukončíte. Maska zůstává v platnosti a písmena se vrací panelu, takže pak můžete psaním skákat v tom, co zbylo — filtr a rychlé hledání ukazují své vlastní ukazatele vedle sebe.
+5. Stiskem Esc filtr vymažete a znovu zobrazíte vše. Kurzor zůstává na nalezené položce, nyní zobrazené mezi sousedy.
 
 Filtr přijímá několik druhů masek:
 
@@ -41,6 +42,7 @@ Stiskem Ctrl+H, nebo volbou příkazu z nabídky Zobrazení, přepnete skryté p
 | Rychlé hledání (klasický režim) | Ctrl+Option+písmeno |
 | Předchozí / další shoda (během rychlého hledání) | ↑ / ↓ |
 | Rychlý filtr zap./vyp. | Ctrl+S |
+| Zachovat výsledek, ukončit filtrování | Enter |
 | Vymazat filtr / zrušit | Esc |
 | Zobrazit/skrýt skryté soubory | Ctrl+H |
 

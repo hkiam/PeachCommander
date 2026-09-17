@@ -22,7 +22,8 @@ Per impostazione predefinita, le lettere semplici vanno alla riga di comando e l
 1. Nel pannello attivo, premi Ctrl+S per attivare il filtro rapido.
 2. Digita una maschera di filtro. Il pannello si restringe in tempo reale agli elementi corrispondenti mentre digiti, e il cursore resta sull'elemento che stavi guardando finché la maschera più stretta lo mantiene.
 3. Scorri il risultato con ↑ e ↓. In un elenco filtrato le frecce girano in tondo, così l'ultimo elemento riporta all'inizio e un risultato breve si può percorrere in ciclo senza fermarsi alle estremità.
-4. Premi Esc per cancellare il filtro e mostrare di nuovo tutto. Il cursore resta su ciò che avevi trovato, ora mostrato tra i suoi vicini.
+4. Premi Invio per mantenere il risultato e smettere di filtrare. La maschera resta in vigore e le lettere tornano al pannello, così puoi poi digitare per saltare dentro ciò che è rimasto: il filtro e la ricerca rapida mostrano i propri indicatori uno accanto all'altro.
+5. Premi Esc per cancellare il filtro e mostrare di nuovo tutto. Il cursore resta su ciò che avevi trovato, ora mostrato tra i suoi vicini.
 
 Il filtro accetta diversi tipi di maschere:
 
@@ -41,6 +42,7 @@ Premi Ctrl+H, o scegli il comando dal menu Vista, per commutare gli elementi nas
 | Ricerca rapida (modalità classica) | Ctrl+Opzione+lettera |
 | Corrispondenza precedente / successiva (durante la ricerca rapida) | ↑ / ↓ |
 | Filtro rapido on/off | Ctrl+S |
+| Mantieni il risultato, smetti di filtrare | Invio |
 | Cancella filtro / annulla | Esc |
 | Mostra/nascondi file nascosti | Ctrl+H |
 

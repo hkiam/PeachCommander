@@ -24,7 +24,8 @@ Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactive
 1. Druk in het actieve paneel op Ctrl+S om het snelfilter aan te zetten.
 2. Typ een filtermasker. Het paneel versmalt live tot overeenkomende items terwijl je typt, en de cursor blijft op het item waar je naar keek zolang het smallere masker het behoudt.
 3. Loop met ↑ en ↓ door het resultaat. In een gefilterde lijst lopen de pijlen rond, dus het laatste item leidt terug naar boven en een kort resultaat kun je rondlopen zonder aan de uiteinden te blijven steken.
-4. Druk op Esc om het filter te wissen en weer alles te tonen. De cursor blijft op wat je had gevonden, nu getoond tussen zijn buren.
+4. Druk op Enter om het resultaat te houden en te stoppen met filteren. Het masker blijft gelden en de letters gaan terug naar het paneel, dus daarna kun je typen om binnen wat er over is te springen — het filter en snelzoeken tonen elk hun eigen aanduiding, naast elkaar.
+5. Druk op Esc om het filter te wissen en weer alles te tonen. De cursor blijft op wat je had gevonden, nu getoond tussen zijn buren.
 
 Het filter accepteert verschillende soorten maskers:
 
@@ -43,6 +44,7 @@ Druk op Ctrl+H, of kies de opdracht uit het menu Weergave, om verborgen items te
 | Snelzoeken (klassieke modus) | Ctrl+Option+letter |
 | Vorige / volgende treffer (tijdens snelzoeken) | ↑ / ↓ |
 | Snelfilter aan/uit | Ctrl+S |
+| Resultaat houden, stoppen met filteren | Enter |
 | Filter wissen / annuleren | Esc |
 | Verborgen bestanden tonen/verbergen | Ctrl+H |
 

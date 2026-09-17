@@ -29,8 +29,9 @@
 //   rowdump <file>        every visible column of the cursor row, as id + rendered text
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
-//   panelarrow <up|down>|<out>  press Up/Down in the active panel (the real keyDown path), then
-//                           report the cursor — the filter's wrap-around is only visible this way
+//   panelkey <up|down|enter|esc|backspace>|<out>  press a plain navigation key in the active panel
+//                           (the real keyDown path), then report the cursor — the filter's wrap-around
+//                           and what Enter does to a filter are visible no other way
 //   indicatordump <out>   the quick-filter and quick-search indicators over the path bar, as text
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
 //   listermenudump <out>  the viewer's own document menus (menudump only sees the main bar)
@@ -1045,14 +1046,13 @@ extension MainWindowController {
             case "indicatordump":                      // indicatordump <out>
                 try? (activePanel?.view.searchIndicatorsForAutomation ?? "ERROR: no active panel\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)
-            case "panelarrow":                         // panelarrow <up|down>|<out>
-                let pa = arg.split(separator: "|", maxSplits: 1).map(String.init)
-                if let panel = activePanel, pa.count == 2, pa[0] == "up" || pa[0] == "down" {
-                    panel.tableView.automationArrow(down: pa[0] == "down")
+            case "panelkey":                           // panelkey <up|down|enter|esc|backspace>|<out>
+                let pk = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if let panel = activePanel, pk.count == 2, panel.tableView.automationKey(pk[0]) {
                     try? panel.tableView.automationViewport()
-                        .write(toFile: pa[1], atomically: true, encoding: .utf8)
+                        .write(toFile: pk[1], atomically: true, encoding: .utf8)
                 } else {
-                    NSLog("[automation] panelarrow needs <up|down>|<out> and an active panel")
+                    NSLog("[automation] panelkey needs <up|down|enter|esc|backspace>|<out> and an active panel")
                 }
             case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
                 try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")

@@ -2215,10 +2215,12 @@ SCENARIOS = [
       "typeahead \\u|/Users/admin/qsf-back.txt",
       "filter e", "wait 800",
       "viewdump /Users/admin/qsf-kept.txt",
-      "panelarrow down|/Users/admin/qsf-filter-wrap.txt",
-      "panelarrow up|/Users/admin/qsf-filter-back.txt",
+      "panelkey down|/Users/admin/qsf-filter-wrap.txt",
+      "panelkey up|/Users/admin/qsf-filter-back.txt",
       "filter re", "wait 800",
       "viewdump /Users/admin/qsf-narrowed.txt",
+      "panelkey enter|/Users/admin/qsf-frozen.txt",
+      "typeahead re|/Users/admin/qsf-frozen-search.txt",
       "indicatordump /Users/admin/qsf-indicator.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
@@ -3683,6 +3685,19 @@ REPORTS = {
     # Narrowing "e" to "re" drops readme.txt's neighbours, not the cursor: row 1, the second hit.
     "quick-search-filter-narrowed": ("/Users/admin/qsf-narrowed.txt",
                                      ["cursor=report.txt", "cursorRow=1"]),
+    # Enter *freezes* a filter: the mask stays in force, the typing stops. Until `panelkey` existed
+    # that state was reachable from no script, so nothing about it was ever measured — and the two
+    # searches are meant to coexist there, which is the one claim the code comment makes and nothing
+    # checked. Three rows: the two "re" hits and `..`.
+    "quick-search-filter-frozen": ("/Users/admin/qsf-frozen.txt",
+                                   ["cursor=report.txt", "cursorRow=1", "rows=3"]),
+    # …and typing inside the frozen result searches *it*, not the folder: two hits, not the six files.
+    # The indicator dump that follows catches both of them side by side (`filter=🔍 re  2/6` next to
+    # `typeahead=⌕ re  2/2`), which is worth having in the artefacts — but it is not asserted: the
+    # search's display expires two seconds after the last keystroke, and an assertion that depends on
+    # the guest not hiccuping between two script lines is worse than none.
+    "quick-search-filter-frozen-search": ("/Users/admin/qsf-frozen-search.txt",
+                                          ["prefix=re", "total=2", "cursor=report.txt"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # And *not* there while the dialog stood: re-listing underneath a dialog is the thing the guard
     # exists to prevent, so a fix that simply refreshed anyway would pass the report above.
