@@ -9899,6 +9899,16 @@ final class PanelView: NSView {
         pathBar.clickRegionForAutomation(region, clickCount: clickCount)
     }
     func pathBarHitTestForAutomation(_ region: String) -> String { pathBar.hitTestForAutomation(region) }
+    /// Diagnostic: the two search indicators over the path bar, exactly as they read.
+    ///
+    /// Both are labels drawn over a bar, so what they *claim* — the prefix, the mask, and the counts
+    /// beside them — is readable nowhere else: a screenshot cannot be asserted on and the panel's own
+    /// dumps report the list, which is the half that was never wrong. A hidden label reports empty
+    /// rather than its stale text, because "not shown" is the state that matters here.
+    var searchIndicatorsForAutomation: String {
+        "filter=\(filterLabel.isHidden ? "" : filterLabel.stringValue)\n"
+            + "typeahead=\(typeAheadLabel.isHidden ? "" : typeAheadLabel.stringValue)\n"
+    }
     #endif
     let statusBar: StatusBarView
     // `ClickThroughLabel`, not `NSTextField`: all three are constrained over the path bar and a plain

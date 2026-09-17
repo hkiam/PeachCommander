@@ -2197,6 +2197,29 @@ SCENARIOS = [
                            "seldump /Users/admin/sel-all.txt",
                            "cmd cm_RestoreSelection", "wait 800",
                            "seldump /Users/admin/sel-after.txt", "wait 400"], 11),
+    # The two keyboard searches, neither of which leaves a trace a screenshot can be asserted on
+    # (F-060, F-395). Documents sorts as config.json, handbook.pdf, inventory.csv, notes.md,
+    # readme.txt, report.txt — so "re" has exactly two hits and they are the last two rows, which is
+    # what makes stepping off the end observable at all.
+    #
+    # Every step here fails differently on the build before it: without the arrows the search sits on
+    # its first hit (pos=1 four times over), without the wrap the filtered list stops at report.txt
+    # instead of cycling through `..`, without the cursor being kept a narrowed mask answers row 0,
+    # and with the indicator counted before the rebuild the last report says `re  4/` — the previous
+    # mask's hits beside the new mask's text.
+    ("quick-search-filter",
+     ["active left", "left /Users/admin/pc-demo/Documents", "wait 1500",
+      "typeahead re|/Users/admin/qsf-search.txt",
+      "typeahead \\d|/Users/admin/qsf-next.txt",
+      "typeahead \\d|/Users/admin/qsf-wrap.txt",
+      "typeahead \\u|/Users/admin/qsf-back.txt",
+      "filter e", "wait 800",
+      "viewdump /Users/admin/qsf-kept.txt",
+      "panelarrow down|/Users/admin/qsf-filter-wrap.txt",
+      "panelarrow up|/Users/admin/qsf-filter-back.txt",
+      "filter re", "wait 800",
+      "viewdump /Users/admin/qsf-narrowed.txt",
+      "indicatordump /Users/admin/qsf-indicator.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -3640,6 +3663,26 @@ REPORTS = {
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
     "sftp-upload": ("/Users/admin/sftpput.txt", ["full=40960", "resumedAt=15000", "tail=25960"]),
+    # The indicator is the base key, because it is written last: the guest waits for this file rather
+    # than for a fixed sleep.
+    "quick-search-filter": ("/Users/admin/qsf-indicator.txt", ["filter=\U0001F50D re  2/", "!re  4/"]),
+    "quick-search-filter-search": ("/Users/admin/qsf-search.txt",
+                                   ["prefix=re", "pos=1", "total=2", "cursor=readme.txt"]),
+    "quick-search-filter-next": ("/Users/admin/qsf-next.txt", ["pos=2", "cursor=report.txt"]),
+    # Down off the last hit comes back to the first, rather than beeping and staying put.
+    "quick-search-filter-wrap": ("/Users/admin/qsf-wrap.txt", ["pos=1", "cursor=readme.txt"]),
+    "quick-search-filter-back": ("/Users/admin/qsf-back.txt", ["pos=2", "cursor=report.txt"]),
+    # Applying a mask keeps the cursor on what it was on: report.txt is row 3 of the four "e" hits,
+    # not row 0.
+    "quick-search-filter-kept": ("/Users/admin/qsf-kept.txt",
+                                 ["cursor=report.txt", "cursorRow=3", "rows=5"]),
+    # ...and in a filtered list the arrows cycle through `..` instead of stopping at the ends.
+    "quick-search-filter-filter-wrap": ("/Users/admin/qsf-filter-wrap.txt",
+                                        ["cursor=..", "cursorRow=-1"]),
+    "quick-search-filter-filter-back": ("/Users/admin/qsf-filter-back.txt", ["cursor=report.txt"]),
+    # Narrowing "e" to "re" drops readme.txt's neighbours, not the cursor: row 1, the second hit.
+    "quick-search-filter-narrowed": ("/Users/admin/qsf-narrowed.txt",
+                                     ["cursor=report.txt", "cursorRow=1"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # And *not* there while the dialog stood: re-listing underneath a dialog is the thing the guard
     # exists to prevent, so a fix that simply refreshed anyway would pass the report above.

@@ -31,6 +31,7 @@
 //   filter <text>         apply the quick filter to the active panel
 //   panelarrow <up|down>|<out>  press Up/Down in the active panel (the real keyDown path), then
 //                           report the cursor — the filter's wrap-around is only visible this way
+//   indicatordump <out>   the quick-filter and quick-search indicators over the path bar, as text
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
 //   listermenudump <out>  the viewer's own document menus (menudump only sees the main bar)
 //   listermarkstep <term>|<steps>|<out>  Mark All, then step through the marks; reports where
@@ -1041,6 +1042,9 @@ extension MainWindowController {
                 activePanel?.tableView.automationSortByPluginColumn(arg)
             case "filter":                             // filter <text> (F-395): apply the quick filter
                 activePanel?.tableView.automationSetFilter(arg)
+            case "indicatordump":                      // indicatordump <out>
+                try? (activePanel?.view.searchIndicatorsForAutomation ?? "ERROR: no active panel\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "panelarrow":                         // panelarrow <up|down>|<out>
                 let pa = arg.split(separator: "|", maxSplits: 1).map(String.init)
                 if let panel = activePanel, pa.count == 2, pa[0] == "up" || pa[0] == "down" {
