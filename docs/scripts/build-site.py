@@ -61,6 +61,10 @@ GROUP_ORDER = [
     "Plugins",
     "Tutorials",
     "Reference & help",
+    # Before "Develop" because the gate keeps the API/SDK end last, and because these pages
+    # are for readers rather than contributors: a German provider needs an Impressum, and a
+    # privacy policy and terms are what someone looks for before trusting an unsigned download.
+    "Legal",
     "Develop",
 ]
 
