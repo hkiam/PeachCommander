@@ -9899,6 +9899,20 @@ final class PanelView: NSView {
         pathBar.clickRegionForAutomation(region, clickCount: clickCount)
     }
     func pathBarHitTestForAutomation(_ region: String) -> String { pathBar.hitTestForAutomation(region) }
+    /// Diagnostic: the icon grid beside the list it is supposed to mirror.
+    ///
+    /// `agree` is the whole point: the grid maps a click or Enter through its own index into the
+    /// *table's* entries, so once the two lists differ the app acts on a file other than the one
+    /// drawn under the cursor — and nothing but a picture could see it.
+    var gridStateForAutomation: String {
+        let tableName = tableView.cursorRow < 0 ? ".." : (tableView.cursorEntryName() ?? "")
+        let dump = iconGrid.automationDump
+        let gridName = dump.split(separator: "\n").first { $0.hasPrefix("gridName=") }
+            .map { String($0.dropFirst("gridName=".count)) } ?? ""
+        return "mode=\(viewMode)\nusesGrid=\(usesGrid)\n" + dump
+            + "tableCursor=\(tableName)\nagree=\(gridName == tableName ? "yes" : "no")\n"
+    }
+
     /// Diagnostic: the two search indicators over the path bar, exactly as they read.
     ///
     /// Both are labels drawn over a bar, so what they *claim* — the prefix, the mask, and the counts
@@ -10198,6 +10212,15 @@ final class PanelView: NSView {
             } else {
                 self.filterLabel.isHidden = true
             }
+            // The icon grid mirrors the table's visible entries, and the quick filter is the one
+            // thing that changes that set without a new listing — so nothing rebuilt the grid when a
+            // mask was applied or cleared while a grid mode was showing. What that looked like: the
+            // filter cleared from the menu in Brief view left the grid showing the four matches of a
+            // mask no longer in force, with two files of the folder simply absent, and the drawn
+            // cursor one cell away from the entry the panel would actually act on — `onActivate`
+            // maps a grid index into the *table's* list, so Enter opened a file other than the
+            // highlighted one.
+            if self.usesGrid { self.refreshGrid() }
         }
         tableView.onTypeAheadChanged = { [weak self] prefix, position, total in
             guard let self else { return }

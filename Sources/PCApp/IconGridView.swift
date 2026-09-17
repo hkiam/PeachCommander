@@ -280,6 +280,15 @@ final class IconGridView: NSView, NSDraggingSource {
         }
     }
 
+    /// Diagnostic: what the grid is actually *drawing* — its own items and its own cursor.
+    ///
+    /// Read off the view, never off the controller's mirror of it: the defect this exists for is the
+    /// two disagreeing, and a dump taken from the mirror would agree with itself every time.
+    var automationDump: String {
+        let name = items.indices.contains(cursorIndex) ? items[cursorIndex].name : ""
+        return "gridCursor=\(cursorIndex)\ngridName=\(name)\nnames=\(items.map(\.name).joined(separator: ","))\n"
+    }
+
     private func move(_ delta: Int) {
         guard !items.isEmpty else { return }
         setCursor(max(0, min(cursorIndex + delta, items.count - 1)))

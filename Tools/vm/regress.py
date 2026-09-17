@@ -2222,6 +2222,22 @@ SCENARIOS = [
       "panelkey enter|/Users/admin/qsf-frozen.txt",
       "typeahead re|/Users/admin/qsf-frozen-search.txt",
       "indicatordump /Users/admin/qsf-indicator.txt", "wait 400"], 11),
+    # The grid modes mirror the table's visible entries, and the quick filter is the one thing that
+    # changes that set without a new listing — so until today nothing rebuilt the grid when a mask was
+    # applied or cleared while Brief/Icons/Gallery was showing. `griddump` reads what the grid is
+    # *drawing* (never the controller's mirror of it, which would agree with itself every time) and
+    # says whether it agrees with the panel's own cursor. `agree=no` is the failure this exists for:
+    # the grid maps a click through its own index into the table's list, so a stale grid opens a file
+    # other than the one under the highlight. Measured with the fix removed: after clearing the mask
+    # the grid still drew the four matches, `gridName=report-2.txt` against `tableCursor=report-1.txt`.
+    ("quick-filter-grid",
+     ["active left", "left /Users/admin/pc-demo/Documents", "wait 1500",
+      "filter e", "wait 800",
+      "cmd cm_SrcShort", "wait 1200",
+      "griddump /Users/admin/qfg-filtered.txt",
+      "cmd cm_QuickFilter", "wait 700",
+      "cmd cm_QuickFilter", "wait 1000",
+      "griddump /Users/admin/qfg-cleared.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -3698,6 +3714,16 @@ REPORTS = {
     # the guest not hiccuping between two script lines is worse than none.
     "quick-search-filter-frozen-search": ("/Users/admin/qsf-frozen-search.txt",
                                           ["prefix=re", "total=2", "cursor=report.txt"]),
+    # Brief view over a filtered listing: the grid draws the four "e" hits and nothing else, and its
+    # cursor is on the same entry the panel would act on.
+    "quick-filter-grid": ("/Users/admin/qfg-filtered.txt",
+                          ["mode=brief", "names=..,inventory.csv,notes.md,readme.txt,report.txt",
+                           "agree=yes"]),
+    # …and clearing the mask from the menu brings the other two files back into the grid. The negative
+    # is the defect itself: a grid still holding only the matches of a mask no longer in force.
+    "quick-filter-grid-cleared": ("/Users/admin/qfg-cleared.txt",
+                                  ["config.json", "handbook.pdf", "agree=yes",
+                                   "!names=..,inventory.csv,notes.md,readme.txt,report.txt"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # And *not* there while the dialog stood: re-listing underneath a dialog is the thing the guard
     # exists to prevent, so a fix that simply refreshed anyway would pass the report above.

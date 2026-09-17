@@ -33,6 +33,9 @@
 //                           (the real keyDown path), then report the cursor — the filter's wrap-around
 //                           and what Enter does to a filter are visible no other way
 //   indicatordump <out>   the quick-filter and quick-search indicators over the path bar, as text
+//   griddump <out>        what the icon grid is DRAWING (brief/icons/gallery) beside the table's own
+//                         cursor, with an `agree=` line — the two can disagree, and then a click
+//                         opens a file other than the highlighted one
 //   listershot <out.png>  a PNG of what the viewer window is showing (the rendered page included)
 //   listermenudump <out>  the viewer's own document menus (menudump only sees the main bar)
 //   listermarkstep <term>|<steps>|<out>  Mark All, then step through the marks; reports where
@@ -1043,6 +1046,9 @@ extension MainWindowController {
                 activePanel?.tableView.automationSortByPluginColumn(arg)
             case "filter":                             // filter <text> (F-395): apply the quick filter
                 activePanel?.tableView.automationSetFilter(arg)
+            case "griddump":                           // griddump <out>
+                try? (activePanel?.view.gridStateForAutomation ?? "ERROR: no active panel\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "indicatordump":                      // indicatordump <out>
                 try? (activePanel?.view.searchIndicatorsForAutomation ?? "ERROR: no active panel\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)

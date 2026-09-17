@@ -1043,7 +1043,6 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         let keep = cursorEntryName()
         filterMode = false
         filterText = ""
-        onFilterChanged?(nil, visibleEntries.count, allEntryCount)
         rebuildVisibleEntries()
         // The same reason the live filter keeps its cursor, at the other end of the job: you filter to
         // find one file and press Esc to see it among its neighbours. Sending the cursor to the top
@@ -1054,6 +1053,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         } else {
             cursorRow = visibleEntries.isEmpty ? -1 : 0
         }
+        onFilterChanged?(nil, visibleEntries.count, allEntryCount)   // after the rebuild, as above
         reloadData()
         Task { await self.syncEntriesToSelectionState(); notifyChanged() }
     }
@@ -1077,11 +1077,6 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func applyFilterLive() {
         let keep = cursorEntryName()
         rebuildVisibleEntries()
-        // Counted after the rebuild, not before it. `visibleEntries` still held the *previous* mask's
-        // result at the old call site, so the indicator showed the new text beside the old number —
-        // one keystroke behind the list it claims to describe, and wrong in the direction that
-        // matters: a mask that has just narrowed to nothing still reported the hits it no longer has.
-        onFilterChanged?(filterText, visibleEntries.count, allEntryCount)
         // Stay on the item you were looking at as long as the narrower mask still keeps it. Refining
         // a filter is done *to* something you can see; sending the cursor back to the top on every
         // keystroke means the item you are aiming at walks away while you type its name.
@@ -1090,6 +1085,11 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         } else {
             cursorRow = visibleEntries.isEmpty ? -1 : 0
         }
+        // Announced once the list and the cursor are both what they are going to be. The count was
+        // read *before* the rebuild until today, so the indicator showed the new text beside the old
+        // number; and the announcement is now also what rebuilds the icon grid, which mirrors this
+        // list and can only mirror it correctly after the cursor has landed.
+        onFilterChanged?(filterText, visibleEntries.count, allEntryCount)
         reloadData()
         Task { await self.syncEntriesToSelectionState(); notifyChanged() }
     }

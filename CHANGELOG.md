@@ -124,6 +124,18 @@ does not have.
   previous mask's number — and a mask that had just narrowed to nothing still claimed the hits it no
   longer had. Counted after the rebuild now.
 
+- **The quick filter and the Brief/Icons/Gallery view disagreed about which files exist** (F-021,
+  F-395). Those three modes draw an icon grid that mirrors the panel's visible entries, and the
+  quick filter is the one thing that changes that set without a new listing — so nothing rebuilt the
+  grid when a mask was applied or cleared while one of them was showing. Filter in Details view,
+  switch to Brief, clear the filter from the View menu, and the grid went on drawing the matches of a
+  mask no longer in force, with the folder's other files simply absent. Worse than stale: the grid
+  maps a click or Enter through its own index into the *panel's* list, so the file that opened was
+  not the file under the highlight — measured, `gridName=report-2.txt` against
+  `tableCursor=report-1.txt`. The grid is rebuilt on every filter change now, and a new `griddump`
+  verb reports what it is drawing beside the panel's own cursor, with an `agree=` line, so the VM
+  gate can see the two part company.
+
 - **Ctrl+S in the middle of a quick search left the search's prefix behind.** The filter took the
   keyboard while the type-ahead's buffer and its indicator stayed up for the rest of the two-second
   window — and since the arrows now step between a search's matches, they would have been taken from
