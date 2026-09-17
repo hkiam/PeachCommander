@@ -12,7 +12,7 @@ Når en mappe inneholder hundrevis av elementer, trenger du sjelden å rulle. Pe
 
 1. Klikk på et filpanel slik at det blir aktivt.
 2. Begynn å skrive begynnelsen av et navn. Markøren hopper til det første samsvarende elementet.
-3. Fortsett å skrive for å forfine treffet, eller trykk samme bokstav igjen for å bla gjennom elementer som begynner med den bokstaven.
+3. Fortsett å skrive for å forfine treffet, eller bytt mellom treffene med ↑ og ↓ så lenge søket vises. Å trykke samme bokstav igjen blar også gjennom elementene som begynner med den.
 4. Det du har skrevet vises over panelet, sammen med hvilket treff du er på og hvor mange det er — for eksempel `⌕ re  2/3`. Det blir rødt når ingenting treffer.
 5. Trykk Backspace for å ta tilbake siste bokstav, eller Esc for å avslutte søket. Backspace redigerer bare et søk som pågår; ellers går det fortsatt til mappen over.
 6. Den innskrevne teksten fjernes etter en kort pause, slik at du kan starte et nytt søk når som helst.
@@ -40,6 +40,7 @@ Trykk Ctrl+H, eller velg kommandoen fra Vis-menyen, for å veksle skjulte elemen
 | Handling | Snarvei |
 | --- | --- |
 | Hurtigsøk (klassisk modus) | Ctrl+Option+bokstav |
+| Forrige / neste treff (under hurtigsøk) | ↑ / ↓ |
 | Hurtigfilter på/av | Ctrl+S |
 | Fjern filter / avbryt | Esc |
 | Vis/skjul skjulte filer | Ctrl+H |

@@ -12,7 +12,7 @@ Gdy folder zawiera setki elementów, rzadko musisz przewijać. Peach Commander p
 
 1. Kliknij panel plików, aby był aktywny.
 2. Zacznij wpisywać początek nazwy. Kursor przeskakuje do pierwszego pasującego elementu.
-3. Pisz dalej, aby zawęzić dopasowanie, lub naciśnij tę samą literę ponownie, aby przechodzić między elementami zaczynającymi się na tę literę.
+3. Pisz dalej, aby zawęzić dopasowanie, albo przechodź między trafieniami klawiszami ↑ i ↓, dopóki wyszukiwanie jest widoczne. Ponowne naciśnięcie tej samej litery również przechodzi między elementami zaczynającymi się na nią.
 4. To, co wpisano, pojawia się nad panelem wraz z numerem trafienia i ich liczbą — na przykład `⌕ re  2/3`. Gdy nic nie pasuje, staje się czerwone.
 5. Backspace cofa ostatnią literę, a Esc kończy wyszukiwanie. Backspace edytuje tylko trwające wyszukiwanie; poza nim nadal przechodzi do folderu nadrzędnego.
 6. Wpisany tekst czyści się po krótkiej pauzie, więc możesz w dowolnej chwili rozpocząć nowe wyszukiwanie.
@@ -40,6 +40,7 @@ Naciśnij Ctrl+H lub wybierz polecenie z menu Widok, aby przełączać ukryte el
 | Akcja | Skrót |
 | --- | --- |
 | Szybkie wyszukiwanie (tryb klasyczny) | Ctrl+Option+litera |
+| Poprzednie / następne trafienie (podczas szybkiego wyszukiwania) | ↑ / ↓ |
 | Szybki filtr wł./wył. | Ctrl+S |
 | Wyczyść filtr / anuluj | Esc |
 | Pokaż/ukryj ukryte pliki | Ctrl+H |

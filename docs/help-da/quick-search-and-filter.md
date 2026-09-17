@@ -12,7 +12,7 @@ Når en mappe indeholder hundredvis af emner, har du sjældent brug for at rulle
 
 1. Klik på et filpanel, så det er aktivt.
 2. Begynd at skrive begyndelsen af et navn. Markøren springer til det første matchende emne.
-3. Fortsæt med at skrive for at forfine matchet, eller tryk på det samme bogstav igen for at cykle gennem emner, der starter med det bogstav.
+3. Fortsæt med at skrive for at forfine matchet, eller skift mellem matchene med ↑ og ↓, mens søgningen vises. Trykker du på det samme bogstav igen, cykler du også gennem emner, der starter med det.
 4. Den indtastede tekst ryddes efter en kort pause, så du kan starte en ny søgning når som helst.
 
 Som standard går almindelige bogstaver til kommandolinjen, og hurtigsøgning udløses med Ctrl+Option+bogstav (den klassiske adfærd). Du kan skifte hurtigsøgning til at reagere på almindelig skrivning i stedet, eller slå den fra, i konfigurationsindstillingerne.
@@ -38,6 +38,7 @@ Tryk på Ctrl+H, eller vælg kommandoen fra Vis-menuen, for at skifte skjulte em
 | Handling | Genvej |
 | --- | --- |
 | Hurtigsøgning (klassisk tilstand) | Ctrl+Option+bogstav |
+| Forrige / næste match (under hurtigsøgning) | ↑ / ↓ |
 | Hurtigfilter til/fra | Ctrl+S |
 | Ryd filter / annullér | Esc |
 | Vis/skjul skjulte filer | Ctrl+H |

@@ -12,7 +12,7 @@ Wanneer een map honderden items bevat, hoef je zelden te scrollen. Met Peach Com
 
 1. Klik op een bestandspaneel zodat het actief is.
 2. Begin het begin van een naam te typen. De cursor springt naar het eerste overeenkomende item.
-3. Blijf typen om de overeenkomst te verfijnen, of druk nogmaals op dezelfde letter om door items te bladeren die met die letter beginnen.
+3. Blijf typen om de overeenkomst te verfijnen, of stap met ↑ en ↓ tussen de treffers zolang de zoekopdracht zichtbaar is. Nogmaals op dezelfde letter drukken bladert ook door de items die met die letter beginnen.
 4. Wat u hebt getypt verschijnt boven het paneel, samen met de hoeveelste treffer u bent en hoeveel er zijn — bijvoorbeeld `⌕ re  2/3`. Het wordt rood als er niets overeenkomt.
 5. Druk op Backspace om de laatste letter terug te nemen, of op Esc om de zoekopdracht te beëindigen. Backspace bewerkt alleen een lopende zoekopdracht; anders gaat het nog steeds naar de bovenliggende map.
 6. De getypte tekst wordt na een korte pauze gewist, zodat je op elk moment een nieuwe zoekopdracht kunt starten.
@@ -40,6 +40,7 @@ Druk op Ctrl+H, of kies de opdracht uit het menu Weergave, om verborgen items te
 | Actie | Sneltoets |
 | --- | --- |
 | Snelzoeken (klassieke modus) | Ctrl+Option+letter |
+| Vorige / volgende treffer (tijdens snelzoeken) | ↑ / ↓ |
 | Snelfilter aan/uit | Ctrl+S |
 | Filter wissen / annuleren | Esc |
 | Verborgen bestanden tonen/verbergen | Ctrl+H |

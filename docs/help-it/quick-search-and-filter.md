@@ -12,7 +12,7 @@ Quando una cartella contiene centinaia di elementi, raramente hai bisogno di sco
 
 1. Fai clic su un pannello dei file così che sia attivo.
 2. Inizia a digitare l'inizio di un nome. Il cursore salta al primo elemento corrispondente.
-3. Continua a digitare per affinare la corrispondenza, o premi di nuovo la stessa lettera per scorrere gli elementi che iniziano con quella lettera.
+3. Continua a digitare per affinare la corrispondenza, o passa da una corrispondenza all'altra con ↑ e ↓ finché la ricerca è visibile. Premere di nuovo la stessa lettera scorre anch'esso gli elementi che iniziano con quella lettera.
 4. Il testo digitato si cancella dopo una breve pausa, così puoi iniziare una nuova ricerca in qualsiasi momento.
 
 Per impostazione predefinita, le lettere semplici vanno alla riga di comando e la ricerca rapida si attiva con Ctrl+Opzione+lettera (il comportamento classico). Puoi impostare la ricerca rapida per rispondere invece alla digitazione semplice, o disattivarla, nelle impostazioni di configurazione.
@@ -38,6 +38,7 @@ Premi Ctrl+H, o scegli il comando dal menu Vista, per commutare gli elementi nas
 | Azione | Scorciatoia |
 | --- | --- |
 | Ricerca rapida (modalità classica) | Ctrl+Opzione+lettera |
+| Corrispondenza precedente / successiva (durante la ricerca rapida) | ↑ / ↓ |
 | Filtro rapido on/off | Ctrl+S |
 | Cancella filtro / annulla | Esc |
 | Mostra/nascondi file nascosti | Ctrl+H |

@@ -52,6 +52,59 @@ final class TypeAheadSearchTests: XCTestCase {
         XCTAssertEqual(TypeAheadSearch.matches(names: ["a", "b"], query: ""), [])
     }
 
+    // MARK: - Stepping between the matches with the arrow keys
+
+    func test_neighbour_walksForwardsAndBackwardsThroughTheHits() {
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]   // hits: 0, 1, 3
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "re", forward: true), 1)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 1, names: names, query: "re", forward: true), 3)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 3, names: names, query: "re", forward: false), 1)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 1, names: names, query: "re", forward: false), 0)
+    }
+
+    func test_neighbour_wrapsAtBothEnds() {
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 3, names: names, query: "re", forward: true), 0)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "re", forward: false), 3)
+    }
+
+    func test_neighbour_fromACursorThatIsNotItselfAMatch() {
+        // Cursor on "notes.txt" (index 2, not a hit): forwards is the hit below it, backwards the
+        // one above. Stepping must not require that you are standing on a match already.
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 2, names: names, query: "re", forward: true), 3)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 2, names: names, query: "re", forward: false), 1)
+    }
+
+    func test_neighbour_fromTheParentRow() {
+        // -1 is the cursor on "..", which is below every row: forwards lands on the first hit,
+        // backwards wraps to the last.
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: -1, names: names, query: "re", forward: true), 0)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: -1, names: names, query: "re", forward: false), 3)
+    }
+
+    func test_neighbour_ofASingleMatchIsItself() {
+        // One hit means both arrows stay put rather than beeping — the panel moves the cursor to a
+        // row it is already on, which is a no-op.
+        let names = ["readme.md", "notes.txt"]
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "re", forward: true), 0)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "re", forward: false), 0)
+    }
+
+    func test_neighbour_isNilWithoutMatches() {
+        XCTAssertNil(TypeAheadSearch.neighbour(of: 0, names: names, query: "zz", forward: true))
+        XCTAssertNil(TypeAheadSearch.neighbour(of: 0, names: names, query: "", forward: true))
+        XCTAssertNil(TypeAheadSearch.neighbour(of: 0, names: [], query: "a", forward: false))
+    }
+
+    func test_neighbour_agreesWithTheJumpOnWhatCounts() {
+        // Same case- and diacritic-insensitive prefix rule as `match`, or the arrows would visit
+        // rows the typed letter refuses to land on.
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "A", forward: true), 1)
+        XCTAssertEqual(TypeAheadSearch.neighbour(of: 0, names: names, query: "ur", forward: true), 4)
+    }
+
     func test_position_saysWhichMatchTheCursorIsOn() {
         let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
         XCTAssertEqual(TypeAheadSearch.position(of: 0, names: names, query: "re"), 1)

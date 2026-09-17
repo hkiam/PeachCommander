@@ -13,7 +13,8 @@
 //   connect <url>         quick-connect (ftp://user:pass@host/… , sftp://… )
 //   disconnect            leave the active panel's network mount
 //   drivedisconnect <name>  hang up an open connection from its drive chip, as its ⏏ does
-//   typeahead <seq>|<out>   type into the active panel's quick search (\\b = Backspace, \\e = Esc)
+//   typeahead <seq>|<out>   type into the active panel's quick search (\\b = Backspace, \\e = Esc,
+//                           \\u / \\d = step to the previous/next match)
 //   wait  <ms>            sleep (let an async connect/list settle)
 //   inlinerename <newname>        commit an in-cell rename (the details-view path)
 //   inlinerenamesleft <out>       whether that name went unused (i.e. no in-cell rename ran)

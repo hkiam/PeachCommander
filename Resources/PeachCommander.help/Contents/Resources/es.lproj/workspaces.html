@@ -10,17 +10,30 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Espacios de trabajo</h1>
-<p>Un espacio de trabajo es una instantánea guardada de tus dos paneles: las carpetas que muestran, cada pestaña abierta, qué pestaña está activa en cada lado, y qué panel tiene el foco. Guarda una vez la disposición que usas para una tarea, y podrás recuperarlo todo con una sola elección más tarde. Los espacios de trabajo son ideales para configuraciones por proyecto, así puedes saltar directamente de las carpetas y pestañas de un trabajo a las de otro sin volver a abrir nada a mano.</p>
-<h2 id="como-hacerlo">Cómo hacerlo</h2>
+<p>Un espacio de trabajo es un contexto con nombre en el que usted trabaja: «Ordenar las copias de seguridad», «Clasificar candidaturas». Cada uno recuerda ambos paneles, todas las pestañas abiertas, qué pestaña está activa en cada lado, el modo de vista, el árbol de carpetas, el historial de atrás/adelante y qué archivos tenía marcados, el filtro rápido y la disposición de la ventana: el panel lateral, el dock, las barras y dónde está el divisor. Cambiar cuesta un clic, y por el camino nunca se pierde nada: un espacio de trabajo nunca se guarda, porque nunca termina.</p>
+<p>Hasta que cree un segundo, no hay nada que ver. Ni barra, ni menú, ni atajos.</p>
+<h2 id="como-se-hace">Cómo se hace</h2>
 <ol>
-<li>Configura ambos paneles como los quieres: abre las carpetas, añade las pestañas y selecciona el panel que quieres activo.</li>
-<li>Abre el menú <strong>Ir</strong> y elige <strong>Guardar espacio de trabajo…</strong>.</li>
-<li>Escribe un nombre para el espacio de trabajo y confirma. La disposición actual de ambos paneles se guarda con ese nombre.</li>
-<li>Para volver a una disposición guardada más tarde, abre el menú <strong>Ir</strong> y elige <strong>Espacios de trabajo…</strong>.</li>
-<li>En la lista emergente, haz clic en el espacio de trabajo que quieras. Se restauran ambos paneles, sus pestañas y el lado activo.</li>
-<li>Para eliminar un espacio de trabajo, abre <strong>Espacios de trabajo…</strong>, apunta a <strong>Eliminar</strong> y elige el nombre en el submenú.</li>
+<li>Prepare ambos paneles para la tarea que tiene entre manos: abra las carpetas, añada las pestañas, elija la vista que quiera.</li>
+<li>Abra el menú <strong>Ir</strong> y elija <strong>Espacios de trabajo…</strong>, luego <strong>Nuevo espacio de trabajo…</strong>. Póngale un nombre.</li>
+<li>Aparece una franja de fichas de colores en la parte superior de la ventana, y el menú <strong>Espacio de trabajo</strong> aparece en la barra de menús. El nuevo espacio de trabajo empieza como una copia de la disposición en la que estaba.</li>
+<li>Prepare el nuevo espacio de trabajo para su propia tarea. Aquel del que venía conserva lo que tenía.</li>
+<li>Haga clic en una ficha para cambiar, o pulse <strong>Ctrl+1</strong> a <strong>Ctrl+9</strong>. Todo cambia con él.</li>
 </ol>
-<h2 id="atajos">Atajos</h2>
+<h2 id="volver-a-un-punto-de-partida">Volver a un punto de partida</h2>
+<p>Cada espacio de trabajo recuerda además la disposición con la que se creó. <strong>Espacio de trabajo ▸ Guardar el estado actual en el espacio de trabajo</strong> (Cmd+Ctrl+S) convierte la disposición actual en ese punto de partida, y <strong>Restablecer al estado guardado</strong> lo devuelve allí tras una tarde de rodeos.</p>
+<p>Esto es independiente del recuerdo continuo: nunca tiene que guardar para no perder su sitio.</p>
+<h2 id="la-bandeja">La bandeja</h2>
+<p>Cada espacio de trabajo tiene una bandeja — para lo que de verdad ocurre mientras se ordena: tres
+carpetas dentro de las copias de seguridad encuentra algo que pertenece a un trabajo completamente
+distinto. <strong>Arrastre archivos a la ficha de otro espacio</strong> y caerán en <em>su</em> bandeja: no cambia de
+espacio, y no se copia ni se mueve nada; el contador de la ficha sube y usted sigue. Mantenga <strong>⌥</strong> al
+soltar para copiar en la carpeta de ese espacio, o <strong>⌘</strong> para mover. <strong>Ctrl+Cmd+A</strong> pone la selección
+en la bandeja del espacio actual, la página <strong>Bandeja</strong> del panel lateral muestra su contenido, y
+<strong>Espacio de trabajo ▸ Copiar la bandeja al otro panel</strong> hace toda la bandeja en una sola operación.</p>
+<p>Los archivos eliminados desde entonces, o en un volumen no montado, se muestran como faltantes en lugar
+de quitarse, y una operación en bloque ofrece omitirlos o sacarlos antes. Un movimiento vacía la bandeja
+de lo movido; una copia la deja como estaba.</p>
 <table>
 <thead>
 <tr>
@@ -30,21 +43,68 @@
 </thead>
 <tbody>
 <tr>
-<td>Guardar la disposición actual como un espacio de trabajo</td>
+<td>Cambiar al espacio de trabajo 1 a 9</td>
+<td>Ctrl+1 … Ctrl+9</td>
+</tr>
+<tr>
+<td>Hacer de la disposición actual el punto de partida</td>
 <td>Cmd+Ctrl+S</td>
 </tr>
 </tbody>
 </table>
 <h2 id="consejos">Consejos</h2>
 <ul>
-<li>En el menú emergente <strong>Espacios de trabajo…</strong>, tus primeros nueve espacios de trabajo guardados reciben las teclas numéricas 1 a 9 de selección rápida, así puedes cambiar con una sola pulsación.</li>
-<li>También puedes guardar un nuevo espacio de trabajo desde dentro del menú emergente <strong>Espacios de trabajo…</strong> con <strong>Guardar actual como espacio de trabajo…</strong>, sin salir de la lista.</li>
-<li>Nombra los espacios de trabajo según el trabajo que apoyan («Sitio web», «Importar fotos», «Copias de seguridad») para que la lista sea fácil de revisar.</li>
+<li>Haga clic derecho en una ficha para renombrarla, darle un color o eliminarla — o haga clic en la <strong>✕</strong> de su extremo derecho, que elimina ese espacio de trabajo tras preguntar. El color es lo que le permite distinguir los espacios de trabajo de un vistazo cuando la ventana es estrecha y los nombres ya no caben.</li>
+<li>Nueve es el límite, para que cada ficha siga siendo reconocible.</li>
+<li><strong>Ver ▸ Mostrar la barra de espacios de trabajo</strong> oculta la franja sin desactivar la función, para quien cambia de espacio con el teclado.</li>
+<li>Los espacios de trabajo se pueden desactivar por completo en <strong>Ajustes ▸ Pestañas</strong>. Sus espacios de trabajo se conservan y vuelven sin cambios cuando vuelve a activar la función.</li>
 </ul>
+<h2 id="limitar-un-espacio-de-trabajo-a-una-carpeta">Limitar un espacio de trabajo a una carpeta</h2>
+<p>A un espacio de trabajo se le puede decir de qué se ocupa, y entonces comprueba antes de que una
+operación salga fuera. Haga clic derecho en su ficha, <strong>Limitar a una carpeta ▸ Establecer en la
+carpeta activa</strong>, y elija si las operaciones fuera se permiten, se preguntan o se rechazan.</p>
+<p>Se comprueba antes de que un borrado tome archivos de fuera, antes de que una copia o un movimiento
+aterrice fuera, y antes de que un renombrado o una carpeta nueva escriba fuera. <strong>La navegación nunca
+se restringe</strong>: un gestor de archivos que se niega a mostrar una carpeta está roto, y todo el valor está
+en el instante anterior a F8. Los guardados del editor tampoco están cubiertos; ocurren en su propia
+ventana.</p>
+<h2 id="el-registro">El registro</h2>
+<p>Cada espacio de trabajo lleva cuenta de lo que se hizo en él: carpetas visitadas, operaciones
+realizadas, líneas de shell escritas y todo lo que un límite de carpeta haya rechazado. <strong>Espacio de
+trabajo ▸ Registro…</strong> lo muestra, el día más reciente primero, con un filtro <strong>Problemas</strong> para todo lo
+que falló o fue detenido.</p>
+<p>Retorno repite la fila seleccionada, bajo la misma regla que el historial: solo una copia o un
+movimiento se repiten con una pulsación, y una línea de shell se rellena en la línea de órdenes en
+lugar de ejecutarse. El registro está deliberadamente separado del historial global: aquel responde a
+«dónde suelo ir» y ordena por frecuencia; este responde a «qué pasó aquí» y conserva el orden. Se
+elimina con su espacio de trabajo, se conserva sin límite en otro caso, y puede desactivarse en
+<strong>Ajustes ▸ Pestañas</strong>.</p>
+<h2 id="pasar-un-espacio-de-trabajo-a-otra-persona">Pasar un espacio de trabajo a otra persona</h2>
+<p><strong>Espacio de trabajo ▸ Exportar espacio de trabajo…</strong> escribe el espacio de trabajo actual en un
+archivo <code>.pcworkspace</code> que puede enviar a alguien o guardar en una carpeta de proyecto. <strong>Importar
+espacio de trabajo…</strong> lo vuelve a leer, y un doble clic en el Finder también.</p>
+<p>Lo que viaja es el <strong>punto de partida guardado</strong> del espacio de trabajo — pulse antes ⌘⌃S si quiere
+la disposición que tiene delante — junto con su nombre, su color, su límite de carpeta y su bandeja.
+Las carpetas dentro de su carpeta personal se escriben abreviadas, para que el archivo se abra en la
+carpeta personal de la <em>otra</em> persona y no en una carpeta con su nombre.</p>
+<p>Lo que deliberadamente no viaja:</p>
+<ul>
+<li><strong>Cualquier cosa que pudiera ser una credencial.</strong> Las pestañas que apuntan a una conexión o a una unidad de complemento montada se eliminan al exportar, y el informe dice cuántas. No hay nada que perder, porque no se escribe nada sobre una conexión.</li>
+<li><strong>El registro.</strong> Anota lo que ha hecho usted y nombra carpetas de su equipo. Se queda aquí.</li>
+<li>Las posiciones del cursor, el historial de deshacer, el tamaño de la ventana y las ventanas abiertas de visor, editor, búsqueda o sincronización.</li>
+<li>Las pestañas del terminal y las conversaciones con el asistente. Pertenecen a este Mac; un archivo de espacio de trabajo lleva <em>dónde</em> trabajar, no lo que está en marcha.</li>
+</ul>
+<p>Una importación siempre <strong>añade</strong> un espacio de trabajo; nunca sustituye aquel en el que está ni
+cambia por su cuenta — un archivo que le han enviado no debe mover su ventana. Las carpetas que no
+están en este Mac se abren en la más cercana que sí existe, los elementos de la bandeja conservan sus
+rutas y se muestran atenuados, y un límite de carpeta cuya carpeta falta se conserva pero pasa a
+preguntar en lugar de rechazar. Un informe enumera todo ello.</p>
 <h2 id="notas">Notas</h2>
 <ul>
-<li>Cargar un espacio de trabajo reemplaza las pestañas de ambos paneles por el conjunto guardado. Lo que tuvieras abierto pero no guardaste no se conserva, así que guarda tu disposición actual primero si quieres volver a ella.</li>
-<li>Un espacio de trabajo registra las ubicaciones de las carpetas y las pestañas, no los archivos que contienen. Si una carpeta guardada se ha movido o eliminado, esa pestaña se reabre donde pueda.</li>
+<li>Cambiar nunca pregunta si hay que guardar y nunca cierra nada. Las operaciones de archivo en curso continúan, y también todo lo que corra en un terminal: las pestañas del espacio que abandona se apartan con sus shells vivos, no se cierran. Las conversaciones del asistente también siguen al espacio de trabajo.</li>
+<li>Deshacer sigue a un espacio de trabajo solo mientras la aplicación está en marcha: un paso de deshacer lleva consigo la acción que lo revierte, y esa no se puede escribir en el disco.</li>
+<li>Un espacio de trabajo registra ubicaciones de carpetas, no los archivos que contienen. Si una carpeta guardada se ha movido o eliminado, esa pestaña se abre en la carpeta más cercana que aún exista.</li>
+<li>Al actualizar desde una versión anterior: los espacios de trabajo que hubiera guardado se convierten en fichas, y la sesión en la que estaba pasa a ser el primero. No se pierde nada, y el antiguo <code>workspaces.ini</code> se conserva como <code>workspaces.ini.migrated</code>.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="settings.html">Ajustes</a></li><li><a href="panels-and-tabs.html">Pestañas</a></li></ul></section>
 </main>

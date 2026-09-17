@@ -12,7 +12,7 @@ Wenn ein Ordner Hunderte von Objekten enthält, müssen Sie selten scrollen. Pea
 
 1. Klicken Sie auf ein Dateipanel, damit es aktiv ist.
 2. Beginnen Sie, den Anfang eines Namens zu tippen. Der Cursor springt zum ersten passenden Objekt.
-3. Tippen Sie weiter, um die Übereinstimmung zu verfeinern, oder drücken Sie denselben Buchstaben erneut, um durch Objekte zu blättern, die mit diesem Buchstaben beginnen.
+3. Tippen Sie weiter, um die Übereinstimmung zu verfeinern, oder wechseln Sie mit ↑ und ↓ zwischen den Treffern, solange die Suche angezeigt wird. Denselben einzelnen Buchstaben erneut zu drücken blättert ebenfalls durch die Objekte, die damit beginnen.
 4. Das Getippte erscheint über dem Panel, zusammen mit der Nummer des aktuellen Treffers und deren Gesamtzahl — zum Beispiel `⌕ re  2/3`. Findet sich nichts, wird es rot.
 5. Mit Backspace nehmen Sie den letzten Buchstaben zurück, mit Esc beenden Sie die Suche. Backspace bearbeitet nur die laufende Suche; sonst führt es weiterhin in den übergeordneten Ordner.
 6. Die Suche endet von selbst nach ein paar Sekunden ohne Eingabe, sodass Sie jederzeit eine neue starten können.
@@ -40,6 +40,7 @@ Drücken Sie Ctrl+H oder wählen Sie den Befehl aus dem Menü Ansicht, um verbor
 | Aktion | Tastaturkürzel |
 | --- | --- |
 | Schnellsuche (klassischer Modus) | Ctrl+Option+Buchstabe |
+| Voriger / nächster Treffer (während der Schnellsuche) | ↑ / ↓ |
 | Schnellfilter ein/aus | Ctrl+S |
 | Filter löschen / abbrechen | Esc |
 | Verborgene Dateien ein-/ausblenden | Ctrl+H |

@@ -10,17 +10,30 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Arbetsytor</h1>
-<p>En arbetsyta är en sparad ögonblicksbild av dina två paneler: mapparna de visar, varje öppen flik, vilken flik som är aktiv på varje sida, och vilken panel som har fokus. Spara den uppställning du använder för en uppgift en gång, så kan du ta tillbaka allt med ett enda val senare. Arbetsytor är idealiska för uppsättningar per projekt, så att du kan hoppa rakt från ett jobbs mappar och flikar till ett annats utan att öppna något för hand.</p>
-<h2 id="sa-har-gor-du">Så här gör du</h2>
+<p>En arbetsyta är ett namngivet sammanhang du arbetar i: ”Rensa säkerhetskopior”, ”Sortera ansökningshandlingar”. Var och en minns båda panelerna, alla öppna flikar, vilken flik som är aktiv på varje sida, visningsläget, mappträdet, fram/tillbaka-historiken och vilka filer du hade markerat, snabbfiltret och fönstrets uppställning — sidopanelen, dockan, raderna och var avdelaren sitter. Ett byte kostar ett klick, och på vägen går aldrig något förlorat — en arbetsyta sparas aldrig, eftersom den aldrig tar slut.</p>
+<p>Tills du skapar en andra finns det inget att se. Ingen rad, ingen meny, inga kortkommandon.</p>
+<h2 id="sa-gor-du">Så gör du</h2>
 <ol>
-<li>Ställ in båda panelerna som du vill ha dem: öppna mapparna, lägg till flikarna och välj den panel du vill ha aktiv.</li>
-<li>Öppna menyn <strong>Gå</strong> och välj <strong>Spara arbetsyta…</strong>.</li>
-<li>Skriv ett namn på arbetsytan och bekräfta. Den aktuella layouten för båda panelerna lagras under det namnet.</li>
-<li>För att återgå till en sparad layout senare, öppna menyn <strong>Gå</strong> och välj <strong>Arbetsytor…</strong>.</li>
-<li>I popuplistan, klicka på den arbetsyta du vill ha. Båda panelerna, deras flikar och den aktiva sidan återställs.</li>
-<li>För att ta bort en arbetsyta, öppna <strong>Arbetsytor…</strong>, peka på <strong>Radera</strong> och välj namnet från undermenyn.</li>
+<li>Ställ in båda panelerna för uppgiften: öppna mapparna, lägg till flikarna, välj den vy du vill ha.</li>
+<li>Öppna menyn <strong>Gå</strong> och välj <strong>Arbetsytor…</strong>, sedan <strong>Ny arbetsyta…</strong>. Ge den ett namn.</li>
+<li>Överst i fönstret dyker en rad färgade brickor upp, och i menyraden dyker menyn <strong>Arbetsyta</strong> upp. Den nya arbetsytan börjar som en kopia av den uppställning du befann dig i.</li>
+<li>Ställ in den nya arbetsytan för sin egen uppgift. Den du kom från behåller det den hade.</li>
+<li>Klicka på en bricka för att byta, eller tryck <strong>Ctrl+1</strong> till <strong>Ctrl+9</strong>. Allt byter med.</li>
 </ol>
-<h2 id="kortkommandon">Kortkommandon</h2>
+<h2 id="tillbaka-till-ett-utgangslage">Tillbaka till ett utgångsläge</h2>
+<p>Varje arbetsyta minns också den uppställning den sattes upp som. <strong>Arbetsyta ▸ Spara nuvarande läge i arbetsytan</strong> (Cmd+Ctrl+S) gör den nuvarande uppställningen till detta utgångsläge, och <strong>Återställ till sparat läge</strong> för dig dit igen efter en eftermiddag på villovägar.</p>
+<p>Detta är skilt från det löpande minnet: du behöver aldrig spara för att inte tappa din plats.</p>
+<h2 id="samlingen">Samlingen</h2>
+<p>Varje arbetsyta har en samling — för det som faktiskt händer under en uppstädning: tre mappar ner i
+säkerhetskopiorna hittar du något som hör till ett helt annat jobb. <strong>Dra filer till en annan arbetsytas
+bricka</strong>, så hamnar de i <em>dess</em> samling — du byter inte, och inget kopieras eller flyttas; räknaren på
+brickan stiger och du fortsätter. Håll <strong>⌥</strong> när du släpper för att i stället kopiera till den
+arbetsytans mapp, eller <strong>⌘</strong> för att flytta. <strong>Ctrl+Cmd+A</strong> lägger markeringen i den nuvarande
+arbetsytans samling, sidan <strong>Samlingen</strong> i sidopanelen visar innehållet, och <strong>Arbetsyta ▸ Kopiera
+samlingen till den andra panelen</strong> tar hela samlingen i en enda operation.</p>
+<p>Filer som raderats sedan dess, eller som ligger på en volym som inte är monterad, visas som saknade i
+stället för att tas bort, och en massoperation erbjuder att hoppa över dem eller ta ut dem först. En
+flytt tömmer samlingen på det som flyttades; en kopia lämnar den som den var.</p>
 <table>
 <thead>
 <tr>
@@ -30,21 +43,66 @@
 </thead>
 <tbody>
 <tr>
-<td>Spara aktuell layout som en arbetsyta</td>
+<td>Byt till arbetsyta 1 till 9</td>
+<td>Ctrl+1 … Ctrl+9</td>
+</tr>
+<tr>
+<td>Gör nuvarande uppställning till utgångsläget</td>
 <td>Cmd+Ctrl+S</td>
 </tr>
 </tbody>
 </table>
 <h2 id="tips">Tips</h2>
 <ul>
-<li>I popupen <strong>Arbetsytor…</strong> får dina första nio sparade arbetsytor snabbvalssiffrorna 1 till 9, så att du kan växla med en enda tangenttryckning.</li>
-<li>Du kan även spara en ny arbetsyta inifrån popupen <strong>Arbetsytor…</strong> med <strong>Spara aktuell som arbetsyta…</strong>, utan att lämna listan.</li>
-<li>Namnge arbetsytor efter det arbete de stöder ("Webbplats", "Fotoimport", "Säkerhetskopior") så att listan förblir lätt att överblicka.</li>
+<li>Högerklicka på en bricka för att byta namn på den, ge den en färg eller radera den — eller klicka på <strong>✕</strong> i dess högra kant, som raderar arbetsytan efter en fråga. Färgen är det du skiljer arbetsytorna åt med i ett ögonkast när fönstret är smalt och namnen inte längre får plats.</li>
+<li>Nio är gränsen, så att varje bricka förblir igenkännlig.</li>
+<li><strong>Visa ▸ Visa arbetsytefältet</strong> döljer raden utan att stänga av funktionen — för den som byter mellan arbetsytor med tangentbordet.</li>
+<li>Arbetsytor kan stängas av helt under <strong>Inställningar ▸ Flikar</strong>. Dina arbetsytor behålls och kommer tillbaka oförändrade när du slår på funktionen igen.</li>
 </ul>
+<h2 id="att-begransa-en-arbetsyta-till-en-mapp">Att begränsa en arbetsyta till en mapp</h2>
+<p>En arbetsyta kan få veta vad den handlar om, och kontrollerar sedan innan en åtgärd sträcker sig
+utanför. Högerklicka på dess bricka, <strong>Begränsa till mapp ▸ Sätt till den aktiva mappen</strong>, och välj om
+åtgärder utanför ska tillåtas, frågas om eller avvisas.</p>
+<p>Det kontrolleras innan en radering tar filer utifrån, innan en kopiering eller flytt hamnar utanför, och
+innan ett namnbyte eller en ny mapp skriver utanför. <strong>Navigering begränsas aldrig</strong> — en filhanterare
+som vägrar visa en mapp är trasig, och värdet ligger helt i ögonblicket före F8. Sparningar i
+redigeraren omfattas inte heller; de sker i sitt eget fönster.</p>
+<h2 id="journalen">Journalen</h2>
+<p>Varje arbetsyta för bok över vad som gjorts i den — besökta mappar, utförda åtgärder, skrivna
+skalrader, och allt som en mappbegränsning har avvisat. <strong>Arbetsyta ▸ Journal…</strong> visar den, senaste
+dagen först, med ett filter <strong>Problem</strong> för allt som misslyckades eller stoppades.</p>
+<p>Retur upprepar den valda raden enligt samma regel som historiken: bara en kopiering eller flytt kan
+upprepas med ett tangenttryck, och en skalrad fylls in i kommandoraden i stället för att köras.
+Journalen är medvetet skild från den globala historiken — den svarar på "var brukar jag vara" och
+rangordnar efter frekvens; denna svarar på "vad hände här" och behåller ordningen. Den raderas
+tillsammans med sin arbetsyta, bevaras annars utan tidsgräns, och kan stängas av under <strong>Inställningar ▸
+Flikar</strong>.</p>
+<h2 id="att-skicka-en-arbetsyta-vidare">Att skicka en arbetsyta vidare</h2>
+<p><strong>Arbetsyta ▸ Exportera arbetsyta…</strong> skriver den aktuella arbetsytan till en <code>.pcworkspace</code>-fil som du
+kan skicka till någon eller spara i en projektmapp. <strong>Importera arbetsyta…</strong> läser tillbaka den, och
+det gör även ett dubbelklick i Finder.</p>
+<p>Det som följer med är arbetsytans <strong>sparade utgångspunkt</strong> — tryck ⌘⌃S först om du vill ha den
+uppställning du har framför dig — tillsammans med namn, färg, mappgräns och samling. Mappar inuti din
+hemmapp skrivs förkortade, så att filen öppnas i den <em>andres</em> hemmapp och inte i en mapp uppkallad
+efter dig.</p>
+<p>Det som medvetet inte följer med:</p>
+<ul>
+<li><strong>Allt som skulle kunna vara en inloggningsuppgift.</strong> Flikar som pekar på en anslutning eller en monterad insticksenhet tas bort vid exporten, och rapporten säger hur många. Det finns inget att förlora, eftersom ingenting om en anslutning skrivs ner.</li>
+<li><strong>Journalen.</strong> Den antecknar vad <em>du</em> har gjort och nämner mappar på din dator. Den stannar här.</li>
+<li>Markörpositioner, ångra-historiken, fönsterstorleken samt öppna visnings-, redigerings-, sök- eller synkroniseringsfönster.</li>
+<li>Terminalflikar och samtal med assistenten. De hör till den här Macen; en arbetsytefil bär <em>var</em> det arbetas, inte vad som är igång.</li>
+</ul>
+<p>En import <strong>lägger</strong> alltid till en arbetsyta; den ersätter aldrig den du står i och växlar aldrig av
+sig själv — en fil som någon skickat ska inte flytta ditt fönster. Mappar som inte finns på den här
+Macen öppnas på den närmaste som finns, poster i samlingen behåller sina sökvägar och visas
+nedtonade, och en mappgräns vars mapp saknas behålls men frågar i stället för att vägra. En rapport
+räknar upp allt detta.</p>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Att läsa in en arbetsyta ersätter flikarna i båda panelerna med den sparade uppsättningen. Allt du hade öppet men inte sparade behålls inte, så spara din aktuella layout först om du vill komma tillbaka till den.</li>
-<li>En arbetsyta registrerar mapplatser och flikar, inte filerna i dem. Om en sparad mapp har flyttats eller raderats öppnas den fliken där den kan.</li>
+<li>Ett byte frågar aldrig om något ska sparas och stänger aldrig något. Pågående filoperationer fortsätter, och likaså allt i en terminal: flikarna i arbetsytan du lämnar läggs undan med levande skal, inte stängs. Assistentens samtal följer också arbetsytan.</li>
+<li>Ångra följer en arbetsyta bara så länge appen körs: ett ångra-steg bär den åtgärd som vänder det, och den kan inte skrivas till disk.</li>
+<li>En arbetsyta minns mappplatser, inte filerna i dem. Har en sparad mapp flyttats eller raderats öppnas den fliken i den närmaste mapp som fortfarande finns.</li>
+<li>Vid uppgradering från en tidigare version: arbetsytor du sparat tidigare blir brickor, och sessionen du var i blir den första. Inget går förlorat, och den gamla <code>workspaces.ini</code> behålls som <code>workspaces.ini.migrated</code>.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="settings.html">Inställningar</a></li><li><a href="panels-and-tabs.html">Flikar</a></li></ul></section>
 </main>

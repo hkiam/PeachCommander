@@ -12,7 +12,7 @@ Když složka obsahuje stovky položek, jen zřídka potřebujete rolovat. Peach
 
 1. Klepnutím na souborový panel jej učiníte aktivním.
 2. Začněte psát začátek názvu. Kurzor přeskočí na první odpovídající položku.
-3. Pokračujte v psaní pro zpřesnění shody, nebo stiskněte totéž písmeno znovu pro procházení položek začínajících tímto písmenem.
+3. Pokračujte v psaní pro zpřesnění shody, nebo přecházejte mezi shodami klávesami ↑ a ↓, dokud je hledání zobrazeno. Opětovné stisknutí téhož písmene rovněž prochází položky, které jím začínají.
 4. Napsaný text se po krátké pauze vymaže, takže nové hledání můžete začít kdykoli.
 
 Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a rychlé hledání se spouští pomocí Ctrl+Option+písmeno (klasické chování). Rychlé hledání můžete přepnout tak, aby reagovalo na obyčejné psaní, nebo jej vypnout, v nastavení konfigurace.
@@ -38,6 +38,7 @@ Stiskem Ctrl+H, nebo volbou příkazu z nabídky Zobrazení, přepnete skryté p
 | Akce | Zkratka |
 | --- | --- |
 | Rychlé hledání (klasický režim) | Ctrl+Option+písmeno |
+| Předchozí / další shoda (během rychlého hledání) | ↑ / ↓ |
 | Rychlý filtr zap./vyp. | Ctrl+S |
 | Vymazat filtr / zrušit | Esc |
 | Zobrazit/skrýt skryté soubory | Ctrl+H |

@@ -10,17 +10,30 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Workspaces</h1>
-<p>A workspace is a saved snapshot of your two panels: the folders they show, every open tab, which tab is active on each side, and which panel is focused. Save the arrangement you use for a task once, and you can bring it all back with a single choice later. Workspaces are ideal for per-project setups, so you can jump straight from one job's folders and tabs to another's without reopening anything by hand.</p>
+<p>A workspace is a named context you work in: "Clean up backups", "Sort applicant documents". Each one remembers both panels, every open tab, which tab is active on each side, the view mode, the folder tree, the back/forward history and which files you had marked, the quick filter, and the window's arrangement — the side panel, the dock, the bars and where the divider sits. Switching between them takes one click, and nothing is ever lost on the way — a workspace is never saved, because it never ends.</p>
+<p>Until you create a second one there is nothing to see. No bar, no menu, no shortcuts.</p>
 <h2 id="how-to">How to</h2>
 <ol>
-<li>Set up both panels the way you want them: open the folders, add the tabs, and select the panel you want active.</li>
-<li>Open the <strong>Go</strong> menu and choose <strong>Save Workspace…</strong>.</li>
-<li>Type a name for the workspace and confirm. The current layout of both panels is stored under that name.</li>
-<li>To return to a saved layout later, open the <strong>Go</strong> menu and choose <strong>Workspaces…</strong>.</li>
-<li>In the pop-up list, click the workspace you want. Both panels, their tabs, and the active side are restored.</li>
-<li>To remove a workspace, open <strong>Workspaces…</strong>, point at <strong>Delete</strong>, and choose the name from the submenu.</li>
+<li>Set up both panels for the job at hand: open the folders, add the tabs, choose the view you want.</li>
+<li>Open the <strong>Go</strong> menu and choose <strong>Workspaces…</strong>, then <strong>New Workspace…</strong>. Give it a name.</li>
+<li>A strip of coloured chips appears across the top of the window, and a <strong>Workspace</strong> menu appears in the menu bar. The new workspace starts as a copy of the arrangement you were in.</li>
+<li>Set the new workspace up for its own job. The one you came from keeps what it had.</li>
+<li>Click a chip to switch, or press <strong>Ctrl+1</strong> to <strong>Ctrl+9</strong>. Everything switches with it.</li>
 </ol>
-<h2 id="shortcuts">Shortcuts</h2>
+<h2 id="coming-back-to-a-starting-point">Coming back to a starting point</h2>
+<p>Each workspace also remembers the arrangement it was set up as. <strong>Workspace ▸ Save Current State to Workspace</strong> (Cmd+Ctrl+S) makes the current arrangement that starting point, and <strong>Reset to Saved State</strong> goes back to it after an afternoon of wandering.</p>
+<p>This is separate from the continuous remembering: you never have to save in order not to lose your place.</p>
+<h2 id="the-stash">The stash</h2>
+<p>Every workspace has a basket, for the thing that actually happens while tidying up: three folders deep
+in the backups you find something belonging to an entirely different job. <strong>Drag files onto another
+workspace's chip</strong> and they land in <em>its</em> basket — you do not switch, and nothing is copied or moved;
+the chip's counter goes up and you carry on. Hold <strong>⌥</strong> while dropping to copy into that workspace's
+folder instead, or <strong>⌘</strong> to move. <strong>Ctrl+Cmd+A</strong> adds the selection to the current workspace's basket,
+the <strong>Stash</strong> page in the side panel shows what is in it, and <strong>Workspace ▸ Copy Stash to Other Panel</strong>
+does the whole basket in one operation.</p>
+<p>Files deleted since, or on a volume that is not mounted, are shown as missing rather than removed, and
+a bulk operation offers to skip them or take them out of the basket first. A move empties the basket of
+what it moved; a copy leaves it as it was.</p>
 <table>
 <thead>
 <tr>
@@ -30,21 +43,64 @@
 </thead>
 <tbody>
 <tr>
-<td>Save current layout as a workspace</td>
+<td>Switch to workspace 1 to 9</td>
+<td>Ctrl+1 … Ctrl+9</td>
+</tr>
+<tr>
+<td>Make the current arrangement the starting point</td>
 <td>Cmd+Ctrl+S</td>
 </tr>
 </tbody>
 </table>
 <h2 id="tips">Tips</h2>
 <ul>
-<li>In the <strong>Workspaces…</strong> pop-up, your first nine saved workspaces get quick-select number keys 1 through 9, so you can switch with a single keystroke.</li>
-<li>You can also save a new workspace from inside the <strong>Workspaces…</strong> pop-up with <strong>Save Current as Workspace…</strong>, without leaving the list.</li>
-<li>Name workspaces after the work they support ("Website", "Photo import", "Backups") so the list stays easy to scan.</li>
+<li>Right-click a chip to rename it, give it a colour, or delete it — or click the <strong>✕</strong> at a chip's right-hand end, which deletes that workspace after asking. The colour is how you tell workspaces apart at a glance when the window is narrow and the names no longer fit.</li>
+<li>Nine is the limit, so that every chip stays recognisable.</li>
+<li><strong>View ▸ Show Workspace Bar</strong> hides the strip without switching the feature off, for anyone who moves between workspaces with the keyboard.</li>
+<li>Workspaces can be switched off entirely in <strong>Settings ▸ Tabs</strong>. Your workspaces are kept and come back unchanged when you switch it on again.</li>
 </ul>
+<h2 id="limiting-a-workspace-to-a-folder">Limiting a workspace to a folder</h2>
+<p>A workspace can be told which folder it is about, and then it checks before an operation reaches
+outside it. Right-click its chip, <strong>Limit to Folder ▸ Set to the Active Folder</strong>, and choose whether
+operations outside should be allowed, asked about, or refused.</p>
+<p>It is checked before a delete takes files from outside, before a copy or a move lands outside, and
+before a rename or a new folder writes outside. <strong>Navigating is never restricted</strong> — a file manager
+that refuses to show you a folder is broken, and the value of this is entirely in the moment before
+F8. Editor saves are not covered either; they happen in their own window.</p>
+<h2 id="the-journal">The journal</h2>
+<p>Each workspace keeps a record of what was done in it — folders visited, operations carried out, shell
+lines run, and anything a folder limit refused. <strong>Workspace ▸ Journal…</strong> shows it, newest day first,
+with a <strong>Problems</strong> filter for everything that failed or was stopped.</p>
+<p>Return repeats the selected row, under the same rule as the history: only a copy or a move can be
+repeated with one keystroke, and a shell line is filled into the command line rather than run. The
+journal is separate from the global history on purpose — that one answers "where do I usually go" and
+ranks by frequency; this one answers "what happened here" and keeps the order. It is deleted with its
+workspace, kept indefinitely otherwise, and can be switched off in <strong>Settings ▸ Tabs</strong>.</p>
+<h2 id="passing-a-workspace-on">Passing a workspace on</h2>
+<p><strong>Workspace ▸ Export Workspace…</strong> writes the current workspace to a <code>.pcworkspace</code> file you can mail
+to somebody or keep in a project folder. <strong>Import Workspace…</strong> reads one back, and so does
+double-clicking the file in the Finder.</p>
+<p>What travels is the workspace's <strong>saved starting point</strong> — press ⌘⌃S first if you want the
+arrangement you are looking at right now — along with its name, its colour, its folder limit and its
+stash. Folders inside your home are written shortened, so the file opens in the <em>other</em> person's home
+rather than in a folder named after you.</p>
+<p>What deliberately does not travel:</p>
+<ul>
+<li><strong>Anything that could be a credential.</strong> Tabs pointing at a connection or a mounted plugin drive are removed on export, and the report says how many. There is nothing to leak because nothing about a connection is written down.</li>
+<li><strong>The journal.</strong> It is a record of what you did and names folders on your machine. It stays here.</li>
+<li>Cursor positions, the undo history, the window size, and open Lister, Editor, Find or Sync windows.</li>
+<li>Terminal tabs and assistant conversations. Those belong to this Mac; a workspace file carries where to work, not what is running.</li>
+</ul>
+<p>An import always <strong>adds</strong> a workspace; it never replaces the one you are in and never switches by
+itself — opening a file somebody sent should not move your window. Folders that are not on this Mac
+open at the nearest one that is, stash entries keep their paths and show greyed out, and a folder
+limit whose folder is missing is kept but set to ask rather than refuse. A report lists all of it.</p>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>Loading a workspace replaces the tabs in both panels with the saved set. Anything you had open but did not save is not kept, so save your current layout first if you want to come back to it.</li>
-<li>A workspace records folder locations and tabs, not the files inside them. If a saved folder has been moved or deleted, that tab reopens wherever it can.</li>
+<li>Switching never asks whether to save, and never closes anything. Running file operations keep running, and so does anything in a terminal: the tabs of the workspace you leave are set aside with their shells alive, not shut. The assistant's conversations follow the workspace too; an answer still arriving when you switch away finishes and is waiting when you come back.</li>
+<li>Undo follows a workspace only while the app is running: an undo step carries the action that reverses it, and that cannot be written to disk.</li>
+<li>A workspace records folder locations, not the files inside them. If a saved folder has been moved or deleted, that tab opens at the nearest folder that still exists.</li>
+<li>Upgrading from an earlier version: any workspaces you had saved before become chips, and the session you were in becomes the first one. Nothing is lost, and the old <code>workspaces.ini</code> is kept as <code>workspaces.ini.migrated</code>.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="settings.html">Settings</a></li><li><a href="panels-and-tabs.html">Tabs</a></li></ul></section>
 </main>

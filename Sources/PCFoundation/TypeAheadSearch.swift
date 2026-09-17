@@ -36,6 +36,20 @@ public enum TypeAheadSearch {
         }
     }
 
+    /// The match before or after `index`, wrapping at the ends; nil when nothing matches at all.
+    ///
+    /// `match` only ever looks forward, and it looks at names rather than at hits — it answers "the
+    /// next name starting with this", which is the right question for a keystroke and the wrong one
+    /// for a step. Stepping back needs the previous hit, and a cursor that is not itself a hit still
+    /// has both neighbours: the first hit below it, or the last one above it. `index` may be -1 (the
+    /// cursor sits on `..`), which is simply below every row.
+    public static func neighbour(of index: Int, names: [String], query: String, forward: Bool) -> Int? {
+        let hits = matches(names: names, query: query)
+        guard let first = hits.first, let last = hits.last else { return nil }
+        return forward ? (hits.first { $0 > index } ?? first)
+                       : (hits.last { $0 < index } ?? last)
+    }
+
     /// Where `index` sits among the matches for `query`, 1-based, or nil when it is not one of them.
     public static func position(of index: Int, names: [String], query: String) -> Int? {
         matches(names: names, query: query).firstIndex(of: index).map { $0 + 1 }

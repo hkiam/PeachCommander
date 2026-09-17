@@ -10,41 +10,100 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Munkaterületek</h1>
-<p>A munkaterület a két paneljének mentett pillanatképe: a mappák, amelyeket mutatnak, minden nyitott lap, melyik lap aktív mindegyik oldalon, és melyik panel van fókuszban. Mentse el egy feladathoz használt elrendezést egyszer, és később egyetlen választással visszahozhatja az egészet. A munkaterületek ideálisak projektenkénti beállításokhoz, így egyenesen ugorhat egy munka mappáiról és lapjairól egy másikéra anélkül, hogy bármit kézzel megnyitna.</p>
-<h2 id="hogyan">Hogyan</h2>
+<p>A munkaterület egy megnevezett összefüggés, amelyben dolgozik: „Biztonsági mentések rendezése”, „Pályázati anyagok válogatása”. Mindegyik megjegyzi mindkét panelt, az összes megnyitott lapot, hogy melyik oldalon melyik lap aktív, a nézetmódot, a mappafát, az előre/vissza előzményeket és mely fájlokat jelölte ki, a gyorsszűrőt és az ablak elrendezését — az oldalsávot, a dokkot, a sávokat és az elválasztó helyét. A váltás egyetlen kattintásba kerül, és közben soha semmi nem vész el — a munkaterület sosem kerül mentésre, mert sosem ér véget.</p>
+<p>Amíg nem hoz létre egy másodikat, nincs mit látni. Se sáv, se menü, se gyorsbillentyűk.</p>
+<h2 id="igy-kell">Így kell</h2>
 <ol>
-<li>Állítsa be mindkét panelt úgy, ahogy szeretné: nyissa meg a mappákat, adja hozzá a lapokat, és válassza ki a panelt, amelyet aktívnak szeretne.</li>
-<li>Nyissa meg az <strong>Ugrás</strong> menüt és válassza a <strong>Munkaterület mentése…</strong> lehetőséget.</li>
-<li>Írjon be egy nevet a munkaterületnek és erősítse meg. Mindkét panel aktuális elrendezése az adott név alatt tárolódik.</li>
-<li>Egy mentett elrendezéshez való későbbi visszatéréshez nyissa meg az <strong>Ugrás</strong> menüt és válassza a <strong>Munkaterületek…</strong> lehetőséget.</li>
-<li>A felugró listában kattintson a kívánt munkaterületre. Mindkét panel, a lapjaik és az aktív oldal visszaáll.</li>
-<li>Egy munkaterület eltávolításához nyissa meg a <strong>Munkaterületek…</strong> lehetőséget, mutasson a <strong>Törlés</strong>-re, és válassza a nevet az almenüből.</li>
+<li>Állítsa be mindkét panelt az adott feladathoz: nyissa meg a mappákat, adja hozzá a lapokat, válassza ki a kívánt nézetet.</li>
+<li>Nyissa meg az <strong>Ugrás</strong> menüt, és válassza a <strong>Munkaterületek…</strong>, majd az <strong>Új munkaterület…</strong> pontot. Adjon neki nevet.</li>
+<li>Az ablak tetején megjelenik egy sáv színes címkékkel, a menüsorban pedig a <strong>Munkaterület</strong> menü. Az új munkaterület annak az elrendezésnek a másolataként indul, amelyben volt.</li>
+<li>Állítsa be az új munkaterületet a saját feladatához. Az, ahonnan jött, megtartja, amije volt.</li>
+<li>Kattintson egy címkére a váltáshoz, vagy nyomja meg a <strong>Ctrl+1</strong> – <strong>Ctrl+9</strong> billentyűt. Minden vele együtt vált.</li>
 </ol>
-<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<h2 id="vissza-a-kiindulasi-allapothoz">Vissza a kiindulási állapothoz</h2>
+<p>Minden munkaterület megjegyzi azt az elrendezést is, amellyel létrehozták. A <strong>Munkaterület ▸ Jelenlegi állapot mentése a munkaterületre</strong> (Cmd+Ctrl+S) a jelenlegi elrendezést teszi ezzé a kiindulási állapottá, a <strong>Visszaállítás a mentett állapotra</strong> pedig egy kóborlással töltött délután után visszavezet oda.</p>
+<p>Ez független a folyamatos megjegyzéstől: soha nem kell mentenie ahhoz, hogy ne veszítse el a helyét.</p>
+<h2 id="a-gyujto">A gyűjtő</h2>
+<p>Minden munkaterületnek van egy gyűjtője — arra, ami rendrakás közben valóban történik: három mappával
+beljebb a biztonsági mentésekben talál valamit, ami egy egészen más feladathoz tartozik. <strong>Húzzon
+fájlokat egy másik munkaterület címkéjére</strong>, és <em>annak</em> a gyűjtőjébe kerülnek: nem vált, és semmi nem
+másolódik vagy mozdul; a címke számlálója nő, Ön pedig folytatja. Ejtés közben tartsa a <strong>⌥</strong>
+billentyűt, ha inkább az adott munkaterület mappájába másolna, vagy a <strong>⌘</strong> billentyűt az
+áthelyezéshez. A <strong>Ctrl+Cmd+A</strong> a kijelölést a jelenlegi munkaterület gyűjtőjébe teszi, az oldalsáv
+<strong>Gyűjtő</strong> lapja megmutatja a tartalmát, a <strong>Munkaterület ▸ Gyűjtő másolása a másik panelra</strong> pedig az
+egész gyűjtőt egyetlen művelettel elintézi.</p>
+<p>Az azóta törölt fájlok, vagy amelyek nem csatolt köteten vannak, hiányzóként jelennek meg ahelyett,
+hogy eltávolítanák őket, és egy tömeges művelet felajánlja a kihagyásukat vagy előbbi kivételüket. Az
+áthelyezés kiüríti a gyűjtőt az áthelyezettől; a másolás úgy hagyja, ahogy volt.</p>
 <table>
 <thead>
 <tr>
 <th>Művelet</th>
-<th>Billentyűparancs</th>
+<th>Gyorsbillentyű</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Az aktuális elrendezés mentése munkaterületként</td>
+<td>Váltás az 1–9. munkaterületre</td>
+<td>Ctrl+1 … Ctrl+9</td>
+</tr>
+<tr>
+<td>A jelenlegi elrendezés kiindulási állapottá tétele</td>
 <td>Cmd+Ctrl+S</td>
 </tr>
 </tbody>
 </table>
 <h2 id="tippek">Tippek</h2>
 <ul>
-<li>A <strong>Munkaterületek…</strong> felugró menüben az első kilenc mentett munkaterülete 1-től 9-ig gyorsválasztó számbillentyűket kap, így egyetlen billentyűlenyomással válthat.</li>
-<li>Egy új munkaterületet a <strong>Munkaterületek…</strong> felugró menüből is menthet a <strong>Aktuális mentése munkaterületként…</strong> lehetőséggel, a lista elhagyása nélkül.</li>
-<li>Nevezze el a munkaterületeket az általuk támogatott munka szerint („Weboldal", „Fotóimport", „Biztonsági mentések"), hogy a lista könnyen áttekinthető maradjon.</li>
+<li>Kattintson jobb gombbal egy címkére az átnevezéshez, színadáshoz vagy törléshez — vagy kattintson a jobb szélén lévő <strong>✕</strong> jelre, amely rákérdezés után törli a munkaterületet. A szín az, amiről a munkaterületeket egy pillantásra megkülönbözteti, amikor az ablak keskeny és a nevek már nem férnek ki.</li>
+<li>Kilenc a határ, hogy minden címke felismerhető maradjon.</li>
+<li>A <strong>Nézet ▸ Munkaterület-sáv megjelenítése</strong> elrejti a sávot anélkül, hogy kikapcsolná a szolgáltatást — azoknak, akik billentyűzettel váltanak a munkaterületek között.</li>
+<li>A munkaterületek teljesen kikapcsolhatók a <strong>Beállítások ▸ Lapok</strong> alatt. A munkaterületei megmaradnak, és változatlanul visszatérnek, amikor újra bekapcsolja a szolgáltatást.</li>
 </ul>
+<h2 id="munkaterulet-mappara-korlatozasa">Munkaterület mappára korlátozása</h2>
+<p>Egy munkaterületnek megmondható, miről szól, és akkor ellenőriz, mielőtt egy művelet kinyúlna. Kattintson
+jobb gombbal a címkéjére, <strong>Mappára korlátozás ▸ Beállítás az aktív mappára</strong>, és válassza ki, hogy a
+kívüli műveletek engedélyezettek, kérdésesek vagy elutasítottak legyenek-e.</p>
+<p>Ellenőrzés történik, mielőtt egy törlés kívülről venne fájlokat, mielőtt egy másolás vagy áthelyezés
+kívül érkezne meg, és mielőtt egy átnevezés vagy új mappa kívülre írna. <strong>A böngészés soha nem
+korlátozott</strong> — egy fájlkezelő, amely megtagadja egy mappa megmutatását, hibás, és az egész érték az F8
+előtti pillanatban van. A szerkesztő mentései sincsenek lefedve; azok saját ablakukban történnek.</p>
+<h2 id="a-naplo">A napló</h2>
+<p>Minden munkaterület feljegyzi, mi történt benne — meglátogatott mappák, végrehajtott műveletek, beírt
+parancssorok, és minden, amit egy mappakorlát elutasított. A <strong>Munkaterület ▸ Napló…</strong> mutatja meg, a
+legfrissebb nappal kezdve, <strong>Problémák</strong> szűrővel mindarra, ami meghiúsult vagy meg lett állítva.</p>
+<p>Az Enter megismétli a kijelölt sort, ugyanazon szabály szerint, mint az előzmények: egyetlen
+billentyűvel csak másolás vagy áthelyezés ismételhető, a parancssori sor pedig a parancssorba kerül
+beírásra, nem pedig lefuttatásra. A napló szándékosan különül el a globális előzményektől — az arra
+válaszol, „hova járok általában”, és gyakoriság szerint rendez; ez arra válaszol, „mi történt itt”, és
+megtartja a sorrendet. A munkaterületével együtt törlődik, egyébként korlátlanul megmarad, és a
+<strong>Beállítások ▸ Lapok</strong> alatt kikapcsolható.</p>
+<h2 id="munkaterulet-tovabbadasa">Munkaterület továbbadása</h2>
+<p>A <strong>Munkaterület ▸ Munkaterület exportálása…</strong> a jelenlegi munkaterületet egy <code>.pcworkspace</code> fájlba
+írja, amelyet elküldhet valakinek, vagy eltehet egy projektmappába. A <strong>Munkaterület importálása…</strong>
+visszaolvassa, és a Finderben való dupla kattintás is.</p>
+<p>Ami utazik, az a munkaterület <strong>mentett kiindulási állapota</strong> — előbb nyomja meg a ⌘⌃S-t, ha az az
+elrendezés kell, amely most ön előtt van —, a nevével, színével, mappakorlátjával és gyűjtőjével
+együtt. A saját mappáján belüli mappák rövidítve íródnak, hogy a fájl a <em>másik</em> ember saját
+mappájában nyíljon meg, és ne egy önről elnevezett mappában.</p>
+<p>Ami szándékosan nem utazik:</p>
+<ul>
+<li><strong>Bármi, ami hitelesítő adat lehet.</strong> A kapcsolatra vagy csatolt bővítmény-meghajtóra mutató lapok exportáláskor kikerülnek, és a jelentés megmondja, hányan. Nincs mit veszíteni, mert a kapcsolatról semmi nem íródik le.</li>
+<li><strong>A napló.</strong> Azt rögzíti, amit <em>ön</em> tett, és az ön gépén lévő mappákat nevezi meg. Itt marad.</li>
+<li>A kurzorpozíciók, a visszavonási előzmények, az ablakméret, valamint a nyitott megjelenítő-, szerkesztő-, kereső- és összehasonlító ablakok.</li>
+<li>A terminállapok és a segéddel folytatott beszélgetések. Ezek ehhez a Machez tartoznak; egy munkaterület-fájl azt hordozza, <em>hol</em> folyik a munka, nem azt, mi fut éppen.</li>
+</ul>
+<p>Az importálás mindig <strong>hozzáad</strong> egy munkaterületet; soha nem írja felül azt, amelyikben van, és soha
+nem vált magától — egy küldött fájl ne mozdítsa el az ön ablakát. Az ezen a Macen nem létező mappák a
+legközelebbi meglévőn nyílnak meg, a gyűjtő elemei megtartják útvonalukat és halványan látszanak, a
+hiányzó mappájú mappakorlát pedig megmarad, de kérdez a megtagadás helyett. Mindezt egy jelentés
+sorolja fel.</p>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>Egy munkaterület betöltése lecseréli mindkét panel lapjait a mentett készletre. Minden, amit nyitva tartott, de nem mentett el, nem őrződik meg, ezért először mentse el az aktuális elrendezését, ha vissza szeretne térni hozzá.</li>
-<li>Egy munkaterület a mappahelyeket és lapokat rögzíti, nem a bennük lévő fájlokat. Ha egy mentett mappát áthelyeztek vagy töröltek, az a lap ott nyílik meg újra, ahol tud.</li>
+<li>A váltás soha nem kérdez rá a mentésre, és soha nem zár be semmit. A folyamatban lévő fájlműveletek folytatódnak, és így van ez mindennel, ami egy terminálban fut: az elhagyott munkaterület lapjai élő héjakkal félreteendők, nem bezárandók. Az asszisztens beszélgetései szintén követik a munkaterületet.</li>
+<li>A visszavonás csak addig követi a munkaterületet, amíg az alkalmazás fut: egy visszavonási lépés magával hordozza a műveletet, amely megfordítja, és ezt nem lehet lemezre írni.</li>
+<li>A munkaterület mappahelyeket jegyez meg, nem a bennük lévő fájlokat. Ha egy mentett mappát áthelyeztek vagy töröltek, az a lap a legközelebbi még létező mappában nyílik meg.</li>
+<li>Korábbi verzióról való frissítéskor: a korábban mentett munkaterületek címkékké válnak, és a munkamenet, amelyben volt, lesz az első. Semmi nem vész el, a régi <code>workspaces.ini</code> pedig <code>workspaces.ini.migrated</code> néven megmarad.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="settings.html">Beállítások</a></li><li><a href="panels-and-tabs.html">Lapok</a></li></ul></section>
 </main>

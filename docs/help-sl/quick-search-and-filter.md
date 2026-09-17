@@ -12,7 +12,7 @@ Ko mapa vsebuje stotine elementov, le redko potrebujete drsenje. Peach Commander
 
 1. Kliknite podokno z datotekami, da postane dejavno.
 2. Začnite tipkati začetek imena. Kazalka skoči na prvi ujemajoči element.
-3. Nadaljujte tipkanje za izboljšanje ujemanja, ali znova pritisnite isto črko za kroženje po elementih, ki se začnejo s to črko.
+3. Nadaljujte tipkanje za izboljšanje ujemanja, ali se s ↑ in ↓ premikajte med zadetki, dokler je iskanje prikazano. Ponovni pritisk iste črke prav tako kroži po elementih, ki se z njo začnejo.
 4. Vneseno besedilo se po kratkem premoru počisti, tako da lahko kadar koli začnete novo iskanje.
 
 Privzeto navadne črke gredo v ukazno vrstico, hitro iskanje pa se sproži s Ctrl+Option+črka (klasično obnašanje). Hitro iskanje lahko preklopite, da se odziva na navadno tipkanje, ali ga izklopite, v nastavitvah konfiguracije.
@@ -38,6 +38,7 @@ Pritisnite Ctrl+H, ali izberite ukaz iz menija Pogled, da preklopite skrite elem
 | Dejanje | Bližnjica |
 | --- | --- |
 | Hitro iskanje (klasični način) | Ctrl+Option+črka |
+| Prejšnji / naslednji zadetek (med hitrim iskanjem) | ↑ / ↓ |
 | Hitri filter vklop/izklop | Ctrl+S |
 | Počisti filter / prekliči | Esc |
 | Prikaži/skrij skrite datoteke | Ctrl+H |

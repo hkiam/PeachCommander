@@ -10,17 +10,31 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Spazi di lavoro</h1>
-<p>Uno spazio di lavoro è un'istantanea salvata dei tuoi due pannelli: le cartelle che mostrano, ogni scheda aperta, quale scheda è attiva su ciascun lato e quale pannello è a fuoco. Salva una volta la disposizione che usi per un compito, e potrai richiamarla tutta con una sola scelta più tardi. Gli spazi di lavoro sono ideali per configurazioni per progetto, così puoi passare direttamente dalle cartelle e schede di un lavoro a quelle di un altro senza riaprire nulla a mano.</p>
-<h2 id="come-fare">Come fare</h2>
+<p>Un’area di lavoro è un contesto con un nome in cui si lavora: “Fare ordine nei backup”, “Ordinare le candidature”. Ciascuna ricorda entrambi i pannelli, tutte le schede aperte, quale scheda è attiva su ciascun lato, la modalità di visualizzazione, l’albero delle cartelle, la cronologia avanti/indietro e quali file aveva contrassegnato, il filtro rapido e la disposizione della finestra: il pannello laterale, il dock, le barre e dove si trova il divisore. Passare da una all’altra costa un clic, e per strada non si perde mai nulla: un’area di lavoro non viene mai salvata, perché non finisce mai.</p>
+<p>Finché non se ne crea una seconda, non c’è nulla da vedere. Nessuna barra, nessun menu, nessuna scorciatoia.</p>
+<h2 id="come-si-fa">Come si fa</h2>
 <ol>
-<li>Configura entrambi i pannelli come li vuoi: apri le cartelle, aggiungi le schede e seleziona il pannello che vuoi attivo.</li>
-<li>Apri il menu <strong>Vai</strong> e scegli <strong>Salva spazio di lavoro…</strong>.</li>
-<li>Digita un nome per lo spazio di lavoro e conferma. La disposizione corrente di entrambi i pannelli viene memorizzata sotto quel nome.</li>
-<li>Per tornare a una disposizione salvata più tardi, apri il menu <strong>Vai</strong> e scegli <strong>Spazi di lavoro…</strong>.</li>
-<li>Nell'elenco a comparsa, fai clic sullo spazio di lavoro che vuoi. Entrambi i pannelli, le loro schede e il lato attivo vengono ripristinati.</li>
-<li>Per rimuovere uno spazio di lavoro, apri <strong>Spazi di lavoro…</strong>, punta su <strong>Elimina</strong> e scegli il nome dal sottomenu.</li>
+<li>Predisponga entrambi i pannelli per il lavoro da svolgere: apra le cartelle, aggiunga le schede, scelga la vista che desidera.</li>
+<li>Apra il menu <strong>Vai</strong> e scelga <strong>Aree di lavoro…</strong>, quindi <strong>Nuova area di lavoro…</strong>. Le dia un nome.</li>
+<li>In cima alla finestra compare una striscia di pastiglie colorate, e nella barra dei menu compare il menu <strong>Area di lavoro</strong>. La nuova area di lavoro parte come copia della disposizione in cui si trovava.</li>
+<li>Predisponga la nuova area di lavoro per il suo compito. Quella da cui proviene conserva ciò che aveva.</li>
+<li>Faccia clic su una pastiglia per passare, oppure prema <strong>Ctrl+1</strong> fino a <strong>Ctrl+9</strong>. Tutto passa con essa.</li>
 </ol>
-<h2 id="scorciatoie">Scorciatoie</h2>
+<h2 id="tornare-a-un-punto-di-partenza">Tornare a un punto di partenza</h2>
+<p>Ogni area di lavoro ricorda anche la disposizione con cui è stata impostata. <strong>Area di lavoro ▸ Salva lo stato attuale nell’area di lavoro</strong> (Cmd+Ctrl+S) rende la disposizione attuale quel punto di partenza, e <strong>Ripristina lo stato salvato</strong> vi riporta dopo un pomeriggio di divagazioni.</p>
+<p>Questo è indipendente dalla memoria continua: non deve mai salvare per non perdere il segno.</p>
+<h2 id="la-raccolta">La raccolta</h2>
+<p>Ogni area di lavoro ha una raccolta — per quello che succede davvero mentre si mette ordine: tre
+cartelle dentro i backup trova qualcosa che appartiene a un lavoro tutt’altro. <strong>Trascini file sulla
+pastiglia di un’altra area</strong> e finiranno nella <em>sua</em> raccolta: non cambia area, e non viene copiato né
+spostato nulla; il contatore sulla pastiglia sale e lei prosegue. Tenga <strong>⌥</strong> mentre rilascia per
+copiare nella cartella di quell’area, o <strong>⌘</strong> per spostare. <strong>Ctrl+Cmd+A</strong> mette la selezione nella
+raccolta dell’area corrente, la pagina <strong>Raccolta</strong> nel pannello laterale ne mostra il contenuto, e
+<strong>Area di lavoro ▸ Copia la raccolta nell’altro pannello</strong> tratta l’intera raccolta in una sola
+operazione.</p>
+<p>I file eliminati nel frattempo, o su un volume non montato, sono mostrati come mancanti anziché
+rimossi, e un’operazione di gruppo propone di ignorarli o di toglierli prima. Uno spostamento svuota la
+raccolta di ciò che ha spostato; una copia la lascia com’era.</p>
 <table>
 <thead>
 <tr>
@@ -30,21 +44,67 @@
 </thead>
 <tbody>
 <tr>
-<td>Salva la disposizione corrente come spazio di lavoro</td>
+<td>Passare all’area di lavoro da 1 a 9</td>
+<td>Ctrl+1 … Ctrl+9</td>
+</tr>
+<tr>
+<td>Rendere la disposizione attuale il punto di partenza</td>
 <td>Cmd+Ctrl+S</td>
 </tr>
 </tbody>
 </table>
 <h2 id="suggerimenti">Suggerimenti</h2>
 <ul>
-<li>Nel menu a comparsa <strong>Spazi di lavoro…</strong>, i tuoi primi nove spazi di lavoro salvati ottengono i tasti numerici di selezione rapida da 1 a 9, così puoi passare con una singola pressione.</li>
-<li>Puoi anche salvare un nuovo spazio di lavoro dall'interno del menu a comparsa <strong>Spazi di lavoro…</strong> con <strong>Salva corrente come spazio di lavoro…</strong>, senza lasciare l'elenco.</li>
-<li>Nomina gli spazi di lavoro in base al lavoro che supportano ("Sito web", "Importazione foto", "Backup") così l'elenco resta facile da scorrere.</li>
+<li>Faccia clic con il tasto destro su una pastiglia per rinominarla, darle un colore o eliminarla — oppure faccia clic sulla <strong>✕</strong> alla sua estremità destra, che elimina quell’area di lavoro dopo aver chiesto conferma. Il colore è ciò che le permette di distinguere le aree di lavoro a colpo d’occhio quando la finestra è stretta e i nomi non ci stanno più.</li>
+<li>Nove è il limite, così ogni pastiglia resta riconoscibile.</li>
+<li><strong>Mostra ▸ Mostra la barra delle aree di lavoro</strong> nasconde la striscia senza disattivare la funzione, per chi si sposta tra le aree con la tastiera.</li>
+<li>Le aree di lavoro si possono disattivare del tutto in <strong>Impostazioni ▸ Schede</strong>. Le sue aree di lavoro vengono conservate e tornano invariate quando riattiva la funzione.</li>
 </ul>
+<h2 id="limitare-unarea-di-lavoro-a-una-cartella">Limitare un’area di lavoro a una cartella</h2>
+<p>A un’area di lavoro si può dire di che cosa si occupa, e allora controlla prima che un’operazione esca
+dai confini. Faccia clic con il tasto destro sulla pastiglia, <strong>Limita a una cartella ▸ Imposta sulla
+cartella attiva</strong>, e scelga se le operazioni fuori vadano consentite, chieste o rifiutate.</p>
+<p>Si controlla prima che un’eliminazione prenda file da fuori, prima che una copia o uno spostamento
+atterri fuori, e prima che una rinomina o una nuova cartella scriva fuori. <strong>La navigazione non è mai
+limitata</strong>: un gestore di file che si rifiuta di mostrare una cartella è rotto, e tutto il valore sta
+nell’istante prima di F8. Nemmeno i salvataggi dell’editor sono coperti; avvengono nella loro finestra.</p>
+<h2 id="il-diario">Il diario</h2>
+<p>Ogni area di lavoro tiene nota di ciò che vi è stato fatto: cartelle visitate, operazioni eseguite,
+righe di shell digitate e tutto ciò che un limite di cartella ha rifiutato. <strong>Area di lavoro ▸ Diario…</strong>
+lo mostra, giorno più recente per primo, con un filtro <strong>Problemi</strong> per tutto ciò che è fallito o è
+stato fermato.</p>
+<p>Invio ripete la riga selezionata, con la stessa regola della cronologia: solo una copia o uno
+spostamento si ripetono con un tasto, e una riga di shell viene inserita nella riga di comando invece
+che eseguita. Il diario è deliberatamente separato dalla cronologia globale: quella risponde a "dove
+vado di solito" e ordina per frequenza; questo risponde a "che cosa è successo qui" e mantiene
+l’ordine. Viene eliminato con la sua area di lavoro, conservato senza limiti altrimenti, e si può
+disattivare in <strong>Impostazioni ▸ Schede</strong>.</p>
+<h2 id="passare-unarea-di-lavoro-a-qualcun-altro">Passare un’area di lavoro a qualcun altro</h2>
+<p><strong>Area di lavoro ▸ Esporta area di lavoro…</strong> scrive l’area di lavoro corrente in un file
+<code>.pcworkspace</code> che puoi inviare a qualcuno o tenere in una cartella di progetto. <strong>Importa area di
+lavoro…</strong> lo rilegge, e lo stesso fa un doppio clic nel Finder.</p>
+<p>Ciò che viaggia è il <strong>punto di partenza salvato</strong> dell’area di lavoro — premi prima ⌘⌃S se vuoi la
+disposizione che hai davanti — insieme al nome, al colore, al limite di cartella e alla raccolta. Le
+cartelle dentro la tua cartella Inizio vengono scritte in forma abbreviata, così il file si apre
+nella cartella Inizio dell’<em>altra</em> persona e non in una cartella col tuo nome.</p>
+<p>Ciò che deliberatamente non viaggia:</p>
+<ul>
+<li><strong>Tutto ciò che potrebbe essere una credenziale.</strong> Le schede che puntano a una connessione o a un’unità di plugin montata vengono rimosse all’esportazione, e il resoconto ne dice il numero. Non c’è nulla da perdere, perché di una connessione non viene scritto nulla.</li>
+<li><strong>Il diario.</strong> Registra quello che hai fatto tu e nomina cartelle della tua macchina. Resta qui.</li>
+<li>Le posizioni del cursore, la cronologia di annullamento, la dimensione della finestra e le finestre aperte di visualizzatore, editor, ricerca o sincronizzazione.</li>
+<li>Le schede del terminale e le conversazioni con l’assistente. Appartengono a questo Mac; un file di area di lavoro porta <em>dove</em> lavorare, non ciò che è in esecuzione.</li>
+</ul>
+<p>Un’importazione <strong>aggiunge</strong> sempre un’area di lavoro; non sostituisce mai quella in cui ti trovi e
+non passa mai da sola a un’altra — un file che qualcuno ti ha mandato non deve spostare la tua
+finestra. Le cartelle non presenti su questo Mac si aprono sulla più vicina che esiste, gli elementi
+della raccolta mantengono i loro percorsi e appaiono in grigio, e un limite di cartella la cui
+cartella manca viene mantenuto ma passa a chiedere invece che a rifiutare. Un resoconto elenca tutto.</p>
 <h2 id="note">Note</h2>
 <ul>
-<li>Caricare uno spazio di lavoro sostituisce le schede in entrambi i pannelli con l'insieme salvato. Tutto ciò che avevi aperto ma non salvato non viene mantenuto, quindi salva prima la tua disposizione corrente se vuoi tornarci.</li>
-<li>Uno spazio di lavoro registra le posizioni delle cartelle e le schede, non i file al loro interno. Se una cartella salvata è stata spostata o eliminata, quella scheda si riapre dove può.</li>
+<li>Il passaggio non chiede mai se salvare e non chiude mai nulla. Le operazioni sui file in corso proseguono, e così tutto ciò che gira in un terminale: le schede dell’area che lascia vengono messe da parte con le loro shell vive, non chiuse. Anche le conversazioni dell’assistente seguono l’area di lavoro.</li>
+<li>L’annullamento segue un’area di lavoro solo finché l’app è in esecuzione: un passo di annullamento porta con sé l’azione che lo inverte, e quella non può essere scritta su disco.</li>
+<li>Un’area di lavoro registra posizioni di cartelle, non i file che contengono. Se una cartella salvata è stata spostata o eliminata, quella scheda si apre nella cartella più vicina ancora esistente.</li>
+<li>Passando da una versione precedente: le aree di lavoro che aveva salvato diventano pastiglie, e la sessione in cui si trovava diventa la prima. Non si perde nulla, e il vecchio <code>workspaces.ini</code> viene conservato come <code>workspaces.ini.migrated</code>.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="settings.html">Impostazioni</a></li><li><a href="panels-and-tabs.html">Schede</a></li></ul></section>
 </main>

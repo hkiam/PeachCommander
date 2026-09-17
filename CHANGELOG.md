@@ -99,6 +99,14 @@ does not have.
   now its own `workspaces/<id>.json`, so one unreadable file costs only itself and a workspace can be
   handed to somebody else.
 
+- **The arrow keys step between the quick search's matches** (F-060). Typing letters in a panel jumps
+  the cursor to the first name that starts with them; ↑ and ↓ now walk backwards and forwards through
+  the rest of the hits, wrapping at both ends, for as long as the `⌕ re  2/3` indicator is on screen.
+  Repeating the same single letter still cycles too, but that only ever worked forwards and only for a
+  one-letter prefix — past the first hit of "re" there was nothing to press. Only the bare arrows are
+  taken: Shift+Arrow still extends the selection, Alt+Down is still the history dropdown, and once the
+  indicator has timed out Up and Down move one row again.
+
 ### Fixed
 
 - A tab's cursor position survived loading a saved workspace but not restarting the app: the session

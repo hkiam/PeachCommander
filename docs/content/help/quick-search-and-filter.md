@@ -13,7 +13,7 @@ When a folder holds hundreds of items, you rarely need to scroll. Peach Commande
 
 1. Click a file panel so it is active.
 2. Start typing the beginning of a name. The cursor jumps to the first matching item.
-3. Keep typing to refine the match, or press the same letter again to cycle through items that start with that letter.
+3. Keep typing to refine the match, or step between the matches with ↑ and ↓ while the search is showing. Pressing the same single letter again also cycles through the items that start with it.
 4. What you have typed appears above the panel, together with which match you are on and how many there are — for example `⌕ re  2/3`. It turns red when nothing matches.
 5. Press Backspace to take back the last letter, or Esc to end the search. Backspace only edits the search while one is running; at any other time it still goes to the parent folder.
 6. The search ends on its own after a couple of seconds without typing, so you can start a new one at any time.
@@ -41,6 +41,7 @@ Press Ctrl+H, or choose the command from the View menu, to toggle hidden items (
 | Action | Shortcut |
 | --- | --- |
 | Quick search (classic mode) | Ctrl+Option+letter |
+| Previous / next match (during quick search) | ↑ / ↓ |
 | Quick filter on/off | Ctrl+S |
 | Clear filter / cancel | Esc |
 | Show/hide hidden files | Ctrl+H |

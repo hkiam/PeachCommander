@@ -12,7 +12,7 @@ Lorsqu'un dossier contient des centaines d'éléments, vous n'avez que rarement 
 
 1. Cliquez sur un panneau de fichiers pour l'activer.
 2. Commencez à saisir le début d'un nom. Le curseur saute au premier élément correspondant.
-3. Continuez à saisir pour affiner la correspondance, ou appuyez de nouveau sur la même lettre pour parcourir les éléments qui commencent par cette lettre.
+3. Continuez à saisir pour affiner la correspondance, ou passez d'une correspondance à l'autre avec ↑ et ↓ tant que la recherche est affichée. Appuyer de nouveau sur la même lettre parcourt également les éléments qui commencent par celle-ci.
 4. Ce que vous avez saisi apparaît au-dessus du panneau, avec le rang de la correspondance et leur nombre — par exemple `⌕ re  2/3`. Il devient rouge quand rien ne correspond.
 5. Appuyez sur Retour arrière pour reprendre la dernière lettre, ou sur Esc pour terminer la recherche. Retour arrière ne modifie que la recherche en cours ; le reste du temps, il remonte toujours au dossier parent.
 6. Le texte saisi s'efface après une courte pause, ce qui vous permet de lancer une nouvelle recherche à tout moment.
@@ -40,6 +40,7 @@ Appuyez sur Ctrl+H, ou choisissez la commande dans le menu Affichage, pour bascu
 | Action | Raccourci |
 | --- | --- |
 | Recherche rapide (mode classique) | Ctrl+Option+lettre |
+| Correspondance précédente / suivante (pendant la recherche rapide) | ↑ / ↓ |
 | Activer/désactiver le filtre rapide | Ctrl+S |
 | Effacer le filtre / annuler | Esc |
 | Afficher/masquer les fichiers cachés | Ctrl+H |

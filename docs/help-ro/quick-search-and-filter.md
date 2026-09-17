@@ -12,7 +12,7 @@ Când un folder conține sute de elemente, rareori trebuie să derulați. Peach 
 
 1. Faceți clic pe un panou de fișiere astfel încât să fie activ.
 2. Începeți să tastați începutul unui nume. Cursorul sare la primul element care se potrivește.
-3. Continuați să tastați pentru a rafina potrivirea, sau apăsați din nou aceeași literă pentru a parcurge elementele care încep cu acea literă.
+3. Continuați să tastați pentru a rafina potrivirea, sau treceți între potriviri cu ↑ și ↓ cât timp căutarea este afișată. Apăsarea din nou a aceleiași litere parcurge de asemenea elementele care încep cu ea.
 4. Textul tastat se șterge după o scurtă pauză, astfel încât puteți începe o căutare nouă oricând.
 
 Implicit, literele simple merg la linia de comandă, iar căutarea rapidă este declanșată cu Ctrl+Option+literă (comportamentul clasic). Puteți comuta căutarea rapidă să răspundă la tastarea simplă în schimb, sau să o dezactivați, în setările de configurare.
@@ -38,6 +38,7 @@ Apăsați Ctrl+H, sau alegeți comanda din meniul Vizualizare, pentru a comuta e
 | Acțiune | Comandă rapidă |
 | --- | --- |
 | Căutare rapidă (mod clasic) | Ctrl+Option+literă |
+| Potrivirea anterioară / următoare (în timpul căutării rapide) | ↑ / ↓ |
 | Filtru rapid pornit/oprit | Ctrl+S |
 | Șterge filtrul / anulează | Esc |
 | Afișează/ascunde fișierele ascunse | Ctrl+H |

@@ -12,7 +12,7 @@ När en mapp innehåller hundratals objekt behöver du sällan rulla. Peach Comm
 
 1. Klicka på en filpanel så att den är aktiv.
 2. Börja skriva början på ett namn. Markören hoppar till det första matchande objektet.
-3. Fortsätt skriva för att förfina matchningen, eller tryck på samma bokstav igen för att bläddra bland objekt som börjar på den bokstaven.
+3. Fortsätt skriva för att förfina matchningen, eller växla mellan träffarna med ↑ och ↓ så länge sökningen visas. Att trycka på samma bokstav igen bläddrar också bland objekten som börjar på den.
 4. Det du skrivit visas ovanför panelen, tillsammans med vilken träff du är på och hur många det finns — till exempel `⌕ re  2/3`. Det blir rött när inget matchar.
 5. Tryck Backsteg för att ta tillbaka sista bokstaven, eller Esc för att avsluta sökningen. Backsteg redigerar bara en pågående sökning; annars går det fortfarande till överordnad mapp.
 6. Den inskrivna texten rensas efter en kort paus, så du kan börja en ny sökning när som helst.
@@ -40,6 +40,7 @@ Tryck på Ctrl+H, eller välj kommandot från Visa-menyn, för att växla dolda 
 | Åtgärd | Kortkommando |
 | --- | --- |
 | Snabbsökning (klassiskt läge) | Ctrl+Option+bokstav |
+| Föregående / nästa träff (under snabbsökning) | ↑ / ↓ |
 | Snabbfilter på/av | Ctrl+S |
 | Rensa filter / avbryt | Esc |
 | Visa/dölj dolda filer | Ctrl+H |

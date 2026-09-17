@@ -12,7 +12,7 @@ Cuando una carpeta contiene cientos de elementos, rara vez necesitas desplazarte
 
 1. Haz clic en un panel de archivos para que esté activo.
 2. Empieza a escribir el principio de un nombre. El cursor salta al primer elemento coincidente.
-3. Sigue escribiendo para afinar la coincidencia, o pulsa de nuevo la misma letra para recorrer los elementos que empiezan por esa letra.
+3. Sigue escribiendo para afinar la coincidencia, o pasa de una coincidencia a otra con ↑ y ↓ mientras la búsqueda está visible. Pulsar de nuevo la misma letra también recorre los elementos que empiezan por ella.
 4. El texto escrito se borra tras una breve pausa, así que puedes iniciar una nueva búsqueda en cualquier momento.
 
 Por omisión, las letras normales van a la línea de comandos y la búsqueda rápida se activa con Ctrl+Option+letra (el comportamiento clásico). Puedes cambiar la búsqueda rápida para que responda a la escritura normal, o desactivarla, en los ajustes de Configuración.
@@ -38,6 +38,7 @@ Pulsa Ctrl+H, o elige el comando en el menú Visualización, para alternar los e
 | Acción | Atajo |
 | --- | --- |
 | Búsqueda rápida (modo clásico) | Ctrl+Option+letra |
+| Coincidencia anterior / siguiente (durante la búsqueda rápida) | ↑ / ↓ |
 | Filtro rápido activado/desactivado | Ctrl+S |
 | Borrar filtro / cancelar | Esc |
 | Mostrar/ocultar archivos ocultos | Ctrl+H |

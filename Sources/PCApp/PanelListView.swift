@@ -2015,6 +2015,16 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             }
         }
 
+        // While the search is on screen the bare arrows step between its matches, the way the other
+        // two-pane managers do it: without that, the only way past the first hit is to type the same
+        // letter again, which cannot go backwards and stops working the moment the prefix is longer
+        // than one character. Bare only — Shift+Arrow still extends the selection and Alt+Down is
+        // still the history dropdown.
+        if typeAheadLive, mods.isEmpty, code == 126 || code == 125 {
+            typeAheadStep(forward: code == 125)
+            return
+        }
+
         // A type-ahead search in progress owns Backspace and Esc — and only those two, and only
         // while it is running. Outside a search both keep doing exactly what they did: Backspace
         // goes to the parent folder, which is precisely the wrong answer to a mistyped letter.
@@ -2148,7 +2158,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
 
     /// Drive the type-ahead from the automation runner: `chars` is typed one character at a time,
-    /// with `\\b` for Backspace and `\\e` for Esc.
+    /// with `\\b` for Backspace, `\\e` for Esc and `\\u`/`\\d` for the arrows that step between matches.
     ///
     /// Here because the indicator is a label and the cursor is a drawn row — "what is the search
     /// showing" is otherwise a question only somebody looking at the screen can answer, and this
@@ -2161,6 +2171,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
                 rest = rest.dropFirst()
                 if next == "b" { if typeAheadActive { typeAheadBackspace() }; continue }
                 if next == "e" { endTypeAhead(); continue }
+                if next == "u" { if typeAheadLive { typeAheadStep(forward: false) }; continue }
+                if next == "d" { if typeAheadLive { typeAheadStep(forward: true) }; continue }
             }
             typeAheadJump(String(ch))
         }
@@ -2193,8 +2205,35 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         publishTypeAhead()
     }
 
+    /// Move to the previous/next match of the current prefix, wrapping at both ends.
+    ///
+    /// The prefix is left alone and the window is restarted, so a walk through the hits neither
+    /// narrows the search nor lets it expire underneath you.
+    private func typeAheadStep(forward: Bool) {
+        typeAheadLast = Date()
+        let names = visibleEntries.map { $0.name }
+        if let idx = TypeAheadSearch.neighbour(of: cursorRow, names: names,
+                                               query: typeAheadBuffer, forward: forward) {
+            moveCursor(to: idx)
+        } else {
+            NSSound.beep()   // the prefix matches nothing; the cursor stays where it is
+        }
+        publishTypeAhead()
+    }
+
     /// True while a prefix is being typed — the state Backspace and Esc belong to.
     private var typeAheadActive: Bool { !typeAheadBuffer.isEmpty }
+
+    /// True while the search is still *shown* — an active prefix whose window has not run out.
+    ///
+    /// The arrows ask this rather than `typeAheadActive`, because they are the panel's ordinary
+    /// navigation: once the indicator is gone, Down has to move one row again. The buffer outlives
+    /// the indicator by design (the next keystroke's own window check clears it), and a buffer
+    /// nobody can see must not quietly swallow an arrow key.
+    private var typeAheadLive: Bool {
+        guard typeAheadActive, let last = typeAheadLast else { return false }
+        return Date().timeIntervalSince(last) <= Self.typeAheadWindow
+    }
 
     private func endTypeAhead() {
         typeAheadBuffer = ""

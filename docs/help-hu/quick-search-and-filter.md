@@ -12,7 +12,7 @@ Amikor egy mappa több száz elemet tartalmaz, ritkán kell görgetnie. A Peach 
 
 1. Kattintson egy fájlpanelre, hogy aktív legyen.
 2. Kezdje el gépelni egy név elejét. A kurzor az első megfelelő elemre ugrik.
-3. Folytassa a gépelést az egyezés finomításához, vagy nyomja meg ugyanazt a betűt újra az azzal a betűvel kezdődő elemek közötti körbejáráshoz.
+3. Folytassa a gépelést az egyezés finomításához, vagy lépkedjen a találatok között a ↑ és ↓ billentyűkkel, amíg a keresés látszik. Ugyanazt a betűt újra megnyomva szintén körbejárhatja az azzal kezdődő elemeket.
 4. A beírt szöveg egy rövid szünet után törlődik, így bármikor új keresést kezdhet.
 
 Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a Ctrl+Option+betűvel indul (a klasszikus viselkedés). Átválthatja a gyorskeresést, hogy sima gépelésre reagáljon, vagy kikapcsolhatja, a konfigurációs beállításokban.
@@ -38,6 +38,7 @@ Nyomja meg a Ctrl+H-t, vagy válassza a parancsot a Nézet menüből, a rejtett 
 | Művelet | Billentyűparancs |
 | --- | --- |
 | Gyorskeresés (klasszikus mód) | Ctrl+Option+betű |
+| Előző / következő találat (gyorskeresés közben) | ↑ / ↓ |
 | Gyorsszűrő be/ki | Ctrl+S |
 | Szűrő törlése / mégse | Esc |
 | Rejtett fájlok megjelenítése/elrejtése | Ctrl+H |

@@ -12,7 +12,7 @@ Keď priečinok obsahuje stovky položiek, málokedy potrebujete posúvať. Peac
 
 1. Kliknite na panel súborov, aby bol aktívny.
 2. Začnite písať začiatok názvu. Kurzor skočí na prvú zhodnú položku.
-3. Pokračujte v písaní na spresnenie zhody, alebo stlačte to isté písmeno znova na prechádzanie položkami, ktoré začínajú tým písmenom.
+3. Pokračujte v písaní na spresnenie zhody, alebo prechádzajte medzi zhodami klávesmi ↑ a ↓, kým je hľadanie zobrazené. Opätovné stlačenie toho istého písmena tiež prechádza položky, ktoré ním začínajú.
 4. Napísaný text sa po krátkej pauze vymaže, takže nové hľadanie môžete začať kedykoľvek.
 
 Predvolene obyčajné písmená idú do príkazového riadka a rýchle hľadanie sa spúšťa pomocou Ctrl+Option+písmeno (klasické správanie). Rýchle hľadanie môžete prepnúť tak, aby reagovalo na obyčajné písanie, alebo ho vypnúť, v nastaveniach konfigurácie.
@@ -38,6 +38,7 @@ Stlačte Ctrl+H, alebo vyberte príkaz z ponuky Zobraziť, na prepnutie skrytýc
 | Akcia | Skratka |
 | --- | --- |
 | Rýchle hľadanie (klasický režim) | Ctrl+Option+písmeno |
+| Predchádzajúca / ďalšia zhoda (počas rýchleho hľadania) | ↑ / ↓ |
 | Rýchly filter zap./vyp. | Ctrl+S |
 | Vymazať filter / zrušiť | Esc |
 | Zobraziť/skryť skryté súbory | Ctrl+H |
