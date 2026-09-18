@@ -289,12 +289,22 @@ final class IconGridView: NSView, NSDraggingSource {
         let (stepH, jumpV): (Int, Int) = columnMajor
             ? (layout.rowsPerColumn(forHeight: bounds.height), 1)
             : (1, columns)
+        // Bare keys only. The grid owns these because they are about its geometry — but only plain:
+        // Shift+Arrow marks a range, Alt+Down is the history dropdown, Ctrl+PageDown enters the item
+        // under the cursor, Alt+Enter opens the properties. The switch used to ignore modifiers
+        // entirely, so every one of those was answered as if it were the plain key.
+        let plain = event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty
         switch event.keyCode {
-        case 123: move(columnMajor ? -stepH : -1)   // ←
-        case 124: move(columnMajor ? stepH : 1)     // →
-        case 126: move(columnMajor ? -1 : -jumpV)   // ↑
-        case 125: move(columnMajor ? 1 : jumpV)     // ↓
-        case 36, 76: onActivate?(cursorIndex)        // Enter
+        case 123 where plain: move(columnMajor ? -stepH : -1)   // ←
+        case 124 where plain: move(columnMajor ? stepH : 1)     // →
+        case 126 where plain: move(columnMajor ? -1 : -jumpV)   // ↑
+        case 125 where plain: move(columnMajor ? 1 : jumpV)     // ↓
+        // A page is what is on screen *here*. Forwarded to the list, these asked a table that is not
+        // in the view hierarchy how tall it was, and its answer covered the whole folder — so one
+        // Page Down in Brief or Icons went to the last file instead of down a screenful.
+        case 116 where plain: move(-pageStep())   // Page Up
+        case 121 where plain: move(pageStep())    // Page Down
+        case 36 where plain, 76 where plain: onActivate?(cursorIndex)     // Enter
         default:
             // Everything else belongs to the panel, not to the geometry: the quick search, the quick
             // filter, Space and Insert, Backspace, Tab, the numpad selection keys. The grid owns the
@@ -312,7 +322,18 @@ final class IconGridView: NSView, NSDraggingSource {
         let name = items.indices.contains(cursorIndex) ? items[cursorIndex].name : ""
         let marked = markedIndexes.sorted().compactMap { items.indices.contains($0) ? items[$0].name : nil }
         return "gridCursor=\(cursorIndex)\ngridName=\(name)\nnames=\(items.map(\.name).joined(separator: ","))\n"
-            + "gridMarked=\(marked.joined(separator: ","))\n"
+            + "gridMarked=\(marked.joined(separator: ","))\ngridPage=\(pageStep())\n"
+    }
+
+    /// One screenful of cells — the grid of cells that fits the clip view, which is the same product
+    /// in both flows: a column-major page is whole columns, a row-major one whole rows.
+    ///
+    /// From the geometry rather than from `visibleItemIndexes()`, which reads the *scrolled* rect:
+    /// measured with that, a first Page Down moved 164 cells and the next one 24, because the second
+    /// was asked after the view had scrolled to put the cursor at an edge.
+    private func pageStep() -> Int {
+        let clip = enclosingScrollView?.contentView.bounds.size ?? superview?.bounds.size ?? bounds.size
+        return max(1, layout.columns(forWidth: clip.width) * layout.rowsPerColumn(forHeight: clip.height))
     }
 
     private func move(_ delta: Int) {

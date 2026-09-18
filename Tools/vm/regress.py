@@ -2244,7 +2244,10 @@ SCENARIOS = [
       "panelkey r|/Users/admin/qfg-key.txt", "wait 600",
       "griddump /Users/admin/qfg-search.txt",
       "panelkey space|/Users/admin/qfg-space.txt", "wait 600",
-      "griddump /Users/admin/qfg-marked.txt", "wait 400"], 11),
+      "griddump /Users/admin/qfg-marked.txt",
+      "panelkey down|/Users/admin/qfg-down.txt", "wait 600",
+      "panelkey shift+down|/Users/admin/qfg-shift.txt", "wait 600",
+      "griddump /Users/admin/qfg-range.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -3723,9 +3726,16 @@ REPORTS = {
                                           ["prefix=re", "total=2", "cursor=report.txt"]),
     # The base key is the LAST dump the script writes, because that is the file the guest waits for:
     # naming an earlier one lets it stop waiting while the rest of the script is still running.
-    # Space marks the entry under the cursor and the grid draws the mark — in Brief view the grid had
+    #
+    # Shift+Down marks a range: the grid answered the arrows whatever modifiers were held, so this
+    # arrived as a plain Down and moved the cursor without marking anything. Two names, in order,
+    # after Space marked the first and a plain Down stepped to the second.
+    "quick-filter-grid": ("/Users/admin/qfg-range.txt",
+                          ["gridMarked=readme.txt,report.txt", "agree=yes"]),
+    # Space alone marks the entry under the cursor and the grid draws it — in Brief view the grid had
     # no notion of a mark at all, so a file marked here stayed invisible while F5 acted on it.
-    "quick-filter-grid": ("/Users/admin/qfg-marked.txt", ["gridMarked=readme.txt", "agree=yes"]),
+    "quick-filter-grid-marked": ("/Users/admin/qfg-marked.txt",
+                                 ["gridMarked=readme.txt", "agree=yes"]),
     # Brief view over a filtered listing: the grid draws the four "e" hits and nothing else, and its
     # cursor is on the same entry the panel would act on.
     "quick-filter-grid-filtered": ("/Users/admin/qfg-filtered.txt",

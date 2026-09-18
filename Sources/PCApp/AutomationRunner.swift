@@ -31,8 +31,8 @@
 //   filter <text>         apply the quick filter to the active panel
 //   panelkey <key>|<out>  press a key where the keyboard would land in the active panel (the icon
 //                           grid in brief/icons/gallery, else the list), then report the cursor.
-//                           <key>: up down enter esc backspace space insert tab ctrl+s, or any
-//                           single printable character (which drives the quick search)
+//                           <key>: up down home end pageup pagedown enter esc backspace space
+//                           insert tab ctrl+s, or any single printable character (quick search)
 //   indicatordump <out>   the quick-filter and quick-search indicators over the path bar, as text
 //   griddump <out>        what the icon grid is DRAWING (brief/icons/gallery) beside the table's own
 //                         cursor, with an `agree=` line — the two can disagree, and then a click

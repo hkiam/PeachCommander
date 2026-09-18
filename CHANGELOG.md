@@ -133,6 +133,20 @@ does not have.
   than rows. Marks are drawn in the theme's marked colour, the same colour and the same meaning as in
   the list, and they follow every change without rebuilding a cell.
 
+  **Page Up and Page Down belong to the grid too**, because a page there is a screenful of cells:
+  handed to the list they asked a table that is not on screen how tall it was, and its answer covered
+  the whole folder — so one press went to the last file rather than down a screen. Measured on a
+  500-file folder: 52 cells per page in Brief, 20 in Icons at that window size, the same step on
+  every press and the exact inverse going up. Home and End keep going to the list, which needs no
+  geometry to answer them.
+
+- **A grid mode answered Shift+Arrow, Alt+Down and Ctrl+PageDown as if they were bare keys** (F-021).
+  `IconGridView.keyDown` switched on the key code and never looked at the modifiers, so marking a
+  range, opening the history dropdown and "enter the item under the cursor" all arrived as a plain
+  arrow: the cursor moved and nothing else happened. Only bare keys belong to the grid now — anything
+  carrying a modifier goes to the panel. Measured in Icons view: Shift+Down marks notes.txt, again
+  marks report-1.txt beside it, and the grid draws both.
+
 - **A quick search that had already expired kept Backspace** (F-060). The typed prefix outlives its
   indicator by design — the next keystroke's window check is what clears it — but the *keys* went on
   belonging to a search nobody could see: measured, 2.6 s after one letter the indicator was empty and

@@ -2253,6 +2253,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             "enter": (36, "\r", []), "esc": (53, "\u{1B}", []), "backspace": (51, "\u{8}", []),
             "space": (49, " ", []), "insert": (114, "\u{F746}", []), "tab": (48, "\t", []),
             "ctrl+s": (1, "s", [.control]),
+            "home": (115, "\u{F729}", []), "end": (119, "\u{F72B}", []),
+            "pageup": (116, "\u{F72C}", []), "pagedown": (121, "\u{F72D}", []),
+            // Chords, because a key the grid answers plain must go to the panel when it carries a
+            // modifier: Shift+Arrow marks a range, Alt+Down is the history, Ctrl+PageDown enters.
+            "shift+down": (125, "\u{F701}", [.shift]), "shift+up": (126, "\u{F700}", [.shift]),
+            "alt+down": (125, "\u{F701}", [.option]),
+            "ctrl+pagedown": (121, "\u{F72D}", [.control]),
         ]
         let (code, chars, mods): (UInt16, String, NSEvent.ModifierFlags)
         if let hit = named[name] {
