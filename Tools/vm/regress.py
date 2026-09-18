@@ -2248,6 +2248,23 @@ SCENARIOS = [
       "panelkey down|/Users/admin/qfg-down.txt", "wait 600",
       "panelkey shift+down|/Users/admin/qfg-shift.txt", "wait 600",
       "griddump /Users/admin/qfg-range.txt", "wait 400"], 11),
+    # What the grid *forwards*, kept audited. Until the forwarding existed, none of these keys did
+    # anything in Icons view; they are not about geometry, so the grid has no business answering them
+    # and every one of them is a plain fall-through to the list. Chosen because each fails visibly:
+    # mark-all fills `gridMarked=` with the whole folder, the numpad `*` empties it, `/` puts the
+    # previous selection back, and Tab moves the active side *and* the focus — which is the half a
+    # `panelsdump` can see and a cursor dump cannot.
+    ("grid-keys",
+     ["active left", "left /Users/admin/pc-demo/Documents", "wait 1500",
+      "cmd cm_SrcIcons", "wait 1500",
+      "panelkey ctrl+keypad+|/Users/admin/gk-markall.txt", "wait 700",
+      "griddump /Users/admin/gk-marked.txt",
+      "panelkey keypad*|/Users/admin/gk-invert.txt", "wait 700",
+      "griddump /Users/admin/gk-inverted.txt",
+      "panelkey keypad/|/Users/admin/gk-restore.txt", "wait 700",
+      "griddump /Users/admin/gk-restored.txt",
+      "panelkey tab|/Users/admin/gk-tab.txt", "wait 900",
+      "panelsdump /Users/admin/gk-panels.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -3753,6 +3770,14 @@ REPORTS = {
     "quick-filter-grid-cleared": ("/Users/admin/qfg-cleared.txt",
                                   ["config.json", "handbook.pdf", "agree=yes",
                                    "!names=..,inventory.csv,notes.md,readme.txt,report.txt"]),
+    # Base key = the last dump the script writes. Tab from a grid mode hands the keystroke to the
+    # list, which switches sides; the responder proves the focus went with it rather than staying on
+    # a grid whose panel is no longer active.
+    "grid-keys": ("/Users/admin/gk-panels.txt", ["active=right", "responder=PanelListView"]),
+    "grid-keys-marked": ("/Users/admin/gk-marked.txt", ["gridMarked=config.json,handbook.pdf,inventory.csv,notes.md,readme.txt,report.txt"]),
+    # Empty, with the newline, so a stale list cannot satisfy it.
+    "grid-keys-inverted": ("/Users/admin/gk-inverted.txt", ["gridMarked=\n"]),
+    "grid-keys-restored": ("/Users/admin/gk-restored.txt", ["gridMarked=config.json,handbook.pdf,inventory.csv,notes.md,readme.txt,report.txt"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # And *not* there while the dialog stood: re-listing underneath a dialog is the thing the guard
     # exists to prevent, so a fix that simply refreshed anyway would pass the report above.
