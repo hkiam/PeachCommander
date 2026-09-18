@@ -2260,6 +2260,14 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             "shift+down": (125, "\u{F701}", [.shift]), "shift+up": (126, "\u{F700}", [.shift]),
             "alt+down": (125, "\u{F701}", [.option]),
             "ctrl+pagedown": (121, "\u{F72D}", [.control]),
+            "ctrl+tab": (48, "\t", [.control]),
+            "ctrl+enter": (36, "\r", [.control]), "alt+enter": (36, "\r", [.option]),
+            // The numpad selection keys. Bare + and - open a dialog, so a script that must not hang
+            // on a modal uses the chorded ones: Ctrl marks or unmarks everything, * inverts, / puts
+            // back the previous selection.
+            "keypad*": (67, "*", []), "keypad/": (75, "/", []),
+            "ctrl+keypad+": (69, "+", [.control]), "ctrl+keypad-": (78, "-", [.control]),
+            "alt+keypad+": (69, "+", [.option]),
         ]
         let (code, chars, mods): (UInt16, String, NSEvent.ModifierFlags)
         if let hit = named[name] {
