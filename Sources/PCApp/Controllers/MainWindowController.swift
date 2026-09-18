@@ -7845,6 +7845,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
     func viewStateChanged() {
         scheduleStatusRefresh()
         view.syncGridCursor()
+        view.syncGridMarks()
         onCursorChanged?()
     }
 
@@ -9899,6 +9900,16 @@ final class PanelView: NSView {
         pathBar.clickRegionForAutomation(region, clickCount: clickCount)
     }
     func pathBarHitTestForAutomation(_ region: String) -> String { pathBar.hitTestForAutomation(region) }
+    /// Press a key where the keyboard would actually land: the icon grid in the grid modes, the list
+    /// otherwise. Aimed at the list directly it could not see the forwarding at all — which is the
+    /// half that was missing, so it is the half a check has to go through.
+    func automationKey(_ name: String) -> Bool {
+        guard let event = PanelListView.automationKeyEvent(name, windowNumber: window?.windowNumber ?? 0)
+        else { return false }
+        currentContentView.keyDown(with: event)
+        return true
+    }
+
     /// Diagnostic: the icon grid beside the list it is supposed to mirror.
     ///
     /// `agree` is the whole point: the grid maps a click or Enter through its own index into the
@@ -10097,6 +10108,12 @@ final class PanelView: NSView {
         iconGrid.onActivate = { [weak controller] index in controller?.tableView.activateVisibleIndex(index - 1) }
         iconGrid.onDropFiles = { [weak controller] paths, move in
             Task { @MainActor in await controller?.performDrop(paths: paths, move: move) }
+        }
+        // The panel's whole keyboard vocabulary, handed to the view that implements it. Straight into
+        // `keyDown` rather than through a synthetic re-dispatch: it is the same event, and the list is
+        // the responder for it in every other view mode.
+        iconGrid.onUnhandledKey = { [weak controller] event in
+            controller?.tableView.keyDown(with: event)
         }
 
         pathBar.onPathClick = { [weak controller] path in
@@ -10516,6 +10533,7 @@ final class PanelView: NSView {
         gridGeneration &+= 1
         let entries = tableView.currentVisibleEntries()
         iconGrid.setItems(gridItems(from: entries), cursor: max(0, tableView.cursorRow + 1))
+        syncGridMarks()
         gridEntries = entries
         // Installed once, not per refresh, and it drives the same request path a refresh does.
         if iconGrid.onVisibleRangeChanged == nil {
@@ -10680,6 +10698,13 @@ final class PanelView: NSView {
     func syncGridCursor() {
         guard usesGrid else { return }
         iconGrid.setCursor(max(0, tableView.cursorRow + 1))
+    }
+
+    /// Mirror the table's marks onto the grid. Grid index 0 is the synthetic `..`, which is never
+    /// marked, so every index shifts by one — the same offset `onCursorChanged` undoes.
+    func syncGridMarks() {
+        guard usesGrid else { return }
+        iconGrid.setMarked(Set(tableView.markedVisibleIndexes().map { $0 + 1 }))
     }
 
     /// Build grid items (with a synthetic ".." first) using real Finder icons.

@@ -1436,6 +1436,19 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     /// The current visible entries (for an alternate view, e.g. the icon grid).
     func currentVisibleEntries() -> [VFSEntry] { visibleEntries }
+    /// Which of those entries are marked, by index.
+    ///
+    /// Indexes rather than the path set itself: an alternate view holds no paths for entries that
+    /// have none — a mount's rows, an archive's members, the synthetic `..` — so matching paths
+    /// there would silently draw no mark on exactly the listings where marking matters most.
+    func markedVisibleIndexes() -> Set<Int> {
+        guard !selectedPaths.isEmpty else { return [] }
+        var marked: Set<Int> = []
+        for (i, entry) in visibleEntries.enumerated() where selectedPaths.contains(fullPath(of: entry)) {
+            marked.insert(i)
+        }
+        return marked
+    }
     /// Move the cursor to a visible-entry index (used by the icon grid to sync).
     func focusVisibleIndex(_ index: Int) { moveCursor(to: index) }
     /// Move the cursor to a visible-entry index and open it (icon-grid double-click/Enter).
@@ -2070,10 +2083,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             return
         }
 
+        // An expired search owns nothing. The buffer outlives its indicator by design — the next
+        // keystroke's own window check is what clears it — and that left the *keys* belonging to a
+        // search nobody could see any more: measured, 2.6 s after typing one letter the indicator was
+        // empty and Backspace still edited the invisible prefix instead of going to the parent folder,
+        // for good, until some other keystroke happened to clear it. Cleared here instead, so
+        // everything below sees "a search is running" and "a search is visible" as the same thing.
+        if typeAheadActive, !typeAheadLive { endTypeAhead() }
+
         // A type-ahead search in progress owns Backspace and Esc — and only those two, and only
         // while it is running. Outside a search both keep doing exactly what they did: Backspace
         // goes to the parent folder, which is precisely the wrong answer to a mistyped letter.
-        if typeAheadActive, mods.isSubset(of: .shift) {
+        if typeAheadLive, mods.isSubset(of: .shift) {
             switch code {
             case 51: typeAheadBackspace(); return   // correct the prefix
             case 53: endTypeAhead(); return         // give up on the search
@@ -2213,20 +2234,39 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// reason and a stronger one — Enter on a filter *freezes* it (the mask stays, the typing stops),
     /// and that state was reachable from no script at all, so nothing about it was ever measured.
     func automationKey(_ name: String) -> Bool {
-        // characters *and* key code, because the panel switches on the code while anything that reads
-        // the character (a field editor taking over, the type-ahead's own gate) reads the string.
-        let keys: [String: (UInt16, String)] = [
-            "up": (126, "\u{F700}"), "down": (125, "\u{F701}"),
-            "enter": (36, "\r"), "esc": (53, "\u{1B}"), "backspace": (51, "\u{8}"),
-        ]
-        guard let (code, chars) = keys[name],
-              let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
-                                           timestamp: ProcessInfo.processInfo.systemUptime,
-                                           windowNumber: window?.windowNumber ?? 0, context: nil,
-                                           characters: chars, charactersIgnoringModifiers: chars,
-                                           isARepeat: false, keyCode: code) else { return false }
+        guard let event = Self.automationKeyEvent(name, windowNumber: window?.windowNumber ?? 0)
+        else { return false }
         keyDown(with: event)
         return true
+    }
+
+    /// The event one named key would arrive as.
+    ///
+    /// Characters *and* key code, because the panel switches on the code while anything that reads
+    /// the character (the type-ahead's own gate, a field editor taking over) reads the string. A name
+    /// that is a single printable character is passed through as itself, which is what the quick
+    /// search is driven by — key code 0 is claimed by none of the panel's switches, so such an event
+    /// reaches the same `default:` branch a typed letter does.
+    static func automationKeyEvent(_ name: String, windowNumber: Int) -> NSEvent? {
+        let named: [String: (UInt16, String, NSEvent.ModifierFlags)] = [
+            "up": (126, "\u{F700}", []), "down": (125, "\u{F701}", []),
+            "enter": (36, "\r", []), "esc": (53, "\u{1B}", []), "backspace": (51, "\u{8}", []),
+            "space": (49, " ", []), "insert": (114, "\u{F746}", []), "tab": (48, "\t", []),
+            "ctrl+s": (1, "s", [.control]),
+        ]
+        let (code, chars, mods): (UInt16, String, NSEvent.ModifierFlags)
+        if let hit = named[name] {
+            (code, chars, mods) = hit
+        } else if name.count == 1, let scalar = name.unicodeScalars.first, scalar.value >= 32 {
+            (code, chars, mods) = (0, name, [])
+        } else {
+            return nil
+        }
+        return NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: mods,
+                                timestamp: ProcessInfo.processInfo.systemUptime,
+                                windowNumber: windowNumber, context: nil,
+                                characters: chars, charactersIgnoringModifiers: chars,
+                                isARepeat: false, keyCode: code)
     }
 
     /// Drive the type-ahead from the automation runner: `chars` is typed one character at a time,

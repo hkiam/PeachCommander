@@ -29,9 +29,10 @@
 //   rowdump <file>        every visible column of the cursor row, as id + rendered text
 //   sortcol <fieldID>     sort the panel by a plugin content column
 //   filter <text>         apply the quick filter to the active panel
-//   panelkey <up|down|enter|esc|backspace>|<out>  press a plain navigation key in the active panel
-//                           (the real keyDown path), then report the cursor — the filter's wrap-around
-//                           and what Enter does to a filter are visible no other way
+//   panelkey <key>|<out>  press a key where the keyboard would land in the active panel (the icon
+//                           grid in brief/icons/gallery, else the list), then report the cursor.
+//                           <key>: up down enter esc backspace space insert tab ctrl+s, or any
+//                           single printable character (which drives the quick search)
 //   indicatordump <out>   the quick-filter and quick-search indicators over the path bar, as text
 //   griddump <out>        what the icon grid is DRAWING (brief/icons/gallery) beside the table's own
 //                         cursor, with an `agree=` line — the two can disagree, and then a click
@@ -1054,11 +1055,11 @@ extension MainWindowController {
                     .write(toFile: arg, atomically: true, encoding: .utf8)
             case "panelkey":                           // panelkey <up|down|enter|esc|backspace>|<out>
                 let pk = arg.split(separator: "|", maxSplits: 1).map(String.init)
-                if let panel = activePanel, pk.count == 2, panel.tableView.automationKey(pk[0]) {
+                if let panel = activePanel, pk.count == 2, panel.view.automationKey(pk[0]) {
                     try? panel.tableView.automationViewport()
                         .write(toFile: pk[1], atomically: true, encoding: .utf8)
                 } else {
-                    NSLog("[automation] panelkey needs <up|down|enter|esc|backspace>|<out> and an active panel")
+                    NSLog("[automation] panelkey needs <key>|<out> and an active panel")
                 }
             case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
                 try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")

@@ -37,6 +37,9 @@ final class IconGridView: NSView, NSDraggingSource {
 
     private var items: [Item] = []
     private(set) var cursorIndex = 0
+    /// Marked cells, by item index. The grid had no notion of a mark at all: Space marked a file and
+    /// the grid went on drawing it plain, so a selection made here was invisible while F5 acted on it.
+    private var markedIndexes: Set<Int> = []
     private var layout = GridLayout(itemWidth: 110, itemHeight: 92, spacing: 12, edgeInset: 12)
     private var iconSize: CGFloat = 48
     private let nameFont = NSFont.systemFont(ofSize: 11)
@@ -73,6 +76,8 @@ final class IconGridView: NSView, NSDraggingSource {
     var onActivate: ((Int) -> Void)?
     /// The cursor moved to a new index (click or arrows).
     var onCursorChanged: ((Int) -> Void)?
+    /// A key the grid does not handle itself, handed on to the panel's own key handling.
+    var onUnhandledKey: ((NSEvent) -> Void)?
     /// Files were dropped onto the grid (`move` true when Command was held).
     var onDropFiles: (([String], _ move: Bool) -> Void)?
     /// Pending drag gesture captured on mouseDown, promoted in mouseDragged.
@@ -85,6 +90,14 @@ final class IconGridView: NSView, NSDraggingSource {
         self.items = items
         cursorIndex = items.isEmpty ? 0 : max(0, min(cursor, items.count - 1))
         relayout()
+        needsDisplay = true
+    }
+
+    /// Which cells are marked. Cheap enough for every keystroke: no item is rebuilt, and an
+    /// unchanged set does not even repaint.
+    func setMarked(_ indexes: Set<Int>) {
+        guard indexes != markedIndexes else { return }
+        markedIndexes = indexes
         needsDisplay = true
     }
 
@@ -192,8 +205,14 @@ final class IconGridView: NSView, NSDraggingSource {
                 NSBezierPath(roundedRect: frame.insetBy(dx: 1, dy: 1), xRadius: 6, yRadius: 6).fill()
             }
 
+            // A mark is drawn in the theme's `selectedText` — the same colour and the same meaning
+            // as in the table (red by default, NC's yellow in the Norton themes), so the two views
+            // do not invent separate vocabularies for the same state.
             let attrs: [NSAttributedString.Key: Any] = [
-                .font: nameFont, .foregroundColor: Theme.current.listText, .paragraphStyle: para
+                .font: nameFont,
+                .foregroundColor: markedIndexes.contains(index) ? Theme.current.selectedText
+                                                                : Theme.current.listText,
+                .paragraphStyle: para,
             ]
             if nameOnly {
                 // Compact list row: small icon at the left, name vertically centered.
@@ -276,7 +295,12 @@ final class IconGridView: NSView, NSDraggingSource {
         case 126: move(columnMajor ? -1 : -jumpV)   // ↑
         case 125: move(columnMajor ? 1 : jumpV)     // ↓
         case 36, 76: onActivate?(cursorIndex)        // Enter
-        default: super.keyDown(with: event)
+        default:
+            // Everything else belongs to the panel, not to the geometry: the quick search, the quick
+            // filter, Space and Insert, Backspace, Tab, the numpad selection keys. The grid owns the
+            // arrows and Enter because in a grid those are about rows and columns; it owned the rest
+            // by accident, which is why three view modes had no search and no marking at all.
+            if let forward = onUnhandledKey { forward(event) } else { super.keyDown(with: event) }
         }
     }
 
@@ -286,7 +310,9 @@ final class IconGridView: NSView, NSDraggingSource {
     /// two disagreeing, and a dump taken from the mirror would agree with itself every time.
     var automationDump: String {
         let name = items.indices.contains(cursorIndex) ? items[cursorIndex].name : ""
+        let marked = markedIndexes.sorted().compactMap { items.indices.contains($0) ? items[$0].name : nil }
         return "gridCursor=\(cursorIndex)\ngridName=\(name)\nnames=\(items.map(\.name).joined(separator: ","))\n"
+            + "gridMarked=\(marked.joined(separator: ","))\n"
     }
 
     private func move(_ delta: Int) {

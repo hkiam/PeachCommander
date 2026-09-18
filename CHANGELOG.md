@@ -124,6 +124,22 @@ does not have.
   previous mask's number — and a mask that had just narrowed to nothing still claimed the hits it no
   longer had. Counted after the rebuild now.
 
+- **The panel's keyboard now works in Brief, Icons and Gallery too, and those views draw marks**
+  (F-021, F-060, F-395). `IconGridView` answered the arrows and Enter and dropped every other key, so
+  in three of the five view modes there was no quick search, no quick filter, no Space or Insert
+  marking, and Backspace did not go up a folder — while `syncGridCursor`'s own comment said the
+  type-ahead was meant to reach the grid. Every key the grid does not own is handed to the list that
+  implements it; the arrows and Enter stay with the grid, because there they are about cells rather
+  than rows. Marks are drawn in the theme's marked colour, the same colour and the same meaning as in
+  the list, and they follow every change without rebuilding a cell.
+
+- **A quick search that had already expired kept Backspace** (F-060). The typed prefix outlives its
+  indicator by design — the next keystroke's window check is what clears it — but the *keys* went on
+  belonging to a search nobody could see: measured, 2.6 s after one letter the indicator was empty and
+  Backspace still edited the invisible prefix instead of going to the parent folder, and it stayed
+  that way until some other keystroke happened to clear the buffer. An expired search now owns
+  nothing, which is the same rule the arrows got when they learned to step between matches.
+
 - **The quick filter and the Brief/Icons/Gallery view disagreed about which files exist** (F-021,
   F-395). Those three modes draw an icon grid that mirrors the panel's visible entries, and the
   quick filter is the one thing that changes that set without a new listing — so nothing rebuilt the

@@ -2235,9 +2235,16 @@ SCENARIOS = [
       "filter e", "wait 800",
       "cmd cm_SrcShort", "wait 1200",
       "griddump /Users/admin/qfg-filtered.txt",
-      "cmd cm_QuickFilter", "wait 700",
+      # ONE toggle, not two: `filter` leaves the panel in filter mode, so the first menu toggle is
+      # already the clearing one — a second turns filter mode back on with an empty mask, and the
+      # typed letter below then lands in the mask instead of the search. (It did; the guest's grid
+      # came back filtered to the three names containing "r".)
       "cmd cm_QuickFilter", "wait 1000",
-      "griddump /Users/admin/qfg-cleared.txt", "wait 400"], 11),
+      "griddump /Users/admin/qfg-cleared.txt",
+      "panelkey r|/Users/admin/qfg-key.txt", "wait 600",
+      "griddump /Users/admin/qfg-search.txt",
+      "panelkey space|/Users/admin/qfg-space.txt", "wait 600",
+      "griddump /Users/admin/qfg-marked.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -3714,11 +3721,23 @@ REPORTS = {
     # the guest not hiccuping between two script lines is worse than none.
     "quick-search-filter-frozen-search": ("/Users/admin/qsf-frozen-search.txt",
                                           ["prefix=re", "total=2", "cursor=report.txt"]),
+    # The base key is the LAST dump the script writes, because that is the file the guest waits for:
+    # naming an earlier one lets it stop waiting while the rest of the script is still running.
+    # Space marks the entry under the cursor and the grid draws the mark — in Brief view the grid had
+    # no notion of a mark at all, so a file marked here stayed invisible while F5 acted on it.
+    "quick-filter-grid": ("/Users/admin/qfg-marked.txt", ["gridMarked=readme.txt", "agree=yes"]),
     # Brief view over a filtered listing: the grid draws the four "e" hits and nothing else, and its
     # cursor is on the same entry the panel would act on.
-    "quick-filter-grid": ("/Users/admin/qfg-filtered.txt",
-                          ["mode=brief", "names=..,inventory.csv,notes.md,readme.txt,report.txt",
-                           "agree=yes"]),
+    "quick-filter-grid-filtered": ("/Users/admin/qfg-filtered.txt",
+                                   ["mode=brief", "names=..,inventory.csv,notes.md,readme.txt,report.txt",
+                                    "agree=yes"]),
+    # A typed letter reaches the quick search from a grid mode at all: `IconGridView` answered the
+    # arrows and Enter and dropped every other key, so three view modes had no search and no marking.
+    # "r" from the cursor on inventory.csv lands on readme.txt, and the grid follows — with the full
+    # listing still showing, which is what tells a search apart from a mask.
+    "quick-filter-grid-search": ("/Users/admin/qfg-search.txt",
+                                 ["gridName=readme.txt", "agree=yes",
+                                  "names=..,config.json,handbook.pdf,inventory.csv,notes.md,readme.txt,report.txt"]),
     # …and clearing the mask from the menu brings the other two files back into the grid. The negative
     # is the defect itself: a grid still holding only the matches of a mask no longer in force.
     "quick-filter-grid-cleared": ("/Users/admin/qfg-cleared.txt",
