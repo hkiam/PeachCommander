@@ -11,13 +11,47 @@ related: [version-notes, known-limitations, installation]
 
 # What's new
 
-Peach Commander is at **0.9.1**, released 15 September 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
+Peach Commander is at **0.9.2**, released 19 September 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
 
 <div class="pc-release pc-release--latest" markdown="1">
 
+## 0.9.2 <span class="pc-release__date">19 September 2026</span>
+
+<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">3 changed</span><span class="pc-chip">9 fixed</span></p>
+
+Named workspaces, a keyboard that works the same in every view — and the packaging defect behind
+"it keeps asking for folder permissions".
+
+A workspace is a named work context now rather than a saved layout: both panels, every tab, the
+marks, the filter, the tree and the window's whole arrangement switch together, and switching back
+restores what you left. The panel's keyboard vocabulary, which only ever worked in the details view,
+now works in Brief, Icons and Gallery as well, and those views draw what is marked. The quick search
+and the quick filter lost the last of the places where the list and the count disagreed.
+
+And the app bundle is sealed at last. It never was: `codesign --verify` answered *"code object is
+not signed at all"*, because the plugin build wrote its incremental stamps into
+`Contents/PlugIns/.build-stamps` and `codesign` refuses a bundle carrying a directory it does not
+recognise — with or without a certificate. macOS 26 kept honouring permissions granted to an unsealed
+bundle; macOS 27 will not grant new ones, which is why a fresh install asked for Desktop, Documents
+and Downloads over and over and forgot every answer. Measured on 27.0: 27 prompts before, three
+after — one per folder, remembered, and nothing at all on the next launch. This is an ad-hoc seal,
+not a Developer ID: the first launch still goes through System Settings.
+
+**Highlights**
+
+- Workspaces are named work contexts now, not saved layouts.
+- The arrow keys step between the quick search's matches.
+- A filtered list cycles, and keeps its cursor while you narrow it.
+
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.2">0.9.2 in full — the other 9 notes &rarr;</a></p>
+
+</div>
+
+<div class="pc-release" markdown="1">
+
 ## 0.9.1 <span class="pc-release__date">15 September 2026</span>
 
-<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">18 new</span><span class="pc-chip">6 changed</span><span class="pc-chip">46 fixed</span></p>
+<p class="pc-release__chips"><span class="pc-chip">18 new</span><span class="pc-chip">6 changed</span><span class="pc-chip">46 fixed</span></p>
 
 Docker as a drive, directory synchronisation worked through end to end, and a round of things
 reported by the people using it.
@@ -96,19 +130,14 @@ editor could not read opened as an empty one and saving wrote that over it, an u
 replaced by an empty one, and a slow DNS lookup froze the window for half a minute whenever a
 terminal reported where it was.
 
-**What it added**
+**Highlights**
 
 - Plugins are installable from a package, and you are told what is in it first.
 - Plugins have a stable identity and a version.
 - `ReadEntryData` and `PC_CAP_RANDOM_ACCESS`, both optional.
 - Per-line notes in the editor.
-- The editor can Save As and Print.
-- Next and Previous Mark in the viewer.
-- A Windows path pasted into Go to Folder now goes there.
-- The strings in a binary, in four encodings at once.
-- Pictures inside an archive get real thumbnails.
 
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.0">0.9.0 in full — the other 23 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.0">0.9.0 in full — the other 28 notes &rarr;</a></p>
 
 </div>
 
@@ -207,14 +236,7 @@ says what it could not read, and no longer leaves extracted copies behind. Amazo
 the assistant summarises whole files and looks through your disk for one, and the documentation
 website stops reporting its readers to anyone.
 
-**Highlights**
-
-- Searching inside archives now means every archive the app can open.
-- A search that could not look somewhere now says so.
-- Results found inside archives are usable.
-- Amazon S3 and S3-compatible storage as a drive.
-
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.7.3">0.7.3 in full — the other 60 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.7.3">0.7.3 in full — all 64 notes &rarr;</a></p>
 
 </div>
 

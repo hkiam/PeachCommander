@@ -8,11 +8,32 @@ and any release may still change behaviour it got wrong.
 `docs/distribution/release-and-updates.md` referred to this file before it existed; the releases below
 were reconstructed from the git history and the notes in `STATE.md` when it was written.
 
-**Every build so far is unsigned and un-notarized.** macOS will refuse to open it on the first attempt;
-`README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
-does not have.
+**No build is signed with an Apple Developer ID, and none is notarized.** macOS will refuse to open it
+on the first attempt; `README.md` explains the route through System Settings. From 0.9.2 the bundle
+does carry an ad-hoc code seal, which is free and is what macOS needs in order to remember a folder
+permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
+
+## [0.9.2] — 2026-09-19
+
+Named workspaces, a keyboard that works the same in every view — and the packaging defect behind
+"it keeps asking for folder permissions".
+
+A workspace is a named work context now rather than a saved layout: both panels, every tab, the
+marks, the filter, the tree and the window's whole arrangement switch together, and switching back
+restores what you left. The panel's keyboard vocabulary, which only ever worked in the details view,
+now works in Brief, Icons and Gallery as well, and those views draw what is marked. The quick search
+and the quick filter lost the last of the places where the list and the count disagreed.
+
+And the app bundle is sealed at last. It never was: `codesign --verify` answered *"code object is
+not signed at all"*, because the plugin build wrote its incremental stamps into
+`Contents/PlugIns/.build-stamps` and `codesign` refuses a bundle carrying a directory it does not
+recognise — with or without a certificate. macOS 26 kept honouring permissions granted to an unsealed
+bundle; macOS 27 will not grant new ones, which is why a fresh install asked for Desktop, Documents
+and Downloads over and over and forgot every answer. Measured on 27.0: 27 prompts before, three
+after — one per folder, remembered, and nothing at all on the next launch. This is an ad-hoc seal,
+not a Developer ID: the first launch still goes through System Settings.
 
 ### Changed
 
@@ -118,6 +139,26 @@ does not have.
   just set.
 
 ### Fixed
+
+- **macOS kept asking for the same folder permission and never remembered the answer** (#3). The app
+  bundle carried no code seal: `Tools/build-all-plugins.sh` wrote its incremental stamps to
+  `$OUT_DIR/.build-stamps`, which for a packaged build is the app's `Contents/PlugIns`, and `codesign`
+  refuses an entire bundle over a directory no bundle format knows — *"bundle format unrecognized,
+  invalid, or unsuitable. In subcomponent: Contents/PlugIns/.build-stamps"*. `Tools/codesign-app.sh`
+  then returned early whenever no signing identity was configured, so no build was ever sealed and the
+  first defect stayed invisible. Stamps now live outside the target, and the app is sealed ad-hoc when
+  no identity is given.
+
+  macOS 26 went on honouring permissions that had been granted earlier, so this only showed on a
+  machine without them — a new install, or macOS 27, which refuses to store one for an unsealed
+  bundle at all. Measured on 27.0 (26A428): 27 prompts, every one answered, none recorded; after the
+  fix three prompts, one per folder, each recorded, and a restart asks nothing. Full Disk Access is
+  not a workaround for the old build and never was.
+
+- **The build stopped compiling under Xcode 27.** Swift 6.4 will not choose between
+  `Data.append(Data)` and `Data.append(UInt8)` for a bare `$0` inside an array literal, where earlier
+  compilers took the type from the literal. Two places, the same four lines copied once:
+  `Sources/PCFoundation/TextPipe.swift` and `Plugins/SDK/PluginDecompiler.swift`.
 
 - **The quick filter's count was one keystroke behind its text** (F-395). `applyFilterLive` reported
   to the indicator before rebuilding the list, so `🔍 rep  7/1217` showed the new mask beside the
