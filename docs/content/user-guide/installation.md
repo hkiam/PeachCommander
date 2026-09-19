@@ -53,6 +53,19 @@ You only need to do this once, on either version. After the first successful lau
 
 > **Why the extra step?** Developer-ID signing and notarization — the process that lets macOS vouch for the app automatically — are deliberately left out of the beta. Once they are in place, this step disappears and Peach Commander opens on a plain double-click like any other app.
 
+## Folder permissions on first use
+
+The first time Peach Commander looks at your **Desktop**, **Documents** or **Downloads**, macOS asks
+whether to allow it — once for each. Allow them and it stays quiet from then on, including after a
+restart. A panel does not have to be sitting in one of those folders for the question to come up;
+listing your home folder is enough to touch all three.
+
+If the same question keeps returning no matter how often you answer it, you are on a build older than
+0.9.2. Those bundles carried no code seal, and macOS 27 will not store a permission for a bundle
+without one — the answer was taken and discarded every time
+([#3](https://github.com/hkiam/PeachCommander/issues/3)). Updating fixes it; Full Disk Access does
+not, and never did.
+
 ## Grant Full Disk Access
 
 A file manager is only useful if it can reach your files, and macOS keeps some locations private (other apps' data inside your Library folder, Mail and Messages storage, and similar) until you explicitly allow an app to see them. So that Peach Commander can browse everywhere Finder can, grant it **Full Disk Access**.
@@ -63,6 +76,8 @@ The app keeps working right away with reduced access — you'll browse and manag
 2. macOS opens **System Settings ▸ Privacy & Security ▸ Full Disk Access**.
 3. Turn on the switch next to **Peach Commander**. If it isn't listed yet, click the **+** button and add it from your Applications folder.
 4. If prompted, quit and reopen Peach Commander so the new permission takes effect.
+
+This is separate from the folder prompts above, and it is the one permission that may not stick while the app is unsigned: macOS binds it to a code identity, and a build without a Developer ID does not always satisfy the check. If protected locations stay out of reach after granting it, that is the reason, and there is no workaround short of signing.
 
 For more on why this permission matters and where your data lives, see [Privacy & security](privacy-and-security.md).
 

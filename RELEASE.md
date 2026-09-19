@@ -4,12 +4,18 @@ How a build gets from a tag to a downloadable disk image, what is automated toda
 and what still has to be done by hand. Referenced from
 `.github/workflows/release.yml` and `Tools/make-dmg.sh`.
 
-> **Status:** the packaging path is automated end to end, and so are signing and
-> notarization — but they are **dormant for want of credentials**. The workflow
-> looks for the secrets, finds none, warns, and produces an unsigned DMG, which
-> Gatekeeper refuses on a normal double-click (right-click → **Open** works).
-> Adding the secrets is the whole remaining step; no code changes. See
-> [Signing & notarization](#signing--notarization).
+> **Status:** the packaging path is automated end to end. **Developer ID signing and
+> notarization are dormant for want of credentials** — the workflow looks for the
+> secrets, finds none, warns, and produces a DMG Gatekeeper refuses on a normal
+> double-click (System Settings ▸ Privacy & Security ▸ **Open Anyway**; right-click
+> → **Open** on macOS 13–14). Adding the secrets is the whole remaining step; no code
+> changes. See [Signing & notarization](#signing--notarization).
+>
+> Since 0.9.2 the app is nevertheless **sealed ad-hoc** when no identity is configured,
+> because a bundle without a seal is one macOS 27 will not store a TCC folder
+> permission for — it asked for Desktop, Documents and Downloads on every access and
+> forgot each answer (#3). Ad-hoc is free and says nothing about origin, so it changes
+> Gatekeeper not at all.
 
 ## The pipeline
 

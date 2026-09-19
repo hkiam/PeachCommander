@@ -467,6 +467,21 @@
   background: var(--md-default-bg-color);
 }
 
+/* The two one-time steps a new install needs. Same shape as .pc-whatsnew, warmer edge: this is a
+   thing to do before the app works, not news. */
+.pc-setup {
+  margin: 1.8rem 0 2.2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-left: 3px solid var(--pc-peach-400);
+  border-radius: .7rem;
+  background: var(--md-default-bg-color);
+}
+.pc-setup h2 { margin: 0 0 .6rem !important; font-size: .95rem; font-weight: 700; }
+.pc-setup ol { margin: 0 0 .7rem 1.1rem; }
+.pc-setup li { margin: .25rem 0; }
+.pc-setup p:last-child { margin-bottom: 0; }
+
 .md-typeset .pc-whatsnew__eyebrow {
   margin: 0 0 .35rem;
   font-size: .68rem;

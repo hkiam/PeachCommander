@@ -150,16 +150,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           cat > build/first-run.md <<'NOTE'
-          > ### Before you double-click
+          > ### Two one-time steps
           >
-          > This build is **not signed or notarized**, so macOS blocks the first launch. Allow it once:
+          > This build is **not signed with an Apple Developer ID and not notarized**, so macOS blocks
+          > the first launch. Allow it once:
           >
           > * **macOS 15 Sequoia and later** — double-click, dismiss the warning, then open
           >   **System Settings ▸ Privacy & Security** and click **Open Anyway**. Apple removed the
           >   Control-click shortcut for unsigned apps in macOS 15, so right-clicking does not help.
           > * **macOS 13–14** — right-click the app ▸ **Open**, then confirm.
           >
-          > Only the first launch asks.
+          > Then **answer the folder prompts once** — macOS asks separately for Desktop, Documents and
+          > Downloads the first time the app looks at them. Allow them and it stays quiet from then on.
 
           NOTE
           cat build/first-run.md build/release-notes.md > build/notes.md

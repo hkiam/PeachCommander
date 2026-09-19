@@ -31,6 +31,23 @@ description: A fast, keyboard-driven, dual-panel file manager for macOS in the T
   </div>
 </div>
 
+<div class="pc-setup" markdown="1">
+
+## Before it works fully — two one-time steps
+
+1. **Allow the first launch.** macOS 15 and later: double-click, dismiss the warning, then
+   **System Settings ▸ Privacy & Security ▸ Open Anyway**. macOS 13–14: right-click the app ▸ **Open**.
+2. **Answer the folder prompts once.** The first time Peach Commander looks at your Desktop,
+   Documents or Downloads, macOS asks for each one. Allow them and it stays quiet from then on.
+
+Peach Commander is **not signed with an Apple Developer ID and not notarized** — that is a paid
+yearly certificate this project does not have, so macOS cannot vouch for who built it. Since 0.9.2
+the bundle carries a free ad-hoc code seal, which is what macOS needs in order to *remember* a folder
+permission. The seal says nothing about origin, so the first step stays. See the
+[installation guide](installation.md) for the full walk-through.
+
+</div>
+
 Peach Commander puts two folders side by side and every operation under your fingertips. Copy with F5, move with F6, switch panels with Tab, and reach roughly 150 named commands without ever lifting your hands from the keyboard. It is built in the Total Commander tradition and made for people who move a lot of files — and it wires that workflow straight into the Mac you already use. Hit a remote server, crack open an archive, and rename a thousand files at once, all inside one native window.
 
 ![Peach Commander main window with two file panels](screenshots/main-window.png)

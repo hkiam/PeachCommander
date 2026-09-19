@@ -24,6 +24,22 @@ Two panels. Every key on the keyboard. Archives you walk into like folders. A vi
 > [!NOTE]
 > **Peach Commander is in beta.** It is under active development, it does a lot already, and it is genuinely useful day to day — but things are still moving. APIs (especially the plugin SDK) can change, some corners are rough, and feedback is very welcome. See [Known limitations](#-known-limitations) before filing a surprise as a bug.
 
+> [!IMPORTANT]
+> **Two one-time steps before it works fully.**
+>
+> 1. **Allow the first launch.** macOS 15 and later: double-click, dismiss the warning, then
+>    **System Settings ▸ Privacy & Security ▸ Open Anyway**. macOS 13–14: right-click the app ▸
+>    **Open**. Control-clicking no longer works on macOS 15+.
+> 2. **Answer the folder prompts once.** The first time Peach Commander looks at your Desktop,
+>    Documents or Downloads, macOS asks for each one. Allow them and it stays quiet from then on.
+>
+> **Why the extra steps:** the app is **not signed with an Apple Developer ID and not notarized** —
+> that is a paid yearly certificate the project does not have, so macOS cannot vouch for who built it.
+> Since 0.9.2 the bundle does carry a free ad-hoc code seal, which is what macOS needs in order to
+> *remember* a folder permission; before that it kept asking ([#3](https://github.com/hkiam/PeachCommander/issues/3)).
+> The seal says nothing about origin, so step 1 stays. Locations macOS keeps private — `~/Library`,
+> Mail, Messages — may remain out of reach until the app is properly signed.
+
 ## What it is
 
 Peach Commander is a **native macOS dual-pane (orthodox) file manager**, inspired by Total Commander on Windows. It shows two folders side by side, so copying, moving, and comparing files is a matter of pointing one panel at the source and the other at the destination — hands on the keyboard, eyes on the files.
