@@ -947,7 +947,10 @@ enum PluginDecompilerRunner {
         // holds, and waiting first would deadlock on exactly the large classes this is for.
         var outData = Data(), errData = Data()
         let group = DispatchGroup()
-        for (pipe, sink) in [(out, { outData.append($0) }), (err, { errData.append($0) })] {
+        // `$0` is annotated because Swift 6.4 will not pick between Data.append(Data) and
+        // Data.append(UInt8) on its own; earlier compilers took the type from the array literal.
+        for (pipe, sink) in [(out, { (d: Data) in outData.append(d) }),
+                             (err, { (d: Data) in errData.append(d) })] {
             group.enter()
             DispatchQueue.global().async {
                 sink(pipe.fileHandleForReading.readDataToEndOfFile())
