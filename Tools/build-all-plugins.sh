@@ -52,8 +52,21 @@ SCRIPTS=(
 # bundle's Contents/PlugIns, and Xcode replacing the .app takes the plugins with it. Skipping then
 # would leave a bundle with no plugins in it that looked freshly built — the exact failure the
 # unconditional rebuild was there to prevent.
-STAMPS="$OUT_DIR/.build-stamps"
+#
+# The stamps live OUTSIDE the target, and that is not tidiness. They used to be written to
+# "$OUT_DIR/.build-stamps", which for a DMG build is the app bundle's Contents/PlugIns — a directory
+# no bundle format knows about, and `codesign` refuses the entire app over it: "bundle format
+# unrecognized, invalid, or unsuitable. In subcomponent: Contents/PlugIns/.build-stamps". Every
+# shipped build was therefore unsignable, with an identity or without one, and nobody found out
+# because codesign-app.sh used to return early when no identity was configured. macOS 27 stores no
+# TCC folder permission for a bundle carrying no seal, so the app asked for Desktop, Documents and
+# Downloads on every access and never remembered the answer (issue #3). Keyed by target, so the
+# user-plugins build and the app-bundle build do not share a stamp for the same script.
+STAMPS="$PWD/build/plugin-stamps/$(printf '%s' "$OUT_DIR" | shasum -a 256 | cut -c1-16)"
 mkdir -p "$STAMPS"
+# An app bundle built before this change still carries the old directory, and it would keep the
+# bundle unsignable for as long as it sat there.
+rm -rf "$OUT_DIR/.build-stamps"
 BUILT=0
 SKIPPED=0
 
