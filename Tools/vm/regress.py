@@ -203,9 +203,12 @@ SCENARIOS = [
     # of surface — so it is asserted on the menu dump and the bar's own report rather than on a
     # picture. `enabled=true` is part of it: the feature is *on* and still invisible, which is the
     # difference between latent and switched off.
+    # The menu dump goes FIRST and the workspace dump last, because the guest waits for the base
+    # report (`ws-latent.txt`) and anything written after that wait is a race the app loses on a slow
+    # launch — which is what `Tools/check-scenario-reports.py` fails the build over.
     ("workspace-latent", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                          "workspacedump /Users/admin/ws-latent.txt", "wait 300",
-                          "menudump /Users/admin/ws-latent-menu.txt"], 8),
+                          "menudump /Users/admin/ws-latent-menu.txt", "wait 300",
+                          "workspacedump /Users/admin/ws-latent.txt"], 8),
 
     # And the other half: make a second one and everything appears at once. Then switch away, switch
     # back, and check that the panel came with — `ghost=0` is the assertion no other tool can make,
