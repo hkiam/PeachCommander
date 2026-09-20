@@ -117,8 +117,12 @@ public enum FtpConnectionRules {
         switch setting {
         case .user:        return !anonymous
         // Enabled for a key file too: an encrypted key needs its passphrase typed somewhere, and
-        // this is that somewhere. Only the ssh-agent needs no secret from us at all.
-        case .password:    return !anonymous && auth != .agent
+        // this is that somewhere. It is enabled for the ssh-agent as well, which it was not: the
+        // agent needs no secret from us, but `.agent` is a value only a hand-edited ini can carry
+        // and the dialog has no control that sets it — so a field disabled for it was a site that
+        // could never be given a password at all. An empty field still sends nothing; typing in
+        // it is how the site stops being an agent site.
+        case .password:    return !anonymous
         case .anonymous:   return hasAnonymousLogin(site.proto)   // there is no anonymous SSH login
         case .passive:     return !isSFTP && !hasProxy // SFTP has no data channel to turn round;
                                                        // a tunnelled client cannot be dialled back

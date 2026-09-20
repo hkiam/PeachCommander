@@ -189,8 +189,18 @@ final class FtpConnectionRulesTests: XCTestCase {
         // an encrypted key unusable unless the ssh-agent happened to be holding it.
         XCTAssertTrue(FtpConnectionRules.applies(.password, to: site(.sftp, auth: .keyFile,
                                                                     keyFile: "/tmp/k")))
-        // The agent is the one case that needs no secret from us at all.
-        XCTAssertFalse(FtpConnectionRules.applies(.password, to: site(.sftp, auth: .agent)))
+    }
+
+    func testAnAgentSiteCanStillBeGivenAPassword() {
+        // The agent needs no secret from us, and the field used to be disabled for it on that
+        // reasoning. But `.agent` is a value only a hand-written ini can carry and no control in
+        // the dialog sets it, so the disabled field was a site that could never be given a
+        // password at all — the same shape of dead end as issue #4. An empty field still sends
+        // nothing; typing in one is how a site stops being an agent site.
+        XCTAssertTrue(FtpConnectionRules.applies(.password, to: site(.sftp, auth: .agent)))
+        XCTAssertTrue(FtpConnectionRules.applies(.user, to: site(.sftp, auth: .agent)))
+        // The anonymous login remains the one that genuinely has nothing to type.
+        XCTAssertFalse(FtpConnectionRules.applies(.password, to: site(.ftp, auth: .anonymous)))
     }
 
     func testAKeyFileThatIsNotThereIsRefusedRatherThanFallenBackFrom() throws {

@@ -325,6 +325,13 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         // box itself dead — and writes that dead end into ftp-sites.ini (issue #4).
         if anonymousCheck.state == .on, FtpConnectionRules.applies(.anonymous, to: s) {
             s.auth = .anonymous
+        } else if s.auth == .agent, s.proto == .sftp, key.isEmpty,
+                  passwordField.stringValue.isEmpty {
+            // The ssh-agent is the one authentication the form has no control for — only a
+            // hand-written ini can say it — so rewriting it to `.password` on the next keystroke
+            // was the dialog discarding a setting it cannot show. Kept while nothing in the form
+            // contradicts it; a key file or a typed secret does, and is how it is left.
+            s.auth = .agent
         } else {
             s.auth = (s.proto == .sftp && !key.isEmpty) ? .keyFile : .password
         }

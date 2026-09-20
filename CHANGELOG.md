@@ -42,6 +42,13 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   stored, and had to be retyped every session. It is kept whenever the field is offered at all,
   which is the same question the dialog already asks in order to enable it.
 
+- **An ssh-agent login was silently demoted to a password login.** `auth=agent` is a value only a
+  hand-written `ftp-sites.ini` carries — no control in the dialog sets it — and the next keystroke
+  in any field rewrote it to `auth=password`. It is kept now while nothing in the form contradicts
+  it. The secret field is also no longer disabled for it: nothing in the dialog could set `.agent`
+  and nothing could leave it either, so such a site could not be given a password at all. An empty
+  field still sends no secret; typing in one is how a site stops being an agent site.
+
 ## [0.9.2] — 2026-09-19
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind

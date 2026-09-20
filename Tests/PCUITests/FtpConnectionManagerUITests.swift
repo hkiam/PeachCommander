@@ -9,12 +9,12 @@ import XCTest
 
 final class FtpConnectionManagerUITests: XCTestCase {
 
-    /// A fresh config root per run, optionally seeded with an `ftp-sites.ini`, so the site list
-    /// is exactly what the test put there.
+    /// A fresh config root per run, optionally seeded with an `ftp-sites.ini`, so the site list is
+    /// exactly what the test put there and the file can be read back after Save.
     ///
     /// Nothing here ever types into the password field: the app builds its own
     /// `KeychainSecretStore`, so a saved secret would land in the real login keychain.
-    private func launchedApp(sites: String? = nil) -> XCUIApplication {
+    private func launchedApp(sites: String? = nil) -> (app: XCUIApplication, configRoot: String) {
         let app = XCUIApplication()
         let cfg = NSTemporaryDirectory() + "pcui-\(UUID().uuidString)"
         if let sites {
@@ -28,7 +28,28 @@ final class FtpConnectionManagerUITests: XCTestCase {
             "-LeftPath", NSHomeDirectory(), "-RightPath", "/tmp",
         ]
         app.launch()
-        return app
+        return (app, cfg)
+    }
+
+    /// Press Save and read back what landed in ftp-sites.ini.
+    ///
+    /// Waits on the file's modification date rather than on its contents: a save that correctly
+    /// changes nothing is exactly what one of these tests asserts, so "wait until it differs"
+    /// would hang on the passing case and read a stale file on the failing one.
+    private func savedSites(in window: XCUIElement, configRoot: String) -> String {
+        let path = configRoot + "/ftp-sites.ini"
+        let before = (try? FileManager.default.attributesOfItem(atPath: path)[.modificationDate])
+            .flatMap { $0 as? Date } ?? .distantPast
+        let save = window.buttons["Save"]
+        XCTAssertTrue(save.waitForExistence(timeout: 5), "no Save button")
+        save.click()
+        for _ in 0..<80 {
+            let now = (try? FileManager.default.attributesOfItem(atPath: path)[.modificationDate])
+                .flatMap { $0 as? Date }
+            if let now, now > before { break }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+        return (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
     }
 
     /// Open Net ▸ FTP Connect…, leaving whatever the site list selected by itself.
@@ -76,7 +97,7 @@ final class FtpConnectionManagerUITests: XCTestCase {
     }
 
     func test_newSite_startsAnonymousAndOffersTheChoice() {
-        let app = launchedApp()
+        let app = launchedApp().app
         let window = openManagerWithNewSite(app)
         let anonymous = window.checkBoxes["Anonymous"]
         XCTAssertTrue(anonymous.waitForExistence(timeout: 5), "no Anonymous checkbox")
@@ -88,7 +109,7 @@ final class FtpConnectionManagerUITests: XCTestCase {
     /// reach an authenticated login: either the box comes off with the protocol that has no
     /// anonymous login, or it stays clickable. Disabled *and* ticked is a dead end.
     func test_selectingSFTP_doesNotLockTheSiteToAnonymous() {
-        let app = launchedApp()
+        let app = launchedApp().app
         let window = openManagerWithNewSite(app)
 
         let anonymous = window.checkBoxes["Anonymous"]
@@ -126,7 +147,7 @@ final class FtpConnectionManagerUITests: XCTestCase {
             protocol=sftp
             user=anonymous
             auth=anonymous
-            """)
+            """).app
         let window = openManager(app)
 
         let anonymous = window.checkBoxes["Anonymous"]
@@ -135,5 +156,29 @@ final class FtpConnectionManagerUITests: XCTestCase {
                        "the stored anonymous login is shown as in force although SSH has none")
         XCTAssertTrue(aPasswordCanBeTyped(in: window),
                       "a site saved this way is still locked out of its own credentials")
+    }
+
+    /// The ssh-agent is the one authentication no control in the dialog can set, so the dialog
+    /// must not rewrite it either — and must still leave a way out of it.
+    func test_anAgentSiteKeepsItsAuthenticationAndCanStillBeGivenAPassword() {
+        let (app, cfg) = launchedApp(sites: """
+            [Agent Box]
+            host=box.example.org
+            port=22
+            protocol=sftp
+            user=root
+            auth=agent
+            """)
+        let window = openManager(app)
+
+        // The way out: typing a password is what makes the site stop being an agent site, and a
+        // disabled field made that impossible without hand-editing the file back.
+        XCTAssertTrue(aPasswordCanBeTyped(in: window),
+                      "an agent site cannot be given a password at all")
+
+        // Saving without touching anything must not quietly demote it to a password login.
+        let ini = savedSites(in: window, configRoot: cfg)
+        XCTAssertTrue(ini.contains("auth=agent"),
+                      "the ssh-agent setting was rewritten by a save that changed nothing:\n\(ini)")
     }
 }
