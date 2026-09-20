@@ -14,7 +14,9 @@ final class FtpConnectionManagerUITests: XCTestCase {
     ///
     /// Nothing here ever types into the password field: the app builds its own
     /// `KeychainSecretStore`, so a saved secret would land in the real login keychain.
-    private func launchedApp(sites: String? = nil) -> (app: XCUIApplication, configRoot: String) {
+    private func launchedApp(sites: String? = nil,
+                             inMemorySecrets: Bool = false) -> (app: XCUIApplication,
+                                                                configRoot: String) {
         let app = XCUIApplication()
         let cfg = NSTemporaryDirectory() + "pcui-\(UUID().uuidString)"
         if let sites {
@@ -27,6 +29,9 @@ final class FtpConnectionManagerUITests: XCTestCase {
             "-ConfigRoot", cfg,
             "-LeftPath", NSHomeDirectory(), "-RightPath", "/tmp",
         ]
+        // Only the one test that types a secret asks for this, and it is what lets it: without it
+        // the dialog writes into the real login keychain.
+        if inMemorySecrets { app.launchArguments += ["-PCSecretStore", "memory"] }
         app.launch()
         return (app, cfg)
     }
@@ -65,6 +70,17 @@ final class FtpConnectionManagerUITests: XCTestCase {
         let window = app.windows["FTP Connection Manager"]
         XCTAssertTrue(window.waitForExistence(timeout: 10), "connection manager did not open")
         return window
+    }
+
+    /// The site's own secret field: the only one of the two that is live on an SFTP site, since
+    /// the other is the proxy password and a proxy is not a thing there.
+    private func accountSecretField(in window: XCUIElement) -> XCUIElement {
+        let secrets = window.secureTextFields
+        for i in 0..<secrets.count where secrets.element(boundBy: i).isEnabled {
+            return secrets.element(boundBy: i)
+        }
+        XCTFail("no secret field is enabled")
+        return secrets.firstMatch
     }
 
     /// Whether any of the two secure fields is live. Asked this way rather than by index: the
@@ -156,6 +172,71 @@ final class FtpConnectionManagerUITests: XCTestCase {
                        "the stored anonymous login is shown as in force although SSH has none")
         XCTAssertTrue(aPasswordCanBeTyped(in: window),
                       "a site saved this way is still locked out of its own credentials")
+    }
+
+    /// The passphrase of an encrypted key is offered by the dialog, so it has to be kept. It was
+    /// read back from the Keychain on every selection and written on none, because `persist()`
+    /// stored a secret only for a plain password login — and the field is *specially* enabled for
+    /// a key file, that being where libssh2 wants the passphrase instead of a password.
+    ///
+    /// The round-trip is driven by moving the selection away and back, which is what makes
+    /// `updateForm` re-read the store. Closing and reopening the window would prove the same
+    /// thing, but the app does not reliably stay active across it and the menu bar goes away.
+    func test_theKeyPassphraseIsRememberedAcrossASelectionChange() {
+        // A key file that is really there: a named key is what puts the dialog into key
+        // authentication, and a missing one would only add a warning.
+        let key = NSTemporaryDirectory() + "pcui-key-\(UUID().uuidString)"
+        FileManager.default.createFile(atPath: key, contents: Data("k".utf8))
+        defer { try? FileManager.default.removeItem(atPath: key) }
+
+        let (app, _) = launchedApp(sites: """
+            [Key Box]
+            host=box.example.org
+            port=22
+            protocol=sftp
+            user=root
+            auth=key
+            keyfile=\(key)
+
+            [Somewhere Else]
+            host=other.example.org
+            port=21
+            protocol=ftp
+            user=someone
+            auth=password
+            """, inMemorySecrets: true)
+        let window = openManager(app)
+
+        // The label is the dialog saying which secret it is asking for, and doubles as proof that
+        // the seeded site really arrived in key authentication.
+        XCTAssertTrue(window.staticTexts["Passphrase:"].waitForExistence(timeout: 5),
+                      "the seeded site is not in key authentication")
+
+        let field = accountSecretField(in: window)
+        field.click()
+        field.typeText("correct-horse")
+        // A secure field reports its value as AppKit's masking glyph (U+F79A) once per character,
+        // never the text — so this compares how much is in the field, not what, and no secret can
+        // reach the log. Measured: 13 glyphs for the 13 characters above.
+        let typed = (field.value as? String) ?? ""
+        XCTAssertEqual(typed.count, "correct-horse".count,
+                       "nothing reached the field; value: \(String(describing: field.value))")
+
+        window.buttons["Save"].click()
+
+        // Away and back. `updateForm` rewrites the secret field from the store on every selection
+        // change, so what comes back is what was stored — or nothing, which was the defect.
+        let other = window.staticTexts["Somewhere Else"]
+        XCTAssertTrue(other.waitForExistence(timeout: 5), "the second seeded site is not listed")
+        other.click()
+        window.staticTexts["Key Box"].click()
+
+        XCTAssertTrue(window.staticTexts["Passphrase:"].waitForExistence(timeout: 5),
+                      "the key site did not come back")
+        let reopened = (accountSecretField(in: window).value as? String) ?? ""
+        XCTAssertEqual(reopened, typed,
+                       "the passphrase was not kept — it came back "
+                       + (reopened.isEmpty ? "empty" : "as something else"))
     }
 
     /// A setting the new protocol has no such thing for is not carried over behind a greyed-out

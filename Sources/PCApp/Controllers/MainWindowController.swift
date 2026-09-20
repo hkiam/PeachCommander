@@ -2275,7 +2275,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     /// Open the FTP connection manager (saved sites). cm_FtpConnect.
     func showFtpConnect() {
-        let store = KeychainSecretStore()
+        let store = AppSecretStore.shared
         let sitesURL = configPaths.ftpSites
         let editor = FtpConnectionManagerWindowController(sitesURL: sitesURL, store: store)
         editor.onConnect = { [weak self] site, password in self?.connectToSite(site, password: password) }
@@ -11460,7 +11460,7 @@ private let archivePasswordService = "PeachCommander.archive"
 /// Keychain-remembered one if present, else prompt (and remember on request).
 /// Sets `archive.password` and returns it, or nil if the user cancelled.
 @MainActor fileprivate func resolveArchivePassword(for archive: ArchiveFS, localPath: String) -> String? {
-    let store = KeychainSecretStore()
+    let store = AppSecretStore.shared
     if let saved = (try? store.password(service: archivePasswordService, account: localPath)) ?? nil, !saved.isEmpty {
         archive.password = saved
         if archive.passwordIsValid() { return saved }
