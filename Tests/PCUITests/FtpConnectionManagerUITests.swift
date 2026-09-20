@@ -158,6 +158,44 @@ final class FtpConnectionManagerUITests: XCTestCase {
                       "a site saved this way is still locked out of its own credentials")
     }
 
+    /// A setting the new protocol has no such thing for is not carried over behind a greyed-out
+    /// tick. "Accept a self-signed certificate" is the one that matters: re-arming itself the next
+    /// time the site becomes FTPS again is a security decision nobody made twice.
+    func test_aTickThatNoLongerAppliesIsClearedByTheProtocolChange() {
+        let (app, cfg) = launchedApp(sites: """
+            [Carry Over]
+            host=example.org
+            port=22
+            protocol=sftp
+            user=root
+            auth=password
+            usescp=1
+            allowinsecuretls=1
+            """)
+        let window = openManager(app)
+
+        let scp = window.checkBoxes["Transfer via SCP (SFTP only)"]
+        XCTAssertTrue(scp.waitForExistence(timeout: 5), "no SCP checkbox")
+        XCTAssertEqual(scp.value as? Int, 1, "precondition: the seeded site transfers via SCP")
+
+        let proto = protocolPopup(in: window)
+        proto.click()
+        let ftp = app.menuItems["FTP"]
+        XCTAssertTrue(ftp.waitForExistence(timeout: 5), "no FTP item in the protocol popup")
+        ftp.click()
+        XCTAssertEqual(proto.value as? String, "FTP", "protocol did not change")
+
+        XCTAssertEqual(scp.value as? Int, 0, "SCP is an SFTP setting and did not come off with it")
+        let tls = window.checkBoxes["Accept self-signed certificate (FTPS)"]
+        XCTAssertEqual(tls.value as? Int, 0, "plain FTP has no certificate to accept")
+
+        // And what the form shows is what the file gets: both keys are written only when true.
+        let ini = savedSites(in: window, configRoot: cfg)
+        XCTAssertFalse(ini.contains("usescp"), "usescp survived into a plain FTP site:\n\(ini)")
+        XCTAssertFalse(ini.contains("allowinsecuretls"),
+                       "a plain FTP site was saved accepting self-signed certificates:\n\(ini)")
+    }
+
     /// The ssh-agent is the one authentication no control in the dialog can set, so the dialog
     /// must not rewrite it either — and must still leave a way out of it.
     func test_anAgentSiteKeepsItsAuthenticationAndCanStillBeGivenAPassword() {

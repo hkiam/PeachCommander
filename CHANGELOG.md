@@ -49,6 +49,13 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   and nothing could leave it either, so such a site could not be given a password at all. An empty
   field still sends no secret; typing in one is how a site stops being an agent site.
 
+- **A tick that no longer applied was carried over behind a greyed-out box.** "Transfer via SCP" and
+  "Accept self-signed certificate" stayed set when the protocol moved to one that has no such
+  setting, and were written to `ftp-sites.ini` that way — so a site that had been FTPS once accepted
+  any certificate again the moment it became FTPS a second time, without anybody choosing it twice.
+  Changing the protocol now clears the boxes the new protocol has no such thing for, visibly and by
+  the user's own action.
+
 ## [0.9.2] — 2026-09-19
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind

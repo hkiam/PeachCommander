@@ -378,17 +378,28 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
             let typed = Int(portField.stringValue.trimmingCharacters(in: .whitespaces))
             portField.stringValue = String(
                 FtpConnectionRules.port(changingTo: new, from: old, current: typed))
-            // The anonymous login is the other setting that cannot simply carry over, and it is
-            // worse than the port: left ticked under a protocol that has no such login it is also
-            // greyed out, taking the user name and password with it and leaving no way back
-            // (issue #4). Cleared here — with the name it put in the field, which is not a name
-            // anybody chose — because this is the moment the choice stops existing. `commitForm`
-            // could not do it: it runs on every keystroke and would fight what is being typed.
+            // A ticked box whose setting the new protocol has no such thing for does not carry
+            // over silently. Cleared here, by the user's own action and visibly, rather than left
+            // ticked and greyed: "Anonymous" left standing under SFTP is greyed out *with* the
+            // user name and the password, which is the dead end of issue #4, and "accept a
+            // self-signed certificate" re-arming itself the next time the site becomes FTPS again
+            // is a decision nobody made twice. This is the moment the choice stops existing —
+            // `commitForm` could not do it, running on every keystroke it would be erasing
+            // settings during edits that have nothing to do with the protocol.
             var after = sites[selected]
             after.proto = new
-            if anonymousCheck.state == .on, !FtpConnectionRules.applies(.anonymous, to: after) {
-                anonymousCheck.state = .off
-                if userField.stringValue == "anonymous" { userField.stringValue = "" }
+            let wasAnonymous = anonymousCheck.state == .on
+            let boxes: [(NSButton, FtpSiteSetting)] = [(anonymousCheck, .anonymous),
+                                                       (scpCheck, .scp),
+                                                       (insecureTLSCheck, .insecureTLS)]
+            for (box, setting) in boxes
+            where box.state == .on && !FtpConnectionRules.applies(setting, to: after) {
+                box.state = .off
+            }
+            // The anonymous login also put its name in the user field, and that is not a name
+            // anybody chose — left there it would be an SSH login as the user "anonymous".
+            if wasAnonymous, anonymousCheck.state == .off, userField.stringValue == "anonymous" {
+                userField.stringValue = ""
             }
         }
         commitForm()
