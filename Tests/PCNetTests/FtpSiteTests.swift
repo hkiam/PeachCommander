@@ -111,6 +111,20 @@ final class FtpSiteTests: XCTestCase {
         XCTAssertEqual(site.remoteDir, "/var")
     }
 
+    func testAnSFTPURLWithoutAUserLogsInAsTheLocalAccount() {
+        // It used to become the user "anonymous" — a login SSH does not have, against an account
+        // nobody owns, on the one protocol where the right answer was already known (issue #4).
+        let site = FtpURL.parse("sftp://box")!.toSite()
+        XCTAssertEqual(site.user, NSUserName())
+        XCTAssertEqual(site.auth, .password)
+        // Nothing to complain about: the site names the account it will use.
+        XCTAssertTrue(FtpConnectionRules.problems(with: site).isEmpty)
+        // FTP is untouched — there the anonymous login is real and is what a bare URL means.
+        let ftp = FtpURL.parse("ftp://box")!.toSite()
+        XCTAssertEqual(ftp.user, "anonymous")
+        XCTAssertEqual(ftp.auth, .anonymous)
+    }
+
     func test_effectiveKeepAlive_siteOverridesGlobal_elseFallsBack() {
         var s = FtpSite(name: "s", host: "h")
         s.keepAliveSeconds = 0

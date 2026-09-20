@@ -215,10 +215,19 @@ public struct FtpURL: Equatable, Sendable {
     }
 
     /// Build a site from this URL (name defaults to the host).
+    ///
+    /// `parse` leaves an SFTP URL's user empty on purpose: SSH has no anonymous login, and the
+    /// account to use when the URL names none is the local one. Filling that in with "anonymous"
+    /// — as this did — produced a site that logged in as a user nobody has, and did it for the
+    /// one protocol where the answer was already known (issue #4). Resolved to the local name
+    /// here rather than left empty, so the site says what it will do instead of relying on a
+    /// fallback further down, and so the dialog shows a name the user can change.
     public func toSite(name: String? = nil) -> FtpSite {
-        FtpSite(name: name ?? host, host: host, port: port, proto: proto,
-                user: user.isEmpty ? "anonymous" : user,
-                auth: user.isEmpty || user == "anonymous" ? .anonymous : .password,
-                remoteDir: path)
+        let anonymous = (user.isEmpty || user == "anonymous")
+            && FtpConnectionRules.hasAnonymousLogin(proto)
+        return FtpSite(name: name ?? host, host: host, port: port, proto: proto,
+                       user: anonymous ? "anonymous" : (user.isEmpty ? NSUserName() : user),
+                       auth: anonymous ? .anonymous : .password,
+                       remoteDir: path)
     }
 }

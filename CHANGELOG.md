@@ -29,6 +29,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   all still say the same thing. Picking SFTP now clears the box and the name "anonymous" it had put
   in the field, which is what makes the dialog ask for a real one.
 
+- **A bare `sftp://` URL logged in as "anonymous"** (#4). The same forcing sat on the quick-connect
+  route (Ctrl+N): `sftp://host` without a user name became the user **anonymous** instead of the
+  local account, although the URL parser had deliberately left it empty for exactly that fallback.
+  It logs in as the local account now; `ftp://` is unchanged, since there the anonymous login is
+  real and is what a bare URL means.
+
 ## [0.9.2] — 2026-09-19
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind
