@@ -15,6 +15,20 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Choosing SFTP locked a connection to the anonymous login** (#4). A new site starts with
+  "Anonymous" ticked, and SSH has no anonymous login — so picking SFTP greyed the box out while it
+  was still ticked, and `.anonymous` is what disables the user name and the password as well. All
+  three controls went dead together and the only way back was greyed out with them: the site could
+  not be given a user name at all, short of switching to FTP, unticking, and switching back. It was
+  saved that way too, so everyone who met this has `auth=anonymous` under `protocol=sftp` in their
+  `ftp-sites.ini` — such a site is read as an ordinary password (or key) login now, without the file
+  being rewritten behind anyone's back, and the dialog opens it unlocked. The rule lives with the
+  others in `FtpConnectionRules`, so the greyed-out controls, the warning label and the connection
+  all still say the same thing. Picking SFTP now clears the box and the name "anonymous" it had put
+  in the field, which is what makes the dialog ask for a real one.
+
 ## [0.9.2] — 2026-09-19
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind

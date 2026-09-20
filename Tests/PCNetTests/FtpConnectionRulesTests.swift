@@ -83,6 +83,50 @@ final class FtpConnectionRulesTests: XCTestCase {
         XCTAssertTrue(FtpConnectionRules.applies(.proxyLogin, to: site(.ftp, proxyHost: "socks.local")))
     }
 
+    // MARK: - An anonymous login the protocol does not have (issue #4)
+
+    func testSFTPNeverHonoursAStoredAnonymousLogin() {
+        // The reported dead end: `.anonymous` disables the user name and the password, and on
+        // SFTP it also disables the one checkbox that could undo it. There is no anonymous SSH
+        // login, so the stored value is not honoured and the form stays usable.
+        let stored = site(.sftp, user: "anonymous", auth: .anonymous)
+        XCTAssertEqual(FtpConnectionRules.auth(for: stored), .password)
+        XCTAssertTrue(FtpConnectionRules.applies(.user, to: stored))
+        XCTAssertTrue(FtpConnectionRules.applies(.password, to: stored))
+        // The box itself stays off-limits — it is the login that does not exist, not the control
+        // that is broken.
+        XCTAssertFalse(FtpConnectionRules.applies(.anonymous, to: stored))
+    }
+
+    func testAKeyFileDecidesTheAuthenticationThatReplacesIt() {
+        // Same rule the dialog commits by: a named key file *is* the choice of key
+        // authentication, so a site that names one does not fall back to a password.
+        let withKey = site(.sftp, user: "anonymous", auth: .anonymous, keyFile: "/tmp/id_ed25519")
+        XCTAssertEqual(FtpConnectionRules.auth(for: withKey), .keyFile)
+    }
+
+    func testEveryOtherStoredAuthenticationIsLeftAlone() {
+        // The rule is about one impossible combination, not about second-guessing the file.
+        XCTAssertEqual(FtpConnectionRules.auth(for: site(.ftp, auth: .anonymous)), .anonymous)
+        XCTAssertEqual(FtpConnectionRules.auth(for: site(.ftpsImplicit, auth: .anonymous)), .anonymous)
+        XCTAssertEqual(FtpConnectionRules.auth(for: site(.sftp, auth: .agent)), .agent)
+        XCTAssertEqual(FtpConnectionRules.auth(for: site(.sftp, auth: .password)), .password)
+        XCTAssertEqual(FtpConnectionRules.auth(for: site(.sftp, auth: .keyFile, keyFile: "/tmp/k")),
+                       .keyFile)
+    }
+
+    func testTheWarningLabelJudgesTheLoginThatWillActuallyBeMade() {
+        // With the stored value taken literally this site looked complete — anonymous logins need
+        // no user name — while the connection it describes has nobody to log in as.
+        XCTAssertEqual(FtpConnectionRules.blockingProblems(with:
+            site(.sftp, user: "", auth: .anonymous)), [.missingUser])
+        // And the key of such a site is checked like any other key, rather than skipped because
+        // the file still says "anonymous".
+        XCTAssertEqual(FtpConnectionRules.blockingProblems(with:
+            site(.sftp, auth: .anonymous, keyFile: "/nope/id_ed25519")),
+                       [.keyFileMissing("/nope/id_ed25519")])
+    }
+
     func testAnAnonymousLoginHasNoUserNameOrPasswordToEnter() {
         let anon = site(.ftp, user: "anonymous", auth: .anonymous)
         XCTAssertFalse(FtpConnectionRules.applies(.user, to: anon))

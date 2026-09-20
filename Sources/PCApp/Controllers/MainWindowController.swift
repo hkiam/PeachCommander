@@ -1991,7 +1991,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // there instead of as a password — passed as one it would only be tried against
             // password auth and the key would then be opened with nothing, which is how an
             // encrypted key failed with "authentication failed" and no way to supply the phrase.
-            let usingKey = site.auth == .keyFile
+            // The effective auth: a site saved as anonymous under SFTP has no such login, and
+            // reading it literally here would ignore the key file it does name (issue #4).
+            let usingKey = FtpConnectionRules.auth(for: site) == .keyFile
             let keyFile = usingKey ? site.keyFile.map { ($0 as NSString).expandingTildeInPath } : nil
             let secret = password.isEmpty ? nil : password
             Task { @MainActor in

@@ -242,7 +242,10 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         localDirField.stringValue = s.localDir
         encodingPopup.selectItem(at: Self.encodings.firstIndex(of: s.encoding.lowercased()) ?? 0)
         protoPopup.selectItem(at: Self.protoOrder.firstIndex(of: s.proto) ?? 0)
-        anonymousCheck.state = s.auth == .anonymous ? .on : .off
+        // The auth in force, not the one in the file: a site saved as anonymous under a protocol
+        // with no anonymous login is not connecting anonymously, and a tick saying it is would be
+        // one the user cannot clear (issue #4).
+        anonymousCheck.state = FtpConnectionRules.auth(for: s) == .anonymous ? .on : .off
         passiveCheck.state = s.passive ? .on : .off
         proxyHostField.stringValue = s.proxyHost ?? ""
         proxyPortField.stringValue = String(s.proxyPort)
@@ -263,6 +266,7 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
     private func updateEnabledState() {
         let on = sites.indices.contains(selected)
         let s = on ? sites[selected] : FtpSite(name: "", host: "")
+        let auth = FtpConnectionRules.auth(for: s)
         func gate(_ setting: FtpSiteSetting) -> Bool {
             on && FtpConnectionRules.applies(setting, to: s)
         }
@@ -286,11 +290,11 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         // The one secret field says what it is being used for. libssh2 takes a passphrase *instead
         // of* a password, not as well, so a field still labelled "Password" beside a key file would
         // be describing something the connection never does.
-        passwordLabel.stringValue = s.auth == .keyFile
+        passwordLabel.stringValue = auth == .keyFile
             ? String(localized: "Passphrase:") : String(localized: "Password:")
         // An anonymous login is "anonymous" — showing the previous user name in a field the user
         // can no longer edit says the connection will use it, and it will not.
-        if on, s.auth == .anonymous { userField.stringValue = s.user }
+        if on, auth == .anonymous { userField.stringValue = s.user }
         // Passive is not optional behind a proxy; the box is ticked and locked rather than left
         // showing a choice that the connection would override anyway.
         if on, !FtpConnectionRules.applies(.passive, to: s), s.proto != .sftp {
@@ -315,7 +319,11 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         // all, which is what made `site.keyFile` unreachable however it got into the ini.
         let key = keyFileField.stringValue.trimmingCharacters(in: .whitespaces)
         s.keyFile = key.isEmpty ? nil : key
-        if anonymousCheck.state == .on {
+        // The rules are asked here and not only where the box is greyed out: `auth` is the one
+        // committed value that decides whether *other* controls apply, so recording `.anonymous`
+        // for a protocol that has no anonymous login takes the user name, the password and the
+        // box itself dead — and writes that dead end into ftp-sites.ini (issue #4).
+        if anonymousCheck.state == .on, FtpConnectionRules.applies(.anonymous, to: s) {
             s.auth = .anonymous
         } else {
             s.auth = (s.proto == .sftp && !key.isEmpty) ? .keyFile : .password
@@ -363,6 +371,18 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
             let typed = Int(portField.stringValue.trimmingCharacters(in: .whitespaces))
             portField.stringValue = String(
                 FtpConnectionRules.port(changingTo: new, from: old, current: typed))
+            // The anonymous login is the other setting that cannot simply carry over, and it is
+            // worse than the port: left ticked under a protocol that has no such login it is also
+            // greyed out, taking the user name and password with it and leaving no way back
+            // (issue #4). Cleared here — with the name it put in the field, which is not a name
+            // anybody chose — because this is the moment the choice stops existing. `commitForm`
+            // could not do it: it runs on every keystroke and would fight what is being typed.
+            var after = sites[selected]
+            after.proto = new
+            if anonymousCheck.state == .on, !FtpConnectionRules.applies(.anonymous, to: after) {
+                anonymousCheck.state = .off
+                if userField.stringValue == "anonymous" { userField.stringValue = "" }
+            }
         }
         commitForm()
         updateEnabledState()
