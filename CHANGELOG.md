@@ -35,6 +35,13 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   It logs in as the local account now; `ftp://` is unchanged, since there the anonymous login is
   real and is what a bare URL means.
 
+- **The passphrase of an encrypted SSH key was asked for and then thrown away.** The secret field is
+  deliberately enabled for a key file — libssh2 wants the passphrase *instead of* a password, and
+  that field is where it is typed — but the site's secret was written to the Keychain only when the
+  login was a plain password. So the passphrase was read back on every selection and never once
+  stored, and had to be retyped every session. It is kept whenever the field is offered at all,
+  which is the same question the dialog already asks in order to enable it.
+
 ## [0.9.2] — 2026-09-19
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind

@@ -444,13 +444,19 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
 
     @objc private func saveSites() { window?.makeFirstResponder(nil); commitForm(); persist() }
 
-    /// Write ftp-sites.ini + store the current site's password in the Keychain.
+    /// Write ftp-sites.ini + store the current site's secret in the Keychain.
+    ///
+    /// Kept whenever the secret field is offered at all, which is the same question
+    /// `updateEnabledState` asks to enable it and `updateForm` asks nothing before reading it
+    /// back. It used to be kept only for `.password`, so the one case the field was *specially*
+    /// enabled for — the passphrase of an encrypted key — was read from the Keychain on every
+    /// selection and never written to it, and had to be retyped every session.
     private func persist() {
         try? FtpSitesFile.serialize(sites).write(to: sitesURL, atomically: true, encoding: .utf8)
         if sites.indices.contains(selected) {
             let s = sites[selected]
             let pw = passwordField.stringValue
-            if s.auth == .password, !pw.isEmpty {
+            if FtpConnectionRules.applies(.password, to: s), !pw.isEmpty {
                 try? FtpCredentials.savePassword(pw, for: s, in: store)
             }
         }
