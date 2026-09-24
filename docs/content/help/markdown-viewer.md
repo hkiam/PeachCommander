@@ -34,6 +34,21 @@ Both can be switched off separately in **Configuration ▸ Settings ▸ Markdown
 
 If you need a newer or different build of Mermaid or KaTeX, put it in the folder the **Engine Folder…** button opens and it is used instead of the bundled one. The file names are `mermaid.min.js`, `katex.min.js`, `katex.min.css` and `auto-render.min.js`. Nothing is ever fetched from the internet for you.
 
+## Making a PDF
+
+With the cursor on a `.md` or `.html` file, **Commands ▸ Export to PDF…** — or the same entry in the panel's context menu — writes the document as a PDF beside it, under its own name. It is offered on ordinary folders only — inside an archive or on a mounted drive there is no file on the disk to read and nowhere beside it to write. Mark several documents and they are exported one after the other.
+
+The PDF is the page you see with F3: the same stylesheet, the same coloured code, the same diagrams and mathematics. It is laid out on A4 by default (Letter is a setting), the page breaks fall between paragraphs, list items and table rows rather than through a line of text, and no page begins without the heading its section starts with. A document with something too wide for the text column — a table with many columns, a long unbroken line — is scaled down to fit rather than cut off at the edge, the way a browser's own print does it.
+
+On the plugin's settings page, under **PDF**:
+
+- **Offer "Export to PDF" on .md and .html files** — switched off, the command declines and says so. The menu entry itself stays visible: the application builds a plugin's menus from the plugin's description of itself without loading it, so there is nothing for a setting to be read from at that moment.
+- **Paper** — A4 or US Letter.
+- **Replace an existing PDF of the same name** — off by default, so a second export is written beside the first as `Name 2.pdf` rather than overwriting it.
+- **Show the new PDF in the panel** — moves the panel to the file that was just written. With this off you get a short message instead, so an export is never silent.
+
+A document too large for the formatted view (see **Limits**) cannot be exported either; the message names it.
+
 ## What the rendered page will not do
 
 The formatted page is deliberately sealed off, because a Markdown file is content that came from somewhere else:

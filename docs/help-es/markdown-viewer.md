@@ -33,6 +33,21 @@ Ambos se pueden desactivar por separado en **Configuración ▸ Ajustes ▸ Mark
 
 Si necesita una versión más nueva o distinta de Mermaid o KaTeX, colóquela en la carpeta que abre el botón **Engine Folder…** y se usará en lugar de la incluida. Los nombres de archivo son `mermaid.min.js`, `katex.min.js`, `katex.min.css` y `auto-render.min.js`. Nunca se descarga nada de internet en su nombre.
 
+## Crear un PDF
+
+Con el cursor sobre un archivo `.md` o `.html`, **Órdenes ▸ Exportar a PDF…** — o la misma entrada en el menú contextual del panel — escribe el documento como PDF junto a él, con su propio nombre. Solo se ofrece en carpetas normales — dentro de un archivo comprimido o en una unidad montada no hay un archivo en el disco que leer ni un junto a él donde escribir. Marque varios documentos y se exportan uno tras otro.
+
+El PDF es la página que ve con F3: la misma hoja de estilo, el mismo código coloreado, los mismos diagramas y las mismas matemáticas. Se compone en A4 de forma predeterminada (Letter es un ajuste), los saltos de página caen entre párrafos, elementos de lista y filas de tabla en lugar de en medio de una línea de texto, y ninguna página empieza sin el título con el que empieza su sección. Un documento con algo demasiado ancho para la columna de texto — una tabla de muchas columnas, una línea larga e ininterrumpida — se reduce para que quepa en lugar de cortarse en el borde, igual que hace la impresión de un navegador.
+
+En la página de ajustes del plugin, bajo **PDF**:
+
+- **Ofrecer «Exportar a PDF» en archivos .md y .html** — desactivado, la orden se niega y lo dice. La entrada de menú en sí permanece visible: la aplicación construye los menús de un plugin a partir de la descripción que el plugin hace de sí mismo, sin cargarlo, así que en ese momento no hay nada de lo que leer un ajuste.
+- **Papel** — A4 o US Letter.
+- **Reemplazar un PDF existente con el mismo nombre** — desactivado de serie, de modo que una segunda exportación se escribe junto a la primera como `Name 2.pdf` en lugar de sobrescribirla.
+- **Mostrar el nuevo PDF en el panel** — lleva el panel al archivo recién escrito. Con esto desactivado recibe en su lugar un mensaje breve, para que una exportación nunca sea silenciosa.
+
+Un documento demasiado grande para la vista con formato (véase **Límites**) tampoco puede exportarse; el mensaje lo nombra.
+
 ## Lo que la página con formato no hará
 
 La página con formato está deliberadamente aislada, porque un archivo Markdown es contenido que viene de otro sitio:

@@ -33,6 +33,21 @@ Oba można wyłączyć osobno w **Konfiguracja ▸ Ustawienia ▸ Markdown**, gd
 
 Jeśli potrzebujesz nowszej lub innej wersji Mermaid albo KaTeX, umieść ją w folderze, który otwiera przycisk **Engine Folder…**, i zostanie użyta zamiast dostarczonej. Nazwy plików to `mermaid.min.js`, `katex.min.js`, `katex.min.css` i `auto-render.min.js`. Nic nigdy nie jest pobierane z internetu.
 
+## Zrobić PDF
+
+Gdy kursor stoi na pliku `.md` lub `.html`, **Polecenia ▸ Eksportuj do PDF…** — albo ta sama pozycja w menu kontekstowym panelu — zapisuje dokument jako PDF obok niego, pod jego własną nazwą. Jest to proponowane tylko w zwykłych katalogach — w archiwum albo na zamontowanym dysku nie ma pliku na dysku do odczytania ani miejsca obok do zapisania. Zaznaczcie kilka dokumentów, a zostaną wyeksportowane jeden po drugim.
+
+PDF to ta sama strona, którą widzicie pod F3: ten sam arkusz stylów, ten sam pokolorowany kod, te same diagramy i ta sama matematyka. Skład odbywa się domyślnie na A4 (Letter jest ustawieniem), podziały stron wypadają między akapitami, punktami listy i wierszami tabeli, a nie w środku wiersza tekstu, i żadna strona nie zaczyna się bez nagłówka, od którego zaczyna się jej sekcja. Dokument z czymś zbyt szerokim dla kolumny tekstu — tabelą o wielu kolumnach, długim nieprzerwanym wierszem — jest pomniejszany, aby się zmieścił, zamiast być ucinanym przy krawędzi, tak jak robi to wydruk przeglądarki.
+
+Na stronie ustawień wtyczki, pod **PDF**:
+
+- **Proponuj „Eksportuj do PDF” dla plików .md i .html** — po wyłączeniu polecenie odmawia i o tym informuje. Sama pozycja menu pozostaje widoczna: program buduje menu wtyczki z jej własnego opisu siebie, nie ładując jej, więc w tym momencie nie ma skąd odczytać ustawienia.
+- **Papier** — A4 albo US Letter.
+- **Zastępuj istniejący PDF o tej samej nazwie** — domyślnie wyłączone, więc drugi eksport zapisywany jest obok pierwszego jako `Name 2.pdf`, zamiast go nadpisać.
+- **Pokaż nowy PDF w panelu** — przenosi panel na właśnie zapisany plik. Gdy to wyłączone, dostajecie krótki komunikat, więc eksport nigdy nie przebiega w ciszy.
+
+Dokumentu zbyt dużego dla widoku sformatowanego (zobacz **Ograniczenia**) też nie da się wyeksportować; komunikat go nazywa.
+
 ## Czego strona sformatowana nie zrobi
 
 Strona sformatowana jest celowo odcięta, bo plik Markdown to treść, która przyszła z zewnątrz:

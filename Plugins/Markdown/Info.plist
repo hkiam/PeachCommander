@@ -30,6 +30,46 @@
 	     by them. They live in <configRoot>/markdown.ini instead. -->
 	<key>PCContributions</key>
 	<dict>
+		<!-- Export facet: the renderer this plugin owns, offered as a file action. The application
+		     has no other renderer for .md and .html, so this is the only place a faithful PDF of
+		     one can come from — a second rendering (QuickLook, AppKit's HTML reader) would not
+		     look like what F3 shows. The `when` list is the same extension set as
+		     PCPluginExtensions above; a `when` the host cannot evaluate fails closed, so this
+		     names the extensions rather than asking the plugin, which the host will not load to
+		     build a menu.
+
+		     `panelScheme == 'file'` is load-bearing and not belt-and-braces: inside an archive or
+		     on a mounted drive the cursor's path is a VFS path with nothing behind it on disk, so
+		     the export could neither read the document nor put a PDF beside it. Without this the
+		     entry offered itself over a README in an opened .zip and answered that nothing was
+		     selected. Greyed out there is the honest answer. -->
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>category</key><string>Commands</string>
+				<key>id</key><string>plugin.markdown.pdf</string>
+				<key>title</key><string>Export to PDF…</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.markdown.pdf</string>
+				<key>group</key><string>2_tools</string>
+				<key>menu</key><string>Commands</string>
+				<key>order</key><integer>121</integer>
+				<key>when</key><string>panelScheme == 'file' &amp;&amp; cursorExt in ('markdown', 'md', 'mdown', 'mdwn', 'mdx', 'mkd', 'mkdn', 'html', 'htm', 'xhtml')</string>
+			</dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.markdown.pdf</string>
+				<key>group</key><string>9_plugins</string>
+				<key>surface</key><string>panel.item</string>
+				<key>when</key><string>panelScheme == 'file' &amp;&amp; cursorExt in ('markdown', 'md', 'mdown', 'mdwn', 'mdx', 'mkd', 'mkdn', 'html', 'htm', 'xhtml')</string>
+			</dict>
+		</array>
 		<key>views</key>
 		<array>
 			<dict>

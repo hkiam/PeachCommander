@@ -451,8 +451,8 @@ features:
     category: plugins
     audiences: [user, expert]
     status: stable
-    ui: { menus: [], shortcuts: [F3], commands: [] }
-    source: { modules: [Plugins/Markdown], types: [MarkdownRenderer, HTMLEmitter, MarkdownEngines] }
+    ui: { menus: [Commands], shortcuts: [F3], commands: [plugin.markdown.pdf] }
+    source: { modules: [Plugins/Markdown], types: [MarkdownRenderer, HTMLEmitter, MarkdownEngines, MarkdownPDF] }
     documentation: { integrated_help: true, website: true, developer_docs: false }
     notes: >-
       The application's only renderer for .md and .html — both formats left the core, so this ships
@@ -463,7 +463,15 @@ features:
       mathematics are drawn on the machine and nothing is ever fetched. Two web-view configurations,
       not one with a switch: the generated Markdown page may run the engines, a foreign .html file may
       run nothing. Raw HTML in a document is escaped, never emitted. Own settings page; switched off,
-      both formats show as text with the outline intact.
+      both formats show as text with the outline intact. Also exports the page it renders as a PDF —
+      a contributed command on .md and .html (and on a local panel only: `panelScheme == 'file'`, since
+      a path inside an archive or a mount has no file behind it), in the Commands menu and the panel's
+      context menu, over a selection as well as one file, on A4 or Letter, written beside the document. Paginated here
+      rather than by WebKit: `printOperation` does not return on this platform (a gigabyte of repeated
+      pages, measured), so the document is measured, cut at block boundaries the page itself reports
+      and never below a heading, captured a slice at a time with `createPDF` and composed with Core
+      Graphics — shrunk to fit when the layout is wider than the column, which is what stops a wide
+      table from losing its right-hand columns off the edge of the sheet.
 
   - id: amazon-s3
     name: Amazon S3 (Plugin)

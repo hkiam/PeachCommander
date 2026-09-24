@@ -33,6 +33,21 @@ Beide kunnen apart worden uitgeschakeld in **Configuratie ▸ Instellingen ▸ M
 
 Hebt u een nieuwere of andere versie van Mermaid of KaTeX nodig, zet die dan in de map die de knop **Engine Folder…** opent; die wordt dan gebruikt in plaats van de meegeleverde. De bestandsnamen zijn `mermaid.min.js`, `katex.min.js`, `katex.min.css` en `auto-render.min.js`. Er wordt nooit iets van internet voor u gehaald.
 
+## Een PDF maken
+
+Staat de cursor op een `.md`- of `.html`-bestand, dan schrijft **Opdrachten ▸ Exporteren naar PDF…** — of dezelfde ingang in het contextmenu van het venster — het document ernaast weg als PDF, onder zijn eigen naam. Het wordt alleen in gewone mappen aangeboden — in een archief of op een gekoppelde schijf is er geen bestand op de schijf om te lezen en geen plek ernaast om te schrijven. Markeer meerdere documenten en ze worden na elkaar geëxporteerd.
+
+De PDF is de pagina die u met F3 ziet: dezelfde stylesheet, dezelfde gekleurde code, dezelfde diagrammen en dezelfde wiskunde. Er wordt standaard op A4 opgemaakt (Letter is een instelling), de paginaovergangen vallen tussen alinea's, lijstonderdelen en tabelrijen in plaats van midden door een regel tekst, en geen pagina begint zonder de kop waarmee haar paragraaf begint. Een document met iets dat te breed is voor de tekstkolom — een tabel met veel kolommen, een lange ononderbroken regel — wordt verkleind zodat het past in plaats van aan de rand te worden afgesneden, zoals het afdrukken van een browser dat ook doet.
+
+Op de instellingenpagina van de plug-in, onder **PDF**:
+
+- **“Exporteren naar PDF” aanbieden bij .md- en .html-bestanden** — uitgezet weigert de opdracht en zegt dat ook. Het menu-item zelf blijft zichtbaar: het programma bouwt de menu's van een plug-in uit haar eigen beschrijving zonder haar te laden, dus er is op dat moment niets waaruit een instelling gelezen kan worden.
+- **Papier** — A4 of US Letter.
+- **Een bestaande PDF met dezelfde naam vervangen** — standaard uit, zodat een tweede export ernaast wordt geschreven als `Name 2.pdf` in plaats van de eerste te overschrijven.
+- **De nieuwe PDF in het venster tonen** — brengt het venster naar het bestand dat zojuist is geschreven. Staat dit uit, dan krijgt u in plaats daarvan een kort bericht, zodat een export nooit stil verloopt.
+
+Een document dat te groot is voor de opgemaakte weergave (zie **Grenzen**) kan ook niet worden geëxporteerd; het bericht noemt het.
+
 ## Wat de opgemaakte pagina niet doet
 
 De opgemaakte pagina is opzettelijk afgeschermd, want een Markdown-bestand is inhoud die van elders komt:

@@ -33,6 +33,21 @@ Beides lässt sich getrennt abschalten in **Konfiguration ▸ Einstellungen ▸ 
 
 Wenn Sie eine neuere oder andere Fassung von Mermaid oder KaTeX brauchen, legen Sie sie in den Ordner, den die Schaltfläche **Engine Folder…** öffnet, und sie wird anstelle der mitgelieferten benutzt. Die Dateinamen sind `mermaid.min.js`, `katex.min.js`, `katex.min.css` und `auto-render.min.js`. Aus dem Internet wird nie etwas für Sie geholt.
 
+## Ein PDF erzeugen
+
+Steht der Cursor auf einer `.md`- oder `.html`-Datei, schreibt **Befehle ▸ Als PDF exportieren…** — oder derselbe Eintrag im Kontextmenü des Dateifensters — das Dokument als PDF daneben, unter seinem eigenen Namen. Angeboten wird das nur in gewöhnlichen Ordnern — in einem Archiv oder auf einem eingehängten Laufwerk gibt es keine Datei auf der Platte zu lesen und kein Daneben zum Schreiben. Markieren Sie mehrere Dokumente, werden sie nacheinander exportiert.
+
+Das PDF ist die Seite, die Sie mit F3 sehen: dasselbe Stylesheet, derselbe gefärbte Quelltext, dieselben Diagramme und dieselbe Mathematik. Gesetzt wird voreingestellt auf A4 (Letter ist eine Einstellung), die Seitenumbrüche fallen zwischen Absätze, Listeneinträge und Tabellenzeilen statt mitten durch eine Textzeile, und keine Seite beginnt ohne die Überschrift, mit der ihr Abschnitt anfängt. Ein Dokument mit etwas, das breiter ist als die Textspalte — eine Tabelle mit vielen Spalten, eine lange ununterbrochene Zeile — wird verkleinert, statt am Rand abgeschnitten zu werden, so wie es der Druck eines Browsers auch macht.
+
+Auf der Einstellungsseite des Plugins, unter **PDF**:
+
+- **„Als PDF exportieren" bei .md- und .html-Dateien anbieten** — abgeschaltet verweigert der Befehl und sagt das auch. Der Menüeintrag selbst bleibt sichtbar: die Anwendung baut die Menüs eines Plugins aus dessen Selbstbeschreibung, ohne es zu laden, also gibt es in diesem Moment nichts, woraus eine Einstellung gelesen werden könnte.
+- **Papier** — A4 oder US Letter.
+- **Ein vorhandenes PDF gleichen Namens ersetzen** — aus als Voreinstellung, ein zweiter Export wird also als `Name 2.pdf` daneben geschrieben, statt den ersten zu überschreiben.
+- **Das neue PDF im Dateifenster zeigen** — bringt das Dateifenster auf die eben geschriebene Datei. Ist das aus, bekommen Sie stattdessen eine kurze Meldung, damit ein Export nie stumm bleibt.
+
+Ein Dokument, das für die formatierte Ansicht zu groß ist (siehe **Grenzen**), lässt sich auch nicht exportieren; die Meldung nennt es.
+
 ## Was die formatierte Seite nicht tut
 
 Die formatierte Seite ist bewusst abgeschottet, denn eine Markdown-Datei ist Inhalt, der von woanders kommt:

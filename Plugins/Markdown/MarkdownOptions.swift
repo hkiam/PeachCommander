@@ -12,6 +12,24 @@
 
 import Foundation
 
+/// The paper an exported PDF is laid out on.
+///
+/// Two sizes rather than the system's whole list: the page is a document, not a form, and A4 or
+/// Letter is the entire question anyone has ever had about it. Sizes are in points (72 to the inch),
+/// which is what `NSPrintInfo` wants and what keeps this file free of AppKit — it is compiled into
+/// the test bundle too.
+enum MarkdownPaper: String {
+    case a4
+    case letter
+
+    var size: CGSize {
+        switch self {
+        case .a4: return CGSize(width: 595, height: 842)
+        case .letter: return CGSize(width: 612, height: 792)
+        }
+    }
+}
+
 struct MarkdownOptions {
     /// Whether F3 shows the rendered page at all. Off, the plugin's detect string comes back empty
     /// and the host falls back to its own text viewer — with the outline still working, because that
@@ -23,6 +41,21 @@ struct MarkdownOptions {
     /// not a thing anybody wants to wait for, and the viewer exists for files that need not fit in
     /// memory.
     var maxSizeMB = 8
+
+    /// Whether the "Export to PDF…" command does anything.
+    ///
+    /// It cannot hide the menu entry, and that is not an oversight: the host builds a plugin's menus
+    /// from its manifest **without loading the plugin**, deliberately, so that a disabled plugin
+    /// contributes nothing and no plugin code decides menu presence. There is therefore nowhere for a
+    /// setting in this file to be read at menu-build time. Switched off, the command says so and does
+    /// nothing — which is the honest half of the feature that is available to it.
+    var pdfExport = true
+    /// What an exported PDF is laid out on.
+    var pdfPaper = MarkdownPaper.a4
+    /// Whether an export replaces an existing PDF of the same name, rather than numbering the new one.
+    var pdfOverwrite = false
+    /// Whether the panel moves its cursor to the PDF that was just written.
+    var pdfReveal = true
 
     /// The view id this plugin's settings pane is contributed under (Info.plist must agree).
     static let settingsViewId = "plugin.markdown.settings"
@@ -47,6 +80,12 @@ struct MarkdownOptions {
             case "diagrams": options.diagrams = isTrue(value)
             case "maths": options.maths = isTrue(value)
             case "maxsizemb": options.maxSizeMB = max(1, Int(value) ?? options.maxSizeMB)
+            case "pdfexport": options.pdfExport = isTrue(value)
+            // An unrecognised paper name is A4 rather than a failure, the way an unrecognised
+            // boolean is "no": a hand-edited file should lose one setting, never the rest of them.
+            case "pdfpaper": options.pdfPaper = MarkdownPaper(rawValue: value.lowercased()) ?? .a4
+            case "pdfoverwrite": options.pdfOverwrite = isTrue(value)
+            case "pdfreveal": options.pdfReveal = isTrue(value)
             default: break
             }
         }
@@ -69,6 +108,10 @@ struct MarkdownOptions {
         Diagrams=\(diagrams ? 1 : 0)
         Maths=\(maths ? 1 : 0)
         MaxSizeMB=\(maxSizeMB)
+        PDFExport=\(pdfExport ? 1 : 0)
+        PDFPaper=\(pdfPaper.rawValue)
+        PDFOverwrite=\(pdfOverwrite ? 1 : 0)
+        PDFReveal=\(pdfReveal ? 1 : 0)
         """
         try? text.write(toFile: Self.path(configRoot: configRoot), atomically: true, encoding: .utf8)
     }

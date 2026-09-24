@@ -33,6 +33,21 @@ Mindkettő külön kikapcsolható a **Konfiguráció ▸ Beállítások ▸ Mark
 
 Ha a Mermaid vagy a KaTeX újabb vagy más változatára van szüksége, tegye abba a mappába, amelyet az **Engine Folder…** gomb megnyit, és a szállított helyett azt fogja használni. A fájlnevek: `mermaid.min.js`, `katex.min.js`, `katex.min.css` és `auto-render.min.js`. Az internetről soha semmit nem tölt le Ön helyett.
 
+## PDF készítése
+
+Ha a kurzor `.md` vagy `.html` fájlon áll, a **Parancsok ▸ Exportálás PDF-be…** — vagy ugyanez a panel helyi menüjében — a dokumentumot PDF-ként írja ki mellé, a saját nevén. Csak közönséges mappákban kínálja fel — egy archívumon belül vagy csatolt meghajtón nincs a lemezen fájl, amit beolvasson, és nincs hová mellé írni. Jelöljön meg több dokumentumot, és egymás után exportálódnak.
+
+A PDF ugyanaz az oldal, amit F3-mal lát: ugyanaz a stíluslap, ugyanaz a színezett kód, ugyanazok az ábrák és ugyanaz a matematika. Alapértelmezésben A4-re tördel (a Letter beállítás kérdése), az oldaltörések bekezdések, listaelemek és táblázatsorok közé esnek, nem egy szövegsor közepébe, és egyetlen oldal sem kezdődik a szakaszát nyitó címsor nélkül. Az olyan dokumentum, amelyben valami szélesebb a szövegoszlopnál — sok oszlopos táblázat, hosszú töretlen sor —, lekicsinyítve fér el, ahelyett hogy a szélén levágódna, ahogyan egy böngésző nyomtatása is teszi.
+
+A bővítmény beállításlapján, a **PDF** alatt:
+
+- **Az „Exportálás PDF-be” felkínálása .md és .html fájlokon** — kikapcsolva a parancs visszautasít, és ezt meg is mondja. Maga a menüpont látható marad: az alkalmazás a bővítmény menüit a bővítmény önleírásából építi, anélkül hogy betöltené, így abban a pillanatban nincs honnan beolvasni egy beállítást.
+- **Papír** — A4 vagy US Letter.
+- **Azonos nevű meglévő PDF cseréje** — alapból kikapcsolva, így a második exportálás `Name 2.pdf` néven kerül az első mellé ahelyett, hogy felülírná.
+- **Az új PDF megmutatása a panelen** — a panelt az imént kiírt fájlra viszi. Ha ez ki van kapcsolva, helyette rövid üzenetet kap, hogy egy exportálás soha ne legyen néma.
+
+A formázott nézethez túl nagy dokumentum (lásd **Korlátok**) sem exportálható; az üzenet megnevezi.
+
 ## Amit a formázott oldal nem tesz meg
 
 A formázott oldal szándékosan el van szigetelve, mert egy Markdown-fájl máshonnan érkezett tartalom:

@@ -732,6 +732,10 @@ targets:
       - path: Plugins/Markdown/MarkdownEngines.swift
       - path: Plugins/Markdown/MarkdownHTML.swift
       - path: Plugins/Markdown/MarkdownOptions.swift
+      - path: Plugins/Markdown/MarkdownPDF.swift
+      # `L(…)` — the shared plugin localization helper, because MarkdownPDF names its own
+      # strings. In the bundle it resolves against the plugin; here it falls back to the key.
+      - path: Plugins/SDK/PluginLoc.swift
     settings:
       PRODUCT_NAME: PCMarkdownTests
       CODE_SIGNING_ALLOWED: NO

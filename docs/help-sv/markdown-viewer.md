@@ -33,6 +33,21 @@ Båda kan stängas av separat i **Konfiguration ▸ Inställningar ▸ Markdown*
 
 Behöver du en nyare eller annan version av Mermaid eller KaTeX, lägg den i mappen som knappen **Engine Folder…** öppnar, och den används i stället för den medföljande. Filnamnen är `mermaid.min.js`, `katex.min.js`, `katex.min.css` och `auto-render.min.js`. Inget hämtas någonsin från internet för din räkning.
 
+## Göra en PDF
+
+Med markören på en `.md`- eller `.html`-fil skriver **Kommandon ▸ Exportera till PDF…** — eller samma post i panelens snabbmeny — dokumentet som en PDF bredvid det, under dess eget namn. Det erbjuds endast i vanliga mappar — inuti ett arkiv eller på en monterad enhet finns ingen fil på disken att läsa och ingen plats bredvid att skriva till. Markera flera dokument så exporteras de ett efter ett.
+
+PDF:en är den sida du ser med F3: samma stilmall, samma färgade kod, samma diagram och samma matematik. Den sätts på A4 som standard (Letter är en inställning), sidbrytningarna faller mellan stycken, listpunkter och tabellrader i stället för mitt i en textrad, och ingen sida börjar utan den rubrik som dess avsnitt inleds med. Ett dokument med något som är för brett för textspalten — en tabell med många kolumner, en lång obruten rad — skalas ned så att det får plats i stället för att skäras av vid kanten, så som en webbläsares egen utskrift gör.
+
+På tilläggets inställningssida, under **PDF**:
+
+- **Erbjud ”Exportera till PDF” för .md- och .html-filer** — avstängt avböjer kommandot och säger det. Själva menyposten blir kvar: programmet bygger ett tilläggs menyer ur tilläggets egen beskrivning av sig självt utan att läsa in det, så det finns ingenting att läsa en inställning ur i det ögonblicket.
+- **Papper** — A4 eller US Letter.
+- **Ersätt en befintlig PDF med samma namn** — av som standard, så en andra export skrivs bredvid den första som `Name 2.pdf` i stället för att ersätta den.
+- **Visa den nya PDF:en i panelen** — flyttar panelen till filen som just skrevs. Med detta avstängt får du ett kort meddelande i stället, så att en export aldrig är tyst.
+
+Ett dokument som är för stort för den formaterade vyn (se **Gränser**) kan inte heller exporteras; meddelandet namnger det.
+
 ## Vad den formaterade sidan inte gör
 
 Den formaterade sidan är avsiktligt avskild, för en Markdown-fil är innehåll som kommer någon annanstans ifrån:

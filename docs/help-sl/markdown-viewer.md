@@ -33,6 +33,21 @@ Oboje je mogoče izklopiti ločeno v **Nastavitve ▸ Možnosti ▸ Markdown**, 
 
 Če potrebujete novejšo ali drugačno različico Mermaid ali KaTeX, jo dajte v mapo, ki jo odpre gumb **Engine Folder…**, in uporabljena bo namesto priložene. Imena datotek so `mermaid.min.js`, `katex.min.js`, `katex.min.css` in `auto-render.min.js`. Z interneta se za vas nikoli nič ne prenese.
 
+## Ustvariti PDF
+
+Ko kazalec stoji na datoteki `.md` ali `.html`, **Ukazi ▸ Izvozi v PDF…** — ali isti vnos v kontekstnem meniju pulta — zapiše dokument kot PDF poleg njega, pod njegovim lastnim imenom. Ponujeno je le v običajnih mapah — v arhivu ali na priklopljenem pogonu ni datoteke na disku za branje in ne prostora poleg za pisanje. Označite več dokumentov in izvozijo se drug za drugim.
+
+PDF je ista stran, ki jo vidite s F3: isti slogovni list, ista obarvana koda, isti diagrami in ista matematika. Privzeto se stavi na A4 (Letter je nastavitev), prelomi strani padejo med odstavke, postavke seznama in vrstice tabele namesto sredi vrstice besedila, in nobena stran se ne začne brez naslova, s katerim se začne njen razdelek. Dokument z nečim, kar je preširoko za besedilni stolpec — tabela z mnogimi stolpci, dolga neprekinjena vrstica — se pomanjša, da se prilega, namesto da bi bil odrezan na robu, tako kot to stori brskalnikovo tiskanje.
+
+Na nastavitveni strani vtičnika, pod **PDF**:
+
+- **Ponudi »Izvozi v PDF« pri datotekah .md in .html** — izklopljeno ukaz zavrne in to pove. Sam menijski vnos ostane viden: program zgradi menije vtičnika iz njegovega lastnega opisa sebe, ne da bi ga naložil, zato v tistem trenutku ni od kod prebrati nastavitve.
+- **Papir** — A4 ali US Letter.
+- **Zamenjaj obstoječi PDF z istim imenom** — privzeto izklopljeno, tako da se drugi izvoz zapiše poleg prvega kot `Name 2.pdf`, namesto da bi ga prepisal.
+- **Pokaži nov PDF v pultu** — premakne pult na pravkar zapisano datoteko. Če je to izklopljeno, dobite namesto tega kratko sporočilo, da izvoz nikoli ni tih.
+
+Dokumenta, ki je prevelik za oblikovani pogled (glejte **Omejitve**), tudi ni mogoče izvoziti; sporočilo ga poimenuje.
+
 ## Česa oblikovana stran ne bo storila
 
 Oblikovana stran je namenoma odrezana, ker je datoteka Markdown vsebina, ki prihaja od drugod:

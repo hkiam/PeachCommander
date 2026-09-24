@@ -33,6 +33,21 @@ Entrambi possono essere disattivati separatamente in **Configurazione ▸ Impost
 
 Se ti serve una versione più recente o diversa di Mermaid o KaTeX, mettila nella cartella che apre il pulsante **Engine Folder…** e verrà usata al posto di quella fornita. I nomi dei file sono `mermaid.min.js`, `katex.min.js`, `katex.min.css` e `auto-render.min.js`. Non viene mai scaricato nulla da internet per te.
 
+## Creare un PDF
+
+Con il cursore su un file `.md` o `.html`, **Comandi ▸ Esporta in PDF…** — o la stessa voce nel menu contestuale del pannello — scrive il documento come PDF accanto ad esso, con il suo stesso nome. È offerto solo nelle cartelle ordinarie — dentro un archivio o su un disco montato non c'è un file sul disco da leggere né un accanto in cui scrivere. Marcate più documenti e vengono esportati uno dopo l'altro.
+
+Il PDF è la pagina che vedete con F3: lo stesso foglio di stile, lo stesso codice colorato, gli stessi diagrammi e la stessa matematica. L'impaginazione è su A4 per impostazione predefinita (Letter è un'impostazione), le interruzioni di pagina cadono fra paragrafi, voci di elenco e righe di tabella invece che in mezzo a una riga di testo, e nessuna pagina comincia senza il titolo con cui inizia la sua sezione. Un documento con qualcosa di troppo largo per la colonna di testo — una tabella con molte colonne, una riga lunga e ininterrotta — viene rimpicciolito per entrare invece di essere tagliato al bordo, come fa la stampa di un browser.
+
+Nella pagina delle impostazioni del plugin, sotto **PDF**:
+
+- **Offrire «Esporta in PDF» sui file .md e .html** — disattivato, il comando rifiuta e lo dice. La voce di menu resta visibile: l'applicazione costruisce i menu di un plugin dalla descrizione che il plugin dà di sé, senza caricarlo, quindi in quel momento non c'è nulla da cui leggere un'impostazione.
+- **Carta** — A4 o US Letter.
+- **Sostituire un PDF esistente con lo stesso nome** — disattivato di serie, così una seconda esportazione viene scritta accanto alla prima come `Name 2.pdf` invece di sovrascriverla.
+- **Mostrare il nuovo PDF nel pannello** — porta il pannello sul file appena scritto. Con questa opzione disattivata ricevete invece un breve messaggio, così un'esportazione non è mai silenziosa.
+
+Un documento troppo grande per la vista formattata (vedi **Limiti**) non può nemmeno essere esportato; il messaggio lo nomina.
+
 ## Cosa la pagina formattata non farà
 
 La pagina formattata è deliberatamente isolata, perché un file Markdown è contenuto che viene da altrove:

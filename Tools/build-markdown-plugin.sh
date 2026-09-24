@@ -149,6 +149,7 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/Markdown/MarkdownAssets.swift" \
   "$ROOT/Plugins/Markdown/MarkdownOptions.swift" \
   "$ROOT/Plugins/Markdown/MarkdownSettings.swift" \
+  "$ROOT/Plugins/Markdown/MarkdownPDF.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
   "$ROOT/Plugins/Markdown/MarkdownEngines.swift" \
   "$ROOT/Plugins/Markdown/MarkdownDocument.swift"

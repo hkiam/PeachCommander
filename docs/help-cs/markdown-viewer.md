@@ -33,6 +33,21 @@ Obojí lze vypnout zvlášť v **Konfigurace ▸ Nastavení ▸ Markdown**, kde 
 
 Potřebujete-li novější nebo jinou verzi Mermaid či KaTeX, vložte ji do složky, kterou otevře tlačítko **Engine Folder…**, a použije se místo dodané. Jména souborů jsou `mermaid.min.js`, `katex.min.js`, `katex.min.css` a `auto-render.min.js`. Z internetu se pro vás nikdy nic nestahuje.
 
+## Vytvořit PDF
+
+Když kurzor stojí na souboru `.md` nebo `.html`, **Příkazy ▸ Exportovat do PDF…** — nebo tatáž položka v kontextové nabídce panelu — zapíše dokument jako PDF vedle něj, pod jeho vlastním jménem. Nabízí se jen v běžných složkách — v archivu nebo na připojené jednotce není soubor na disku ke čtení ani místo vedle k zápisu. Označte více dokumentů a exportují se jeden po druhém.
+
+PDF je táž stránka, kterou vidíte pod F3: tentýž styl, tentýž obarvený kód, tytéž diagramy a tatáž matematika. Sází se předvolené na A4 (Letter je nastavení), zlomy stran padnou mezi odstavce, položky seznamu a řádky tabulky místo doprostřed řádku textu, a žádná strana nezačíná bez nadpisu, kterým její oddíl začíná. Dokument s něčím, co je širší než textový sloupec — tabulka s mnoha sloupci, dlouhý nepřerušený řádek — se zmenší, aby se vešel, místo aby byl u okraje oříznut, tak jak to dělá tisk prohlížeče.
+
+Na stránce nastavení zásuvného modulu, pod **PDF**:
+
+- **Nabízet „Exportovat do PDF“ u souborů .md a .html** — po vypnutí příkaz odmítne a řekne to. Samotná položka nabídky zůstává viditelná: aplikace staví nabídky modulu z jeho vlastního popisu sebe sama, aniž by jej načetla, takže v tu chvíli není odkud nastavení přečíst.
+- **Papír** — A4 nebo US Letter.
+- **Nahradit stávající PDF stejného jména** — ve výchozím stavu vypnuto, takže druhý export se zapíše vedle prvního jako `Name 2.pdf` místo jeho přepsání.
+- **Zobrazit nové PDF v panelu** — přesune panel na právě zapsaný soubor. Je-li to vypnuto, dostanete místo toho krátkou zprávu, aby export nikdy nebyl tichý.
+
+Dokument příliš velký pro formátovaný pohled (viz **Meze**) nelze ani exportovat; zpráva jej pojmenuje.
+
 ## Co formátovaná stránka neudělá
 
 Formátovaná stránka je záměrně odříznutá, protože soubor Markdown je obsah, který přišel odjinud:

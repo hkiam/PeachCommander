@@ -33,6 +33,21 @@ Les deux peuvent être désactivés séparément dans **Configuration ▸ Régla
 
 Si vous avez besoin d'une version plus récente ou différente de Mermaid ou de KaTeX, placez-la dans le dossier qu'ouvre le bouton **Engine Folder…** et elle sera utilisée à la place de celle fournie. Les noms de fichiers sont `mermaid.min.js`, `katex.min.js`, `katex.min.css` et `auto-render.min.js`. Rien n'est jamais récupéré sur Internet pour vous.
 
+## Créer un PDF
+
+Le curseur sur un fichier `.md` ou `.html`, **Commandes ▸ Exporter en PDF…** — ou la même entrée dans le menu contextuel du panneau — écrit le document en PDF à côté de lui, sous son propre nom. Ce n'est proposé que dans les dossiers ordinaires — dans une archive ou sur un disque monté il n'y a pas de fichier sur le disque à lire ni de place à côté où écrire. Marquez plusieurs documents et ils sont exportés l'un après l'autre.
+
+Le PDF est la page que vous voyez avec F3 : la même feuille de style, le même code coloré, les mêmes diagrammes et les mêmes mathématiques. La mise en page se fait par défaut en A4 (Letter est un réglage), les sauts de page tombent entre les paragraphes, les éléments de liste et les lignes de tableau plutôt qu'au milieu d'une ligne de texte, et aucune page ne commence sans le titre par lequel sa section commence. Un document contenant quelque chose de trop large pour la colonne de texte — un tableau à nombreuses colonnes, une longue ligne insécable — est réduit pour tenir plutôt que coupé au bord, comme le fait l'impression d'un navigateur.
+
+Sur la page de réglages du plugin, sous **PDF** :
+
+- **Proposer « Exporter en PDF » sur les fichiers .md et .html** — désactivé, la commande refuse et le dit. L'entrée de menu elle-même reste visible : l'application construit les menus d'un plugin à partir de sa description de lui-même sans le charger, il n'y a donc rien dont un réglage puisse être lu à ce moment-là.
+- **Papier** — A4 ou US Letter.
+- **Remplacer un PDF existant du même nom** — désactivé par défaut, un second export est donc écrit à côté du premier sous `Name 2.pdf` au lieu de l'écraser.
+- **Montrer le nouveau PDF dans le panneau** — amène le panneau sur le fichier qui vient d'être écrit. Désactivé, vous recevez un court message à la place, pour qu'un export ne soit jamais silencieux.
+
+Un document trop grand pour la vue mise en forme (voir **Limites**) ne peut pas non plus être exporté ; le message le nomme.
+
 ## Ce que la page mise en forme ne fera pas
 
 La page mise en forme est délibérément isolée, car un fichier Markdown est un contenu venu d'ailleurs :

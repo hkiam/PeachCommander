@@ -33,6 +33,21 @@ Ambele pot fi dezactivate separat în **Configurare ▸ Setări ▸ Markdown**, 
 
 Dacă aveți nevoie de o versiune mai nouă sau diferită de Mermaid ori KaTeX, puneți-o în folderul deschis de butonul **Engine Folder…** și va fi folosită în locul celei livrate. Numele fișierelor sunt `mermaid.min.js`, `katex.min.js`, `katex.min.css` și `auto-render.min.js`. Nimic nu este niciodată adus din internet pentru dumneavoastră.
 
+## Crearea unui PDF
+
+Cu cursorul pe un fișier `.md` sau `.html`, **Comenzi ▸ Exportă în PDF…** — sau aceeași intrare în meniul contextual al panoului — scrie documentul ca PDF lângă el, sub propriul său nume. Este oferit doar în dosare obișnuite — într-o arhivă sau pe o unitate montată nu există un fișier pe disc de citit și nici un lângă unde să scrie. Marcați mai multe documente și sunt exportate unul după altul.
+
+PDF-ul este pagina pe care o vedeți cu F3: aceeași foaie de stil, același cod colorat, aceleași diagrame și aceeași matematică. Se culege implicit pe A4 (Letter este o setare), întreruperile de pagină cad între paragrafe, elemente de listă și rânduri de tabel, nu în mijlocul unui rând de text, și nicio pagină nu începe fără titlul cu care începe secțiunea ei. Un document cu ceva prea lat pentru coloana de text — un tabel cu multe coloane, un rând lung neîntrerupt — este micșorat ca să încapă în loc să fie tăiat la margine, așa cum face și tipărirea unui navigator.
+
+În pagina de setări a pluginului, sub **PDF**:
+
+- **Oferă „Exportă în PDF” pentru fișierele .md și .html** — dezactivată, comanda refuză și spune asta. Intrarea de meniu însăși rămâne vizibilă: aplicația construiește meniurile unui plugin din descrierea pe care pluginul o dă despre sine, fără să îl încarce, deci în acel moment nu există de unde să fie citită o setare.
+- **Hârtie** — A4 sau US Letter.
+- **Înlocuiește un PDF existent cu același nume** — dezactivată din start, astfel încât un al doilea export este scris lângă primul ca `Name 2.pdf` în loc să îl suprascrie.
+- **Arată noul PDF în panou** — duce panoul la fișierul tocmai scris. Cu aceasta dezactivată primiți în schimb un mesaj scurt, ca un export să nu fie niciodată tăcut.
+
+Un document prea mare pentru vizualizarea formatată (vedeți **Limite**) nu poate fi nici exportat; mesajul îl numește.
+
 ## Ce nu va face pagina formatată
 
 Pagina formatată este izolată în mod deliberat, pentru că un fișier Markdown este conținut venit din altă parte:

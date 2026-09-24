@@ -389,4 +389,22 @@ final class MarkdownDocumentTests: XCTestCase {
         XCTAssertNotNil(policyAt); XCTAssertNotNil(imageAt)
         if let p = policyAt, let i = imageAt { XCTAssertTrue(p.lowerBound < i.lowerBound) }
     }
+
+    /// The stylesheet has to say what happens on a page, under the class the export adds — otherwise
+    /// a fenced block wider than the sheet is simply cut off, silently, in a file the reader then
+    /// sends to somebody. Not `@media print`: the export captures the screen medium, so a print
+    /// block would never apply to it.
+    func testTheStylesheetSaysWhatHappensOnAPage() {
+        let doc = MarkdownRenderer.htmlDocument(from: "# T\n\n```\nx\n```\n")
+        XCTAssertTrue(doc.contains("body.pc-paged"))
+        XCTAssertTrue(doc.contains("white-space: pre-wrap"))
+        XCTAssertTrue(doc.contains("overflow: visible"))
+        // A table is `display: block; overflow: auto` on screen — its own scrollbar. On a sheet
+        // there is nothing to scroll, and leaving it a block merely turned "scrollable" into "runs
+        // off the right edge": measured at 604 points wide inside a 487-point column.
+        XCTAssertTrue(doc.contains("body.pc-paged .markdown-body table { display: table"))
+        // And not as a print block: the capture renders the screen medium, so one would never
+        // apply. (The stylesheet's own comment says so, hence the rule form rather than the words.)
+        XCTAssertFalse(doc.contains("@media print {"))
+    }
 }

@@ -45,7 +45,75 @@ public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: I
     _ = exts.withCString { strlcpy(buf, $0, Int(maxlen)) }
 }
 
-// MARK: - Contributions (the settings pane)
+// MARK: - Contributions (the command and the settings pane)
+
+/// The command ids this plugin declares in its manifest.
+///
+/// One today. Named here rather than compared inline so the manifest and the code can be read
+/// against each other — the host dispatches by string, and a typo on either side is a menu entry
+/// that does nothing.
+private enum MarkdownCommand {
+    static let exportPDF = "plugin.markdown.pdf"
+}
+
+@_cdecl("PcRunCommand")
+public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafePointer<PcHostServices>?) {
+    guard let services, commandId.map({ String(cString: $0) }) == MarkdownCommand.exportPDF else { return }
+    // Everything the export needs is taken NOW, while the pointer is valid: it points at the host's
+    // stack for the duration of this call, and the export outlives the call because the document has
+    // to load first. The callbacks below are copied by value out of the table, which is safe for the
+    // opposite reason — the host keeps one long-lived bridge per window, and its opaque token stays
+    // valid for anything a command spawns.
+    let table = services.pointee
+    let paths = selectionPaths(services)
+    let side = Int32(contextValue(services, "activeSide")) ?? 0
+    let root = contextValue(services, "configRoot")
+    if !root.isEmpty { pluginConfigRoot = root }
+    let configRoot = root.isEmpty ? pluginConfigRoot : root
+    let callbacks = MarkdownPDF.Callbacks(
+        presentInfo: { title, message in
+            guard let present = table.presentInfo else { return }
+            title.withCString { t in message.withCString { m in present(table.host, t, m) } }
+        },
+        reveal: { path in
+            // `openPathInPanel`, not `openPath`: only the former passes the file name through to
+            // the panel as the row to select, so only it actually puts the cursor on the new PDF —
+            // `openPath` reloads the folder and leaves the cursor where it was, which is not what
+            // the setting promises. The side comes from the host's own `activeSide`, published in
+            // the same 0 = left / 1 = right terms this call takes.
+            if let openInPanel = table.openPathInPanel {
+                path.withCString { openInPanel(table.host, side, $0) }
+            } else if let open = table.openPath {
+                path.withCString { open(table.host, $0) }   // an older host, which has only this
+            }
+        })
+    MainActor.assumeIsolated {
+        MarkdownPDF.export(paths: paths, configRoot: configRoot, host: callbacks)
+    }
+}
+
+/// The marked files, or the file under the cursor when nothing is marked.
+///
+/// Both, because a file manager's answer to "this file" is the selection when there is one — and
+/// exporting four READMEs in one go is the whole reason the export loops at all.
+private func selectionPaths(_ services: UnsafePointer<PcHostServices>) -> [String] {
+    let table = services.pointee
+    var out: [String] = []
+    if let count = table.selectionCount, let at = table.selectionPath {
+        var buf = [CChar](repeating: 0, count: 4096)
+        for index in 0..<max(0, Int(count(table.host))) {
+            let ok = buf.withUnsafeMutableBufferPointer {
+                at(table.host, Int32(index), $0.baseAddress, 4096)
+            }
+            if ok != 0 { out.append(String(cString: buf)) }
+        }
+    }
+    if out.isEmpty {
+        let cursor = contextValue(services, "cursorPath")
+        if !cursor.isEmpty { out.append(cursor) }
+    }
+    return out
+}
 
 @_cdecl("PcMakeView")
 public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,

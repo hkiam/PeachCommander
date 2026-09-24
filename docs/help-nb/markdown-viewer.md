@@ -33,6 +33,21 @@ Begge kan slås av hver for seg i **Konfigurasjon ▸ Innstillinger ▸ Markdown
 
 Trenger du en nyere eller annen utgave av Mermaid eller KaTeX, legg den i mappen som knappen **Engine Folder…** åpner, og den brukes i stedet for den medfølgende. Filnavnene er `mermaid.min.js`, `katex.min.js`, `katex.min.css` og `auto-render.min.js`. Ingenting hentes noen gang fra internett for deg.
 
+## Lage en PDF
+
+Med markøren på en `.md`- eller `.html`-fil skriver **Kommandoer ▸ Eksporter til PDF…** — eller samme oppføring i panelets kontekstmeny — dokumentet som en PDF ved siden av det, under sitt eget navn. Det tilbys bare i vanlige mapper — inne i et arkiv eller på en montert stasjon finnes det ingen fil på disken å lese og ingen plass ved siden av å skrive til. Merk flere dokumenter, og de eksporteres etter tur.
+
+PDF-en er siden du ser med F3: samme stilark, samme fargelagte kode, samme diagrammer og samme matematikk. Den settes på A4 som standard (Letter er en innstilling), sideskiftene faller mellom avsnitt, listepunkter og tabellrader i stedet for midt gjennom en tekstlinje, og ingen side begynner uten overskriften delen dens starter med. Et dokument med noe som er for bredt for tekstspalten — en tabell med mange kolonner, en lang ubrutt linje — skaleres ned slik at det passer, i stedet for å bli kuttet ved kanten, slik en nettlesers egen utskrift gjør det.
+
+På utvidelsens innstillingsside, under **PDF**:
+
+- **Tilby «Eksporter til PDF» på .md- og .html-filer** — slått av avviser kommandoen og sier fra. Selve menyoppføringen blir stående: programmet bygger en utvidelses menyer fra utvidelsens egen beskrivelse av seg selv uten å laste den, så det finnes ingenting å lese en innstilling fra i det øyeblikket.
+- **Papir** — A4 eller US Letter.
+- **Erstatt en eksisterende PDF med samme navn** — av som standard, så en ny eksport skrives ved siden av den første som `Name 2.pdf` i stedet for å overskrive den.
+- **Vis den nye PDF-en i panelet** — flytter panelet til filen som nettopp ble skrevet. Er dette av, får du en kort melding i stedet, slik at en eksport aldri er taus.
+
+Et dokument som er for stort for den formaterte visningen (se **Grenser**), kan heller ikke eksporteres; meldingen navngir det.
+
 ## Hva den formaterte siden ikke gjør
 
 Den formaterte siden er bevisst avstengt, for en Markdown-fil er innhold som kommer et annet sted fra:

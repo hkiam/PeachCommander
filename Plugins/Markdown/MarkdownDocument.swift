@@ -289,6 +289,24 @@ public enum MarkdownRenderer {
     .markdown-body .pc-diagram-error {
       background: rgba(207,34,46,.08); border-left: .25em solid #cf222e; color: #82071e;
     }
+    /* On paper. The export (MarkdownPDF) adds `pc-paged` to the body before it measures the
+       document, so these are the rules the captured page is laid out under — a class rather than
+       `@media print`, because the capture is a render of the screen medium and a print block would
+       never apply to it. Three of the screen rules are wrong on a page: a scroll box cannot scroll,
+       a column centred in 900 points leaves a margin inside the margin, and the sheet is white
+       whatever the machine's appearance is. */
+    body.pc-paged { padding: 0; background: #ffffff; }
+    body.pc-paged .markdown-body { max-width: none; color: #1f2328; }
+    body.pc-paged .markdown-body pre, body.pc-paged .markdown-body table { overflow: visible; }
+    body.pc-paged .markdown-body pre { white-space: pre-wrap; word-wrap: break-word; }
+    /* A table is `display: block; overflow: auto` on screen, which is how a wide one gets its own
+       scrollbar instead of stretching the page. On a sheet there is nothing to scroll and nothing
+       to overflow INTO: the capture stops at the page edge, so `overflow: visible` alone merely
+       turned "scrollable" into "cut off" — an eight-column table lost its last two columns, and the
+       PDF said nothing about it. As a real table it shrinks to the text column and wraps its cells
+       instead, which is what every browser's own print does with one. A table whose columns still
+       will not fit is handled one level up, by scaling the whole capture (see MarkdownPDF). */
+    body.pc-paged .markdown-body table { display: table; max-width: 100%; }
     @media (prefers-color-scheme: dark) {
       body { background: #0d1117; }
       .markdown-body { color: #e6edf3; }

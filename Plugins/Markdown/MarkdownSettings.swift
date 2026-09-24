@@ -8,8 +8,8 @@
 // `<configRoot>/markdown.ini` instead.
 //
 // Everything on it is a setting somebody would otherwise have to discover: whether F3 shows the
-// rendered page at all, whether diagrams and formulae are drawn, where the engines came from, and how
-// large a document may be before it is left to the text viewer.
+// rendered page at all, whether diagrams and formulae are drawn, where the engines came from, how
+// large a document may be before it is left to the text viewer, and what "Export to PDF…" produces.
 //
 // The "where from" row is the one that earns its place. "It is not working" and "it is working from a
 // copy you put in that folder six months ago and forgot" look identical from the outside, and the
@@ -48,10 +48,18 @@ final class MarkdownSettingsView: NSView {
     private let sizeLimit = NSTextField()
     private let engineStatus = NSTextField(labelWithString: "")
 
+    private let pdfExport = NSButton(checkboxWithTitle: L("Offer “Export to PDF” on .md and .html files"),
+                                     target: nil, action: nil)
+    private let pdfPaper = NSPopUpButton()
+    private let pdfOverwrite = NSButton(checkboxWithTitle: L("Replace an existing PDF of the same name"),
+                                        target: nil, action: nil)
+    private let pdfReveal = NSButton(checkboxWithTitle: L("Show the new PDF in the panel"),
+                                     target: nil, action: nil)
+
     init(configRoot: String) {
         self.configRoot = configRoot
         self.options = MarkdownOptions.read(configRoot: configRoot)
-        super.init(frame: NSRect(x: 0, y: 0, width: 520, height: 360))
+        super.init(frame: NSRect(x: 0, y: 0, width: 520, height: 500))
         build()
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -92,6 +100,29 @@ final class MarkdownSettingsView: NSView {
         sizeLimit.target = self
         sizeLimit.action = #selector(optionsChanged)
         rows.append(labelled(L("Render files up to (MB):"), sizeLimit, width: 60))
+
+        rows.append(heading(L("PDF")))
+        pdfExport.state = options.pdfExport ? .on : .off
+        pdfExport.target = self
+        pdfExport.action = #selector(optionsChanged)
+        // Says what the switch can and cannot do, because the menu entry stays where it is either
+        // way: the host builds a plugin's menus from the manifest without loading the plugin, so
+        // nothing in this file is readable at the moment that menu is built. See MarkdownOptions.
+        pdfExport.toolTip = L("The menu entry is built from the plugin's manifest and stays visible; switched off, the command declines and says so.")
+        rows.append(pdfExport)
+        // Paper names are the same word everywhere, so they are not translated.
+        pdfPaper.addItems(withTitles: ["A4", "US Letter"])
+        pdfPaper.selectItem(at: options.pdfPaper == .letter ? 1 : 0)
+        pdfPaper.target = self
+        pdfPaper.action = #selector(optionsChanged)
+        rows.append(labelled(L("Paper:"), pdfPaper, width: 120))
+        for (box, state) in [(pdfOverwrite, options.pdfOverwrite), (pdfReveal, options.pdfReveal)] {
+            box.state = state ? .on : .off
+            box.target = self
+            box.action = #selector(optionsChanged)
+            rows.append(box)
+        }
+        pdfOverwrite.toolTip = L("Off, a second export is written beside the first as “name 2.pdf” instead of replacing it.")
 
         let stack = NSStackView(views: rows)
         stack.orientation = .vertical
@@ -144,6 +175,10 @@ final class MarkdownSettingsView: NSView {
         options.maths = maths.state == .on
         options.maxSizeMB = max(1, Int(sizeLimit.stringValue) ?? options.maxSizeMB)
         sizeLimit.stringValue = String(options.maxSizeMB)
+        options.pdfExport = pdfExport.state == .on
+        options.pdfPaper = pdfPaper.indexOfSelectedItem == 1 ? .letter : .a4
+        options.pdfOverwrite = pdfOverwrite.state == .on
+        options.pdfReveal = pdfReveal.state == .on
         options.write(configRoot: configRoot)
     }
 

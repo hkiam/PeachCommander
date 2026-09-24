@@ -15,6 +15,32 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+### Added
+
+- **Markdown and HTML documents export as PDFs.** With the cursor on a `.md` or `.html` file,
+  **Commands ▸ Export to PDF…** — and the same entry in the panel's context menu — writes the
+  document as a PDF beside it, under its own name; a marked selection is exported one file after
+  another. The PDF is the page F3 shows, because it is produced by the same renderer: the same
+  stylesheet, the same coloured fences, the same Mermaid diagrams and KaTeX formulae, and the same
+  two web-view policies (the generated Markdown page may run the engines, a foreign `.html` file may
+  run nothing). A4 or US Letter, a setting; a second export is numbered rather than overwriting the
+  first, unless that is asked for; the panel moves its cursor to the new file, and when that is
+  switched off a short message takes its place so an export is never silent. Offered on ordinary
+  folders only — inside an archive or on a mounted drive the cursor's path is a VFS path with no
+  file behind it on disk and nowhere beside it to write, so the entry is greyed out there.
+
+  Pagination is done in the plugin rather than by WebKit, and that is measured rather than a
+  preference: `WKWebView.printOperation` does not return on this platform — `op.run()` wrote a
+  gigabyte of repeated pages in ninety seconds, first in a standalone harness and then in the
+  application, with the print view's own frame reported as 0×0. So the document is measured,
+  the page breaks are put at the block boundaries the page itself reports — and never directly below
+  a heading, which is the one break a reader notices — each page is captured with `createPDF`, and
+  the slices are composed onto real sheets with Core Graphics. Anything that will not fit the text
+  column shrinks the sheet to fit rather than running off its right edge: an eight-column table was
+  measured at 604 points inside a 487-point column and lost its last two columns, silently. The whole thing is a contributed
+  command: the host builds the menu entry from the plugin's manifest without loading it, so a
+  removed or disabled plugin takes the entry with it.
+
 ### Fixed
 
 - **Choosing SFTP locked a connection to the anonymous login** (#4). A new site starts with
