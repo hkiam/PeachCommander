@@ -41,7 +41,6 @@ Le PDF est la page que vous voyez avec F3 : la même feuille de style, le même 
 
 Sur la page de réglages du plugin, sous **PDF** :
 
-- **Proposer « Exporter en PDF » sur les fichiers .md et .html** — désactivé, la commande refuse et le dit. L'entrée de menu elle-même reste visible : l'application construit les menus d'un plugin à partir de sa description de lui-même sans le charger, il n'y a donc rien dont un réglage puisse être lu à ce moment-là.
 - **Papier** — A4 ou US Letter.
 - **Remplacer un PDF existant du même nom** — désactivé par défaut, un second export est donc écrit à côté du premier sous `Name 2.pdf` au lieu de l'écraser.
 - **Montrer le nouveau PDF dans le panneau** — amène le panneau sur le fichier qui vient d'être écrit. Désactivé, vous recevez un court message à la place, pour qu'un export ne soit jamais silencieux.

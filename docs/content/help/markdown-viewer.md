@@ -42,7 +42,6 @@ The PDF is the page you see with F3: the same stylesheet, the same coloured code
 
 On the plugin's settings page, under **PDF**:
 
-- **Offer "Export to PDF" on .md and .html files** — switched off, the command declines and says so. The menu entry itself stays visible: the application builds a plugin's menus from the plugin's description of itself without loading it, so there is nothing for a setting to be read from at that moment.
 - **Paper** — A4 or US Letter.
 - **Replace an existing PDF of the same name** — off by default, so a second export is written beside the first as `Name 2.pdf` rather than overwriting it.
 - **Show the new PDF in the panel** — moves the panel to the file that was just written. With this off you get a short message instead, so an export is never silent.

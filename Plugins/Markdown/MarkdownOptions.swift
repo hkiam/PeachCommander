@@ -42,14 +42,13 @@ struct MarkdownOptions {
     /// memory.
     var maxSizeMB = 8
 
-    /// Whether the "Export to PDF…" command does anything.
-    ///
-    /// It cannot hide the menu entry, and that is not an oversight: the host builds a plugin's menus
-    /// from its manifest **without loading the plugin**, deliberately, so that a disabled plugin
-    /// contributes nothing and no plugin code decides menu presence. There is therefore nowhere for a
-    /// setting in this file to be read at menu-build time. Switched off, the command says so and does
-    /// nothing — which is the honest half of the feature that is available to it.
-    var pdfExport = true
+    // There is deliberately no "offer the PDF export" switch. One was written and taken out again:
+    // the host builds a plugin's menus from its manifest WITHOUT loading the plugin, so nothing in
+    // this file can be read at the moment the entry is built, and the switch could only ever make
+    // the command refuse — a menu entry that is present and says no. Whoever does not want the
+    // export does not have to use it, and whoever wants neither it nor the rendered view switches
+    // the plugin off. `PDFExport=` left in an older markdown.ini is simply ignored.
+
     /// What an exported PDF is laid out on.
     var pdfPaper = MarkdownPaper.a4
     /// Whether an export replaces an existing PDF of the same name, rather than numbering the new one.
@@ -80,7 +79,6 @@ struct MarkdownOptions {
             case "diagrams": options.diagrams = isTrue(value)
             case "maths": options.maths = isTrue(value)
             case "maxsizemb": options.maxSizeMB = max(1, Int(value) ?? options.maxSizeMB)
-            case "pdfexport": options.pdfExport = isTrue(value)
             // An unrecognised paper name is A4 rather than a failure, the way an unrecognised
             // boolean is "no": a hand-edited file should lose one setting, never the rest of them.
             case "pdfpaper": options.pdfPaper = MarkdownPaper(rawValue: value.lowercased()) ?? .a4
@@ -108,7 +106,6 @@ struct MarkdownOptions {
         Diagrams=\(diagrams ? 1 : 0)
         Maths=\(maths ? 1 : 0)
         MaxSizeMB=\(maxSizeMB)
-        PDFExport=\(pdfExport ? 1 : 0)
         PDFPaper=\(pdfPaper.rawValue)
         PDFOverwrite=\(pdfOverwrite ? 1 : 0)
         PDFReveal=\(pdfReveal ? 1 : 0)

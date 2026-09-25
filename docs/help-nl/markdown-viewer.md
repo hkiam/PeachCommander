@@ -41,7 +41,6 @@ De PDF is de pagina die u met F3 ziet: dezelfde stylesheet, dezelfde gekleurde c
 
 Op de instellingenpagina van de plug-in, onder **PDF**:
 
-- **“Exporteren naar PDF” aanbieden bij .md- en .html-bestanden** — uitgezet weigert de opdracht en zegt dat ook. Het menu-item zelf blijft zichtbaar: het programma bouwt de menu's van een plug-in uit haar eigen beschrijving zonder haar te laden, dus er is op dat moment niets waaruit een instelling gelezen kan worden.
 - **Papier** — A4 of US Letter.
 - **Een bestaande PDF met dezelfde naam vervangen** — standaard uit, zodat een tweede export ernaast wordt geschreven als `Name 2.pdf` in plaats van de eerste te overschrijven.
 - **De nieuwe PDF in het venster tonen** — brengt het venster naar het bestand dat zojuist is geschreven. Staat dit uit, dan krijgt u in plaats daarvan een kort bericht, zodat een export nooit stil verloopt.

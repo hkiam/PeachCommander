@@ -217,7 +217,6 @@ final class MarkdownPluginTests: XCTestCase {
         options.claimFiles = false
         options.maths = false
         options.maxSizeMB = 3
-        options.pdfExport = false
         options.pdfPaper = .letter
         options.pdfOverwrite = true
         options.pdfReveal = false
@@ -227,7 +226,6 @@ final class MarkdownPluginTests: XCTestCase {
         XCTAssertTrue(read.diagrams)
         XCTAssertFalse(read.maths)
         XCTAssertEqual(read.maxSizeMB, 3)
-        XCTAssertFalse(read.pdfExport)
         XCTAssertEqual(read.pdfPaper, .letter)
         XCTAssertTrue(read.pdfOverwrite)
         XCTAssertFalse(read.pdfReveal)
@@ -255,7 +253,6 @@ final class MarkdownPluginTests: XCTestCase {
             XCTAssertTrue(options.diagrams)
             XCTAssertTrue(options.maths)
             XCTAssertEqual(options.maxSizeMB, 8)
-            XCTAssertTrue(options.pdfExport)
             XCTAssertEqual(options.pdfPaper, .a4)
             XCTAssertFalse(options.pdfOverwrite)
             XCTAssertTrue(options.pdfReveal)
@@ -339,24 +336,6 @@ final class MarkdownPluginTests: XCTestCase {
         // …and replaced when the reader asked for that on the settings page.
         XCTAssertEqual(MarkdownPDF.destination(for: md, overwrite: true).lastPathComponent,
                        "Report.pdf")
-    }
-
-    @MainActor
-    func testTheExportSaysWhySwitchedOffRatherThanDoingNothing() throws {
-        // The menu entry comes from the manifest, which the host reads without loading the plugin —
-        // so this switch cannot hide it, and a command that silently did nothing would read as a
-        // defect. It has to say so.
-        var options = MarkdownOptions()
-        options.pdfExport = false
-        options.write(configRoot: dir.path)
-        var said: [String] = []
-        let host = MarkdownPDF.Callbacks(presentInfo: { _, message in said.append(message) },
-                                         reveal: { _ in })
-        MarkdownPDF.export(paths: [try write("a.md", "# A")], configRoot: dir.path, host: host)
-        XCTAssertEqual(said.count, 1)
-        XCTAssertFalse(said[0].isEmpty)
-        // Nothing was written, because nothing was meant to be.
-        XCTAssertFalse(FileManager.default.fileExists(atPath: dir.appendingPathComponent("a.pdf").path))
     }
 
     @MainActor

@@ -41,7 +41,6 @@ PDF je ista stran, ki jo vidite s F3: isti slogovni list, ista obarvana koda, is
 
 Na nastavitveni strani vtičnika, pod **PDF**:
 
-- **Ponudi »Izvozi v PDF« pri datotekah .md in .html** — izklopljeno ukaz zavrne in to pove. Sam menijski vnos ostane viden: program zgradi menije vtičnika iz njegovega lastnega opisa sebe, ne da bi ga naložil, zato v tistem trenutku ni od kod prebrati nastavitve.
 - **Papir** — A4 ali US Letter.
 - **Zamenjaj obstoječi PDF z istim imenom** — privzeto izklopljeno, tako da se drugi izvoz zapiše poleg prvega kot `Name 2.pdf`, namesto da bi ga prepisal.
 - **Pokaži nov PDF v pultu** — premakne pult na pravkar zapisano datoteko. Če je to izklopljeno, dobite namesto tega kratko sporočilo, da izvoz nikoli ni tih.

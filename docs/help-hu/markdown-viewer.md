@@ -41,7 +41,6 @@ A PDF ugyanaz az oldal, amit F3-mal lát: ugyanaz a stíluslap, ugyanaz a színe
 
 A bővítmény beállításlapján, a **PDF** alatt:
 
-- **Az „Exportálás PDF-be” felkínálása .md és .html fájlokon** — kikapcsolva a parancs visszautasít, és ezt meg is mondja. Maga a menüpont látható marad: az alkalmazás a bővítmény menüit a bővítmény önleírásából építi, anélkül hogy betöltené, így abban a pillanatban nincs honnan beolvasni egy beállítást.
 - **Papír** — A4 vagy US Letter.
 - **Azonos nevű meglévő PDF cseréje** — alapból kikapcsolva, így a második exportálás `Name 2.pdf` néven kerül az első mellé ahelyett, hogy felülírná.
 - **Az új PDF megmutatása a panelen** — a panelt az imént kiírt fájlra viszi. Ha ez ki van kapcsolva, helyette rövid üzenetet kap, hogy egy exportálás soha ne legyen néma.

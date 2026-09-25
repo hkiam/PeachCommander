@@ -41,7 +41,6 @@ PDF to ta sama strona, którą widzicie pod F3: ten sam arkusz stylów, ten sam 
 
 Na stronie ustawień wtyczki, pod **PDF**:
 
-- **Proponuj „Eksportuj do PDF” dla plików .md i .html** — po wyłączeniu polecenie odmawia i o tym informuje. Sama pozycja menu pozostaje widoczna: program buduje menu wtyczki z jej własnego opisu siebie, nie ładując jej, więc w tym momencie nie ma skąd odczytać ustawienia.
 - **Papier** — A4 albo US Letter.
 - **Zastępuj istniejący PDF o tej samej nazwie** — domyślnie wyłączone, więc drugi eksport zapisywany jest obok pierwszego jako `Name 2.pdf`, zamiast go nadpisać.
 - **Pokaż nowy PDF w panelu** — przenosi panel na właśnie zapisany plik. Gdy to wyłączone, dostajecie krótki komunikat, więc eksport nigdy nie przebiega w ciszy.

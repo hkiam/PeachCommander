@@ -180,11 +180,6 @@ enum MarkdownPDF {
     /// application has stopped drawing".
     static func export(paths: [String], configRoot: String, host: Callbacks) {
         let options = MarkdownOptions.read(configRoot: configRoot)
-        guard options.pdfExport else {
-            host.presentInfo(L("Export to PDF"),
-                             L("PDF export is switched off on this plugin's page in Settings."))
-            return
-        }
         let wanted = claimed(paths)
         guard !wanted.isEmpty else {
             host.presentInfo(L("Export to PDF"), L("No Markdown or HTML document is selected."))

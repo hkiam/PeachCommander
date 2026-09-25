@@ -41,7 +41,6 @@ PDF-ul este pagina pe care o vedeți cu F3: aceeași foaie de stil, același cod
 
 În pagina de setări a pluginului, sub **PDF**:
 
-- **Oferă „Exportă în PDF” pentru fișierele .md și .html** — dezactivată, comanda refuză și spune asta. Intrarea de meniu însăși rămâne vizibilă: aplicația construiește meniurile unui plugin din descrierea pe care pluginul o dă despre sine, fără să îl încarce, deci în acel moment nu există de unde să fie citită o setare.
 - **Hârtie** — A4 sau US Letter.
 - **Înlocuiește un PDF existent cu același nume** — dezactivată din start, astfel încât un al doilea export este scris lângă primul ca `Name 2.pdf` în loc să îl suprascrie.
 - **Arată noul PDF în panou** — duce panoul la fișierul tocmai scris. Cu aceasta dezactivată primiți în schimb un mesaj scurt, ca un export să nu fie niciodată tăcut.

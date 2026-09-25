@@ -41,7 +41,6 @@ Il PDF è la pagina che vedete con F3: lo stesso foglio di stile, lo stesso codi
 
 Nella pagina delle impostazioni del plugin, sotto **PDF**:
 
-- **Offrire «Esporta in PDF» sui file .md e .html** — disattivato, il comando rifiuta e lo dice. La voce di menu resta visibile: l'applicazione costruisce i menu di un plugin dalla descrizione che il plugin dà di sé, senza caricarlo, quindi in quel momento non c'è nulla da cui leggere un'impostazione.
 - **Carta** — A4 o US Letter.
 - **Sostituire un PDF esistente con lo stesso nome** — disattivato di serie, così una seconda esportazione viene scritta accanto alla prima come `Name 2.pdf` invece di sovrascriverla.
 - **Mostrare il nuovo PDF nel pannello** — porta il pannello sul file appena scritto. Con questa opzione disattivata ricevete invece un breve messaggio, così un'esportazione non è mai silenziosa.

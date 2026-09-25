@@ -48,8 +48,6 @@ final class MarkdownSettingsView: NSView {
     private let sizeLimit = NSTextField()
     private let engineStatus = NSTextField(labelWithString: "")
 
-    private let pdfExport = NSButton(checkboxWithTitle: L("Offer “Export to PDF” on .md and .html files"),
-                                     target: nil, action: nil)
     private let pdfPaper = NSPopUpButton()
     private let pdfOverwrite = NSButton(checkboxWithTitle: L("Replace an existing PDF of the same name"),
                                         target: nil, action: nil)
@@ -102,14 +100,7 @@ final class MarkdownSettingsView: NSView {
         rows.append(labelled(L("Render files up to (MB):"), sizeLimit, width: 60))
 
         rows.append(heading(L("PDF")))
-        pdfExport.state = options.pdfExport ? .on : .off
-        pdfExport.target = self
-        pdfExport.action = #selector(optionsChanged)
-        // Says what the switch can and cannot do, because the menu entry stays where it is either
-        // way: the host builds a plugin's menus from the manifest without loading the plugin, so
-        // nothing in this file is readable at the moment that menu is built. See MarkdownOptions.
-        pdfExport.toolTip = L("The menu entry is built from the plugin's manifest and stays visible; switched off, the command declines and says so.")
-        rows.append(pdfExport)
+        // No on/off switch here, on purpose — see MarkdownOptions for why one cannot work.
         // Paper names are the same word everywhere, so they are not translated.
         pdfPaper.addItems(withTitles: ["A4", "US Letter"])
         pdfPaper.selectItem(at: options.pdfPaper == .letter ? 1 : 0)
@@ -175,7 +166,6 @@ final class MarkdownSettingsView: NSView {
         options.maths = maths.state == .on
         options.maxSizeMB = max(1, Int(sizeLimit.stringValue) ?? options.maxSizeMB)
         sizeLimit.stringValue = String(options.maxSizeMB)
-        options.pdfExport = pdfExport.state == .on
         options.pdfPaper = pdfPaper.indexOfSelectedItem == 1 ? .letter : .a4
         options.pdfOverwrite = pdfOverwrite.state == .on
         options.pdfReveal = pdfReveal.state == .on

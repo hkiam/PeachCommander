@@ -41,7 +41,6 @@ PDF-en er siden du ser med F3: samme stilark, samme fargelagte kode, samme diagr
 
 På utvidelsens innstillingsside, under **PDF**:
 
-- **Tilby «Eksporter til PDF» på .md- og .html-filer** — slått av avviser kommandoen og sier fra. Selve menyoppføringen blir stående: programmet bygger en utvidelses menyer fra utvidelsens egen beskrivelse av seg selv uten å laste den, så det finnes ingenting å lese en innstilling fra i det øyeblikket.
 - **Papir** — A4 eller US Letter.
 - **Erstatt en eksisterende PDF med samme navn** — av som standard, så en ny eksport skrives ved siden av den første som `Name 2.pdf` i stedet for å overskrive den.
 - **Vis den nye PDF-en i panelet** — flytter panelet til filen som nettopp ble skrevet. Er dette av, får du en kort melding i stedet, slik at en eksport aldri er taus.

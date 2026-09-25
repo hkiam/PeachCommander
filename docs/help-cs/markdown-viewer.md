@@ -41,7 +41,6 @@ PDF je táž stránka, kterou vidíte pod F3: tentýž styl, tentýž obarvený 
 
 Na stránce nastavení zásuvného modulu, pod **PDF**:
 
-- **Nabízet „Exportovat do PDF“ u souborů .md a .html** — po vypnutí příkaz odmítne a řekne to. Samotná položka nabídky zůstává viditelná: aplikace staví nabídky modulu z jeho vlastního popisu sebe sama, aniž by jej načetla, takže v tu chvíli není odkud nastavení přečíst.
 - **Papír** — A4 nebo US Letter.
 - **Nahradit stávající PDF stejného jména** — ve výchozím stavu vypnuto, takže druhý export se zapíše vedle prvního jako `Name 2.pdf` místo jeho přepsání.
 - **Zobrazit nové PDF v panelu** — přesune panel na právě zapsaný soubor. Je-li to vypnuto, dostanete místo toho krátkou zprávu, aby export nikdy nebyl tichý.

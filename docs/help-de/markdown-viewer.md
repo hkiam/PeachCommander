@@ -41,7 +41,6 @@ Das PDF ist die Seite, die Sie mit F3 sehen: dasselbe Stylesheet, derselbe gefä
 
 Auf der Einstellungsseite des Plugins, unter **PDF**:
 
-- **„Als PDF exportieren" bei .md- und .html-Dateien anbieten** — abgeschaltet verweigert der Befehl und sagt das auch. Der Menüeintrag selbst bleibt sichtbar: die Anwendung baut die Menüs eines Plugins aus dessen Selbstbeschreibung, ohne es zu laden, also gibt es in diesem Moment nichts, woraus eine Einstellung gelesen werden könnte.
 - **Papier** — A4 oder US Letter.
 - **Ein vorhandenes PDF gleichen Namens ersetzen** — aus als Voreinstellung, ein zweiter Export wird also als `Name 2.pdf` daneben geschrieben, statt den ersten zu überschreiben.
 - **Das neue PDF im Dateifenster zeigen** — bringt das Dateifenster auf die eben geschriebene Datei. Ist das aus, bekommen Sie stattdessen eine kurze Meldung, damit ein Export nie stumm bleibt.

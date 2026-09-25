@@ -41,7 +41,6 @@ PDF je tá istá stránka, ktorú vidíte pod F3: rovnaký štýl, rovnako zafar
 
 Na stránke nastavení doplnku, pod **PDF**:
 
-- **Ponúkať „Exportovať do PDF“ pri súboroch .md a .html** — po vypnutí príkaz odmietne a povie to. Samotná položka ponuky zostáva viditeľná: aplikácia stavia ponuky doplnku z jeho vlastného popisu seba samého bez toho, aby ho načítala, takže v tej chvíli nie je odkiaľ nastavenie prečítať.
 - **Papier** — A4 alebo US Letter.
 - **Nahradiť existujúce PDF s rovnakým názvom** — predvolene vypnuté, takže druhý export sa zapíše vedľa prvého ako `Name 2.pdf` namiesto jeho prepísania.
 - **Zobraziť nové PDF v paneli** — presunie panel na práve zapísaný súbor. Keď je to vypnuté, dostanete namiesto toho krátku správu, aby export nikdy nebol tichý.

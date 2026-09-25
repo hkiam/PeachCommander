@@ -39,7 +39,10 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   column shrinks the sheet to fit rather than running off its right edge: an eight-column table was
   measured at 604 points inside a 487-point column and lost its last two columns, silently. The whole thing is a contributed
   command: the host builds the menu entry from the plugin's manifest without loading it, so a
-  removed or disabled plugin takes the entry with it.
+  removed or disabled plugin takes the entry with it. There is deliberately no switch for the export
+  itself: nothing in the plugin's settings can be read at the moment the entry is built, so such a
+  switch could only make the command refuse — a menu entry that is present and says no. `PDFExport=`
+  in an older `markdown.ini` is ignored.
 
 ### Fixed
 

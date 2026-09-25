@@ -41,7 +41,6 @@ PDF:en är den sida du ser med F3: samma stilmall, samma färgade kod, samma dia
 
 På tilläggets inställningssida, under **PDF**:
 
-- **Erbjud ”Exportera till PDF” för .md- och .html-filer** — avstängt avböjer kommandot och säger det. Själva menyposten blir kvar: programmet bygger ett tilläggs menyer ur tilläggets egen beskrivning av sig självt utan att läsa in det, så det finns ingenting att läsa en inställning ur i det ögonblicket.
 - **Papper** — A4 eller US Letter.
 - **Ersätt en befintlig PDF med samma namn** — av som standard, så en andra export skrivs bredvid den första som `Name 2.pdf` i stället för att ersätta den.
 - **Visa den nya PDF:en i panelen** — flyttar panelen till filen som just skrevs. Med detta avstängt får du ett kort meddelande i stället, så att en export aldrig är tyst.

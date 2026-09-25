@@ -41,7 +41,6 @@ PDF'en er den side, du ser med F3: samme stylesheet, samme farvede kode, samme d
 
 På pluginets indstillingsside, under **PDF**:
 
-- **Tilbyd “Eksportér til PDF” på .md- og .html-filer** — slået fra afviser kommandoen og siger det. Selve menupunktet bliver stående: programmet bygger et plugins menuer ud fra pluginets egen beskrivelse af sig selv uden at indlæse det, så der er intet at læse en indstilling fra i det øjeblik.
 - **Papir** — A4 eller US Letter.
 - **Erstat en eksisterende PDF med samme navn** — slået fra som standard, så en anden eksport skrives ved siden af den første som `Name 2.pdf` i stedet for at overskrive den.
 - **Vis den nye PDF i panelet** — flytter panelet til den fil, der lige er skrevet. Er dette slået fra, får du en kort besked i stedet, så en eksport aldrig er tavs.
