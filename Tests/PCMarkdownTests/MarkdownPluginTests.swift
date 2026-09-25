@@ -208,6 +208,35 @@ final class MarkdownPluginTests: XCTestCase {
         XCTAssertTrue(view.documentText.contains("mermaid"))
     }
 
+    @MainActor
+    func testADiagramThatNeverDrawsStillLeavesItsSourceBehind() throws {
+        // The plugin's own rule, stated in MarkdownEngines: a figure that cannot be drawn says so
+        // WHERE IT WAS, with the block's source below it, because "a silently missing figure is the
+        // failure that gets reported as 'the viewer lost my text'". The parse-error path obeyed it.
+        // The path where Mermaid's promise never settles did not — `render()` neither resolved nor
+        // rejected, so the `.catch` never ran and the holder stayed empty for ever. Measured with an
+        // engine whose render returns a promise that never settles: the diagram AND its source were
+        // absent from the page and from the exported PDF, with nothing said.
+        //
+        // The bootstrap now arms its own timer, so the rule holds for the viewer as well as for the
+        // export — this asserts the rule is in the page, which is the half a unit test can reach.
+        let assets = URL(fileURLWithPath: MarkdownAssets.overrideDirectory(configRoot: dir.path))
+        try FileManager.default.createDirectory(at: assets, withIntermediateDirectories: true)
+        try "window.mermaid = {};".write(to: assets.appendingPathComponent("mermaid.min.js"),
+                                        atomically: true, encoding: .utf8)
+        let web = makeMarkdownWebView(policy: .ownDocument)
+        _ = MarkdownEngines.install(.init(diagrams: true, maths: false), into: web,
+                                    configRoot: dir.path)
+        let injected = web.configuration.userContentController.userScripts
+            .map(\.source).joined(separator: "\n")
+        XCTAssertTrue(injected.contains("setTimeout"), "no deadline on the render")
+        // The same error box the parse failure uses, and the source captured before the <pre> is
+        // replaced — without that variable there is nothing left to put back.
+        XCTAssertTrue(injected.contains("pc-diagram-error"))
+        XCTAssertTrue(injected.contains("var source = code.textContent"))
+        XCTAssertTrue(injected.contains("clearTimeout(timer)"), "a drawn diagram must cancel it")
+    }
+
     // MARK: - What the reader chose
 
     func testOptionsRoundTripThroughTheirOwnFile() {

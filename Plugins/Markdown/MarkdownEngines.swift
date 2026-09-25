@@ -69,7 +69,7 @@ enum MarkdownEngines {
         var loaded: [String] = []
         if needs.diagrams, let mermaid = MarkdownAssets.mermaidScript(configRoot: configRoot) {
             add(mermaid.js, to: controller)
-            add(mermaidBootstrap, to: controller)
+            add(mermaidBootstrap(timeoutMessage: L("The diagram did not finish drawing.")), to: controller)
             loaded.append("mermaid (\(mermaid.source.description))")
         }
         if needs.maths, let katex = MarkdownAssets.katexScript(configRoot: configRoot),
@@ -100,7 +100,8 @@ enum MarkdownEngines {
     /// `theme: 'base'` with explicit colours rather than Mermaid's own palette: the page follows
     /// `prefers-color-scheme`, and a diagram in Mermaid's default lavender on a dark page is the one
     /// element that does not belong to the document it is in.
-    private static let mermaidBootstrap = """
+    private static func mermaidBootstrap(timeoutMessage: String) -> String {
+        """
     (function () {
       var blocks = document.querySelectorAll('pre > code.language-mermaid');
       if (!blocks.length || typeof mermaid === 'undefined') { return; }
@@ -126,20 +127,37 @@ enum MarkdownEngines {
         var holder = document.createElement('div');
         holder.className = 'pc-diagram';
         pre.replaceWith(holder);
-        mermaid.render('pc-mermaid-' + i, code.textContent).then(function (result) {
-          holder.innerHTML = result.svg;
-        }).catch(function (error) {
-          // A diagram that will not parse must say so *where it was*, with its source intact — a
-          // silently missing figure is the failure that gets reported as "the viewer lost my text".
+        var source = code.textContent;
+        var settled = false;
+        // A diagram that will not parse must say so *where it was*, with its source intact — a
+        // silently missing figure is the failure that gets reported as "the viewer lost my text".
+        function fail(message) {
+          if (settled) { return; }
+          settled = true;
           var box = document.createElement('pre');
           box.className = 'pc-diagram-error';
-          box.textContent = String(error && error.message ? error.message : error)
-                            + '\\n\\n' + code.textContent;
+          box.textContent = message + '\\n\\n' + source;
           holder.replaceWith(box);
+        }
+        // The same rule for a promise that never settles as for one that rejects. Mermaid can hang
+        // — a broken engine file in the reader's own folder is enough — and the rejection path then
+        // never runs, so the holder stayed empty for ever: the figure gone AND its source with it,
+        // on screen and in an exported PDF alike. Ten seconds is well past any diagram that is
+        // going to draw, and comfortably inside the export's own wait.
+        var timer = setTimeout(function () { fail(\(jsString(timeoutMessage))); }, 10000);
+        mermaid.render('pc-mermaid-' + i, source).then(function (result) {
+          if (settled) { return; }
+          settled = true;
+          clearTimeout(timer);
+          holder.innerHTML = result.svg;
+        }).catch(function (error) {
+          clearTimeout(timer);
+          fail(String(error && error.message ? error.message : error));
         });
       });
     })();
     """
+    }
 
     /// Set the maths, and bring KaTeX's stylesheet with the fonts already inlined.
     ///

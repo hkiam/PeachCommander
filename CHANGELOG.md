@@ -46,6 +46,17 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Fixed
 
+- **A diagram that hung took its own source with it.** The Markdown plugin's rule is that a figure
+  which cannot be drawn says so *where it was*, with the block's source below it — "a silently
+  missing figure is the failure that gets reported as 'the viewer lost my text'". The parse-error
+  path obeyed it; the path where Mermaid's promise never settles did not, because the `.catch` that
+  restores the source never ran. The `<pre>` had already been replaced by an empty holder, so the
+  diagram *and* its text were simply gone — in the viewer and in an exported PDF, with nothing said.
+  Found by deliberately arming a `render()` that never settles, which is what a broken engine file in
+  the reader's own folder amounts to. The page now carries its own ten-second deadline per diagram,
+  so the rule holds on the same path as a parse error.
+
+
 - **Choosing SFTP locked a connection to the anonymous login** (#4). A new site starts with
   "Anonymous" ticked, and SSH has no anonymous login — so picking SFTP greyed the box out while it
   was still ticked, and `.anonymous` is what disables the user name and the password as well. All
