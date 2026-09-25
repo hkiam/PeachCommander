@@ -27,6 +27,16 @@
 <p>Both can be switched off separately in <strong>Configuration ▸ Settings ▸ Markdown</strong>, which is also where you can see which engine version is in use and where it came from.</p>
 <h2 id="your-own-engine-version">Your own engine version</h2>
 <p>If you need a newer or different build of Mermaid or KaTeX, put it in the folder the <strong>Engine Folder…</strong> button opens and it is used instead of the bundled one. The file names are <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> and <code>auto-render.min.js</code>. Nothing is ever fetched from the internet for you.</p>
+<h2 id="making-a-pdf">Making a PDF</h2>
+<p>With the cursor on a <code>.md</code> or <code>.html</code> file, <strong>Commands ▸ Export to PDF…</strong> — or the same entry in the panel's context menu — writes the document as a PDF beside it, under its own name. It is offered on ordinary folders only — inside an archive or on a mounted drive there is no file on the disk to read and nowhere beside it to write. Mark several documents and they are exported one after the other.</p>
+<p>The PDF is the page you see with F3: the same stylesheet, the same coloured code, the same diagrams and mathematics. It is laid out on A4 by default (Letter is a setting), the page breaks fall between paragraphs, list items and table rows rather than through a line of text, and no page begins without the heading its section starts with. A document with something too wide for the text column — a table with many columns, a long unbroken line — is scaled down to fit rather than cut off at the edge, the way a browser's own print does it.</p>
+<p>On the plugin's settings page, under <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Paper</strong> — A4 or US Letter.</li>
+<li><strong>Replace an existing PDF of the same name</strong> — off by default, so a second export is written beside the first as <code>Name 2.pdf</code> rather than overwriting it.</li>
+<li><strong>Show the new PDF in the panel</strong> — moves the panel to the file that was just written. With this off you get a short message instead, so an export is never silent.</li>
+</ul>
+<p>A document too large for the formatted view (see <strong>Limits</strong>) cannot be exported either; the message names it.</p>
 <h2 id="what-the-rendered-page-will-not-do">What the rendered page will not do</h2>
 <p>The formatted page is deliberately sealed off, because a Markdown file is content that came from somewhere else:</p>
 <ul>

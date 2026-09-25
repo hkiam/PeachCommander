@@ -27,6 +27,16 @@
 <p>Ambos se pueden desactivar por separado en <strong>Configuración ▸ Ajustes ▸ Markdown</strong>, donde también se ve qué versión está en uso y de dónde viene.</p>
 <h2 id="su-propia-version">Su propia versión</h2>
 <p>Si necesita una versión más nueva o distinta de Mermaid o KaTeX, colóquela en la carpeta que abre el botón <strong>Engine Folder…</strong> y se usará en lugar de la incluida. Los nombres de archivo son <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> y <code>auto-render.min.js</code>. Nunca se descarga nada de internet en su nombre.</p>
+<h2 id="crear-un-pdf">Crear un PDF</h2>
+<p>Con el cursor sobre un archivo <code>.md</code> o <code>.html</code>, <strong>Órdenes ▸ Exportar a PDF…</strong> — o la misma entrada en el menú contextual del panel — escribe el documento como PDF junto a él, con su propio nombre. Solo se ofrece en carpetas normales — dentro de un archivo comprimido o en una unidad montada no hay un archivo en el disco que leer ni un junto a él donde escribir. Marque varios documentos y se exportan uno tras otro.</p>
+<p>El PDF es la página que ve con F3: la misma hoja de estilo, el mismo código coloreado, los mismos diagramas y las mismas matemáticas. Se compone en A4 de forma predeterminada (Letter es un ajuste), los saltos de página caen entre párrafos, elementos de lista y filas de tabla en lugar de en medio de una línea de texto, y ninguna página empieza sin el título con el que empieza su sección. Un documento con algo demasiado ancho para la columna de texto — una tabla de muchas columnas, una línea larga e ininterrumpida — se reduce para que quepa en lugar de cortarse en el borde, igual que hace la impresión de un navegador.</p>
+<p>En la página de ajustes del plugin, bajo <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papel</strong> — A4 o US Letter.</li>
+<li><strong>Reemplazar un PDF existente con el mismo nombre</strong> — desactivado de serie, de modo que una segunda exportación se escribe junto a la primera como <code>Name 2.pdf</code> en lugar de sobrescribirla.</li>
+<li><strong>Mostrar el nuevo PDF en el panel</strong> — lleva el panel al archivo recién escrito. Con esto desactivado recibe en su lugar un mensaje breve, para que una exportación nunca sea silenciosa.</li>
+</ul>
+<p>Un documento demasiado grande para la vista con formato (véase <strong>Límites</strong>) tampoco puede exportarse; el mensaje lo nombra.</p>
 <h2 id="lo-que-la-pagina-con-formato-no-hara">Lo que la página con formato no hará</h2>
 <p>La página con formato está deliberadamente aislada, porque un archivo Markdown es contenido que viene de otro sitio:</p>
 <ul>

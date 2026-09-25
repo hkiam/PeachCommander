@@ -27,6 +27,16 @@
 <p>Obojí lze vypnout zvlášť v <strong>Konfigurace ▸ Nastavení ▸ Markdown</strong>, kde je také vidět, která verze se používá a odkud pochází.</p>
 <h2 id="vase-vlastni-verze">Vaše vlastní verze</h2>
 <p>Potřebujete-li novější nebo jinou verzi Mermaid či KaTeX, vložte ji do složky, kterou otevře tlačítko <strong>Engine Folder…</strong>, a použije se místo dodané. Jména souborů jsou <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> a <code>auto-render.min.js</code>. Z internetu se pro vás nikdy nic nestahuje.</p>
+<h2 id="vytvorit-pdf">Vytvořit PDF</h2>
+<p>Když kurzor stojí na souboru <code>.md</code> nebo <code>.html</code>, <strong>Příkazy ▸ Exportovat do PDF…</strong> — nebo tatáž položka v kontextové nabídce panelu — zapíše dokument jako PDF vedle něj, pod jeho vlastním jménem. Nabízí se jen v běžných složkách — v archivu nebo na připojené jednotce není soubor na disku ke čtení ani místo vedle k zápisu. Označte více dokumentů a exportují se jeden po druhém.</p>
+<p>PDF je táž stránka, kterou vidíte pod F3: tentýž styl, tentýž obarvený kód, tytéž diagramy a tatáž matematika. Sází se předvolené na A4 (Letter je nastavení), zlomy stran padnou mezi odstavce, položky seznamu a řádky tabulky místo doprostřed řádku textu, a žádná strana nezačíná bez nadpisu, kterým její oddíl začíná. Dokument s něčím, co je širší než textový sloupec — tabulka s mnoha sloupci, dlouhý nepřerušený řádek — se zmenší, aby se vešel, místo aby byl u okraje oříznut, tak jak to dělá tisk prohlížeče.</p>
+<p>Na stránce nastavení zásuvného modulu, pod <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papír</strong> — A4 nebo US Letter.</li>
+<li><strong>Nahradit stávající PDF stejného jména</strong> — ve výchozím stavu vypnuto, takže druhý export se zapíše vedle prvního jako <code>Name 2.pdf</code> místo jeho přepsání.</li>
+<li><strong>Zobrazit nové PDF v panelu</strong> — přesune panel na právě zapsaný soubor. Je-li to vypnuto, dostanete místo toho krátkou zprávu, aby export nikdy nebyl tichý.</li>
+</ul>
+<p>Dokument příliš velký pro formátovaný pohled (viz <strong>Meze</strong>) nelze ani exportovat; zpráva jej pojmenuje.</p>
 <h2 id="co-formatovana-stranka-neudela">Co formátovaná stránka neudělá</h2>
 <p>Formátovaná stránka je záměrně odříznutá, protože soubor Markdown je obsah, který přišel odjinud:</p>
 <ul>

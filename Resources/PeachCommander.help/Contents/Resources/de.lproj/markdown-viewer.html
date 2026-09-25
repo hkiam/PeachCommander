@@ -27,6 +27,16 @@
 <p>Beides lässt sich getrennt abschalten in <strong>Konfiguration ▸ Einstellungen ▸ Markdown</strong>, wo auch steht, welche Fassung im Einsatz ist und woher sie kommt.</p>
 <h2 id="ihre-eigene-fassung">Ihre eigene Fassung</h2>
 <p>Wenn Sie eine neuere oder andere Fassung von Mermaid oder KaTeX brauchen, legen Sie sie in den Ordner, den die Schaltfläche <strong>Engine Folder…</strong> öffnet, und sie wird anstelle der mitgelieferten benutzt. Die Dateinamen sind <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> und <code>auto-render.min.js</code>. Aus dem Internet wird nie etwas für Sie geholt.</p>
+<h2 id="ein-pdf-erzeugen">Ein PDF erzeugen</h2>
+<p>Steht der Cursor auf einer <code>.md</code>- oder <code>.html</code>-Datei, schreibt <strong>Befehle ▸ Als PDF exportieren…</strong> — oder derselbe Eintrag im Kontextmenü des Dateifensters — das Dokument als PDF daneben, unter seinem eigenen Namen. Angeboten wird das nur in gewöhnlichen Ordnern — in einem Archiv oder auf einem eingehängten Laufwerk gibt es keine Datei auf der Platte zu lesen und kein Daneben zum Schreiben. Markieren Sie mehrere Dokumente, werden sie nacheinander exportiert.</p>
+<p>Das PDF ist die Seite, die Sie mit F3 sehen: dasselbe Stylesheet, derselbe gefärbte Quelltext, dieselben Diagramme und dieselbe Mathematik. Gesetzt wird voreingestellt auf A4 (Letter ist eine Einstellung), die Seitenumbrüche fallen zwischen Absätze, Listeneinträge und Tabellenzeilen statt mitten durch eine Textzeile, und keine Seite beginnt ohne die Überschrift, mit der ihr Abschnitt anfängt. Ein Dokument mit etwas, das breiter ist als die Textspalte — eine Tabelle mit vielen Spalten, eine lange ununterbrochene Zeile — wird verkleinert, statt am Rand abgeschnitten zu werden, so wie es der Druck eines Browsers auch macht.</p>
+<p>Auf der Einstellungsseite des Plugins, unter <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papier</strong> — A4 oder US Letter.</li>
+<li><strong>Ein vorhandenes PDF gleichen Namens ersetzen</strong> — aus als Voreinstellung, ein zweiter Export wird also als <code>Name 2.pdf</code> daneben geschrieben, statt den ersten zu überschreiben.</li>
+<li><strong>Das neue PDF im Dateifenster zeigen</strong> — bringt das Dateifenster auf die eben geschriebene Datei. Ist das aus, bekommen Sie stattdessen eine kurze Meldung, damit ein Export nie stumm bleibt.</li>
+</ul>
+<p>Ein Dokument, das für die formatierte Ansicht zu groß ist (siehe <strong>Grenzen</strong>), lässt sich auch nicht exportieren; die Meldung nennt es.</p>
 <h2 id="was-die-formatierte-seite-nicht-tut">Was die formatierte Seite nicht tut</h2>
 <p>Die formatierte Seite ist bewusst abgeschottet, denn eine Markdown-Datei ist Inhalt, der von woanders kommt:</p>
 <ul>

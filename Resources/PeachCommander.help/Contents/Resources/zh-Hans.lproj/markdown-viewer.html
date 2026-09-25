@@ -27,6 +27,16 @@
 <p>两者可以在<strong>配置 ▸ 设置 ▸ Markdown</strong> 中分别关闭；那里也能看到正在使用哪个版本、来自何处。</p>
 <h2 id="_4">你自己的版本</h2>
 <p>如果需要更新或不同的 Mermaid、KaTeX 构建，把它放进<strong>Engine Folder…</strong>按钮打开的文件夹，就会用它代替随附的那份。文件名为 <code>mermaid.min.js</code>、<code>katex.min.js</code>、<code>katex.min.css</code> 和 <code>auto-render.min.js</code>。永远不会替你从互联网获取任何东西。</p>
+<h2 id="pdf">生成 PDF</h2>
+<p>把光标放在 <code>.md</code> 或 <code>.html</code> 文件上，<strong>命令 ▸ 导出为 PDF…</strong>（面板右键菜单中也有同一项）会把该文档以自身的名称写成 PDF，放在它旁边。它只在普通文件夹中提供——在压缩包内或已挂载的驱动器上，既没有磁盘上的文件可读，也没有可写入的旁边位置。标记多个文档，它们会被逐个导出。</p>
+<p>这个 PDF 就是您按 F3 看到的那一页：相同的样式表、相同的着色代码、相同的图表与公式。默认按 A4 排版（Letter 是一项设置），分页落在段落、列表项和表格行之间，而不会从一行文字中间切开，并且没有哪一页会缺少其小节开头的标题。若文档中有超出文字栏宽度的内容——列数很多的表格、一行很长且无法断开的文字——会整体缩小以适应，而不是在边缘被切掉，这与浏览器自身的打印做法一致。</p>
+<p>在插件的设置页面，<strong>PDF</strong> 之下：</p>
+<ul>
+<li><strong>纸张</strong> — A4 或 US Letter。</li>
+<li><strong>替换同名的现有 PDF</strong> — 默认关闭，因此第二次导出会以 <code>Name 2.pdf</code> 写在第一个旁边，而不是覆盖它。</li>
+<li><strong>在面板中显示新的 PDF</strong> — 把面板移到刚写好的文件上。关闭时您会收到一条简短消息，这样导出就不会悄无声息。</li>
+</ul>
+<p>对格式化视图来说过大的文档（见<strong>限制</strong>）同样无法导出；消息会指出是哪一个。</p>
 <h2 id="_5">排版页面不会做的事</h2>
 <p>排版页面是刻意隔离的，因为 Markdown 文件是来自别处的内容：</p>
 <ul>

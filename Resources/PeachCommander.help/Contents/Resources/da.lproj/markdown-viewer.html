@@ -27,6 +27,16 @@
 <p>Begge kan slås fra hver for sig i <strong>Konfiguration ▸ Indstillinger ▸ Markdown</strong>, hvor man også kan se, hvilken version der er i brug, og hvor den kommer fra.</p>
 <h2 id="din-egen-version">Din egen version</h2>
 <p>Har du brug for en nyere eller anden udgave af Mermaid eller KaTeX, så læg den i den mappe, knappen <strong>Engine Folder…</strong> åbner, og den bruges i stedet for den medfølgende. Filnavnene er <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> og <code>auto-render.min.js</code>. Der hentes aldrig noget fra internettet for dig.</p>
+<h2 id="lav-en-pdf">Lav en PDF</h2>
+<p>Med markøren på en <code>.md</code>- eller <code>.html</code>-fil skriver <strong>Kommandoer ▸ Eksportér til PDF…</strong> — eller samme punkt i panelets kontekstmenu — dokumentet som en PDF ved siden af det, under dets eget navn. Det tilbydes kun i almindelige mapper — inde i et arkiv eller på et monteret drev er der ingen fil på disken at læse og ingen plads ved siden af at skrive til. Markér flere dokumenter, og de eksporteres et efter et.</p>
+<p>PDF'en er den side, du ser med F3: samme stylesheet, samme farvede kode, samme diagrammer og samme matematik. Der sættes op på A4 som standard (Letter er en indstilling), sideskiftene falder mellem afsnit, listepunkter og tabelrækker frem for midt gennem en tekstlinje, og ingen side begynder uden den overskrift, som dens afsnit starter med. Et dokument med noget, der er for bredt til tekstspalten — en tabel med mange kolonner, en lang ubrudt linje — skaleres ned, så det passer, i stedet for at blive skåret af ved kanten, sådan som en browsers egen udskrift gør det.</p>
+<p>På pluginets indstillingsside, under <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papir</strong> — A4 eller US Letter.</li>
+<li><strong>Erstat en eksisterende PDF med samme navn</strong> — slået fra som standard, så en anden eksport skrives ved siden af den første som <code>Name 2.pdf</code> i stedet for at overskrive den.</li>
+<li><strong>Vis den nye PDF i panelet</strong> — flytter panelet til den fil, der lige er skrevet. Er dette slået fra, får du en kort besked i stedet, så en eksport aldrig er tavs.</li>
+</ul>
+<p>Et dokument, der er for stort til den formaterede visning (se <strong>Grænser</strong>), kan heller ikke eksporteres; beskeden nævner det.</p>
 <h2 id="hvad-den-formaterede-side-ikke-gr">Hvad den formaterede side ikke gør</h2>
 <p>Den formaterede side er bevidst lukket af, for en Markdown-fil er indhold, der kommer fra et andet sted:</p>
 <ul>

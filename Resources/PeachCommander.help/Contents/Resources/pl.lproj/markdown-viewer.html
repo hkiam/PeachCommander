@@ -27,6 +27,16 @@
 <p>Oba można wyłączyć osobno w <strong>Konfiguracja ▸ Ustawienia ▸ Markdown</strong>, gdzie widać także, która wersja jest używana i skąd pochodzi.</p>
 <h2 id="wasna-wersja">Własna wersja</h2>
 <p>Jeśli potrzebujesz nowszej lub innej wersji Mermaid albo KaTeX, umieść ją w folderze, który otwiera przycisk <strong>Engine Folder…</strong>, i zostanie użyta zamiast dostarczonej. Nazwy plików to <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> i <code>auto-render.min.js</code>. Nic nigdy nie jest pobierane z internetu.</p>
+<h2 id="zrobic-pdf">Zrobić PDF</h2>
+<p>Gdy kursor stoi na pliku <code>.md</code> lub <code>.html</code>, <strong>Polecenia ▸ Eksportuj do PDF…</strong> — albo ta sama pozycja w menu kontekstowym panelu — zapisuje dokument jako PDF obok niego, pod jego własną nazwą. Jest to proponowane tylko w zwykłych katalogach — w archiwum albo na zamontowanym dysku nie ma pliku na dysku do odczytania ani miejsca obok do zapisania. Zaznaczcie kilka dokumentów, a zostaną wyeksportowane jeden po drugim.</p>
+<p>PDF to ta sama strona, którą widzicie pod F3: ten sam arkusz stylów, ten sam pokolorowany kod, te same diagramy i ta sama matematyka. Skład odbywa się domyślnie na A4 (Letter jest ustawieniem), podziały stron wypadają między akapitami, punktami listy i wierszami tabeli, a nie w środku wiersza tekstu, i żadna strona nie zaczyna się bez nagłówka, od którego zaczyna się jej sekcja. Dokument z czymś zbyt szerokim dla kolumny tekstu — tabelą o wielu kolumnach, długim nieprzerwanym wierszem — jest pomniejszany, aby się zmieścił, zamiast być ucinanym przy krawędzi, tak jak robi to wydruk przeglądarki.</p>
+<p>Na stronie ustawień wtyczki, pod <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papier</strong> — A4 albo US Letter.</li>
+<li><strong>Zastępuj istniejący PDF o tej samej nazwie</strong> — domyślnie wyłączone, więc drugi eksport zapisywany jest obok pierwszego jako <code>Name 2.pdf</code>, zamiast go nadpisać.</li>
+<li><strong>Pokaż nowy PDF w panelu</strong> — przenosi panel na właśnie zapisany plik. Gdy to wyłączone, dostajecie krótki komunikat, więc eksport nigdy nie przebiega w ciszy.</li>
+</ul>
+<p>Dokumentu zbyt dużego dla widoku sformatowanego (zobacz <strong>Ograniczenia</strong>) też nie da się wyeksportować; komunikat go nazywa.</p>
 <h2 id="czego-strona-sformatowana-nie-zrobi">Czego strona sformatowana nie zrobi</h2>
 <p>Strona sformatowana jest celowo odcięta, bo plik Markdown to treść, która przyszła z zewnątrz:</p>
 <ul>

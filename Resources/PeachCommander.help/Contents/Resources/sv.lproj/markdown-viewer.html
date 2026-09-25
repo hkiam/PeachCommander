@@ -27,6 +27,16 @@
 <p>Båda kan stängas av separat i <strong>Konfiguration ▸ Inställningar ▸ Markdown</strong>, där man också ser vilken version som används och varifrån den kommer.</p>
 <h2 id="din-egen-version">Din egen version</h2>
 <p>Behöver du en nyare eller annan version av Mermaid eller KaTeX, lägg den i mappen som knappen <strong>Engine Folder…</strong> öppnar, och den används i stället för den medföljande. Filnamnen är <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> och <code>auto-render.min.js</code>. Inget hämtas någonsin från internet för din räkning.</p>
+<h2 id="gora-en-pdf">Göra en PDF</h2>
+<p>Med markören på en <code>.md</code>- eller <code>.html</code>-fil skriver <strong>Kommandon ▸ Exportera till PDF…</strong> — eller samma post i panelens snabbmeny — dokumentet som en PDF bredvid det, under dess eget namn. Det erbjuds endast i vanliga mappar — inuti ett arkiv eller på en monterad enhet finns ingen fil på disken att läsa och ingen plats bredvid att skriva till. Markera flera dokument så exporteras de ett efter ett.</p>
+<p>PDF:en är den sida du ser med F3: samma stilmall, samma färgade kod, samma diagram och samma matematik. Den sätts på A4 som standard (Letter är en inställning), sidbrytningarna faller mellan stycken, listpunkter och tabellrader i stället för mitt i en textrad, och ingen sida börjar utan den rubrik som dess avsnitt inleds med. Ett dokument med något som är för brett för textspalten — en tabell med många kolumner, en lång obruten rad — skalas ned så att det får plats i stället för att skäras av vid kanten, så som en webbläsares egen utskrift gör.</p>
+<p>På tilläggets inställningssida, under <strong>PDF</strong>:</p>
+<ul>
+<li><strong>Papper</strong> — A4 eller US Letter.</li>
+<li><strong>Ersätt en befintlig PDF med samma namn</strong> — av som standard, så en andra export skrivs bredvid den första som <code>Name 2.pdf</code> i stället för att ersätta den.</li>
+<li><strong>Visa den nya PDF:en i panelen</strong> — flyttar panelen till filen som just skrevs. Med detta avstängt får du ett kort meddelande i stället, så att en export aldrig är tyst.</li>
+</ul>
+<p>Ett dokument som är för stort för den formaterade vyn (se <strong>Gränser</strong>) kan inte heller exporteras; meddelandet namnger det.</p>
 <h2 id="vad-den-formaterade-sidan-inte-gor">Vad den formaterade sidan inte gör</h2>
 <p>Den formaterade sidan är avsiktligt avskild, för en Markdown-fil är innehåll som kommer någon annanstans ifrån:</p>
 <ul>
