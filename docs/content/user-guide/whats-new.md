@@ -11,13 +11,30 @@ related: [version-notes, known-limitations, installation]
 
 # What's new
 
-Peach Commander is at **0.9.2**, released 19 September 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
+Peach Commander is at **0.9.3**, released 25 September 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
 
 <div class="pc-release pc-release--latest" markdown="1">
 
+## 0.9.3 <span class="pc-release__date">25 September 2026</span>
+
+<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">1 new</span><span class="pc-chip">6 fixed</span></p>
+
+Markdown and HTML as PDFs, from the renderer that already draws them — and the five ways an SFTP
+site could be left unable to log in at all.
+
+**What it added**
+
+- Markdown and HTML documents export as PDFs.
+
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.3">0.9.3 in full — the other 6 notes &rarr;</a></p>
+
+</div>
+
+<div class="pc-release" markdown="1">
+
 ## 0.9.2 <span class="pc-release__date">19 September 2026</span>
 
-<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">3 changed</span><span class="pc-chip">9 fixed</span></p>
+<p class="pc-release__chips"><span class="pc-chip">3 changed</span><span class="pc-chip">9 fixed</span></p>
 
 Named workspaces, a keyboard that works the same in every view — and the packaging defect behind
 "it keeps asking for folder permissions".
@@ -70,28 +87,14 @@ The rest came from use: the terminal tab's ✕ sits inside the tab and asks befo
 stopped clipping its own letters, Escape closes the synchronise window, and the search dialog's third
 field remembers the folders you searched.
 
-**What it added**
+**Highlights**
 
 - A container's log is a file now.
 - The Docker provider has a settings page.
 - A container or a volume has a context menu now.
 - Docker containers and volumes are a drive.
-- You can look at one side of a synchronisation row.
-- The compare window says when there is nothing to see.
-- You can see what the app remembers, and make it forget.
-- A third synchronisation mode that can carry a deletion across.
-- An advanced filter for the directory synchronisation.
-- A recursive permission change can be watched and stopped.
-- The comparison tolerance is on screen.
-- Synchronize Directories says what it is doing while it does it.
-- The result grid now shows the dates, and can be ordered and asked about.
-- A conflict can be given a direction.
-- Synchronizing reports its progress and can be stopped.
-- Swap sides.
-- Two comparison options that existed in the model and nowhere on screen.
-- A direction filter over the compared result, and it drives the selection.
 
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1">0.9.1 in full — the other 52 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1">0.9.1 in full — the other 66 notes &rarr;</a></p>
 
 </div>
 
@@ -212,14 +215,7 @@ tokens, leaving 473 for your question, the file and the answer together — so i
 language, mistook folders for files, and died on the second message telling you to start a new chat,
 which changed nothing. That was the default every new reader landed on.
 
-**Highlights**
-
-- Macros: a named sequence of file actions, and the quickest way to one is to do it once.
-- AppleScript and JavaScript can now be run *by* Peach Commander, not just used to drive it.
-- The side panel's pages can be switched off, and it now ships showing Info alone.
-- AI On-Device — five actions that do the work instead of talking about it.
-
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0">0.8.0 in full — the other 25 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.0">0.8.0 in full — all 29 notes &rarr;</a></p>
 
 </div>
 

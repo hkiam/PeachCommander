@@ -15,6 +15,11 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+## [0.9.3] — 2026-09-25
+
+Markdown and HTML as PDFs, from the renderer that already draws them — and the five ways an SFTP
+site could be left unable to log in at all.
+
 ### Added
 
 - **Markdown and HTML documents export as PDFs.** With the cursor on a `.md` or `.html` file,
@@ -3148,6 +3153,8 @@ this is the release to take.
 First public beta: dual-panel browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.9.3]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.3
+[0.9.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.2
 [0.9.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1
 [0.9.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.0
 [0.8.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.8.2
