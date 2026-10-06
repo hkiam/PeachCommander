@@ -60,7 +60,9 @@ final class ProgressDialog: NSWindowController {
     func update(_ progress: OpProgress) {
         currentItemLabel.stringValue = progress.currentItem
 
-        if progress.bytesTotal > 0 {
+        // While the totals are still being counted they only grow, and a fraction of them would run
+        // backwards; the bar waits for the count to finish.
+        if progress.bytesTotal > 0, !progress.isCounting {
             totalProgressIndicator.isIndeterminate = false
             totalProgressIndicator.minValue = 0
             totalProgressIndicator.maxValue = 1

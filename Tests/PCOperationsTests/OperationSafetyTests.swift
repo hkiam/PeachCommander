@@ -352,6 +352,45 @@ final class OperationSafetyTests: XCTestCase {
         XCTAssertEqual(seen.maximum, 1)
     }
 
+    /// The totals are counted beside the copy now, not before it; the last report still has to carry
+    /// the whole tree, and say the count is over, or the bar would stay indeterminate.
+    func test_theLastReportCarriesTheFinishedCount() async throws {
+        _ = try makeDirectory("tree/a/b")
+        try write("12345", "tree/one.txt")
+        try write("1234567890", "tree/a/two.txt")
+        try write("123", "tree/a/b/three.txt")
+        let destDir = try makeDirectory("dest")
+
+        let last = LastProgressBox()
+        let engine = CopyEngine(options: CopyOptions(), control: OperationControl(),
+                                resolver: SkipAllResolver(), progress: { last.record($0) })
+        _ = try await engine.run(items: [root.appendingPathComponent("tree").path],
+                                 toDirectory: destDir.path)
+
+        let final = try XCTUnwrap(last.value)
+        XCTAssertEqual(final.filesTotal, 3)
+        XCTAssertEqual(final.bytesTotal, 18)
+        XCTAssertFalse(final.isCounting)
+    }
+
+    /// The bulk listing has to agree with what `lstat` says, entry by entry, or the plan counts a
+    /// different tree from the one the copy walks.
+    func test_theBulkListingAgreesWithLstat() throws {
+        let dir = try makeDirectory("bulk")
+        _ = try makeDirectory("bulk/sub")
+        try write("hello", "bulk/file.txt")
+        try fm.createSymbolicLink(atPath: dir.appendingPathComponent("link").path,
+                                  withDestinationPath: "file.txt")
+
+        let entries = try XCTUnwrap(FSLowLevel.bulkEntries(of: dir.path))
+        XCTAssertEqual(Set(entries.map(\.name)), ["sub", "file.txt", "link"])
+        for entry in entries {
+            let path = dir.appendingPathComponent(entry.name).path
+            XCTAssertEqual(entry.kind, FSLowLevel.kind(of: path), entry.name)
+            if entry.kind == .file { XCTAssertEqual(entry.size, FSLowLevel.size(of: path), entry.name) }
+        }
+    }
+
     /// A link pointing at itself must not recurse until the stack runs out.
     func test_aSelfReferentialSymlinkIsRefusedRatherThanRecursing() async throws {
         let link = root.appendingPathComponent("loop")
@@ -374,4 +413,12 @@ private final class TotalsBox: @unchecked Sendable {
     private var highest = 0
     func record(_ value: Int) { lock.lock(); highest = max(highest, value); lock.unlock() }
     var maximum: Int { lock.lock(); defer { lock.unlock() }; return highest }
+}
+
+/// Keeps the most recent progress report, off whatever thread it arrived on.
+private final class LastProgressBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var last: OpProgress?
+    func record(_ p: OpProgress) { lock.lock(); last = p; lock.unlock() }
+    var value: OpProgress? { lock.lock(); defer { lock.unlock() }; return last }
 }

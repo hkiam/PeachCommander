@@ -15,6 +15,15 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A large copy from a network share sat counting before it started.** The copy counted the whole
+  source tree first, with two `lstat` calls per file — on SMB each one a round trip — and moved no
+  byte until the count was done. The totals are now counted beside the copy, a directory at a time
+  through `getattrlistbulk`, and the progress bar runs indeterminate until they are complete.
+  Measured on an SMB share with 2000 files: counting took 1.9 s and now takes 0.4 s, and the first
+  byte moves after about half a second instead of after the count.
+
 ## [0.9.3] — 2026-09-25
 
 Markdown and HTML as PDFs, from the renderer that already draws them — and the five ways an SFTP

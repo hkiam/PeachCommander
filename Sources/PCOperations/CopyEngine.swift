@@ -41,9 +41,14 @@ public final class CopyEngine {
     /// Copy each item into `dstDir`. Returns the source paths fully processed.
     @discardableResult
     public func run(items: [String], toDirectory dstDir: String) async throws -> [String] {
-        let totals = planTotals(items)
-        state.filesTotal = totals.files
-        state.bytesTotal = totals.bytes
+        // Counted beside the copy rather than before it. Counting first meant a large tree on a slow
+        // share sat at nothing for minutes before the first byte moved; the totals now arrive while
+        // the bytes already do, and `report` folds in whatever has been counted so far.
+        let tally = Tally()
+        let follow = options.followSymlinks
+        let counting = Task.detached(priority: .utility) { Self.countTotals(items, followSymlinks: follow, into: tally) }
+        defer { counting.cancel() }
+        self.tally = tally
         report()
 
         for src in items {
@@ -74,42 +79,85 @@ public final class CopyEngine {
                 }
             }
         }
+        // The last report carries the finished totals, not whatever the count had reached when the
+        // final byte went out — a small tree can be copied before its count returns.
+        await counting.value
+        report()
         return processed
     }
 
     // MARK: - Planning
 
-    private func planTotals(_ items: [String]) -> (files: Int, bytes: Int64) {
-        var files = 0
-        var bytes: Int64 = 0
-        var stack = items
+    /// Totals counted so far, written by the counting task and read by `report`.
+    final class Tally: @unchecked Sendable {
+        private let lock = NSLock()
+        private var files = 0
+        private var bytes: Int64 = 0
+        private var finished = false
+
+        func add(files: Int, bytes: Int64) {
+            lock.lock(); self.files += files; self.bytes += bytes; lock.unlock()
+        }
+        func finish() { lock.lock(); finished = true; lock.unlock() }
+        var snapshot: (files: Int, bytes: Int64, finished: Bool) {
+            lock.lock(); defer { lock.unlock() }
+            return (files, bytes, finished)
+        }
+    }
+
+    private var tally: Tally?
+
+    /// Count what `items` will copy. Directory by directory through `getattrlistbulk`, so the cost on
+    /// a network volume is a round trip per directory rather than two per file; per file only where
+    /// the volume cannot answer that way. Stops early when the copy it runs beside is over.
+    static func countTotals(_ items: [String], followSymlinks: Bool, into tally: Tally) {
+        var stack: [String] = []
         // Only needed for the followed-symlink walk below, where a link can point back at a folder
         // already on the stack. A plain tree walk cannot revisit a path.
         var seen = Set<String>()
-        while let path = stack.popLast() {
-            guard let kind = FSLowLevel.kind(of: path) else { continue }
+        func countOne(_ path: String, kind: FSKind, size: @autoclosure () -> Int64) {
             switch kind {
             case .file:
-                files += 1
-                bytes += FSLowLevel.size(of: path)
+                tally.add(files: 1, bytes: size())
             case .symlink:
                 // With `followSymlinks` the copy takes what the link points at, which may be a whole
                 // directory — counted as one file here, the total was short by everything inside it
                 // and the progress bar filled past its own end.
-                guard options.followSymlinks else {
-                    files += 1
-                    bytes += FSLowLevel.size(of: path)
-                    continue
-                }
+                guard followSymlinks else { tally.add(files: 1, bytes: size()); return }
                 let resolved = (path as NSString).resolvingSymlinksInPath
-                if resolved != path, seen.insert(resolved).inserted { stack.append(resolved) }
+                guard resolved != path, seen.insert(resolved).inserted,
+                      let target = FSLowLevel.kind(of: resolved) else { return }
+                countOne(resolved, kind: target, size: FSLowLevel.size(of: resolved))
             case .directory:
-                if let children = DeepPath.contentsOfDirectory(path) {
-                    for c in children { stack.append((path as NSString).appendingPathComponent(c)) }
+                stack.append(path)
+            }
+        }
+        // The top-level items are named by the caller, so their kinds have to be asked for.
+        for path in items {
+            guard let kind = FSLowLevel.kind(of: path) else { continue }
+            countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+        }
+        while let dir = stack.popLast() {
+            if Task.isCancelled { return }
+            if let entries = FSLowLevel.bulkEntries(of: dir) {
+                for entry in entries {
+                    let path = (dir as NSString).appendingPathComponent(entry.name)
+                    if let kind = entry.kind {
+                        countOne(path, kind: kind, size: entry.size)
+                    } else if let kind = FSLowLevel.kind(of: path) {
+                        countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+                    }
+                }
+            } else if let children = DeepPath.contentsOfDirectory(dir) {
+                for child in children {
+                    let path = (dir as NSString).appendingPathComponent(child)
+                    if let kind = FSLowLevel.kind(of: path) {
+                        countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+                    }
                 }
             }
         }
-        return (files, bytes)
+        tally.finish()
     }
 
     // MARK: - Recursion
@@ -465,5 +513,13 @@ public final class CopyEngine {
         return elapsed > 0 ? Double(state.bytesDone) / elapsed : 0
     }
 
-    private func report() { progress(state) }
+    private func report() {
+        if let counted = tally?.snapshot {
+            // Never below what is already done: the copy can run ahead of the count.
+            state.filesTotal = max(counted.files, state.filesDone)
+            state.bytesTotal = max(counted.bytes, state.bytesDone)
+            state.isCounting = !counted.finished
+        }
+        progress(state)
+    }
 }

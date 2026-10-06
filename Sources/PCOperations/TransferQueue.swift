@@ -30,6 +30,7 @@ final class ProgressThrottle: @unchecked Sendable {
     private let continuation: AsyncStream<OpEvent>.Continuation
     private let minInterval: TimeInterval
     private var lastEmit = Date.distantPast
+    private var lastCounting = false
     private let lock = NSLock()
 
     init(_ continuation: AsyncStream<OpEvent>.Continuation, hz: Double = 30) {
@@ -40,8 +41,13 @@ final class ProgressThrottle: @unchecked Sendable {
     func emit(_ progress: OpProgress) {
         lock.lock(); defer { lock.unlock() }
         let now = Date()
-        guard now.timeIntervalSince(lastEmit) >= minInterval else { return }
+        // The report in which the count finishes always goes through: the totals are counted beside
+        // the copy, and a small one ends inside the interval, where dropping that report would leave
+        // the totals unfinished for good.
+        guard now.timeIntervalSince(lastEmit) >= minInterval
+                || progress.isCounting != lastCounting else { return }
         lastEmit = now
+        lastCounting = progress.isCounting
         continuation.yield(.progress(progress))
     }
 }

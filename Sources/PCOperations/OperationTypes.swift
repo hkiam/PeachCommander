@@ -15,16 +15,21 @@ public struct OpProgress: Sendable, Equatable {
     public var bytesDone: Int64
     public var currentItem: String
     public var bytesPerSecond: Double
+    /// The totals are still being counted while the work already runs, so they only grow and are not
+    /// yet something to show a fraction of.
+    public var isCounting: Bool
 
     public init(filesTotal: Int = 0, filesDone: Int = 0,
                 bytesTotal: Int64 = 0, bytesDone: Int64 = 0,
-                currentItem: String = "", bytesPerSecond: Double = 0) {
+                currentItem: String = "", bytesPerSecond: Double = 0,
+                isCounting: Bool = false) {
         self.filesTotal = filesTotal
         self.filesDone = filesDone
         self.bytesTotal = bytesTotal
         self.bytesDone = bytesDone
         self.currentItem = currentItem
         self.bytesPerSecond = bytesPerSecond
+        self.isCounting = isCounting
     }
 }
 

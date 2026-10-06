@@ -119,7 +119,8 @@ final class TransferManagerWindowController: NSWindowController {
         bar.minValue = 0; bar.maxValue = 1
         bar.doubleValue = fraction(job.progress)
         if (job.status == .running || job.status == .paused)
-            && job.progress.bytesTotal == 0 && job.progress.filesTotal == 0 {
+            && (job.progress.isCounting
+                || (job.progress.bytesTotal == 0 && job.progress.filesTotal == 0)) {
             bar.isIndeterminate = true; bar.startAnimation(nil)
         }
 

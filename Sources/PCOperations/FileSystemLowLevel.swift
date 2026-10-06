@@ -81,6 +81,91 @@ enum FSLowLevel {
         DeepPath.readSymlink(path)
     }
 
+    /// One directory entry as `getattrlistbulk(2)` reported it. `kind` is nil when the volume did not
+    /// say what the entry is; the caller then has to ask per file.
+    struct BulkEntry {
+        let name: String
+        let kind: FSKind?
+        let size: Int64
+    }
+
+    /// The entries of `dir` with their kind and size, read in batches rather than one `lstat` each.
+    ///
+    /// For the copy's plan, which needs nothing but kind and size of every item in the tree. On a
+    /// network volume each `lstat` is a round trip: `LocalBulkList` in PCVFS measured 19.6 s to stat a
+    /// 1366-entry SMB folder one by one, against 0.098 s for its names, and the plan used to stat every
+    /// file twice before the first byte moved. nil when the directory cannot be opened or the volume
+    /// cannot answer this way; the caller walks it per file instead.
+    static func bulkEntries(of dir: String) -> [BulkEntry]? {
+        let fd = DeepPath.isDeep(dir) ? DeepPath.openDirectory(dir) : open(dir, O_RDONLY | O_DIRECTORY)
+        guard fd >= 0 else { return nil }
+        defer { close(fd) }
+
+        var attrList = attrlist()
+        attrList.bitmapcount = u_short(ATTR_BIT_MAP_COUNT)
+        // RETURNED_ATTRS so a volume that leaves one out does not shift every field after it.
+        var wanted: attrgroup_t = ATTR_CMN_RETURNED_ATTRS
+        wanted |= attrgroup_t(ATTR_CMN_NAME)
+        wanted |= attrgroup_t(ATTR_CMN_OBJTYPE)
+        attrList.commonattr = wanted
+        attrList.fileattr = attrgroup_t(ATTR_FILE_DATALENGTH)
+
+        var buffer = [UInt8](repeating: 0, count: 128 * 1024)
+        var entries: [BulkEntry] = []
+        while true {
+            let produced = buffer.withUnsafeMutableBytes { raw in
+                getattrlistbulk(fd, &attrList, raw.baseAddress, raw.count, 0)
+            }
+            if produced == 0 { return entries }
+            // Nothing has gone to the caller yet, so walking it per file instead repeats nothing.
+            if produced < 0 { return nil }
+            buffer.withUnsafeBytes { raw in
+                var record = raw.baseAddress!
+                for _ in 0..<Int(produced) {
+                    let length = record.loadUnaligned(as: UInt32.self)
+                    if let entry = parseBulkRecord(record) { entries.append(entry) }
+                    record = record.advanced(by: Int(length))
+                }
+            }
+        }
+    }
+
+    /// vnode types from `<sys/vnode.h>`, spelled out for the reason `LocalBulkList` gives.
+    private static let vdirectory: UInt32 = 2
+    private static let vsymlink: UInt32 = 5
+
+    /// Unpack one record. The wire order is the order of the attribute bits: the name reference, the
+    /// object type, then — file attributes coming after common ones — the data length.
+    private static func parseBulkRecord(_ record: UnsafeRawPointer) -> BulkEntry? {
+        var cursor = record.advanced(by: MemoryLayout<UInt32>.size)
+        let returned = cursor.loadUnaligned(as: attribute_set_t.self)
+        cursor = cursor.advanced(by: MemoryLayout<attribute_set_t>.size)
+
+        guard (returned.commonattr & attrgroup_t(ATTR_CMN_NAME)) != 0 else { return nil }
+        let nameRef = cursor.loadUnaligned(as: attrreference_t.self)
+        let name = String(cString: cursor.advanced(by: Int(nameRef.attr_dataoffset))
+                                         .assumingMemoryBound(to: CChar.self))
+        cursor = cursor.advanced(by: MemoryLayout<attrreference_t>.size)
+
+        var kind: FSKind?
+        if (returned.commonattr & attrgroup_t(ATTR_CMN_OBJTYPE)) != 0 {
+            switch cursor.loadUnaligned(as: UInt32.self) {
+            case vdirectory: kind = .directory
+            case vsymlink: kind = .symlink
+            // Anything else — a fifo, a device — is what `kind(of:)` calls a file too.
+            default: kind = .file
+            }
+            cursor = cursor.advanced(by: MemoryLayout<UInt32>.size)
+        }
+        var size: Int64 = 0
+        if (returned.fileattr & attrgroup_t(ATTR_FILE_DATALENGTH)) != 0 {
+            size = Int64(cursor.loadUnaligned(as: off_t.self))
+        } else if kind == .file {
+            kind = nil   // a file whose size did not arrive: ask for it per file
+        }
+        return BulkEntry(name: name, kind: kind, size: size)
+    }
+
     /// Routed through `DeepPath` so a path past PATH_MAX answers instead of reporting "does not
     /// exist" — which is what an lstat failure reads as to every caller above (F-383).
     private static func lstatPath(_ path: String, _ st: inout stat) -> Int32 {
