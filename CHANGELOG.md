@@ -15,6 +15,11 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+## [0.9.4] — 2026-10-07
+
+Copies that start at once from a slow share, and files pasted from a Windows App session that arrive
+with their content instead of zeros.
+
 ### Fixed
 
 - **A large copy from a network share sat counting before it started.** The copy counted the whole
@@ -3173,6 +3178,7 @@ this is the release to take.
 First public beta: dual-panel browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.9.4]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.4
 [0.9.3]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.3
 [0.9.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.2
 [0.9.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.1

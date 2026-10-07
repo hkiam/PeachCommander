@@ -11,13 +11,31 @@ related: [version-notes, known-limitations, installation]
 
 # What's new
 
-Peach Commander is at **0.9.3**, released 25 September 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
+Peach Commander is at **0.9.4**, released 7 October 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
 
 <div class="pc-release pc-release--latest" markdown="1">
 
+## 0.9.4 <span class="pc-release__date">7 October 2026</span>
+
+<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">2 fixed</span></p>
+
+Copies that start at once from a slow share, and files pasted from a Windows App session that arrive
+with their content instead of zeros.
+
+**Highlights**
+
+- A large copy from a network share sat counting before it started.
+- Files pasted from the Windows App arrived full of zeros.
+
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.4">0.9.4 in full — the release itself &rarr;</a></p>
+
+</div>
+
+<div class="pc-release" markdown="1">
+
 ## 0.9.3 <span class="pc-release__date">25 September 2026</span>
 
-<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">1 new</span><span class="pc-chip">6 fixed</span></p>
+<p class="pc-release__chips"><span class="pc-chip">1 new</span><span class="pc-chip">6 fixed</span></p>
 
 Markdown and HTML as PDFs, from the renderer that already draws them — and the five ways an SFTP
 site could be left unable to log in at all.
@@ -192,14 +210,7 @@ depend on it. And each macro is its own file now, because a macro is a thing peo
 and getting one out of a JSON array meant editing by hand — which is also why one typo no longer costs
 you every macro you have.
 
-**Highlights**
-
-- Macros can be recorded with a beginning and an end.
-- A recording survives a restart.
-- A new file (Shift+F4) can be recorded.
-- The macro window can run a macro.
-
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.1">0.8.1 in full — the other 20 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.1">0.8.1 in full — all 24 notes &rarr;</a></p>
 
 </div>
 
