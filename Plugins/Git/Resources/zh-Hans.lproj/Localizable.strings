@@ -177,7 +177,7 @@
 "Use the macOS Keychain" = "使用 macOS 钥匙串";
 "git will now keep credentials in the macOS Keychain (credential.helper = osxkeychain)." = "git 现在会把凭据保存在 macOS 钥匙串中（credential.helper = osxkeychain）。";
 "“%@” has no remote to open." = "“%@”没有可打开的远程。";
-"%lld commit(s) ahead of %@" = "比 %@ 领先 %lld 个提交";
+"%lld commit(s) ahead of %@" = "比 %2$@ 领先 %1$lld 个提交";
 "A rebase is already running. Continue or abort that one first." = "已经有一个 rebase 在进行。请先继续或中止它。";
 "A rebase is half-finished — use “Rebase…” to continue or abort it." = "有一个 rebase 尚未完成 — 用“Rebase…”继续或中止。";
 "A rebase is half-finished. Resolve the conflict, then continue — or abort to get the branch back." = "有一个 rebase 尚未完成。解决冲突后继续，或中止以恢复分支。";
@@ -268,3 +268,32 @@
 "(deleted)" = "（已删除）";
 "Search commits: hash, author, message" = "搜索提交：哈希、作者、消息";
 "No commits found." = "未找到提交。";
+
+/* Phase 7 — the history's context menu. */
+"%lld commit(s) after %@" = "%2$@ 之后的 %1$lld 个提交";
+"Check out" = "检出";
+"Check out %@?" = "检出 %@？";
+"Check out this commit" = "检出此提交";
+"Check out this commit…" = "检出此提交…";
+"Discard every change after this commit?" = "丢弃此提交之后的所有更改？";
+"HEAD is then detached: new commits belong to no branch until you create one." = "HEAD 将处于分离状态：在你创建分支之前，新提交不属于任何分支。";
+"Hard…" = "硬重置…";
+"Interactive rebase from here…" = "从这里交互式变基…";
+"Its own commits are replaced by new ones on top of that commit. If any of them has been pushed already, the branch will have to be force-pushed. A rebase that conflicts stops; continue or abort it in the Rebase window." = "当前分支自己的提交将被替换为此提交之上的新提交。如果其中有已推送的提交，就需要强制推送该分支。发生冲突的变基会停止；请在“变基”窗口中继续或中止。";
+"Merge into the current branch…" = "合并到当前分支…";
+"Mixed" = "混合";
+"New branch at %@" = "在 %@ 新建分支";
+"New branch here…" = "在此新建分支…";
+"New tag at %@" = "在 %@ 新建标签";
+"New tag here…" = "在此新建标签…";
+"Rebase the current branch onto %@?" = "将当前分支变基到 %@？";
+"Rebase the current branch onto this…" = "将当前分支变基到此处…";
+"Reset" = "重置";
+"Reset hard" = "硬重置";
+"Reset the current branch to %@?" = "将当前分支重置到 %@？";
+"Reset the current branch to here…" = "将当前分支重置到此处…";
+"Soft" = "软";
+"Soft keeps the changes of the commits after it staged, Mixed keeps them in the working tree, Hard discards them together with every uncommitted change." = "软重置会保留之后各提交的更改为已暂存，混合重置会保留在工作区，硬重置会连同所有未提交的更改一起丢弃。";
+"That commit is not on the current branch, so there is nothing to rebase from it." = "该提交不在当前分支上，因此无法从它开始变基。";
+"The commits after it and every uncommitted change are gone from the working tree. This cannot be undone here." = "之后的提交和所有未提交的更改都会从工作区消失。此处无法撤销。";
+"The commits are replaced by new ones. If any of them has been pushed already, the branch will have to be force-pushed, and anyone who has them keeps the old ones." = "这些提交将被替换为新的提交。如果其中有已推送的提交，就需要强制推送该分支，已拥有它们的人会保留旧的提交。";

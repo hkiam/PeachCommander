@@ -43,6 +43,7 @@ Under knapparna visar panelen historiken för alla grenar, fjärrgrenar och tagg
 - En commit visar antingen **Commit** — författare, committer, datum, hash, föräldrar, refs, signatur och hela meddelandet — eller **Ändringar**.
 - **Ändringar** visar berörda filer som ett träd och diffen för vald fil med radnummer; ett dubbelklick öppnar jämförelsefönstret.
 - Snabbmenyn kopierar hash eller ämne, återställer, cherry-pickar, öppnar commiten på webben och begränsar listan till **Endast aktuell gren**.
+- Från samma meny kan en commit checkas ut, få en ny gren eller tagg, slås samman in i aktuell gren, få aktuell gren rebasad på sig eller återställd till sig, eller starta en interaktiv rebase.
 - Sökfältet ovanför listan söker i hela historiken — meddelande, författarens namn och e-post eller en hash och dess första tecken — och visar träffarna utan grafen.
 
 ## Historik, blame och webben

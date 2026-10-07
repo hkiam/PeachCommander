@@ -43,6 +43,7 @@ Sotto i pulsanti il pannello mostra la cronologia di tutti i rami, rami remoti e
 - Un commit mostra **Commit** — autore, committer, data, hash, genitori, ref, firma e messaggio completo — oppure **Modifiche**.
 - **Modifiche** elenca i file toccati come albero e il diff del file scelto con i numeri di riga; un doppio clic apre la finestra di confronto.
 - Il menu contestuale copia hash o oggetto, annulla, fa cherry-pick, apre il commit sul web e limita l’elenco a **Solo il ramo corrente**.
+- Dallo stesso menu un commit può essere estratto, ricevere un nuovo ramo o tag, essere unito al ramo corrente, fare da base per il rebase o il ripristino del ramo corrente, o avviare un rebase interattivo.
 - Il campo di ricerca sopra l’elenco cerca in tutta la cronologia — messaggio, nome ed e-mail dell’autore, o un hash e i suoi primi caratteri — ed elenca i risultati senza il grafo.
 
 ## Cronologia, blame e il web

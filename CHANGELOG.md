@@ -26,9 +26,18 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   window. The context menu copies, reverts, cherry-picks, opens the commit on the web and limits the
   list to the current branch. A search field above the history searches all of it — message, author
   name and e-mail, or a hash and its first characters.
+- **Act on any commit from the Git panel's history.** Its context menu checks a commit out, creates a
+  branch or a tag on it, merges it into the current branch, rebases the current branch onto it, resets
+  the current branch to it (soft, mixed or hard — hard asks twice) and opens the Rebase window from
+  that commit, which until now could only start at the upstream. A **Fetch** button and command join
+  Pull and Push.
 
 ### Fixed
 
+- **The Rebase window's heading was garbled in Chinese, Korean and Russian.** Their translations of
+  "%lld commit(s) ahead of %@" put the two values in the other order without saying so, which hands
+  the count to the text placeholder. Positions now say which is which, and the plugin translation check
+  fails on any translation whose placeholders differ from its key's.
 - **Git failed in repositories using LFS when the app was opened from the Finder.** An app opened that
   way inherits a `PATH` of `/usr/bin:/bin:/usr/sbin:/sbin`, so git could not start the `git-lfs` filter
   — and in such a repository even `git status` stopped with "git-lfs: command not found", which left the

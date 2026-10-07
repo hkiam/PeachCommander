@@ -3938,6 +3938,10 @@ REPORTS = {
                    "row4=lane0 [] Initial commit",
                    "files=A src/utils.py", "diff added 1 def add(a, b):",
                    "splitFillsPanel=true", "buttonsCompact=true", "headerCompact=true",
+                   # The history's context menu, phase 7: the actions on a commit are on it.
+                   "Check out this commit…;New branch here…;New tag here…",
+                   "Merge into the current branch…;Rebase the current branch onto this…;"
+                   "Interactive rebase from here…;Reset the current branch to here…",
                    "!index on", "!untracked files on"]),
     # One match, from the whole history, listed without the working copy and without lanes, and selected
     # so its changes are on screen. `!row1=` is the negation: a filter that matched more than the one

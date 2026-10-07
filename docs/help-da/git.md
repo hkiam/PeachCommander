@@ -42,6 +42,7 @@ Under knapperne viser panelet historikken for alle grene, fjerngrene og tags som
 - Et commit viser enten **Commit** — forfatter, committer, dato, hash, forældre, refs, signatur og hele beskeden — eller **Ændringer**.
 - **Ændringer** viser de berørte filer som et træ og diffen for den valgte fil med linjenumre; et dobbeltklik åbner sammenligningsvinduet.
 - Kontekstmenuen kopierer hash eller emne, tilbagefører, cherry-picker, åbner commit'et på nettet og begrænser listen til **Kun den aktuelle gren**.
+- Fra samme menu kan et commit tjekkes ud, få en ny gren eller et tag, flettes ind i den aktuelle gren, få den aktuelle gren rebaset på sig eller nulstillet til sig, eller starte en interaktiv rebase.
 - Søgefeltet over listen søger i hele historikken — besked, forfatterens navn og e-mail eller en hash og dens første tegn — og viser resultaterne uden grafen.
 
 ## Historik, blame og nettet

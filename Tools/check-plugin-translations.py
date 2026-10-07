@@ -19,6 +19,12 @@ Two different things are wrong in two different ways, so this reports them diffe
 A stale key — one in a .lproj that no longer exists in en.lproj — fails too: it is a translation of
 something the plugin no longer says.
 
+So does a translation whose format specifiers are not the key's: `String(format:)` takes its arguments
+in the order the *key* passes them, so "%@보다 %lld개 앞섬" for "%lld commit(s) ahead of %@" handed the
+count to `%@` — garbage at best, a crash at worst — in three languages of the Git plugin, past every gate,
+because the app's own specifier check reads the String Catalog only. A translation that needs another
+order says so with positions (`%2$@ … %1$lld`).
+
 Usage: Tools/check-plugin-translations.py [--list-missing]
 """
 import os
@@ -30,6 +36,20 @@ PLUGINS = os.path.join(ROOT, "Plugins")
 LANGUAGES_YML = os.path.join(ROOT, "docs/metadata/languages.yml")
 
 KEY_RE = re.compile(r'^"((?:[^"\\]|\\.)*)"\s*=', re.M)
+PAIR_RE = re.compile(r'^"((?:[^"\\]|\\.)*)"\s*=\s*"((?:[^"\\]|\\.)*)";', re.M)
+SPEC_RE = re.compile(r'%(?:(\d+)\$)?(lld|ld|lu|llu|d|u|@|s|f|%)')
+
+
+def arguments(text):
+    """The argument types a format string consumes, in argument order (positions honoured)."""
+    found = []
+    index = 0
+    for match in SPEC_RE.finditer(text):
+        if match.group(2) == "%":
+            continue
+        index += 1
+        found.append((int(match.group(1)) if match.group(1) else index, match.group(2)))
+    return [kind for _, kind in sorted(found)]
 
 
 def shipped_languages():
@@ -93,6 +113,11 @@ def main():
                 missing_total += len(expected)
                 continue
             have = set(keys_of(path))
+            with open(path, encoding="utf-8") as handle:
+                for key, value in PAIR_RE.findall(handle.read()):
+                    if key in expected and arguments(key) != arguments(value):
+                        print(f"  ✗ {plugin}/{lang}: format specifiers differ from the key: {key!r} -> {value!r}")
+                        problems += 1
             for key in sorted(expected - have):
                 print(f"  ✗ {plugin}/{lang}: not translated: {key!r}")
                 problems += 1

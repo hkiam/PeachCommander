@@ -369,7 +369,7 @@ final class GitBranchesView: NSView {
     }
 
     @objc private func createBranch() {
-        guard let name = prompt(L("New branch"), L("Name:")) else { return }
+        guard let name = gitPrompt(L("New branch"), L("Name:")) else { return }
         run(["-C", root, "switch", "-c", name])
     }
 
@@ -424,26 +424,8 @@ final class GitBranchesView: NSView {
     /// A name, and optionally a message. Whether the tag is annotated follows from that rather than from a
     /// checkbox: a message *is* what makes it annotated, and git decides the rest.
     @objc private func createTag() {
-        let alert = NSAlert()
-        alert.messageText = L("New tag")
-        alert.informativeText = L("A message makes it an annotated tag; without one it is lightweight.")
-        let name = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 22))
-        name.placeholderString = L("Name, e.g. v1.2.0")
-        let message = NSTextField(frame: NSRect(x: 0, y: 26, width: 320, height: 22))
-        message.placeholderString = L("Message (optional)")
-        let box = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 48))
-        box.addSubview(name); box.addSubview(message)
-        alert.accessoryView = box
-        alert.addButton(withTitle: L("Create"))
-        alert.addButton(withTitle: L("Cancel"))
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
-        let tagName = name.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !tagName.isEmpty else { return }
-        // git's own `check-ref-format` decides what a valid name is; repeating those rules here would only
-        // be a second, wronger copy of them, so an invalid name comes back as git's message.
-        run(["-C", root] + PluginGit.createTagArguments(
-                name: tagName,
-                message: message.stringValue.trimmingCharacters(in: .whitespaces)))
+        guard let tag = gitPromptTag() else { return }
+        run(["-C", root] + PluginGit.createTagArguments(name: tag.name, message: tag.message))
     }
 
     @objc private func deleteSelectedTag() {
@@ -501,7 +483,7 @@ final class GitBranchesView: NSView {
     }
 
     @objc private func stashPush() {
-        let message = prompt(L("Stash changes"), L("Message (optional):")) ?? ""
+        let message = gitPrompt(L("Stash changes"), L("Message (optional):")) ?? ""
         var arguments = ["-C", root, "stash", "push", "--include-untracked"]
         if !message.isEmpty { arguments += ["-m", message] }
         run(arguments)
@@ -612,20 +594,6 @@ final class GitBranchesView: NSView {
                 }
             }
         }
-    }
-
-    /// A one-line text prompt. Returns nil when cancelled or empty.
-    private func prompt(_ title: String, _ label: String) -> String? {
-        let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = label
-        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 260, height: 22))
-        alert.accessoryView = field
-        alert.addButton(withTitle: L("OK"))
-        alert.addButton(withTitle: L("Cancel"))
-        guard alert.runModal() == .alertFirstButtonReturn else { return nil }
-        let text = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        return text.isEmpty ? nil : text
     }
 
     private func report(_ message: String) {

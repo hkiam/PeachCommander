@@ -99,6 +99,15 @@ final class GitHistoryView: NSView {
             (L("Copy commit hash"), #selector(copyHash)),
             (L("Copy subject"), #selector(copySubject)),
             (nil, nil),
+            (L("Check out this commit…"), #selector(checkoutSelected)),
+            (L("New branch here…"), #selector(branchHere)),
+            (L("New tag here…"), #selector(tagHere)),
+            (nil, nil),
+            (L("Merge into the current branch…"), #selector(mergeSelected)),
+            (L("Rebase the current branch onto this…"), #selector(rebaseOntoSelected)),
+            (L("Interactive rebase from here…"), #selector(interactiveRebaseFromHere)),
+            (L("Reset the current branch to here…"), #selector(resetToSelected)),
+            (nil, nil),
             (L("Revert commit"), #selector(revertSelected)),
             (L("Cherry-pick"), #selector(cherryPickSelected)),
             (L("Open on the web"), #selector(openSelectedOnTheWeb)),
@@ -236,6 +245,7 @@ final class GitHistoryView: NSView {
                    "commits=\(commits.count) hasMore=\(hasMore)"]
         if hasRepo, !searching { out.append("row0=working-copy changes=\(changeCount)") }
         if !emptyLabel.isHidden { out.append("empty=\(emptyLabel.stringValue)") }
+        out.append("menu=" + (table.menu?.items.map { $0.isSeparatorItem ? "|" : $0.title } ?? []).joined(separator: ";"))
         for (index, commit) in commits.prefix(20).enumerated() {
             let refs = commit.refs.map { "\($0.kind.rawValue):\($0.name)" }.joined(separator: ",")
             out.append("row\(index + offset)=lane\(drawn[index].node) [\(refs)] \(commit.subject)")
@@ -298,6 +308,39 @@ final class GitHistoryView: NSView {
     @objc private func openSelectedOnTheWeb() {
         guard let root, let commit = selectedCommit else { return }
         GitCommitActions.openCommitOnTheWeb(hash: commit.hash, root: root, services: services)
+    }
+
+    private typealias CommitAction = (PluginGit.Commit, String, PcHostServices, NSProgressIndicator?,
+                                      @escaping () -> Void) -> Void
+
+    private func act(_ action: CommitAction) {
+        guard let root, let commit = selectedCommit else { return }
+        action(commit, root, services, busy) { [weak self] in self?.onChanged?() }
+    }
+
+    @objc private func checkoutSelected() { act { GitCommitActions.checkout($0, root: $1, services: $2, busy: $3, done: $4) } }
+    @objc private func branchHere() { act { GitCommitActions.branchHere($0, root: $1, services: $2, busy: $3, done: $4) } }
+    @objc private func tagHere() { act { GitCommitActions.tagHere($0, root: $1, services: $2, busy: $3, done: $4) } }
+    @objc private func mergeSelected() { act { GitCommitActions.merge($0, root: $1, services: $2, busy: $3, done: $4) } }
+    @objc private func rebaseOntoSelected() { act { GitCommitActions.rebaseOnto($0, root: $1, services: $2, busy: $3, done: $4) } }
+    @objc private func resetToSelected() { act { GitCommitActions.reset(to: $0, root: $1, services: $2, busy: $3, done: $4) } }
+
+    /// The Rebase window, starting at this commit. Only below the current branch's tip: from a commit HEAD
+    /// does not contain, the list would be HEAD's own commits and the rebase would move the branch there.
+    @objc private func interactiveRebaseFromHere() {
+        guard let root, let commit = selectedCommit else { return }
+        let box = ServicesBox(services)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let isAncestor = PluginGitRepo.run(["-C", root] + PluginGit.isAncestorOfHeadArguments(commit.hash)).ok
+            DispatchQueue.main.async {
+                guard isAncestor else {
+                    GitCommitActions.report(box.services, L("Rebase"),
+                                            L("That commit is not on the current branch, so there is nothing to rebase from it."))
+                    return
+                }
+                showRebaseWindow(root: root, base: commit.hash, box.services)
+            }
+        }
     }
 }
 

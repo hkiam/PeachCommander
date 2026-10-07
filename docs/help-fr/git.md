@@ -44,6 +44,7 @@ Sous ses boutons, le panneau affiche l’historique de toutes les branches, bran
 - Un commit montre soit **Commit** — auteur, committer, date, hash, parents, réfs, signature et message complet — soit **Modifications**.
 - **Modifications** liste les fichiers touchés en arbre et le diff du fichier choisi avec numéros de ligne ; un double-clic ouvre la fenêtre de comparaison.
 - Le menu contextuel copie le hash ou le sujet, annule, fait un cherry-pick, ouvre le commit sur le web et limite la liste à **Uniquement la branche actuelle**.
+- Depuis ce même menu, un commit peut être extrait, recevoir une nouvelle branche ou étiquette, être fusionné dans la branche actuelle, servir de base pour rebaser ou réinitialiser la branche actuelle, ou ouvrir un rebase interactif.
 - Le champ de recherche au-dessus de la liste parcourt tout l’historique — message, nom et e-mail de l’auteur, ou un hash et ses premiers caractères — et liste les résultats sans le graphe.
 
 ## Historique, blâme et le web

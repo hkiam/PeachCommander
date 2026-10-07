@@ -42,6 +42,7 @@ Pod gumbi plošča prikazuje zgodovino vseh vej, oddaljenih vej in oznak kot nar
 - Commit prikaže bodisi **Commit** — avtorja, committerja, datum, hash, starše, refe, podpis in celotno sporočilo — bodisi **Spremembe**.
 - **Spremembe** našteje spremenjene datoteke kot drevo in diff izbrane datoteke s številkami vrstic; dvoklik odpre okno za primerjavo.
 - Priročni meni kopira hash ali zadevo, razveljavi, naredi cherry-pick, odpre commit na spletu in omeji seznam na **Samo trenutna veja**.
+- V istem meniju lahko na commit preklopite, mu dodate novo vejo ali oznako, ga združite v trenutno vejo, nanj prestavite ali ponastavite trenutno vejo ali od njega začnete interaktivni rebase.
 - Iskalno polje nad seznamom preišče celotno zgodovino — sporočilo, ime in e-pošto avtorja ali hash in njegove prve znake — ter izpiše zadetke brez grafa.
 
 ## Zgodovina, blame in splet

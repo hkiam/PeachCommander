@@ -43,6 +43,7 @@ A gombok alatt a panel az összes ág, távoli ág és címke előzményét rajz
 - Egy commit vagy a **Commit** nézetet mutatja — szerző, committer, dátum, hash, szülők, refek, aláírás és a teljes üzenet —, vagy a **Változások** nézetet.
 - A **Változások** fában sorolja fel az érintett fájlokat, és sorszámokkal mutatja a kijelölt fájl diffjét; dupla kattintás megnyitja az összehasonlító ablakot.
 - A helyi menü másolja a hash-t vagy a tárgyat, visszavon, cherry-pickel, megnyitja a commitot a weben, és a listát a **Csak az aktuális ág** beállításra szűkíti.
+- Ugyanebből a menüből egy commit kivehető, kaphat új ágat vagy címkét, egyesíthető az aktuális ágba, rá lehet rebase-elni vagy vissza lehet állítani rá az aktuális ágat, vagy indítható tőle interaktív rebase.
 - A lista feletti keresőmező a teljes előzményben keres — üzenetben, a szerző nevében és e-mail-címében, vagy egy hash első karaktereire —, és gráf nélkül listázza a találatokat.
 
 ## Előzmények, blame és a web

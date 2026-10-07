@@ -177,7 +177,7 @@
 "Use the macOS Keychain" = "Использовать связку ключей macOS";
 "git will now keep credentials in the macOS Keychain (credential.helper = osxkeychain)." = "Теперь git будет хранить учётные данные в связке ключей macOS (credential.helper = osxkeychain).";
 "“%@” has no remote to open." = "У «%@» нет удалённого репозитория, который можно открыть.";
-"%lld commit(s) ahead of %@" = "Впереди %@ на %lld коммит(ов)";
+"%lld commit(s) ahead of %@" = "Впереди %2$@ на %1$lld коммит(ов)";
 "A rebase is already running. Continue or abort that one first." = "Rebase уже выполняется. Сначала завершите или прервите его.";
 "A rebase is half-finished — use “Rebase…” to continue or abort it." = "Rebase не завершён — продолжите или прервите его через «Rebase…».";
 "A rebase is half-finished. Resolve the conflict, then continue — or abort to get the branch back." = "Rebase не завершён. Разрешите конфликт и продолжите — или прервите, чтобы вернуть ветвь.";
@@ -268,3 +268,32 @@
 "(deleted)" = "(удалён)";
 "Search commits: hash, author, message" = "Поиск коммитов: хеш, автор, сообщение";
 "No commits found." = "Коммиты не найдены.";
+
+/* Phase 7 — the history's context menu. */
+"%lld commit(s) after %@" = "%lld коммит(ов) после %@";
+"Check out" = "Переключиться";
+"Check out %@?" = "Переключиться на %@?";
+"Check out this commit" = "Переключиться на этот коммит";
+"Check out this commit…" = "Переключиться на этот коммит…";
+"Discard every change after this commit?" = "Отменить все изменения после этого коммита?";
+"HEAD is then detached: new commits belong to no branch until you create one." = "HEAD станет отсоединённым: новые коммиты не принадлежат никакой ветке, пока вы её не создадите.";
+"Hard…" = "Жёстко…";
+"Interactive rebase from here…" = "Интерактивный rebase отсюда…";
+"Its own commits are replaced by new ones on top of that commit. If any of them has been pushed already, the branch will have to be force-pushed. A rebase that conflicts stops; continue or abort it in the Rebase window." = "Собственные коммиты ветки заменяются новыми поверх этого коммита. Если какой-то из них уже отправлен, ветку придётся отправить принудительно. Rebase с конфликтом останавливается; продолжите или прервите его в окне Rebase.";
+"Merge into the current branch…" = "Слить в текущую ветку…";
+"Mixed" = "Смешанный";
+"New branch at %@" = "Новая ветка на %@";
+"New branch here…" = "Новая ветка здесь…";
+"New tag at %@" = "Новый тег на %@";
+"New tag here…" = "Новый тег здесь…";
+"Rebase the current branch onto %@?" = "Перебазировать текущую ветку на %@?";
+"Rebase the current branch onto this…" = "Перебазировать текущую ветку сюда…";
+"Reset" = "Сбросить";
+"Reset hard" = "Сбросить жёстко";
+"Reset the current branch to %@?" = "Сбросить текущую ветку на %@?";
+"Reset the current branch to here…" = "Сбросить текущую ветку сюда…";
+"Soft" = "Мягкий";
+"Soft keeps the changes of the commits after it staged, Mixed keeps them in the working tree, Hard discards them together with every uncommitted change." = "Мягкий оставляет изменения последующих коммитов проиндексированными, Смешанный — в рабочем дереве, Жёсткий отбрасывает их вместе со всеми незафиксированными изменениями.";
+"That commit is not on the current branch, so there is nothing to rebase from it." = "Этот коммит не на текущей ветке, поэтому от него нечего перебазировать.";
+"The commits after it and every uncommitted change are gone from the working tree. This cannot be undone here." = "Последующие коммиты и все незафиксированные изменения исчезнут из рабочего дерева. Здесь это нельзя отменить.";
+"The commits are replaced by new ones. If any of them has been pushed already, the branch will have to be force-pushed, and anyone who has them keeps the old ones." = "Коммиты заменяются новыми. Если какой-то из них уже отправлен, ветку придётся отправить принудительно, а у тех, у кого они уже есть, останутся старые.";

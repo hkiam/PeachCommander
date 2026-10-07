@@ -177,3 +177,43 @@ final class GitBusyIndicator: NSProgressIndicator {
         if running == 0 { super.stopAnimation(sender) }
     }
 }
+
+/// A one-line text prompt. Returns nil when cancelled or empty.
+@MainActor
+func gitPrompt(_ title: String, _ label: String) -> String? {
+    let alert = NSAlert()
+    alert.messageText = title
+    alert.informativeText = label
+    let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 260, height: 22))
+    alert.accessoryView = field
+    alert.window.initialFirstResponder = field
+    alert.addButton(withTitle: L("OK"))
+    alert.addButton(withTitle: L("Cancel"))
+    guard alert.runModal() == .alertFirstButtonReturn else { return nil }
+    let text = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    return text.isEmpty ? nil : text
+}
+
+/// The name and the optional message of a new tag. A message makes it annotated. git's own
+/// `check-ref-format` decides what a valid name is; repeating those rules here would only be a second,
+/// wronger copy of them, so an invalid name comes back as git's message.
+@MainActor
+func gitPromptTag(_ title: String = L("New tag")) -> (name: String, message: String)? {
+    let alert = NSAlert()
+    alert.messageText = title
+    alert.informativeText = L("A message makes it an annotated tag; without one it is lightweight.")
+    let name = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 22))
+    name.placeholderString = L("Name, e.g. v1.2.0")
+    let message = NSTextField(frame: NSRect(x: 0, y: 26, width: 320, height: 22))
+    message.placeholderString = L("Message (optional)")
+    let box = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 48))
+    box.addSubview(name); box.addSubview(message)
+    alert.accessoryView = box
+    alert.window.initialFirstResponder = name
+    alert.addButton(withTitle: L("Create"))
+    alert.addButton(withTitle: L("Cancel"))
+    guard alert.runModal() == .alertFirstButtonReturn else { return nil }
+    let tagName = name.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !tagName.isEmpty else { return nil }
+    return (tagName, message.stringValue.trimmingCharacters(in: .whitespaces))
+}

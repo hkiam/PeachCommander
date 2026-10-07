@@ -696,10 +696,10 @@ private func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: Pc
 }
 
 @MainActor
-private func showRebaseWindow(root: String, _ svc: PcHostServices) {
+func showRebaseWindow(root: String, base: String? = nil, _ svc: PcHostServices) {
     let name = (root as NSString).lastPathComponent
     showToolWindow(title: String(format: L("Rebase — %@"), name),
-                   view: GitRebaseView(services: svc, root: root),
+                   view: GitRebaseView(services: svc, root: root, base: base),
                    size: NSSize(width: 720, height: 420), svc)
 }
 

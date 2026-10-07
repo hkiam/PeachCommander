@@ -29,6 +29,9 @@ final class GitRebaseView: NSView {
     private var commits: [PluginGit.Commit] = []
     private var actions: [PluginGit.RebaseAction] = []
     private var upstream: String?
+    /// A commit chosen in the panel's history ("Interactive rebase from here…"): the list is then the
+    /// commits after it, whether or not the branch has an upstream — and some of them may be pushed.
+    private let base: String?
     private var running = false
 
     private let header = NSTextField(labelWithString: "")
@@ -42,9 +45,10 @@ final class GitRebaseView: NSView {
     private let skipButton = NSButton()
     private let abortButton = NSButton()
 
-    init(services: PcHostServices, root: String) {
+    init(services: PcHostServices, root: String, base: String? = nil) {
         self.services = services
         self.root = root
+        self.base = base
         self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 720, height: 420))
         build()
@@ -187,11 +191,11 @@ final class GitRebaseView: NSView {
 
     private func reload() {
         busy.startAnimation(nil)
-        let root = self.root
+        let root = self.root, base = self.base
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let running = PluginGitRepo.rebaseIsRunning(root: root)
             let status = PluginGitRepo.status(root: root)
-            let upstream = status?.upstream
+            let upstream = base ?? status?.upstream
             var commits: [PluginGit.Commit] = []
             if let upstream, !running {
                 let result = PluginGitRepo.run(["-C", root]
@@ -222,6 +226,8 @@ final class GitRebaseView: NSView {
         for button in [continueButton, skipButton, abortButton] { button.isEnabled = running }
         if running {
             header.stringValue = L("A rebase is half-finished. Resolve the conflict, then continue — or abort to get the branch back.")
+        } else if let base {
+            header.stringValue = String(format: L("%lld commit(s) after %@"), commits.count, String(base.prefix(8)))
         } else if let upstream {
             header.stringValue = String(format: L("%lld commit(s) ahead of %@"), commits.count, upstream)
         } else {
@@ -286,7 +292,7 @@ final class GitRebaseView: NSView {
     @objc private func start() {
         guard let upstream, let status = PluginGitRepo.status(root: root) else { return }
         if let refusal = PluginGit.rebaseRefusal(repo: status, aheadCount: commits.count,
-                                                actions: actions, rebaseRunning: running) {
+                                                actions: actions, rebaseRunning: running, hasBase: base != nil) {
             report(Self.text(for: refusal))
             return
         }
@@ -311,7 +317,11 @@ final class GitRebaseView: NSView {
         // Not "you would have to force-push": the list is `upstream..HEAD`, so every commit in it is by
         // construction one the upstream does not have. Warning about rewriting other people's history here
         // was inaccurate, and a warning that does not apply is one a reader learns to click through (F-424).
-        alert.informativeText = L("The commits are replaced by new ones. These are not on the upstream yet, so nobody else has them — but anything referring to them locally (another branch, a stash, an open worktree) keeps pointing at the old ones.")
+        // From a commit chosen in the history the list is not `upstream..HEAD`, so some of it may be pushed
+        // already — and then the warning has to say so.
+        alert.informativeText = base == nil
+            ? L("The commits are replaced by new ones. These are not on the upstream yet, so nobody else has them — but anything referring to them locally (another branch, a stash, an open worktree) keeps pointing at the old ones.")
+            : L("The commits are replaced by new ones. If any of them has been pushed already, the branch will have to be force-pushed, and anyone who has them keeps the old ones.")
         alert.addButton(withTitle: L("Rebase"))
         alert.addButton(withTitle: L("Cancel"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }

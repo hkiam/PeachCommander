@@ -416,6 +416,77 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.parseStatus(fixed.out).files.keys.sorted(), ["a.bin"])
     }
 
+    func testActionsOnACommitFromTheHistory() {
+        XCTAssertEqual(PluginGit.checkoutCommitArguments("abc"), ["switch", "--detach", "abc"])
+        XCTAssertEqual(PluginGit.branchAtArguments(name: "fix", commit: "abc"), ["switch", "-c", "fix", "abc"])
+        XCTAssertEqual(PluginGit.mergeArguments("feature/x"), ["merge", "--no-edit", "feature/x"])
+        XCTAssertEqual(PluginGit.rebaseOntoArguments("abc"), ["rebase", "abc"])
+        XCTAssertEqual(PluginGit.resetArguments(.hard, to: "abc"), ["reset", "--hard", "abc"])
+        XCTAssertEqual(PluginGit.resetArguments(.soft, to: "abc"), ["reset", "--soft", "abc"])
+        XCTAssertEqual(PluginGit.isAncestorOfHeadArguments("abc"), ["merge-base", "--is-ancestor", "abc", "HEAD"])
+    }
+
+    /// The history menu's actions against real git: each argument list does what its menu item says.
+    func testHistoryActionsAgainstRealGit() throws {
+        let repo = try TempRepo()
+        func head() throws -> String { try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines) }
+        func branch() throws -> String { try repo.git(["branch", "--show-current"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines) }
+        func commit(_ file: String, _ text: String) throws {
+            try text.write(to: repo.dir.appendingPathComponent(file), atomically: true, encoding: .utf8)
+            try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "\(file) \(text)"])
+        }
+        try repo.git(["init", "-q", "-b", "main"])
+        try commit("a.txt", "1")
+        let first = try head()
+        try commit("a.txt", "2")
+        let second = try head()
+
+        // New branch here: a branch at the older commit, checked out.
+        XCTAssertTrue(try repo.git(PluginGit.branchAtArguments(name: "side", commit: first)).ok)
+        XCTAssertEqual(try branch(), "side"); XCTAssertEqual(try head(), first)
+        try commit("b.txt", "side")
+        // New tag here, on a commit that is not HEAD.
+        XCTAssertTrue(try repo.git(PluginGit.createTagArguments(name: "v0", message: "first", at: first)).ok)
+        XCTAssertEqual(try repo.git(["rev-parse", "v0^{commit}"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines), first)
+        // Rebase the current branch onto main's tip: side's commit now sits on top of `second`.
+        XCTAssertTrue(try repo.git(PluginGit.rebaseOntoArguments("main")).ok)
+        XCTAssertEqual(try repo.git(["rev-parse", "HEAD~1"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines), second)
+        // Merge into the current branch: main merges side, without an editor.
+        try repo.git(["switch", "-q", "main"])
+        XCTAssertTrue(try repo.git(PluginGit.mergeArguments("side"), environment: ["GIT_EDITOR": "false"]).ok)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: repo.dir.appendingPathComponent("b.txt").path))
+        // Reset: soft keeps the change staged, hard discards it.
+        XCTAssertTrue(try repo.git(PluginGit.resetArguments(.soft, to: second)).ok)
+        XCTAssertTrue(PluginGit.parseStatus(try repo.git(PluginGit.statusArguments, combined: false).out).files["b.txt"]?.isStaged ?? false)
+        XCTAssertTrue(try repo.git(PluginGit.resetArguments(.hard, to: second)).ok)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: repo.dir.appendingPathComponent("b.txt").path))
+        // Check out this commit: HEAD detached on it, no branch.
+        XCTAssertTrue(try repo.git(PluginGit.checkoutCommitArguments(first)).ok)
+        XCTAssertEqual(try head(), first); XCTAssertEqual(try branch(), "")
+        // From here an interactive rebase is allowed only below HEAD.
+        XCTAssertFalse(try repo.git(PluginGit.isAncestorOfHeadArguments(second)).ok, "second is not below the detached HEAD")
+        try repo.git(["switch", "-q", "main"])
+        XCTAssertTrue(try repo.git(PluginGit.isAncestorOfHeadArguments(first)).ok)
+    }
+
+    func testMergeAndRebaseNameTheBranchWhenThereIsOne() {
+        var commit = PluginGit.parseLog(logRecord("abc123", "abc", "", "A", "1", "s"))[0]
+        XCTAssertEqual(PluginGit.preferredRefName(commit), "abc123", "a bare commit by its hash")
+        commit.refs = [.init(name: "v1.0", kind: .tag), .init(name: "origin/HEAD", kind: .remote),
+                       .init(name: "origin/main", kind: .remote), .init(name: "feature/x", kind: .branch)]
+        XCTAssertEqual(PluginGit.preferredRefName(commit), "feature/x", "a local branch first")
+        commit.refs.removeLast()
+        XCTAssertEqual(PluginGit.preferredRefName(commit), "origin/main", "then a remote branch, never origin/HEAD")
+    }
+
+    func testAnInteractiveRebaseFromAChosenCommitNeedsNoUpstream() {
+        let repo = PluginGit.parseStatus("# branch.oid abc\0# branch.head main\0")
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: repo, aheadCount: 2, actions: [.pick, .pick], rebaseRunning: false),
+                       .noUpstream)
+        XCTAssertNil(PluginGit.rebaseRefusal(repo: repo, aheadCount: 2, actions: [.pick, .pick], rebaseRunning: false,
+                                             hasBase: true))
+    }
+
     func testHashLikeNeedsFourToFortyHexDigits() {
         XCTAssertTrue(PluginGit.isHashLike("7a6e"))
         XCTAssertTrue(PluginGit.isHashLike("7A6E3E0"))
@@ -903,6 +974,8 @@ final class PluginGitTests: XCTestCase {
     /// Annotated when there is a message, lightweight when there is not — that *is* the difference.
     func testTagArguments() {
         XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: nil), ["tag", "v1"])
+        XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: nil, at: "abc"), ["tag", "v1", "abc"])
+        XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: "m", at: "abc"), ["tag", "-a", "v1", "-m", "m", "abc"])
         XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: ""), ["tag", "v1"])
         XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: "ship it"),
                        ["tag", "-a", "v1", "-m", "ship it"])

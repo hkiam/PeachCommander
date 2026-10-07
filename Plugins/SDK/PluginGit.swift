@@ -1187,10 +1187,48 @@ public enum PluginGit {
     /// Annotated when there is a message, lightweight when there is not — which is the actual difference
     /// between the two, so the choice is made by whether the reader typed something rather than by a
     /// checkbox they would have to understand first.
-    public static func createTagArguments(name: String, message: String?) -> [String] {
-        guard let message, !message.isEmpty else { return ["tag", name] }
-        return ["tag", "-a", name, "-m", message]
+    /// `at` tags that commit instead of HEAD (the history's "New tag here…").
+    public static func createTagArguments(name: String, message: String?, at commit: String? = nil) -> [String] {
+        let target = commit.map { [$0] } ?? []
+        guard let message, !message.isEmpty else { return ["tag", name] + target }
+        return ["tag", "-a", name, "-m", message] + target
     }
+
+    // MARK: - Acting on a commit from the history (phase 7)
+
+    /// HEAD on that commit, detached — the history's "Check out this commit". `switch --detach` rather
+    /// than `checkout`: it says what it does, and it refuses to carry local changes into a conflict.
+    public static func checkoutCommitArguments(_ hash: String) -> [String] { ["switch", "--detach", hash] }
+
+    /// A new branch at that commit, checked out — what "New branch here…" means in every reference product.
+    public static func branchAtArguments(name: String, commit: String) -> [String] { ["switch", "-c", name, commit] }
+
+    /// Merge that commit into the current branch, with git's own message and no editor.
+    public static func mergeArguments(_ ref: String) -> [String] { ["merge", "--no-edit", ref] }
+
+    /// Replay the current branch on top of that commit.
+    public static func rebaseOntoArguments(_ ref: String) -> [String] { ["rebase", ref] }
+
+    public enum ResetMode: String, Sendable, CaseIterable { case soft, mixed, hard }
+
+    /// Move the current branch to that commit. `soft` keeps the changes staged, `mixed` keeps them in the
+    /// working tree, `hard` throws them away.
+    public static func resetArguments(_ mode: ResetMode, to hash: String) -> [String] {
+        ["reset", "--\(mode.rawValue)", hash]
+    }
+
+    /// The name to merge or rebase onto: the commit's branch, remote branch or tag when it has one — git
+    /// then writes "Merge branch 'feature/x'" instead of a hash — otherwise its hash.
+    public static func preferredRefName(_ commit: Commit) -> String {
+        for kind in [Ref.Kind.branch, .head, .remote, .tag] {
+            if let ref = commit.refs.first(where: { $0.kind == kind && !$0.name.hasSuffix("/HEAD") }) { return ref.name }
+        }
+        return commit.hash
+    }
+
+    /// Whether `hash` is an ancestor of HEAD — the exit status says it. An interactive rebase "from here"
+    /// only makes sense below the current branch's tip; from anywhere else it would move the branch.
+    public static func isAncestorOfHeadArguments(_ hash: String) -> [String] { ["merge-base", "--is-ancestor", hash, "HEAD"] }
 
     public static func deleteTagArguments(_ name: String) -> [String] { ["tag", "-d", name] }
 
@@ -1219,13 +1257,16 @@ public enum PluginGit {
     }
 
     /// Check a plan before running it. The order matters: what has to be dealt with first comes first.
+    ///
+    /// `hasBase`: the rebase starts at a commit the reader chose in the history ("interactive rebase from
+    /// here") rather than at the upstream, so a missing upstream is no reason to refuse.
     public static func rebaseRefusal(repo: RepoStatus, aheadCount: Int, actions: [RebaseAction],
-                                    rebaseRunning: Bool) -> RebaseRefusal? {
+                                    rebaseRunning: Bool, hasBase: Bool = false) -> RebaseRefusal? {
         if rebaseRunning { return .rebaseAlreadyRunning }
         if let refusal = refusal(forCommitActionIn: repo) {
             return refusal == .conflictOpen ? .conflictOpen : .dirtyWorkingTree
         }
-        if repo.upstream == nil { return .noUpstream }
+        if repo.upstream == nil, !hasBase { return .noUpstream }
         if aheadCount == 0 { return .nothingAhead }
         // The list is oldest-first, as git's todo file is: a squash on the first line has no parent left.
         if let first = actions.first, first == .squash || first == .fixup { return .squashWithoutParent }
