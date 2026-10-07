@@ -47,6 +47,17 @@ Sous ses boutons, le panneau affiche l’historique de toutes les branches, bran
 - Depuis ce même menu, un commit peut être extrait, recevoir une nouvelle branche ou étiquette, être fusionné dans la branche actuelle, servir de base pour rebaser ou réinitialiser la branche actuelle, ou ouvrir un rebase interactif.
 - Le champ de recherche au-dessus de la liste parcourt tout l’historique — message, nom et e-mail de l’auteur, ou un hash et ses premiers caractères — et liste les résultats sans le graphe.
 
+## Plus dans le panneau et dans le menu Git
+
+La copie de travail, l’historique et le menu **Commandes ▸ Git** offrent davantage que la validation :
+
+- Un fichier indexé ou modifié sélectionné montre son diff sous la liste ; des lignes sélectionnées ou un bloc entier s’indexent, se désindexent ou s’abandonnent depuis son menu contextuel.
+- Le champ de commit est une liste déroulante : elle contient vos derniers messages de commit, à réutiliser ou modifier.
+- **Afficher dans le panneau de gauche** et **Afficher dans le panneau de droite** amènent un panneau de fichiers sur un fichier de la liste ou des modifications d’un commit, sans que le panneau Git bouge ; les fichiers stockés par Git LFS sont marqués **LFS**.
+- Les remisages apparaissent dans l’historique sous forme de petits carrés au-dessus du commit sur lequel ils ont été faits, avec **Appliquer le remisage**, **Appliquer et retirer le remisage** et **Supprimer le remisage…** dans leur menu contextuel.
+- **Reflog…** liste chaque déplacement de HEAD ; un commit perdu par un reset ou une branche supprimée revient avec **Nouvelle branche ici…**. **Dépôts distants et sous-modules…** ajoute, renomme, redirige et retire des dépôts distants et met à jour les sous-modules.
+- **Créer un dépôt ici…** et **Cloner un dépôt…** agissent dans le dossier du panneau actif, et l’horloge à côté du titre du panneau ramène à un dépôt récent.
+
 ## Historique, blâme et le web
 
 - **Historique…** liste les validations avec un graphe en couloirs, les références qui pointent sur chacune

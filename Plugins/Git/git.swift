@@ -215,6 +215,15 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         svc.presentInfo?(svc.host, L("Git"), L("Git was not found on this Mac."))
         return
     }
+    // Creating and cloning work where there is no repository yet: in the active panel's folder.
+    if id == "plugin.git.init" || id == "plugin.git.clone" {
+        var dirBuf = [CChar](repeating: 0, count: 4096)
+        let folder = svc.getContext.map { $0(svc.host, "dir", &dirBuf, 4096) != 0 ? String(cString: dirBuf) : "" } ?? ""
+        guard !folder.isEmpty else { return }
+        if id == "plugin.git.init" { initRepository(in: folder, svc) } else { cloneRepository(into: folder, svc) }
+        return
+    }
+
     guard let (root, relative) = PluginGitRepo.item(cursor) else {
         svc.presentInfo?(svc.host, L("Git"), L("Not a Git repository."))
         return
@@ -251,6 +260,10 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         MainActor.assumeIsolated { showLogWindow(root: root, path: forFile ? relative : nil, svc) }
     case "plugin.git.branches":
         MainActor.assumeIsolated { showBranchesWindow(root: root, svc) }
+    case "plugin.git.reflog":
+        MainActor.assumeIsolated { showReflogWindow(root: root, svc) }
+    case "plugin.git.remotes":
+        MainActor.assumeIsolated { showRemotesWindow(root: root, svc) }
     case "plugin.git.conflict":
         // The resolver, not the comparison. Phase 3 opened *ours* against *theirs* here and left the
         // reader with `<<<<<<<` still in the file, which means the conflict ended somewhere else — a
@@ -442,7 +455,7 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); the alert
         // this may raise must be built there, and asserting it is honest where a hop would hide it.
         MainActor.assumeIsolated { openOnTheWeb(remote: remote.url, target: target, svc) }
-    case "plugin.git.push", "plugin.git.pull", "plugin.git.fetch":
+    case "plugin.git.push", "plugin.git.pull", "plugin.git.fetch", "plugin.git.submodules.update":
         // Declared `"async": true` in the manifest, so this runs OFF the main thread (F-422): it may block
         // on git, report each line into the host's progress window, and be cancelled — which is the whole
         // difference between a push to an unreachable host and an application that appears to have died.
@@ -452,6 +465,8 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         switch id {
         case "plugin.git.push":  (title, arguments) = (L("Git Push"), ["-C", root, "push"])
         case "plugin.git.fetch": (title, arguments) = (L("Fetch"), ["-C", root, "fetch", "--prune"])
+        case "plugin.git.submodules.update":
+            (title, arguments) = (L("Update submodules"), ["-C", root] + PluginGit.updateSubmodulesArguments)
         default:                 (title, arguments) = (L("Git Pull"), ["-C", root, "pull", "--ff-only"])
         }
         let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
@@ -736,6 +751,76 @@ private func showBlameWindow(root: String, path: String, _ svc: PcHostServices) 
     let view = GitBlameView(services: svc, root: root, path: path)
     showToolWindow(title: String(format: L("Blame: %@"), path), view: view,
                    size: NSSize(width: 820, height: 500), svc)
+}
+
+/// `git init` in the panel's folder, after asking — and not inside a repository, where it would make a
+/// nested one the reader almost never means.
+private func initRepository(in folder: String, _ svc: PcHostServices) {
+    MainActor.assumeIsolated {
+        if let located = PluginGitRepo.locate(folder) {
+            svc.presentInfo?(svc.host, L("Git"), String(format: L("This folder is already inside the repository %@."), located.root))
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = L("Create a Git repository here?")
+        alert.informativeText = folder
+        alert.addButton(withTitle: L("Create"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let result = PluginGitRepo.run(["-C", folder, "init"], combined: true)
+        PluginGitRepo.invalidate()
+        svc.reloadActivePanel?(svc.host)
+        if !result.ok { svc.presentInfo?(svc.host, L("Git"), result.out) }
+    }
+}
+
+/// `git clone` into a new folder in the panel's folder. Declared asynchronous: it runs off the main
+/// thread with the host's progress window and Cancel, and asks for the URL on the main thread first.
+private func cloneRepository(into folder: String, _ svc: PcHostServices) {
+    let box = ServicesBox(svc)
+    let url: String? = DispatchQueue.main.sync {
+        MainActor.assumeIsolated { gitPrompt(L("Clone a repository"), String(format: L("URL — cloned into a new folder in %@:"), folder)) }
+    }
+    guard let url else { return }
+    guard let name = PluginGit.cloneDirectoryName(url) else {
+        DispatchQueue.main.async { box.services.presentInfo?(box.services.host, L("Git"), L("That URL names no repository.")) }
+        return
+    }
+    let target = (folder as NSString).appendingPathComponent(name)
+    guard !FileManager.default.fileExists(atPath: target) else {
+        DispatchQueue.main.async {
+            box.services.presentInfo?(box.services.host, L("Git"), String(format: L("“%@” already exists here."), name))
+        }
+        return
+    }
+    let title = L("Clone a repository")
+    let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
+    let result = PluginGitRepo.runCancellable(PluginGit.cloneArguments(url: url, into: target)) { line in
+        guard let handle else { return true }
+        return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 }
+    }
+    if let handle { svc.endProgress?(svc.host, handle) }
+    DispatchQueue.main.async {
+        let svc = box.services
+        if result.ok {
+            target.withCString { svc.openPath?(svc.host, $0) }          // straight into the new repository
+        } else {
+            svc.reloadActivePanel?(svc.host)
+            svc.presentInfo?(svc.host, title, result.cancelled ? L("Cancelled.") : result.out)
+        }
+    }
+}
+
+@MainActor
+func showRemotesWindow(root: String, _ svc: PcHostServices) {
+    showToolWindow(title: String(format: L("Remotes & Submodules — %@"), (root as NSString).lastPathComponent),
+                   view: GitRemotesView(services: svc, root: root), size: NSSize(width: 820, height: 480), svc)
+}
+
+@MainActor
+func showReflogWindow(root: String, _ svc: PcHostServices) {
+    showToolWindow(title: String(format: L("Reflog — %@"), (root as NSString).lastPathComponent),
+                   view: GitReflogView(services: svc, root: root), size: NSSize(width: 820, height: 460), svc)
 }
 
 // MARK: - The Git panel (phase 1, F-416)

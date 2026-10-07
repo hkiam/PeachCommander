@@ -55,7 +55,7 @@ enum PluginGitRepo {
     /// `environment` is added to git's (the search's locale); `cancel` stops it — a search over a long
     /// history can run for seconds without writing a line, so stopping it cannot wait for its output.
     static func run(_ arguments: [String], combined: Bool = false, environment extra: [String: String] = [:],
-                    cancel: GitCancellation? = nil) -> (out: String, ok: Bool) {
+                    cancel: GitCancellation? = nil, input: Data? = nil) -> (out: String, ok: Bool) {
         guard let executable = executable() else { return (L("Git was not found on this Mac."), false) }
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
@@ -66,8 +66,18 @@ enum PluginGitRepo {
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = combined ? pipe : FileHandle.nullDevice
+        let stdin = input.map { _ in Pipe() }
+        if let stdin { process.standardInput = stdin }
         do { try process.run() } catch { return (L("Git could not be started."), false) }
         cancel?.register(process)
+        // Written on its own queue: a large input and git's output filling the pipe would otherwise wait
+        // for each other.
+        if let stdin, let input {
+            DispatchQueue.global(qos: .utility).async {
+                try? stdin.fileHandleForWriting.write(contentsOf: input)
+                try? stdin.fileHandleForWriting.close()
+            }
+        }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
         cancel?.unregister(process)

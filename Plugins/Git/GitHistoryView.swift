@@ -95,7 +95,10 @@ final class GitHistoryView: NSView {
         table.target = self
         table.doubleAction = #selector(activateRow)
         table.onEnter = { [weak self] in self?.activateRow() }
-        table.menu = gitMenu([
+        let menu = gitMenu([
+            (L("Apply stash"), #selector(applyStash)),
+            (L("Pop stash"), #selector(popStash)),
+            (L("Drop stash…"), #selector(dropStash)),
             (L("Copy commit hash"), #selector(copyHash)),
             (L("Copy subject"), #selector(copySubject)),
             (nil, nil),
@@ -113,8 +116,12 @@ final class GitHistoryView: NSView {
             (L("Open on the web"), #selector(openSelectedOnTheWeb)),
             (nil, nil),
             (L("Only the current branch"), #selector(toggleScope)),
+            (L("Reflog…"), #selector(showReflog)),
             (L("Reload"), #selector(reloadFromMenu)),
         ], target: self)
+        // A stash row and a commit row have different menus; `menuNeedsUpdate` hides what does not apply.
+        menu.delegate = self
+        table.menu = menu
 
         searchField.placeholderString = L("Search commits: hash, author, message")
         searchField.controlSize = .small
@@ -188,7 +195,7 @@ final class GitHistoryView: NSView {
         self.hasRepo = hasRepo
         self.changeCount = changeCount
         self.hasMore = hasMore
-        drawn = searching ? commits.map { _ in (node: 0, lines: []) } : PluginGit.graphLines(PluginGit.graph(commits))
+        drawn = searching ? commits.map { _ in (node: 0, lines: []) } : Self.drawnRows(commits)
         emptyLabel.isHidden = !(searching && commits.isEmpty && hasRepo)
         // Beyond ten lanes the subject is what suffers; the cell clips the strokes past that.
         let lanes = drawn.map { row in max(row.node, row.lines.map { max($0.from, $0.to) }.max() ?? 0) + 1 }
@@ -245,7 +252,10 @@ final class GitHistoryView: NSView {
                    "commits=\(commits.count) hasMore=\(hasMore)"]
         if hasRepo, !searching { out.append("row0=working-copy changes=\(changeCount)") }
         if !emptyLabel.isHidden { out.append("empty=\(emptyLabel.stringValue)") }
-        out.append("menu=" + (table.menu?.items.map { $0.isSeparatorItem ? "|" : $0.title } ?? []).joined(separator: ";"))
+        // As the menu opens for the selected row: hidden items left out.
+        if let menu = table.menu { menuNeedsUpdate(menu) }
+        out.append("menu=" + (table.menu?.items.filter { !$0.isHidden }.map { $0.isSeparatorItem ? "|" : $0.title } ?? [])
+            .joined(separator: ";"))
         for (index, commit) in commits.prefix(20).enumerated() {
             let refs = commit.refs.map { "\($0.kind.rawValue):\($0.name)" }.joined(separator: ",")
             out.append("row\(index + offset)=lane\(drawn[index].node) [\(refs)] \(commit.subject)")
@@ -256,6 +266,36 @@ final class GitHistoryView: NSView {
     private var selectedCommit: PluginGit.Commit? {
         if case .commit(let commit)? = selection { return commit }
         return nil
+    }
+
+    /// The graph of a history that may hold stash rows. Lanes come from the real commits alone — a stash
+    /// is not part of the history — and a stash row lets every lane alive at that point run straight
+    /// through, with its node on the lane of the commit below it, the one it was made on.
+    private static func drawnRows(_ rows: [PluginGit.Commit]) -> [(node: Int, lines: [PluginGit.GraphLine])] {
+        let real = rows.filter { !PluginGit.isStash($0) }
+        let graph = PluginGit.graph(real)
+        let lines = PluginGit.graphLines(graph)
+        var out: [(node: Int, lines: [PluginGit.GraphLine])] = []
+        var next = 0          // the real commit the next stash row sits above
+        for row in rows {
+            if PluginGit.isStash(row) {
+                guard next < graph.count else { out.append((0, [])); continue }
+                let node = lines[next].node
+                var strokes: [PluginGit.GraphLine] = []
+                for (lane, waiting) in graph[next].lanes.enumerated() where waiting != nil && next > 0 {
+                    strokes.append(.init(from: lane, to: lane, upper: true, color: lane))
+                    strokes.append(.init(from: lane, to: lane, upper: false, color: lane))
+                }
+                if !strokes.contains(where: { !$0.upper && $0.from == node }) {
+                    strokes.append(.init(from: node, to: node, upper: false, color: node))
+                }
+                out.append((node, strokes))
+            } else {
+                out.append(lines[next])
+                next += 1
+            }
+        }
+        return out
     }
 
     // MARK: - Layout
@@ -288,6 +328,48 @@ final class GitHistoryView: NSView {
     func setOnlyCurrentBranch(_ on: Bool) { onlyCurrentBranch = on }
 
     @objc private func copyHash() { selectedCommit.map { gitCopyToClipboard($0.hash) } }
+    private var selectedStash: PluginGit.Commit? { selectedCommit.flatMap { PluginGit.isStash($0) ? $0 : nil } }
+
+    @objc private func applyStash() { stash(.apply) }
+    @objc private func popStash() { stash(.pop) }
+    @objc private func dropStash() { stash(.drop) }
+
+    /// The stash is named by its hash, not by the `stash@{n}` it had when the history loaded: a stash
+    /// pushed or dropped elsewhere since moves every position, and dropping by an old name would drop a
+    /// different stash for good. So its current name is looked up first.
+    private func stash(_ action: PluginGit.StashAction) {
+        guard let root, let stash = selectedStash else { return }
+        let box = ServicesBox(services)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let output = PluginGitRepo.run(["-C", root] + PluginGit.stashCommitsArguments).out
+            let ref = PluginGit.currentStashRef(hash: stash.hash, in: output)
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                guard let ref else {
+                    GitCommitActions.report(box.services, L("Stash"), L("That stash is gone; the list is reloaded."))
+                    self.onChanged?()
+                    return
+                }
+                if action == .drop {
+                    let alert = NSAlert()
+                    alert.alertStyle = .warning
+                    alert.messageText = String(format: L("Drop %@?"), ref)
+                    alert.informativeText = stash.subject + "\n\n" + L("This cannot be undone.")
+                    alert.addButton(withTitle: L("Drop"))
+                    alert.addButton(withTitle: L("Cancel"))
+                    guard alert.runModal() == .alertFirstButtonReturn else { return }
+                }
+                GitCommitActions.run(PluginGit.stashArguments(action, ref: ref), title: L("Stash"), root: root,
+                                     services: box.services, busy: self.busy) { [weak self] in self?.onChanged?() }
+            }
+        }
+    }
+
+    @objc private func showReflog() {
+        guard let root else { return }
+        showReflogWindow(root: root, services)
+    }
+
     @objc private func copySubject() { selectedCommit.map { gitCopyToClipboard($0.subject) } }
     @objc private func revertSelected() { runSequencer(.revert) }
     @objc private func cherryPickSelected() { runSequencer(.cherryPick) }
@@ -344,13 +426,37 @@ final class GitHistoryView: NSView {
     }
 }
 
+extension GitHistoryView: NSMenuDelegate {
+    /// A stash row offers the stash's three actions, a commit row the commit's; the hash and the view
+    /// items are on both. Separators that end up next to each other or at the top are hidden as well.
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        let stashActions: Set<Selector> = [#selector(applyStash), #selector(popStash), #selector(dropStash)]
+        let shared: Set<Selector> = [#selector(copyHash), #selector(copySubject), #selector(toggleScope),
+                                     #selector(showReflog), #selector(reloadFromMenu)]
+        let onStash = selectedStash != nil
+        for item in menu.items where !item.isSeparatorItem {
+            guard let action = item.action else { continue }
+            item.isHidden = shared.contains(action) ? false : (stashActions.contains(action) ? !onStash : onStash)
+        }
+        var previousVisibleIsSeparator = true
+        for item in menu.items where item.isSeparatorItem || !item.isHidden {
+            if item.isSeparatorItem {
+                item.isHidden = previousVisibleIsSeparator
+                if !item.isHidden { previousVisibleIsSeparator = true }
+            } else {
+                previousVisibleIsSeparator = false
+            }
+        }
+    }
+}
+
 extension GitHistoryView: NSMenuItemValidation {
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         if menuItem.action == #selector(toggleScope) {
             menuItem.state = onlyCurrentBranch ? .on : .off
             return hasRepo
         }
-        if menuItem.action == #selector(reloadFromMenu) { return hasRepo }
+        if menuItem.action == #selector(reloadFromMenu) || menuItem.action == #selector(showReflog) { return hasRepo }
         return selectedCommit != nil
     }
 }
@@ -376,7 +482,8 @@ extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
             } else if commits.indices.contains(index) {
                 let isHead = commits[index].refs.contains { $0.kind == .head }
                 cell.configure(node: drawn[index].node, lines: drawn[index].lines, workingCopy: false,
-                               isHead: isHead, isMerge: commits[index].isMerge)
+                               isHead: isHead, isMerge: commits[index].isMerge,
+                               isStash: PluginGit.isStash(commits[index]))
             } else {
                 cell.configure(node: nil, lines: [], workingCopy: false, isHead: false, isMerge: false)
             }
@@ -490,10 +597,12 @@ final class GitGraphCell: NSView {
     private var workingCopy = false
     private var isHead = false
     private var isMerge = false
+    private var isStash = false
 
-    func configure(node: Int?, lines: [PluginGit.GraphLine], workingCopy: Bool, isHead: Bool, isMerge: Bool) {
+    func configure(node: Int?, lines: [PluginGit.GraphLine], workingCopy: Bool, isHead: Bool, isMerge: Bool,
+                   isStash: Bool = false) {
         self.node = node; self.lines = lines
-        self.workingCopy = workingCopy; self.isHead = isHead; self.isMerge = isMerge
+        self.workingCopy = workingCopy; self.isHead = isHead; self.isMerge = isMerge; self.isStash = isStash
         needsDisplay = true
     }
 
@@ -534,6 +643,14 @@ final class GitGraphCell: NSView {
             circle.setLineDash([2, 1.5], count: 2, phase: 0)
             color(node).setStroke()
             circle.stroke()
+            return
+        }
+        if isStash {
+            // A stash is not part of the history: a small open square on the commit it was made on.
+            let square = NSBezierPath(rect: dot.insetBy(dx: 0.5, dy: 0.5))
+            square.lineWidth = 1.4
+            NSColor.systemPurple.setStroke()
+            square.stroke()
             return
         }
         if isMerge {

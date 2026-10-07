@@ -853,6 +853,234 @@ public enum PluginGit {
         return (lines, truncated)
     }
 
+    // MARK: - Remotes and submodules (phase 7)
+
+    public struct Remote: Sendable, Equatable {
+        public let name: String
+        public var fetchURL: String
+        public var pushURL: String
+    }
+
+    public static let remotesArguments = ["--no-optional-locks", "remote", "-v"]
+
+    /// `git remote -v`: `origin\tgit@host:x.git (fetch)` and the same with `(push)`. One entry per remote,
+    /// in git's order; the push URL is shown only where it differs, so it is kept apart.
+    public static func parseRemotes(_ output: String) -> [Remote] {
+        var out: [Remote] = []
+        for line in output.split(separator: "\n") {
+            let parts = line.split(separator: "\t", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { continue }
+            var rest = parts[1]
+            let kind: String
+            if rest.hasSuffix(" (fetch)") { kind = "fetch"; rest.removeLast(8) }
+            else if rest.hasSuffix(" (push)") { kind = "push"; rest.removeLast(7) }
+            else { continue }
+            if let index = out.firstIndex(where: { $0.name == parts[0] }) {
+                if kind == "fetch" { out[index].fetchURL = rest } else { out[index].pushURL = rest }
+            } else {
+                out.append(Remote(name: parts[0], fetchURL: kind == "fetch" ? rest : "", pushURL: kind == "push" ? rest : ""))
+            }
+        }
+        return out
+    }
+
+    public static func addRemoteArguments(name: String, url: String) -> [String] { ["remote", "add", name, url] }
+    public static func renameRemoteArguments(_ name: String, to newName: String) -> [String] { ["remote", "rename", name, newName] }
+    public static func setRemoteURLArguments(_ name: String, url: String) -> [String] { ["remote", "set-url", name, url] }
+    public static func removeRemoteArguments(_ name: String) -> [String] { ["remote", "remove", name] }
+
+    public struct Submodule: Sendable, Equatable {
+        public enum State: String, Sendable { case current, uninitialized, differs, conflict }
+        public let path: String
+        public let commit: String
+        public let state: State
+        /// `git describe` of the checked-out commit, when git gives one.
+        public let describe: String?
+    }
+
+    public static let submodulesArguments = ["--no-optional-locks", "submodule", "status", "--recursive"]
+
+    /// `git submodule status`: a state letter — space, `-` not initialized, `+` another commit checked
+    /// out than the one recorded, `U` conflicted — then the commit, the path and `(describe)`.
+    public static func parseSubmodules(_ output: String) -> [Submodule] {
+        output.split(separator: "\n").compactMap { raw in
+            let line = String(raw)
+            guard let first = line.first else { return nil }
+            let state: Submodule.State
+            switch first {
+            case "-": state = .uninitialized
+            case "+": state = .differs
+            case "U": state = .conflict
+            default: state = .current
+            }
+            let fields = line.dropFirst().split(separator: " ", maxSplits: 1).map(String.init)
+            guard fields.count == 2 else { return nil }
+            var path = fields[1]
+            var describe: String?
+            if let open = path.range(of: " (", options: .backwards), path.hasSuffix(")") {
+                describe = String(path[open.upperBound..<path.index(before: path.endIndex)])
+                path = String(path[..<open.lowerBound])
+            }
+            return Submodule(path: path, commit: fields[0], state: state, describe: describe)
+        }
+    }
+
+    public static let updateSubmodulesArguments = ["submodule", "update", "--init", "--recursive"]
+
+    // MARK: - Creating and cloning, recent repositories (phase 7)
+
+    /// The folder `git clone` would create for `url`: its last path component without `.git` — for
+    /// `git@host:team/app.git`, `https://host/team/app/` and `/srv/app.git` alike, `app`. nil when the URL
+    /// names nothing usable.
+    public static func cloneDirectoryName(_ url: String) -> String? {
+        var text = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        while text.hasSuffix("/") { text.removeLast() }
+        if text.hasSuffix(".git") { text.removeLast(4) }
+        let name = text.split(whereSeparator: { $0 == "/" || $0 == ":" || $0 == "\\" }).last.map(String.init) ?? ""
+        return name.isEmpty || name == "." || name == ".." ? nil : name
+    }
+
+    /// `git clone` into `directory`, reporting progress on stderr so the host's progress window has lines.
+    public static func cloneArguments(url: String, into directory: String) -> [String] {
+        ["clone", "--progress", "--end-of-options", url, directory]
+    }
+
+    /// The recent-repositories list after `root` was opened: it moves to the front, each root once, at
+    /// most `limit`.
+    public static func recentRepositories(_ list: [String], opening root: String, limit: Int = 10) -> [String] {
+        Array(([root] + list.filter { $0 != root }).prefix(limit))
+    }
+
+    // MARK: - Reflog (phase 7)
+
+    /// One move of HEAD, from `git reflog`: where it went, what moved it and when.
+    public struct ReflogEntry: Sendable, Equatable {
+        public let hash: String
+        /// `HEAD@{3}` — the name git takes for it.
+        public let selector: String
+        /// git's own description of the move: "commit: …", "checkout: moving from a to b", "reset: …".
+        public let action: String
+        public let subject: String
+        public let date: Date
+    }
+
+    public static func reflogArguments(limit: Int) -> [String] {
+        ["--no-optional-locks", "reflog", "--max-count=\(limit)",
+         "--format=%H\(unitSeparator)%gd\(unitSeparator)%gs\(unitSeparator)%s\(unitSeparator)%ct\(recordSeparator)"]
+    }
+
+    public static func parseReflog(_ output: String) -> [ReflogEntry] {
+        output.components(separatedBy: recordSeparator).compactMap { record in
+            let fields = record.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: unitSeparator)
+            guard fields.count >= 5, !fields[0].isEmpty else { return nil }
+            return ReflogEntry(hash: fields[0], selector: fields[1], action: fields[2], subject: fields[3],
+                               date: Date(timeIntervalSince1970: Double(fields[4]) ?? 0))
+        }
+    }
+
+    /// A reflog entry as a `Commit`, so the history's actions — check out, new branch here — take it.
+    public static func commit(of entry: ReflogEntry) -> Commit {
+        Commit(hash: entry.hash, shortHash: String(entry.hash.prefix(7)), parents: [], author: "",
+               date: entry.date, subject: entry.subject)
+    }
+
+    // MARK: - Staging lines (phase 7)
+
+    /// What a partial patch is for. Staging applies it to the index; unstaging and discarding apply it in
+    /// reverse — to the index, or to the working tree.
+    public enum LinePatchUse: Sendable { case stage, unstage, discard }
+
+    /// A patch holding only the selected lines of a file's diff, for `git apply --recount`.
+    ///
+    /// `lines` is `parseUnifiedDiff` of `git diff -- path` (staging, discarding) or of `git diff --cached
+    /// -- path` (unstaging); `selected` are indices into it. A change line that is not selected must not
+    /// move, so it is rewritten the way it stands on the side the patch is applied to: applied forwards, an
+    /// unselected `-` line is still there (it becomes context) and an unselected `+` line is not (it is
+    /// dropped); applied in reverse it is the other way round. Hunk headers keep their start lines and
+    /// `--recount` works out the counts. nil when nothing selected is a change.
+    public static func linePatch(path: String, oldPath: String? = nil, lines: [DiffLine], selected: Set<Int>,
+                                 use: LinePatchUse) -> String? {
+        let reverse = use != .stage
+        /// Whether line `index` ends up in the patch at all.
+        func willKeep(_ index: Int) -> Bool {
+            switch lines[index].kind {
+            case .context: return true
+            case .added: return selected.contains(index) || reverse
+            case .removed: return selected.contains(index) || !reverse
+            default: return false
+            }
+        }
+        var hunks: [String] = []
+        var index = 0
+        while index < lines.count {
+            guard lines[index].kind == .hunk else { index += 1; continue }
+            var body: [String] = []
+            var changes = 0
+            var keptPrevious = false
+            var cursor = index + 1
+            while cursor < lines.count, lines[cursor].kind != .hunk {
+                let line = lines[cursor]
+                let isSelected = selected.contains(cursor)
+                switch line.kind {
+                case .context:
+                    body.append(" " + line.text); keptPrevious = true
+                case .added:
+                    if isSelected { body.append("+" + line.text); changes += 1; keptPrevious = true }
+                    else if reverse { body.append(" " + line.text); keptPrevious = true }
+                    else { keptPrevious = false }
+                case .removed:
+                    if isSelected { body.append("-" + line.text); changes += 1; keptPrevious = true }
+                    else if !reverse { body.append(" " + line.text); keptPrevious = true }
+                    else { keptPrevious = false }
+                case .meta where line.text.hasPrefix("\\"):
+                    if keptPrevious { body.append(line.text) }   // "\ No newline at end of file"
+                    // A line without a newline that stays as context cannot have anything after it: the
+                    // patch would add lines past a file's unterminated end, which git rejects. Such a
+                    // selection is refused rather than rewritten into something else.
+                    if keptPrevious, body.count >= 2, body[body.count - 2].hasPrefix(" ") {
+                        var next = cursor + 1
+                        while next < lines.count, lines[next].kind != .hunk {
+                            if willKeep(next) { return nil }
+                            next += 1
+                        }
+                    }
+                default:
+                    break
+                }
+                cursor += 1
+            }
+            if changes > 0 { hunks.append(([lines[index].text] + body).joined(separator: "\n")) }
+            index = cursor
+        }
+        guard !hunks.isEmpty else { return nil }
+        let header = "--- a/\(oldPath ?? path)\n+++ b/\(path)\n"
+        return header + hunks.joined(separator: "\n") + "\n"
+    }
+
+    /// `git apply` for a `linePatch` written to `patchFile`.
+    public static func applyLinePatchArguments(_ use: LinePatchUse, patchFile: String) -> [String] {
+        switch use {
+        case .stage:   return ["apply", "--cached", "--recount", patchFile]
+        case .unstage: return ["apply", "--cached", "--recount", "--reverse", patchFile]
+        case .discard: return ["apply", "--recount", "--reverse", patchFile]
+        }
+    }
+
+    /// The change lines of the hunk that holds `row` — "stage this hunk" is "stage these lines".
+    public static func hunkLines(containing row: Int, in lines: [DiffLine]) -> Set<Int> {
+        guard lines.indices.contains(row) else { return [] }
+        var start = row
+        while start > 0, lines[start].kind != .hunk { start -= 1 }
+        guard lines[start].kind == .hunk else { return [] }
+        var out = Set<Int>()
+        var cursor = start + 1
+        while cursor < lines.count, lines[cursor].kind != .hunk {
+            if lines[cursor].kind == .added || lines[cursor].kind == .removed { out.insert(cursor) }
+            cursor += 1
+        }
+        return out
+    }
+
     // MARK: - Blame (phase 2)
 
     /// One line of `git blame --porcelain`.
@@ -1015,6 +1243,59 @@ public enum PluginGit {
             stashes.append(Stash(ref: fields[0], branch: branch, subject: subject))
         }
         return stashes
+    }
+
+    /// `stash list` as commits, for the panel's history (phase 7): hash, the commit it was made on, when,
+    /// its name and its subject.
+    public static let stashCommitsArguments = [
+        "--no-optional-locks", "stash", "list",
+        "--format=%H\(unitSeparator)%P\(unitSeparator)%at\(unitSeparator)%gd\(unitSeparator)%gs\(unitSeparator)%ct\(recordSeparator)",
+    ]
+
+    /// Each stash as a `Commit` whose one parent is the commit it was made on and whose only ref is its
+    /// `stash@{n}` — so the Commit and Changes tabs show it like any commit, against what it was made on.
+    /// The stash's other parents (its index, its untracked files) are internal and left out.
+    public static func stashCommits(_ output: String) -> [Commit] {
+        var out: [Commit] = []
+        for record in output.components(separatedBy: recordSeparator) {
+            let fields = record.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: unitSeparator)
+            guard fields.count >= 5, !fields[0].isEmpty else { continue }
+            let base = fields[1].split(separator: " ").first.map(String.init)
+            var commit = Commit(hash: fields[0], shortHash: String(fields[0].prefix(7)), parents: base.map { [$0] } ?? [],
+                                author: "", date: Date(timeIntervalSince1970: Double(fields[2]) ?? 0), subject: fields[4])
+            commit.refs = [Ref(name: fields[3], kind: .stash)]
+            if fields.count >= 6, let seconds = Double(fields[5]) { commit.commitDate = Date(timeIntervalSince1970: seconds) }
+            out.append(commit)
+        }
+        return out
+    }
+
+    /// Whether this commit is a stash entry from `stashCommits`.
+    public static func isStash(_ commit: Commit) -> Bool { commit.refs.contains { $0.kind == .stash } && commit.refs.count == 1 }
+
+    /// The history with each stash placed directly above the commit it was made on, newest stash first
+    /// there. A stash whose commit is not loaded is left out: it belongs further down than the list goes.
+    public static func historyWithStashes(_ commits: [Commit], stashes: [Commit]) -> [Commit] {
+        guard !stashes.isEmpty else { return commits }
+        var byBase: [String: [Commit]] = [:]
+        for stash in stashes { if let base = stash.parents.first { byBase[base, default: []].append(stash) } }
+        var out: [Commit] = []
+        for commit in commits {
+            out += byBase[commit.hash] ?? []
+            out.append(commit)
+        }
+        return out
+    }
+
+    public enum StashAction: String, Sendable { case apply, pop, drop }
+
+    public static func stashArguments(_ action: StashAction, ref: String) -> [String] { ["stash", action.rawValue, ref] }
+
+    /// The `stash@{n}` that names the stash with `hash` *now*, from a fresh `stashCommitsArguments` read.
+    /// Positions move whenever a stash is pushed or dropped elsewhere, so acting on the name the history
+    /// loaded with could drop a different stash — permanently. nil when it is gone.
+    public static func currentStashRef(hash: String, in output: String) -> String? {
+        stashCommits(output).first { $0.hash == hash }?.refs.first?.name
     }
 
     /// Whether switching branches is safe right now, and if not, why — in a form the caller can turn into
@@ -1192,6 +1473,53 @@ public enum PluginGit {
         let target = commit.map { [$0] } ?? []
         guard let message, !message.isEmpty else { return ["tag", name] + target }
         return ["tag", "-a", name, "-m", message] + target
+    }
+
+    // MARK: - Recent messages and LFS (phase 7)
+
+    /// The subjects of the reader's own last commits on any branch, for the commit box's list. `author`
+    /// is their `user.email`; without one, the last commits of anybody.
+    public static func recentMessagesArguments(author: String?) -> [String] {
+        var out = ["--no-optional-locks", "log", "--branches", "--max-count=100", "--format=%s"]
+        if let author, !author.isEmpty { out += ["-F", "--author=\(author)"] }
+        return out
+    }
+
+    /// The recent subjects, each once, newest first, at most `limit` — a message used on five commits in a
+    /// row is one entry, not five.
+    public static func recentMessages(_ output: String, limit: Int = 20) -> [String] {
+        var seen = Set<String>()
+        var out: [String] = []
+        for line in output.split(separator: "\n") {
+            let subject = line.trimmingCharacters(in: .whitespaces)
+            guard !subject.isEmpty, seen.insert(subject).inserted else { continue }
+            out.append(subject)
+            if out.count == limit { break }
+        }
+        return out
+    }
+
+    /// `git check-attr` for which paths Git LFS stores: their `filter` attribute. The paths go to its
+    /// standard input (`lfsCheckInput`), not on the command line — a commit touching thousands of deeply
+    /// nested files would exceed the argument limit, and every badge would silently disappear.
+    public static let lfsCheckArguments = ["check-attr", "--stdin", "-z", "filter"]
+
+    /// The paths for `lfsCheckArguments`' standard input, NUL-separated.
+    public static func lfsCheckInput(_ paths: [String]) -> Data {
+        Data(paths.map { $0 + "\0" }.joined().utf8)
+    }
+
+    /// The paths whose filter is `lfs`, from `lfsCheckArguments`' NUL-separated `path, attribute, value`
+    /// triples.
+    public static func lfsPaths(_ output: String) -> Set<String> {
+        let fields = output.split(separator: "\0", omittingEmptySubsequences: false).map(String.init)
+        var out = Set<String>()
+        var index = 0
+        while index + 2 < fields.count {
+            if fields[index + 1] == "filter", fields[index + 2] == "lfs" { out.insert(fields[index]) }
+            index += 3
+        }
+        return out
     }
 
     // MARK: - Acting on a commit from the history (phase 7)

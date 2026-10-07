@@ -43,6 +43,16 @@ véglegesítés amúgy is történik; mindhárom mutatja a haladást, és megsza
 <li>Ugyanebből a menüből egy commit kivehető, kaphat új ágat vagy címkét, egyesíthető az aktuális ágba, rá lehet rebase-elni vagy vissza lehet állítani rá az aktuális ágat, vagy indítható tőle interaktív rebase.</li>
 <li>A lista feletti keresőmező a teljes előzményben keres — üzenetben, a szerző nevében és e-mail-címében, vagy egy hash első karaktereire —, és gráf nélkül listázza a találatokat.</li>
 </ul>
+<h2 id="tobb-a-panelen-es-a-git-menuben">Több a panelen és a Git menüben</h2>
+<p>A munkapéldány, az előzmények és a <strong>Parancsok ▸ Git</strong> menü többet kínál a véglegesítésnél:</p>
+<ul>
+<li>Egy kijelölt előkészített vagy módosított fájl a lista alatt mutatja a diffjét; a kijelölt sorok vagy egy teljes blokk a helyi menüből előkészíthető, visszavonható vagy elvethető.</li>
+<li>A commit-mező kombinált lista: a listája a legutóbbi commit-üzeneteidet tartalmazza újrafelhasználásra vagy szerkesztésre.</li>
+<li>A <strong>Megjelenítés a bal panelen</strong> és a <strong>Megjelenítés a jobb panelen</strong> egy fájlpanelt a lista vagy egy commit változásainak egy fájljához visz, miközben a Git panel változatlan marad; a Git LFS által tárolt fájlok <strong>LFS</strong> jelölést kapnak.</li>
+<li>A stash-ek kis négyzetekként jelennek meg az előzményekben annak a commitnak a felett, amelyen készültek, a helyi menüben <strong>Stash alkalmazása</strong>, <strong>Stash alkalmazása és eltávolítása</strong> és <strong>Stash törlése…</strong> pontokkal.</li>
+<li>A <strong>Reflog…</strong> a HEAD minden mozgását listázza; egy visszaállítással vagy törölt ággal elveszett commit az <strong>Új ág itt…</strong> paranccsal visszajön. A <strong>Távoli tárolók és almodulok…</strong> hozzáad, átnevez, átirányít és eltávolít távoli tárolókat, és frissíti az almodulokat.</li>
+<li>A <strong>Tároló létrehozása itt…</strong> és a <strong>Tároló klónozása…</strong> az aktív panel mappájában dolgozik, a panel címe melletti óra pedig egy legutóbbi tárolóhoz visz vissza.</li>
+</ul>
 <h2 id="elozmenyek-blame-es-a-web">Előzmények, blame és a web</h2>
 <ul>
 <li>Az <strong>Előzmények…</strong> sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (<code>● main</code>,

@@ -21,6 +21,11 @@ final class GitChangesView: NSView {
     private let outlineScroll = NSScrollView()
     private let diff: GitDiffView
     private var tree: [TreeItem] = []
+    /// "Show in the left/right panel": the full path and the side (0 left, 1 right). The panel does the
+    /// navigating, because it has to keep itself still while the file panel moves (see `reveal`).
+    var onReveal: ((String, Int) -> Void)?
+    /// The listed files Git LFS stores, by the repository's current `.gitattributes`.
+    private var lfs: Set<String> = []
     private var commit: PluginGit.Commit?
     private var root: String?
     /// The commit / file being loaded; a late result for anything else is dropped.
@@ -57,6 +62,10 @@ final class GitChangesView: NSView {
         outline.onEnter = { [weak self] in self?.compareSelected() }
         outline.menu = gitMenu([
             (L("Show changes of this file"), #selector(compareSelected)),
+            (nil, nil),
+            (L("Show in the left panel"), #selector(revealLeft)),
+            (L("Show in the right panel"), #selector(revealRight)),
+            (nil, nil),
             (L("Copy file path"), #selector(copyFilePath)),
         ], target: self)
         outlineScroll.documentView = outline
@@ -127,11 +136,17 @@ final class GitChangesView: NSView {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let result = PluginGitRepo.run(["-C", root] + PluginGit.nameStatusArguments(hash))
             let files = PluginGit.parseNameStatus(result.out)
+            // Which of them LFS stores — a pointer file's diff is three lines of hash, which reads as
+            // nonsense unless the tree says what it is. The paths go on standard input, however many.
+            let paths = files.map(\.path)
+            let lfs = paths.isEmpty ? [] : PluginGit.lfsPaths(PluginGitRepo.run(
+                ["-C", root] + PluginGit.lfsCheckArguments, input: PluginGit.lfsCheckInput(paths)).out)
             DispatchQueue.main.async {
                 // Stopped before the staleness check: the indicator counts, and a dropped result that
                 // never stops it would leave it spinning.
                 self?.busy.stopAnimation(nil)
                 guard let self, self.loadingFiles == hash else { return }
+                self.lfs = lfs
                 self.tree = PluginGit.fileTree(files).map(TreeItem.init)
                 self.outline.reloadData()
                 self.outline.expandItem(nil, expandChildren: true)
@@ -151,7 +166,10 @@ final class GitChangesView: NSView {
     /// The tree's files and the diff on screen, for the verification dump.
     func automationSummary() -> [String] {
         func files(_ items: [TreeItem]) -> [String] {
-            items.flatMap { item in item.node.file.map { ["\($0.status) \($0.path)"] } ?? files(item.children) }
+            items.flatMap { item in
+                item.node.file.map { ["\($0.status) \($0.path)" + (lfs.contains($0.path) ? " LFS" : "")] }
+                    ?? files(item.children)
+            }
         }
         return ["files=" + files(tree).joined(separator: ", "),
                 "selectedFile=\(selectedFile?.path ?? "<none>")"] + diff.automationSummary()
@@ -187,6 +205,30 @@ final class GitChangesView: NSView {
                                      services: services, busy: busy)
     }
 
+    /// Verification only: select the first file of the tree and show it in a file panel.
+    func revealFirstFile(side: Int) {
+        guard let row = (0..<outline.numberOfRows).first(where: { (outline.item(atRow: $0) as? TreeItem)?.node.file != nil })
+        else { return }
+        outline.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        reveal(side: side)
+    }
+
+    @objc private func revealLeft() { reveal(side: 0) }
+    @objc private func revealRight() { reveal(side: 1) }
+
+    private func reveal(side: Int) {
+        guard let path = selectedFullPath else { return }
+        onReveal?(path, side)
+    }
+
+    /// The selected row on disk — a file, or a folder of the tree — when it is still there: a file this
+    /// commit deleted, or one deleted since, has nowhere to be shown.
+    private var selectedFullPath: String? {
+        guard let root, let item = outline.item(atRow: outline.selectedRow) as? TreeItem else { return nil }
+        let path = (root as NSString).appendingPathComponent(item.node.path)
+        return FileManager.default.fileExists(atPath: path) ? path : nil
+    }
+
     @objc private func copyFilePath() {
         guard let root, let item = outline.item(atRow: outline.selectedRow) as? TreeItem else { return }
         gitCopyToClipboard((root as NSString).appendingPathComponent(item.node.path))
@@ -200,6 +242,15 @@ private final class TreeItem {
     init(_ node: PluginGit.FileTreeNode) {
         self.node = node
         self.children = node.children.map(TreeItem.init)
+    }
+}
+
+extension GitChangesView: NSMenuItemValidation {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(revealLeft) || menuItem.action == #selector(revealRight) {
+            return selectedFullPath != nil
+        }
+        return outline.selectedRow >= 0
     }
 }
 
@@ -234,6 +285,11 @@ extension GitChangesView: NSOutlineViewDataSource, NSOutlineViewDelegate {
         text.append(NSAttributedString(string: node.name, attributes: [
             .font: NSFont.systemFont(ofSize: 11), .foregroundColor: theme.text,
         ]))
+        if let file = node.file, lfs.contains(file.path) {
+            text.append(NSAttributedString(string: "  LFS", attributes: [
+                .font: NSFont.systemFont(ofSize: 9, weight: .semibold), .foregroundColor: NSColor.systemPurple,
+            ]))
+        }
         cell.textField?.attributedStringValue = text
         cell.toolTip = node.file?.oldPath.map { String(format: L("Renamed from %@"), $0) } ?? node.path
         return cell
@@ -290,6 +346,23 @@ final class GitDiffView: NSView {
     private let placeholder = NSTextField(labelWithString: "")
     private var lines: [PluginGit.DiffLine] = []
     private var theme: PluginTheme
+    /// The diff's own lines, without the "rest not shown" note `show` may append — what a line patch is
+    /// built from. Row indices below the note are the same in both.
+    private(set) var diffLines: [PluginGit.DiffLine] = []
+    private(set) var isTruncated = false
+
+    /// The rows the reader selected, and the one a right-click was on (selected rows win).
+    var selectedRows: Set<Int> { Set(table.selectedRowIndexes) }
+    var clickedRow: Int { table.clickedRow >= 0 ? table.clickedRow : table.selectedRow }
+
+    /// Select diff rows without a click (the verification probe).
+    func selectRows(_ rows: IndexSet) { table.selectRowIndexes(rows, byExtendingSelection: false) }
+
+    /// A context menu for the lines — the working copy's stage / unstage / discard.
+    var lineMenu: NSMenu? {
+        get { table.menu }
+        set { table.menu = newValue }
+    }
 
     init(theme: PluginTheme) {
         self.theme = theme
@@ -345,6 +418,8 @@ final class GitDiffView: NSView {
     }
 
     func show(lines: [PluginGit.DiffLine], truncated: Bool, placeholder text: String) {
+        diffLines = lines
+        isTruncated = truncated
         var shown = lines
         if truncated {
             shown.append(.init(kind: .meta, text: L("… the rest of this diff is not shown. Double-click the file to compare it.")))

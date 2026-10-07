@@ -31,6 +31,19 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   the current branch to it (soft, mixed or hard — hard asks twice) and opens the Rebase window from
   that commit, which until now could only start at the upstream. A **Fetch** button and command join
   Pull and Push.
+- **Stage, unstage and discard single lines.** Selecting a file in the working copy shows its diff
+  under the list; selected lines or a whole hunk are staged, unstaged or discarded from its context
+  menu. The commit box lists your recent commit messages.
+- **Stashes in the history**, as small squares above the commit each was made on, applied, popped or
+  dropped from their context menu; their Changes tab shows what they hold.
+- **Show a file in the left or right panel** from the working copy's list or a commit's changes — the
+  Git panel keeps its selection, its tab and its list while the file panel moves. Files stored by Git
+  LFS are marked in the changes tree.
+- **Reflog…** lists every move of HEAD, and brings back a commit lost to a reset or a deleted branch
+  with a new branch on it. **Remotes & Submodules…** adds, renames, re-points and removes remotes and
+  updates submodules, with progress and Cancel.
+- **Create Repository Here…** and **Clone Repository…** (with progress and Cancel) in the Git menu, and
+  a list of recent repositories beside the panel's title.
 
 ### Fixed
 

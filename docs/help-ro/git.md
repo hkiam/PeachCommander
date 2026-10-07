@@ -46,6 +46,17 @@ Sub butoane, panoul arată istoricul tuturor ramurilor, ramurilor la distanță 
 - Din același meniu, un commit poate fi comutat, poate primi o ramură sau o etichetă nouă, poate fi îmbinat în ramura curentă, ramura curentă poate fi rebazată sau resetată pe el ori poate porni un rebase interactiv.
 - Câmpul de căutare de deasupra listei caută în tot istoricul — mesaj, numele și e-mailul autorului sau un hash și primele lui caractere — și listează rezultatele fără graf.
 
+## Mai mult în panou și în meniul Git
+
+Copia de lucru, istoricul și meniul **Comenzi ▸ Git** oferă mai mult decât comiterea:
+
+- Un fișier pregătit sau modificat selectat își arată diff-ul sub listă; liniile selectate sau un bloc întreg pot fi pregătite, retrase din pregătire sau abandonate din meniul contextual.
+- Câmpul de commit este o casetă combinată: lista ei conține ultimele tale mesaje de commit, de refolosit sau de editat.
+- **Arată în panoul din stânga** și **Arată în panoul din dreapta** duc un panou de fișiere la un fișier din listă sau din modificările unui commit, în timp ce panoul Git rămâne cum este; fișierele stocate de Git LFS sunt marcate **LFS**.
+- Stash-urile apar în istoric ca pătrățele deasupra commit-ului pe care au fost făcute, cu **Aplică stash**, **Aplică și elimină stash** și **Șterge stash…** în meniul contextual.
+- **Reflog…** listează fiecare mutare a HEAD; un commit pierdut printr-o resetare sau o ramură ștearsă revine cu **Ramură nouă aici…**. **Depozite la distanță și submodule…** adaugă, redenumește, redirecționează și elimină depozite la distanță și actualizează submodulele.
+- **Creează depozit aici…** și **Clonează depozitul…** lucrează în dosarul panoului activ, iar ceasul de lângă titlul panoului duce înapoi la un depozit recent.
+
 ## Istoric, blame și web
 
 - **Istoric…** listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (`● main`,

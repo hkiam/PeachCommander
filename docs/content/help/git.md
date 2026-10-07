@@ -46,6 +46,17 @@ Below its buttons the panel shows the history of every branch, remote branch and
 - From the same menu a commit can be checked out, get a new branch or tag, be merged into the current branch, have the current branch rebased onto it or reset to it, or start an interactive rebase.
 - The search field above the list searches the whole history — message, author name and e-mail, or a hash and its first characters — and lists the matches without the graph.
 
+## More in the panel and in the Git menu
+
+The working copy, the history and the **Commands ▸ Git** menu offer more than committing:
+
+- Selecting a staged or changed file shows its diff under the list; selected lines or a whole hunk can be staged, unstaged or discarded from its context menu.
+- The commit box is a combo box: its list holds your last commit messages, to reuse or edit.
+- **Show in the left panel** and **Show in the right panel** take a file panel to a file of the list or of a commit's changes, while the Git panel stays as it is; files stored by Git LFS are marked **LFS**.
+- Stashes appear in the history as small squares above the commit they were made on, with **Apply stash**, **Pop stash** and **Drop stash…** in their context menu.
+- **Reflog…** lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with **New branch here…**. **Remotes & Submodules…** adds, renames, re-points and removes remotes and updates submodules.
+- **Create Repository Here…** and **Clone Repository…** work in the active panel's folder, and the clock beside the panel's title goes back to a recent repository.
+
 ## History, blame and the web
 
 - **History…** lists the commits with a lane graph, the refs pointing at each one (`● main`,

@@ -45,6 +45,17 @@ Under knappene viser panelet historikken for alle grener, fjerngrener og tagger 
 - Fra samme meny kan en commit sjekkes ut, få en ny gren eller tagg, slås sammen inn i gjeldende gren, få gjeldende gren rebaset på seg eller tilbakestilt til seg, eller starte en interaktiv rebase.
 - Søkefeltet over listen søker i hele historikken — melding, forfatterens navn og e-post eller en hash og de første tegnene — og viser treffene uten grafen.
 
+## Mer i panelet og i Git-menyen
+
+Arbeidskopien, historikken og menyen **Kommandoer ▸ Git** tilbyr mer enn å committe:
+
+- En markert stagede eller endret fil viser diffen sin under listen; markerte linjer eller en hel hunk stages, unstages eller forkastes fra kontekstmenyen.
+- Commit-feltet er en kombinasjonsboks: Listen inneholder de siste commit-meldingene dine til gjenbruk eller redigering.
+- **Vis i venstre panel** og **Vis i høyre panel** fører et filpanel til en fil fra listen eller fra en commits endringer, mens Git-panelet blir som det er; filer som Git LFS lagrer, er merket **LFS**.
+- Stasher vises i historikken som små firkanter over commiten de ble laget på, med **Bruk stash**, **Bruk og fjern stash** og **Slett stash…** i kontekstmenyen.
+- **Reflog…** viser hver flytting av HEAD; en commit som gikk tapt ved en tilbakestilling eller en slettet gren, kommer tilbake med **Ny gren her…**. **Remotes og undermoduler…** legger til, gir nytt navn, endrer og fjerner remotes og oppdaterer undermoduler.
+- **Opprett repository her…** og **Klon repository…** arbeider i mappen til det aktive panelet, og klokken ved siden av panelets tittel går tilbake til et nylig repository.
+
 ## Historikk, blame og nettet
 
 - **Historikk…** lister commitene med en banegraf, refene som peker på hver av dem (`● main`,

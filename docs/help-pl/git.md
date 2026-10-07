@@ -45,6 +45,17 @@ Pod przyciskami panel pokazuje historię wszystkich gałęzi, gałęzi zdalnych 
 - Z tego samego menu commit można przełączyć, nadać mu nową gałąź lub tag, scalić z bieżącą gałęzią, przenieść na niego bieżącą gałąź lub ją do niego zresetować albo rozpocząć od niego interaktywny rebase.
 - Pole wyszukiwania nad listą przeszukuje całą historię — opis, imię i e-mail autora albo hash i jego pierwsze znaki — i pokazuje wyniki bez grafu.
 
+## Więcej w panelu i w menu Git
+
+Kopia robocza, historia i menu **Polecenia ▸ Git** oferują więcej niż zatwierdzanie:
+
+- Zaznaczony przygotowany lub zmieniony plik pokazuje pod listą swój diff; zaznaczone wiersze lub cały fragment można z jego menu kontekstowego przygotować, cofnąć z przygotowania lub odrzucić.
+- Pole commita to pole kombi: jego lista zawiera twoje ostatnie opisy commitów do ponownego użycia lub edycji.
+- **Pokaż w lewym panelu** i **Pokaż w prawym panelu** przenoszą panel plików na plik z listy lub ze zmian commita, a panel Git zostaje bez zmian; pliki przechowywane przez Git LFS są oznaczone **LFS**.
+- Schowki pojawiają się w historii jako małe kwadraty nad commitem, na którym je utworzono, z **Zastosuj schowek**, **Zastosuj i usuń schowek** i **Usuń schowek…** w menu kontekstowym.
+- **Reflog…** wyświetla każde przesunięcie HEAD; commit utracony przez reset lub usuniętą gałąź wraca przez **Nowa gałąź tutaj…**. **Zdalne repozytoria i podmoduły…** dodaje, zmienia nazwy, przekierowuje i usuwa zdalne repozytoria oraz aktualizuje podmoduły.
+- **Utwórz tu repozytorium…** i **Klonuj repozytorium…** działają w folderze aktywnego panelu, a zegar obok tytułu panelu prowadzi z powrotem do ostatniego repozytorium.
+
 ## Historia, blame i sieć
 
 - **Historia…** wypisuje zatwierdzenia z grafem torów, referencje wskazujące na każde z nich (`● main`,

@@ -369,12 +369,30 @@ separate log window beside it. Built:
   fixed for the status. A rename is compared under its old name in the parent, a deletion against an
   empty file.
 
-Next, in the order of the feature comparison made for this phase: ~~a `PATH` that reaches Homebrew's
-`git-lfs`, `gpg` and credential helpers~~ — **done**: reproduced first (under launchd's PATH, `git status`
-in an LFS repository failed with "git-lfs: command not found"), fixed in `PluginGitRepo.environment()`
-with `PluginGit.toolSearchPath`, and guarded by a test that runs that exact case; the full history context menu (checkout a commit, merge, rebase onto, branch and
-tag here, reset); recent commit messages; stashes in the graph; hunk and line staging in the working
-copy's diff; a reflog view; remotes and submodule actions; init, clone and recent repositories.
+### Phase 7 — The rest of the feature comparison · **built**
+
+Done in the order the comparison with Fork set, each measured in the app or against real git:
+
+* **A `PATH` that reaches Homebrew's `git-lfs`, `gpg` and credential helpers** — reproduced first (under
+  launchd's PATH, `git status` in an LFS repository failed with "git-lfs: command not found"), fixed in
+  `PluginGitRepo.environment()` with `PluginGit.toolSearchPath`, guarded by a test of that exact case.
+* **The history's context menu**: checkout, branch and tag here, merge, rebase onto, reset (soft / mixed /
+  hard), interactive rebase from a chosen commit (the Rebase window takes a base). Fetch as a command.
+* **Line staging**: the working copy's diff, whose selected lines or hunk are staged, unstaged or
+  discarded through `git apply --recount` with a patch built by `PluginGit.linePatch` — an unselected
+  change keeps the side it stands on; a selection git could not apply is refused.
+* **Stashes in the history** above the commit each was made on, apply / pop / drop resolved by hash (a
+  `stash@{n}` moves when another stash is pushed).
+* **Reflog** window; **Remotes & Submodules** window (submodule update with progress and Cancel, in the
+  window's own repository); **init**, **clone** and **recent repositories**.
+* **Show a file in the left or right file panel** without the Git panel moving: the host activates the
+  target panel before it navigates and reports a stale folder once more, so the panel waits for the
+  file panel's own folder notification to name the target (measured: three extra reloads without it).
+* Recent commit messages in the commit box; LFS files marked in the changes tree (`check-attr --stdin`).
+* `check-plugin-translations.py` now fails on a translation whose format specifiers differ from its
+  key's — three such were found in the Rebase window's heading (zh-Hans, ko, ru).
+
+Still out: Git-flow, creating repositories on a hosting service, browsing the tree at any commit.
 
 ### Deliberately out of scope
 

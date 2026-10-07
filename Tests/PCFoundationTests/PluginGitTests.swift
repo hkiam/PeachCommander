@@ -416,6 +416,225 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.parseStatus(fixed.out).files.keys.sorted(), ["a.bin"])
     }
 
+    func testCloneDirectoryNames() {
+        XCTAssertEqual(PluginGit.cloneDirectoryName("git@github.com:team/app.git"), "app")
+        XCTAssertEqual(PluginGit.cloneDirectoryName("https://host/team/app/"), "app")
+        XCTAssertEqual(PluginGit.cloneDirectoryName("/srv/repos/app.git"), "app")
+        XCTAssertEqual(PluginGit.cloneDirectoryName("ssh://host:22/x/Grüße"), "Grüße")
+        XCTAssertNil(PluginGit.cloneDirectoryName("  "))
+        XCTAssertEqual(Array(PluginGit.cloneArguments(url: "-x", into: "/d").suffix(3)), ["--end-of-options", "-x", "/d"],
+                       "a URL can never be an option")
+    }
+
+    func testRecentRepositoriesMoveToTheFrontOnce() {
+        XCTAssertEqual(PluginGit.recentRepositories(["/a", "/b", "/c"], opening: "/b"), ["/b", "/a", "/c"])
+        XCTAssertEqual(PluginGit.recentRepositories((1...10).map { "/\($0)" }, opening: "/new").count, 10)
+        XCTAssertEqual(PluginGit.recentRepositories((1...10).map { "/\($0)" }, opening: "/new").last, "/9")
+    }
+
+    func testCloneAgainstRealGit() throws {
+        let source = try TempRepo()
+        try source.git(["init", "-q", "-b", "main"])
+        try source.git(["commit", "-q", "--allow-empty", "-m", "first"])
+        let target = try TempRepo()
+        let name = try XCTUnwrap(PluginGit.cloneDirectoryName(source.dir.path))
+        let into = target.dir.appendingPathComponent(name).path
+        XCTAssertTrue(try target.git(PluginGit.cloneArguments(url: source.dir.path, into: into)).ok)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: (into as NSString).appendingPathComponent(".git")))
+    }
+
+    func testParseRemotesKeepsFetchAndPushApart() {
+        let out = "origin\tgit@github.com:a/b.git (fetch)\norigin\tgit@github.com:a/b.git (push)\n"
+            + "fork\thttps://x/y.git (fetch)\nfork\tssh://push/y.git (push)\n"
+        XCTAssertEqual(PluginGit.parseRemotes(out), [
+            .init(name: "origin", fetchURL: "git@github.com:a/b.git", pushURL: "git@github.com:a/b.git"),
+            .init(name: "fork", fetchURL: "https://x/y.git", pushURL: "ssh://push/y.git"),
+        ])
+        XCTAssertEqual(PluginGit.renameRemoteArguments("fork", to: "upstream"), ["remote", "rename", "fork", "upstream"])
+    }
+
+    func testParseSubmodules() {
+        let out = " 1111 libs/core (v1.2)\n-2222 vendor/x\n+3333 tools/y (heads/main)\nU4444 z\n"
+        let subs = PluginGit.parseSubmodules(out)
+        XCTAssertEqual(subs.map(\.path), ["libs/core", "vendor/x", "tools/y", "z"])
+        XCTAssertEqual(subs.map(\.state), [.current, .uninitialized, .differs, .conflict])
+        XCTAssertEqual(subs[0].describe, "v1.2")
+        XCTAssertNil(subs[1].describe)
+    }
+
+    func testRemotesAndSubmodulesAgainstRealGit() throws {
+        let lib = try TempRepo()
+        try lib.git(["init", "-q", "-b", "main"])
+        try lib.git(["commit", "-q", "--allow-empty", "-m", "lib"])
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        XCTAssertTrue(try repo.git(PluginGit.addRemoteArguments(name: "origin", url: "https://example.com/a.git")).ok)
+        XCTAssertTrue(try repo.git(PluginGit.setRemoteURLArguments("origin", url: "https://example.com/b.git")).ok)
+        XCTAssertTrue(try repo.git(PluginGit.renameRemoteArguments("origin", to: "upstream")).ok)
+        XCTAssertEqual(PluginGit.parseRemotes(try repo.git(PluginGit.remotesArguments, combined: false).out),
+                       [.init(name: "upstream", fetchURL: "https://example.com/b.git", pushURL: "https://example.com/b.git")])
+        XCTAssertTrue(try repo.git(PluginGit.removeRemoteArguments("upstream")).ok)
+        XCTAssertEqual(PluginGit.parseRemotes(try repo.git(PluginGit.remotesArguments, combined: false).out), [])
+
+        // A local submodule (protocol.file.allow: git refuses file:// submodules by default since 2.38).
+        let allow = ["GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "protocol.file.allow", "GIT_CONFIG_VALUE_0": "always"]
+        XCTAssertTrue(try repo.git(["submodule", "add", "-q", lib.dir.path, "libs/lib"], environment: allow).ok)
+        try repo.git(["commit", "-q", "-m", "add lib"])
+        let subs = PluginGit.parseSubmodules(try repo.git(PluginGit.submodulesArguments, combined: false).out)
+        XCTAssertEqual(subs.map(\.path), ["libs/lib"])
+        XCTAssertEqual(subs.first?.state, .current)
+    }
+
+    /// A commit lost to a hard reset is still in the reflog, and a branch on it brings it back.
+    func testTheReflogFindsALostCommitAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try repo.git(["commit", "-q", "--allow-empty", "-m", "base"])
+        try repo.git(["commit", "-q", "--allow-empty", "-m", "precious"])
+        try repo.git(PluginGit.resetArguments(.hard, to: "HEAD~1"))
+        XCTAssertFalse(try repo.git(["log", "--format=%s"], combined: false).out.contains("precious"))
+        let entries = PluginGit.parseReflog(try repo.git(PluginGit.reflogArguments(limit: 50), combined: false).out)
+        XCTAssertEqual(entries.first?.selector, "HEAD@{0}")
+        XCTAssertTrue(entries.first?.action.hasPrefix("reset:") ?? false, entries.first?.action ?? "")
+        let lost = try XCTUnwrap(entries.first { $0.subject == "precious" })
+        XCTAssertTrue(lost.action.hasPrefix("commit"))
+        let commit = PluginGit.commit(of: lost)
+        XCTAssertTrue(try repo.git(PluginGit.branchAtArguments(name: "rescued", commit: commit.hash)).ok)
+        XCTAssertEqual(try repo.git(["log", "-1", "--format=%s"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines), "precious")
+    }
+
+    func testALinePatchKeepsUnselectedChangesWhereTheyStand() {
+        let diff = """
+        @@ -1,3 +1,3 @@
+         keep
+        -old one
+        -old two
+        +new one
+        +new two
+         tail
+        """
+        let lines = PluginGit.parseUnifiedDiff(diff).lines
+        // Select "-old one" (2) and "+new one" (4).
+        let stage = PluginGit.linePatch(path: "f.txt", lines: lines, selected: [2, 4], use: .stage)
+        XCTAssertEqual(stage, "--- a/f.txt\n+++ b/f.txt\n@@ -1,3 +1,3 @@\n keep\n-old one\n old two\n+new one\n tail\n",
+                       "forwards: the unselected - stays as context, the unselected + is left out")
+        let unstage = PluginGit.linePatch(path: "f.txt", lines: lines, selected: [2, 4], use: .unstage)
+        XCTAssertEqual(unstage, "--- a/f.txt\n+++ b/f.txt\n@@ -1,3 +1,3 @@\n keep\n-old one\n+new one\n new two\n tail\n",
+                       "in reverse it is the other way round")
+        XCTAssertNil(PluginGit.linePatch(path: "f.txt", lines: lines, selected: [1, 6], use: .stage), "context only")
+        // The old file ended without a newline; adding a line after it while its end stays context is
+        // something git cannot apply, so it is refused.
+        let unterminated = PluginGit.parseUnifiedDiff("@@ -1 +1,2 @@\n-foo\n\\ No newline at end of file\n+foo\n+bar\n").lines
+        XCTAssertNil(PluginGit.linePatch(path: "f", lines: unterminated, selected: [4], use: .stage))
+        XCTAssertNotNil(PluginGit.linePatch(path: "f", lines: unterminated, selected: [1, 3, 4], use: .stage),
+                        "the whole change is fine")
+        XCTAssertEqual(PluginGit.hunkLines(containing: 5, in: lines), [2, 3, 4, 5])
+    }
+
+    /// Against real git: stage two of four changed lines, unstage one of them, discard another.
+    func testStagingLinesAgainstRealGit() throws {
+        let repo = try TempRepo()
+        let file = repo.dir.appendingPathComponent("f.txt")
+        func write(_ text: String) throws { try text.write(to: file, atomically: true, encoding: .utf8) }
+        func diff(_ cached: Bool) throws -> [PluginGit.DiffLine] {
+            PluginGit.parseUnifiedDiff(try repo.git(["diff"] + (cached ? ["--cached"] : []) + ["--", "f.txt"], combined: false).out).lines
+        }
+        func apply(_ patch: String?, _ use: PluginGit.LinePatchUse) throws {
+            let patchFile = repo.dir.appendingPathComponent("p.patch")
+            try XCTUnwrap(patch).write(to: patchFile, atomically: true, encoding: .utf8)
+            let result = try repo.git(PluginGit.applyLinePatchArguments(use, patchFile: patchFile.path))
+            XCTAssertTrue(result.ok, result.out)
+            try FileManager.default.removeItem(at: patchFile)
+        }
+
+        try repo.git(["init", "-q"])
+        try write("a\nb\nc\nd\ne\n")
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "base"])
+        try write("a\nB\nc\nD\ne\nf\n")         // b→B, d→D, +f
+
+        let unstaged = try diff(false)
+        let pick = Set(unstaged.indices.filter { ["b", "B"].contains(unstaged[$0].text) && unstaged[$0].kind != .context })
+        try apply(PluginGit.linePatch(path: "f.txt", lines: unstaged, selected: pick, use: .stage), .stage)
+        XCTAssertEqual(try repo.git(["show", ":f.txt"], combined: false).out, "a\nB\nc\nd\ne\n", "only b→B is staged")
+
+        let staged = try diff(true)
+        let back = Set(staged.indices.filter { staged[$0].text == "B" })
+        try apply(PluginGit.linePatch(path: "f.txt", lines: staged, selected: back, use: .unstage), .unstage)
+        XCTAssertEqual(try repo.git(["show", ":f.txt"], combined: false).out, "a\nc\nd\ne\n",
+                       "each line on its own: unstaging +B takes B out, the staged deletion of b stays")
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8), "a\nB\nc\nD\ne\nf\n", "the working tree is untouched")
+
+        let now = try diff(false)
+        let f = Set(now.indices.filter { now[$0].text == "f" && now[$0].kind == .added })
+        try apply(PluginGit.linePatch(path: "f.txt", lines: now, selected: f, use: .discard), .discard)
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8), "a\nB\nc\nD\ne\n", "discarding +f removes it alone")
+    }
+
+    func testStashesSitAboveTheCommitTheyWereMadeOn() {
+        let us = "\u{1F}", rs = "\u{1E}"
+        let out = ["s1", "base2 idx1", "300", "stash@{0}", "On main: wip", "301"].joined(separator: us) + rs
+            + ["s2", "base1 idx2 untracked2", "100", "stash@{1}", "WIP on main: abc subject", "101"].joined(separator: us) + rs
+        let stashes = PluginGit.stashCommits(out)
+        XCTAssertEqual(stashes.map(\.parents), [["base2"], ["base1"]], "only the commit it was made on")
+        XCTAssertEqual(stashes[0].refs, [.init(name: "stash@{0}", kind: .stash)])
+        XCTAssertTrue(PluginGit.isStash(stashes[0]))
+        let commits = PluginGit.parseLog(logRecord("base2", "b2", "base1", "A", "200", "two")
+            + logRecord("base1", "b1", "", "A", "50", "one"))
+        XCTAssertFalse(PluginGit.isStash(commits[0]))
+        XCTAssertEqual(PluginGit.historyWithStashes(commits, stashes: stashes).map(\.hash), ["s1", "base2", "s2", "base1"])
+        let orphan = PluginGit.stashCommits(["s3", "elsewhere", "1", "stash@{2}", "x"].joined(separator: us) + rs)
+        XCTAssertEqual(PluginGit.historyWithStashes(commits, stashes: orphan).count, 2, "its commit is not loaded")
+        XCTAssertEqual(PluginGit.stashArguments(.pop, ref: "stash@{1}"), ["stash", "pop", "stash@{1}"])
+        // Pushed elsewhere since: s2 is stash@{2} now, and its old name points at another stash.
+        let later = ["s9", "base2", "400", "stash@{0}", "On main: newer", "401"].joined(separator: us) + rs
+            + ["s1", "base2", "300", "stash@{1}", "On main: wip", "301"].joined(separator: us) + rs
+            + ["s2", "base1", "100", "stash@{2}", "WIP on main: abc subject", "101"].joined(separator: us) + rs
+        XCTAssertEqual(PluginGit.currentStashRef(hash: "s2", in: later), "stash@{2}")
+        XCTAssertNil(PluginGit.currentStashRef(hash: "gone", in: later))
+    }
+
+    func testStashCommitsAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try "a\n".write(to: repo.dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "base"])
+        let base = try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        try "b\n".write(to: repo.dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try "u\n".write(to: repo.dir.appendingPathComponent("new.txt"), atomically: true, encoding: .utf8)
+        try repo.git(["stash", "push", "-u", "-q", "-m", "half done"])
+        let stashes = PluginGit.stashCommits(try repo.git(PluginGit.stashCommitsArguments, combined: false).out)
+        XCTAssertEqual(stashes.count, 1)
+        XCTAssertEqual(stashes[0].parents, [base], "the untracked-files parent is not the base")
+        XCTAssertEqual(stashes[0].subject, "On main: half done")
+        XCTAssertEqual(stashes[0].refs.first?.name, "stash@{0}")
+        let files = PluginGit.parseNameStatus(try repo.git(PluginGit.nameStatusArguments(stashes[0].hash), combined: false).out)
+        XCTAssertEqual(files.map(\.path), ["a.txt"], "its Changes are the tracked change, against the base")
+    }
+
+    func testRecentMessagesAreTheReadersOwnEachOnce() {
+        XCTAssertTrue(PluginGit.recentMessagesArguments(author: "me@x").contains("--author=me@x"))
+        XCTAssertFalse(PluginGit.recentMessagesArguments(author: nil).contains { $0.hasPrefix("--author") })
+        XCTAssertEqual(PluginGit.recentMessages("fix: a\nwip\nwip\n\nfix: b\nwip\n"), ["fix: a", "wip", "fix: b"])
+        XCTAssertEqual(PluginGit.recentMessages((1...30).map { "m\($0)" }.joined(separator: "\n"), limit: 20).count, 20)
+    }
+
+    func testLFSPathsFromCheckAttr() {
+        XCTAssertEqual(PluginGit.lfsCheckArguments, ["check-attr", "--stdin", "-z", "filter"])
+        XCTAssertEqual(PluginGit.lfsCheckInput(["a.bin", "b c"]), Data("a.bin\0b c\0".utf8))
+        let out = "a.bin\0filter\0lfs\0Grüße.txt\0filter\0unspecified\0b c.psd\0filter\0lfs\0"
+        XCTAssertEqual(PluginGit.lfsPaths(out), ["a.bin", "b c.psd"])
+    }
+
+    func testLFSPathsAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q"])
+        try "*.bin filter=lfs diff=lfs merge=lfs -text\n".write(to: repo.dir.appendingPathComponent(".gitattributes"),
+                                                                  atomically: true, encoding: .utf8)
+        let out = try repo.git(PluginGit.lfsCheckArguments, combined: false,
+                               input: PluginGit.lfsCheckInput(["data/a.bin", "Grüße.txt"])).out
+        XCTAssertEqual(PluginGit.lfsPaths(out), ["data/a.bin"])
+    }
+
     func testActionsOnACommitFromTheHistory() {
         XCTAssertEqual(PluginGit.checkoutCommitArguments("abc"), ["switch", "--detach", "abc"])
         XCTAssertEqual(PluginGit.branchAtArguments(name: "fix", commit: "abc"), ["switch", "-c", "fix", "abc"])
@@ -1491,8 +1710,14 @@ private final class TempRepo {
     /// want; the parsers' tests read stdout alone.
     @discardableResult
     func git(_ arguments: [String], environment extra: [String: String] = [:], author: String = "T",
-             combined: Bool = true) throws -> (out: String, ok: Bool) {
+             combined: Bool = true, input: Data? = nil) throws -> (out: String, ok: Bool) {
         let process = Process()
+        if let input {
+            let stdin = Pipe()
+            process.standardInput = stdin
+            try stdin.fileHandleForWriting.write(contentsOf: input)
+            try stdin.fileHandleForWriting.close()
+        }
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = ["-C", dir.path] + arguments
         let pipe = Pipe()

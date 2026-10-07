@@ -114,6 +114,50 @@
 				<key>category</key>
 				<string>Commands</string>
 				<key>id</key>
+				<string>plugin.git.reflog</string>
+				<key>title</key>
+				<string>Reflog…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.init</string>
+				<key>title</key>
+				<string>Create Repository Here…</string>
+			</dict>
+			<dict>
+				<key>async</key>
+				<true/>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.clone</string>
+				<key>title</key>
+				<string>Clone Repository…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.remotes</string>
+				<key>title</key>
+				<string>Remotes &amp; Submodules…</string>
+			</dict>
+			<dict>
+				<key>async</key>
+				<true/>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.submodules.update</string>
+				<key>title</key>
+				<string>Update submodules</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
 				<string>plugin.git.branches</string>
 				<key>title</key>
 				<string>Branches, Stashes &amp; Tags…</string>
@@ -503,6 +547,50 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>100</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.reflog</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>105</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.init</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>10</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.clone</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>11</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.remotes</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>106</integer>
+				<key>when</key>
+				<string>cursorPath</string>
 			</dict>
 			<dict>
 				<key>command</key>

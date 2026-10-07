@@ -44,6 +44,16 @@ lassen sich abbrechen.</p>
 <li>Im selben Menü lässt sich ein Commit auschecken, bekommt einen neuen Branch oder Tag, wird in den aktuellen Branch gemergt, der aktuelle Branch auf ihn rebased oder zurückgesetzt, oder ein interaktiver Rebase beginnt bei ihm.</li>
 <li>Das Suchfeld über der Liste durchsucht die ganze Historie — Nachricht, Name und E-Mail des Autors oder einen Hash und seine ersten Zeichen — und listet die Treffer ohne Graph.</li>
 </ul>
+<h2 id="mehr-im-panel-und-im-git-menu">Mehr im Panel und im Git-Menü</h2>
+<p>Arbeitskopie, Historie und das Menü <strong>Befehle ▸ Git</strong> bieten mehr als das Committen:</p>
+<ul>
+<li>Eine ausgewählte gestagte oder geänderte Datei zeigt ihren Diff unter der Liste; ausgewählte Zeilen oder ein ganzer Hunk lassen sich über sein Kontextmenü stagen, unstagen oder verwerfen.</li>
+<li>Das Commit-Feld ist eine Combo-Box: Ihre Liste enthält deine letzten Commit-Nachrichten zum Wiederverwenden oder Bearbeiten.</li>
+<li><strong>Im linken Panel zeigen</strong> und <strong>Im rechten Panel zeigen</strong> bringen ein Dateipanel zu einer Datei der Liste oder der Änderungen eines Commits, während das Git-Panel bleibt, wie es ist; von Git LFS gespeicherte Dateien sind mit <strong>LFS</strong> markiert.</li>
+<li>Stashes erscheinen in der Historie als kleine Quadrate über dem Commit, auf dem sie angelegt wurden, mit <strong>Stash anwenden</strong>, <strong>Stash anwenden und entfernen</strong> und <strong>Stash verwerfen…</strong> im Kontextmenü.</li>
+<li><strong>Reflog…</strong> listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit <strong>Neuer Branch hier…</strong> zurück. <strong>Remotes &amp; Submodule…</strong> fügt Remotes hinzu, benennt sie um, ändert ihre URL, entfernt sie und aktualisiert Submodule.</li>
+<li><strong>Repository hier anlegen…</strong> und <strong>Repository klonen…</strong> arbeiten im Ordner des aktiven Panels, und die Uhr neben dem Titel des Panels führt zurück zu einem zuletzt genutzten Repository.</li>
+</ul>
 <h2 id="historie-blame-und-das-web">Historie, Blame und das Web</h2>
 <ul>
 <li><strong>Historie…</strong> listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (<code>● main</code>,

@@ -42,6 +42,16 @@ der hvor commit alligevel sker; alle tre viser forløb og kan afbrydes.</p>
 <li>Fra samme menu kan et commit tjekkes ud, få en ny gren eller et tag, flettes ind i den aktuelle gren, få den aktuelle gren rebaset på sig eller nulstillet til sig, eller starte en interaktiv rebase.</li>
 <li>Søgefeltet over listen søger i hele historikken — besked, forfatterens navn og e-mail eller en hash og dens første tegn — og viser resultaterne uden grafen.</li>
 </ul>
+<h2 id="mere-i-panelet-og-i-git-menuen">Mere i panelet og i Git-menuen</h2>
+<p>Arbejdskopien, historikken og menuen <strong>Kommandoer ▸ Git</strong> tilbyder mere end at committe:</p>
+<ul>
+<li>En markeret stagede eller ændret fil viser sin diff under listen; markerede linjer eller en hel hunk stages, unstages eller kasseres fra dens kontekstmenu.</li>
+<li>Commit-feltet er en kombinationsboks: Dens liste rummer dine seneste commit-beskeder til genbrug eller redigering.</li>
+<li><strong>Vis i venstre panel</strong> og <strong>Vis i højre panel</strong> fører et filpanel til en fil fra listen eller fra et commits ændringer, mens Git-panelet bliver, som det er; filer, som Git LFS gemmer, er markeret <strong>LFS</strong>.</li>
+<li>Stashes vises i historikken som små firkanter over det commit, de blev lavet på, med <strong>Anvend stash</strong>, <strong>Anvend og fjern stash</strong> og <strong>Slet stash…</strong> i kontekstmenuen.</li>
+<li><strong>Reflog…</strong> viser hver flytning af HEAD; et commit, der gik tabt ved en nulstilling eller en slettet gren, kommer tilbage med <strong>Ny gren her…</strong>. <strong>Remotes og undermoduler…</strong> tilføjer, omdøber, ændrer og fjerner remotes og opdaterer undermoduler.</li>
+<li><strong>Opret repository her…</strong> og <strong>Klon repository…</strong> arbejder i det aktive panels mappe, og uret ved siden af panelets titel går tilbage til et nyligt repository.</li>
+</ul>
 <h2 id="historik-blame-og-nettet">Historik, blame og nettet</h2>
 <ul>
 <li><strong>Historik…</strong> viser commits med en banegraf, de refs, der peger på hver enkelt (<code>● main</code>, <code>↗ origin/main</code>,

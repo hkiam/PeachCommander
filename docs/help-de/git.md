@@ -47,6 +47,17 @@ Unter seinen Schaltflächen zeigt das Panel die Historie aller Branches, Remote-
 - Im selben Menü lässt sich ein Commit auschecken, bekommt einen neuen Branch oder Tag, wird in den aktuellen Branch gemergt, der aktuelle Branch auf ihn rebased oder zurückgesetzt, oder ein interaktiver Rebase beginnt bei ihm.
 - Das Suchfeld über der Liste durchsucht die ganze Historie — Nachricht, Name und E-Mail des Autors oder einen Hash und seine ersten Zeichen — und listet die Treffer ohne Graph.
 
+## Mehr im Panel und im Git-Menü
+
+Arbeitskopie, Historie und das Menü **Befehle ▸ Git** bieten mehr als das Committen:
+
+- Eine ausgewählte gestagte oder geänderte Datei zeigt ihren Diff unter der Liste; ausgewählte Zeilen oder ein ganzer Hunk lassen sich über sein Kontextmenü stagen, unstagen oder verwerfen.
+- Das Commit-Feld ist eine Combo-Box: Ihre Liste enthält deine letzten Commit-Nachrichten zum Wiederverwenden oder Bearbeiten.
+- **Im linken Panel zeigen** und **Im rechten Panel zeigen** bringen ein Dateipanel zu einer Datei der Liste oder der Änderungen eines Commits, während das Git-Panel bleibt, wie es ist; von Git LFS gespeicherte Dateien sind mit **LFS** markiert.
+- Stashes erscheinen in der Historie als kleine Quadrate über dem Commit, auf dem sie angelegt wurden, mit **Stash anwenden**, **Stash anwenden und entfernen** und **Stash verwerfen…** im Kontextmenü.
+- **Reflog…** listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit **Neuer Branch hier…** zurück. **Remotes & Submodule…** fügt Remotes hinzu, benennt sie um, ändert ihre URL, entfernt sie und aktualisiert Submodule.
+- **Repository hier anlegen…** und **Repository klonen…** arbeiten im Ordner des aktiven Panels, und die Uhr neben dem Titel des Panels führt zurück zu einem zuletzt genutzten Repository.
+
 ## Historie, Blame und das Web
 
 - **Historie…** listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (`● main`,

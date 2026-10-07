@@ -46,6 +46,17 @@ Sotto i pulsanti il pannello mostra la cronologia di tutti i rami, rami remoti e
 - Dallo stesso menu un commit può essere estratto, ricevere un nuovo ramo o tag, essere unito al ramo corrente, fare da base per il rebase o il ripristino del ramo corrente, o avviare un rebase interattivo.
 - Il campo di ricerca sopra l’elenco cerca in tutta la cronologia — messaggio, nome ed e-mail dell’autore, o un hash e i suoi primi caratteri — ed elenca i risultati senza il grafo.
 
+## Altro nel pannello e nel menu Git
+
+La copia di lavoro, la cronologia e il menu **Comandi ▸ Git** offrono più del solo commit:
+
+- Un file in stage o modificato selezionato mostra il suo diff sotto l’elenco; righe selezionate o un intero blocco si mettono in stage, si tolgono dallo stage o si scartano dal suo menu contestuale.
+- Il campo del commit è una casella combinata: il suo elenco contiene i tuoi ultimi messaggi di commit, da riusare o modificare.
+- **Mostra nel pannello sinistro** e **Mostra nel pannello destro** portano un pannello file su un file dell’elenco o delle modifiche di un commit, mentre il pannello Git resta com’è; i file memorizzati da Git LFS sono contrassegnati **LFS**.
+- Gli stash compaiono nella cronologia come piccoli quadrati sopra il commit su cui sono stati creati, con **Applica stash**, **Applica e rimuovi stash** ed **Elimina stash…** nel menu contestuale.
+- **Reflog…** elenca ogni spostamento di HEAD; un commit perso con un reset o un ramo eliminato torna con **Nuovo ramo qui…**. **Remoti e sottomoduli…** aggiunge, rinomina, reindirizza e rimuove remoti e aggiorna i sottomoduli.
+- **Crea repository qui…** e **Clona repository…** lavorano nella cartella del pannello attivo, e l’orologio accanto al titolo del pannello riporta a un repository recente.
+
 ## Cronologia, blame e il web
 
 - **Cronologia…** elenca i commit con un grafo a corsie, i riferimenti che puntano a ciascuno (`● main`,

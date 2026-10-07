@@ -46,6 +46,17 @@ Onder de knoppen toont het paneel de geschiedenis van alle branches, remote bran
 - Vanuit hetzelfde menu kan een commit worden uitgecheckt, een nieuwe branch of tag krijgen, in de huidige branch worden samengevoegd, de huidige branch erop laten rebasen of herstellen, of een interactieve rebase starten.
 - Het zoekveld boven de lijst doorzoekt de hele geschiedenis — bericht, naam en e-mail van de auteur, of een hash en de eerste tekens ervan — en toont de treffers zonder graaf.
 
+## Meer in het paneel en in het Git-menu
+
+De werkkopie, de geschiedenis en het menu **Commando’s ▸ Git** bieden meer dan committen:
+
+- Een geselecteerd gestaged of gewijzigd bestand toont zijn diff onder de lijst; geselecteerde regels of een hele hunk worden via het contextmenu gestaged, ge-unstaged of verworpen.
+- Het commitveld is een combinatievak: de lijst bevat je laatste commitberichten om te hergebruiken of te bewerken.
+- **Tonen in het linkerpaneel** en **Tonen in het rechterpaneel** brengen een bestandspaneel naar een bestand uit de lijst of uit de wijzigingen van een commit, terwijl het Git-paneel blijft zoals het is; bestanden die Git LFS bewaart, zijn gemarkeerd met **LFS**.
+- Stashes verschijnen in de geschiedenis als kleine vierkantjes boven de commit waarop ze zijn gemaakt, met **Stash toepassen**, **Stash toepassen en verwijderen** en **Stash verwijderen…** in het contextmenu.
+- **Reflog…** toont elke verplaatsing van HEAD; een commit die verloren ging door een reset of een verwijderde branch komt terug met **Nieuwe branch hier…**. **Remotes en submodules…** voegt remotes toe, hernoemt ze, wijzigt hun URL, verwijdert ze en werkt submodules bij.
+- **Repository hier aanmaken…** en **Repository klonen…** werken in de map van het actieve paneel, en de klok naast de titel van het paneel gaat terug naar een recente repository.
+
 ## Geschiedenis, blame en het web
 
 - **Geschiedenis…** toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (`● main`,

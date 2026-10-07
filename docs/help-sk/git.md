@@ -45,6 +45,17 @@ Pod tlačidlami panel ukazuje históriu všetkých vetiev, vzdialených vetiev a
 - Z tej istej ponuky možno commit prepnúť, dať mu novú vetvu alebo tag, zlúčiť ho do aktuálnej vetvy, preniesť naň aktuálnu vetvu alebo ju naň resetovať, alebo od neho spustiť interaktívny rebase.
 - Vyhľadávacie pole nad zoznamom prehľadá celú históriu — správu, meno a e-mail autora alebo hash a jeho prvé znaky — a vypíše výsledky bez grafu.
 
+## Viac v paneli a v ponuke Git
+
+Pracovná kópia, história a ponuka **Príkazy ▸ Git** ponúkajú viac než zápis:
+
+- Vybraný pripravený alebo zmenený súbor ukáže pod zoznamom svoj diff; vybrané riadky alebo celý blok sa dajú z jeho kontextovej ponuky pripraviť, vrátiť z prípravy alebo zahodiť.
+- Pole commitu je rozbaľovacie pole: jeho zoznam obsahuje tvoje posledné správy commitov na opätovné použitie alebo úpravu.
+- **Zobraziť v ľavom paneli** a **Zobraziť v pravom paneli** prenesú súborový panel na súbor zo zoznamu alebo zo zmien commitu, zatiaľ čo panel Git zostane, ako je; súbory uložené Git LFS sú označené **LFS**.
+- Stashe sa v histórii zobrazujú ako malé štvorce nad commitom, na ktorom vznikli, s **Použiť stash**, **Použiť a odobrať stash** a **Odstrániť stash…** v kontextovej ponuke.
+- **Reflog…** vypíše každý posun HEAD; commit stratený resetom alebo odstránenou vetvou sa vráti cez **Nová vetva tu…**. **Vzdialené repozitáre a submoduly…** pridáva, premenúva, presmerúva a odoberá vzdialené repozitáre a aktualizuje submoduly.
+- **Vytvoriť repozitár tu…** a **Klonovať repozitár…** pracujú v priečinku aktívneho panela a hodiny vedľa názvu panela vedú späť k nedávnemu repozitáru.
+
 ## História, blame a web
 
 - **História…** vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (`● main`, `↗ origin/main`,

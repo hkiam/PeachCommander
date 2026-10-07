@@ -46,6 +46,17 @@ Under knapparna visar panelen historiken för alla grenar, fjärrgrenar och tagg
 - Från samma meny kan en commit checkas ut, få en ny gren eller tagg, slås samman in i aktuell gren, få aktuell gren rebasad på sig eller återställd till sig, eller starta en interaktiv rebase.
 - Sökfältet ovanför listan söker i hela historiken — meddelande, författarens namn och e-post eller en hash och dess första tecken — och visar träffarna utan grafen.
 
+## Mer i panelen och i Git-menyn
+
+Arbetskopian, historiken och menyn **Kommandon ▸ Git** erbjuder mer än att checka in:
+
+- En markerad köad eller ändrad fil visar sin diff under listan; markerade rader eller en hel hunk köas, avköas eller kastas från dess snabbmeny.
+- Commit-fältet är en kombinationsruta: Listan innehåller dina senaste commit-meddelanden att återanvända eller redigera.
+- **Visa i vänster panel** och **Visa i höger panel** för en filpanel till en fil från listan eller från en commits ändringar, medan Git-panelen förblir som den är; filer som Git LFS lagrar är märkta **LFS**.
+- Stashar visas i historiken som små kvadrater ovanför den commit de gjordes på, med **Tillämpa stash**, **Tillämpa och ta bort stash** och **Ta bort stash…** i snabbmenyn.
+- **Reflog…** listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med **Ny gren här…**. **Fjärrar och undermoduler…** lägger till, byter namn på, ändrar och tar bort fjärrar och uppdaterar undermoduler.
+- **Skapa repository här…** och **Klona repository…** arbetar i den aktiva panelens mapp, och klockan bredvid panelens titel går tillbaka till ett nyligen använt repository.
+
 ## Historik, blame och webben
 
 - **Historik…** listar incheckningarna med en filgraf, referenserna som pekar på var och en (`● main`,

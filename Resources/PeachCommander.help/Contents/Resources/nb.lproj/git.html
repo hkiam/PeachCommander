@@ -42,6 +42,16 @@ siden av, der committen uansett skjer; alle tre viser framdrift og kan avbrytes.
 <li>Fra samme meny kan en commit sjekkes ut, få en ny gren eller tagg, slås sammen inn i gjeldende gren, få gjeldende gren rebaset på seg eller tilbakestilt til seg, eller starte en interaktiv rebase.</li>
 <li>Søkefeltet over listen søker i hele historikken — melding, forfatterens navn og e-post eller en hash og de første tegnene — og viser treffene uten grafen.</li>
 </ul>
+<h2 id="mer-i-panelet-og-i-git-menyen">Mer i panelet og i Git-menyen</h2>
+<p>Arbeidskopien, historikken og menyen <strong>Kommandoer ▸ Git</strong> tilbyr mer enn å committe:</p>
+<ul>
+<li>En markert stagede eller endret fil viser diffen sin under listen; markerte linjer eller en hel hunk stages, unstages eller forkastes fra kontekstmenyen.</li>
+<li>Commit-feltet er en kombinasjonsboks: Listen inneholder de siste commit-meldingene dine til gjenbruk eller redigering.</li>
+<li><strong>Vis i venstre panel</strong> og <strong>Vis i høyre panel</strong> fører et filpanel til en fil fra listen eller fra en commits endringer, mens Git-panelet blir som det er; filer som Git LFS lagrer, er merket <strong>LFS</strong>.</li>
+<li>Stasher vises i historikken som små firkanter over commiten de ble laget på, med <strong>Bruk stash</strong>, <strong>Bruk og fjern stash</strong> og <strong>Slett stash…</strong> i kontekstmenyen.</li>
+<li><strong>Reflog…</strong> viser hver flytting av HEAD; en commit som gikk tapt ved en tilbakestilling eller en slettet gren, kommer tilbake med <strong>Ny gren her…</strong>. <strong>Remotes og undermoduler…</strong> legger til, gir nytt navn, endrer og fjerner remotes og oppdaterer undermoduler.</li>
+<li><strong>Opprett repository her…</strong> og <strong>Klon repository…</strong> arbeider i mappen til det aktive panelet, og klokken ved siden av panelets tittel går tilbake til et nylig repository.</li>
+</ul>
 <h2 id="historikk-blame-og-nettet">Historikk, blame og nettet</h2>
 <ul>
 <li><strong>Historikk…</strong> lister commitene med en banegraf, refene som peker på hver av dem (<code>● main</code>,

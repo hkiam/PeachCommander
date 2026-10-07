@@ -47,6 +47,17 @@ Bajo sus botones, el panel muestra el historial de todas las ramas, ramas remota
 - Desde el mismo menú un commit se puede extraer, recibir una rama o etiqueta nueva, fusionarse en la rama actual, servir de base para hacer rebase o restablecer la rama actual, o iniciar un rebase interactivo.
 - El campo de búsqueda sobre la lista busca en todo el historial — mensaje, nombre y correo del autor, o un hash y sus primeros caracteres — y muestra los resultados sin el grafo.
 
+## Más en el panel y en el menú Git
+
+La copia de trabajo, el historial y el menú **Comandos ▸ Git** ofrecen más que confirmar:
+
+- Un archivo preparado o modificado seleccionado muestra su diff bajo la lista; las líneas seleccionadas o un fragmento entero se preparan, se quitan de la preparación o se descartan desde su menú contextual.
+- El campo de commit es un cuadro combinado: su lista contiene tus últimos mensajes de commit, para reutilizarlos o editarlos.
+- **Mostrar en el panel izquierdo** y **Mostrar en el panel derecho** llevan un panel de archivos a un archivo de la lista o de los cambios de un commit, sin que el panel Git se mueva; los archivos guardados por Git LFS se marcan con **LFS**.
+- Los stashes aparecen en el historial como pequeños cuadrados sobre el commit en el que se hicieron, con **Aplicar stash**, **Aplicar y quitar stash** y **Eliminar stash…** en su menú contextual.
+- **Reflog…** lista cada movimiento de HEAD; un commit perdido por un reset o una rama eliminada vuelve con **Nueva rama aquí…**. **Remotos y submódulos…** añade, renombra, redirige y quita remotos y actualiza submódulos.
+- **Crear repositorio aquí…** y **Clonar repositorio…** trabajan en la carpeta del panel activo, y el reloj junto al título del panel vuelve a un repositorio reciente.
+
 ## Historial, autoría y la web
 
 - **Historial…** enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una

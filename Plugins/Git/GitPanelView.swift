@@ -31,7 +31,8 @@ final class GitPanelView: NSView {
     private let header = NSTextField(labelWithString: "")
     private let outline = GitOutline()
     private let scroll = NSScrollView()
-    private let messageField = NSTextField()
+    /// A combo box: its list holds the reader's recent commit messages (phase 7), to reuse or edit.
+    private let messageField = NSComboBox()
     private let commitButton = NSButton()
     private let amendCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let stageButton = NSButton()
@@ -41,6 +42,9 @@ final class GitPanelView: NSView {
     private let pullButton = NSButton()
     private let fetchButton = NSButton()
     private let pushButton = NSButton()
+    /// The repositories this panel showed lately, newest first — a pull-down beside the header (phase 7).
+    private let recentButton = NSPopUpButton(frame: .zero, pullsDown: true)
+    private static let recentKey = "PCGitRecentRepositories"
     /// Counted: the panel's reload, the Changes tab and the commit actions all share it.
     private let busy = GitBusyIndicator()
 
@@ -50,10 +54,19 @@ final class GitPanelView: NSView {
     private var commitDetail: GitCommitDetailView!
     private var changes: GitChangesView!
     private let workingCopyPane = NSStackView()
+    private let workingSplit = NSSplitView()
+    private var workingDiff: GitDiffView!
+    /// The file whose diff `workingDiff` shows, and from which side of the index.
+    private var workingDiffFile: (path: String, section: PluginGit.Section)?
+    private var workingDiffToken = 0
     private let commitPane = NSStackView()
     private let detailTabs = NSSegmentedControl(labels: [], trackingMode: .selectOne, target: nil, action: nil)
     private var commits: [PluginGit.Commit] = []
     private var limit = GitPanelView.pageSize
+    /// The repository whose recent commit messages the commit box lists, and whether a commit since has
+    /// made them out of date.
+    private var messagesRoot: String?
+    private var messagesStale = false
     /// Whether the history (or search) has more than is loaded — what "Load more" offers.
     private var hasMoreCommits = false
     /// The search the listed commits came from; empty for the plain history.
@@ -76,6 +89,7 @@ final class GitPanelView: NSView {
         self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 360))
         build()
+        updateRecentMenu()
         // Verification only (see `applyAutomationProbe`): a search typed before the first load, so the
         // first load is already the search.
         if let query = Self.probe("PC_GIT_PANEL_SEARCH") { history.setSearchText(query) }
@@ -92,6 +106,19 @@ final class GitPanelView: NSView {
         switch key {
         case "dir", "cursorPath", "sidebarViewRoot":
             let directory = key == "cursorPath" ? (value as NSString).deletingLastPathComponent : value
+            // While a file panel moves because this panel asked it to, its notifications are noted, not
+            // followed (see `reveal`).
+            if Date() < quietUntil {
+                quietDirectory = directory
+                // The folder the file panel was sent to has arrived — by the panel's own folder, not by
+                // its cursor: measured, the host reports the new cursor first and then the *old* folder
+                // once more from its cache, so ending at the cursor let that stale folder reload the panel.
+                if key == "dir", directory == revealTarget {
+                    quietUntil = .distantPast
+                    settleAfterReveal()
+                }
+                return
+            }
             guard directory != self.directory else { return }
             self.directory = directory
             // A folder change inside the same repository does not move its history: the status is
@@ -163,6 +190,9 @@ final class GitPanelView: NSView {
             (L("Unstage"), #selector(unstageSelected)),
             (L("Discard…"), #selector(discardSelected)),
             (nil, nil),
+            (L("Show in the left panel"), #selector(revealLeftFromList)),
+            (L("Show in the right panel"), #selector(revealRightFromList)),
+            (nil, nil),
             (L("Copy file path"), #selector(copyFilePath)),
             (L("Reload"), #selector(refreshNow)),
         ], target: self)
@@ -176,6 +206,8 @@ final class GitPanelView: NSView {
         messageField.placeholderString = L("Commit message")
         messageField.font = .systemFont(ofSize: 11)
         messageField.controlSize = .small
+        messageField.completes = false          // a list to pick from, not a text that finishes itself
+        messageField.numberOfVisibleItems = 12
         commitButton.title = L("Commit")
         commitButton.bezelStyle = .rounded
         commitButton.controlSize = .small
@@ -193,13 +225,33 @@ final class GitPanelView: NSView {
 
         // The working copy: the staging list and the commit box, shown when the history's first row —
         // "Local changes" — is selected (phase 6).
-        workingCopyPane.setViews([scroll, commitRow], in: .top)
+        // Below the list, the selected file's diff (phase 7), whose lines can be staged, unstaged and
+        // discarded one by one or a hunk at a time.
+        workingDiff = GitDiffView(theme: theme)
+        workingDiff.lineMenu = gitMenu([
+            (L("Stage selected lines"), #selector(stageLines)),
+            (L("Stage hunk"), #selector(stageHunk)),
+            (L("Unstage selected lines"), #selector(unstageLines)),
+            (L("Unstage hunk"), #selector(unstageHunk)),
+            (nil, nil),
+            (L("Discard selected lines…"), #selector(discardLines)),
+            (L("Discard hunk…"), #selector(discardHunk)),
+        ], target: self)
+        workingSplit.isVertical = false
+        workingSplit.dividerStyle = .thin
+        workingSplit.addArrangedSubview(scroll)
+        workingSplit.addArrangedSubview(workingDiff)
+        let listShare = scroll.heightAnchor.constraint(equalTo: workingSplit.heightAnchor, multiplier: 0.45)
+        listShare.priority = .init(500)
+        listShare.isActive = true
+        workingSplit.setContentHuggingPriority(.init(200), for: .vertical)
+
+        workingCopyPane.setViews([workingSplit, commitRow], in: .top)
         workingCopyPane.orientation = .vertical
         workingCopyPane.alignment = .width
         workingCopyPane.distribution = .fill
-        scroll.setContentHuggingPriority(.init(200), for: .vertical)
         workingCopyPane.spacing = 6
-        for child in [scroll, commitRow] as [NSView] {
+        for child in [workingSplit, commitRow] as [NSView] {
             child.widthAnchor.constraint(equalTo: workingCopyPane.widthAnchor).isActive = true
         }
 
@@ -207,6 +259,7 @@ final class GitPanelView: NSView {
         history = GitHistoryView(services: services, busy: busy)
         commitDetail = GitCommitDetailView(theme: theme)
         changes = GitChangesView(services: services, busy: busy)
+        changes.onReveal = { [weak self] path, side in self?.reveal(path, side: side) }
         detailTabs.segmentCount = 2
         detailTabs.setLabel(L("Commit"), forSegment: 0)
         detailTabs.setLabel(L("Changes"), forSegment: 1)
@@ -259,7 +312,15 @@ final class GitPanelView: NSView {
 
         // The spinner beside the header, where it is on screen whatever the detail area shows — in the
         // commit row it was hidden whenever a commit rather than the working copy was selected.
-        let headerRow = NSStackView(views: [header, busy])
+        recentButton.bezelStyle = .texturedRounded
+        recentButton.isBordered = false
+        recentButton.controlSize = .small
+        recentButton.toolTip = L("Recent repositories")
+        (recentButton.cell as? NSPopUpButtonCell)?.arrowPosition = .noArrow
+        // Its items are enabled by hand — a repository that is gone (deleted, on an unmounted volume)
+        // stays listed but cannot be picked — so the menu must not enable them itself.
+        recentButton.menu?.autoenablesItems = false
+        let headerRow = NSStackView(views: [header, busy, recentButton])
         headerRow.orientation = .horizontal
         headerRow.spacing = 6
         headerRow.setHuggingPriority(.defaultHigh, for: .vertical)      // as the buttons, see there
@@ -328,6 +389,7 @@ final class GitPanelView: NSView {
         outline.reloadData()
         history?.applyTheme(theme)
         commitDetail?.applyTheme(theme)
+        workingDiff?.applyTheme(theme)
         changes?.applyTheme(theme)
     }
 
@@ -366,6 +428,100 @@ final class GitPanelView: NSView {
         commandId.withCString { services.invokeCommand?(services.host, $0) }
     }
 
+    // MARK: - Recent repositories
+
+    private func remember(_ root: String) {
+        let list = UserDefaults.standard.stringArray(forKey: Self.recentKey) ?? []
+        UserDefaults.standard.set(PluginGit.recentRepositories(list, opening: root), forKey: Self.recentKey)
+        updateRecentMenu()
+    }
+
+    /// A pull-down's first item is its face: here the clock symbol. The others are the repositories, by
+    /// folder name, with the path as the tooltip; picking one takes the active file panel there.
+    private func updateRecentMenu() {
+        recentButton.removeAllItems()
+        recentButton.addItem(withTitle: "")
+        recentButton.item(at: 0)?.image = NSImage(systemSymbolName: "clock.arrow.circlepath",
+                                                  accessibilityDescription: L("Recent repositories"))
+        for path in UserDefaults.standard.stringArray(forKey: Self.recentKey) ?? [] {
+            let item = NSMenuItem(title: (path as NSString).lastPathComponent, action: #selector(openRecent(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = path
+            item.toolTip = path
+            item.isEnabled = FileManager.default.fileExists(atPath: path)
+            recentButton.menu?.addItem(item)
+        }
+        recentButton.isHidden = recentButton.numberOfItems <= 1
+    }
+
+    @objc private func openRecent(_ sender: NSMenuItem) {
+        guard let path = sender.representedObject as? String else { return }
+        path.withCString { services.openPath?(services.host, $0) }
+    }
+
+    // MARK: - Showing a file in a file panel
+
+    /// Until then, folder notifications are held (see `reveal`).
+    private var quietUntil = Date.distantPast
+    /// The last folder a held notification named.
+    private var quietDirectory: String?
+    /// The folder `reveal` sent a file panel to.
+    private var revealTarget: String?
+    /// Counted for the verification dump: how often the panel read the repository, and revealed a file.
+    private var reloadCount = 0
+    private var revealCount = 0
+
+    @objc private func revealLeftFromList() { revealSelectedFromList(side: 0) }
+    @objc private func revealRightFromList() { revealSelectedFromList(side: 1) }
+
+    private func revealSelectedFromList(side: Int) {
+        guard let root, let first = selectedFiles().first else { return }
+        let path = (root as NSString).appendingPathComponent(first.file.path)
+        guard FileManager.default.fileExists(atPath: path) else { return }
+        reveal(path, side: side)
+    }
+
+    /// Navigate a file panel to `path` and select it there — without this panel moving at all.
+    ///
+    /// The host makes the chosen file panel the active one *before* it navigates, so this panel would be
+    /// told first about whatever folder that panel was showing — another repository or none — and then
+    /// about the new one: it would show "Not a Git repository", come back, and lose the selected commit
+    /// and the open tab on the way. So the notifications are only noted until the file panel reports the
+    /// folder it was sent to — on a slow volume that can take a while, so the wait is ended by its arrival,
+    /// not by a timer; the timer is only the upper bound for a navigation that never arrives. Then that
+    /// folder is checked, and only a different repository reloads anything.
+    func reveal(_ path: String, side: Int) {
+        var isDirectory: ObjCBool = false
+        FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+        revealTarget = isDirectory.boolValue ? path : (path as NSString).deletingLastPathComponent
+        quietUntil = Date().addingTimeInterval(Self.revealQuietTime)
+        quietDirectory = nil
+        revealCount += 1
+        path.withCString { services.openPathInPanel?(services.host, Int32(side), $0) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.revealQuietTime + 0.1) { [weak self] in
+            self?.settleAfterReveal()
+        }
+    }
+
+    private static let revealQuietTime: TimeInterval = 5
+
+    private func settleAfterReveal() {
+        guard Date() >= quietUntil, let directory = quietDirectory else { return }
+        quietDirectory = nil
+        guard directory != self.directory else { return }
+        // Taken over at once: the notifications that follow name the same folder and must find it already
+        // here, or each of them would reload (measured: one extra reload when this waited for the lookup).
+        self.directory = directory
+        let currentRoot = root
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let located = PluginGitRepo.locate(directory)
+            DispatchQueue.main.async {
+                // The same repository: nothing on screen changes.
+                if located?.root != currentRoot { self?.reload(history: false) }
+            }
+        }
+    }
+
     /// The full path, not the repository-relative one: it is copied to be pasted somewhere else, and
     /// "src/app.swift" means nothing outside this repository.
     @objc private func copyFilePath() {
@@ -383,6 +539,7 @@ final class GitPanelView: NSView {
         // A read in progress is superseded by this one, so if it was reading the history — a search, "Load
         // more" — this one has to as well, or its result would be dropped and the old list kept beside the
         // new search text.
+        reloadCount += 1
         let history = requested || historyInFlight
         historyInFlight = history
         let directory = self.directory.isEmpty ? hostDirectory() : self.directory
@@ -392,6 +549,7 @@ final class GitPanelView: NSView {
         let generation = self.generation
         let previousRoot = root, kept = self.commits, keptHasMore = self.hasMoreCommits
         let pageLimit = self.limit, firstPage = Self.pageSize, all = !self.history.onlyCurrentBranch
+        let messagesRoot = self.messagesRoot, messagesStale = self.messagesStale
         // The search the list will show: a fresh read takes what the field says now; kept commits keep
         // the search they came from, whatever has been typed since without being applied yet.
         let query = history ? self.history.searchText : activeQuery
@@ -412,10 +570,26 @@ final class GitPanelView: NSView {
                     DispatchQueue.global(qos: .userInitiated).async(group: group) {
                         found.set { $0.status = PluginGitRepo.status(root: root) }
                     }
+                    // The commit box's list changes only with a commit or another repository, so it is not
+                    // re-read on every refresh — `log --branches` on a large repository is not free.
+                    if root != messagesRoot || messagesStale {
+                    DispatchQueue.global(qos: .utility).async(group: group) {
+                        let email = PluginGitRepo.run(["-C", root, "config", "user.email"]).out
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                        let output = PluginGitRepo.run(["-C", root] + PluginGit.recentMessagesArguments(author: email)).out
+                        let messages = PluginGit.recentMessages(output)
+                        found.set { $0.recentMessages = messages }
+                    }
+                    }
                 }
                 if !(history || !sameRepo) {
                     found.set { $0.commits = kept; $0.hasMore = keptHasMore }
                 } else if query.isEmpty {
+                    // Stashes beside the log (phase 7), placed above the commit each was made on.
+                    DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                        let stashes = PluginGit.stashCommits(PluginGitRepo.run(["-C", root] + PluginGit.stashCommitsArguments).out)
+                        found.set { $0.stashes = stashes }
+                    }
                     let output = PluginGitRepo.run(["-C", root] + PluginGit.logArguments(limit: limit, all: all)).out
                     let commits = PluginGit.parseLog(output)
                     found.set { $0.commits = commits; $0.hasMore = commits.count >= limit }
@@ -424,6 +598,9 @@ final class GitPanelView: NSView {
                 }
             }
             group.wait()
+            if query.isEmpty, history || !sameRepo {
+                found.set { $0.commits = PluginGit.historyWithStashes($0.commits, stashes: $0.stashes) }
+            }
             if !query.isEmpty, history || !sameRepo {
                 found.set { load in
                     let merged = PluginGit.mergeSearchResults(load.fields, extra: load.extra, limit: limit)
@@ -439,14 +616,29 @@ final class GitPanelView: NSView {
                 self.limit = limit
                 self.root = located?.root
                 if readStatus {
+                    if let messages = result.recentMessages {
+                        self.messageField.removeAllItems()
+                        self.messageField.addItems(withObjectValues: messages)
+                        self.messagesRoot = located?.root
+                        self.messagesStale = false
+                    }
                     self.status = result.status
                     self.groups = result.status.map { PluginGit.grouped($0) } ?? []
+                    let keep = self.selectedFiles().map { ($0.file.path, $0.section) }
                     self.outline.reloadData()
                     self.outline.expandItem(nil, expandChildren: true)
+                    // The rows are new objects after a reload: select the same files again, in the same
+                    // section if they are still there — after staging a line the file is still the one
+                    // being worked on.
+                    self.reselect(keep)
+                    // Also when the selection came back unchanged — no selection change is posted then,
+                    // and the diff would still show the lines just staged as unstaged.
+                    self.loadWorkingDiff()
                 }
                 self.commits = result.commits
                 self.hasMoreCommits = result.hasMore
                 self.activeQuery = query
+                if let root = located?.root, root != previousRoot { self.remember(root) }
                 self.history.root = located?.root
                 self.history.update(commits: result.commits, hasRepo: located != nil,
                                     changeCount: self.changeCount, hasMore: result.hasMore,
@@ -541,8 +733,39 @@ final class GitPanelView: NSView {
         // `PC_GIT_PANEL_DUMP=<file>`: what the panel shows, written once the selected commit's changes
         // have had time to load — the VM scenario's report. A layout dump alone cannot say which pane
         // is on screen or what the history lists, and both have been wrong with zero conflicts.
+        // `PC_GIT_PANEL_REVEAL=left|right`: once the selected commit's changes are on screen, show its
+        // first file in that file panel — and the dump, written later, says whether the panel moved.
+        // `PC_GIT_PANEL_FILE=<path>` selects that file in the working copy's list, and
+        // `PC_GIT_PANEL_STAGE_LINE=<text>|<text>…` then stages the changed lines with exactly those texts.
+        if let path = probe("PC_GIT_PANEL_FILE") {
+            // To stage lines, the file's row in Changed — a file can be in Staged as well, listed first.
+            let wanted: PluginGit.Section? = probe("PC_GIT_PANEL_STAGE_LINE") != nil ? .changed : nil
+            if let row = (0..<outline.numberOfRows).first(where: {
+                guard let node = outline.item(atRow: $0) as? FileNode else { return false }
+                return node.file.path == path && (wanted == nil || node.section == wanted)
+            }) {
+                outline.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+            }
+            if let text = probe("PC_GIT_PANEL_STAGE_LINE") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                    guard let self else { return }
+                    let texts = Set(text.components(separatedBy: "|"))
+                    let rows = self.workingDiff.diffLines.indices.filter {
+                        texts.contains(self.workingDiff.diffLines[$0].text) && self.workingDiff.diffLines[$0].kind != .context
+                    }
+                    self.workingDiff.selectRows(IndexSet(rows))
+                    self.stageLines()
+                }
+            }
+        }
+        let reveal = probe("PC_GIT_PANEL_REVEAL")
+        if let reveal {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                self?.changes.revealFirstFile(side: reveal == "right" ? 1 : 0)
+            }
+        }
         if let path = probe("PC_GIT_PANEL_DUMP") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + (reveal == nil ? 2.5 : 5.0)) { [weak self] in
                 guard let self else { return }
                 try? self.automationReport().write(toFile: path, atomically: true, encoding: .utf8)
             }
@@ -559,6 +782,12 @@ final class GitPanelView: NSView {
         }
         lines.append("workingCopyShown=\(!workingCopyPane.isHidden)")
         lines.append("tab=\(detailTabs.selectedSegment == 0 ? "commit" : "changes")")
+        lines.append("reloads=\(reloadCount) reveals=\(revealCount)")
+        lines.append("recentMessages=\(messageField.numberOfItems)")
+        lines.append("recentRepositories=" + (recentButton.itemArray.dropFirst().map(\.title)).joined(separator: ","))
+        for group in groups { lines.append("\(group.section.rawValue)=" + group.files.map(\.path).joined(separator: ",")) }
+        lines.append("workingSelection=" + selectedFiles().map { "\($0.section.rawValue):\($0.file.path)" }.joined(separator: ","))
+        lines.append("workingDiffLines=\(workingDiff.diffLines.count)")
         lines += history.automationRows()
         if !commitPane.isHidden, detailTabs.selectedSegment == 1 { lines += changes.automationSummary() }
         // The three layout defects this panel has had, each as a yes/no: the split view stopping short of
@@ -701,6 +930,7 @@ final class GitPanelView: NSView {
         } else {
             arguments += ["-m", message]
         }
+        messagesStale = true          // the commit about to be made joins the list of recent messages
         run(arguments) { [weak self] ok in
             guard ok else { return }
             self?.messageField.stringValue = ""
@@ -739,6 +969,100 @@ final class GitPanelView: NSView {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Staging lines (phase 7)
+
+    private func reselect(_ files: [(String, PluginGit.Section)]) {
+        guard !files.isEmpty else { return }
+        var rows = IndexSet()
+        for (path, section) in files {
+            let matches = (0..<outline.numberOfRows).filter { (outline.item(atRow: $0) as? FileNode)?.file.path == path }
+            if let same = matches.first(where: { (outline.item(atRow: $0) as? FileNode)?.section == section }) {
+                rows.insert(same)
+            } else if let other = matches.first {
+                rows.insert(other)
+            }
+        }
+        outline.selectRowIndexes(rows, byExtendingSelection: false)
+    }
+
+    /// The diff of the one selected file: the index against HEAD for a staged file, the working tree
+    /// against the index for a changed one. An untracked or conflicted file has none to stage lines of.
+    private func loadWorkingDiff() {
+        workingDiffToken += 1
+        let token = workingDiffToken
+        let selected = selectedFiles()
+        guard let root, selected.count == 1, let file = selected.first else {
+            workingDiffFile = nil
+            workingDiff.show(lines: [], truncated: false, placeholder: selected.count > 1 ? L("Several files are selected.") : "")
+            return
+        }
+        guard file.section == .staged || file.section == .changed else {
+            workingDiffFile = nil
+            workingDiff.show(lines: [], truncated: false, placeholder: file.section == .untracked
+                ? L("An untracked file is staged as a whole.") : L("Resolve the conflict first."))
+            return
+        }
+        let path = file.file.path
+        let arguments = ["-C", root, "--no-optional-locks", "diff", "--no-color"]
+            + (file.section == .staged ? ["--cached"] : []) + ["--", path]
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let parsed = PluginGit.parseUnifiedDiff(PluginGitRepo.run(arguments).out)
+            DispatchQueue.main.async {
+                guard let self, self.workingDiffToken == token else { return }
+                self.workingDiffFile = (path, file.section)
+                self.workingDiff.show(lines: parsed.lines, truncated: parsed.truncated,
+                                      placeholder: parsed.lines.isEmpty ? L("No textual changes.") : "")
+            }
+        }
+    }
+
+    @objc private func stageLines() { applyLines(.stage, hunk: false) }
+    @objc private func stageHunk() { applyLines(.stage, hunk: true) }
+    @objc private func unstageLines() { applyLines(.unstage, hunk: false) }
+    @objc private func unstageHunk() { applyLines(.unstage, hunk: true) }
+    @objc private func discardLines() { applyLines(.discard, hunk: false) }
+    @objc private func discardHunk() { applyLines(.discard, hunk: true) }
+
+    /// The lines the action is for: the selected change lines, or the hunk the right-click was on.
+    private func chosenLines(hunk: Bool) -> Set<Int> {
+        let lines = workingDiff.diffLines
+        if hunk { return PluginGit.hunkLines(containing: workingDiff.clickedRow, in: lines) }
+        return workingDiff.selectedRows.filter { lines.indices.contains($0) && (lines[$0].kind == .added || lines[$0].kind == .removed) }
+    }
+
+    /// Which line actions fit the diff on screen: staging and discarding a changed file's lines,
+    /// unstaging a staged file's — never on a cut-off diff, whose missing part the patch could not hold.
+    private func allows(_ use: PluginGit.LinePatchUse) -> Bool {
+        guard let file = workingDiffFile, !workingDiff.isTruncated else { return false }
+        return use == .unstage ? file.section == .staged : file.section == .changed
+    }
+
+    private func applyLines(_ use: PluginGit.LinePatchUse, hunk: Bool) {
+        guard let root, let file = workingDiffFile, allows(use) else { return }
+        guard let patch = PluginGit.linePatch(path: file.path, lines: workingDiff.diffLines,
+                                              selected: chosenLines(hunk: hunk), use: use) else {
+            report(L("Git"), L("Select the changed lines first."))
+            return
+        }
+        if use == .discard {
+            let alert = NSAlert()
+            alert.alertStyle = .warning
+            alert.messageText = L("Discard these changes?")
+            alert.informativeText = L("The selected lines go back to how they are in the index. This cannot be undone.")
+            alert.addButton(withTitle: L("Discard"))
+            alert.addButton(withTitle: L("Cancel"))
+            guard alert.runModal() == .alertFirstButtonReturn else { return }
+        }
+        let patchFile = (NSTemporaryDirectory() as NSString).appendingPathComponent("pc-git-lines-\(UUID().uuidString).patch")
+        guard (try? patch.write(toFile: patchFile, atomically: true, encoding: .utf8)) != nil else {
+            report(L("Git"), L("The patch could not be written."))
+            return
+        }
+        runSequence([["-C", root] + PluginGit.applyLinePatchArguments(use, patchFile: patchFile)]) { _ in
+            try? FileManager.default.removeItem(atPath: patchFile)
         }
     }
 
@@ -848,7 +1172,10 @@ extension GitPanelView: NSOutlineViewDataSource, NSOutlineViewDelegate {
         return field
     }
 
-    func outlineViewSelectionDidChange(_ notification: Notification) { updateButtons() }
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+        updateButtons()
+        loadWorkingDiff()
+    }
 
     private func sectionTitle(_ section: PluginGit.Section) -> String {
         switch section {
@@ -887,10 +1214,23 @@ private final class PanelLoad: @unchecked Sendable {
         var hasMore = false
         var fields: [[PluginGit.Commit]] = []
         var extra: [PluginGit.Commit] = []
+        var recentMessages: [String]?
+        var stashes: [PluginGit.Commit] = []
     }
     private let lock = NSLock()
     private var values = Values()
 
     func set(_ change: (inout Values) -> Void) { lock.lock(); change(&values); lock.unlock() }
     func snapshot() -> Values { lock.lock(); defer { lock.unlock() }; return values }
+}
+
+extension GitPanelView: NSMenuItemValidation {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        switch menuItem.action {
+        case #selector(stageLines), #selector(stageHunk): return allows(.stage)
+        case #selector(unstageLines), #selector(unstageHunk): return allows(.unstage)
+        case #selector(discardLines), #selector(discardHunk): return allows(.discard)
+        default: return true
+        }
+    }
 }

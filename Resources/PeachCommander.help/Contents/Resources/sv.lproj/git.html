@@ -43,6 +43,16 @@ incheckningen ändå sker; alla tre visar förlopp och kan avbrytas.</p>
 <li>Från samma meny kan en commit checkas ut, få en ny gren eller tagg, slås samman in i aktuell gren, få aktuell gren rebasad på sig eller återställd till sig, eller starta en interaktiv rebase.</li>
 <li>Sökfältet ovanför listan söker i hela historiken — meddelande, författarens namn och e-post eller en hash och dess första tecken — och visar träffarna utan grafen.</li>
 </ul>
+<h2 id="mer-i-panelen-och-i-git-menyn">Mer i panelen och i Git-menyn</h2>
+<p>Arbetskopian, historiken och menyn <strong>Kommandon ▸ Git</strong> erbjuder mer än att checka in:</p>
+<ul>
+<li>En markerad köad eller ändrad fil visar sin diff under listan; markerade rader eller en hel hunk köas, avköas eller kastas från dess snabbmeny.</li>
+<li>Commit-fältet är en kombinationsruta: Listan innehåller dina senaste commit-meddelanden att återanvända eller redigera.</li>
+<li><strong>Visa i vänster panel</strong> och <strong>Visa i höger panel</strong> för en filpanel till en fil från listan eller från en commits ändringar, medan Git-panelen förblir som den är; filer som Git LFS lagrar är märkta <strong>LFS</strong>.</li>
+<li>Stashar visas i historiken som små kvadrater ovanför den commit de gjordes på, med <strong>Tillämpa stash</strong>, <strong>Tillämpa och ta bort stash</strong> och <strong>Ta bort stash…</strong> i snabbmenyn.</li>
+<li><strong>Reflog…</strong> listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med <strong>Ny gren här…</strong>. <strong>Fjärrar och undermoduler…</strong> lägger till, byter namn på, ändrar och tar bort fjärrar och uppdaterar undermoduler.</li>
+<li><strong>Skapa repository här…</strong> och <strong>Klona repository…</strong> arbetar i den aktiva panelens mapp, och klockan bredvid panelens titel går tillbaka till ett nyligen använt repository.</li>
+</ul>
 <h2 id="historik-blame-och-webben">Historik, blame och webben</h2>
 <ul>
 <li><strong>Historik…</strong> listar incheckningarna med en filgraf, referenserna som pekar på var och en (<code>● main</code>,

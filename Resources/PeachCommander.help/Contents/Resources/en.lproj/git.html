@@ -42,6 +42,16 @@ there too, next to the commit that usually precedes them; all three show progres
 <li>From the same menu a commit can be checked out, get a new branch or tag, be merged into the current branch, have the current branch rebased onto it or reset to it, or start an interactive rebase.</li>
 <li>The search field above the list searches the whole history — message, author name and e-mail, or a hash and its first characters — and lists the matches without the graph.</li>
 </ul>
+<h2 id="more-in-the-panel-and-in-the-git-menu">More in the panel and in the Git menu</h2>
+<p>The working copy, the history and the <strong>Commands ▸ Git</strong> menu offer more than committing:</p>
+<ul>
+<li>Selecting a staged or changed file shows its diff under the list; selected lines or a whole hunk can be staged, unstaged or discarded from its context menu.</li>
+<li>The commit box is a combo box: its list holds your last commit messages, to reuse or edit.</li>
+<li><strong>Show in the left panel</strong> and <strong>Show in the right panel</strong> take a file panel to a file of the list or of a commit's changes, while the Git panel stays as it is; files stored by Git LFS are marked <strong>LFS</strong>.</li>
+<li>Stashes appear in the history as small squares above the commit they were made on, with <strong>Apply stash</strong>, <strong>Pop stash</strong> and <strong>Drop stash…</strong> in their context menu.</li>
+<li><strong>Reflog…</strong> lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with <strong>New branch here…</strong>. <strong>Remotes &amp; Submodules…</strong> adds, renames, re-points and removes remotes and updates submodules.</li>
+<li><strong>Create Repository Here…</strong> and <strong>Clone Repository…</strong> work in the active panel's folder, and the clock beside the panel's title goes back to a recent repository.</li>
+</ul>
 <h2 id="history-blame-and-the-web">History, blame and the web</h2>
 <ul>
 <li><strong>History…</strong> lists the commits with a lane graph, the refs pointing at each one (<code>● main</code>,

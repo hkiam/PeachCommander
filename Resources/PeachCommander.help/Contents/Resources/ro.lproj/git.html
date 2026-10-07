@@ -43,6 +43,16 @@ anulate.</p>
 <li>Din același meniu, un commit poate fi comutat, poate primi o ramură sau o etichetă nouă, poate fi îmbinat în ramura curentă, ramura curentă poate fi rebazată sau resetată pe el ori poate porni un rebase interactiv.</li>
 <li>Câmpul de căutare de deasupra listei caută în tot istoricul — mesaj, numele și e-mailul autorului sau un hash și primele lui caractere — și listează rezultatele fără graf.</li>
 </ul>
+<h2 id="mai-mult-in-panou-si-in-meniul-git">Mai mult în panou și în meniul Git</h2>
+<p>Copia de lucru, istoricul și meniul <strong>Comenzi ▸ Git</strong> oferă mai mult decât comiterea:</p>
+<ul>
+<li>Un fișier pregătit sau modificat selectat își arată diff-ul sub listă; liniile selectate sau un bloc întreg pot fi pregătite, retrase din pregătire sau abandonate din meniul contextual.</li>
+<li>Câmpul de commit este o casetă combinată: lista ei conține ultimele tale mesaje de commit, de refolosit sau de editat.</li>
+<li><strong>Arată în panoul din stânga</strong> și <strong>Arată în panoul din dreapta</strong> duc un panou de fișiere la un fișier din listă sau din modificările unui commit, în timp ce panoul Git rămâne cum este; fișierele stocate de Git LFS sunt marcate <strong>LFS</strong>.</li>
+<li>Stash-urile apar în istoric ca pătrățele deasupra commit-ului pe care au fost făcute, cu <strong>Aplică stash</strong>, <strong>Aplică și elimină stash</strong> și <strong>Șterge stash…</strong> în meniul contextual.</li>
+<li><strong>Reflog…</strong> listează fiecare mutare a HEAD; un commit pierdut printr-o resetare sau o ramură ștearsă revine cu <strong>Ramură nouă aici…</strong>. <strong>Depozite la distanță și submodule…</strong> adaugă, redenumește, redirecționează și elimină depozite la distanță și actualizează submodulele.</li>
+<li><strong>Creează depozit aici…</strong> și <strong>Clonează depozitul…</strong> lucrează în dosarul panoului activ, iar ceasul de lângă titlul panoului duce înapoi la un depozit recent.</li>
+</ul>
 <h2 id="istoric-blame-si-web">Istoric, blame și web</h2>
 <ul>
 <li><strong>Istoric…</strong> listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (<code>● main</code>,

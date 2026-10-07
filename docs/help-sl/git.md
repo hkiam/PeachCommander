@@ -45,6 +45,17 @@ Pod gumbi plošča prikazuje zgodovino vseh vej, oddaljenih vej in oznak kot nar
 - V istem meniju lahko na commit preklopite, mu dodate novo vejo ali oznako, ga združite v trenutno vejo, nanj prestavite ali ponastavite trenutno vejo ali od njega začnete interaktivni rebase.
 - Iskalno polje nad seznamom preišče celotno zgodovino — sporočilo, ime in e-pošto avtorja ali hash in njegove prve znake — ter izpiše zadetke brez grafa.
 
+## Več v plošči in v meniju Git
+
+Delovna kopija, zgodovina in meni **Ukazi ▸ Git** ponujajo več kot objavo:
+
+- Izbrana pripravljena ali spremenjena datoteka pod seznamom pokaže svoj diff; izbrane vrstice ali cel kos lahko v njegovem priročnem meniju pripravite, umaknete iz priprave ali zavržete.
+- Polje za commit je kombinirano polje: njegov seznam vsebuje vaša zadnja sporočila commitov za ponovno uporabo ali urejanje.
+- **Pokaži v levem podoknu** in **Pokaži v desnem podoknu** preneseta podokno z datotekami na datoteko s seznama ali iz sprememb commita, plošča Git pa ostane, kot je; datoteke, ki jih hrani Git LFS, so označene z **LFS**.
+- Stashi se v zgodovini pojavijo kot majhni kvadratki nad commitom, na katerem so nastali, z **Uporabi stash**, **Uporabi in odstrani stash** in **Izbriši stash…** v priročnem meniju.
+- **Reflog…** našteje vsak premik HEAD; commit, izgubljen s ponastavitvijo ali izbrisano vejo, se vrne z **Nova veja tukaj…**. **Oddaljena skladišča in podmoduli…** dodaja, preimenuje, preusmerja in odstranjuje oddaljena skladišča ter posodablja podmodule.
+- **Ustvari skladišče tukaj…** in **Kloniraj skladišče…** delujeta v mapi aktivnega podokna, ura poleg naslova plošče pa vodi nazaj k nedavnemu skladišču.
+
 ## Zgodovina, blame in splet
 
 - **Zgodovina…** našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (`● main`,

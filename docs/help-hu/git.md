@@ -46,6 +46,17 @@ A gombok alatt a panel az összes ág, távoli ág és címke előzményét rajz
 - Ugyanebből a menüből egy commit kivehető, kaphat új ágat vagy címkét, egyesíthető az aktuális ágba, rá lehet rebase-elni vagy vissza lehet állítani rá az aktuális ágat, vagy indítható tőle interaktív rebase.
 - A lista feletti keresőmező a teljes előzményben keres — üzenetben, a szerző nevében és e-mail-címében, vagy egy hash első karaktereire —, és gráf nélkül listázza a találatokat.
 
+## Több a panelen és a Git menüben
+
+A munkapéldány, az előzmények és a **Parancsok ▸ Git** menü többet kínál a véglegesítésnél:
+
+- Egy kijelölt előkészített vagy módosított fájl a lista alatt mutatja a diffjét; a kijelölt sorok vagy egy teljes blokk a helyi menüből előkészíthető, visszavonható vagy elvethető.
+- A commit-mező kombinált lista: a listája a legutóbbi commit-üzeneteidet tartalmazza újrafelhasználásra vagy szerkesztésre.
+- A **Megjelenítés a bal panelen** és a **Megjelenítés a jobb panelen** egy fájlpanelt a lista vagy egy commit változásainak egy fájljához visz, miközben a Git panel változatlan marad; a Git LFS által tárolt fájlok **LFS** jelölést kapnak.
+- A stash-ek kis négyzetekként jelennek meg az előzményekben annak a commitnak a felett, amelyen készültek, a helyi menüben **Stash alkalmazása**, **Stash alkalmazása és eltávolítása** és **Stash törlése…** pontokkal.
+- A **Reflog…** a HEAD minden mozgását listázza; egy visszaállítással vagy törölt ággal elveszett commit az **Új ág itt…** paranccsal visszajön. A **Távoli tárolók és almodulok…** hozzáad, átnevez, átirányít és eltávolít távoli tárolókat, és frissíti az almodulokat.
+- A **Tároló létrehozása itt…** és a **Tároló klónozása…** az aktív panel mappájában dolgozik, a panel címe melletti óra pedig egy legutóbbi tárolóhoz visz vissza.
+
 ## Előzmények, blame és a web
 
 - Az **Előzmények…** sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (`● main`,
