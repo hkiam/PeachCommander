@@ -101,3 +101,4 @@ přeskládání**, aby se rozdělané přeskládání nemuselo dokončovat v ter
 - Připojené pracovní stromy a podmoduly jsou podporovány: soubor uvnitř podmodulu ukazuje stav a větev
   *podmodulu*, ne nadřazeného repozitáře.
 - Každý seznam má místní nabídku, **Return** spustí jeho hlavní akci a **Cmd+R** okno znovu načte.
+- Git LFS, `gpg` pro podepsané commity a pomocníci pro přihlašovací údaje se najdou ve složkách Homebrew a MacPorts, i když byla aplikace otevřena z Finderu.

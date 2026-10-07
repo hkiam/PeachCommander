@@ -36,6 +36,17 @@ enum PluginGitRepo {
 
     // MARK: - Running
 
+    /// The environment every git call gets: the app's, without a terminal prompt (a `push` that wants a
+    /// password must fail and say so rather than wait for a terminal this process does not have), without
+    /// optional locks, and with a `PATH` that reaches the tools git starts (`PluginGit.toolSearchPath`).
+    static func environment() -> [String: String] {
+        var environment = ProcessInfo.processInfo.environment
+        environment["GIT_TERMINAL_PROMPT"] = "0"
+        environment["GIT_OPTIONAL_LOCKS"] = "0"
+        environment["PATH"] = PluginGit.toolSearchPath(current: environment["PATH"], gitExecutable: executable())
+        return environment
+    }
+
     /// Run git, capturing stdout (and stderr when `combined`, because git says useful things there).
     ///
     /// `GIT_TERMINAL_PROMPT=0` is the important one: a `push` that wants a password must fail and say so
@@ -49,9 +60,7 @@ enum PluginGitRepo {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        var environment = ProcessInfo.processInfo.environment
-        environment["GIT_TERMINAL_PROMPT"] = "0"
-        environment["GIT_OPTIONAL_LOCKS"] = "0"
+        var environment = Self.environment()
         environment.merge(extra) { _, new in new }
         process.environment = environment
         let pipe = Pipe()
@@ -72,9 +81,7 @@ enum PluginGitRepo {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        var environment = ProcessInfo.processInfo.environment
-        environment["GIT_TERMINAL_PROMPT"] = "0"
-        environment["GIT_OPTIONAL_LOCKS"] = "0"
+        var environment = Self.environment()
         environment.merge(extra) { _, new in new }
         process.environment = environment
         let pipe = Pipe()
@@ -100,10 +107,7 @@ enum PluginGitRepo {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        var environment = ProcessInfo.processInfo.environment
-        environment["GIT_TERMINAL_PROMPT"] = "0"
-        environment["GIT_OPTIONAL_LOCKS"] = "0"
-        process.environment = environment
+        process.environment = Self.environment()
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice
@@ -130,10 +134,7 @@ enum PluginGitRepo {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        var environment = ProcessInfo.processInfo.environment
-        environment["GIT_TERMINAL_PROMPT"] = "0"
-        environment["GIT_OPTIONAL_LOCKS"] = "0"
-        process.environment = environment
+        process.environment = Self.environment()
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe

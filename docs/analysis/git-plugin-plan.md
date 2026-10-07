@@ -369,9 +369,10 @@ separate log window beside it. Built:
   fixed for the status. A rename is compared under its old name in the parent, a deletion against an
   empty file.
 
-Next, in the order of the feature comparison made for this phase: a `PATH` that reaches Homebrew's
-`git-lfs`, `gpg` and credential helpers (to be reproduced first — a Finder-launched app inherits
-`/usr/bin:/bin:…`); the full history context menu (checkout a commit, merge, rebase onto, branch and
+Next, in the order of the feature comparison made for this phase: ~~a `PATH` that reaches Homebrew's
+`git-lfs`, `gpg` and credential helpers~~ — **done**: reproduced first (under launchd's PATH, `git status`
+in an LFS repository failed with "git-lfs: command not found"), fixed in `PluginGitRepo.environment()`
+with `PluginGit.toolSearchPath`, and guarded by a test that runs that exact case; the full history context menu (checkout a commit, merge, rebase onto, branch and
 tag here, reset); recent commit messages; stashes in the graph; hunk and line staging in the working
 copy's diff; a reflog view; remotes and submodule actions; init, clone and recent repositories.
 

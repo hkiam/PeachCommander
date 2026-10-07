@@ -104,3 +104,4 @@ Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu **Fortsetze
 - Linked Worktrees und Submodule werden unterstützt: eine Datei in einem Submodul zeigt den Status und den
   Branch *des Submoduls*, nicht die des übergeordneten Repositorys.
 - Jede Liste hat ein Kontextmenü, **Return** führt ihre Hauptaktion aus und **Cmd+R** lädt das Fenster neu.
+- Git LFS, `gpg` für signierte Commits und Credential-Helper werden in den Ordnern von Homebrew und MacPorts gefunden, auch wenn die App aus dem Finder geöffnet wurde.

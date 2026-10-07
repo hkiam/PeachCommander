@@ -103,3 +103,4 @@ afbreken**, zodat een half afgemaakte rebase niet in een terminal hoeft te worde
 - Gekoppelde worktrees en submodules worden ondersteund: een bestand in een submodule toont de status en de
   branch *van de submodule*, niet die van de bovenliggende repository.
 - Elke lijst heeft een contextmenu, **Return** voert de hoofdactie uit en **Cmd+R** laadt het venster opnieuw.
+- Git LFS, `gpg` voor ondertekende commits en credential-helpers worden in de mappen van Homebrew en MacPorts gevonden, ook als de app vanuit de Finder is geopend.

@@ -378,6 +378,44 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.nameStatusArguments("abc").last, "abc")
     }
 
+    /// An app opened from the Finder gets launchd's PATH; git must still find git-lfs, gpg and the rest.
+    func testToolSearchPathReachesTheTools() {
+        let finder = PluginGit.toolSearchPath(current: "/usr/bin:/bin:/usr/sbin:/sbin", gitExecutable: "/usr/bin/git")
+        XCTAssertEqual(finder, "/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/bin:/opt/local/bin")
+        // The reader's own PATH comes first and is not reordered; nothing is listed twice.
+        let own = PluginGit.toolSearchPath(current: "/Users/x/bin:/usr/local/bin:/usr/bin", gitExecutable: "/opt/homebrew/bin/git")
+        XCTAssertTrue(own.hasPrefix("/Users/x/bin:/usr/local/bin:/usr/bin:/opt/homebrew/bin"))
+        XCTAssertEqual(own.split(separator: ":").count, Set(own.split(separator: ":")).count)
+        // A git outside the usual places brings its own directory, where its git-lfs lives.
+        XCTAssertTrue(PluginGit.toolSearchPath(current: nil, gitExecutable: "/Applications/X.app/bin/git")
+            .hasPrefix("/Applications/X.app/bin:"))
+    }
+
+    /// The measured failure, end to end: an LFS repository under launchd's PATH. Without the tool path
+    /// `git status` stops with "git-lfs: command not found"; with it, it reports the file.
+    func testAnLFSRepositoryWorksUnderTheFindersPath() throws {
+        let lfs = ["/opt/homebrew/bin/git-lfs", "/usr/local/bin/git-lfs"].first {
+            FileManager.default.isExecutableFile(atPath: $0)
+        }
+        guard lfs != nil else { throw XCTSkip("git-lfs is not installed here") }
+        let repo = try TempRepo()
+        let finder = "/usr/bin:/bin:/usr/sbin:/sbin"
+        let full = ["PATH": PluginGit.toolSearchPath(current: finder, gitExecutable: "/usr/bin/git")]
+        try repo.git(["init", "-q"], environment: full)
+        try repo.git(["lfs", "install", "--local"], environment: full)
+        try repo.git(["lfs", "track", "*.bin"], environment: full)
+        try Data(repeating: 7, count: 100).write(to: repo.dir.appendingPathComponent("a.bin"))
+        try repo.git(["add", "-A"], environment: full)
+        try repo.git(["commit", "-q", "-m", "lfs"], environment: full)
+        try Data(repeating: 8, count: 100).write(to: repo.dir.appendingPathComponent("a.bin"))
+
+        let bare = try repo.git(PluginGit.statusArguments, environment: ["PATH": finder])
+        XCTAssertTrue(bare.out.contains("git-lfs") && !bare.ok, "the defect this guards against: \(bare.out)")
+        let fixed = try repo.git(PluginGit.statusArguments, environment: full, combined: false)
+        XCTAssertTrue(fixed.ok)
+        XCTAssertEqual(PluginGit.parseStatus(fixed.out).files.keys.sorted(), ["a.bin"])
+    }
+
     func testHashLikeNeedsFourToFortyHexDigits() {
         XCTAssertTrue(PluginGit.isHashLike("7a6e"))
         XCTAssertTrue(PluginGit.isHashLike("7A6E3E0"))

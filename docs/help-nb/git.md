@@ -101,3 +101,4 @@ rebase ikke må fullføres i en terminal.
 - Tilknyttede arbeidstrær og undermoduler støttes: en fil i en undermodul viser *undermodulens* status og
   gren, ikke det overordnede arkivets.
 - Hver liste har en kontekstmeny, **Retur** kjører hovedhandlingen og **Cmd+R** laster vinduet på nytt.
+- Git LFS, `gpg` for signerte commits og credential-hjelpere finnes i mappene til Homebrew og MacPorts, også når appen er åpnet fra Finder.

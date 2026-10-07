@@ -29,6 +29,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Fixed
 
+- **Git failed in repositories using LFS when the app was opened from the Finder.** An app opened that
+  way inherits a `PATH` of `/usr/bin:/bin:/usr/sbin:/sbin`, so git could not start the `git-lfs` filter
+  — and in such a repository even `git status` stopped with "git-lfs: command not found", which left the
+  status column and the panel empty. The same applied to `gpg` for signed commits and to credential
+  helpers installed with Homebrew. The plugin now adds the folders of the git it runs, Homebrew and
+  MacPorts after the inherited `PATH`.
 - **The Git log window did not fill when it was made larger.** Its commit list kept the width of its
   columns, 824 points, inside a pane of 729, so the date column was cut off at the edge and no column
   grew. The columns now share the pane's width in their declared proportions and scroll sideways only

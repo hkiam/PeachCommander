@@ -104,3 +104,4 @@ un rebase se detiene en un conflicto, la misma ventana pasa a **Continuar** / **
 - Los árboles de trabajo enlazados y los submódulos están soportados: un archivo dentro de un submódulo
   muestra el estado y la rama *del submódulo*, no los del repositorio padre.
 - Cada lista tiene un menú contextual, **Retorno** ejecuta su acción principal y **Cmd+R** recarga la ventana.
+- Git LFS, `gpg` para commits firmados y los asistentes de credenciales se encuentran en las carpetas de Homebrew y MacPorts aunque la app se haya abierto desde el Finder.

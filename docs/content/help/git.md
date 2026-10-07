@@ -100,3 +100,4 @@ be finished in a terminal.
 - Linked worktrees and submodules are supported: a file inside a submodule shows the *submodule's* status and
   branch, not the parent's.
 - Every list has a context menu, **Return** runs its main action and **Cmd+R** reloads the window.
+- Git LFS, `gpg` for signed commits and credential helpers are found in Homebrew's and MacPorts' folders even when the app was opened from the Finder.

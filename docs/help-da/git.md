@@ -101,3 +101,4 @@ ikke skal gøres færdig i en terminal.
 - Tilknyttede arbejdstræer og undermoduler understøttes: en fil i et undermodul viser *undermodulets* status
   og gren, ikke det overordnede arkivs.
 - Hver liste har en højrekliksmenu, **Retur** kører dens hovedhandling og **Cmd+R** genindlæser vinduet.
+- Git LFS, `gpg` til signerede commits og credential-hjælpere findes i Homebrews og MacPorts’ mapper, også når appen er åbnet fra Finder.

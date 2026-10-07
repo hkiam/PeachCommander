@@ -103,3 +103,4 @@ så att en halvfärdig ombasering inte måste avslutas i en terminal.
 - Länkade arbetsträd och undermoduler stöds: en fil i en undermodul visar *undermodulens* status och gren,
   inte det överordnade arkivets.
 - Varje lista har en kontextmeny, **Retur** kör dess huvudåtgärd och **Cmd+R** laddar om fönstret.
+- Git LFS, `gpg` för signerade commits och credential-hjälpare hittas i Homebrews och MacPorts mappar, även när appen öppnades från Finder.

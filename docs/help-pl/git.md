@@ -102,3 +102,4 @@ zatwierdzenie** / **Przerwij**, żeby niedokończonej zmiany bazy nie trzeba by�
 - Dowiązane drzewa robocze i podmoduły są obsługiwane: plik w podmodule pokazuje stan i gałąź *podmodułu*, a
   nie repozytorium nadrzędnego.
 - Każda lista ma menu kontekstowe, **Return** wykonuje jej główne działanie, a **Cmd+R** przeładowuje okno.
+- Git LFS, `gpg` do podpisanych commitów i pomocnicy poświadczeń są znajdowani w folderach Homebrew i MacPorts, także gdy aplikację otwarto z Findera.

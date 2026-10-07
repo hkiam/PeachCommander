@@ -103,3 +103,4 @@ meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, át
 - A csatolt munkafák és az almodulok támogatottak: egy almodulon belüli fájl *az almodul* állapotát és ágát
   mutatja, nem a szülő tárolóét.
 - Minden listának van helyi menüje, a **Return** a fő műveletet futtatja, a **Cmd+R** újratölti az ablakot.
+- A Git LFS, az aláírt commitokhoz használt `gpg` és a hitelesítő segédek a Homebrew és a MacPorts mappáiban is megtalálhatók, akkor is, ha az appot a Finderből nyitották meg.

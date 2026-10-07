@@ -104,3 +104,4 @@ trebuie încheiată într-un terminal.
 - Arborii de lucru legați și submodulele sunt acceptate: un fișier dintr-un submodul arată starea și ramura
   *submodulului*, nu pe cele ale depozitului părinte.
 - Fiecare listă are meniu contextual, **Return** rulează acțiunea principală și **Cmd+R** reîncarcă fereastra.
+- Git LFS, `gpg` pentru commit-uri semnate și asistenții de autentificare sunt găsiți în dosarele Homebrew și MacPorts, chiar dacă aplicația a fost deschisă din Finder.

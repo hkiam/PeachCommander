@@ -571,6 +571,25 @@ public enum PluginGit {
         return out
     }
 
+    // MARK: - The tools git starts
+
+    /// The `PATH` git runs with: the inherited one first, then — when missing — the directory of the git
+    /// being run and the places Homebrew (Apple silicon, Intel) and MacPorts install to.
+    ///
+    /// git starts other programs by name: the `git-lfs` filter, `gpg` for a signed commit, credential
+    /// helpers. An app opened from the Finder inherits launchd's `/usr/bin:/bin:/usr/sbin:/sbin`, none of
+    /// which holds them, and git then fails in ways that look like the plugin's fault — measured: in a
+    /// repository using LFS, even `git status` stopped with "git-lfs filter-process: git-lfs: command not
+    /// found". Appended, not prepended, so a PATH the reader set up on purpose still wins.
+    public static func toolSearchPath(current: String?, gitExecutable: String?) -> String {
+        var entries = (current ?? "").split(separator: ":").map(String.init).filter { !$0.isEmpty }
+        var extra: [String] = []
+        if let gitExecutable { extra.append((gitExecutable as NSString).deletingLastPathComponent) }
+        extra += ["/opt/homebrew/bin", "/usr/local/bin", "/opt/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"]
+        for directory in extra where !directory.isEmpty && !entries.contains(directory) { entries.append(directory) }
+        return entries.joined(separator: ":")
+    }
+
     // MARK: - Searching the history
 
     /// Whether a search text could be (the start of) a commit hash: four to forty hex digits. Four is

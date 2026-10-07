@@ -574,10 +574,7 @@ final class GitBranchesView: NSView {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        var environment = ProcessInfo.processInfo.environment
-        environment["GIT_TERMINAL_PROMPT"] = "0"          // fail loudly rather than wait for a password
-        environment["GIT_OPTIONAL_LOCKS"] = "0"
-        process.environment = environment
+        process.environment = PluginGitRepo.environment()    // no prompt, no optional locks, git's tools
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe

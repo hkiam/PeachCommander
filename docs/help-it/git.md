@@ -103,3 +103,4 @@ rebase**, così un rebase lasciato a metà non deve essere finito in un terminal
 - I worktree collegati e i sottomoduli sono supportati: un file dentro un sottomodulo mostra lo stato e il
   branch *del sottomodulo*, non quelli del repository padre.
 - Ogni elenco ha un menu contestuale, **Invio** esegue l’azione principale e **Cmd+R** ricarica la finestra.
+- Git LFS, `gpg` per i commit firmati e gli helper delle credenziali vengono trovati nelle cartelle di Homebrew e MacPorts anche se l’app è stata aperta dal Finder.

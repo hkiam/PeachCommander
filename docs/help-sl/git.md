@@ -102,3 +102,4 @@ napol opravljenega prestavljanja ni treba dokončati v terminalu.
 - Povezana delovna drevesa in podmoduli so podprti: datoteka v podmodulu prikaže stanje in vejo *podmodula*,
   ne nadrejenega skladišča.
 - Vsak seznam ima kontekstni meni, **Return** izvede njegovo glavno dejanje in **Cmd+R** znova naloži okno.
+- Git LFS, `gpg` za podpisane commite in pomočniki za poverilnice se najdejo v mapah Homebrew in MacPorts, tudi če je bila aplikacija odprta iz Finderja.

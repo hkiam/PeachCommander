@@ -106,3 +106,4 @@ un terminal.
 - Les copies de travail liées et les sous-modules sont pris en charge : un fichier dans un sous-module montre
   l’état et la branche *du sous-module*, pas ceux du dépôt parent.
 - Chaque liste a un menu contextuel, **Retour** lance son action principale et **Cmd+R** recharge la fenêtre.
+- Git LFS, `gpg` pour les commits signés et les assistants d’identification sont trouvés dans les dossiers de Homebrew et MacPorts, même si l’app a été ouverte depuis le Finder.
