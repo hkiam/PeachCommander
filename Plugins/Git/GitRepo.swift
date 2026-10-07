@@ -40,7 +40,11 @@ enum PluginGitRepo {
     ///
     /// `GIT_TERMINAL_PROMPT=0` is the important one: a `push` that wants a password must fail and say so
     /// rather than wait forever on a terminal this process does not have.
-    static func run(_ arguments: [String], combined: Bool = false) -> (out: String, ok: Bool) {
+    ///
+    /// `environment` is added to git's (the search's locale); `cancel` stops it — a search over a long
+    /// history can run for seconds without writing a line, so stopping it cannot wait for its output.
+    static func run(_ arguments: [String], combined: Bool = false, environment extra: [String: String] = [:],
+                    cancel: GitCancellation? = nil) -> (out: String, ok: Bool) {
         guard let executable = executable() else { return (L("Git was not found on this Mac."), false) }
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
@@ -48,13 +52,16 @@ enum PluginGitRepo {
         var environment = ProcessInfo.processInfo.environment
         environment["GIT_TERMINAL_PROMPT"] = "0"
         environment["GIT_OPTIONAL_LOCKS"] = "0"
+        environment.merge(extra) { _, new in new }
         process.environment = environment
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = combined ? pipe : FileHandle.nullDevice
         do { try process.run() } catch { return (L("Git could not be started."), false) }
+        cancel?.register(process)
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
+        cancel?.unregister(process)
         return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
     }
 
@@ -310,5 +317,37 @@ enum PluginGitRepo {
             PluginGit.blobFileName(path: path, base: base, token: token))
         do { try data.write(to: url) } catch { return nil }
         return url.path
+    }
+}
+
+/// Stops the git processes of one piece of work — a search that a newer search has made pointless.
+/// Thread-safe: processes register from background queues, and the panel cancels from the main thread.
+final class GitCancellation: @unchecked Sendable {
+    private let lock = NSLock()
+    private var processes: [Process] = []
+    private var cancelled = false
+
+    var isCancelled: Bool { lock.lock(); defer { lock.unlock() }; return cancelled }
+
+    /// A process registered after `cancel` is stopped at once.
+    func register(_ process: Process) {
+        lock.lock()
+        let stop = cancelled
+        if !stop { processes.append(process) }
+        lock.unlock()
+        if stop { process.terminate() }
+    }
+
+    func unregister(_ process: Process) {
+        lock.lock(); processes.removeAll { $0 === process }; lock.unlock()
+    }
+
+    func cancel() {
+        lock.lock()
+        cancelled = true
+        let running = processes
+        processes = []
+        lock.unlock()
+        running.forEach { $0.terminate() }
     }
 }

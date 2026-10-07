@@ -53,6 +53,14 @@ final class GitPanelView: NSView {
     private let detailTabs = NSSegmentedControl(labels: [], trackingMode: .selectOne, target: nil, action: nil)
     private var commits: [PluginGit.Commit] = []
     private var limit = GitPanelView.pageSize
+    /// Whether the history (or search) has more than is loaded — what "Load more" offers.
+    private var hasMoreCommits = false
+    /// The search the listed commits came from; empty for the plain history.
+    private var activeQuery = ""
+    /// Stops the git processes of the read in progress when a newer one starts.
+    private var searchCancel: GitCancellation?
+    /// The read in progress reads the history (see `reload`).
+    private var historyInFlight = false
     /// Bumped by every reload; a result from an older one is dropped. Without it a slow `log` of the
     /// repository the cursor just left could land after the new one's and put the old repository back.
     private var generation = 0
@@ -67,6 +75,10 @@ final class GitPanelView: NSView {
         self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 360))
         build()
+        // Verification only (see `applyAutomationProbe`): a search typed before the first load, so the
+        // first load is already the search.
+        if let query = Self.probe("PC_GIT_PANEL_SEARCH") { history.setSearchText(query) }
+        if Self.probe("PC_GIT_PANEL_SCOPE") == "current" { history.setOnlyCurrentBranch(true) }
         reload()
     }
 
@@ -221,10 +233,15 @@ final class GitPanelView: NSView {
         history.onLoadMore = { [weak self] in
             guard let self else { return }
             self.limit += Self.pageSize
-            self.reload()
+            self.reload(status: false)
         }
         history.onChanged = { [weak self] in self?.refreshNow() }
         history.onScopeChange = { [weak self] in self?.reload() }
+        history.onSearch = { [weak self] in
+            guard let self else { return }
+            self.limit = Self.pageSize          // a new search starts from its first page
+            self.reload(status: false)
+        }
         mainSplit.isVertical = false
         mainSplit.dividerStyle = .thin
         mainSplit.addArrangedSubview(history)
@@ -338,52 +355,111 @@ final class GitPanelView: NSView {
     /// Re-read the repository off the main thread and rebuild the list on it.
     ///
     /// `history: false` keeps the loaded log when the repository is the same one — a folder change inside
-    /// it. Another repository always gets its history read, from the first page.
-    private func reload(history: Bool = true) {
+    /// it. Another repository always gets its history read, from the first page. `status: false` reads
+    /// the history alone: a search, or "Load more", has no reason to re-read the working tree and rebuild
+    /// the staging list (which also re-expanded every group the reader had collapsed).
+    private func reload(history requested: Bool = true, status readStatus: Bool = true) {
+        // A read in progress is superseded by this one, so if it was reading the history — a search, "Load
+        // more" — this one has to as well, or its result would be dropped and the old list kept beside the
+        // new search text.
+        let history = requested || historyInFlight
+        historyInFlight = history
         let directory = self.directory.isEmpty ? hostDirectory() : self.directory
         self.directory = directory
         busy.startAnimation(nil)
         generation += 1
         let generation = self.generation
-        let previousRoot = root, kept = self.commits
+        let previousRoot = root, kept = self.commits, keptHasMore = self.hasMoreCommits
         let pageLimit = self.limit, firstPage = Self.pageSize, all = !self.history.onlyCurrentBranch
+        // The search the list will show: a fresh read takes what the field says now; kept commits keep
+        // the search they came from, whatever has been typed since without being applied yet.
+        let query = history ? self.history.searchText : activeQuery
+        // A newer read makes the previous search pointless; its git processes are stopped, not waited for.
+        searchCancel?.cancel()
+        let cancel = GitCancellation()
+        searchCancel = cancel
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let located = PluginGitRepo.locate(directory)
             let sameRepo = located?.root == previousRoot
             let limit = sameRepo ? pageLimit : firstPage
-            // Status and log are independent, so they run side by side; the log of every branch is the
-            // slower of the two on a large repository.
-            var status: PluginGit.RepoStatus?
-            var commits: [PluginGit.Commit] = []
+            // Status, log and the search's calls are independent, so they run side by side.
+            let found = PanelLoad()
             let group = DispatchGroup()
             if let located {
-                DispatchQueue.global(qos: .userInitiated).async(group: group) {
-                    status = PluginGitRepo.status(root: located.root)
+                let root = located.root
+                if readStatus {
+                    DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                        found.set { $0.status = PluginGitRepo.status(root: root) }
+                    }
                 }
-                if history || !sameRepo {
-                    let arguments = ["-C", located.root] + PluginGit.logArguments(limit: limit, all: all)
-                    commits = PluginGit.parseLog(PluginGitRepo.run(arguments).out)
+                if !(history || !sameRepo) {
+                    found.set { $0.commits = kept; $0.hasMore = keptHasMore }
+                } else if query.isEmpty {
+                    let output = PluginGitRepo.run(["-C", root] + PluginGit.logArguments(limit: limit, all: all)).out
+                    let commits = PluginGit.parseLog(output)
+                    found.set { $0.commits = commits; $0.hasMore = commits.count >= limit }
                 } else {
-                    commits = kept
+                    Self.search(query, root: root, limit: limit, all: all, cancel: cancel, group: group, into: found)
                 }
             }
             group.wait()
+            if !query.isEmpty, history || !sameRepo {
+                found.set { load in
+                    let merged = PluginGit.mergeSearchResults(load.fields, extra: load.extra, limit: limit)
+                    load.commits = merged.commits
+                    load.hasMore = merged.hasMore
+                }
+            }
+            let result = found.snapshot()
             DispatchQueue.main.async {
                 self?.busy.stopAnimation(nil)
-                guard let self, self.generation == generation else { return }
+                guard let self, self.generation == generation, !cancel.isCancelled else { return }
+                self.historyInFlight = false
                 self.limit = limit
                 self.root = located?.root
-                self.status = status
-                self.groups = status.map { PluginGit.grouped($0) } ?? []
-                self.commits = commits
-                self.outline.reloadData()
-                self.outline.expandItem(nil, expandChildren: true)
+                if readStatus {
+                    self.status = result.status
+                    self.groups = result.status.map { PluginGit.grouped($0) } ?? []
+                    self.outline.reloadData()
+                    self.outline.expandItem(nil, expandChildren: true)
+                }
+                self.commits = result.commits
+                self.hasMoreCommits = result.hasMore
+                self.activeQuery = query
                 self.history.root = located?.root
-                self.history.update(commits: commits, hasRepo: located != nil,
-                                    changeCount: self.changeCount, hasMore: commits.count >= limit)
+                self.history.update(commits: result.commits, hasRepo: located != nil,
+                                    changeCount: self.changeCount, hasMore: result.hasMore,
+                                    searching: !query.isEmpty)
                 self.updateHeader()
                 self.updateButtons()
                 self.applyAutomationProbe()
+            }
+        }
+    }
+
+    /// One search: the message and author calls and, for a hash-like text, the hash call, all at once.
+    /// The hash call's commit is kept only when the history being searched contains it.
+    private nonisolated static func search(_ query: String, root: String, limit: Int, all: Bool,
+                                           cancel: GitCancellation, group: DispatchGroup, into found: PanelLoad) {
+        let environment = PluginGit.searchEnvironment
+        let calls = PluginGit.searchArguments(query, limit: limit, all: all)
+        found.set { $0.fields = Array(repeating: [], count: calls.count) }
+        for (index, call) in calls.enumerated() {
+            DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                let output = PluginGitRepo.run(["-C", root] + call, environment: environment, cancel: cancel).out
+                let commits = PluginGit.parseLog(output)
+                found.set { $0.fields[index] = commits }
+            }
+        }
+        if let call = PluginGit.hashSearchArguments(query) {
+            DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                let commits = PluginGit.parseLog(PluginGitRepo.run(["-C", root] + call, cancel: cancel).out)
+                let reachable = commits.filter { commit in
+                    let check = PluginGitRepo.run(["-C", root] + PluginGit.reachabilityArguments(commit.hash, all: all),
+                                                  cancel: cancel)
+                    return all ? !check.out.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty : check.ok
+                }
+                found.set { $0.extra = reachable }
             }
         }
     }
@@ -424,16 +500,20 @@ final class GitPanelView: NSView {
     /// Verification only: `PC_GIT_PANEL_ROW=<n>` selects history row n (0 is the working copy) and
     /// `PC_GIT_PANEL_TAB=commit|changes` picks the tab, once, after the first load — so an automation run
     /// can lay out the commit views, which no script can reach with a click. `PC_GIT_PANEL_ACTIVATE=1`
-    /// then does what a double-click on that row does ("Load more" on the last row). Read from the environment
+    /// then does what a double-click on that row does ("Load more" on the last row); `PC_GIT_PANEL_SEARCH`
+    /// types a search before the first load, `PC_GIT_PANEL_SCOPE=current` turns on "Only the current
+    /// branch". Read from the environment
     /// and from the argument domain, because the VM harness passes a scenario's variables as arguments.
+    private static func probe(_ key: String) -> String? {
+        if let value = ProcessInfo.processInfo.environment[key], !value.isEmpty { return value }
+        let value = UserDefaults.standard.string(forKey: key)
+        return (value?.isEmpty ?? true) ? nil : value
+    }
+
     private func applyAutomationProbe() {
         guard !probeApplied, root != nil else { return }
         probeApplied = true
-        func probe(_ key: String) -> String? {
-            if let value = ProcessInfo.processInfo.environment[key], !value.isEmpty { return value }
-            let value = UserDefaults.standard.string(forKey: key)
-            return (value?.isEmpty ?? true) ? nil : value
-        }
+        let probe = Self.probe
         if let tab = probe("PC_GIT_PANEL_TAB") { detailTabs.selectedSegment = tab == "commit" ? 0 : 1 }
         if let row = probe("PC_GIT_PANEL_ROW").flatMap(Int.init) { history.selectRow(row) }
         if probe("PC_GIT_PANEL_ACTIVATE") != nil { history.activateRow() }
@@ -474,6 +554,12 @@ final class GitPanelView: NSView {
     /// Follow the history's selection: the working copy, or one commit's details or changes.
     private func show(_ selection: GitHistoryView.Selection?) {
         switch selection {
+        case nil where history.isSearching:
+            // A search with nothing selected — typically nothing found — shows neither the working copy,
+            // which the search did not ask about, nor a commit.
+            showingWorkingCopy = false
+            workingCopyPane.isHidden = true
+            commitPane.isHidden = true
         case .workingCopy?, nil:
             showingWorkingCopy = true
             workingCopyPane.isHidden = false
@@ -766,4 +852,21 @@ private extension NSColor {
         let a = text.count == 8 ? CGFloat(value & 0xFF) / 255 : 1
         self.init(srgbRed: r, green: g, blue: b, alpha: a)
     }
+}
+
+/// What one panel read collects from its parallel git calls. A class with a lock because the calls finish
+/// on different queues; `snapshot` hands the main thread a copy.
+private final class PanelLoad: @unchecked Sendable {
+    struct Values {
+        var status: PluginGit.RepoStatus?
+        var commits: [PluginGit.Commit] = []
+        var hasMore = false
+        var fields: [[PluginGit.Commit]] = []
+        var extra: [PluginGit.Commit] = []
+    }
+    private let lock = NSLock()
+    private var values = Values()
+
+    func set(_ change: (inout Values) -> Void) { lock.lock(); change(&values); lock.unlock() }
+    func snapshot() -> Values { lock.lock(); defer { lock.unlock() }; return values }
 }

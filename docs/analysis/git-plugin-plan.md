@@ -354,6 +354,16 @@ separate log window beside it. Built:
   rule was about — a second diff *implementation* with its own defects — does not arise. The host's
   compare window stays one double-click away for anything long or subtle.
 * `gitFitColumns` (GitTable.swift) and `GitCommitActions` are shared with the log window.
+* **Search** over the whole history, not the loaded pages: one `git log` per field — `--grep` (the
+  whole message) and `--author` (name and e-mail), case-insensitive fixed strings — because git
+  intersects the two within one call; a hash-like text adds that commit (`--end-of-options`, so a
+  search can never be an option) when some branch, remote or tag contains it — HEAD alone with "Only
+  the current branch". Both field calls run in commit-time order (`--date-order`, `%ct`) and are merged
+  newest first, ending where the first full call stopped, so no match is skipped between the two; "Load
+  more" goes on from there. Listed without lanes, which through a disconnected set would draw branches
+  that are not there. git folds case by its locale and a Finder-launched app has none, so the search
+  calls run with `LC_ALL=UTF-8` (measured: `über` did not find "Über" under C). A newer read stops the
+  previous search's git processes (`GitCancellation`); a search reads the history only, not the status.
 * Paths come from `show --name-status -z`: without `-z` git C-quotes every path outside ASCII and the
   tree showed `"Gr\303\274\303\237e.txt"` with an empty diff — the defect `parseStatus` had already
   fixed for the status. A rename is compared under its old name in the parent, a deletion against an

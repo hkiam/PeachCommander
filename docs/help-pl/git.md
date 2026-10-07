@@ -42,6 +42,7 @@ Pod przyciskami panel pokazuje historię wszystkich gałęzi, gałęzi zdalnych 
 - Commit pokazuje **Commit** — autora, committera, datę, hash, rodziców, refy, podpis i pełny opis — albo **Zmiany**.
 - **Zmiany** wyświetla zmienione pliki jako drzewo i diff wybranego pliku z numerami wierszy; dwukrotne kliknięcie otwiera okno porównania.
 - Menu kontekstowe kopiuje hash lub temat, cofa, robi cherry-pick, otwiera commit w sieci i ogranicza listę do **Tylko bieżąca gałąź**.
+- Pole wyszukiwania nad listą przeszukuje całą historię — opis, imię i e-mail autora albo hash i jego pierwsze znaki — i pokazuje wyniki bez grafu.
 
 ## Historia, blame i sieć
 

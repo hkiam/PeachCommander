@@ -43,6 +43,7 @@ Onder de knoppen toont het paneel de geschiedenis van alle branches, remote bran
 - Een commit toont **Commit** — auteur, committer, datum, hash, ouders, refs, handtekening en volledig bericht — of **Wijzigingen**.
 - **Wijzigingen** toont de geraakte bestanden als boom en de diff van het gekozen bestand met regelnummers; dubbelklikken opent het vergelijkvenster.
 - Het contextmenu kopieert hash of onderwerp, draait terug, cherry-pickt, opent de commit op het web en beperkt de lijst tot **Alleen de huidige branch**.
+- Het zoekveld boven de lijst doorzoekt de hele geschiedenis — bericht, naam en e-mail van de auteur, of een hash en de eerste tekens ervan — en toont de treffers zonder graaf.
 
 ## Geschiedenis, blame en het web
 

@@ -43,6 +43,7 @@ Below its buttons the panel shows the history of every branch, remote branch and
 - A commit shows either **Commit** — author, committer, date, hash, parents, refs, signature and the full message — or **Changes**.
 - **Changes** lists the touched files as a tree and the selected file's diff with line numbers; a double-click opens the compare window.
 - The context menu copies hash or subject, reverts, cherry-picks, opens the commit on the web, and limits the list to **Only the current branch**.
+- The search field above the list searches the whole history — message, author name and e-mail, or a hash and its first characters — and lists the matches without the graph.
 
 ## History, blame and the web
 

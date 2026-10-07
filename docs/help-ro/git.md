@@ -43,6 +43,7 @@ Sub butoane, panoul arată istoricul tuturor ramurilor, ramurilor la distanță 
 - Un commit arată fie **Commit** — autor, committer, dată, hash, părinți, ref-uri, semnătură și mesajul complet — fie **Modificări**.
 - **Modificări** listează fișierele atinse ca arbore și diff-ul fișierului ales cu numere de linie; un dublu clic deschide fereastra de comparare.
 - Meniul contextual copiază hash-ul sau subiectul, anulează, face cherry-pick, deschide commit-ul pe web și limitează lista la **Doar ramura curentă**.
+- Câmpul de căutare de deasupra listei caută în tot istoricul — mesaj, numele și e-mailul autorului sau un hash și primele lui caractere — și listează rezultatele fără graf.
 
 ## Istoric, blame și web
 

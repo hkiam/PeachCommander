@@ -44,6 +44,7 @@ Unter seinen Schaltflächen zeigt das Panel die Historie aller Branches, Remote-
 - Ein Commit zeigt entweder **Commit** — Autor, Committer, Datum, Hash, Eltern, Refs, Signatur und die ganze Nachricht — oder **Änderungen**.
 - **Änderungen** listet die berührten Dateien als Baum und den Diff der gewählten Datei mit Zeilennummern; ein Doppelklick öffnet das Vergleichsfenster.
 - Das Kontextmenü kopiert Hash oder Betreff, nimmt zurück, cherry-pickt, öffnet den Commit im Browser und beschränkt die Liste auf **Nur der aktuelle Branch**.
+- Das Suchfeld über der Liste durchsucht die ganze Historie — Nachricht, Name und E-Mail des Autors oder einen Hash und seine ersten Zeichen — und listet die Treffer ohne Graph.
 
 ## Historie, Blame und das Web
 

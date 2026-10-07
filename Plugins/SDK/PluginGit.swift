@@ -370,6 +370,9 @@ public enum PluginGit {
         /// A history without these does not answer the question it is usually opened for — *where* is
         /// `main`, what did the release tag point at — and every reference product shows them.
         public var refs: [Ref] = []
+        /// When the commit was *committed* (`%ct`) — what history order follows. `date` is when it was
+        /// authored, which a rebase or a cherry-pick keeps from months ago. nil from an older format.
+        public var commitDate: Date?
 
         public init(hash: String, shortHash: String, parents: [String], author: String,
                     date: Date, subject: String) {
@@ -395,7 +398,11 @@ public enum PluginGit {
     ///
     /// `--decorate=full` in every form: the short decoration cannot tell a local `feature/x` from the
     /// remote `origin/main` — both are a name with a slash.
-    public static func logArguments(limit: Int, path: String? = nil, all: Bool = false) -> [String] {
+    ///
+    /// `dateOrder` is for a search: its results are not a graph, and several searches merged together
+    /// need one order they all follow — commit time, which `--date-order` keeps (parents after children).
+    public static func logArguments(limit: Int, path: String? = nil, all: Bool = false,
+                                    dateOrder: Bool = false) -> [String] {
         // `--topo-order`, not git's default date order: with date order a parent can be listed *before*
         // its child (a branch committed earlier than the commit it forked from), and then the lane waiting
         // for that parent never closes — the graph shows a branch running past the commit that ended it.
@@ -403,9 +410,11 @@ public enum PluginGit {
         // `%D` last, after the subject: a subject may contain anything, including our separators in
         // principle, but appending a field keeps every existing index where it was — the rename defect in
         // `parseStatus` was exactly a shifted field, and it is not worth repeating here (F-425).
-        var out = ["--no-optional-locks", "log", "--topo-order", "--max-count=\(limit)",
+        var out = ["--no-optional-locks", "log", dateOrder ? "--date-order" : "--topo-order",
+                   "--max-count=\(limit)",
                    "--format=%H\(unitSeparator)%h\(unitSeparator)%P\(unitSeparator)%an"
-                   + "\(unitSeparator)%at\(unitSeparator)%s\(unitSeparator)%D\(recordSeparator)"]
+                   + "\(unitSeparator)%at\(unitSeparator)%s\(unitSeparator)%D\(unitSeparator)%ct"
+                   + "\(recordSeparator)"]
         out.append("--decorate=full")
         if all { out += ["--branches", "--remotes", "--tags", "HEAD"] }
         if let path, !path.isEmpty { out += ["--follow", "--", path] }
@@ -426,6 +435,9 @@ public enum PluginGit {
             // An older format (or a caller with its own) simply has no seventh field, and then there are
             // no refs — not a parse error.
             if fields.count >= 7 { commit.refs = parseRefs(fields[6]) }
+            if fields.count >= 8, let seconds = Double(fields[7]) {
+                commit.commitDate = Date(timeIntervalSince1970: seconds)
+            }
             commits.append(commit)
         }
         return commits
@@ -557,6 +569,74 @@ public enum PluginGit {
             out.append((row.lane, lines))
         }
         return out
+    }
+
+    // MARK: - Searching the history
+
+    /// Whether a search text could be (the start of) a commit hash: four to forty hex digits. Four is
+    /// git's own minimum for an abbreviated object name.
+    public static func isHashLike(_ query: String) -> Bool {
+        (4...40).contains(query.count) && query.allSatisfy(\.isHexDigit)
+    }
+
+    /// The `git log` calls one search runs over the message and the author, each a complete argument list
+    /// for `parseLog`.
+    ///
+    /// Two calls because git *intersects* `--grep` and `--author` within one (measured: `--author=Demo
+    /// --grep=helpers` lists only commits matching both), and a search box that only finds commits
+    /// matching every field it says it searches is the wrong way round. Both are case-insensitive fixed
+    /// strings — a reader typing `fix(git)` means those characters, not a regex — and `--grep` searches
+    /// the whole message, body included; `--author` matches name and e-mail. In commit-time order, so the
+    /// two lists can be merged without gaps (`mergeSearchResults`). Run them with `searchEnvironment`.
+    public static func searchArguments(_ query: String, limit: Int, all: Bool) -> [[String]] {
+        let text = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return [] }
+        let base = logArguments(limit: limit, all: all, dateOrder: true)
+        return [base + ["-i", "-F", "--grep=\(text)"], base + ["-i", "-F", "--author=\(text)"]]
+    }
+
+    /// git folds case by its locale, and an app started from Finder has none: under the C locale `über`
+    /// does not find "Über" (measured). Only the search calls get this; their output is parsed, not shown.
+    public static let searchEnvironment = ["LC_ALL": "UTF-8"]
+
+    /// For a hash-like search, the call that resolves it to its commit — or nil. After `--end-of-options`,
+    /// so nothing a reader types can become an option. The commit it finds still has to pass
+    /// `reachabilityArguments`: a hash names any object in the repository, also one outside the history
+    /// being searched.
+    public static func hashSearchArguments(_ query: String) -> [String]? {
+        let text = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard isHashLike(text) else { return nil }
+        return logArguments(limit: 1) + ["--no-walk", "--end-of-options", text]
+    }
+
+    /// Whether the commit a hash search found belongs to the history being searched. With `all`, some
+    /// branch, remote branch or tag must contain it — the call lists one such ref, or nothing; on the
+    /// current branch only, HEAD must — the call's exit status says it.
+    public static func reachabilityArguments(_ hash: String, all: Bool) -> [String] {
+        all ? ["for-each-ref", "--count=1", "--format=%(refname)", "--contains", hash,
+               "refs/heads", "refs/remotes", "refs/tags"]
+            : ["merge-base", "--is-ancestor", hash, "HEAD"]
+    }
+
+    /// The results of `searchArguments`' calls (each `limit` long at most) as one list, newest commit
+    /// first, each commit once — plus `extra`, the hash search's commit, wherever its time puts it.
+    ///
+    /// A call that came back full stopped somewhere: past its last commit it may have more matches, which
+    /// the other call cannot stand in for. So the merged list ends at the newest such stopping point, and
+    /// `hasMore` says a longer search would go on — otherwise commits older than one call's cut-off and
+    /// newer than the other's would be listed with the first call's matches missing among them.
+    public static func mergeSearchResults(_ results: [[Commit]], extra: [Commit] = [],
+                                          limit: Int) -> (commits: [Commit], hasMore: Bool) {
+        func time(_ commit: Commit) -> Date { commit.commitDate ?? commit.date }
+        let cutOffs = results.filter { $0.count >= limit }.compactMap { $0.last.map(time) }
+        let cutOff = cutOffs.max()
+        var seen = Set<String>()
+        var out: [Commit] = []
+        for commit in results.joined() + extra where seen.insert(commit.hash).inserted {
+            if let cutOff, time(commit) < cutOff, !extra.contains(where: { $0.hash == commit.hash }) { continue }
+            out.append(commit)
+        }
+        return (out.sorted { time($0) > time($1) }, cutOff != nil)
     }
 
     /// A file a commit touched, from `--name-status`. `oldPath` is set for a rename or copy.

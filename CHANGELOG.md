@@ -24,7 +24,8 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   message) or **Changes**: the touched files as a tree and the selected file's diff, numbered and
   coloured, side by side with the tree when the panel is wide. Double-click still opens the compare
   window. The context menu copies, reverts, cherry-picks, opens the commit on the web and limits the
-  list to the current branch.
+  list to the current branch. A search field above the history searches all of it — message, author
+  name and e-mail, or a hash and its first characters.
 
 ### Fixed
 

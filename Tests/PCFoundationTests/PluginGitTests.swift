@@ -378,6 +378,143 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.nameStatusArguments("abc").last, "abc")
     }
 
+    func testHashLikeNeedsFourToFortyHexDigits() {
+        XCTAssertTrue(PluginGit.isHashLike("7a6e"))
+        XCTAssertTrue(PluginGit.isHashLike("7A6E3E0"))
+        XCTAssertFalse(PluginGit.isHashLike("7a6"), "git's minimum abbreviation is four")
+        XCTAssertFalse(PluginGit.isHashLike("helpers"))
+        XCTAssertFalse(PluginGit.isHashLike(String(repeating: "a", count: 41)))
+    }
+
+    /// Message and author are separate calls, because one call with both intersects them.
+    func testSearchRunsOneCallPerField() {
+        let calls = PluginGit.searchArguments("helpers", limit: 50, all: true)
+        XCTAssertEqual(calls.count, 2)
+        XCTAssertTrue(calls[0].contains("--grep=helpers") && !calls[0].contains { $0.hasPrefix("--author") })
+        XCTAssertTrue(calls[1].contains("--author=helpers") && !calls[1].contains { $0.hasPrefix("--grep") })
+        for call in calls {
+            XCTAssertTrue(call.contains("-i") && call.contains("-F"), "case-insensitive fixed strings")
+            XCTAssertTrue(call.contains("--branches"), "the same refs the history walks")
+            XCTAssertTrue(call.contains("--date-order") && !call.contains("--topo-order"),
+                          "one order every call follows, so they merge without gaps")
+        }
+        XCTAssertEqual(PluginGit.searchArguments("   ", limit: 50, all: true), [])
+        XCTAssertEqual(PluginGit.searchEnvironment["LC_ALL"], "UTF-8")
+    }
+
+    func testAHashLikeSearchAsksForThatCommitWithoutLettingItBeAnOption() {
+        let call = PluginGit.hashSearchArguments(" 7a6e3e0 ")
+        XCTAssertEqual(call.map { Array($0.suffix(2)) }, ["--end-of-options", "7a6e3e0"])
+        XCTAssertTrue(call?.contains("--no-walk") ?? false)
+        XCTAssertNil(PluginGit.hashSearchArguments("helpers"))
+    }
+
+    func testReachabilityFollowsTheScope() {
+        XCTAssertEqual(PluginGit.reachabilityArguments("abc", all: false), ["merge-base", "--is-ancestor", "abc", "HEAD"])
+        let all = PluginGit.reachabilityArguments("abc", all: true)
+        XCTAssertEqual(all.first, "for-each-ref")
+        XCTAssertTrue(all.contains("--contains") && all.contains("refs/remotes") && all.contains("refs/tags"))
+    }
+
+    private func commit(_ hash: String, committed: TimeInterval) -> PluginGit.Commit {
+        var commit = PluginGit.parseLog(logRecord(hash, hash, "", "A", "1", hash))[0]
+        commit.commitDate = Date(timeIntervalSince1970: committed)
+        return commit
+    }
+
+    func testSearchResultsAreMergedOnceNewestCommitFirst() {
+        // Ordered by commit time, not author time: a rebased commit keeps an old author date.
+        let merged = PluginGit.mergeSearchResults(
+            [[commit("a", committed: 300), commit("b", committed: 100)], [commit("a", committed: 300), commit("c", committed: 200)]],
+            limit: 10)
+        XCTAssertEqual(merged.commits.map(\.hash), ["a", "c", "b"])
+        XCTAssertFalse(merged.hasMore)
+    }
+
+    /// A full list stopped somewhere; past its last commit the other list must not fill in alone.
+    func testAFullListCutsTheMergeWhereItStopped() {
+        let grep = [commit("g1", committed: 900), commit("g2", committed: 800)]          // full: limit 2
+        let author = [commit("a1", committed: 850), commit("a2", committed: 100)]        // full too
+        let merged = PluginGit.mergeSearchResults([grep, author], limit: 2)
+        XCTAssertEqual(merged.commits.map(\.hash), ["g1", "a1", "g2"],
+                       "a2 is older than where grep stopped: grep's matches between are not known")
+        XCTAssertTrue(merged.hasMore)
+        let withHash = PluginGit.mergeSearchResults([grep, author], extra: [commit("h", committed: 50)], limit: 2)
+        XCTAssertEqual(withHash.commits.last?.hash, "h", "the hash search's commit is shown wherever it is")
+    }
+
+    /// A temporary repository with git isolated from this machine's configuration; `git` runs in it.
+    private func withTempRepo(_ body: (_ git: (_ arguments: [String], _ author: String) throws -> (out: String, ok: Bool)) throws -> Void) throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        let executable = try XCTUnwrap(found, "no git on this machine")
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try body { arguments, author in
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", dir.path] + arguments
+            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
+            var environment = ProcessInfo.processInfo.environment
+            // No locale, as when the app is started from Finder: the case the search has to survive.
+            for key in ["LANG", "LC_ALL", "LC_CTYPE"] { environment[key] = nil }
+            environment.merge(PluginGit.searchEnvironment) { _, new in new }
+            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+            environment["GIT_CONFIG_NOSYSTEM"] = "1"
+            environment["GIT_AUTHOR_NAME"] = author
+            environment["GIT_AUTHOR_EMAIL"] = "\(author.lowercased())@example.com"
+            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+            process.environment = environment
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+        }
+    }
+
+    /// Against real git: message, body, author name and e-mail and a hash prefix all find their commit,
+    /// case-insensitively also outside ASCII, and a hash outside the current branch is not on it.
+    func testSearchAgainstRealGit() throws {
+        try withTempRepo { git in
+            func search(_ query: String, all: Bool = true) throws -> [String] {
+                let results = try PluginGit.searchArguments(query, limit: 50, all: all)
+                    .map { PluginGit.parseLog(try git($0, "Ada").out) }
+                var extra: [PluginGit.Commit] = []
+                if let call = PluginGit.hashSearchArguments(query) {
+                    extra = try PluginGit.parseLog(git(call, "Ada").out).filter { found in
+                        let check = try git(PluginGit.reachabilityArguments(found.hash, all: all), "Ada")
+                        return all ? !check.out.isEmpty : check.ok
+                    }
+                }
+                return PluginGit.mergeSearchResults(results, extra: extra, limit: 50).commits.map(\.subject)
+            }
+            _ = try git(["init", "-q"], "Ada")
+            _ = try git(["symbolic-ref", "HEAD", "refs/heads/main"], "Ada")
+            _ = try git(["commit", "-q", "--allow-empty", "-m", "Fix(git): Über die Grüße", "-m", "Body mentions Straße"], "Ada")
+            _ = try git(["commit", "-q", "--allow-empty", "-m", "Unrelated"], "Grace")
+            _ = try git(["checkout", "-q", "-b", "side"], "Ada")
+            _ = try git(["commit", "-q", "--allow-empty", "-m", "Only on side"], "Ada")
+            let side = try git(["rev-parse", "HEAD"], "Ada").out.trimmingCharacters(in: .whitespacesAndNewlines)
+            _ = try git(["checkout", "-q", "main"], "Ada")
+            let first = try git(["rev-parse", "HEAD~1"], "Ada").out.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            XCTAssertEqual(try search("fix(GIT)"), ["Fix(git): Über die Grüße"], "case-insensitive, not a regex")
+            XCTAssertEqual(try search("über"), ["Fix(git): Über die Grüße"], "case folded outside ASCII too")
+            XCTAssertEqual(try search("straße"), ["Fix(git): Über die Grüße"], "the body is searched too")
+            XCTAssertEqual(try search("grace"), ["Unrelated"], "the author's name")
+            XCTAssertEqual(try search("ada@example"), ["Only on side", "Fix(git): Über die Grüße"],
+                           "the author's e-mail, across every branch")
+            XCTAssertEqual(try search(String(first.prefix(7))), ["Fix(git): Über die Grüße"], "a hash prefix")
+            XCTAssertEqual(try search(String(side.prefix(7)), all: false), [],
+                           "a commit only on another branch is not on the current one")
+            XCTAssertEqual(try search(String(side.prefix(7)), all: true), ["Only on side"])
+            XCTAssertEqual(try search("nothing like this"), [])
+        }
+    }
+
     func testParseNameStatusKeepsRenamesOldPath() {
         let files = PluginGit.parseNameStatus("M\0README.md\0R100\0old/name.txt\0new/name.txt\0A\0docs/Grüße.md\0")
         XCTAssertEqual(files, [

@@ -607,6 +607,11 @@ SCENARIOS = [
                    "contribcmd plugin.git.panel.show", "wait 3000",
                    "windowlayout peach-app|depth=14|/Users/admin/git-panel-layout.txt",
                    "wait 4000"], 16),
+    # The panel's search, typed before the first load by the probe. Upper case on purpose: the search
+    # is case-insensitive, and a message match must not depend on how the reader typed it.
+    ("git-search", ["active left", "left /Users/admin/pc-demo/Projects/peach-app/src", "wait 1200",
+                    "focus main.swift", "wait 500",
+                    "contribcmd plugin.git.panel.show", "wait 7000"], 16),
     # Formatting a file with very long lines used to freeze the window (F-414). The mapping from character
     # index to UTF-16 offset in the code view's drawing path was quadratic in the line length — asked once
     # per syntax token — so a 2 MB JSON Lines log with thirty ~68,000-character records needed 193,934 ms to
@@ -3934,6 +3939,13 @@ REPORTS = {
                    "files=A src/utils.py", "diff added 1 def add(a, b):",
                    "splitFillsPanel=true", "buttonsCompact=true", "headerCompact=true",
                    "!index on", "!untracked files on"]),
+    # One match, from the whole history, listed without the working copy and without lanes, and selected
+    # so its changes are on screen. `!row1=` is the negation: a filter that matched more than the one
+    # message would still pass the positive lines.
+    "git-search": ("/Users/admin/git-search.txt",
+                   ["search=HELPERS", "rows=1", "row0=lane0 [branch:feature/utils] Add string helpers",
+                    "selection=Add string helpers", "workingCopyShown=false", "files=A src/utils.py",
+                    "!row1=", "splitFillsPanel=true"]),
     "git-panel-layout": ("/Users/admin/git-panel-layout.txt",
                          ["GitPanelView=", "GitHistoryView=", "GitChangesView=", "GitDiffView=",
                           "!ERROR: no visible window"]),
@@ -4792,6 +4804,8 @@ SCENARIO_ENV = {
     # The merge row, its Changes tab, and the panel's report — see the scenario.
     "git-panel": {"PC_GIT_PANEL_ROW": "1", "PC_GIT_PANEL_TAB": "changes",
                   "PC_GIT_PANEL_DUMP": "/Users/admin/git-panel.txt"},
+    "git-search": {"PC_GIT_PANEL_SEARCH": "HELPERS", "PC_GIT_PANEL_TAB": "changes",
+                   "PC_GIT_PANEL_DUMP": "/Users/admin/git-search.txt"},
 }
 
 

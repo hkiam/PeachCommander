@@ -42,6 +42,7 @@ Pod tlačidlami panel ukazuje históriu všetkých vetiev, vzdialených vetiev a
 - Commit ukazuje buď **Commit** — autora, committera, dátum, hash, rodičov, refy, podpis a celú správu — alebo **Zmeny**.
 - **Zmeny** vypíše dotknuté súbory ako strom a diff vybraného súboru s číslami riadkov; dvojklik otvorí okno porovnania.
 - Kontextová ponuka kopíruje hash alebo predmet, vracia, robí cherry-pick, otvára commit na webe a obmedzuje zoznam na **Len aktuálna vetva**.
+- Vyhľadávacie pole nad zoznamom prehľadá celú históriu — správu, meno a e-mail autora alebo hash a jeho prvé znaky — a vypíše výsledky bez grafu.
 
 ## História, blame a web
 

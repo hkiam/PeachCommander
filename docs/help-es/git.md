@@ -44,6 +44,7 @@ Bajo sus botones, el panel muestra el historial de todas las ramas, ramas remota
 - Un commit muestra **Commit** — autor, committer, fecha, hash, padres, refs, firma y mensaje completo — o **Cambios**.
 - **Cambios** lista los archivos afectados como árbol y el diff del archivo elegido con números de línea; un doble clic abre la ventana de comparación.
 - El menú contextual copia el hash o el asunto, revierte, hace cherry-pick, abre el commit en la web y limita la lista a **Solo la rama actual**.
+- El campo de búsqueda sobre la lista busca en todo el historial — mensaje, nombre y correo del autor, o un hash y sus primeros caracteres — y muestra los resultados sin el grafo.
 
 ## Historial, autoría y la web
 

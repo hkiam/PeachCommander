@@ -23,6 +23,11 @@ final class GitHistoryView: NSView {
     var onChanged: (() -> Void)?
     /// "Only the current branch" was toggled; the panel reads `onlyCurrentBranch` for its next load.
     var onScopeChange: (() -> Void)?
+    /// The search text changed (after a typing pause, or on Return); the panel reads `searchText`.
+    var onSearch: (() -> Void)?
+
+    /// What the search field holds, trimmed; empty when the history is not being searched.
+    var searchText: String { searchField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     var root: String?
     private(set) var onlyCurrentBranch = false
@@ -31,6 +36,15 @@ final class GitHistoryView: NSView {
     private var theme: PluginTheme
     private let table = GitTable()
     private let scroll = NSScrollView()
+    private let searchField = NSSearchField()
+    private let emptyLabel = NSTextField(labelWithString: "")
+    /// The list shows search results: no working-copy row, and no lanes — the results are not a
+    /// connected history, so a graph through them would draw branches that are not there.
+    private var searching = false
+    /// The row the first commit is in: 1 below the working copy, 0 when searching.
+    private var offset: Int { searching ? 0 : 1 }
+    /// Whether the list shows search results — the search that was *applied*, not the field's text.
+    var isSearching: Bool { searching }
     private var commits: [PluginGit.Commit] = []
     private var drawn: [(node: Int, lines: [PluginGit.GraphLine])] = []
     private var laneCount = 1
@@ -93,6 +107,22 @@ final class GitHistoryView: NSView {
             (L("Reload"), #selector(reloadFromMenu)),
         ], target: self)
 
+        searchField.placeholderString = L("Search commits: hash, author, message")
+        searchField.controlSize = .small
+        searchField.font = .systemFont(ofSize: 11)
+        // After a pause in typing rather than on every key: each search is up to three runs of git over
+        // the whole history.
+        searchField.sendsSearchStringImmediately = false
+        searchField.sendsWholeSearchString = false
+        searchField.target = self
+        searchField.action = #selector(searchChanged)
+        searchField.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.stringValue = L("No commits found.")
+        emptyLabel.textColor = .secondaryLabelColor
+        emptyLabel.font = .systemFont(ofSize: 11)
+        emptyLabel.isHidden = true
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+
         scroll.documentView = table
         scroll.hasVerticalScroller = true
         scroll.hasHorizontalScroller = true
@@ -102,9 +132,16 @@ final class GitHistoryView: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(clipFrameChanged(_:)),
                                                name: NSView.frameDidChangeNotification,
                                                object: scroll.contentView)
+        addSubview(searchField)
         addSubview(scroll)
+        addSubview(emptyLabel)
         NSLayoutConstraint.activate([
-            scroll.topAnchor.constraint(equalTo: topAnchor),
+            searchField.topAnchor.constraint(equalTo: topAnchor),
+            searchField.leadingAnchor.constraint(equalTo: leadingAnchor),
+            searchField.trailingAnchor.constraint(equalTo: trailingAnchor),
+            emptyLabel.centerXAnchor.constraint(equalTo: scroll.centerXAnchor),
+            emptyLabel.topAnchor.constraint(equalTo: scroll.topAnchor, constant: 40),
+            scroll.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 4),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -116,6 +153,7 @@ final class GitHistoryView: NSView {
         self.theme = theme
         table.backgroundColor = theme.background
         scroll.backgroundColor = theme.background
+        emptyLabel.textColor = theme.secondaryText
         scroll.drawsBackground = true
         table.reloadData()
     }
@@ -123,19 +161,26 @@ final class GitHistoryView: NSView {
     // MARK: - Data
 
     /// Show a new history, keeping the selected commit selected when it is still there.
-    func update(commits: [PluginGit.Commit], hasRepo: Bool, changeCount: Int, hasMore: Bool) {
+    ///
+    /// `searching` says the commits are search results: they are listed without the working copy and
+    /// without lanes, and the first one is selected when the previous selection is not among them.
+    func update(commits: [PluginGit.Commit], hasRepo: Bool, changeCount: Int, hasMore: Bool,
+                searching: Bool = false) {
         let previous = selection
         // "Load more" was the selected row: after loading, the first of the new commits takes its place —
         // not the working copy at the top, which would also swap the detail area away.
         let loadedMore = self.hasMore && table.selectedRow > 0 && table.selectedRow == numberOfRows(in: table) - 1
         let previousCount = self.commits.count
+        let previousOffset = offset
         updating = true
         defer { updating = false }
+        self.searching = searching
         self.commits = commits
         self.hasRepo = hasRepo
         self.changeCount = changeCount
         self.hasMore = hasMore
-        drawn = PluginGit.graphLines(PluginGit.graph(commits))
+        drawn = searching ? commits.map { _ in (node: 0, lines: []) } : PluginGit.graphLines(PluginGit.graph(commits))
+        emptyLabel.isHidden = !(searching && commits.isEmpty && hasRepo)
         // Beyond ten lanes the subject is what suffers; the cell clips the strokes past that.
         let lanes = drawn.map { row in max(row.node, row.lines.map { max($0.from, $0.to) }.max() ?? 0) + 1 }
         laneCount = min(max(lanes.max() ?? 1, 1), 10)
@@ -143,14 +188,16 @@ final class GitHistoryView: NSView {
         table.reloadData()
         fitColumns()
 
+        // Without a match for the previous selection: the working copy, or in a search the first result.
+        let fallback = !hasRepo || (searching && commits.isEmpty) ? -1 : 0
         let row: Int
         switch previous {
         case .commit(let commit)?:
-            row = commits.firstIndex { $0.hash == commit.hash }.map { $0 + 1 } ?? (hasRepo ? 0 : -1)
+            row = commits.firstIndex { $0.hash == commit.hash }.map { $0 + offset } ?? fallback
         case nil where loadedMore && commits.count > previousCount:
-            row = previousCount + 1
+            row = previousCount + previousOffset
         default:
-            row = hasRepo ? 0 : -1
+            row = fallback
         }
         if row >= 0 {
             table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
@@ -165,16 +212,16 @@ final class GitHistoryView: NSView {
 
     var selection: Selection? {
         let row = table.selectedRow
-        if row == 0, hasRepo { return .workingCopy }
-        let index = row - 1
+        if row == 0, hasRepo, !searching { return .workingCopy }
+        let index = row - offset
         return commits.indices.contains(index) ? .commit(commits[index]) : nil
     }
 
     /// Select the commit with this hash, when it is loaded (a parent link in the Commit tab).
     func select(hash: String) {
         guard let index = commits.firstIndex(where: { $0.hash == hash }) else { return }
-        table.selectRowIndexes(IndexSet(integer: index + 1), byExtendingSelection: false)
-        table.scrollRowToVisible(index + 1)
+        table.selectRowIndexes(IndexSet(integer: index + offset), byExtendingSelection: false)
+        table.scrollRowToVisible(index + offset)
     }
 
     func selectRow(_ row: Int) {
@@ -185,11 +232,13 @@ final class GitHistoryView: NSView {
 
     /// One line per row as the verification dump reports it: the lane, the refs and the subject.
     func automationRows() -> [String] {
-        var out = ["rows=\(numberOfRows(in: table))"]
-        if hasRepo { out.append("row0=working-copy changes=\(changeCount)") }
+        var out = ["search=\(searching ? searchText : "<none>")", "rows=\(numberOfRows(in: table))",
+                   "commits=\(commits.count) hasMore=\(hasMore)"]
+        if hasRepo, !searching { out.append("row0=working-copy changes=\(changeCount)") }
+        if !emptyLabel.isHidden { out.append("empty=\(emptyLabel.stringValue)") }
         for (index, commit) in commits.prefix(20).enumerated() {
             let refs = commit.refs.map { "\($0.kind.rawValue):\($0.name)" }.joined(separator: ",")
-            out.append("row\(index + 1)=lane\(drawn[index].node) [\(refs)] \(commit.subject)")
+            out.append("row\(index + offset)=lane\(drawn[index].node) [\(refs)] \(commit.subject)")
         }
         return out
     }
@@ -219,6 +268,14 @@ final class GitHistoryView: NSView {
     @objc func activateRow() {
         if table.selectedRow == numberOfRows(in: table) - 1, hasMore { onLoadMore?() }
     }
+
+    @objc private func searchChanged() { onSearch?() }
+
+    /// Put a search into the field without a reader typing it (the verification probe).
+    func setSearchText(_ text: String) { searchField.stringValue = text }
+
+    /// "Only the current branch" without the context menu (the verification probe).
+    func setOnlyCurrentBranch(_ on: Bool) { onlyCurrentBranch = on }
 
     @objc private func copyHash() { selectedCommit.map { gitCopyToClipboard($0.hash) } }
     @objc private func copySubject() { selectedCommit.map { gitCopyToClipboard($0.subject) } }
@@ -260,17 +317,18 @@ extension GitHistoryView: NSMenuItemValidation {
 extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
     func numberOfRows(in tableView: NSTableView) -> Int {
         guard hasRepo else { return 0 }
-        return 1 + commits.count + (hasMore ? 1 : 0)
+        return offset + commits.count + (hasMore ? 1 : 0)
     }
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let id = tableColumn?.identifier.rawValue else { return nil }
-        let index = row - 1
+        let index = row - offset
+        let isWorkingCopy = row == 0 && !searching
         if id == "graph" {
             let cell = (tableView.makeView(withIdentifier: .init("GitGraphCell"), owner: self) as? GitGraphCell)
                 ?? GitGraphCell()
             cell.identifier = .init("GitGraphCell")
-            if row == 0 {
+            if isWorkingCopy {
                 cell.configure(node: headLane(), lines: [], workingCopy: true, isHead: false, isMerge: false)
             } else if commits.indices.contains(index) {
                 let isHead = commits[index].refs.contains { $0.kind == .head }
@@ -293,7 +351,7 @@ extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
         field.font = .systemFont(ofSize: 11)
         field.textColor = theme.text
         field.toolTip = nil
-        if row == 0 {
+        if isWorkingCopy {
             field.attributedStringValue = NSAttributedString(string: "")
             if id == "subject" {
                 field.font = .systemFont(ofSize: 11, weight: .semibold)
