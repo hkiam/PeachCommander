@@ -50,11 +50,24 @@ Under knapperne viser panelet historikken for alle grene, fjerngrene og tags som
 Arbejdskopien, historikken og menuen **Kommandoer ▸ Git** tilbyder mere end at committe:
 
 - En markeret stagede eller ændret fil viser sin diff under listen; markerede linjer eller en hel hunk stages, unstages eller kasseres fra dens kontekstmenu.
-- Commit-feltet er en kombinationsboks: Dens liste rummer dine seneste commit-beskeder til genbrug eller redigering.
+- Commitfeltet tager flere linjer — et emne, en tom linje, en brødtekst —, committer med **Cmd+Retur** og tæller emnets tegn; menuknappen ved siden af gemmer dine seneste commitbeskeder.
 - **Vis i venstre panel** og **Vis i højre panel** fører et filpanel til en fil fra listen eller fra et commits ændringer, mens Git-panelet bliver, som det er; filer, som Git LFS gemmer, er markeret **LFS**.
 - Stashes vises i historikken som små firkanter over det commit, de blev lavet på, med **Anvend stash**, **Anvend og fjern stash** og **Slet stash…** i kontekstmenuen.
-- **Reflog…** viser hver flytning af HEAD; et commit, der gik tabt ved en nulstilling eller en slettet gren, kommer tilbage med **Ny gren her…**. **Remotes og undermoduler…** tilføjer, omdøber, ændrer og fjerner remotes og opdaterer undermoduler.
+- **Reflog…** viser hver flytning af HEAD; et commit, der gik tabt ved en nulstilling eller en slettet gren, kommer tilbage med **Ny gren her…**.
+- **Repository-indstillinger…** tilføjer, omdøber, omdirigerer og fjerner remotes, tilføjer, opdaterer og fjerner undermoduler, styrer worktrees og giver alene dette repository et navn og en e-mail til commits.
 - **Opret repository her…** og **Klon repository…** arbejder i det aktive panels mappe, og uret ved siden af panelets titel går tilbage til et nyligt repository.
+
+## Når git stopper, og indstillingerne
+
+- **Push** sætter upstream første gang en gren pushes. Har remoten commits, som denne gren mangler, tilbyder den **Pull, derefter push** eller **Gennemtving push**, altid med en lease, der afviser, hvis nogen har pushet siden dit seneste fetch; **Gennemtving push (med lease)…** findes også i genvejsmenuen til **Push**.
+- Finder **Pull** ud af, at grenen og dens upstream er gået hver sin vej, spørger den, om der skal merges eller rebases, i stedet for at stoppe ved gits besked.
+- En merge, et cherry-pick, et revert, en rebase eller en patchserie, der stopper i en konflikt, viser et banner over historikken med **Fortsæt** og **Afbryd…**; et merge-commit revertes eller cherry-pickes mod sin første forælder.
+- Vælg to commits for at sammenligne dem, eller flere for at cherry-picke dem på én gang. **Sammenlign med arbejdskopien** og **Gem som patch…** står i historikkens menu, **Anvend patches…** i Git-menuen.
+- Søgefeltet tager også filtre — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — alene eller sammen med ord.
+- **Bisect: markér som dårlig** og **Bisect: markér som god** i historikkens menu starter en bisect; banneret tilbyder så **God**, **Dårlig**, **Spring over** og **Afslut bisect**, indtil git nævner det første dårlige commit.
+- At stashe valgte filer eller alle ændringer beder om en besked, og om usporede filer skal med, eller indekset skal blive. Filer i Git LFS kan låses og låses op, og deres filtype kan spores.
+- I grenlisten kan en gren omdøbes (**Omdøb…**), få en upstream (**Indstil upstream…**) eller slettes på sin server (**Slet på remoten…**).
+- **Indstillinger ▸ Git** fastlægger git-programmet, dit globale navn og din e-mail, hvordan **Pull** arbejder, fetch i baggrunden, hvad historikken viser, og hvordan dens datoer ser ud, signering, sign-off og hooks for commits samt mellemrum og kontekstlinjer for diffs. Forfattere bærer farvede initialer i historikken.
 
 ## Historik, blame og nettet
 
@@ -105,8 +118,7 @@ ikke skal gøres færdig i en terminal.
 
 ## Bemærkninger
 
-- Pluginet bruger systemets Git i `/usr/bin/git`. Mangler Git, melder kommandoerne, at Git ikke er
-  tilgængelig. (Xcode Command Line Tools indeholder den.)
+- Pluginet bruger systemets Git i `/usr/bin/git` eller programmet valgt i **Indstillinger ▸ Git**. Mangler Git, melder kommandoerne, at Git ikke er tilgængeligt. (Xcode Command Line Tools leverer det.)
 - Arkivets status læses én gang pr. mappe og gemmes, så det bliver ved med at være hurtigt at rulle gennem et
   stort arkiv; cachen fornyes efter enhver kommando, der ændrer træet, og følger også en commit, der er lavet
   uden for appen.

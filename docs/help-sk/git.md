@@ -50,11 +50,24 @@ Pod tlačidlami panel ukazuje históriu všetkých vetiev, vzdialených vetiev a
 Pracovná kópia, história a ponuka **Príkazy ▸ Git** ponúkajú viac než zápis:
 
 - Vybraný pripravený alebo zmenený súbor ukáže pod zoznamom svoj diff; vybrané riadky alebo celý blok sa dajú z jeho kontextovej ponuky pripraviť, vrátiť z prípravy alebo zahodiť.
-- Pole commitu je rozbaľovacie pole: jeho zoznam obsahuje tvoje posledné správy commitov na opätovné použitie alebo úpravu.
+- Pole commitu prijíma viac riadkov — predmet, prázdny riadok, text —, commituje cez **Cmd+Return** a počíta znaky predmetu; tlačidlo ponuky vedľa drží tvoje posledné správy commitov.
 - **Zobraziť v ľavom paneli** a **Zobraziť v pravom paneli** prenesú súborový panel na súbor zo zoznamu alebo zo zmien commitu, zatiaľ čo panel Git zostane, ako je; súbory uložené Git LFS sú označené **LFS**.
 - Stashe sa v histórii zobrazujú ako malé štvorce nad commitom, na ktorom vznikli, s **Použiť stash**, **Použiť a odobrať stash** a **Odstrániť stash…** v kontextovej ponuke.
-- **Reflog…** vypíše každý posun HEAD; commit stratený resetom alebo odstránenou vetvou sa vráti cez **Nová vetva tu…**. **Vzdialené repozitáre a submoduly…** pridáva, premenúva, presmerúva a odoberá vzdialené repozitáre a aktualizuje submoduly.
+- **Reflog…** vypíše každý posun HEAD; commit stratený resetom alebo odstránenou vetvou sa vráti cez **Nová vetva tu…**.
+- **Nastavenia repozitára…** pridáva, premenúva, presmerúva a odstraňuje vzdialené repozitáre, pridáva, aktualizuje a odstraňuje submoduly, spravuje worktree a dáva len tomuto repozitáru meno a e-mail pre commity.
 - **Vytvoriť repozitár tu…** a **Klonovať repozitár…** pracujú v priečinku aktívneho panela a hodiny vedľa názvu panela vedú späť k nedávnemu repozitáru.
+
+## Keď sa git zastaví, a nastavenia
+
+- **Push** pri prvom odoslaní vetvy nastaví upstream. Ak má vzdialený repozitár commity, ktoré tejto vetve chýbajú, ponúkne **Stiahnuť, potom odoslať** alebo **Vynútiť odoslanie** — vždy s lease, ktorý odmietne, ak niekto od tvojho posledného fetch odoslal; **Vynútiť odoslanie (s lease)…** je aj v kontextovej ponuke tlačidla **Push**.
+- Ak **Pull** zistí, že sa vetva a jej upstream rozišli, opýta sa, či zlúčiť, alebo rebasovať, namiesto toho, aby skončil pri správe gitu.
+- Zlúčenie, cherry-pick, revert, rebase alebo séria patchov, ktoré sa zastavia v konflikte, ukážu nad históriou pruh s **Pokračovať** a **Prerušiť…**; zlučovací commit sa vracia alebo cherry-pickuje voči svojmu prvému rodičovi.
+- Vyber dva commity a porovnaj ich, alebo niekoľko a cherry-pickni ich naraz. **Porovnať s pracovnou kópiou** a **Uložiť ako patch…** sú v ponuke histórie, **Použiť patche…** v ponuke Git.
+- Pole hľadania prijíma aj filtre — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — samotné alebo spolu so slovami.
+- **Bisect: označiť ako zlý** a **Bisect: označiť ako dobrý** v ponuke histórie spustia bisect; pruh potom ponúka **Dobrý**, **Zlý**, **Preskočiť** a **Ukončiť bisect**, kým git nenájde prvý zlý commit.
+- Odloženie vybraných súborov alebo všetkých zmien do stashu sa opýta na správu a na to, či zahrnúť nesledované súbory alebo ponechať index. Súbory v Git LFS sa dajú zamknúť a odomknúť a ich typ súboru sledovať.
+- V zozname vetiev sa dá vetva premenovať (**Premenovať…**), dať jej upstream (**Nastaviť upstream…**) alebo ju odstrániť na jej serveri (**Odstrániť na vzdialenom repozitári…**).
+- **Nastavenia ▸ Git** určujú program git, tvoje globálne meno a e-mail, ako pracuje **Pull**, fetch na pozadí, čo ukazuje história a ako vyzerajú jej dátumy, podpisovanie, sign-off a hooky commitov a medzery a riadky kontextu v diffoch. Autori majú v histórii farebné iniciály.
 
 ## História, blame a web
 
@@ -106,8 +119,7 @@ preskladanie**, aby sa rozrobené preskladanie nemuselo dokončovať v terminál
 
 ## Poznámky
 
-- Zásuvný modul používa systémový Git v `/usr/bin/git`. Ak Git chýba, príkazy oznámia, že Git nie je k
-  dispozícii. (Prinášajú ho Xcode Command Line Tools.)
+- Zásuvný modul používa systémový Git v `/usr/bin/git` alebo program zvolený v **Nastavenia ▸ Git**. Ak Git chýba, príkazy oznámia, že Git nie je k dispozícii. (Dodávajú ho Xcode Command Line Tools.)
 - Stav repozitára sa číta raz na priečinok a ukladá do vyrovnávacej pamäte, aby prechádzanie veľkého
   repozitára zostalo rýchle; pamäť sa obnoví po každom príkaze, ktorý zmení strom, a sleduje aj zápis
   urobený mimo aplikácie.

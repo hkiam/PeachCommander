@@ -394,6 +394,58 @@ Done in the order the comparison with Fork set, each measured in the app or agai
 
 Still out: Git-flow, creating repositories on a hosting service, browsing the tree at any commit.
 
+### Phase 8 — Nothing that stops a day's work, a Git settings page, and joy · **built**
+
+What a review of phase 7 found still sending a reader to the terminal, in the order of how often it
+bites:
+
+1. **Pushing a new branch** — `git push` without an upstream fails; the first push sets one
+   (`push -u <remote> <branch>`, the remote being the only one or `origin`).
+2. **Force-push after a rewrite** — rebase and amend exist, `--force-with-lease` did not. Offered when a
+   push is rejected as non-fast-forward, and as its own command; never a plain `--force`.
+3. **Pull on diverged branches** — `--ff-only` fails; the settings choose fast-forward only, merge or
+   rebase, and a refused fast-forward offers the other two.
+4. **A merge, cherry-pick or revert that stopped** — a banner in the panel says which, with Continue
+   and Abort, as the Rebase window already has for a rebase.
+5. **Reverting a merge** — `revert -m 1`.
+6. **A commit message with a body** — the commit box becomes a multi-line editor, with the recent
+   messages beside it and the subject's length shown.
+
+Then the second list: rename a branch, delete a remote branch, set an upstream; compare any two
+commits or a commit with the working tree; clone with submodules, add and remove submodules; fetch in
+the background; stash with options (untracked, keep index, selected files); a history filter with
+`author:`, `path:`, `since:`, `until:`; worktrees; a guided bisect; patches out (`format-patch`) and in
+(`am`); LFS lock, unlock and track; cherry-pick several commits; name and e-mail per repository.
+
+**Settings ▸ Git**, a page of its own (`git.ini` under the host's configuration root): the git program;
+name and e-mail (global and for the current repository); pull mode, push sets an upstream, fetch prunes,
+background fetch interval; history page size, remote branches, tags and stashes in the history, relative
+or absolute dates; commit signing and sign-off, the subject length the box warns at, hooks; diff
+whitespace and context lines; clone with submodules.
+
+**Working with it should be a pleasure**: success says so quietly in the panel instead of in an alert
+(errors still ask for attention), dates read "2 hours ago", authors get coloured initials, Cmd+Return
+commits, and the busy indicator says what it is doing.
+
+### Phase 9 — The four left out, planned
+
+* **Pull requests, issues and CI status at the host.** GitHub and GitLab (cloud and self-hosted) through
+  their REST APIs with a personal access token kept in the Keychain (the host's `crypt` service), never
+  in a file. A *Pull requests* tab beside Commit and Changes: open PRs for the current branch, their
+  checks, a "Create pull request" sheet (title, body from the commit messages, base branch). Read-only
+  first (list, status), then create, then review comments. Rate limits shown, not hit. Size L; needs
+  the host's Keychain service for a token per host.
+* **A three-way merge editor.** The conflict resolver takes ours/theirs/both per hunk today. The editor
+  adds the base and an editable result pane, built on the host's compare window rather than beside it
+  (the plan's rule against a second diff implementation holds). Size L; needs a three-pane mode in
+  `DiffWindowController`.
+* **Git-flow.** A convention, not a feature of git: start/finish feature, release and hotfix branches
+  with configurable prefixes, as a submenu of the history's context menu and settings for the prefixes.
+  Size S once branches and merges are in place — they now are.
+* **The tree at any commit.** A *Files* tab beside Commit and Changes: `ls-tree` of the commit as an
+  outline, a file opened read-only from `git show <commit>:<path>` in the viewer, "restore this version"
+  into the working tree. Size M.
+
 ### Deliberately out of scope
 
 Still out, after the re-examination in phase 5: a **merge editor** with base and result panes (5a
@@ -404,6 +456,10 @@ declines to be (5c gets the web links without any of it), a **general interactiv
 across arbitrary history (5d does the commits ahead of the upstream), and a graphical
 branch-diagram editor. Each of these is a product in itself, and none of them is what a file manager
 is for.
+
+Phase 9 plans the merge editor and the host APIs anyway, on the user's request after phase 8 — each
+as its own step with its own review, and only the parts listed there. Until one is built, the
+reasoning above is why it is not there yet.
 
 ---
 

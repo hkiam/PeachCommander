@@ -32,7 +32,8 @@ final class GitPanelView: NSView {
     private let outline = GitOutline()
     private let scroll = NSScrollView()
     /// A combo box: its list holds the reader's recent commit messages (phase 7), to reuse or edit.
-    private let messageField = NSComboBox()
+    /// The commit message: several lines, recent messages, the subject's length (phase 8).
+    private var messageField: GitCommitBox!
     private let commitButton = NSButton()
     private let amendCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let stageButton = NSButton()
@@ -79,7 +80,26 @@ final class GitPanelView: NSView {
     /// repository the cursor just left could land after the new one's and put the old repository back.
     private var generation = 0
     private var showingWorkingCopy = true
-    private static let pageSize = 300
+    /// How many commits a page of the history holds — Settings ▸ Git.
+    private static var pageSize: Int { GitSettingsStore.current.historyPageSize }
+    /// A quiet line under the header: what just succeeded, fading after a few seconds — instead of an
+    /// alert to click away after every fetch, pull and push. Failures still get an alert.
+    private let statusLine = NSTextField(labelWithString: "")
+    /// A merge, cherry-pick, revert or rebase git stopped in the middle of — said, with its two ways out.
+    private let operationBanner = NSStackView()
+    private let operationLabel = NSTextField(wrappingLabelWithString: "")
+    private let continueButton = NSButton()
+    private let abortButton = NSButton()
+    /// The bisect's own buttons, in the same banner (phase 8).
+    private let bisectGoodButton = NSButton()
+    private let bisectBadButton = NSButton()
+    private let bisectSkipButton = NSButton()
+    private let bisectEndButton = NSButton()
+    private var bisecting = false
+    private var operation: PluginGit.Operation?
+    private var statusToken = 0
+    /// Fetches in the background while a repository is shown, every so often (Settings ▸ Git).
+    private var autoFetchTimer: Timer?
 
     /// Host services, copied — the host's is a stack value and must not be kept by pointer.
     private let services: PcHostServices
@@ -90,6 +110,10 @@ final class GitPanelView: NSView {
         super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 360))
         build()
         updateRecentMenu()
+        NotificationCenter.default.addObserver(self, selector: #selector(settingsChanged),
+                                               name: GitSettingsStore.changed, object: nil)
+        scheduleAutoFetch()
+        checkLFS()
         // Verification only (see `applyAutomationProbe`): a search typed before the first load, so the
         // first load is already the search.
         if let query = Self.probe("PC_GIT_PANEL_SEARCH") { history.setSearchText(query) }
@@ -162,6 +186,8 @@ final class GitPanelView: NSView {
             button.action = action
         }
         amendCheckbox.title = L("Amend")
+        amendCheckbox.target = self
+        amendCheckbox.action = #selector(amendToggled)
         amendCheckbox.controlSize = .small
         amendCheckbox.font = .systemFont(ofSize: 11)
 
@@ -190,6 +216,13 @@ final class GitPanelView: NSView {
             (L("Unstage"), #selector(unstageSelected)),
             (L("Discard…"), #selector(discardSelected)),
             (nil, nil),
+            (L("Stash these files…"), #selector(stashSelectedFiles)),
+            (L("Stash all changes…"), #selector(stashAllChanges)),
+            (nil, nil),
+            (L("Lock (Git LFS)"), #selector(lfsLock)),
+            (L("Unlock (Git LFS)"), #selector(lfsUnlock)),
+            (L("Track this file type with Git LFS"), #selector(lfsTrack)),
+            (nil, nil),
             (L("Show in the left panel"), #selector(revealLeftFromList)),
             (L("Show in the right panel"), #selector(revealRightFromList)),
             (nil, nil),
@@ -203,11 +236,8 @@ final class GitPanelView: NSView {
         scroll.hasVerticalScroller = true
         scroll.translatesAutoresizingMaskIntoConstraints = false
 
-        messageField.placeholderString = L("Commit message")
-        messageField.font = .systemFont(ofSize: 11)
-        messageField.controlSize = .small
-        messageField.completes = false          // a list to pick from, not a text that finishes itself
-        messageField.numberOfVisibleItems = 12
+        messageField = GitCommitBox(theme: theme)
+        messageField.onCommit = { [weak self] in self?.commit() }
         commitButton.title = L("Commit")
         commitButton.bezelStyle = .rounded
         commitButton.controlSize = .small
@@ -218,10 +248,15 @@ final class GitPanelView: NSView {
         busy.controlSize = .small
         busy.isDisplayedWhenStopped = false
 
-        let commitRow = NSStackView(views: [messageField, amendCheckbox, commitButton])
-        commitRow.orientation = .horizontal
-        commitRow.spacing = 6
-        messageField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        let commitButtons = NSStackView(views: [amendCheckbox, commitButton])
+        commitButtons.orientation = .horizontal
+        commitButtons.spacing = 6
+        let commitRow = NSStackView(views: [messageField, commitButtons])
+        commitRow.orientation = .vertical
+        commitRow.alignment = .trailing
+        commitRow.spacing = 4
+        messageField.widthAnchor.constraint(equalTo: commitRow.widthAnchor).isActive = true
+        commitRow.setHuggingPriority(.defaultHigh, for: .vertical)
 
         // The working copy: the staging list and the commit box, shown when the history's first row —
         // "Local changes" — is selected (phase 6).
@@ -298,6 +333,15 @@ final class GitPanelView: NSView {
         }
         history.onChanged = { [weak self] in self?.refreshNow() }
         history.onScopeChange = { [weak self] in self?.reload() }
+        history.onCompareWithWorkingTree = { [weak self] commit in
+            guard let self else { return }
+            self.workingCopyPane.isHidden = true
+            self.commitPane.isHidden = false
+            self.showingWorkingCopy = false
+            self.showComparison(from: commit.hash, to: nil)
+            self.updateButtons()
+        }
+        history.onBisect = { [weak self] mark, commit in self?.bisect(mark, commit: commit.hash) }
         history.onSearch = { [weak self] in
             guard let self else { return }
             self.limit = Self.pageSize          // a new search starts from its first page
@@ -327,7 +371,44 @@ final class GitPanelView: NSView {
         header.setContentHuggingPriority(.defaultLow, for: .horizontal)
         header.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        let stack = NSStackView(views: [headerRow, buttons, mainSplit])
+        statusLine.font = .systemFont(ofSize: 11)
+        statusLine.lineBreakMode = .byTruncatingTail
+        statusLine.isHidden = true
+        statusLine.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        // Right-click on Push: the push that replaces the remote branch, for after a rebase or an amend.
+        pushButton.menu = gitMenu([(L("Force push (with lease)…"), #selector(forcePush))], target: self)
+
+        operationLabel.font = .systemFont(ofSize: 11, weight: .medium)
+        operationLabel.textColor = .systemOrange
+        operationLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        for (button, title, action) in [(continueButton, L("Continue"), #selector(continueOperation)),
+                                        (abortButton, L("Abort…"), #selector(abortOperation)),
+                                        (bisectGoodButton, L("Good"), #selector(bisectGood)),
+                                        (bisectBadButton, L("Bad"), #selector(bisectBad)),
+                                        (bisectSkipButton, L("Skip"), #selector(bisectSkip)),
+                                        (bisectEndButton, L("End bisect"), #selector(bisectEnd))] as [(NSButton, String, Selector)] {
+            button.title = title
+            button.bezelStyle = .rounded
+            button.controlSize = .small
+            button.font = .systemFont(ofSize: 11)
+            button.target = self
+            button.action = action
+        }
+        // Two rows: the text across the whole width, where it can wrap, and the two buttons under it. Side
+        // by side in the sidebar the text was cut to its first sentence by the buttons' height.
+        let operationButtons = NSStackView(views: [continueButton, abortButton, bisectGoodButton, bisectBadButton,
+                                                   bisectSkipButton, bisectEndButton])
+        operationButtons.orientation = .horizontal
+        operationButtons.spacing = 6
+        operationBanner.setViews([operationLabel, operationButtons], in: .top)
+        operationBanner.orientation = .vertical
+        operationBanner.alignment = .leading
+        operationBanner.spacing = 4
+        operationLabel.widthAnchor.constraint(equalTo: operationBanner.widthAnchor).isActive = true
+        operationBanner.setHuggingPriority(.defaultHigh, for: .vertical)
+        operationBanner.isHidden = true
+
+        let stack = NSStackView(views: [headerRow, statusLine, operationBanner, buttons, mainSplit])
         stack.orientation = .vertical
         stack.alignment = .width
         // `.fill`, not the default gravity areas: those leave the leftover height empty below the split
@@ -335,7 +416,7 @@ final class GitPanelView: NSView {
         stack.distribution = .fill
         // Same as the log window: `.width` alone does not stretch a scroll or split view inside a stack,
         // so the ones that should fill the window say so (F-419).
-        for child in [headerRow, buttons, mainSplit] as [NSView] {
+        for child in [headerRow, statusLine, operationBanner, buttons, mainSplit] as [NSView] {
             child.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -16).isActive = true
         }
         stack.spacing = 6
@@ -382,9 +463,7 @@ final class GitPanelView: NSView {
         scroll.backgroundColor = theme.background
         scroll.drawsBackground = true
         // A text field keeps its own background: unthemed, it is a white bar under a dark theme.
-        messageField.backgroundColor = theme.background
-        messageField.textColor = theme.text
-        messageField.drawsBackground = true
+        messageField?.applyTheme(theme)
         amendCheckbox.contentTintColor = theme.text
         outline.reloadData()
         history?.applyTheme(theme)
@@ -421,11 +500,199 @@ final class GitPanelView: NSView {
     /// those two commands are declared asynchronous (F-422), so this way they keep the progress window and
     /// the Cancel button instead of becoming a second, silent implementation inside the panel (F-424).
     @objc private func fetch() { invoke("plugin.git.fetch") }
+    @objc private func forcePush() { invoke("plugin.git.push.force") }
+
+    /// Say something quietly in the line under the header; it goes away by itself.
+    func flash(_ text: String, error: Bool = false) {
+        statusToken += 1
+        let token = statusToken
+        statusLine.stringValue = (error ? "⚠︎ " : "✓ ") + text
+        statusLine.textColor = error ? .systemOrange : .systemGreen
+        statusLine.isHidden = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
+            guard let self, self.statusToken == token else { return }
+            self.statusLine.isHidden = true
+        }
+    }
+
+    /// A fetch, pull or push run as a command moved the refs: read everything again.
+    func refreshAfterSync() {
+        PluginGitRepo.invalidate()
+        reload()
+    }
     @objc private func pull() { invoke("plugin.git.pull") }
     @objc private func push() { invoke("plugin.git.push") }
 
     private func invoke(_ commandId: String) {
         commandId.withCString { services.invokeCommand?(services.host, $0) }
+    }
+
+    // MARK: - A stopped merge, cherry-pick, revert or rebase (phase 8)
+
+    private func showOperation(_ operation: PluginGit.Operation?) {
+        self.operation = operation
+        operationBanner.isHidden = operation == nil && !bisecting
+        for button in [continueButton, abortButton] { button.isHidden = operation == nil }
+        for button in [bisectGoodButton, bisectBadButton, bisectSkipButton, bisectEndButton] {
+            button.isHidden = operation != nil || !bisecting
+        }
+        guard let operation else {
+            if bisecting {
+                operationLabel.stringValue = L("Bisecting: test the commit checked out, then mark it.")
+                operationLabel.toolTip = L("Good if the problem is not there, Bad if it is, Skip if this commit cannot be tested. git checks out the next one until it finds the first bad commit.")
+            }
+            return
+        }
+        let conflicts = status?.files.values.contains { PluginGit.sections(for: $0).contains(.conflicts) } ?? false
+        let what: String
+        switch operation {
+        case .merge: what = L("A merge is under way.")
+        case .cherryPick: what = L("A cherry-pick is under way.")
+        case .revert: what = L("A revert is under way.")
+        case .rebase: what = L("A rebase is under way.")
+        case .applyPatches: what = L("Applying patches is under way.")
+        }
+        // Short, because the sidebar is narrow: what is under way, and the conflicts if they are what
+        // holds it up. The whole explanation is the tooltip.
+        operationLabel.stringValue = conflicts ? what + " " + L("Resolve the conflicts first.") : what
+        operationLabel.toolTip = conflicts
+            ? L("Resolve the conflicts and stage the files, then continue — or abort to get back to where you were.")
+            : L("Continue to finish it, or abort to get back to where you were.")
+        continueButton.isEnabled = !conflicts
+    }
+
+    @objc private func continueOperation() { finish(abort: false) }
+    @objc private func abortOperation() { finish(abort: true) }
+
+    /// Continue or abort the stopped operation. Continuing wants an editor for the message git prepared;
+    /// `GIT_EDITOR=true` takes that message as it is, as every other commit here does.
+    private func finish(abort: Bool) {
+        guard let root, let operation else { return }
+        if abort {
+            let alert = NSAlert()
+            alert.alertStyle = .warning
+            alert.messageText = L("Abort and go back to where you were?")
+            alert.informativeText = L("Every change the operation made so far, conflict resolutions included, is undone.")
+            alert.addButton(withTitle: L("Abort"))
+            alert.addButton(withTitle: L("Cancel"))
+            guard alert.runModal() == .alertFirstButtonReturn else { return }
+        }
+        let arguments = ["-C", root] + (abort ? PluginGit.abortArguments(operation) : PluginGit.continueArguments(operation))
+        busy.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = PluginGitRepo.run(arguments, combined: true, environment: ["GIT_EDITOR": "true"])
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.busy.stopAnimation(nil)
+                PluginGitRepo.invalidate()
+                self.services.reloadActivePanel?(self.services.host)
+                self.reload()
+                if result.ok {
+                    self.flash(abort ? L("Aborted.") : L("Done."))
+                } else {
+                    self.report(L("Git"), result.out.trimmingCharacters(in: .whitespacesAndNewlines))
+                }
+            }
+        }
+    }
+
+    // MARK: - Bisect (phase 8)
+
+    @objc private func bisectGood() { bisect(.good, commit: nil) }
+    @objc private func bisectBad() { bisect(.bad, commit: nil) }
+    @objc private func bisectSkip() { bisect(.skip, commit: nil) }
+
+    /// Mark a commit — from the history's menu, or the one checked out from the banner. The first mark
+    /// starts the bisect. When git has found the first bad commit, it is said, and selected in the history.
+    func bisect(_ mark: PluginGit.BisectMark, commit: String?) {
+        guard let root else { return }
+        busy.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            // Asked here, not taken from `bisecting`: that follows the reload, and a second mark made
+            // before the reload returns would otherwise send `bisect start` again — which drops the
+            // marks already made.
+            let calls = PluginGit.bisectArguments(mark, commit: commit, started: PluginGitRepo.isBisecting(root: root))
+            var output = "", ok = true
+            for call in calls {
+                let result = PluginGitRepo.run(["-C", root] + call, combined: true)
+                output = result.out; ok = result.ok
+                if !ok { break }
+            }
+            let progress = PluginGit.parseBisect(output)
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.busy.stopAnimation(nil)
+                PluginGitRepo.invalidate()
+                self.services.reloadActivePanel?(self.services.host)
+                self.reload()
+                guard ok else { self.report(L("Bisect"), output.trimmingCharacters(in: .whitespacesAndNewlines)); return }
+                switch progress {
+                case .remaining(let revisions, let steps):
+                    self.flash(String(format: L("%lld revisions left to test (about %lld steps)."), revisions, steps))
+                case .found(let hash):
+                    self.report(L("Bisect"), String(format: L("The first bad commit is %@."), String(hash.prefix(10)))
+                                + "\n\n" + output.trimmingCharacters(in: .whitespacesAndNewlines))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { self.history.select(hash: hash) }
+                case .waiting:
+                    self.flash(L("Marked. Mark a good and a bad commit to start narrowing down."))
+                }
+            }
+        }
+    }
+
+    @objc private func bisectEnd() {
+        guard let root else { return }
+        runSequence([["-C", root] + PluginGit.bisectResetArguments])
+    }
+
+    // MARK: - Settings and background fetch (phase 8)
+
+    /// Settings ▸ Git changed: what the history shows, how much of it, the dates — all read again.
+    @objc private func settingsChanged() {
+        limit = Self.pageSize
+        scheduleAutoFetch()
+        checkLFS()
+        reload()
+    }
+
+    /// The timer lives while the panel is in a window: the run loop keeps a scheduled timer alive, so
+    /// one left running by a closed panel would fire for the rest of the session.
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        scheduleAutoFetch()
+    }
+
+    private func scheduleAutoFetch() {
+        autoFetchTimer?.invalidate()
+        autoFetchTimer = nil
+        let minutes = GitSettingsStore.current.autoFetchMinutes
+        guard minutes > 0, window != nil else { return }
+        autoFetchTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(minutes * 60), repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.fetchInBackground() }
+        }
+    }
+
+    /// A quiet fetch: no progress window, no message — the history and the ahead/behind counts in the
+    /// header simply move. Only while the panel is on screen, and never over a fetch already running.
+    private var fetching = false
+
+    private func fetchInBackground() {
+        guard window != nil, !fetching, let root else { return }
+        fetching = true
+        let arguments = ["-C", root] + GitSettingsStore.current.fetchArguments
+        // A host that does not answer would hold `fetching` — and every later fetch — for good; after
+        // two minutes the quiet fetch gives up, and the next tick tries again.
+        let cancel = GitCancellation()
+        DispatchQueue.global().asyncAfter(deadline: .now() + 120) { cancel.cancel() }
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            _ = PluginGitRepo.run(arguments, cancel: cancel)
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.fetching = false
+                PluginGitRepo.invalidate()
+                self.reload()
+            }
+        }
     }
 
     // MARK: - Recent repositories
@@ -550,6 +817,7 @@ final class GitPanelView: NSView {
         let previousRoot = root, kept = self.commits, keptHasMore = self.hasMoreCommits
         let pageLimit = self.limit, firstPage = Self.pageSize, all = !self.history.onlyCurrentBranch
         let messagesRoot = self.messagesRoot, messagesStale = self.messagesStale
+        let settings = GitSettingsStore.current
         // The search the list will show: a fresh read takes what the field says now; kept commits keep
         // the search they came from, whatever has been typed since without being applied yet.
         let query = history ? self.history.searchText : activeQuery
@@ -568,7 +836,10 @@ final class GitPanelView: NSView {
                 let root = located.root
                 if readStatus {
                     DispatchQueue.global(qos: .userInitiated).async(group: group) {
-                        found.set { $0.status = PluginGitRepo.status(root: root) }
+                        let status = PluginGitRepo.status(root: root)
+                        let operation = PluginGitRepo.operationInProgress(root: root)
+                        let bisecting = PluginGitRepo.isBisecting(root: root)
+                        found.set { $0.status = status; $0.operation = operation; $0.bisecting = bisecting }
                     }
                     // The commit box's list changes only with a commit or another repository, so it is not
                     // re-read on every refresh — `log --branches` on a large repository is not free.
@@ -586,15 +857,19 @@ final class GitPanelView: NSView {
                     found.set { $0.commits = kept; $0.hasMore = keptHasMore }
                 } else if query.isEmpty {
                     // Stashes beside the log (phase 7), placed above the commit each was made on.
-                    DispatchQueue.global(qos: .userInitiated).async(group: group) {
-                        let stashes = PluginGit.stashCommits(PluginGitRepo.run(["-C", root] + PluginGit.stashCommitsArguments).out)
-                        found.set { $0.stashes = stashes }
+                    if settings.showStashes {
+                        DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                            let stashes = PluginGit.stashCommits(PluginGitRepo.run(["-C", root] + PluginGit.stashCommitsArguments).out)
+                            found.set { $0.stashes = stashes }
+                        }
                     }
-                    let output = PluginGitRepo.run(["-C", root] + PluginGit.logArguments(limit: limit, all: all)).out
+                    let arguments = PluginGit.logArguments(limit: limit, all: all, refs: settings.historyRefs)
+                    let output = PluginGitRepo.run(["-C", root] + arguments).out
                     let commits = PluginGit.parseLog(output)
                     found.set { $0.commits = commits; $0.hasMore = commits.count >= limit }
                 } else {
-                    Self.search(query, root: root, limit: limit, all: all, cancel: cancel, group: group, into: found)
+                    Self.search(query, root: root, limit: limit, all: all, refs: settings.historyRefs, cancel: cancel,
+                                group: group, into: found)
                 }
             }
             group.wait()
@@ -617,13 +892,14 @@ final class GitPanelView: NSView {
                 self.root = located?.root
                 if readStatus {
                     if let messages = result.recentMessages {
-                        self.messageField.removeAllItems()
-                        self.messageField.addItems(withObjectValues: messages)
+                        self.messageField.setRecentMessages(messages)
                         self.messagesRoot = located?.root
                         self.messagesStale = false
                     }
                     self.status = result.status
                     self.groups = result.status.map { PluginGit.grouped($0) } ?? []
+                    self.bisecting = result.bisecting
+                    self.showOperation(result.operation)
                     let keep = self.selectedFiles().map { ($0.file.path, $0.section) }
                     self.outline.reloadData()
                     self.outline.expandItem(nil, expandChildren: true)
@@ -652,10 +928,13 @@ final class GitPanelView: NSView {
 
     /// One search: the message and author calls and, for a hash-like text, the hash call, all at once.
     /// The hash call's commit is kept only when the history being searched contains it.
-    private nonisolated static func search(_ query: String, root: String, limit: Int, all: Bool,
+    private nonisolated static func search(_ query: String, root: String, limit: Int, all: Bool, refs: [String],
                                            cancel: GitCancellation, group: DispatchGroup, into found: PanelLoad) {
         let environment = PluginGit.searchEnvironment
-        let calls = PluginGit.searchArguments(query, limit: limit, all: all)
+        // Filters (`author:`, `path:`, `since:`, `until:`) narrow every call; the free text is searched
+        // as message and author, and as a hash only when nothing narrows it.
+        let parsed = PluginGit.SearchQuery.parse(query)
+        let calls = PluginGit.searchArguments(parsed, limit: limit, all: all, refs: refs)
         found.set { $0.fields = Array(repeating: [], count: calls.count) }
         for (index, call) in calls.enumerated() {
             DispatchQueue.global(qos: .userInitiated).async(group: group) {
@@ -664,7 +943,7 @@ final class GitPanelView: NSView {
                 found.set { $0.fields[index] = commits }
             }
         }
-        if let call = PluginGit.hashSearchArguments(query) {
+        if !parsed.hasFilters, let call = PluginGit.hashSearchArguments(parsed.text) {
             DispatchQueue.global(qos: .userInitiated).async(group: group) {
                 let commits = PluginGit.parseLog(PluginGitRepo.run(["-C", root] + call, cancel: cancel).out)
                 let reachable = commits.filter { commit in
@@ -728,7 +1007,10 @@ final class GitPanelView: NSView {
         probeApplied = true
         let probe = Self.probe
         if let tab = probe("PC_GIT_PANEL_TAB") { detailTabs.selectedSegment = tab == "commit" ? 0 : 1 }
-        if let row = probe("PC_GIT_PANEL_ROW").flatMap(Int.init) { history.selectRow(row) }
+        if let rows = probe("PC_GIT_PANEL_ROW") {
+            let list = rows.split(separator: ",").compactMap { Int($0) }
+            if list.count > 1 { history.selectRows(IndexSet(list)) } else if let row = list.first { history.selectRow(row) }
+        }
         if probe("PC_GIT_PANEL_ACTIVATE") != nil { history.activateRow() }
         // `PC_GIT_PANEL_DUMP=<file>`: what the panel shows, written once the selected commit's changes
         // have had time to load — the VM scenario's report. A layout dump alone cannot say which pane
@@ -778,12 +1060,17 @@ final class GitPanelView: NSView {
         switch history.selection {
         case .workingCopy?: lines.append("selection=working-copy")
         case .commit(let commit)?: lines.append("selection=\(commit.subject)")
+        case .several(let commits)?: lines.append("selection=\(commits.count) commits")
         case nil: lines.append("selection=<none>")
         }
         lines.append("workingCopyShown=\(!workingCopyPane.isHidden)")
         lines.append("tab=\(detailTabs.selectedSegment == 0 ? "commit" : "changes")")
         lines.append("reloads=\(reloadCount) reveals=\(revealCount)")
-        lines.append("recentMessages=\(messageField.numberOfItems)")
+        lines.append("recentMessages=\(messageField.recentCount)")
+        lines.append("operation=\(operation?.rawValue ?? "none") continueEnabled=\(continueButton.isEnabled) banner=\(operationBanner.isHidden ? "hidden" : operationLabel.stringValue)")
+        lines.append("bannerButtons=" + [continueButton, abortButton, bisectGoodButton, bisectBadButton, bisectSkipButton, bisectEndButton]
+            .filter { !$0.isHidden }.map(\.title).joined(separator: ","))
+        lines.append("bannerFits=\(operationBanner.isHidden || operationLabel.frame.height >= operationLabel.intrinsicContentSize.height - 1)")
         lines.append("recentRepositories=" + (recentButton.itemArray.dropFirst().map(\.title)).joined(separator: ","))
         for group in groups { lines.append("\(group.section.rawValue)=" + group.files.map(\.path).joined(separator: ",")) }
         lines.append("workingSelection=" + selectedFiles().map { "\($0.section.rawValue):\($0.file.path)" }.joined(separator: ","))
@@ -818,13 +1105,34 @@ final class GitPanelView: NSView {
             showingWorkingCopy = false
             workingCopyPane.isHidden = true
             commitPane.isHidden = false
+            detailTabs.setEnabled(true, forSegment: 0)
             showDetail(of: commit)
+        case .several(let commits)?:
+            // Several commits: what they changed together — from the parent of the oldest (the last, in
+            // history order) to the newest, so the oldest's own changes are in it. There is no single
+            // commit to describe, so the Commit tab is off.
+            showingWorkingCopy = false
+            workingCopyPane.isHidden = true
+            commitPane.isHidden = false
+            if let newest = commits.first, let oldest = commits.last {
+                showComparison(from: PluginGit.comparisonBase(oldest: oldest), to: newest.hash)
+            }
         }
         updateButtons()
     }
 
     @objc private func detailTabChanged() {
         if case .commit(let commit)? = history.selection { showDetail(of: commit) }
+    }
+
+    /// The Changes tab on a comparison — two commits, or a commit and the working tree (`to` nil).
+    private func showComparison(from: String, to: String?) {
+        guard let root else { return }
+        detailTabs.selectedSegment = 1
+        detailTabs.setEnabled(false, forSegment: 0)
+        commitDetail.isHidden = true
+        changes.isHidden = false
+        changes.show(from: from, to: to, root: root)
     }
 
     /// Only the visible tab loads: the Changes tab runs git twice per commit, and arrowing through the
@@ -917,13 +1225,13 @@ final class GitPanelView: NSView {
 
     @objc private func commit() {
         guard let root else { return }
-        let message = messageField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let message = messageField.message.trimmingCharacters(in: .whitespacesAndNewlines)
         let amend = amendCheckbox.state == .on
         guard !message.isEmpty || amend else {
             report(L("Git Commit"), L("Enter a commit message."))
             return
         }
-        var arguments = ["-C", root, "commit"]
+        var arguments = ["-C", root, "commit"] + GitSettingsStore.current.commitOptions
         if amend { arguments.append("--amend") }
         if message.isEmpty && amend {
             arguments.append("--no-edit")   // amend without a new message: keep the old one
@@ -933,8 +1241,24 @@ final class GitPanelView: NSView {
         messagesStale = true          // the commit about to be made joins the list of recent messages
         run(arguments) { [weak self] ok in
             guard ok else { return }
-            self?.messageField.stringValue = ""
+            self?.messageField.message = ""
             self?.amendCheckbox.state = .off
+        }
+    }
+
+    /// Amend with an empty box: it is filled with the last commit's message, to keep or to edit — the
+    /// reason one amends is usually the message, and retyping it is not the point.
+    @objc private func amendToggled() {
+        updateButtons()
+        guard amendCheckbox.state == .on, let root,
+              messageField.message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let last = PluginGitRepo.run(["-C", root, "log", "-1", "--format=%B"]).out
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            DispatchQueue.main.async {
+                guard let self, self.amendCheckbox.state == .on, self.messageField.message.isEmpty else { return }
+                self.messageField.message = last
+            }
         }
     }
 
@@ -970,6 +1294,65 @@ final class GitPanelView: NSView {
                 }
             }
         }
+    }
+
+    // MARK: - Stash with options, Git LFS (phase 8)
+
+    @objc private func stashSelectedFiles() { stash(paths: selectedFiles().map(\.file.path)) }
+    @objc private func stashAllChanges() { stash(paths: []) }
+
+    /// Ask for a message and the two options that matter, then stash — the whole working copy, or the
+    /// selected files only.
+    private func stash(paths: [String]) {
+        guard let root else { return }
+        let alert = NSAlert()
+        alert.messageText = paths.isEmpty ? L("Stash all changes") : String(format: L("Stash %lld file(s)"), paths.count)
+        let message = NSTextField(frame: NSRect(x: 0, y: 48, width: 320, height: 22))
+        message.placeholderString = L("Message (optional)")
+        let untracked = NSButton(checkboxWithTitle: L("Include untracked files"), target: nil, action: nil)
+        untracked.frame = NSRect(x: 0, y: 24, width: 320, height: 20)
+        let keepIndex = NSButton(checkboxWithTitle: L("Keep what is staged in the index"), target: nil, action: nil)
+        keepIndex.frame = NSRect(x: 0, y: 0, width: 320, height: 20)
+        let box = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 72))
+        for view in [message, untracked, keepIndex] as [NSView] { box.addSubview(view) }
+        alert.accessoryView = box
+        alert.window.initialFirstResponder = message
+        alert.addButton(withTitle: L("Stash"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        run(["-C", root] + PluginGit.stashPushArguments(
+            message: message.stringValue.trimmingCharacters(in: .whitespaces), includeUntracked: untracked.state == .on,
+            keepIndex: keepIndex.state == .on, paths: paths))
+    }
+
+    /// Whether `git lfs` answers at all — asked in the background when the panel is made and when
+    /// Settings ▸ Git changes (another git may have it), never while a menu waits; the LFS items are
+    /// off until it has answered yes.
+    private var lfsAvailable = false
+
+    private func checkLFS() {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let available = PluginGitRepo.run(["lfs", "version"]).ok
+            DispatchQueue.main.async { self?.lfsAvailable = available }
+        }
+    }
+
+    @objc private func lfsLock() { lfs { PluginGit.lfsLockArguments($0) } }
+    @objc private func lfsUnlock() { lfs { PluginGit.lfsUnlockArguments($0) } }
+    @objc private func lfsTrack() {
+        guard let root, let first = selectedFiles().first else { return }
+        guard let arguments = PluginGit.lfsTrackArguments(forFileType: first.file.path) else {
+            report(L("Git LFS"), L("This file has no extension to track by. Add a pattern to .gitattributes by hand."))
+            return
+        }
+        run(["-C", root] + arguments)
+    }
+
+    /// Lock or unlock each selected file on the LFS server.
+    private func lfs(_ arguments: (String) -> [String]) {
+        guard let root else { return }
+        let calls = selectedFiles().map { ["-C", root] + arguments($0.file.path) }
+        runSequence(calls)
     }
 
     // MARK: - Staging lines (phase 7)
@@ -1093,8 +1476,12 @@ final class GitPanelView: NSView {
                 self.services.reloadActivePanel?(self.services.host)
                 self.reload()
                 then?(ok)
-                if !ok || !output.isEmpty {
+                // A failure asks for attention; a success says so in the line under the header — its
+                // first line of output ("[main 1a2b3c4] subject"), or nothing when git said nothing.
+                if !ok {
                     self.report(L("Git"), output.isEmpty ? L("Failed.") : output)
+                } else if let first = output.split(separator: "\n").first {
+                    self.flash(String(first))
                 }
             }
         }
@@ -1216,6 +1603,8 @@ private final class PanelLoad: @unchecked Sendable {
         var extra: [PluginGit.Commit] = []
         var recentMessages: [String]?
         var stashes: [PluginGit.Commit] = []
+        var operation: PluginGit.Operation?
+        var bisecting = false
     }
     private let lock = NSLock()
     private var values = Values()
@@ -1230,6 +1619,10 @@ extension GitPanelView: NSMenuItemValidation {
         case #selector(stageLines), #selector(stageHunk): return allows(.stage)
         case #selector(unstageLines), #selector(unstageHunk): return allows(.unstage)
         case #selector(discardLines), #selector(discardHunk): return allows(.discard)
+        case #selector(lfsLock), #selector(lfsUnlock), #selector(lfsTrack):
+            return lfsAvailable && !selectedFiles().isEmpty
+        case #selector(stashSelectedFiles): return !selectedFiles().isEmpty
+        case #selector(stashAllChanges): return changeCount > 0
         default: return true
         }
     }

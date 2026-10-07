@@ -51,11 +51,24 @@ A gombok alatt a panel az összes ág, távoli ág és címke előzményét rajz
 A munkapéldány, az előzmények és a **Parancsok ▸ Git** menü többet kínál a véglegesítésnél:
 
 - Egy kijelölt előkészített vagy módosított fájl a lista alatt mutatja a diffjét; a kijelölt sorok vagy egy teljes blokk a helyi menüből előkészíthető, visszavonható vagy elvethető.
-- A commit-mező kombinált lista: a listája a legutóbbi commit-üzeneteidet tartalmazza újrafelhasználásra vagy szerkesztésre.
+- A commitmező több sort fogad — tárgy, üres sor, szöveg —, **Cmd+Return**-nel commitol, és számolja a tárgy karaktereit; a mellette lévő menügomb őrzi a legutóbbi commitüzeneteidet.
 - A **Megjelenítés a bal panelen** és a **Megjelenítés a jobb panelen** egy fájlpanelt a lista vagy egy commit változásainak egy fájljához visz, miközben a Git panel változatlan marad; a Git LFS által tárolt fájlok **LFS** jelölést kapnak.
 - A stash-ek kis négyzetekként jelennek meg az előzményekben annak a commitnak a felett, amelyen készültek, a helyi menüben **Stash alkalmazása**, **Stash alkalmazása és eltávolítása** és **Stash törlése…** pontokkal.
-- A **Reflog…** a HEAD minden mozgását listázza; egy visszaállítással vagy törölt ággal elveszett commit az **Új ág itt…** paranccsal visszajön. A **Távoli tárolók és almodulok…** hozzáad, átnevez, átirányít és eltávolít távoli tárolókat, és frissíti az almodulokat.
+- A **Reflog…** a HEAD minden mozgását listázza; egy visszaállítással vagy törölt ággal elveszett commit az **Új ág itt…** paranccsal visszajön.
+- A **Tárolóbeállítások…** távoli tárolókat ad hozzá, nevez át, irányít át és távolít el, almodulokat ad hozzá, frissít és távolít el, worktree-ket kezel, és csak ennek a tárolónak ad nevet és e-mailt a commitokhoz.
 - A **Tároló létrehozása itt…** és a **Tároló klónozása…** az aktív panel mappájában dolgozik, a panel címe melletti óra pedig egy legutóbbi tárolóhoz visz vissza.
+
+## Amikor a git megáll, és a beállítások
+
+- A **Push** egy ág első feltöltésekor beállítja az upstreamet. Ha a távoli tárolóban olyan commitok vannak, amelyek ebből az ágból hiányoznak, felajánlja a **Letöltés, aztán feltöltés** vagy a **Kényszerített feltöltés** lehetőséget — mindig lease-szel, amely elutasít, ha valaki az utolsó fetch óta feltöltött; a **Kényszerített feltöltés (lease-szel)…** a **Push** helyi menüjében is megvan.
+- Ha a **Pull** azt találja, hogy az ág és az upstreamje szétvált, megkérdezi, hogy egyesítsen vagy rebase-eljen, ahelyett hogy megállna a git üzeneténél.
+- Az ütközésnél megálló egyesítés, cherry-pick, revert, rebase vagy javítássorozat az előzmények fölött sávot mutat **Folytatás** és **Megszakítás…** gombokkal; egy egyesítő commit az első szülőjéhez képest vonódik vissza vagy kerül át.
+- Jelölj ki két commitot az összehasonlításhoz, vagy többet, hogy egyszerre vidd át őket cherry-pickkel. Az **Összehasonlítás a munkapéldánnyal** és a **Mentés javításként…** az előzmények menüjében, a **Javítások alkalmazása…** a Git menüben van.
+- A keresőmező szűrőket is elfogad — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — önmagukban vagy szavakkal együtt.
+- Az előzmények menüjében a **Bisect: megjelölés rosszként** és a **Bisect: megjelölés jóként** bisectet indít; a sáv ezután **Jó**, **Rossz**, **Kihagyás** és **Bisect befejezése** gombokat kínál, amíg a git meg nem nevezi az első rossz commitot.
+- Kijelölt fájlok vagy minden módosítás stash-be tétele üzenetet kér, és rákérdez, hogy a nem követett fájlok is menjenek-e, vagy maradjon-e az index. A Git LFS-ben lévő fájlok zárolhatók és feloldhatók, és a fájltípusuk követhető.
+- Az ágak listájában egy ág átnevezhető (**Átnevezés…**), upstreamet kaphat (**Upstream beállítása…**) vagy törölhető a szerverén (**Törlés a távoli tárolón…**).
+- A **Beállítások ▸ Git** megadja a git programot, a globális neved és e-mailed, a **Pull** működését, a háttérben futó fetchet, hogy mit mutatnak az előzmények és hogyan néznek ki a dátumai, a commitok aláírását, sign-offját és hookjait, valamint a diffek szóközeit és környezeti sorait. A szerzők színes monogramot kapnak az előzményekben.
 
 ## Előzmények, blame és a web
 
@@ -107,8 +120,7 @@ meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, át
 
 ## Megjegyzések
 
-- A bővítmény a rendszer Gitjét használja a `/usr/bin/git` útvonalon. Ha a Git hiányzik, a parancsok jelzik,
-  hogy a Git nem érhető el. (Az Xcode Command Line Tools tartalmazza.)
+- A bővítmény a rendszer Gitjét használja a `/usr/bin/git` útvonalon, vagy a **Beállítások ▸ Git** alatt választott programot. Ha a Git hiányzik, a parancsok jelzik, hogy a Git nem érhető el. (Az Xcode Command Line Tools tartalmazza.)
 - A tároló állapotát mappánként egyszer olvassa be és gyorsítótárazza, hogy egy nagy tárolóban a görgetés
   gyors maradjon; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát, és követi az
   alkalmazáson kívül készült véglegesítést is.

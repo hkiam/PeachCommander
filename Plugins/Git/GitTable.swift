@@ -217,3 +217,67 @@ func gitPromptTag(_ title: String = L("New tag")) -> (name: String, message: Str
     guard !tagName.isEmpty else { return nil }
     return (tagName, message.stringValue.trimmingCharacters(in: .whitespaces))
 }
+
+/// A date as Settings ▸ Git wants it: "2 hours ago", or the date and time.
+@MainActor
+func gitDisplayDate(_ date: Date) -> String {
+    switch GitSettingsStore.current.dateStyle {
+    case .relative:
+        // Within a minute "now" reads better than "in 0 seconds" or "0 seconds ago".
+        if abs(date.timeIntervalSinceNow) < 60 { return L("just now") }
+        return gitRelativeFormatter.localizedString(for: date, relativeTo: Date())
+    case .absolute:
+        return gitDateFormatter.string(from: date)
+    }
+}
+
+@MainActor
+private let gitRelativeFormatter: RelativeDateTimeFormatter = {
+    let f = RelativeDateTimeFormatter()
+    f.unitsStyle = .full
+    return f
+}()
+
+/// A round badge with a person's initials in a colour of their own — the same colour for the same name,
+/// every time, so a history reads by who as well as by what. Drawn here, offline: no avatar service is
+/// asked about anybody's e-mail address.
+@MainActor
+func gitAvatar(for name: String, size: CGFloat = 14) -> NSImage {
+    let key = "\(name)|\(size)"
+    if let cached = gitAvatarCache[key] { return cached }
+    let words = name.split(whereSeparator: { $0 == " " || $0 == "." || $0 == "-" || $0 == "_" }).filter { !$0.isEmpty }
+    let initials = (words.count >= 2 ? [words[0], words[words.count - 1]] : Array(words.prefix(1)))
+        .compactMap { $0.first.map(String.init) }.joined().uppercased()
+    // A stable hash (not `hashValue`, which changes between launches).
+    let sum = name.unicodeScalars.reduce(UInt32(5381)) { ($0 &* 33) &+ $1.value }
+    let palette: [NSColor] = [.systemBlue, .systemPurple, .systemPink, .systemOrange, .systemTeal, .systemGreen,
+                              .systemIndigo, .systemBrown, .systemRed, .systemMint]
+    let color = palette[Int(sum % UInt32(palette.count))]
+    let image = NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
+        color.setFill()
+        NSBezierPath(ovalIn: rect).fill()
+        let text = (initials.isEmpty ? "?" : initials) as NSString
+        let font = NSFont.systemFont(ofSize: size * (initials.count > 1 ? 0.42 : 0.55), weight: .semibold)
+        let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: NSColor.white]
+        let textSize = text.size(withAttributes: attributes)
+        text.draw(at: NSPoint(x: rect.midX - textSize.width / 2, y: rect.midY - textSize.height / 2), withAttributes: attributes)
+        return true
+    }
+    gitAvatarCache[key] = image
+    return image
+}
+
+@MainActor
+private var gitAvatarCache: [String: NSImage] = [:]
+
+/// The author's name with their badge in front, for a table cell.
+@MainActor
+func gitAuthorText(_ name: String, color: NSColor) -> NSAttributedString {
+    let out = NSMutableAttributedString()
+    let attachment = NSTextAttachment()
+    attachment.image = gitAvatar(for: name)
+    attachment.bounds = NSRect(x: 0, y: -3, width: 14, height: 14)
+    out.append(NSAttributedString(attachment: attachment))
+    out.append(NSAttributedString(string: " " + name, attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: color]))
+    return out
+}

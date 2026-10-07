@@ -51,11 +51,24 @@ Onder de knoppen toont het paneel de geschiedenis van alle branches, remote bran
 De werkkopie, de geschiedenis en het menu **Commando’s ▸ Git** bieden meer dan committen:
 
 - Een geselecteerd gestaged of gewijzigd bestand toont zijn diff onder de lijst; geselecteerde regels of een hele hunk worden via het contextmenu gestaged, ge-unstaged of verworpen.
-- Het commitveld is een combinatievak: de lijst bevat je laatste commitberichten om te hergebruiken of te bewerken.
+- Het commitveld neemt meerdere regels — een onderwerp, een lege regel, een tekst —, commit met **Cmd+Return** en telt de tekens van het onderwerp; de menuknop ernaast bewaart je laatste commitberichten.
 - **Tonen in het linkerpaneel** en **Tonen in het rechterpaneel** brengen een bestandspaneel naar een bestand uit de lijst of uit de wijzigingen van een commit, terwijl het Git-paneel blijft zoals het is; bestanden die Git LFS bewaart, zijn gemarkeerd met **LFS**.
 - Stashes verschijnen in de geschiedenis als kleine vierkantjes boven de commit waarop ze zijn gemaakt, met **Stash toepassen**, **Stash toepassen en verwijderen** en **Stash verwijderen…** in het contextmenu.
-- **Reflog…** toont elke verplaatsing van HEAD; een commit die verloren ging door een reset of een verwijderde branch komt terug met **Nieuwe branch hier…**. **Remotes en submodules…** voegt remotes toe, hernoemt ze, wijzigt hun URL, verwijdert ze en werkt submodules bij.
+- **Reflog…** toont elke verplaatsing van HEAD; een commit die verloren ging door een reset of een verwijderde branch komt terug met **Nieuwe branch hier…**.
+- **Repository-instellingen…** voegt remotes toe, hernoemt ze, wijst ze om en verwijdert ze, voegt submodules toe, werkt ze bij en verwijdert ze, beheert worktrees en geeft alleen deze repository een naam en e-mail voor commits.
 - **Repository hier aanmaken…** en **Repository klonen…** werken in de map van het actieve paneel, en de klok naast de titel van het paneel gaat terug naar een recente repository.
+
+## Als git stopt, en de instellingen
+
+- **Push** stelt de upstream in bij de eerste push van een branch. Heeft de remote commits die deze branch mist, dan biedt het **Pullen, dan pushen** of **Geforceerd pushen** aan, altijd met een lease die weigert als iemand sinds je laatste fetch heeft gepusht; **Geforceerd pushen (met lease)…** staat ook in het contextmenu van **Push**.
+- Merkt **Pull** dat de branch en zijn upstream uiteengelopen zijn, dan vraagt het of er gemerged of gerebased moet worden in plaats van te stoppen bij de melding van git.
+- Een merge, cherry-pick, revert, rebase of patchreeks die in een conflict stopt, toont boven de geschiedenis een banner met **Doorgaan** en **Afbreken…**; een mergecommit wordt teruggedraaid of gecherry-pickt tegen zijn eerste ouder.
+- Selecteer twee commits om ze te vergelijken, of meerdere om ze in één keer te cherry-picken. **Vergelijken met de werkkopie** en **Opslaan als patch…** staan in het menu van de geschiedenis, **Patches toepassen…** in het Git-menu.
+- Het zoekveld neemt ook filters — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — los of samen met woorden.
+- **Bisect: als slecht markeren** en **Bisect: als goed markeren** in het menu van de geschiedenis starten een bisect; de banner biedt dan **Goed**, **Slecht**, **Overslaan** en **Bisect beëindigen** tot git de eerste slechte commit noemt.
+- Geselecteerde bestanden of alle wijzigingen stashen vraagt om een bericht en of niet-gevolgde bestanden meegaan of de index blijft. Bestanden in Git LFS kunnen worden vergrendeld en ontgrendeld, en hun bestandstype gevolgd.
+- In de branchlijst kan een branch worden hernoemd (**Hernoemen…**), een upstream krijgen (**Upstream instellen…**) of op zijn server worden verwijderd (**Op de remote verwijderen…**).
+- **Instellingen ▸ Git** bepaalt het git-programma, je globale naam en e-mail, hoe **Pull** werkt, fetchen op de achtergrond, wat de geschiedenis toont en hoe de datums eruitzien, ondertekenen, sign-off en hooks voor commits, en witruimte en contextregels voor diffs. Auteurs dragen gekleurde initialen in de geschiedenis.
 
 ## Geschiedenis, blame en het web
 
@@ -107,8 +120,7 @@ afbreken**, zodat een half afgemaakte rebase niet in een terminal hoeft te worde
 
 ## Opmerkingen
 
-- De plug-in gebruikt de Git van het systeem op `/usr/bin/git`. Ontbreekt Git, dan melden de opdrachten dat
-  Git niet beschikbaar is. (De Xcode Command Line Tools leveren hem mee.)
+- De plug-in gebruikt de Git van het systeem op `/usr/bin/git`, of het programma dat in **Instellingen ▸ Git** is gekozen. Ontbreekt Git, dan melden de opdrachten dat Git niet beschikbaar is. (De Xcode Command Line Tools leveren het mee.)
 - De status van een repository wordt één keer per map gelezen en bewaard, zodat het bladeren door een grote
   repository snel blijft; de cache ververst na elke opdracht die de boom verandert, en volgt ook een commit
   die buiten de app is gemaakt.

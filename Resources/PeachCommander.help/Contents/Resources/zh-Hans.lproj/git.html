@@ -43,11 +43,24 @@
 <p>工作副本、历史和“<strong>命令 ▸ Git</strong>”菜单提供的不只是提交：</p>
 <ul>
 <li>选中已暂存或已更改的文件后，列表下方会显示其 diff；可在其上下文菜单中暂存、取消暂存或丢弃所选行或整个代码块。</li>
-<li>提交框是组合框：其列表包含你最近的提交消息，可直接重用或编辑。</li>
+<li>提交框可输入多行——一行主题、一个空行、正文——按 <strong>Cmd+Return</strong> 提交，并统计主题的字符数；旁边的菜单按钮保存着最近的提交消息。</li>
 <li>“<strong>在左侧面板中显示</strong>”和“<strong>在右侧面板中显示</strong>”会将文件面板带到列表中或某提交更改中的文件，而 Git 面板保持不变；由 Git LFS 存储的文件标有 <strong>LFS</strong>。</li>
 <li>储藏以小方块的形式出现在历史中创建它的提交上方，其上下文菜单中有“<strong>应用储藏</strong>”“<strong>应用并移除储藏</strong>”和“<strong>删除储藏…</strong>”。</li>
-<li>“<strong>Reflog…</strong>”列出 HEAD 的每一次移动；因重置或删除分支而丢失的提交可通过“<strong>在此新建分支…</strong>”找回。“<strong>远程和子模块…</strong>”可添加、重命名、改指向和移除远程，并更新子模块。</li>
+<li>“<strong>Reflog…</strong>”列出 HEAD 的每一次移动；因重置或删除分支而丢失的提交可通过“<strong>在此新建分支…</strong>”找回。</li>
+<li>“<strong>仓库设置…</strong>”可添加、重命名、改指向和移除远程，添加、更新和移除子模块，管理工作树，并只为此仓库指定提交使用的名称和电子邮件。</li>
 <li>“<strong>在此创建仓库…</strong>”和“<strong>克隆仓库…</strong>”在当前面板的文件夹中工作，面板标题旁的时钟可回到最近的仓库。</li>
+</ul>
+<h2 id="git_1">当 git 停下时，以及设置</h2>
+<ul>
+<li>“<strong>Push</strong>”在首次推送分支时设置其上游。如果远程有此分支没有的提交，它会提供“<strong>拉取后推送</strong>”或“<strong>强制推送</strong>”，且总是使用 lease：自你上次获取后若有人推送过，就会拒绝；“<strong>强制推送（使用 lease）…</strong>”也在“<strong>Push</strong>”的右键菜单中。</li>
+<li>如果“<strong>Pull</strong>”发现分支与其上游已分叉，它会询问是合并还是变基，而不是停在 git 的消息上。</li>
+<li>因冲突而停下的合并、拣选、还原、变基或补丁系列，会在历史上方显示带有“<strong>继续</strong>”和“<strong>中止…</strong>”的横幅；合并提交按其第一个父提交进行还原或拣选。</li>
+<li>选择两个提交即可比较，选择多个提交即可一次拣选。“<strong>与工作副本比较</strong>”和“<strong>存储为补丁…</strong>”在历史菜单中，“<strong>应用补丁…</strong>”在 Git 菜单中。</li>
+<li>搜索框也接受筛选条件——<code>author:name</code>、<code>path:folder/</code>、<code>since:"2 weeks ago"</code>、<code>until:2026-10-01</code>——可单独使用，也可与词语一起使用。</li>
+<li>历史菜单中的“<strong>Bisect：标记为坏</strong>”和“<strong>Bisect：标记为好</strong>”会开始二分查找；随后横幅提供“<strong>好</strong>”“<strong>坏</strong>”“<strong>跳过</strong>”和“<strong>结束 bisect</strong>”，直到 git 指出第一个坏提交。</li>
+<li>储藏所选文件或所有更改时，会询问消息，以及是否包括未跟踪的文件或保留索引。Git LFS 中的文件可以锁定和解锁，并可跟踪其文件类型。</li>
+<li>在分支列表中，可以重命名分支（“<strong>重命名…</strong>”）、为其设置上游（“<strong>设置上游…</strong>”）或在其服务器上删除它（“<strong>在远程删除…</strong>”）。</li>
+<li>“<strong>设置 ▸ Git</strong>”可设定 git 程序、你的全局名称和电子邮件、“<strong>Pull</strong>”的方式、后台获取、历史显示的内容及日期样式、提交的签名、sign-off 和钩子，以及 diff 的空白和上下文行数。历史中的作者带有彩色首字母标记。</li>
 </ul>
 <h2 id="_4">历史、追溯与网页</h2>
 <ul>
@@ -83,8 +96,7 @@
 </ul>
 <h2 id="_9">说明</h2>
 <ul>
-<li>插件使用 <code>/usr/bin/git</code> 处的系统 Git。若未安装 Git，这些命令会报告 Git 不可用。（安装 Xcode 命令行工具即可
-  获得。）</li>
+<li>插件使用 <code>/usr/bin/git</code> 处的系统 Git，或在“<strong>设置 ▸ Git</strong>”中选择的程序。若未安装 Git，这些命令会报告 Git 不可用。（安装 Xcode 命令行工具即可获得。）</li>
 <li>仓库状态按文件夹读取一次并缓存，因此在大仓库中滚动依然很快；任何改动树的命令之后缓存都会刷新，也会跟上在
   应用之外所做的提交。</li>
 <li>支持链接工作树和子模块：位于子模块内的文件，显示的是<em>子模块的</em>状态和分支，

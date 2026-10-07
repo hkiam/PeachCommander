@@ -48,11 +48,24 @@ lassen sich abbrechen.</p>
 <p>Arbeitskopie, Historie und das Menü <strong>Befehle ▸ Git</strong> bieten mehr als das Committen:</p>
 <ul>
 <li>Eine ausgewählte gestagte oder geänderte Datei zeigt ihren Diff unter der Liste; ausgewählte Zeilen oder ein ganzer Hunk lassen sich über sein Kontextmenü stagen, unstagen oder verwerfen.</li>
-<li>Das Commit-Feld ist eine Combo-Box: Ihre Liste enthält deine letzten Commit-Nachrichten zum Wiederverwenden oder Bearbeiten.</li>
+<li>Das Commit-Feld nimmt mehrere Zeilen — Betreff, Leerzeile, Text —, committet mit <strong>Cmd+Return</strong> und zählt die Zeichen des Betreffs; der Menüknopf daneben hält deine letzten Commit-Nachrichten.</li>
 <li><strong>Im linken Panel zeigen</strong> und <strong>Im rechten Panel zeigen</strong> bringen ein Dateipanel zu einer Datei der Liste oder der Änderungen eines Commits, während das Git-Panel bleibt, wie es ist; von Git LFS gespeicherte Dateien sind mit <strong>LFS</strong> markiert.</li>
 <li>Stashes erscheinen in der Historie als kleine Quadrate über dem Commit, auf dem sie angelegt wurden, mit <strong>Stash anwenden</strong>, <strong>Stash anwenden und entfernen</strong> und <strong>Stash verwerfen…</strong> im Kontextmenü.</li>
-<li><strong>Reflog…</strong> listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit <strong>Neuer Branch hier…</strong> zurück. <strong>Remotes &amp; Submodule…</strong> fügt Remotes hinzu, benennt sie um, ändert ihre URL, entfernt sie und aktualisiert Submodule.</li>
+<li><strong>Reflog…</strong> listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit <strong>Neuer Branch hier…</strong> zurück.</li>
+<li><strong>Repository-Einstellungen…</strong> fügt Remotes hinzu, benennt sie um, ändert ihre URL und entfernt sie, fügt Submodule hinzu, aktualisiert und entfernt sie, verwaltet Worktrees und gibt diesem Repository allein Name und E-Mail für Commits.</li>
 <li><strong>Repository hier anlegen…</strong> und <strong>Repository klonen…</strong> arbeiten im Ordner des aktiven Panels, und die Uhr neben dem Titel des Panels führt zurück zu einem zuletzt genutzten Repository.</li>
+</ul>
+<h2 id="wenn-git-anhalt-und-die-einstellungen">Wenn git anhält, und die Einstellungen</h2>
+<ul>
+<li><strong>Push</strong> setzt beim ersten Push eines Branches den Upstream. Hat das Remote Commits, die diesem Branch fehlen, bietet es <strong>Pullen, dann pushen</strong> oder <strong>Push erzwingen</strong> an — immer mit Lease, der ablehnt, wenn seit deinem letzten Fetch jemand gepusht hat; <strong>Push erzwingen (mit Lease)…</strong> steht auch im Kontextmenü von <strong>Push</strong>.</li>
+<li>Stellt <strong>Pull</strong> fest, dass Branch und Upstream auseinandergelaufen sind, fragt es, ob gemergt oder rebased werden soll, statt mit der Meldung von git stehen zu bleiben.</li>
+<li>Ein Merge, Cherry-Pick, Revert, Rebase oder eine Patch-Serie, die in einem Konflikt anhält, zeigt über der Historie ein Banner mit <strong>Fortsetzen</strong> und <strong>Abbrechen…</strong>; ein Merge-Commit wird gegen seinen ersten Parent revertiert oder gecherry-pickt.</li>
+<li>Wähle zwei Commits, um sie zu vergleichen, oder mehrere, um sie in einem Zug zu cherry-picken. <strong>Mit der Arbeitskopie vergleichen</strong> und <strong>Als Patch speichern…</strong> stehen im Menü der Historie, <strong>Patches anwenden…</strong> im Git-Menü.</li>
+<li>Das Suchfeld nimmt auch Filter — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — allein oder zusammen mit Wörtern.</li>
+<li><strong>Bisect: als schlecht markieren</strong> und <strong>Bisect: als gut markieren</strong> im Menü der Historie starten ein Bisect; das Banner bietet dann <strong>Gut</strong>, <strong>Schlecht</strong>, <strong>Überspringen</strong> und <strong>Bisect beenden</strong>, bis git den ersten schlechten Commit nennt.</li>
+<li>Ausgewählte Dateien oder alle Änderungen zu stashen fragt nach einer Nachricht und ob unversionierte Dateien dazugehören oder der Index bleibt. Dateien in Git LFS lassen sich sperren und entsperren und ihr Dateityp verfolgen.</li>
+<li>In der Branch-Liste lässt sich ein Branch umbenennen (<strong>Umbenennen…</strong>), mit einem Upstream verbinden (<strong>Upstream setzen…</strong>) oder auf seinem Server löschen (<strong>Auf dem Remote löschen…</strong>).</li>
+<li><strong>Einstellungen ▸ Git</strong> legt das git-Programm fest, deinen globalen Namen und deine E-Mail, wie <strong>Pull</strong> arbeitet, den Fetch im Hintergrund, was die Historie zeigt und wie ihre Daten aussehen, Signieren, Sign-off und Hooks für Commits sowie Leerzeichen und Kontextzeilen für Diffs. Autoren tragen in der Historie farbige Initialen.</li>
 </ul>
 <h2 id="historie-blame-und-das-web">Historie, Blame und das Web</h2>
 <ul>
@@ -97,8 +110,7 @@ Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu <strong>For
 </ul>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
-<li>Das Plugin verwendet das System-Git unter <code>/usr/bin/git</code>. Fehlt Git, melden die Befehle, dass Git nicht
-  verfügbar ist. (Die Xcode Command Line Tools bringen es mit.)</li>
+<li>Das Plugin verwendet das System-Git unter <code>/usr/bin/git</code> oder das in <strong>Einstellungen ▸ Git</strong> gewählte Programm. Fehlt Git, melden die Befehle, dass Git nicht verfügbar ist. (Die Xcode Command Line Tools bringen es mit.)</li>
 <li>Der Repository-Status wird einmal pro Ordner gelesen und zwischengespeichert, damit das Blättern in einem
   großen Repository schnell bleibt; der Cache erneuert sich nach jedem Befehl, der den Baum ändert, und folgt
   auch einem Commit, der außerhalb der App gemacht wurde.</li>

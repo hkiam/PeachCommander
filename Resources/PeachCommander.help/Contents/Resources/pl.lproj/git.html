@@ -46,11 +46,24 @@ naciśnij <strong>Zatwierdź</strong> — z <strong>Popraw</strong> zmiana zosta
 <p>Kopia robocza, historia i menu <strong>Polecenia ▸ Git</strong> oferują więcej niż zatwierdzanie:</p>
 <ul>
 <li>Zaznaczony przygotowany lub zmieniony plik pokazuje pod listą swój diff; zaznaczone wiersze lub cały fragment można z jego menu kontekstowego przygotować, cofnąć z przygotowania lub odrzucić.</li>
-<li>Pole commita to pole kombi: jego lista zawiera twoje ostatnie opisy commitów do ponownego użycia lub edycji.</li>
+<li>Pole commitu przyjmuje kilka wierszy — temat, pusty wiersz, treść —, zatwierdza przez <strong>Cmd+Return</strong> i liczy znaki tematu; przycisk menu obok przechowuje twoje ostatnie wiadomości commitów.</li>
 <li><strong>Pokaż w lewym panelu</strong> i <strong>Pokaż w prawym panelu</strong> przenoszą panel plików na plik z listy lub ze zmian commita, a panel Git zostaje bez zmian; pliki przechowywane przez Git LFS są oznaczone <strong>LFS</strong>.</li>
 <li>Schowki pojawiają się w historii jako małe kwadraty nad commitem, na którym je utworzono, z <strong>Zastosuj schowek</strong>, <strong>Zastosuj i usuń schowek</strong> i <strong>Usuń schowek…</strong> w menu kontekstowym.</li>
-<li><strong>Reflog…</strong> wyświetla każde przesunięcie HEAD; commit utracony przez reset lub usuniętą gałąź wraca przez <strong>Nowa gałąź tutaj…</strong>. <strong>Zdalne repozytoria i podmoduły…</strong> dodaje, zmienia nazwy, przekierowuje i usuwa zdalne repozytoria oraz aktualizuje podmoduły.</li>
+<li><strong>Reflog…</strong> wyświetla każde przesunięcie HEAD; commit utracony przez reset lub usuniętą gałąź wraca przez <strong>Nowa gałąź tutaj…</strong>.</li>
+<li><strong>Ustawienia repozytorium…</strong> dodaje, zmienia nazwy, przekierowuje i usuwa zdalne repozytoria, dodaje, aktualizuje i usuwa podmoduły, zarządza worktree i nadaje tylko temu repozytorium nazwę i e-mail dla commitów.</li>
 <li><strong>Utwórz tu repozytorium…</strong> i <strong>Klonuj repozytorium…</strong> działają w folderze aktywnego panelu, a zegar obok tytułu panelu prowadzi z powrotem do ostatniego repozytorium.</li>
+</ul>
+<h2 id="gdy-git-sie-zatrzymuje-i-ustawienia">Gdy git się zatrzymuje, i ustawienia</h2>
+<ul>
+<li><strong>Push</strong> przy pierwszym wypchnięciu gałęzi ustawia gałąź nadrzędną. Jeśli zdalne repozytorium ma commity, których tej gałęzi brakuje, proponuje <strong>Pobierz, potem wypchnij</strong> albo <strong>Wymuś wypchnięcie</strong> — zawsze z lease, który odmawia, jeśli ktoś wypchnął od twojego ostatniego fetch; <strong>Wymuś wypchnięcie (z lease)…</strong> jest też w menu kontekstowym przycisku <strong>Push</strong>.</li>
+<li>Gdy <strong>Pull</strong> stwierdzi, że gałąź i jej gałąź nadrzędna się rozeszły, pyta, czy scalić, czy zrobić rebase, zamiast zatrzymać się na komunikacie gita.</li>
+<li>Scalanie, cherry-pick, revert, rebase lub seria łatek zatrzymane na konflikcie pokazują nad historią pasek z <strong>Kontynuuj</strong> i <strong>Przerwij…</strong>; commit scalający jest cofany lub przenoszony względem pierwszego rodzica.</li>
+<li>Zaznacz dwa commity, aby je porównać, albo kilka, aby przenieść je naraz przez cherry-pick. <strong>Porównaj z kopią roboczą</strong> i <strong>Zapisz jako łatkę…</strong> są w menu historii, <strong>Zastosuj łatki…</strong> w menu Git.</li>
+<li>Pole wyszukiwania przyjmuje też filtry — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — same lub razem ze słowami.</li>
+<li><strong>Bisect: oznacz jako zły</strong> i <strong>Bisect: oznacz jako dobry</strong> w menu historii zaczynają bisect; pasek oferuje potem <strong>Dobry</strong>, <strong>Zły</strong>, <strong>Pomiń</strong> i <strong>Zakończ bisect</strong>, aż git wskaże pierwszy zły commit.</li>
+<li>Odłożenie wybranych plików lub wszystkich zmian do stasha pyta o wiadomość i o to, czy dołączyć nieśledzone pliki lub zachować indeks. Pliki w Git LFS można zablokować i odblokować, a ich typ pliku śledzić.</li>
+<li>Na liście gałęzi gałąź można przemianować (<strong>Zmień nazwę…</strong>), nadać jej gałąź nadrzędną (<strong>Ustaw gałąź nadrzędną…</strong>) lub usunąć na jej serwerze (<strong>Usuń w zdalnym…</strong>).</li>
+<li><strong>Ustawienia ▸ Git</strong> określają program git, twoją globalną nazwę i e-mail, sposób działania <strong>Pull</strong>, fetch w tle, co pokazuje historia i jak wyglądają jej daty, podpisywanie, sign-off i hooki commitów oraz białe znaki i wiersze kontekstu w diffach. Autorzy mają w historii kolorowe inicjały.</li>
 </ul>
 <h2 id="historia-blame-i-siec">Historia, blame i sieć</h2>
 <ul>
@@ -95,8 +108,7 @@ zatwierdzenie</strong> / <strong>Przerwij</strong>, żeby niedokończonej zmiany
 </ul>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
-<li>Wtyczka używa systemowego Gita w <code>/usr/bin/git</code>. Jeśli Gita nie ma, polecenia zgłaszają, że Git jest
-  niedostępny. (Dostarczają go Xcode Command Line Tools.)</li>
+<li>Wtyczka używa systemowego Gita w <code>/usr/bin/git</code> lub programu wybranego w <strong>Ustawienia ▸ Git</strong>. Jeśli Gita nie ma, polecenia zgłaszają, że Git jest niedostępny. (Dostarczają go Xcode Command Line Tools.)</li>
 <li>Stan repozytorium jest czytany raz na folder i zapamiętywany, więc przewijanie dużego repozytorium pozostaje
   szybkie; pamięć odświeża się po każdym poleceniu zmieniającym drzewo i nadąża też za zatwierdzeniem zrobionym
   poza programem.</li>

@@ -52,11 +52,24 @@ Bajo sus botones, el panel muestra el historial de todas las ramas, ramas remota
 La copia de trabajo, el historial y el menú **Comandos ▸ Git** ofrecen más que confirmar:
 
 - Un archivo preparado o modificado seleccionado muestra su diff bajo la lista; las líneas seleccionadas o un fragmento entero se preparan, se quitan de la preparación o se descartan desde su menú contextual.
-- El campo de commit es un cuadro combinado: su lista contiene tus últimos mensajes de commit, para reutilizarlos o editarlos.
+- El campo de commit admite varias líneas — un asunto, una línea en blanco, un cuerpo —, confirma con **Cmd+Retorno** y cuenta los caracteres del asunto; el botón de menú de al lado guarda tus últimos mensajes de commit.
 - **Mostrar en el panel izquierdo** y **Mostrar en el panel derecho** llevan un panel de archivos a un archivo de la lista o de los cambios de un commit, sin que el panel Git se mueva; los archivos guardados por Git LFS se marcan con **LFS**.
 - Los stashes aparecen en el historial como pequeños cuadrados sobre el commit en el que se hicieron, con **Aplicar stash**, **Aplicar y quitar stash** y **Eliminar stash…** en su menú contextual.
-- **Reflog…** lista cada movimiento de HEAD; un commit perdido por un reset o una rama eliminada vuelve con **Nueva rama aquí…**. **Remotos y submódulos…** añade, renombra, redirige y quita remotos y actualiza submódulos.
+- **Reflog…** lista cada movimiento de HEAD; un commit perdido por un reset o una rama eliminada vuelve con **Nueva rama aquí…**.
+- **Ajustes del repositorio…** añade, renombra, redirige y elimina remotos, añade, actualiza y elimina submódulos, gestiona worktrees y da solo a este repositorio un nombre y un correo para los commits.
 - **Crear repositorio aquí…** y **Clonar repositorio…** trabajan en la carpeta del panel activo, y el reloj junto al título del panel vuelve a un repositorio reciente.
+
+## Cuando git se detiene, y los ajustes
+
+- **Push** establece la rama remota de seguimiento la primera vez que se envía una rama. Si el remoto tiene commits que a esta rama le faltan, ofrece **Traer y luego enviar** o **Forzar envío**, siempre con un arrendamiento que rechaza si alguien envió desde tu último fetch; **Forzar envío (con arrendamiento)…** está también en el menú contextual de **Push**.
+- Si **Pull** ve que la rama y su rama remota de seguimiento han divergido, pregunta si fusionar o hacer rebase en lugar de detenerse con el mensaje de git.
+- Una fusión, un cherry-pick, un revert, un rebase o una serie de parches que se detiene en un conflicto muestra sobre el historial un aviso con **Continuar** y **Abortar…**; un commit de fusión se revierte o se aplica frente a su primer padre.
+- Selecciona dos commits para compararlos, o varios para aplicarlos de una vez con cherry-pick. **Comparar con la copia de trabajo** y **Guardar como parche…** están en el menú del historial, **Aplicar parches…** en el menú Git.
+- El campo de búsqueda admite también filtros — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` —, solos o junto con palabras.
+- **Bisect: marcar como malo** y **Bisect: marcar como bueno** en el menú del historial inician un bisect; el aviso ofrece entonces **Bueno**, **Malo**, **Omitir** y **Terminar bisect** hasta que git nombra el primer commit malo.
+- Guardar en el stash archivos seleccionados o todos los cambios pide un mensaje y si incluir los archivos sin seguimiento o conservar el índice. Los archivos en Git LFS pueden bloquearse y desbloquearse, y seguirse su tipo de archivo.
+- En la lista de ramas, una rama puede renombrarse (**Renombrar…**), recibir una rama remota de seguimiento (**Establecer rama remota de seguimiento…**) o eliminarse en su servidor (**Eliminar en el remoto…**).
+- **Ajustes ▸ Git** fija el programa git, tu nombre y correo globales, cómo trabaja **Pull**, el fetch en segundo plano, qué muestra el historial y cómo se ven sus fechas, la firma, el sign-off y los hooks de los commits, y los espacios y las líneas de contexto de los diffs. Los autores llevan iniciales de color en el historial.
 
 ## Historial, autoría y la web
 
@@ -108,8 +121,7 @@ un rebase se detiene en un conflicto, la misma ventana pasa a **Continuar** / **
 
 ## Notas
 
-- El complemento usa el Git del sistema, en `/usr/bin/git`. Si Git no está instalado, los comandos informan
-  de que no está disponible. (Las Xcode Command Line Tools lo traen.)
+- El complemento usa el Git del sistema, en `/usr/bin/git`, o el programa elegido en **Ajustes ▸ Git**. Si Git no está instalado, los comandos informan de que Git no está disponible. (Las Command Line Tools de Xcode lo incluyen.)
 - El estado del repositorio se lee una vez por carpeta y se guarda en caché, para que desplazarse por un
   repositorio grande siga siendo rápido; la caché se refresca tras cualquier comando que cambie el árbol, y
   sigue a una confirmación hecha fuera de la aplicación.

@@ -401,8 +401,10 @@ public enum PluginGit {
     ///
     /// `dateOrder` is for a search: its results are not a graph, and several searches merged together
     /// need one order they all follow — commit time, which `--date-order` keeps (parents after children).
+    ///
+    /// `refs` replaces the refs `all` walks (Settings ▸ Git can leave remote branches or tags out).
     public static func logArguments(limit: Int, path: String? = nil, all: Bool = false,
-                                    dateOrder: Bool = false) -> [String] {
+                                    dateOrder: Bool = false, refs: [String]? = nil) -> [String] {
         // `--topo-order`, not git's default date order: with date order a parent can be listed *before*
         // its child (a branch committed earlier than the commit it forked from), and then the lane waiting
         // for that parent never closes — the graph shows a branch running past the commit that ended it.
@@ -416,7 +418,7 @@ public enum PluginGit {
                    + "\(unitSeparator)%at\(unitSeparator)%s\(unitSeparator)%D\(unitSeparator)%ct"
                    + "\(recordSeparator)"]
         out.append("--decorate=full")
-        if all { out += ["--branches", "--remotes", "--tags", "HEAD"] }
+        if all { out += refs ?? ["--branches", "--remotes", "--tags", "HEAD"] }
         if let path, !path.isEmpty { out += ["--follow", "--", path] }
         return out
     }
@@ -607,10 +609,10 @@ public enum PluginGit {
     /// strings — a reader typing `fix(git)` means those characters, not a regex — and `--grep` searches
     /// the whole message, body included; `--author` matches name and e-mail. In commit-time order, so the
     /// two lists can be merged without gaps (`mergeSearchResults`). Run them with `searchEnvironment`.
-    public static func searchArguments(_ query: String, limit: Int, all: Bool) -> [[String]] {
+    public static func searchArguments(_ query: String, limit: Int, all: Bool, refs: [String]? = nil) -> [[String]] {
         let text = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return [] }
-        let base = logArguments(limit: limit, all: all, dateOrder: true)
+        let base = logArguments(limit: limit, all: all, dateOrder: true, refs: refs)
         return [base + ["-i", "-F", "--grep=\(text)"], base + ["-i", "-F", "--author=\(text)"]]
     }
 
@@ -926,6 +928,382 @@ public enum PluginGit {
     }
 
     public static let updateSubmodulesArguments = ["submodule", "update", "--init", "--recursive"]
+
+    /// Add a submodule; `path` is where it goes in this repository. `--`, not `--end-of-options`, which
+    /// `git submodule` does not take (it prints its usage and fails — measured).
+    public static func addSubmoduleArguments(url: String, path: String) -> [String] {
+        ["submodule", "add", "--", url, path]
+    }
+
+    /// Remove a submodule: its checkout, its entry in `.gitmodules` and the index. Two calls — `deinit`
+    /// forgets it, `rm` removes it — run one after the other. Its repository under `.git/modules/<name>`
+    /// stays; `submoduleGitDirArguments` finds it so the caller can delete it as well, or a submodule
+    /// added again at that path would find it and refuse.
+
+    public static func removeSubmoduleArguments(_ path: String) -> [[String]] {
+        [["submodule", "deinit", "-f", "--", path], ["rm", "-f", "--", path]]
+    }
+
+    /// Asked inside the submodule before it is removed: its own git directory, absolute.
+    public static let submoduleGitDirArguments = ["rev-parse", "--absolute-git-dir"]
+
+    /// Asked in the superproject: the git directory its submodules' repositories live under.
+    public static let commonGitDirArguments = ["rev-parse", "--path-format=absolute", "--git-common-dir"]
+
+    /// Whether `gitDir` is one the removal may delete: strictly inside `<common>/modules/`. Anything
+    /// else — an old-style submodule with its own `.git` folder, a path git printed oddly — is left.
+    public static func isRemovableSubmoduleGitDir(_ gitDir: String, commonGitDir: String) -> Bool {
+        let modules = (commonGitDir as NSString).standardizingPath + "/modules/"
+        let dir = (gitDir as NSString).standardizingPath
+        return dir.hasPrefix(modules) && dir.count > modules.count && !dir.contains("/../")
+    }
+
+    // MARK: - Worktrees and identity per repository (phase 8)
+
+    public struct Worktree: Sendable, Equatable {
+        public let path: String
+        public let head: String
+        /// The branch checked out there, without `refs/heads/`; nil when detached.
+        public let branch: String?
+        public let isMain: Bool
+        public let isLocked: Bool
+    }
+
+    public static let worktreesArguments = ["--no-optional-locks", "worktree", "list", "--porcelain"]
+
+    /// `git worktree list --porcelain`: blocks of `worktree <path>`, `HEAD <hash>`, `branch refs/heads/x`
+    /// or `detached`, maybe `locked`, separated by an empty line. The first block is the main worktree.
+    public static func parseWorktrees(_ output: String) -> [Worktree] {
+        var out: [Worktree] = []
+        for block in output.components(separatedBy: "\n\n") {
+            var path: String?, head = "", branch: String?, locked = false
+            for line in block.split(separator: "\n").map(String.init) {
+                if line.hasPrefix("worktree ") { path = String(line.dropFirst(9)) }
+                else if line.hasPrefix("HEAD ") { head = String(line.dropFirst(5)) }
+                else if line.hasPrefix("branch ") {
+                    let ref = String(line.dropFirst(7))
+                    branch = ref.hasPrefix("refs/heads/") ? String(ref.dropFirst(11)) : ref
+                }
+                else if line == "locked" || line.hasPrefix("locked ") { locked = true }
+            }
+            guard let path else { continue }
+            out.append(Worktree(path: path, head: head, branch: branch, isMain: out.isEmpty, isLocked: locked))
+        }
+        return out
+    }
+
+    /// A new worktree at `path` with `branch` checked out — created there from HEAD when `create`.
+    public static func addWorktreeArguments(path: String, branch: String, create: Bool) -> [String] {
+        create ? ["worktree", "add", "-b", branch, "--", path] : ["worktree", "add", "--", path, branch]
+    }
+
+    public static func removeWorktreeArguments(_ path: String) -> [String] { ["worktree", "remove", "--", path] }
+
+    /// The name or e-mail this repository commits with, or — `value` empty — back to the global one.
+    public static func localIdentityArguments(key: String, value: String) -> [String] {
+        value.isEmpty ? ["config", "--local", "--unset", key] : ["config", "--local", key, value]
+    }
+
+    // MARK: - Push and pull that do not strand the reader (phase 8)
+
+    /// The push for a branch: a plain `push` once it has an upstream; the first push sets one — to
+    /// `origin` or the repository's only remote — when `setUpstream` (Settings ▸ Git). nil when there is
+    /// no remote to push to at all.
+    public static func pushArguments(upstream: String?, remotes: [String], setUpstream: Bool) -> [String]? {
+        if upstream != nil || !setUpstream { return ["push"] }
+        guard let remote = remotes.contains("origin") ? "origin" : remotes.first else { return nil }
+        return ["push", "--set-upstream", remote, "HEAD"]
+    }
+
+    /// The push after a rewrite: `--force-with-lease` replaces the remote branch only if it is still
+    /// where this repository last saw it — never a plain `--force`, which would throw away commits
+    /// somebody else pushed in the meantime. The lease alone is not enough once the panel fetches in the
+    /// background: the fetch moves `origin/x` to the colleague's commit and the lease then agrees with it.
+    /// `--force-if-includes` also asks that the remote tip be something this branch has had — in its
+    /// reflog — so a commit only a fetch has seen still makes the push refuse (git 2.30, measured).
+    public static let forcePushArguments = ["push", "--force-with-lease", "--force-if-includes"]
+
+    /// git's messages as the helpers above read them. They match git's English, and git speaks the
+    /// system's language when it was built with gettext (Homebrew's is) — so the calls whose refusal is
+    /// read run in English; what the reader is shown is git's text either way.
+    public static let englishMessagesEnvironment = ["LC_ALL": "en_US.UTF-8", "LANGUAGE": "en"]
+
+    /// Whether `git push` was refused because the remote branch has commits this one does not.
+    public static func isRejectedAsBehind(_ output: String) -> Bool {
+        output.contains("[rejected]") && (output.contains("non-fast-forward") || output.contains("fetch first"))
+    }
+
+    /// Whether `git pull --ff-only` refused because the branches diverged.
+    public static func isDivergedPullRefusal(_ output: String) -> Bool {
+        output.contains("Not possible to fast-forward") || output.contains("Diverging branches")
+            || output.contains("divergent branches")
+    }
+
+    /// The pull that joins diverged branches the way the reader chose when asked.
+    public static func pullArguments(_ mode: Settings.PullMode) -> [String] {
+        var settings = Settings()
+        settings.pullMode = mode
+        return settings.pullArguments
+    }
+
+    // MARK: - Stash with options, LFS, search filters (phase 8)
+
+    /// `git stash push` with what the reader chose: a message, untracked files too, the index kept, or
+    /// only some files.
+    public static func stashPushArguments(message: String, includeUntracked: Bool, keepIndex: Bool,
+                                          paths: [String] = []) -> [String] {
+        var out = ["stash", "push"]
+        if includeUntracked { out.append("--include-untracked") }
+        if keepIndex { out.append("--keep-index") }
+        if !message.isEmpty { out += ["-m", message] }
+        if !paths.isEmpty { out += ["--"] + paths }
+        return out
+    }
+
+    public static func lfsLockArguments(_ path: String) -> [String] { ["lfs", "lock", "--", path] }
+    public static func lfsUnlockArguments(_ path: String) -> [String] { ["lfs", "unlock", "--", path] }
+
+    /// Track the file type of `path` with LFS: `*.psd` for `art/cover.psd`; nil for a file without an
+    /// extension, where a pattern would have to be the file's own name and is better typed by hand.
+    public static func lfsTrackArguments(forFileType path: String) -> [String]? {
+        let ext = (path as NSString).pathExtension
+        guard !ext.isEmpty else { return nil }
+        return ["lfs", "track", "*.\(ext)"]
+    }
+
+    /// The history search's filters: `author:`, `path:`, `since:` and `until:` take the next word (or a
+    /// quoted phrase); everything else is the free text, searched as before.
+    public struct SearchQuery: Sendable, Equatable {
+        public var text = ""
+        public var authors: [String] = []
+        public var paths: [String] = []
+        public var since: String?
+        public var until: String?
+        public var hasFilters: Bool { !authors.isEmpty || !paths.isEmpty || since != nil || until != nil }
+
+        public init() {}
+
+        public static func parse(_ input: String) -> SearchQuery {
+            var query = SearchQuery()
+            var words: [String] = []
+            var current = "", quoted = false
+            for character in input {
+                if character == "\"" { quoted.toggle(); continue }
+                if character == " ", !quoted {
+                    if !current.isEmpty { words.append(current); current = "" }
+                } else {
+                    current.append(character)
+                }
+            }
+            if !current.isEmpty { words.append(current) }
+            var text: [String] = []
+            for word in words {
+                let lower = word.lowercased()
+                func value(_ prefix: String) -> String? {
+                    lower.hasPrefix(prefix) && word.count > prefix.count ? String(word.dropFirst(prefix.count)) : nil
+                }
+                if let author = value("author:") { query.authors.append(author) }
+                else if let path = value("path:") { query.paths.append(path) }
+                else if let since = value("since:") { query.since = since }
+                else if let until = value("until:") { query.until = until }
+                else { text.append(word) }
+            }
+            query.text = text.joined(separator: " ")
+            return query
+        }
+
+        /// The `git log` limits the filters stand for — all of them at once (a filter narrows), except
+        /// that several `author:`s are any of them: git ORs `--author`, and a commit has one author.
+        public var filterArguments: [String] {
+            authors.map { "--author=\($0)" } + (since.map { ["--since=\($0)"] } ?? []) + (until.map { ["--until=\($0)"] } ?? [])
+        }
+    }
+
+    /// The calls for a search with filters: the free text, if any, as the message and author searches
+    /// (each narrowed by the filters), or one log narrowed by the filters alone.
+    public static func searchArguments(_ query: SearchQuery, limit: Int, all: Bool, refs: [String]? = nil) -> [[String]] {
+        let base = logArguments(limit: limit, all: all, dateOrder: true, refs: refs) + ["-i", "-F"] + query.filterArguments
+        let pathspec = query.paths.isEmpty ? [] : ["--"] + query.paths
+        if query.text.isEmpty { return query.hasFilters ? [base + pathspec] : [] }
+        // git ORs `--author`s: the text as one more author would widen an `author:` filter, not
+        // narrow it. With an author filter the text is searched in the messages only.
+        let byAuthor = query.authors.isEmpty ? [base + ["--author=\(query.text)"] + pathspec] : []
+        return [base + ["--grep=\(query.text)"] + pathspec] + byAuthor
+    }
+
+    // MARK: - Comparing and picking several (phase 8)
+
+    /// The files that differ between `from` and `to` — or, with `to` nil, between `from` and the working
+    /// tree. NUL-separated like `nameStatusArguments`, so `parseNameStatus` reads both.
+    public static func compareNameStatusArguments(from: String, to: String?) -> [String] {
+        ["--no-optional-locks", "diff", "--name-status", "-z", "-M", from] + (to.map { [$0] } ?? []) + ["--"]
+    }
+
+    /// The unified diff of `paths` between the same two.
+    public static func compareDiffArguments(from: String, to: String?, paths: [String], options: [String] = []) -> [String] {
+        ["--no-optional-locks", "diff", "--no-color", "-M"] + options + [from] + (to.map { [$0] } ?? []) + ["--"] + paths
+    }
+
+    /// Cherry-pick several commits, oldest first, so each applies on top of the one before. `commits`
+    /// come in the history's order — newest first, topologically — and are simply reversed: a date
+    /// cannot order them, since a rebase or `git am` gives a whole series the same second. nil when one
+    /// of them is a merge: picking a merge in a series is ambiguous about its mainline, so such a
+    /// selection is refused rather than guessed.
+    public static func cherryPickSeriesArguments(_ commits: [Commit]) -> [String]? {
+        guard !commits.isEmpty, !commits.contains(where: \.isMerge) else { return nil }
+        return ["cherry-pick", "--no-edit"] + commits.reversed().map(\.hash)
+    }
+
+    /// The tree of an empty repository — what a root commit is compared against, having no parent.
+    public static let emptyTree = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
+    /// The base for "what these commits changed": the parent of the oldest of them, so its own changes
+    /// are included — or the empty tree when it is a root commit. `oldest` is the last in history order.
+    public static func comparisonBase(oldest: Commit) -> String {
+        oldest.parents.isEmpty ? emptyTree : oldest.hash + "^"
+    }
+
+    // MARK: - Branches: rename, upstream, remote deletion (phase 8)
+
+    public static func renameBranchArguments(_ name: String, to newName: String) -> [String] { ["branch", "-m", name, newName] }
+
+    public static func setUpstreamArguments(branch: String, upstream: String) -> [String] {
+        ["branch", "--set-upstream-to=\(upstream)", branch]
+    }
+
+    /// Delete a branch on its remote: `origin/feature/x` is `feature/x` on `origin` — the remote is the
+    /// part before the first slash, the branch may have slashes of its own. nil for a name with no remote.
+    public static func deleteRemoteBranchArguments(_ remoteBranch: String) -> [String]? {
+        guard let slash = remoteBranch.firstIndex(of: "/") else { return nil }
+        let remote = String(remoteBranch[..<slash]), branch = String(remoteBranch[remoteBranch.index(after: slash)...])
+        guard !remote.isEmpty, !branch.isEmpty, branch != "HEAD" else { return nil }
+        return ["push", remote, "--delete", branch]
+    }
+
+    // MARK: - Settings (phase 8)
+
+    /// What the reader can decide about the plugin, kept in `git.ini` under the host's configuration root.
+    /// Name and e-mail are not here: they are git's own (`git config`), and the settings page edits them
+    /// there, so a commit made in a terminal carries the same ones.
+    public struct Settings: Sendable, Equatable {
+        public enum PullMode: String, Sendable, CaseIterable { case fastForward = "ff-only", merge, rebase }
+        public enum DateStyle: String, Sendable, CaseIterable { case relative, absolute }
+
+        /// The git to run; empty finds one (Homebrew, then the Command Line Tools — see `resolveExecutable`).
+        public var gitProgram = ""
+        public var pullMode = PullMode.fastForward
+        /// The first push of a branch sets its upstream, so the second needs no arguments.
+        public var pushSetsUpstream = true
+        public var fetchPrunes = true
+        /// Fetch in the background every so many minutes while the panel shows a repository; 0 is never.
+        public var autoFetchMinutes = 0
+        public var historyPageSize = 300
+        public var showRemoteBranches = true
+        public var showTags = true
+        public var showStashes = true
+        public var dateStyle = DateStyle.relative
+        public var signCommits = false
+        public var signOff = false
+        /// The commit box shows the subject's length and turns it orange past this.
+        public var subjectLength = 72
+        /// Pre-commit and commit-msg hooks run; off adds `--no-verify`.
+        public var runHooks = true
+        public var diffIgnoreWhitespace = false
+        public var diffContextLines = 3
+        public var cloneRecursive = true
+
+        public init() {}
+
+        public static func parse(_ text: String) -> Settings {
+            var settings = Settings()
+            for line in text.components(separatedBy: .newlines) {
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                guard !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("#"), !trimmed.hasPrefix("["),
+                      let equals = trimmed.firstIndex(of: "=") else { continue }
+                let key = trimmed[..<equals].trimmingCharacters(in: .whitespaces)
+                let value = String(trimmed[trimmed.index(after: equals)...]).trimmingCharacters(in: .whitespaces)
+                func number(_ range: ClosedRange<Int>, _ fallback: Int) -> Int {
+                    Int(value).map { min(max($0, range.lowerBound), range.upperBound) } ?? fallback
+                }
+                switch key {
+                case "GitProgram": settings.gitProgram = value
+                case "PullMode": settings.pullMode = PullMode(rawValue: value) ?? settings.pullMode
+                case "PushSetsUpstream": settings.pushSetsUpstream = value != "0"
+                case "FetchPrunes": settings.fetchPrunes = value != "0"
+                case "AutoFetchMinutes": settings.autoFetchMinutes = number(0...1440, settings.autoFetchMinutes)
+                case "HistoryPageSize": settings.historyPageSize = number(50...5000, settings.historyPageSize)
+                case "ShowRemoteBranches": settings.showRemoteBranches = value != "0"
+                case "ShowTags": settings.showTags = value != "0"
+                case "ShowStashes": settings.showStashes = value != "0"
+                case "DateStyle": settings.dateStyle = DateStyle(rawValue: value) ?? settings.dateStyle
+                case "SignCommits": settings.signCommits = value == "1"
+                case "SignOff": settings.signOff = value == "1"
+                case "SubjectLength": settings.subjectLength = number(20...200, settings.subjectLength)
+                case "RunHooks": settings.runHooks = value != "0"
+                case "DiffIgnoreWhitespace": settings.diffIgnoreWhitespace = value == "1"
+                case "DiffContextLines": settings.diffContextLines = number(0...50, settings.diffContextLines)
+                case "CloneRecursive": settings.cloneRecursive = value != "0"
+                default: break
+                }
+            }
+            return settings
+        }
+
+        public func serialized() -> String {
+            func flag(_ on: Bool) -> String { on ? "1" : "0" }
+            return """
+            ; Peach Commander — Git plugin. Written by Settings ▸ Git, safe to edit by hand.
+            [Git]
+            ; The git to run ("" = find one).
+            GitProgram=\(gitProgram)
+            ; ff-only, merge or rebase.
+            PullMode=\(pullMode.rawValue)
+            PushSetsUpstream=\(flag(pushSetsUpstream))
+            FetchPrunes=\(flag(fetchPrunes))
+            ; Minutes between background fetches; 0 = never.
+            AutoFetchMinutes=\(autoFetchMinutes)
+            HistoryPageSize=\(historyPageSize)
+            ShowRemoteBranches=\(flag(showRemoteBranches))
+            ShowTags=\(flag(showTags))
+            ShowStashes=\(flag(showStashes))
+            ; relative or absolute.
+            DateStyle=\(dateStyle.rawValue)
+            SignCommits=\(flag(signCommits))
+            SignOff=\(flag(signOff))
+            SubjectLength=\(subjectLength)
+            RunHooks=\(flag(runHooks))
+            DiffIgnoreWhitespace=\(flag(diffIgnoreWhitespace))
+            DiffContextLines=\(diffContextLines)
+            CloneRecursive=\(flag(cloneRecursive))
+
+            """
+        }
+
+        /// The refs the panel's history walks, by the settings: branches and HEAD always, remote branches
+        /// and tags when shown.
+        public var historyRefs: [String] {
+            ["--branches"] + (showRemoteBranches ? ["--remotes"] : []) + (showTags ? ["--tags"] : []) + ["HEAD"]
+        }
+
+        /// `git pull` for the pull mode.
+        public var pullArguments: [String] {
+            switch pullMode {
+            case .fastForward: return ["pull", "--ff-only"]
+            case .merge: return ["pull", "--no-rebase", "--no-edit"]
+            case .rebase: return ["pull", "--rebase"]
+            }
+        }
+
+        public var fetchArguments: [String] { ["fetch", "--all"] + (fetchPrunes ? ["--prune"] : []) }
+
+        /// The options a commit takes from the settings.
+        public var commitOptions: [String] {
+            (signCommits ? ["-S"] : []) + (signOff ? ["--signoff"] : []) + (runHooks ? [] : ["--no-verify"])
+        }
+
+        /// The options a diff of a commit takes from the settings.
+        public var diffOptions: [String] { ["-U\(diffContextLines)"] + (diffIgnoreWhitespace ? ["-w"] : []) }
+    }
 
     // MARK: - Creating and cloning, recent repositories (phase 7)
 
@@ -1648,6 +2026,97 @@ public enum PluginGit {
     public static let rebaseSkipArguments = ["rebase", "--skip"]
     public static let rebaseAbortArguments = ["rebase", "--abort"]
 
+    /// An operation git stopped in the middle of, waiting for the reader (phase 8).
+    public enum Operation: String, Sendable, Equatable { case merge, cherryPick, revert, rebase, applyPatches }
+
+    /// Which one is under way, by the files git leaves in its directory for it.
+    public static func operationInProgress(gitDir: String, exists: (String) -> Bool) -> Operation? {
+        func has(_ name: String) -> Bool { exists((gitDir as NSString).appendingPathComponent(name)) }
+        // `git am` keeps its state in rebase-apply too; its own marker says it is am, not a rebase.
+        if has("rebase-apply/applying") { return .applyPatches }
+        if rebaseIsRunning(gitDir: gitDir, exists: exists) { return .rebase }
+        if has("MERGE_HEAD") { return .merge }
+        if has("CHERRY_PICK_HEAD") { return .cherryPick }
+        if has("REVERT_HEAD") { return .revert }
+        return nil
+    }
+
+    /// Finishing it. A merge is finished by committing with git's prepared message; the others by
+    /// `--continue`, which wants an editor for that message — run them with `GIT_EDITOR=true`.
+    public static func continueArguments(_ operation: Operation) -> [String] {
+        switch operation {
+        case .merge: return ["commit", "--no-edit"]
+        case .cherryPick: return ["cherry-pick", "--continue"]
+        case .revert: return ["revert", "--continue"]
+        case .rebase: return ["rebase", "--continue"]
+        case .applyPatches: return ["am", "--continue"]
+        }
+    }
+
+    public static func abortArguments(_ operation: Operation) -> [String] {
+        switch operation {
+        case .merge: return ["merge", "--abort"]
+        case .cherryPick: return ["cherry-pick", "--abort"]
+        case .revert: return ["revert", "--abort"]
+        case .rebase: return ["rebase", "--abort"]
+        case .applyPatches: return ["am", "--abort"]
+        }
+    }
+
+    // MARK: - Bisect (phase 8)
+
+    /// Whether a bisect is under way: git keeps its log while it is.
+    public static func isBisecting(gitDir: String, exists: (String) -> Bool) -> Bool {
+        exists((gitDir as NSString).appendingPathComponent("BISECT_LOG"))
+    }
+
+    public enum BisectMark: String, Sendable { case good, bad, skip }
+
+    /// Mark a commit (or, without one, the commit checked out) as good, bad or untestable. A bisect not
+    /// yet started is started first — `bisect start` then the mark, two calls.
+    public static func bisectArguments(_ mark: BisectMark, commit: String?, started: Bool) -> [[String]] {
+        (started ? [] : [["bisect", "start"]]) + [["bisect", mark.rawValue] + (commit.map { [$0] } ?? [])]
+    }
+
+    public static let bisectResetArguments = ["bisect", "reset"]
+
+    /// What `git bisect` said: how much is left, or which commit it found.
+    public enum BisectProgress: Sendable, Equatable {
+        case remaining(revisions: Int, steps: Int)
+        case found(String)
+        case waiting
+    }
+
+    public static func parseBisect(_ output: String) -> BisectProgress {
+        for line in output.split(separator: "\n").map(String.init) {
+            if line.hasSuffix(" is the first bad commit") {
+                return .found(String(line.dropLast(" is the first bad commit".count)))
+            }
+            if line.hasPrefix("Bisecting: ") {
+                let numbers = line.split(whereSeparator: { !$0.isNumber }).compactMap { Int($0) }
+                return .remaining(revisions: numbers.first ?? 0, steps: numbers.count > 1 ? numbers[1] : 0)
+            }
+        }
+        return .waiting
+    }
+
+    // MARK: - Patches (phase 8)
+
+    /// One commit as a mail-style patch on standard output, numbered `number` when several are saved.
+    public static func formatPatchArguments(_ hash: String) -> [String] {
+        ["format-patch", "-1", "--stdout", hash]
+    }
+
+    /// A file name for a commit's patch: `0001-the-subject.patch`, as `git format-patch` names them.
+    public static func patchFileName(number: Int, subject: String) -> String {
+        let slug = subject.lowercased().map { $0.isLetter || $0.isNumber ? String($0) : "-" }.joined()
+            .split(separator: "-").joined(separator: "-")
+        return String(format: "%04d-%@.patch", number, String(slug.prefix(52)))
+    }
+
+    /// Apply mailbox patches as commits, falling back to a three-way merge where they do not apply cleanly.
+    public static func applyPatchesArguments(_ files: [String]) -> [String] { ["am", "--3way", "--"] + files }
+
     /// Is a rebase half-finished in this repository?
     ///
     /// From the git directory rather than from a command: `rebase-merge` (the interactive machinery) and
@@ -2051,12 +2520,15 @@ public enum PluginGit {
     }
 
     /// `revert`/`cherry-pick` with no editor: this process has no terminal to open one on.
-    public static func revertArguments(_ hash: String) -> [String] {
-        ["revert", "--no-edit", hash]
+    public static func revertArguments(_ hash: String, isMerge: Bool = false) -> [String] {
+        ["revert", "--no-edit"] + (isMerge ? ["-m", "1"] : []) + [hash]
     }
 
-    public static func cherryPickArguments(_ hash: String) -> [String] {
-        ["cherry-pick", "--no-edit", hash]
+    ///
+    /// `isMerge`: a merge commit has two parents, and git refuses to pick or revert one without being told
+    /// which side is the mainline — `-m 1`, the branch it was merged into, is what is meant every time.
+    public static func cherryPickArguments(_ hash: String, isMerge: Bool = false) -> [String] {
+        ["cherry-pick", "--no-edit"] + (isMerge ? ["-m", "1"] : []) + [hash]
     }
 
     // MARK: - Column glyphs (phase 4)

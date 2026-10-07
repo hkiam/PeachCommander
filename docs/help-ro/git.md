@@ -51,11 +51,24 @@ Sub butoane, panoul arată istoricul tuturor ramurilor, ramurilor la distanță 
 Copia de lucru, istoricul și meniul **Comenzi ▸ Git** oferă mai mult decât comiterea:
 
 - Un fișier pregătit sau modificat selectat își arată diff-ul sub listă; liniile selectate sau un bloc întreg pot fi pregătite, retrase din pregătire sau abandonate din meniul contextual.
-- Câmpul de commit este o casetă combinată: lista ei conține ultimele tale mesaje de commit, de refolosit sau de editat.
+- Câmpul de commit primește mai multe rânduri — un subiect, un rând gol, un text —, comite cu **Cmd+Return** și numără caracterele subiectului; butonul de meniu de alături păstrează ultimele tale mesaje de commit.
 - **Arată în panoul din stânga** și **Arată în panoul din dreapta** duc un panou de fișiere la un fișier din listă sau din modificările unui commit, în timp ce panoul Git rămâne cum este; fișierele stocate de Git LFS sunt marcate **LFS**.
 - Stash-urile apar în istoric ca pătrățele deasupra commit-ului pe care au fost făcute, cu **Aplică stash**, **Aplică și elimină stash** și **Șterge stash…** în meniul contextual.
-- **Reflog…** listează fiecare mutare a HEAD; un commit pierdut printr-o resetare sau o ramură ștearsă revine cu **Ramură nouă aici…**. **Depozite la distanță și submodule…** adaugă, redenumește, redirecționează și elimină depozite la distanță și actualizează submodulele.
+- **Reflog…** listează fiecare mutare a HEAD; un commit pierdut printr-o resetare sau o ramură ștearsă revine cu **Ramură nouă aici…**.
+- **Setările depozitului…** adaugă, redenumește, redirecționează și elimină depozite la distanță, adaugă, actualizează și elimină submodule, gestionează worktree-uri și dă doar acestui depozit un nume și un e-mail pentru commit-uri.
 - **Creează depozit aici…** și **Clonează depozitul…** lucrează în dosarul panoului activ, iar ceasul de lângă titlul panoului duce înapoi la un depozit recent.
+
+## Când git se oprește, și setările
+
+- **Push** setează ramura upstream la prima împingere a unei ramuri. Dacă depozitul la distanță are commit-uri care lipsesc acestei ramuri, oferă **Preia, apoi împinge** sau **Împingere forțată**, mereu cu un lease care refuză dacă cineva a împins de la ultima ta preluare; **Împingere forțată (cu lease)…** este și în meniul contextual al lui **Push**.
+- Dacă **Pull** constată că ramura și upstream-ul ei s-au despărțit, întreabă dacă să îmbine sau să facă rebase, în loc să se oprească la mesajul lui git.
+- O îmbinare, un cherry-pick, un revert, un rebase sau o serie de patch-uri oprite într-un conflict arată deasupra istoricului un banner cu **Continuă** și **Anulează…**; un commit de îmbinare este anulat sau preluat față de primul său părinte.
+- Selectează două commit-uri pentru a le compara, sau mai multe pentru a le prelua dintr-odată cu cherry-pick. **Compară cu copia de lucru** și **Salvează ca patch…** sunt în meniul istoricului, **Aplică patch-uri…** în meniul Git.
+- Câmpul de căutare primește și filtre — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — singure sau împreună cu cuvinte.
+- **Bisect: marchează ca rău** și **Bisect: marchează ca bun** din meniul istoricului pornesc un bisect; bannerul oferă apoi **Bun**, **Rău**, **Sari** și **Încheie bisect** până când git numește primul commit rău.
+- Punerea în stash a fișierelor selectate sau a tuturor modificărilor cere un mesaj și întreabă dacă să includă fișierele neurmărite sau să păstreze indexul. Fișierele din Git LFS pot fi blocate și deblocate, iar tipul lor de fișier urmărit.
+- În lista de ramuri, o ramură poate fi redenumită (**Redenumește…**), legată de un upstream (**Setează ramura upstream…**) sau ștearsă pe serverul ei (**Șterge pe depozitul la distanță…**).
+- **Setări ▸ Git** stabilește programul git, numele și e-mailul tău global, cum lucrează **Pull**, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.
 
 ## Istoric, blame și web
 
@@ -108,8 +121,7 @@ trebuie încheiată într-un terminal.
 
 ## Observații
 
-- Pluginul folosește Git-ul sistemului, de la `/usr/bin/git`. Dacă Git lipsește, comenzile raportează că Git
-  nu este disponibil. (Xcode Command Line Tools îl aduc.)
+- Pluginul folosește Git-ul sistemului, de la `/usr/bin/git`, sau programul ales în **Setări ▸ Git**. Dacă Git lipsește, comenzile raportează că Git nu este disponibil. (Instrumentele Xcode Command Line Tools îl includ.)
 - Starea depozitului este citită o dată per dosar și păstrată în cache, astfel încât derularea într-un depozit
   mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care schimbă arborele și urmărește și o
   comitere făcută în afara aplicației.

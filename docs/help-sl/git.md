@@ -50,11 +50,24 @@ Pod gumbi plošča prikazuje zgodovino vseh vej, oddaljenih vej in oznak kot nar
 Delovna kopija, zgodovina in meni **Ukazi ▸ Git** ponujajo več kot objavo:
 
 - Izbrana pripravljena ali spremenjena datoteka pod seznamom pokaže svoj diff; izbrane vrstice ali cel kos lahko v njegovem priročnem meniju pripravite, umaknete iz priprave ali zavržete.
-- Polje za commit je kombinirano polje: njegov seznam vsebuje vaša zadnja sporočila commitov za ponovno uporabo ali urejanje.
+- Polje za commit sprejme več vrstic — zadevo, prazno vrstico, besedilo —, naredi commit s **Cmd+Return** in šteje znake zadeve; gumb menija ob njem hrani tvoja zadnja sporočila commitov.
 - **Pokaži v levem podoknu** in **Pokaži v desnem podoknu** preneseta podokno z datotekami na datoteko s seznama ali iz sprememb commita, plošča Git pa ostane, kot je; datoteke, ki jih hrani Git LFS, so označene z **LFS**.
 - Stashi se v zgodovini pojavijo kot majhni kvadratki nad commitom, na katerem so nastali, z **Uporabi stash**, **Uporabi in odstrani stash** in **Izbriši stash…** v priročnem meniju.
-- **Reflog…** našteje vsak premik HEAD; commit, izgubljen s ponastavitvijo ali izbrisano vejo, se vrne z **Nova veja tukaj…**. **Oddaljena skladišča in podmoduli…** dodaja, preimenuje, preusmerja in odstranjuje oddaljena skladišča ter posodablja podmodule.
+- **Reflog…** našteje vsak premik HEAD; commit, izgubljen s ponastavitvijo ali izbrisano vejo, se vrne z **Nova veja tukaj…**.
+- **Nastavitve skladišča…** dodaja, preimenuje, preusmerja in odstranjuje oddaljena skladišča, dodaja, posodablja in odstranjuje podmodule, upravlja worktree in da samo temu skladišču ime in e-pošto za commite.
 - **Ustvari skladišče tukaj…** in **Kloniraj skladišče…** delujeta v mapi aktivnega podokna, ura poleg naslova plošče pa vodi nazaj k nedavnemu skladišču.
+
+## Ko se git ustavi, in nastavitve
+
+- **Push** ob prvem potisku veje nastavi upstream. Če ima oddaljeno skladišče commite, ki jih ta veja nima, ponudi **Prenesi, nato potisni** ali **Prisilno potisni** — vedno z lease, ki zavrne, če je kdo potisnil po tvojem zadnjem fetch; **Prisilno potisni (z lease)…** je tudi v priročnem meniju gumba **Push**.
+- Če **Pull** ugotovi, da sta se veja in njen upstream razšla, vpraša, ali naj združi ali naredi rebase, namesto da bi obstal pri sporočilu gita.
+- Združitev, cherry-pick, revert, rebase ali serija popravkov, ki se ustavi v sporu, pokaže nad zgodovino pasico z **Nadaljuj** in **Prekini…**; commit združitve se razveljavi ali cherry-picka glede na svojega prvega starša.
+- Izberi dva commita, da ju primerjaš, ali več, da jih naenkrat cherry-pickaš. **Primerjaj z delovno kopijo** in **Shrani kot popravek…** sta v meniju zgodovine, **Uporabi popravke…** v meniju Git.
+- Iskalno polje sprejme tudi filtre — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — same ali skupaj z besedami.
+- **Bisect: označi kot slab** in **Bisect: označi kot dober** v meniju zgodovine začneta bisect; pasica nato ponuja **Dober**, **Slab**, **Preskoči** in **Končaj bisect**, dokler git ne imenuje prvega slabega commita.
+- Shranjevanje izbranih datotek ali vseh sprememb v stash vpraša za sporočilo in ali naj vključi nesledene datoteke ali ohrani indeks. Datoteke v Git LFS lahko zakleneš in odkleneš ter slediš njihovi vrsti datotek.
+- V seznamu vej lahko vejo preimenuješ (**Preimenuj…**), ji daš upstream (**Nastavi upstream…**) ali jo izbrišeš na njenem strežniku (**Izbriši na oddaljenem…**).
+- **Nastavitve ▸ Git** določajo program git, tvoje globalno ime in e-pošto, kako dela **Pull**, fetch v ozadju, kaj kaže zgodovina in kako so videti njeni datumi, podpisovanje, sign-off in hooke za commite ter presledke in vrstice konteksta za diffe. Avtorji imajo v zgodovini barvne začetnice.
 
 ## Zgodovina, blame in splet
 
@@ -106,8 +119,7 @@ napol opravljenega prestavljanja ni treba dokončati v terminalu.
 
 ## Opombe
 
-- Vtičnik uporablja sistemski Git v `/usr/bin/git`. Če Gita ni, ukazi sporočijo, da Git ni na voljo. (Prinesejo
-  ga Xcode Command Line Tools.)
+- Vtičnik uporablja sistemski Git v `/usr/bin/git` ali program, izbran v **Nastavitve ▸ Git**. Če Gita ni, ukazi sporočijo, da Git ni na voljo. (Prinesejo ga Xcode Command Line Tools.)
 - Stanje skladišča se prebere enkrat na mapo in shrani v predpomnilnik, da listanje po velikem skladišču
   ostane hitro; predpomnilnik se osveži po vsakem ukazu, ki spremeni drevo, in sledi tudi objavi, narejeni
   zunaj aplikacije.

@@ -108,7 +108,11 @@ final class GitBranchesView: NSView {
         branchTable.menu = gitMenu([
             (L("Switch"), #selector(switchToSelected)),
             (L("Merge…"), #selector(mergeSelected)),
+            (L("Rename…"), #selector(renameSelected)),
+            (L("Set upstream…"), #selector(setUpstreamOfSelected)),
+            (nil, nil),
             (L("Delete…"), #selector(deleteSelected)),
+            (L("Delete on the remote…"), #selector(deleteRemoteSelected)),
             (nil, nil),
             (L("Copy branch name"), #selector(copyBranchName)),
             (L("Open on the web"), #selector(openSelectedOnTheWeb)),
@@ -406,6 +410,58 @@ final class GitBranchesView: NSView {
         guard choice != .alertSecondButtonReturn else { return }
         let flag = choice == .alertThirdButtonReturn ? "-D" : "-d"
         run(["-C", root, "branch", flag, branch.name])
+    }
+
+    // MARK: - Rename, upstream, remote deletion (phase 8)
+
+    @objc private func renameSelected() {
+        guard let branch = selectedBranch, !branch.isRemote else {
+            report(L("Select a local branch to rename."))
+            return
+        }
+        guard let name = gitPrompt(String(format: L("Rename %@"), branch.name), L("New name:")) else { return }
+        run(["-C", root] + PluginGit.renameBranchArguments(branch.name, to: name))
+    }
+
+    /// The remote branch this one pulls from and pushes to, chosen from the remote branches there are.
+    @objc private func setUpstreamOfSelected() {
+        guard let branch = selectedBranch, !branch.isRemote else {
+            report(L("Select a local branch first."))
+            return
+        }
+        let remotes = branches.filter(\.isRemote).map(\.name).filter { !$0.hasSuffix("/HEAD") }
+        guard !remotes.isEmpty else {
+            report(L("There are no remote branches. Fetch first, or push the branch — the first push sets its upstream."))
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = String(format: L("Upstream of %@"), branch.name)
+        let popUp = NSPopUpButton(frame: NSRect(x: 0, y: 0, width: 300, height: 26))
+        popUp.addItems(withTitles: remotes)
+        if let current = branch.upstream { popUp.selectItem(withTitle: current) }
+        else if let same = remotes.first(where: { $0.hasSuffix("/" + branch.name) }) { popUp.selectItem(withTitle: same) }
+        alert.accessoryView = popUp
+        alert.addButton(withTitle: L("Set"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn, let upstream = popUp.titleOfSelectedItem else { return }
+        run(["-C", root] + PluginGit.setUpstreamArguments(branch: branch.name, upstream: upstream))
+    }
+
+    /// Delete the branch on its server. Talks to the network, so it is cancellable like fetch and push.
+    @objc private func deleteRemoteSelected() {
+        guard let branch = selectedBranch, branch.isRemote,
+              let arguments = PluginGit.deleteRemoteBranchArguments(branch.name) else {
+            report(L("Select a remote branch to delete on its server."))
+            return
+        }
+        let alert = NSAlert()
+        alert.alertStyle = .critical
+        alert.messageText = String(format: L("Delete %@ on the server?"), branch.name)
+        alert.informativeText = L("Everybody who fetches from it loses the branch. Commits only on it are gone from the server.")
+        alert.addButton(withTitle: L("Delete on the server"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        runCancellable(["-C", root] + arguments, L("Deleting the remote branch…"))
     }
 
     // MARK: - Stash actions

@@ -47,11 +47,24 @@ ernaast, waar de commit toch al plaatsvindt; alle drie tonen voortgang en kunnen
 <p>De werkkopie, de geschiedenis en het menu <strong>Commando’s ▸ Git</strong> bieden meer dan committen:</p>
 <ul>
 <li>Een geselecteerd gestaged of gewijzigd bestand toont zijn diff onder de lijst; geselecteerde regels of een hele hunk worden via het contextmenu gestaged, ge-unstaged of verworpen.</li>
-<li>Het commitveld is een combinatievak: de lijst bevat je laatste commitberichten om te hergebruiken of te bewerken.</li>
+<li>Het commitveld neemt meerdere regels — een onderwerp, een lege regel, een tekst —, commit met <strong>Cmd+Return</strong> en telt de tekens van het onderwerp; de menuknop ernaast bewaart je laatste commitberichten.</li>
 <li><strong>Tonen in het linkerpaneel</strong> en <strong>Tonen in het rechterpaneel</strong> brengen een bestandspaneel naar een bestand uit de lijst of uit de wijzigingen van een commit, terwijl het Git-paneel blijft zoals het is; bestanden die Git LFS bewaart, zijn gemarkeerd met <strong>LFS</strong>.</li>
 <li>Stashes verschijnen in de geschiedenis als kleine vierkantjes boven de commit waarop ze zijn gemaakt, met <strong>Stash toepassen</strong>, <strong>Stash toepassen en verwijderen</strong> en <strong>Stash verwijderen…</strong> in het contextmenu.</li>
-<li><strong>Reflog…</strong> toont elke verplaatsing van HEAD; een commit die verloren ging door een reset of een verwijderde branch komt terug met <strong>Nieuwe branch hier…</strong>. <strong>Remotes en submodules…</strong> voegt remotes toe, hernoemt ze, wijzigt hun URL, verwijdert ze en werkt submodules bij.</li>
+<li><strong>Reflog…</strong> toont elke verplaatsing van HEAD; een commit die verloren ging door een reset of een verwijderde branch komt terug met <strong>Nieuwe branch hier…</strong>.</li>
+<li><strong>Repository-instellingen…</strong> voegt remotes toe, hernoemt ze, wijst ze om en verwijdert ze, voegt submodules toe, werkt ze bij en verwijdert ze, beheert worktrees en geeft alleen deze repository een naam en e-mail voor commits.</li>
 <li><strong>Repository hier aanmaken…</strong> en <strong>Repository klonen…</strong> werken in de map van het actieve paneel, en de klok naast de titel van het paneel gaat terug naar een recente repository.</li>
+</ul>
+<h2 id="als-git-stopt-en-de-instellingen">Als git stopt, en de instellingen</h2>
+<ul>
+<li><strong>Push</strong> stelt de upstream in bij de eerste push van een branch. Heeft de remote commits die deze branch mist, dan biedt het <strong>Pullen, dan pushen</strong> of <strong>Geforceerd pushen</strong> aan, altijd met een lease die weigert als iemand sinds je laatste fetch heeft gepusht; <strong>Geforceerd pushen (met lease)…</strong> staat ook in het contextmenu van <strong>Push</strong>.</li>
+<li>Merkt <strong>Pull</strong> dat de branch en zijn upstream uiteengelopen zijn, dan vraagt het of er gemerged of gerebased moet worden in plaats van te stoppen bij de melding van git.</li>
+<li>Een merge, cherry-pick, revert, rebase of patchreeks die in een conflict stopt, toont boven de geschiedenis een banner met <strong>Doorgaan</strong> en <strong>Afbreken…</strong>; een mergecommit wordt teruggedraaid of gecherry-pickt tegen zijn eerste ouder.</li>
+<li>Selecteer twee commits om ze te vergelijken, of meerdere om ze in één keer te cherry-picken. <strong>Vergelijken met de werkkopie</strong> en <strong>Opslaan als patch…</strong> staan in het menu van de geschiedenis, <strong>Patches toepassen…</strong> in het Git-menu.</li>
+<li>Het zoekveld neemt ook filters — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — los of samen met woorden.</li>
+<li><strong>Bisect: als slecht markeren</strong> en <strong>Bisect: als goed markeren</strong> in het menu van de geschiedenis starten een bisect; de banner biedt dan <strong>Goed</strong>, <strong>Slecht</strong>, <strong>Overslaan</strong> en <strong>Bisect beëindigen</strong> tot git de eerste slechte commit noemt.</li>
+<li>Geselecteerde bestanden of alle wijzigingen stashen vraagt om een bericht en of niet-gevolgde bestanden meegaan of de index blijft. Bestanden in Git LFS kunnen worden vergrendeld en ontgrendeld, en hun bestandstype gevolgd.</li>
+<li>In de branchlijst kan een branch worden hernoemd (<strong>Hernoemen…</strong>), een upstream krijgen (<strong>Upstream instellen…</strong>) of op zijn server worden verwijderd (<strong>Op de remote verwijderen…</strong>).</li>
+<li><strong>Instellingen ▸ Git</strong> bepaalt het git-programma, je globale naam en e-mail, hoe <strong>Pull</strong> werkt, fetchen op de achtergrond, wat de geschiedenis toont en hoe de datums eruitzien, ondertekenen, sign-off en hooks voor commits, en witruimte en contextregels voor diffs. Auteurs dragen gekleurde initialen in de geschiedenis.</li>
 </ul>
 <h2 id="geschiedenis-blame-en-het-web">Geschiedenis, blame en het web</h2>
 <ul>
@@ -96,8 +109,7 @@ afbreken</strong>, zodat een half afgemaakte rebase niet in een terminal hoeft t
 </ul>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
-<li>De plug-in gebruikt de Git van het systeem op <code>/usr/bin/git</code>. Ontbreekt Git, dan melden de opdrachten dat
-  Git niet beschikbaar is. (De Xcode Command Line Tools leveren hem mee.)</li>
+<li>De plug-in gebruikt de Git van het systeem op <code>/usr/bin/git</code>, of het programma dat in <strong>Instellingen ▸ Git</strong> is gekozen. Ontbreekt Git, dan melden de opdrachten dat Git niet beschikbaar is. (De Xcode Command Line Tools leveren het mee.)</li>
 <li>De status van een repository wordt één keer per map gelezen en bewaard, zodat het bladeren door een grote
   repository snel blijft; de cache ververst na elke opdracht die de boom verandert, en volgt ook een commit
   die buiten de app is gemaakt.</li>

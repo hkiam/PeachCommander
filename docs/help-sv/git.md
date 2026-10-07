@@ -51,11 +51,24 @@ Under knapparna visar panelen historiken för alla grenar, fjärrgrenar och tagg
 Arbetskopian, historiken och menyn **Kommandon ▸ Git** erbjuder mer än att checka in:
 
 - En markerad köad eller ändrad fil visar sin diff under listan; markerade rader eller en hel hunk köas, avköas eller kastas från dess snabbmeny.
-- Commit-fältet är en kombinationsruta: Listan innehåller dina senaste commit-meddelanden att återanvända eller redigera.
+- Commitfältet tar flera rader — ett ämne, en tom rad, en brödtext —, gör commit med **Cmd+Retur** och räknar ämnets tecken; menyknappen bredvid håller dina senaste commitmeddelanden.
 - **Visa i vänster panel** och **Visa i höger panel** för en filpanel till en fil från listan eller från en commits ändringar, medan Git-panelen förblir som den är; filer som Git LFS lagrar är märkta **LFS**.
 - Stashar visas i historiken som små kvadrater ovanför den commit de gjordes på, med **Tillämpa stash**, **Tillämpa och ta bort stash** och **Ta bort stash…** i snabbmenyn.
-- **Reflog…** listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med **Ny gren här…**. **Fjärrar och undermoduler…** lägger till, byter namn på, ändrar och tar bort fjärrar och uppdaterar undermoduler.
+- **Reflog…** listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med **Ny gren här…**.
+- **Repository-inställningar…** lägger till, byter namn på, pekar om och tar bort fjärrar, lägger till, uppdaterar och tar bort undermoduler, hanterar worktrees och ger enbart detta repository ett namn och en e-postadress för commits.
 - **Skapa repository här…** och **Klona repository…** arbetar i den aktiva panelens mapp, och klockan bredvid panelens titel går tillbaka till ett nyligen använt repository.
+
+## När git stannar, och inställningarna
+
+- **Push** anger uppströmsgrenen första gången en gren pushas. Har fjärren commits som den här grenen saknar, erbjuder den **Hämta, sedan pusha** eller **Tvinga push**, alltid med en lease som vägrar om någon har pushat sedan din senaste fetch; **Tvinga push (med lease)…** finns också i snabbmenyn för **Push**.
+- Märker **Pull** att grenen och dess uppströmsgren har gått isär, frågar den om den ska slå ihop eller göra rebase i stället för att stanna vid gits meddelande.
+- En sammanslagning, cherry-pick, revert, rebase eller patchserie som stannar i en konflikt visar en banderoll ovanför historiken med **Fortsätt** och **Avbryt…**; en sammanslagningscommit återställs eller cherry-pickas mot sin första förälder.
+- Markera två commits för att jämföra dem, eller flera för att cherry-picka dem på en gång. **Jämför med arbetskopian** och **Spara som patch…** finns i historikens meny, **Tillämpa patchar…** i Git-menyn.
+- Sökfältet tar också filter — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — ensamma eller tillsammans med ord.
+- **Bisect: markera som dålig** och **Bisect: markera som bra** i historikens meny startar en bisect; banderollen erbjuder sedan **Bra**, **Dålig**, **Hoppa över** och **Avsluta bisect** tills git nämner den första dåliga commiten.
+- Att stasha valda filer eller alla ändringar frågar efter ett meddelande och om ospårade filer ska med eller indexet ska vara kvar. Filer i Git LFS kan låsas och låsas upp, och deras filtyp spåras.
+- I grenlistan kan en gren byta namn (**Byt namn…**), få en uppströmsgren (**Ange uppströmsgren…**) eller tas bort på sin server (**Ta bort på fjärren…**).
+- **Inställningar ▸ Git** bestämmer git-programmet, ditt globala namn och din e-post, hur **Pull** arbetar, fetch i bakgrunden, vad historiken visar och hur dess datum ser ut, signering, sign-off och hooks för commits samt blanksteg och kontextrader för diffar. Författare har färgade initialer i historiken.
 
 ## Historik, blame och webben
 
@@ -107,8 +120,7 @@ så att en halvfärdig ombasering inte måste avslutas i en terminal.
 
 ## Anmärkningar
 
-- Insticksprogrammet använder systemets Git i `/usr/bin/git`. Saknas Git meddelar kommandona att Git inte är
-  tillgängligt. (Xcode Command Line Tools innehåller det.)
+- Insticksprogrammet använder systemets Git i `/usr/bin/git` eller programmet som valts i **Inställningar ▸ Git**. Saknas Git meddelar kommandona att Git inte är tillgängligt. (Xcode Command Line Tools innehåller det.)
 - Arkivets status läses en gång per mapp och cachas, så att bläddra i ett stort arkiv förblir snabbt; cachen
   förnyas efter varje kommando som ändrar trädet, och följer även en incheckning som gjorts utanför
   programmet.

@@ -52,11 +52,24 @@ Unter seinen Schaltflächen zeigt das Panel die Historie aller Branches, Remote-
 Arbeitskopie, Historie und das Menü **Befehle ▸ Git** bieten mehr als das Committen:
 
 - Eine ausgewählte gestagte oder geänderte Datei zeigt ihren Diff unter der Liste; ausgewählte Zeilen oder ein ganzer Hunk lassen sich über sein Kontextmenü stagen, unstagen oder verwerfen.
-- Das Commit-Feld ist eine Combo-Box: Ihre Liste enthält deine letzten Commit-Nachrichten zum Wiederverwenden oder Bearbeiten.
+- Das Commit-Feld nimmt mehrere Zeilen — Betreff, Leerzeile, Text —, committet mit **Cmd+Return** und zählt die Zeichen des Betreffs; der Menüknopf daneben hält deine letzten Commit-Nachrichten.
 - **Im linken Panel zeigen** und **Im rechten Panel zeigen** bringen ein Dateipanel zu einer Datei der Liste oder der Änderungen eines Commits, während das Git-Panel bleibt, wie es ist; von Git LFS gespeicherte Dateien sind mit **LFS** markiert.
 - Stashes erscheinen in der Historie als kleine Quadrate über dem Commit, auf dem sie angelegt wurden, mit **Stash anwenden**, **Stash anwenden und entfernen** und **Stash verwerfen…** im Kontextmenü.
-- **Reflog…** listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit **Neuer Branch hier…** zurück. **Remotes & Submodule…** fügt Remotes hinzu, benennt sie um, ändert ihre URL, entfernt sie und aktualisiert Submodule.
+- **Reflog…** listet jede Bewegung von HEAD; ein durch Reset oder gelöschten Branch verlorener Commit kommt mit **Neuer Branch hier…** zurück.
+- **Repository-Einstellungen…** fügt Remotes hinzu, benennt sie um, ändert ihre URL und entfernt sie, fügt Submodule hinzu, aktualisiert und entfernt sie, verwaltet Worktrees und gibt diesem Repository allein Name und E-Mail für Commits.
 - **Repository hier anlegen…** und **Repository klonen…** arbeiten im Ordner des aktiven Panels, und die Uhr neben dem Titel des Panels führt zurück zu einem zuletzt genutzten Repository.
+
+## Wenn git anhält, und die Einstellungen
+
+- **Push** setzt beim ersten Push eines Branches den Upstream. Hat das Remote Commits, die diesem Branch fehlen, bietet es **Pullen, dann pushen** oder **Push erzwingen** an — immer mit Lease, der ablehnt, wenn seit deinem letzten Fetch jemand gepusht hat; **Push erzwingen (mit Lease)…** steht auch im Kontextmenü von **Push**.
+- Stellt **Pull** fest, dass Branch und Upstream auseinandergelaufen sind, fragt es, ob gemergt oder rebased werden soll, statt mit der Meldung von git stehen zu bleiben.
+- Ein Merge, Cherry-Pick, Revert, Rebase oder eine Patch-Serie, die in einem Konflikt anhält, zeigt über der Historie ein Banner mit **Fortsetzen** und **Abbrechen…**; ein Merge-Commit wird gegen seinen ersten Parent revertiert oder gecherry-pickt.
+- Wähle zwei Commits, um sie zu vergleichen, oder mehrere, um sie in einem Zug zu cherry-picken. **Mit der Arbeitskopie vergleichen** und **Als Patch speichern…** stehen im Menü der Historie, **Patches anwenden…** im Git-Menü.
+- Das Suchfeld nimmt auch Filter — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — allein oder zusammen mit Wörtern.
+- **Bisect: als schlecht markieren** und **Bisect: als gut markieren** im Menü der Historie starten ein Bisect; das Banner bietet dann **Gut**, **Schlecht**, **Überspringen** und **Bisect beenden**, bis git den ersten schlechten Commit nennt.
+- Ausgewählte Dateien oder alle Änderungen zu stashen fragt nach einer Nachricht und ob unversionierte Dateien dazugehören oder der Index bleibt. Dateien in Git LFS lassen sich sperren und entsperren und ihr Dateityp verfolgen.
+- In der Branch-Liste lässt sich ein Branch umbenennen (**Umbenennen…**), mit einem Upstream verbinden (**Upstream setzen…**) oder auf seinem Server löschen (**Auf dem Remote löschen…**).
+- **Einstellungen ▸ Git** legt das git-Programm fest, deinen globalen Namen und deine E-Mail, wie **Pull** arbeitet, den Fetch im Hintergrund, was die Historie zeigt und wie ihre Daten aussehen, Signieren, Sign-off und Hooks für Commits sowie Leerzeichen und Kontextzeilen für Diffs. Autoren tragen in der Historie farbige Initialen.
 
 ## Historie, Blame und das Web
 
@@ -108,8 +121,7 @@ Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu **Fortsetze
 
 ## Hinweise
 
-- Das Plugin verwendet das System-Git unter `/usr/bin/git`. Fehlt Git, melden die Befehle, dass Git nicht
-  verfügbar ist. (Die Xcode Command Line Tools bringen es mit.)
+- Das Plugin verwendet das System-Git unter `/usr/bin/git` oder das in **Einstellungen ▸ Git** gewählte Programm. Fehlt Git, melden die Befehle, dass Git nicht verfügbar ist. (Die Xcode Command Line Tools bringen es mit.)
 - Der Repository-Status wird einmal pro Ordner gelesen und zwischengespeichert, damit das Blättern in einem
   großen Repository schnell bleibt; der Cache erneuert sich nach jedem Befehl, der den Baum ändert, und folgt
   auch einem Commit, der außerhalb der App gemacht wurde.

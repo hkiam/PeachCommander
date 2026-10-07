@@ -66,6 +66,16 @@
 				<key>category</key>
 				<string>Commands</string>
 				<key>id</key>
+				<string>plugin.git.push.force</string>
+				<key>title</key>
+				<string>Force push (with lease)…</string>
+			</dict>
+			<dict>
+				<key>async</key>
+				<true/>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
 				<string>plugin.git.fetch</string>
 				<key>title</key>
 				<string>Fetch</string>
@@ -122,6 +132,14 @@
 				<key>category</key>
 				<string>Commands</string>
 				<key>id</key>
+				<string>plugin.git.am</string>
+				<key>title</key>
+				<string>Apply Patches…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
 				<string>plugin.git.init</string>
 				<key>title</key>
 				<string>Create Repository Here…</string>
@@ -142,7 +160,7 @@
 				<key>id</key>
 				<string>plugin.git.remotes</string>
 				<key>title</key>
-				<string>Remotes &amp; Submodules…</string>
+				<string>Repository Settings…</string>
 			</dict>
 			<dict>
 				<key>async</key>
@@ -460,6 +478,18 @@
 			</dict>
 			<dict>
 				<key>command</key>
+				<string>plugin.git.push.force</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>141</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
 				<string>plugin.git.fetch</string>
 				<key>group</key>
 				<string>5_git</string>
@@ -557,6 +587,18 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>105</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.am</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>107</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -678,6 +720,14 @@
 				<string>sidebar</string>
 				<key>id</key>
 				<string>plugin.git.panel</string>
+				<key>title</key>
+				<string>Git</string>
+			</dict>
+			<dict>
+				<key>container</key>
+				<string>settings</string>
+				<key>id</key>
+				<string>plugin.git.settings</string>
 				<key>title</key>
 				<string>Git</string>
 			</dict>

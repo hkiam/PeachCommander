@@ -15,8 +15,15 @@ final class GitRemotesView: NSView {
     private var theme: PluginTheme
     private var remotes: [PluginGit.Remote] = []
     private var submodules: [PluginGit.Submodule] = []
+    private var worktrees: [PluginGit.Worktree] = []
     private let remoteTable = GitTable()
     private let submoduleTable = GitTable()
+    private let worktreeTable = GitTable()
+    /// The name and e-mail this repository commits with (phase 8); empty = git's global ones, shown as
+    /// the placeholder.
+    private let localName = NSTextField()
+    private let localEmail = NSTextField()
+    private var loadedName = "", loadedEmail = ""
     private let busy = GitBusyIndicator()
     private var preferredWidth: [NSUserInterfaceItemIdentifier: CGFloat] = [:]
 
@@ -39,6 +46,7 @@ final class GitRemotesView: NSView {
             (remoteTable, [("name", L("Name"), 120), ("fetch", L("Fetch URL"), 300), ("push", L("Push URL"), 300)]),
             (submoduleTable, [("path", L("Path"), 260), ("state", L("State"), 160), ("commit", L("Commit"), 120),
                               ("describe", L("Description"), 180)]),
+            (worktreeTable, [("wtpath", L("Path"), 380), ("branch", L("Branch"), 200), ("wtstate", L("State"), 140)]),
         ] as [(GitTable, [(String, String, CGFloat)])] {
             table.rowHeight = 18
             table.usesAlternatingRowBackgroundColors = true
@@ -61,11 +69,20 @@ final class GitRemotesView: NSView {
             (nil, nil), (L("Copy URL"), #selector(copyURL)),
         ], target: self)
         submoduleTable.menu = gitMenu([
-            (L("Update submodules"), #selector(updateSubmodules)), (nil, nil),
+            (L("Update submodules"), #selector(updateSubmodules)),
+            (L("Add submodule…"), #selector(addSubmodule)), (L("Remove submodule…"), #selector(removeSubmodule)),
+            (nil, nil),
             (L("Show in the left panel"), #selector(showLeft)), (L("Show in the right panel"), #selector(showRight)),
         ], target: self)
         submoduleTable.doubleAction = #selector(showLeft)
         submoduleTable.target = self
+        worktreeTable.menu = gitMenu([
+            (L("Add worktree…"), #selector(addWorktree)), (L("Remove worktree…"), #selector(removeWorktree)),
+            (nil, nil),
+            (L("Show in the left panel"), #selector(showWorktreeLeft)), (L("Show in the right panel"), #selector(showWorktreeRight)),
+        ], target: self)
+        worktreeTable.doubleAction = #selector(showWorktreeLeft)
+        worktreeTable.target = self
 
         func pane(_ title: String, _ table: GitTable, _ buttons: [(String, Selector)]) -> NSStackView {
             let label = NSTextField(labelWithString: title)
@@ -100,20 +117,44 @@ final class GitRemotesView: NSView {
                                                            (L("Rename…"), #selector(renameRemote)),
                                                            (L("Change URL…"), #selector(changeURL)),
                                                            (L("Remove…"), #selector(removeRemote))])
-        let submodulesPane = pane(L("Submodules"), submoduleTable, [(L("Update submodules"), #selector(updateSubmodules))])
-        let stack = NSStackView(views: [remotesPane, submodulesPane, busy])
+        let submodulesPane = pane(L("Submodules"), submoduleTable, [(L("Update submodules"), #selector(updateSubmodules)),
+                                                                    (L("Add submodule…"), #selector(addSubmodule)),
+                                                                    (L("Remove submodule…"), #selector(removeSubmodule))])
+        let worktreesPane = pane(L("Worktrees"), worktreeTable, [(L("Add worktree…"), #selector(addWorktree)),
+                                                                 (L("Remove worktree…"), #selector(removeWorktree))])
+        for field in [localName, localEmail] {
+            field.target = self
+            field.action = #selector(identityChanged)
+            field.delegate = self
+        }
+        let identityTitle = NSTextField(labelWithString: L("Identity for this repository"))
+        identityTitle.font = .systemFont(ofSize: 12, weight: .semibold)
+        let identityRow = NSStackView(views: [NSTextField(labelWithString: L("Name:")), localName,
+                                              NSTextField(labelWithString: L("E-mail:")), localEmail])
+        identityRow.orientation = .horizontal
+        identityRow.spacing = 6
+        localName.widthAnchor.constraint(equalTo: localEmail.widthAnchor).isActive = true
+        let identityPane = NSStackView(views: [identityTitle, identityRow])
+        identityPane.orientation = .vertical
+        identityPane.alignment = .leading
+        identityPane.spacing = 4
+        identityPane.setHuggingPriority(.defaultHigh, for: .vertical)
+        identityRow.widthAnchor.constraint(equalTo: identityPane.widthAnchor).isActive = true
+        let stack = NSStackView(views: [identityPane, remotesPane, submodulesPane, worktreesPane, busy])
         stack.orientation = .vertical
         stack.alignment = .width
         stack.distribution = .fill
         stack.spacing = 10
         stack.edgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         stack.translatesAutoresizingMaskIntoConstraints = false
-        for child in [remotesPane, submodulesPane] as [NSView] {
+        for child in [identityPane, remotesPane, submodulesPane, worktreesPane] as [NSView] {
             child.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -16).isActive = true
         }
-        let share = remotesPane.heightAnchor.constraint(equalTo: submodulesPane.heightAnchor)
-        share.priority = .init(500)
-        share.isActive = true
+        for other in [submodulesPane, worktreesPane] {
+            let share = remotesPane.heightAnchor.constraint(equalTo: other.heightAnchor)
+            share.priority = .init(500)
+            share.isActive = true
+        }
         addSubview(stack)
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: topAnchor), stack.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -126,7 +167,7 @@ final class GitRemotesView: NSView {
         theme = PluginTheme(services)
         wantsLayer = true
         layer?.backgroundColor = theme.windowBackground.cgColor
-        for table in [remoteTable, submoduleTable] {
+        for table in [remoteTable, submoduleTable, worktreeTable] {
             table.backgroundColor = theme.background
             table.enclosingScrollView?.drawsBackground = true
             table.enclosingScrollView?.backgroundColor = theme.background
@@ -137,6 +178,7 @@ final class GitRemotesView: NSView {
     @objc private func clipFrameChanged() {
         gitFitColumns(remoteTable, preferred: preferredWidth)
         gitFitColumns(submoduleTable, preferred: preferredWidth)
+        gitFitColumns(worktreeTable, preferred: preferredWidth)
     }
 
     private func reload() {
@@ -145,13 +187,26 @@ final class GitRemotesView: NSView {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let remotes = PluginGit.parseRemotes(PluginGitRepo.run(["-C", root] + PluginGit.remotesArguments).out)
             let submodules = PluginGit.parseSubmodules(PluginGitRepo.run(["-C", root] + PluginGit.submodulesArguments).out)
+            let worktrees = PluginGit.parseWorktrees(PluginGitRepo.run(["-C", root] + PluginGit.worktreesArguments).out)
+            func config(_ scope: String, _ key: String) -> String {
+                PluginGitRepo.run(["-C", root, "config", scope, key]).out.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            let identity = (config("--local", "user.name"), config("--local", "user.email"),
+                            config("--global", "user.name"), config("--global", "user.email"))
             DispatchQueue.main.async {
                 self?.busy.stopAnimation(nil)
                 guard let self else { return }
                 self.remotes = remotes
                 self.submodules = submodules
+                self.worktrees = worktrees
                 self.remoteTable.reloadData()
                 self.submoduleTable.reloadData()
+                self.worktreeTable.reloadData()
+                self.loadedName = identity.0; self.loadedEmail = identity.1
+                self.localName.stringValue = identity.0
+                self.localEmail.stringValue = identity.1
+                self.localName.placeholderString = identity.2.isEmpty ? L("Name for commits") : identity.2
+                self.localEmail.placeholderString = identity.3.isEmpty ? L("E-mail for commits") : identity.3
             }
         }
     }
@@ -205,7 +260,116 @@ final class GitRemotesView: NSView {
 
     @objc private func copyURL() { selectedRemote.map { gitCopyToClipboard($0.fetchURL) } }
 
+    // MARK: - Identity for this repository (phase 8)
+
+    /// Written only when changed; an emptied field goes back to the global value.
+    @objc private func identityChanged() {
+        var calls: [[String]] = []
+        let name = localName.stringValue.trimmingCharacters(in: .whitespaces)
+        let email = localEmail.stringValue.trimmingCharacters(in: .whitespaces)
+        if name != loadedName { calls.append(["-C", root] + PluginGit.localIdentityArguments(key: "user.name", value: name)) }
+        if email != loadedEmail { calls.append(["-C", root] + PluginGit.localIdentityArguments(key: "user.email", value: email)) }
+        guard !calls.isEmpty else { return }
+        loadedName = name; loadedEmail = email
+        DispatchQueue.global(qos: .utility).async { for call in calls { _ = PluginGitRepo.run(call) } }
+    }
+
+    // MARK: - Worktrees (phase 8)
+
+    private var selectedWorktree: PluginGit.Worktree? {
+        worktrees.indices.contains(worktreeTable.selectedRow) ? worktrees[worktreeTable.selectedRow] : nil
+    }
+
+    /// A second checkout of this repository on another branch, beside it: `<repository>-<branch>`.
+    @objc private func addWorktree() {
+        guard let branch = gitPrompt(L("Add worktree…"), L("Branch (an existing one, or a new name):")) else { return }
+        let parent = (root as NSString).deletingLastPathComponent
+        let folder = (root as NSString).lastPathComponent + "-" + branch.replacingOccurrences(of: "/", with: "-")
+        let path = (parent as NSString).appendingPathComponent(folder)
+        let root = self.root, box = ServicesBox(services)
+        busy.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let exists = PluginGitRepo.run(["-C", root, "rev-parse", "--verify", "--quiet", "refs/heads/" + branch]).ok
+            let result = PluginGitRepo.run(["-C", root] + PluginGit.addWorktreeArguments(path: path, branch: branch, create: !exists),
+                                           combined: true)
+            DispatchQueue.main.async {
+                self?.busy.stopAnimation(nil)
+                if !result.ok { GitCommitActions.report(box.services, L("Worktrees"), result.out) }
+                self?.reload()
+            }
+        }
+    }
+
+    @objc private func removeWorktree() {
+        guard let worktree = selectedWorktree, !worktree.isMain else { return }
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: L("Remove the worktree %@?"), (worktree.path as NSString).lastPathComponent)
+        alert.informativeText = L("Its folder is deleted. git refuses while it has uncommitted changes; its branch stays.")
+        alert.addButton(withTitle: L("Remove"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        run(PluginGit.removeWorktreeArguments(worktree.path), L("Worktrees"))
+    }
+
+    @objc private func showWorktreeLeft() { showWorktree(side: 0) }
+    @objc private func showWorktreeRight() { showWorktree(side: 1) }
+
+    private func showWorktree(side: Int) {
+        guard let worktree = selectedWorktree else { return }
+        worktree.path.withCString { services.openPathInPanel?(services.host, Int32(side), $0) }
+    }
+
     // MARK: - Submodules
+
+    @objc private func addSubmodule() {
+        guard let url = gitPrompt(L("Add submodule…"), L("URL:")),
+              let name = PluginGit.cloneDirectoryName(url),
+              let path = gitPrompt(L("Add submodule…"), String(format: L("Path in this repository (e.g. libs/%@):"), name))
+        else { return }
+        run(PluginGit.addSubmoduleArguments(url: url, path: path), L("Submodules"))
+    }
+
+    @objc private func removeSubmodule() {
+        guard let submodule = selectedSubmodule else { return }
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: L("Remove the submodule %@?"), submodule.path)
+        alert.informativeText = L("Its checkout, its entry in .gitmodules and the index are removed; commit to record it.")
+        alert.addButton(withTitle: L("Remove"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let calls = PluginGit.removeSubmoduleArguments(submodule.path)
+        let root = self.root, box = ServicesBox(services)
+        busy.startAnimation(nil)
+        let checkout = (root as NSString).appendingPathComponent(submodule.path)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            // Its repository under .git/modules is found first — `deinit` empties the checkout that
+            // knows where it is — and deleted last, or adding a submodule at this path again would
+            // find the old one and refuse.
+            func line(_ arguments: [String]) -> String? {
+                let result = PluginGitRepo.run(arguments)
+                let text = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
+                return result.ok && !text.isEmpty ? text : nil
+            }
+            let gitDir = line(["-C", checkout] + PluginGit.submoduleGitDirArguments)
+            let common = line(["-C", root] + PluginGit.commonGitDirArguments)
+            var failure: String?
+            for call in calls {
+                let result = PluginGitRepo.run(["-C", root] + call, combined: true)
+                if !result.ok { failure = result.out; break }
+            }
+            if failure == nil, let gitDir, let common,
+               PluginGit.isRemovableSubmoduleGitDir(gitDir, commonGitDir: common) {
+                try? FileManager.default.removeItem(atPath: gitDir)
+            }
+            DispatchQueue.main.async {
+                self?.busy.stopAnimation(nil)
+                if let failure { GitCommitActions.report(box.services, L("Submodules"), failure) }
+                self?.reload()
+            }
+        }
+    }
 
     private var selectedSubmodule: PluginGit.Submodule? {
         submodules.indices.contains(submoduleTable.selectedRow) ? submodules[submoduleTable.selectedRow] : nil
@@ -265,6 +429,9 @@ extension GitRemotesView: NSMenuItemValidation {
         case #selector(showLeft), #selector(showRight):
             return selectedSubmodule.map { $0.state != .uninitialized } ?? false
         case #selector(updateSubmodules): return !submodules.isEmpty
+        case #selector(removeSubmodule): return selectedSubmodule != nil
+        case #selector(removeWorktree): return selectedWorktree.map { !$0.isMain } ?? false
+        case #selector(showWorktreeLeft), #selector(showWorktreeRight): return selectedWorktree != nil
         default: return true
         }
     }
@@ -277,7 +444,7 @@ extension GitRemotesView: NSTableViewDataSource, NSTableViewDelegate {
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
-        tableView === remoteTable ? remotes.count : submodules.count
+        tableView === remoteTable ? remotes.count : tableView === worktreeTable ? worktrees.count : submodules.count
     }
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -302,6 +469,15 @@ extension GitRemotesView: NSTableViewDataSource, NSTableViewDelegate {
                 field.stringValue = remote.pushURL
                 field.textColor = remote.pushURL == remote.fetchURL ? theme.secondaryText : theme.text
             }
+        } else if tableView === worktreeTable, worktrees.indices.contains(row) {
+            let worktree = worktrees[row]
+            switch id {
+            case "wtpath": field.stringValue = worktree.path
+            case "branch": field.stringValue = worktree.branch ?? L("(detached)")
+            default:
+                field.stringValue = worktree.isMain ? L("Main") : (worktree.isLocked ? L("Locked") : "")
+                field.textColor = theme.secondaryText
+            }
         } else if submodules.indices.contains(row) {
             let submodule = submodules[row]
             switch id {
@@ -317,4 +493,9 @@ extension GitRemotesView: NSTableViewDataSource, NSTableViewDelegate {
         }
         return field
     }
+}
+
+extension GitRemotesView: NSTextFieldDelegate {
+    /// Saved when a field loses focus as well as on Return.
+    func controlTextDidEndEditing(_ notification: Notification) { identityChanged() }
 }

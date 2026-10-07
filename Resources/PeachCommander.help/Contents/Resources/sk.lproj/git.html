@@ -46,11 +46,24 @@ kde sa aj tak zapisuje; všetky tri ukazujú postup a dajú sa prerušiť.</p>
 <p>Pracovná kópia, história a ponuka <strong>Príkazy ▸ Git</strong> ponúkajú viac než zápis:</p>
 <ul>
 <li>Vybraný pripravený alebo zmenený súbor ukáže pod zoznamom svoj diff; vybrané riadky alebo celý blok sa dajú z jeho kontextovej ponuky pripraviť, vrátiť z prípravy alebo zahodiť.</li>
-<li>Pole commitu je rozbaľovacie pole: jeho zoznam obsahuje tvoje posledné správy commitov na opätovné použitie alebo úpravu.</li>
+<li>Pole commitu prijíma viac riadkov — predmet, prázdny riadok, text —, commituje cez <strong>Cmd+Return</strong> a počíta znaky predmetu; tlačidlo ponuky vedľa drží tvoje posledné správy commitov.</li>
 <li><strong>Zobraziť v ľavom paneli</strong> a <strong>Zobraziť v pravom paneli</strong> prenesú súborový panel na súbor zo zoznamu alebo zo zmien commitu, zatiaľ čo panel Git zostane, ako je; súbory uložené Git LFS sú označené <strong>LFS</strong>.</li>
 <li>Stashe sa v histórii zobrazujú ako malé štvorce nad commitom, na ktorom vznikli, s <strong>Použiť stash</strong>, <strong>Použiť a odobrať stash</strong> a <strong>Odstrániť stash…</strong> v kontextovej ponuke.</li>
-<li><strong>Reflog…</strong> vypíše každý posun HEAD; commit stratený resetom alebo odstránenou vetvou sa vráti cez <strong>Nová vetva tu…</strong>. <strong>Vzdialené repozitáre a submoduly…</strong> pridáva, premenúva, presmerúva a odoberá vzdialené repozitáre a aktualizuje submoduly.</li>
+<li><strong>Reflog…</strong> vypíše každý posun HEAD; commit stratený resetom alebo odstránenou vetvou sa vráti cez <strong>Nová vetva tu…</strong>.</li>
+<li><strong>Nastavenia repozitára…</strong> pridáva, premenúva, presmerúva a odstraňuje vzdialené repozitáre, pridáva, aktualizuje a odstraňuje submoduly, spravuje worktree a dáva len tomuto repozitáru meno a e-mail pre commity.</li>
 <li><strong>Vytvoriť repozitár tu…</strong> a <strong>Klonovať repozitár…</strong> pracujú v priečinku aktívneho panela a hodiny vedľa názvu panela vedú späť k nedávnemu repozitáru.</li>
+</ul>
+<h2 id="ked-sa-git-zastavi-a-nastavenia">Keď sa git zastaví, a nastavenia</h2>
+<ul>
+<li><strong>Push</strong> pri prvom odoslaní vetvy nastaví upstream. Ak má vzdialený repozitár commity, ktoré tejto vetve chýbajú, ponúkne <strong>Stiahnuť, potom odoslať</strong> alebo <strong>Vynútiť odoslanie</strong> — vždy s lease, ktorý odmietne, ak niekto od tvojho posledného fetch odoslal; <strong>Vynútiť odoslanie (s lease)…</strong> je aj v kontextovej ponuke tlačidla <strong>Push</strong>.</li>
+<li>Ak <strong>Pull</strong> zistí, že sa vetva a jej upstream rozišli, opýta sa, či zlúčiť, alebo rebasovať, namiesto toho, aby skončil pri správe gitu.</li>
+<li>Zlúčenie, cherry-pick, revert, rebase alebo séria patchov, ktoré sa zastavia v konflikte, ukážu nad históriou pruh s <strong>Pokračovať</strong> a <strong>Prerušiť…</strong>; zlučovací commit sa vracia alebo cherry-pickuje voči svojmu prvému rodičovi.</li>
+<li>Vyber dva commity a porovnaj ich, alebo niekoľko a cherry-pickni ich naraz. <strong>Porovnať s pracovnou kópiou</strong> a <strong>Uložiť ako patch…</strong> sú v ponuke histórie, <strong>Použiť patche…</strong> v ponuke Git.</li>
+<li>Pole hľadania prijíma aj filtre — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — samotné alebo spolu so slovami.</li>
+<li><strong>Bisect: označiť ako zlý</strong> a <strong>Bisect: označiť ako dobrý</strong> v ponuke histórie spustia bisect; pruh potom ponúka <strong>Dobrý</strong>, <strong>Zlý</strong>, <strong>Preskočiť</strong> a <strong>Ukončiť bisect</strong>, kým git nenájde prvý zlý commit.</li>
+<li>Odloženie vybraných súborov alebo všetkých zmien do stashu sa opýta na správu a na to, či zahrnúť nesledované súbory alebo ponechať index. Súbory v Git LFS sa dajú zamknúť a odomknúť a ich typ súboru sledovať.</li>
+<li>V zozname vetiev sa dá vetva premenovať (<strong>Premenovať…</strong>), dať jej upstream (<strong>Nastaviť upstream…</strong>) alebo ju odstrániť na jej serveri (<strong>Odstrániť na vzdialenom repozitári…</strong>).</li>
+<li><strong>Nastavenia ▸ Git</strong> určujú program git, tvoje globálne meno a e-mail, ako pracuje <strong>Pull</strong>, fetch na pozadí, čo ukazuje história a ako vyzerajú jej dátumy, podpisovanie, sign-off a hooky commitov a medzery a riadky kontextu v diffoch. Autori majú v histórii farebné iniciály.</li>
 </ul>
 <h2 id="historia-blame-a-web">História, blame a web</h2>
 <ul>
@@ -95,8 +108,7 @@ preskladanie</strong>, aby sa rozrobené preskladanie nemuselo dokončovať v te
 </ul>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Zásuvný modul používa systémový Git v <code>/usr/bin/git</code>. Ak Git chýba, príkazy oznámia, že Git nie je k
-  dispozícii. (Prinášajú ho Xcode Command Line Tools.)</li>
+<li>Zásuvný modul používa systémový Git v <code>/usr/bin/git</code> alebo program zvolený v <strong>Nastavenia ▸ Git</strong>. Ak Git chýba, príkazy oznámia, že Git nie je k dispozícii. (Dodávajú ho Xcode Command Line Tools.)</li>
 <li>Stav repozitára sa číta raz na priečinok a ukladá do vyrovnávacej pamäte, aby prechádzanie veľkého
   repozitára zostalo rýchle; pamäť sa obnoví po každom príkaze, ktorý zmení strom, a sleduje aj zápis
   urobený mimo aplikácie.</li>

@@ -51,11 +51,24 @@ Below its buttons the panel shows the history of every branch, remote branch and
 The working copy, the history and the **Commands ▸ Git** menu offer more than committing:
 
 - Selecting a staged or changed file shows its diff under the list; selected lines or a whole hunk can be staged, unstaged or discarded from its context menu.
-- The commit box is a combo box: its list holds your last commit messages, to reuse or edit.
+- The commit box takes several lines — a subject, a blank line, a body — commits with **Cmd+Return** and counts the subject's characters; the menu button beside it holds your last commit messages.
 - **Show in the left panel** and **Show in the right panel** take a file panel to a file of the list or of a commit's changes, while the Git panel stays as it is; files stored by Git LFS are marked **LFS**.
 - Stashes appear in the history as small squares above the commit they were made on, with **Apply stash**, **Pop stash** and **Drop stash…** in their context menu.
-- **Reflog…** lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with **New branch here…**. **Remotes & Submodules…** adds, renames, re-points and removes remotes and updates submodules.
+- **Reflog…** lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with **New branch here…**.
+- **Repository Settings…** adds, renames, re-points and removes remotes, adds, updates and removes submodules, manages worktrees, and gives this repository alone a name and e-mail for commits.
 - **Create Repository Here…** and **Clone Repository…** work in the active panel's folder, and the clock beside the panel's title goes back to a recent repository.
+
+## When git stops, and the settings
+
+- **Push** sets the upstream the first time a branch is pushed. If the remote has commits this branch lacks, it offers **Pull, then push** or **Force push**, always with a lease that refuses if someone pushed since your last fetch; **Force push (with lease)…** is also in the right-click menu of **Push**.
+- If **Pull** finds that the branch and its upstream have diverged, it asks whether to merge or to rebase instead of stopping with git's message.
+- A merge, cherry-pick, revert, rebase or patch series that stops in a conflict shows a banner above the history with **Continue** and **Abort…**; a merge commit is reverted or cherry-picked against its first parent.
+- Select two commits to compare them, or several to cherry-pick them in one go. **Compare with the working tree** and **Save as patch…** are in the history's menu, **Apply Patches…** is in the Git menu.
+- The search field also takes filters — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — alone or together with words.
+- **Bisect: mark as bad** and **Bisect: mark as good** in the history's menu start a bisect; the banner then offers **Good**, **Bad**, **Skip** and **End bisect** until git names the first bad commit.
+- Stashing selected files or all changes asks for a message and whether to include untracked files or keep the index. Files in Git LFS can be locked and unlocked, and their file type tracked.
+- In the branch list a branch can be renamed (**Rename…**), given an upstream (**Set upstream…**) or deleted on its server (**Delete on the remote…**).
+- **Settings ▸ Git** sets the git program, your global name and e-mail, how **Pull** works, background fetch, what the history shows and how its dates look, signing, sign-off and hooks for commits, and whitespace and context lines for diffs. Authors in the history carry coloured initials.
 
 ## History, blame and the web
 
@@ -105,8 +118,7 @@ be finished in a terminal.
 
 ## Notes
 
-- The plugin uses the system Git at `/usr/bin/git`. If Git isn't installed, the commands report that Git is
-  not available. (Installing the Xcode Command Line Tools provides it.)
+- The plugin uses the system Git at `/usr/bin/git`, or the program chosen in **Settings ▸ Git**. If Git isn't installed, the commands report that Git is not available. (Installing the Xcode Command Line Tools provides it.)
 - Repository status is read once per folder and cached, so scrolling a large repo stays fast; the cache
   refreshes after any command that changes the tree, and follows a commit made outside the app.
 - Linked worktrees and submodules are supported: a file inside a submodule shows the *submodule's* status and

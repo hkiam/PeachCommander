@@ -46,11 +46,24 @@ siden av, der committen uansett skjer; alle tre viser framdrift og kan avbrytes.
 <p>Arbeidskopien, historikken og menyen <strong>Kommandoer ▸ Git</strong> tilbyr mer enn å committe:</p>
 <ul>
 <li>En markert stagede eller endret fil viser diffen sin under listen; markerte linjer eller en hel hunk stages, unstages eller forkastes fra kontekstmenyen.</li>
-<li>Commit-feltet er en kombinasjonsboks: Listen inneholder de siste commit-meldingene dine til gjenbruk eller redigering.</li>
+<li>Commitfeltet tar flere linjer — et emne, en tom linje, en brødtekst —, committer med <strong>Cmd+Retur</strong> og teller emnets tegn; menyknappen ved siden av holder dine siste commitmeldinger.</li>
 <li><strong>Vis i venstre panel</strong> og <strong>Vis i høyre panel</strong> fører et filpanel til en fil fra listen eller fra en commits endringer, mens Git-panelet blir som det er; filer som Git LFS lagrer, er merket <strong>LFS</strong>.</li>
 <li>Stasher vises i historikken som små firkanter over commiten de ble laget på, med <strong>Bruk stash</strong>, <strong>Bruk og fjern stash</strong> og <strong>Slett stash…</strong> i kontekstmenyen.</li>
-<li><strong>Reflog…</strong> viser hver flytting av HEAD; en commit som gikk tapt ved en tilbakestilling eller en slettet gren, kommer tilbake med <strong>Ny gren her…</strong>. <strong>Remotes og undermoduler…</strong> legger til, gir nytt navn, endrer og fjerner remotes og oppdaterer undermoduler.</li>
+<li><strong>Reflog…</strong> viser hver flytting av HEAD; en commit som gikk tapt ved en tilbakestilling eller en slettet gren, kommer tilbake med <strong>Ny gren her…</strong>.</li>
+<li><strong>Repository-innstillinger…</strong> legger til, gir nytt navn, omdirigerer og fjerner remotes, legger til, oppdaterer og fjerner undermoduler, styrer worktrees og gir dette repositoryet alene et navn og en e-post for commits.</li>
 <li><strong>Opprett repository her…</strong> og <strong>Klon repository…</strong> arbeider i mappen til det aktive panelet, og klokken ved siden av panelets tittel går tilbake til et nylig repository.</li>
+</ul>
+<h2 id="nar-git-stopper-og-innstillingene">Når git stopper, og innstillingene</h2>
+<ul>
+<li><strong>Push</strong> setter upstream første gang en gren pushes. Har remoten commits denne grenen mangler, tilbyr den <strong>Pull, deretter push</strong> eller <strong>Tving push</strong>, alltid med en lease som avviser hvis noen har pushet siden din siste fetch; <strong>Tving push (med lease)…</strong> finnes også i hurtigmenyen til <strong>Push</strong>.</li>
+<li>Finner <strong>Pull</strong> at grenen og upstream har gått hver sin vei, spør den om det skal merges eller rebases i stedet for å stoppe ved gits melding.</li>
+<li>En merge, en cherry-pick, en revert, en rebase eller en patchserie som stopper i en konflikt, viser et banner over historikken med <strong>Fortsett</strong> og <strong>Avbryt…</strong>; en merge-commit reverteres eller cherry-pickes mot sin første forelder.</li>
+<li>Velg to commits for å sammenligne dem, eller flere for å cherry-picke dem på én gang. <strong>Sammenlign med arbeidskopien</strong> og <strong>Lagre som patch…</strong> står i historikkens meny, <strong>Bruk patcher…</strong> i Git-menyen.</li>
+<li>Søkefeltet tar også filtre — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — alene eller sammen med ord.</li>
+<li><strong>Bisect: merk som dårlig</strong> og <strong>Bisect: merk som god</strong> i historikkens meny starter en bisect; banneret tilbyr så <strong>God</strong>, <strong>Dårlig</strong>, <strong>Hopp over</strong> og <strong>Avslutt bisect</strong> til git nevner den første dårlige commiten.</li>
+<li>Å stashe valgte filer eller alle endringer ber om en melding og om usporede filer skal med eller indeksen skal bli. Filer i Git LFS kan låses og låses opp, og filtypen deres spores.</li>
+<li>I grenlisten kan en gren få nytt navn (<strong>Gi nytt navn…</strong>), få en upstream (<strong>Angi upstream…</strong>) eller slettes på serveren sin (<strong>Slett på remoten…</strong>).</li>
+<li><strong>Innstillinger ▸ Git</strong> bestemmer git-programmet, ditt globale navn og din e-post, hvordan <strong>Pull</strong> arbeider, fetch i bakgrunnen, hva historikken viser og hvordan datoene ser ut, signering, sign-off og hooks for commits, og mellomrom og kontekstlinjer for differ. Forfattere har fargede initialer i historikken.</li>
 </ul>
 <h2 id="historikk-blame-og-nettet">Historikk, blame og nettet</h2>
 <ul>
@@ -95,8 +108,7 @@ rebase ikke må fullføres i en terminal.</p>
 </ul>
 <h2 id="merknader">Merknader</h2>
 <ul>
-<li>Programtillegget bruker systemets Git i <code>/usr/bin/git</code>. Mangler Git, melder kommandoene at Git ikke er
-  tilgjengelig. (Xcode Command Line Tools har den med.)</li>
+<li>Programtillegget bruker systemets Git i <code>/usr/bin/git</code> eller programmet valgt i <strong>Innstillinger ▸ Git</strong>. Mangler Git, melder kommandoene at Git ikke er tilgjengelig. (Xcode Command Line Tools inneholder det.)</li>
 <li>Arkivstatusen leses én gang per mappe og mellomlagres, slik at det går raskt å bla i et stort arkiv; hurtig-
   lageret fornyes etter enhver kommando som endrer treet, og følger også en commit gjort utenfor appen.</li>
 <li>Tilknyttede arbeidstrær og undermoduler støttes: en fil i en undermodul viser <em>undermodulens</em> status og

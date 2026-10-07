@@ -416,6 +416,349 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.parseStatus(fixed.out).files.keys.sorted(), ["a.bin"])
     }
 
+    func testBisectFindsTheFirstBadCommitAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        var hashes: [String] = []
+        for index in 1...8 {
+            try (index >= 6 ? "broken" : "fine").write(to: repo.dir.appendingPathComponent("state"), atomically: true, encoding: .utf8)
+            try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "c\(index)"])
+            hashes.append(try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        let gitDir = repo.dir.appendingPathComponent(".git").path
+        func bisecting() -> Bool { PluginGit.isBisecting(gitDir: gitDir) { FileManager.default.fileExists(atPath: $0) } }
+        XCTAssertFalse(bisecting())
+        var progress = PluginGit.BisectProgress.waiting
+        for call in PluginGit.bisectArguments(.bad, commit: hashes[7], started: false) { progress = PluginGit.parseBisect(try repo.git(call).out) }
+        XCTAssertTrue(bisecting())
+        for call in PluginGit.bisectArguments(.good, commit: hashes[0], started: true) { progress = PluginGit.parseBisect(try repo.git(call).out) }
+        var rounds = 0
+        while case .remaining = progress, rounds < 10 {
+            let state = try String(contentsOf: repo.dir.appendingPathComponent("state"), encoding: .utf8)
+            let mark: PluginGit.BisectMark = state == "broken" ? .bad : .good
+            progress = PluginGit.parseBisect(try repo.git(PluginGit.bisectArguments(mark, commit: nil, started: true)[0]).out)
+            rounds += 1
+        }
+        XCTAssertEqual(progress, .found(hashes[5]), "c6 is where it broke")
+        XCTAssertTrue(try repo.git(PluginGit.bisectResetArguments).ok)
+        XCTAssertFalse(bisecting())
+    }
+
+    func testPatchesOutAndInAgainstRealGit() throws {
+        XCTAssertEqual(PluginGit.patchFileName(number: 1, subject: "Fix(git): the panel's buttons!"), "0001-fix-git-the-panel-s-buttons.patch")
+        let source = try TempRepo(), target = try TempRepo()
+        for repo in [source, target] { try repo.git(["init", "-q", "-b", "main"]) }
+        try "a\n".write(to: source.dir.appendingPathComponent("f"), atomically: true, encoding: .utf8)
+        try source.git(["add", "-A"]); try source.git(["commit", "-q", "-m", "base"])
+        try "a\n".write(to: target.dir.appendingPathComponent("f"), atomically: true, encoding: .utf8)
+        try target.git(["add", "-A"]); try target.git(["commit", "-q", "-m", "base"])
+        try "a\nb\n".write(to: source.dir.appendingPathComponent("f"), atomically: true, encoding: .utf8)
+        try source.git(["commit", "-q", "-am", "Add b"])
+        let patch = try source.git(PluginGit.formatPatchArguments("HEAD"), combined: false).out
+        let file = target.dir.appendingPathComponent(PluginGit.patchFileName(number: 1, subject: "Add b"))
+        try patch.write(to: file, atomically: true, encoding: .utf8)
+        XCTAssertTrue(try target.git(PluginGit.applyPatchesArguments([file.path])).ok)
+        XCTAssertEqual(try target.git(["log", "-1", "--format=%s"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines), "Add b")
+        // A patch that does not apply leaves `am` under way, seen as such, and aborted.
+        try target.git(["reset", "-q", "--hard", "HEAD~1"])
+        try "z\n".write(to: target.dir.appendingPathComponent("f"), atomically: true, encoding: .utf8)
+        try target.git(["commit", "-q", "-am", "conflicting"])
+        XCTAssertFalse(try target.git(PluginGit.applyPatchesArguments([file.path])).ok)
+        let gitDir = target.dir.appendingPathComponent(".git").path
+        XCTAssertEqual(PluginGit.operationInProgress(gitDir: gitDir) { FileManager.default.fileExists(atPath: $0) }, .applyPatches)
+        XCTAssertTrue(try target.git(PluginGit.abortArguments(.applyPatches)).ok)
+        XCTAssertNil(PluginGit.operationInProgress(gitDir: gitDir) { FileManager.default.fileExists(atPath: $0) })
+    }
+
+    func testParseWorktrees() {
+        let out = "worktree /r/main\nHEAD aaa\nbranch refs/heads/main\n\nworktree /r/fix\nHEAD bbb\nbranch refs/heads/fix/x\nlocked\n\nworktree /r/det\nHEAD ccc\ndetached\n"
+        let trees = PluginGit.parseWorktrees(out)
+        XCTAssertEqual(trees.map(\.path), ["/r/main", "/r/fix", "/r/det"])
+        XCTAssertEqual(trees.map(\.branch), ["main", "fix/x", nil])
+        XCTAssertEqual(trees.map(\.isMain), [true, false, false])
+        XCTAssertEqual(trees.map(\.isLocked), [false, true, false])
+    }
+
+    func testWorktreesSubmodulesAndLocalIdentityAgainstRealGit() throws {
+        let repo = try TempRepo(), lib = try TempRepo(), place = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"]); try repo.git(["commit", "-q", "--allow-empty", "-m", "x"])
+        try lib.git(["init", "-q", "-b", "main"]); try lib.git(["commit", "-q", "--allow-empty", "-m", "lib"])
+        let path = place.dir.appendingPathComponent("wt").path
+        XCTAssertTrue(try repo.git(PluginGit.addWorktreeArguments(path: path, branch: "fix", create: true)).ok)
+        let trees = PluginGit.parseWorktrees(try repo.git(PluginGit.worktreesArguments, combined: false).out)
+        XCTAssertEqual(trees.count, 2)
+        XCTAssertEqual(trees.last?.branch, "fix")
+        XCTAssertTrue(try repo.git(PluginGit.removeWorktreeArguments(path)).ok)
+        XCTAssertEqual(PluginGit.parseWorktrees(try repo.git(PluginGit.worktreesArguments, combined: false).out).count, 1)
+
+        let allow = ["GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "protocol.file.allow", "GIT_CONFIG_VALUE_0": "always"]
+        XCTAssertTrue(try repo.git(PluginGit.addSubmoduleArguments(url: lib.dir.path, path: "libs/lib"), environment: allow).ok)
+        try repo.git(["commit", "-q", "-m", "add lib"])
+        let gitDir = try repo.git(["-C", "libs/lib"] + PluginGit.submoduleGitDirArguments, combined: false).out
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let common = try repo.git(PluginGit.commonGitDirArguments, combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertTrue(PluginGit.isRemovableSubmoduleGitDir(gitDir, commonGitDir: common), gitDir)
+        XCTAssertFalse(PluginGit.isRemovableSubmoduleGitDir(common, commonGitDir: common), "never the superproject's own")
+        XCTAssertFalse(PluginGit.isRemovableSubmoduleGitDir(common + "/modules/../hooks", commonGitDir: common))
+        for call in PluginGit.removeSubmoduleArguments("libs/lib") { XCTAssertTrue(try repo.git(call).ok) }
+        XCTAssertTrue(PluginGit.parseSubmodules(try repo.git(PluginGit.submodulesArguments, combined: false).out).isEmpty)
+
+        XCTAssertTrue(try repo.git(PluginGit.localIdentityArguments(key: "user.email", value: "me@example.com")).ok)
+        XCTAssertEqual(try repo.git(["config", "--local", "user.email"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines), "me@example.com")
+        XCTAssertTrue(try repo.git(PluginGit.localIdentityArguments(key: "user.email", value: "")).ok)
+        XCTAssertFalse(try repo.git(["config", "--local", "user.email"]).ok, "back to the global one")
+    }
+
+    func testSearchFilters() {
+        let query = PluginGit.SearchQuery.parse("fix author:ada path:src/ \"since:2 weeks ago\" until:2026-10-01 panel")
+        XCTAssertEqual(query.text, "fix panel")
+        XCTAssertEqual(query.authors, ["ada"])
+        XCTAssertEqual(query.paths, ["src/"])
+        XCTAssertEqual(query.since, "2 weeks ago")
+        XCTAssertEqual(query.until, "2026-10-01")
+        let calls = PluginGit.searchArguments(query, limit: 10, all: true)
+        XCTAssertEqual(calls.count, 1, "with author: the text is searched in messages only — git ORs --author")
+        XCTAssertTrue(calls[0].contains("--grep=fix panel") && calls[0].contains("--author=ada") && calls[0].suffix(2) == ["--", "src/"])
+        XCTAssertEqual(PluginGit.searchArguments(PluginGit.SearchQuery.parse("fix path:src/"), limit: 10, all: true).count, 2,
+                       "without one, the text is a message or an author")
+        let filtersOnly = PluginGit.searchArguments(PluginGit.SearchQuery.parse("path:README.md"), limit: 10, all: true)
+        XCTAssertEqual(filtersOnly.count, 1, "no text: one log, narrowed by the filters")
+        XCTAssertEqual(PluginGit.searchArguments(PluginGit.SearchQuery.parse("  "), limit: 10, all: true), [])
+    }
+
+    func testStashPushAndLFSArguments() {
+        XCTAssertEqual(PluginGit.stashPushArguments(message: "wip", includeUntracked: true, keepIndex: true, paths: ["a"]),
+                       ["stash", "push", "--include-untracked", "--keep-index", "-m", "wip", "--", "a"])
+        XCTAssertEqual(PluginGit.stashPushArguments(message: "", includeUntracked: false, keepIndex: false), ["stash", "push"])
+        XCTAssertEqual(PluginGit.lfsTrackArguments(forFileType: "art/cover.psd"), ["lfs", "track", "*.psd"])
+        XCTAssertNil(PluginGit.lfsTrackArguments(forFileType: "Makefile"))
+    }
+
+    func testStashingSelectedFilesAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        for name in ["a", "b"] { try "1".write(to: repo.dir.appendingPathComponent(name), atomically: true, encoding: .utf8) }
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "base"])
+        for name in ["a", "b"] { try "2".write(to: repo.dir.appendingPathComponent(name), atomically: true, encoding: .utf8) }
+        try "u".write(to: repo.dir.appendingPathComponent("new"), atomically: true, encoding: .utf8)
+        XCTAssertTrue(try repo.git(PluginGit.stashPushArguments(message: "only a", includeUntracked: false, keepIndex: false,
+                                                                paths: ["a"])).ok)
+        let status = PluginGit.parseStatus(try repo.git(PluginGit.statusArguments, combined: false).out)
+        XCTAssertNil(status.files["a"], "a went into the stash")
+        XCTAssertNotNil(status.files["b"], "b did not")
+        XCTAssertTrue(try repo.git(PluginGit.stashPushArguments(message: "", includeUntracked: true, keepIndex: false)).ok)
+        XCTAssertTrue(PluginGit.parseStatus(try repo.git(PluginGit.statusArguments, combined: false).out).files.isEmpty,
+                      "untracked files went too")
+    }
+
+    func testComparingTwoCommitsOrOneWithTheWorkingTree() throws {
+        XCTAssertEqual(PluginGit.compareNameStatusArguments(from: "a", to: "b").suffix(3), ["a", "b", "--"])
+        XCTAssertEqual(PluginGit.compareNameStatusArguments(from: "a", to: nil).suffix(2), ["a", "--"])
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        let file = repo.dir.appendingPathComponent("f.txt")
+        try "1\n".write(to: file, atomically: true, encoding: .utf8)
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "one"])
+        let one = try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        try "2\n".write(to: file, atomically: true, encoding: .utf8)
+        try "n\n".write(to: repo.dir.appendingPathComponent("new.txt"), atomically: true, encoding: .utf8)
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "two"])
+        try "3\n".write(to: file, atomically: true, encoding: .utf8)
+        let between = PluginGit.parseNameStatus(try repo.git(PluginGit.compareNameStatusArguments(from: one, to: "HEAD"), combined: false).out)
+        XCTAssertEqual(between.map(\.path).sorted(), ["f.txt", "new.txt"])
+        let toWorkingTree = PluginGit.parseUnifiedDiff(
+            try repo.git(PluginGit.compareDiffArguments(from: one, to: nil, paths: ["f.txt"]), combined: false).out).lines
+        XCTAssertEqual(toWorkingTree.filter { $0.kind == .added }.map(\.text), ["3"], "against the file on disk")
+    }
+
+    /// Oldest first by the history's order, not by date: a rebase gives a whole series one second, and
+    /// a date sort then kept them newest first — a child picked before its parent.
+    func testCherryPickingSeveralInTheOrderTheyWereMade() {
+        var a = PluginGit.parseLog(logRecord("a", "a", "b", "A", "1", "a"))[0]; a.commitDate = Date(timeIntervalSince1970: 100)
+        var b = PluginGit.parseLog(logRecord("b", "b", "p", "A", "1", "b"))[0]; b.commitDate = Date(timeIntervalSince1970: 100)
+        XCTAssertEqual(PluginGit.cherryPickSeriesArguments([a, b]), ["cherry-pick", "--no-edit", "b", "a"],
+                       "history order is newest first, whatever the dates")
+        let merge = PluginGit.parseLog(logRecord("m", "m", "p q", "A", "1", "m"))[0]
+        XCTAssertNil(PluginGit.cherryPickSeriesArguments([a, merge]))
+        XCTAssertEqual(PluginGit.comparisonBase(oldest: b), "b^", "the oldest's own changes are in the comparison")
+        let root = PluginGit.parseLog(logRecord("r", "r", "", "A", "1", "r"))[0]
+        XCTAssertEqual(PluginGit.comparisonBase(oldest: root), PluginGit.emptyTree)
+    }
+
+    /// A series made in one second, picked onto another branch: the order has to be the history's.
+    func testCherryPickingASeriesMadeInOneSecondAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try repo.git(["commit", "-q", "--allow-empty", "-m", "base"])
+        try repo.git(["switch", "-q", "-c", "topic"])
+        let file = repo.dir.appendingPathComponent("f.txt")
+        let date = ["GIT_COMMITTER_DATE": "2026-01-01T00:00:00", "GIT_AUTHOR_DATE": "2026-01-01T00:00:00"]
+        for text in ["1\n", "1\n2\n", "1\n2\n3\n"] {
+            try text.write(to: file, atomically: true, encoding: .utf8)
+            try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", text], environment: date)
+        }
+        let log = PluginGit.parseLog(try repo.git(PluginGit.logArguments(limit: 3, path: nil), combined: false).out)
+        XCTAssertEqual(log.count, 3)
+        try repo.git(["switch", "-q", "main"])
+        let pick = try repo.git(try XCTUnwrap(PluginGit.cherryPickSeriesArguments(log)))
+        XCTAssertTrue(pick.ok, pick.out)
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8), "1\n2\n3\n")
+    }
+
+    func testBranchHousekeeping() {
+        XCTAssertEqual(PluginGit.renameBranchArguments("a", to: "b"), ["branch", "-m", "a", "b"])
+        XCTAssertEqual(PluginGit.setUpstreamArguments(branch: "main", upstream: "origin/main"),
+                       ["branch", "--set-upstream-to=origin/main", "main"])
+        XCTAssertEqual(PluginGit.deleteRemoteBranchArguments("origin/feature/x"), ["push", "origin", "--delete", "feature/x"])
+        XCTAssertNil(PluginGit.deleteRemoteBranchArguments("origin/HEAD"))
+        XCTAssertNil(PluginGit.deleteRemoteBranchArguments("main"))
+    }
+
+    func testDeletingARemoteBranchAgainstRealGit() throws {
+        let remote = try TempRepo(), local = try TempRepo()
+        try remote.git(["init", "-q", "--bare", "-b", "main"])
+        try local.git(["init", "-q", "-b", "main"])
+        try local.git(["remote", "add", "origin", remote.dir.path])
+        try local.git(["commit", "-q", "--allow-empty", "-m", "x"])
+        try local.git(["push", "-q", "origin", "main", "main:feature/x"])
+        try local.git(["fetch", "-q"])
+        XCTAssertTrue(try local.git(XCTUnwrap(PluginGit.deleteRemoteBranchArguments("origin/feature/x"))).ok)
+        XCTAssertFalse(try remote.git(["branch", "--list", "feature/x"], combined: false).out.contains("feature/x"))
+        XCTAssertTrue(try local.git(PluginGit.renameBranchArguments("main", to: "trunk")).ok)
+        XCTAssertTrue(try local.git(PluginGit.setUpstreamArguments(branch: "trunk", upstream: "origin/main")).ok)
+    }
+
+    func testAMergeIsRevertedAndPickedAgainstItsMainline() {
+        XCTAssertEqual(PluginGit.revertArguments("m", isMerge: true), ["revert", "--no-edit", "-m", "1", "m"])
+        XCTAssertEqual(PluginGit.cherryPickArguments("m", isMerge: true), ["cherry-pick", "--no-edit", "-m", "1", "m"])
+    }
+
+    /// A merge that conflicts is seen as under way, can be aborted, and once resolved is finished.
+    func testAStoppedMergeAgainstRealGit() throws {
+        let repo = try TempRepo()
+        func write(_ text: String) throws { try text.write(to: repo.dir.appendingPathComponent("f"), atomically: true, encoding: .utf8) }
+        func operation() -> PluginGit.Operation? {
+            PluginGit.operationInProgress(gitDir: repo.dir.appendingPathComponent(".git").path) {
+                FileManager.default.fileExists(atPath: $0)
+            }
+        }
+        try repo.git(["init", "-q", "-b", "main"])
+        try write("base\n"); try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "base"])
+        try repo.git(["switch", "-q", "-c", "side"])
+        try write("side\n"); try repo.git(["commit", "-q", "-am", "side"])
+        try repo.git(["switch", "-q", "main"])
+        try write("main\n"); try repo.git(["commit", "-q", "-am", "main"])
+        XCTAssertNil(operation())
+        XCTAssertFalse(try repo.git(PluginGit.mergeArguments("side")).ok, "it conflicts")
+        XCTAssertEqual(operation(), .merge)
+        XCTAssertTrue(try repo.git(PluginGit.abortArguments(.merge)).ok)
+        XCTAssertNil(operation())
+        XCTAssertFalse(try repo.git(PluginGit.mergeArguments("side")).ok)
+        try write("both\n"); try repo.git(["add", "f"])
+        XCTAssertTrue(try repo.git(PluginGit.continueArguments(.merge)).ok)
+        XCTAssertNil(operation())
+        XCTAssertEqual(try repo.git(["log", "-1", "--format=%P"], combined: false).out.split(separator: " ").count, 2,
+                       "finished as a merge commit")
+        // And that merge reverted against its mainline.
+        let merge = try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertTrue(try repo.git(PluginGit.revertArguments(merge, isMerge: true)).ok)
+        XCTAssertEqual(try String(contentsOf: repo.dir.appendingPathComponent("f"), encoding: .utf8), "main\n")
+    }
+
+    func testTheFirstPushSetsAnUpstream() {
+        XCTAssertEqual(PluginGit.pushArguments(upstream: "origin/main", remotes: ["origin"], setUpstream: true), ["push"])
+        XCTAssertEqual(PluginGit.pushArguments(upstream: nil, remotes: ["fork", "origin"], setUpstream: true),
+                       ["push", "--set-upstream", "origin", "HEAD"], "origin when there is one")
+        XCTAssertEqual(PluginGit.pushArguments(upstream: nil, remotes: ["fork"], setUpstream: true),
+                       ["push", "--set-upstream", "fork", "HEAD"], "else the only remote")
+        XCTAssertNil(PluginGit.pushArguments(upstream: nil, remotes: [], setUpstream: true))
+        XCTAssertEqual(PluginGit.pushArguments(upstream: nil, remotes: ["origin"], setUpstream: false), ["push"])
+        XCTAssertFalse(PluginGit.forcePushArguments.contains("--force"), "never a plain --force")
+    }
+
+    /// Two clones of one remote diverge: the push of the second is refused as behind, a pull with
+    /// --ff-only refuses as diverged, a rebasing pull joins them, and a force-with-lease push after an
+    /// amend goes through — the whole sequence that sent a reader to the terminal.
+    func testPushAndPullOnDivergedBranchesAgainstRealGit() throws {
+        let remote = try TempRepo()
+        try remote.git(["init", "-q", "--bare", "-b", "main"])
+        let one = try TempRepo(), two = try TempRepo()
+        func commit(_ repo: TempRepo, _ file: String) throws {
+            try file.write(to: repo.dir.appendingPathComponent(file), atomically: true, encoding: .utf8)
+            try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", file])
+        }
+        try one.git(["init", "-q", "-b", "main"])
+        try one.git(["remote", "add", "origin", remote.dir.path])
+        try commit(one, "base")
+        // The first push of a branch without an upstream.
+        let first = try XCTUnwrap(PluginGit.pushArguments(upstream: nil, remotes: ["origin"], setUpstream: true))
+        XCTAssertTrue(try one.git(first).ok)
+        XCTAssertTrue(try one.git(["rev-parse", "--abbrev-ref", "@{upstream}"], combined: false).out.contains("origin/main"))
+
+        try two.git(["clone", "-q", remote.dir.path, "."])
+        try commit(one, "from-one"); try one.git(["push", "-q"])
+        try commit(two, "from-two")
+        let push = try two.git(["push"])
+        XCTAssertFalse(push.ok)
+        XCTAssertTrue(PluginGit.isRejectedAsBehind(push.out), push.out)
+        let pull = try two.git(PluginGit.Settings().pullArguments)
+        XCTAssertFalse(pull.ok)
+        XCTAssertTrue(PluginGit.isDivergedPullRefusal(pull.out), pull.out)
+        XCTAssertTrue(try two.git(PluginGit.pullArguments(.rebase)).ok, "a rebasing pull joins them")
+        XCTAssertTrue(try two.git(["push", "-q"]).ok)
+
+        // An amend of a pushed commit, then the lease.
+        try two.git(["commit", "-q", "--amend", "-m", "from-two, reworded"])
+        XCTAssertFalse(try two.git(["push"]).ok)
+        XCTAssertTrue(try two.git(PluginGit.forcePushArguments).ok)
+
+        // A background fetch brings a colleague's push into origin/main; a lease alone would now agree
+        // with it and drop the colleague's commit. --force-if-includes refuses: this branch never had it.
+        try one.git(["pull", "-q", "--rebase"])
+        try commit(one, "colleague"); try one.git(["push", "-q"])
+        try two.git(["fetch", "-q"])
+        try two.git(["commit", "-q", "--amend", "-m", "from-two, again"])
+        let unsafe = try two.git(PluginGit.forcePushArguments)
+        XCTAssertFalse(unsafe.ok, "a commit only a fetch has seen stops the force push")
+        XCTAssertTrue(PluginGit.isRejectedAsBehind(unsafe.out) || unsafe.out.contains("rejected"), unsafe.out)
+    }
+
+    func testSettingsRoundTripAndClamp() {
+        var settings = PluginGit.Settings()
+        settings.pullMode = .rebase
+        settings.autoFetchMinutes = 15
+        settings.showTags = false
+        settings.signOff = true
+        settings.dateStyle = .absolute
+        settings.gitProgram = "/opt/homebrew/bin/git"
+        XCTAssertEqual(PluginGit.Settings.parse(settings.serialized()), settings)
+        // A hand-edited file with nonsense keeps sensible values.
+        let odd = PluginGit.Settings.parse("[Git]\nHistoryPageSize=3\nPullMode=sideways\nSubjectLength=x\n")
+        XCTAssertEqual(odd.historyPageSize, 50, "clamped to the smallest page that is still a page")
+        XCTAssertEqual(odd.pullMode, .fastForward)
+        XCTAssertEqual(odd.subjectLength, 72)
+        XCTAssertEqual(PluginGit.Settings.parse(""), PluginGit.Settings(), "no file is the defaults")
+    }
+
+    func testSettingsShapeTheCommands() {
+        var settings = PluginGit.Settings()
+        XCTAssertEqual(settings.historyRefs, ["--branches", "--remotes", "--tags", "HEAD"])
+        XCTAssertEqual(settings.pullArguments, ["pull", "--ff-only"])
+        XCTAssertEqual(settings.fetchArguments, ["fetch", "--all", "--prune"])
+        XCTAssertEqual(settings.commitOptions, [])
+        XCTAssertEqual(settings.diffOptions, ["-U3"])
+        settings.showRemoteBranches = false; settings.showTags = false
+        settings.pullMode = .rebase; settings.fetchPrunes = false
+        settings.signCommits = true; settings.signOff = true; settings.runHooks = false
+        settings.diffIgnoreWhitespace = true; settings.diffContextLines = 8
+        XCTAssertEqual(settings.historyRefs, ["--branches", "HEAD"])
+        XCTAssertEqual(settings.pullArguments, ["pull", "--rebase"])
+        XCTAssertEqual(settings.fetchArguments, ["fetch", "--all"])
+        XCTAssertEqual(settings.commitOptions, ["-S", "--signoff", "--no-verify"])
+        XCTAssertEqual(settings.diffOptions, ["-U8", "-w"])
+        XCTAssertEqual(Array(PluginGit.logArguments(limit: 5, all: true, refs: settings.historyRefs).suffix(2)), ["--branches", "HEAD"])
+    }
+
     func testCloneDirectoryNames() {
         XCTAssertEqual(PluginGit.cloneDirectoryName("git@github.com:team/app.git"), "app")
         XCTAssertEqual(PluginGit.cloneDirectoryName("https://host/team/app/"), "app")

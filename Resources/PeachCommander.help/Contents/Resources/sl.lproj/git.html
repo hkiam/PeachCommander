@@ -46,11 +46,24 @@ sporočilo in pritisnite <strong>Objavi</strong> — z <strong>Popravi</strong> 
 <p>Delovna kopija, zgodovina in meni <strong>Ukazi ▸ Git</strong> ponujajo več kot objavo:</p>
 <ul>
 <li>Izbrana pripravljena ali spremenjena datoteka pod seznamom pokaže svoj diff; izbrane vrstice ali cel kos lahko v njegovem priročnem meniju pripravite, umaknete iz priprave ali zavržete.</li>
-<li>Polje za commit je kombinirano polje: njegov seznam vsebuje vaša zadnja sporočila commitov za ponovno uporabo ali urejanje.</li>
+<li>Polje za commit sprejme več vrstic — zadevo, prazno vrstico, besedilo —, naredi commit s <strong>Cmd+Return</strong> in šteje znake zadeve; gumb menija ob njem hrani tvoja zadnja sporočila commitov.</li>
 <li><strong>Pokaži v levem podoknu</strong> in <strong>Pokaži v desnem podoknu</strong> preneseta podokno z datotekami na datoteko s seznama ali iz sprememb commita, plošča Git pa ostane, kot je; datoteke, ki jih hrani Git LFS, so označene z <strong>LFS</strong>.</li>
 <li>Stashi se v zgodovini pojavijo kot majhni kvadratki nad commitom, na katerem so nastali, z <strong>Uporabi stash</strong>, <strong>Uporabi in odstrani stash</strong> in <strong>Izbriši stash…</strong> v priročnem meniju.</li>
-<li><strong>Reflog…</strong> našteje vsak premik HEAD; commit, izgubljen s ponastavitvijo ali izbrisano vejo, se vrne z <strong>Nova veja tukaj…</strong>. <strong>Oddaljena skladišča in podmoduli…</strong> dodaja, preimenuje, preusmerja in odstranjuje oddaljena skladišča ter posodablja podmodule.</li>
+<li><strong>Reflog…</strong> našteje vsak premik HEAD; commit, izgubljen s ponastavitvijo ali izbrisano vejo, se vrne z <strong>Nova veja tukaj…</strong>.</li>
+<li><strong>Nastavitve skladišča…</strong> dodaja, preimenuje, preusmerja in odstranjuje oddaljena skladišča, dodaja, posodablja in odstranjuje podmodule, upravlja worktree in da samo temu skladišču ime in e-pošto za commite.</li>
 <li><strong>Ustvari skladišče tukaj…</strong> in <strong>Kloniraj skladišče…</strong> delujeta v mapi aktivnega podokna, ura poleg naslova plošče pa vodi nazaj k nedavnemu skladišču.</li>
+</ul>
+<h2 id="ko-se-git-ustavi-in-nastavitve">Ko se git ustavi, in nastavitve</h2>
+<ul>
+<li><strong>Push</strong> ob prvem potisku veje nastavi upstream. Če ima oddaljeno skladišče commite, ki jih ta veja nima, ponudi <strong>Prenesi, nato potisni</strong> ali <strong>Prisilno potisni</strong> — vedno z lease, ki zavrne, če je kdo potisnil po tvojem zadnjem fetch; <strong>Prisilno potisni (z lease)…</strong> je tudi v priročnem meniju gumba <strong>Push</strong>.</li>
+<li>Če <strong>Pull</strong> ugotovi, da sta se veja in njen upstream razšla, vpraša, ali naj združi ali naredi rebase, namesto da bi obstal pri sporočilu gita.</li>
+<li>Združitev, cherry-pick, revert, rebase ali serija popravkov, ki se ustavi v sporu, pokaže nad zgodovino pasico z <strong>Nadaljuj</strong> in <strong>Prekini…</strong>; commit združitve se razveljavi ali cherry-picka glede na svojega prvega starša.</li>
+<li>Izberi dva commita, da ju primerjaš, ali več, da jih naenkrat cherry-pickaš. <strong>Primerjaj z delovno kopijo</strong> in <strong>Shrani kot popravek…</strong> sta v meniju zgodovine, <strong>Uporabi popravke…</strong> v meniju Git.</li>
+<li>Iskalno polje sprejme tudi filtre — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — same ali skupaj z besedami.</li>
+<li><strong>Bisect: označi kot slab</strong> in <strong>Bisect: označi kot dober</strong> v meniju zgodovine začneta bisect; pasica nato ponuja <strong>Dober</strong>, <strong>Slab</strong>, <strong>Preskoči</strong> in <strong>Končaj bisect</strong>, dokler git ne imenuje prvega slabega commita.</li>
+<li>Shranjevanje izbranih datotek ali vseh sprememb v stash vpraša za sporočilo in ali naj vključi nesledene datoteke ali ohrani indeks. Datoteke v Git LFS lahko zakleneš in odkleneš ter slediš njihovi vrsti datotek.</li>
+<li>V seznamu vej lahko vejo preimenuješ (<strong>Preimenuj…</strong>), ji daš upstream (<strong>Nastavi upstream…</strong>) ali jo izbrišeš na njenem strežniku (<strong>Izbriši na oddaljenem…</strong>).</li>
+<li><strong>Nastavitve ▸ Git</strong> določajo program git, tvoje globalno ime in e-pošto, kako dela <strong>Pull</strong>, fetch v ozadju, kaj kaže zgodovina in kako so videti njeni datumi, podpisovanje, sign-off in hooke za commite ter presledke in vrstice konteksta za diffe. Avtorji imajo v zgodovini barvne začetnice.</li>
 </ul>
 <h2 id="zgodovina-blame-in-splet">Zgodovina, blame in splet</h2>
 <ul>
@@ -95,8 +108,7 @@ napol opravljenega prestavljanja ni treba dokončati v terminalu.</p>
 </ul>
 <h2 id="opombe">Opombe</h2>
 <ul>
-<li>Vtičnik uporablja sistemski Git v <code>/usr/bin/git</code>. Če Gita ni, ukazi sporočijo, da Git ni na voljo. (Prinesejo
-  ga Xcode Command Line Tools.)</li>
+<li>Vtičnik uporablja sistemski Git v <code>/usr/bin/git</code> ali program, izbran v <strong>Nastavitve ▸ Git</strong>. Če Gita ni, ukazi sporočijo, da Git ni na voljo. (Prinesejo ga Xcode Command Line Tools.)</li>
 <li>Stanje skladišča se prebere enkrat na mapo in shrani v predpomnilnik, da listanje po velikem skladišču
   ostane hitro; predpomnilnik se osveži po vsakem ukazu, ki spremeni drevo, in sledi tudi objavi, narejeni
   zunaj aplikacije.</li>

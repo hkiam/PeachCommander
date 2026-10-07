@@ -24,7 +24,9 @@ enum PluginGitRepo {
         gitLock.unlock()
         let manager = FileManager.default
         let found = PluginGit.resolveExecutable(
-            setting: ProcessInfo.processInfo.environment["PCGitExecutable"],
+            // Settings ▸ Git first, then the variable the automation harness sets.
+            setting: GitSettingsStore.current.gitProgram.isEmpty
+                ? ProcessInfo.processInfo.environment["PCGitExecutable"] : GitSettingsStore.current.gitProgram,
             isExecutable: { manager.isExecutableFile(atPath: $0) },
             exists: { manager.fileExists(atPath: $0) })
         gitLock.lock(); resolvedGit = .some(found); gitLock.unlock()
@@ -103,6 +105,19 @@ enum PluginGitRepo {
         return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
     }
 
+    /// The operation git stopped in the middle of in this repository, if any (phase 8).
+    static func operationInProgress(root: String) -> PluginGit.Operation? {
+        cacheLock.lock(); let gitDir = gitDirByRoot[root]; cacheLock.unlock()
+        let base = gitDir ?? (root as NSString).appendingPathComponent(".git")
+        return PluginGit.operationInProgress(gitDir: base) { FileManager.default.fileExists(atPath: $0) }
+    }
+
+    static func isBisecting(root: String) -> Bool {
+        cacheLock.lock(); let gitDir = gitDirByRoot[root]; cacheLock.unlock()
+        let base = gitDir ?? (root as NSString).appendingPathComponent(".git")
+        return PluginGit.isBisecting(gitDir: base) { FileManager.default.fileExists(atPath: $0) }
+    }
+
     /// Is a rebase half-finished here? Asked of the real git directory, which in a worktree is not
     /// `<root>/.git` (F-419).
     static func rebaseIsRunning(root: String) -> Bool {
@@ -138,13 +153,13 @@ enum PluginGitRepo {
     /// Line-by-line rather than `readDataToEndOfFile`: the point is to notice the Cancel *while* git runs,
     /// and reading to the end means noticing it afterwards. A quiet git (a large push computing objects)
     /// would still not be noticed, so the caller gets a tick per line and the window stays indeterminate.
-    static func runCancellable(_ arguments: [String],
+    static func runCancellable(_ arguments: [String], environment extra: [String: String] = [:],
                                progress: (String) -> Bool) -> (out: String, ok: Bool, cancelled: Bool) {
         guard let executable = executable() else { return (L("Git was not found on this Mac."), false, false) }
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
-        process.environment = Self.environment()
+        process.environment = Self.environment().merging(extra) { _, new in new }
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
@@ -273,6 +288,11 @@ enum PluginGitRepo {
         statusByRoot[root] = CacheEntry(status: parsed, indexMTime: mtime, cachedAt: Date())
         cacheLock.unlock()
         return parsed
+    }
+
+    /// Forget the git found, so the next call looks again (Settings ▸ Git changed the program).
+    static func forgetExecutable() {
+        gitLock.lock(); resolvedGit = nil; gitLock.unlock()
     }
 
     static func invalidate() {

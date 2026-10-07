@@ -31,6 +31,8 @@ pc_swiftc -emit-library -O -module-name Git -target "$TARGET" -framework AppKit 
   "$ROOT/Plugins/Git/GitChangesView.swift" \
   "$ROOT/Plugins/Git/GitReflogView.swift" \
   "$ROOT/Plugins/Git/GitRemotesView.swift" \
+  "$ROOT/Plugins/Git/GitSettings.swift" \
+  "$ROOT/Plugins/Git/GitCommitBox.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
   "$ROOT/Plugins/SDK/PluginTheme.swift" \
   "$ROOT/Plugins/SDK/PluginGit.swift"

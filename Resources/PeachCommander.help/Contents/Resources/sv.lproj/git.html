@@ -47,11 +47,24 @@ incheckningen ändå sker; alla tre visar förlopp och kan avbrytas.</p>
 <p>Arbetskopian, historiken och menyn <strong>Kommandon ▸ Git</strong> erbjuder mer än att checka in:</p>
 <ul>
 <li>En markerad köad eller ändrad fil visar sin diff under listan; markerade rader eller en hel hunk köas, avköas eller kastas från dess snabbmeny.</li>
-<li>Commit-fältet är en kombinationsruta: Listan innehåller dina senaste commit-meddelanden att återanvända eller redigera.</li>
+<li>Commitfältet tar flera rader — ett ämne, en tom rad, en brödtext —, gör commit med <strong>Cmd+Retur</strong> och räknar ämnets tecken; menyknappen bredvid håller dina senaste commitmeddelanden.</li>
 <li><strong>Visa i vänster panel</strong> och <strong>Visa i höger panel</strong> för en filpanel till en fil från listan eller från en commits ändringar, medan Git-panelen förblir som den är; filer som Git LFS lagrar är märkta <strong>LFS</strong>.</li>
 <li>Stashar visas i historiken som små kvadrater ovanför den commit de gjordes på, med <strong>Tillämpa stash</strong>, <strong>Tillämpa och ta bort stash</strong> och <strong>Ta bort stash…</strong> i snabbmenyn.</li>
-<li><strong>Reflog…</strong> listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med <strong>Ny gren här…</strong>. <strong>Fjärrar och undermoduler…</strong> lägger till, byter namn på, ändrar och tar bort fjärrar och uppdaterar undermoduler.</li>
+<li><strong>Reflog…</strong> listar varje förflyttning av HEAD; en commit som gick förlorad vid en återställning eller en borttagen gren kommer tillbaka med <strong>Ny gren här…</strong>.</li>
+<li><strong>Repository-inställningar…</strong> lägger till, byter namn på, pekar om och tar bort fjärrar, lägger till, uppdaterar och tar bort undermoduler, hanterar worktrees och ger enbart detta repository ett namn och en e-postadress för commits.</li>
 <li><strong>Skapa repository här…</strong> och <strong>Klona repository…</strong> arbetar i den aktiva panelens mapp, och klockan bredvid panelens titel går tillbaka till ett nyligen använt repository.</li>
+</ul>
+<h2 id="nar-git-stannar-och-installningarna">När git stannar, och inställningarna</h2>
+<ul>
+<li><strong>Push</strong> anger uppströmsgrenen första gången en gren pushas. Har fjärren commits som den här grenen saknar, erbjuder den <strong>Hämta, sedan pusha</strong> eller <strong>Tvinga push</strong>, alltid med en lease som vägrar om någon har pushat sedan din senaste fetch; <strong>Tvinga push (med lease)…</strong> finns också i snabbmenyn för <strong>Push</strong>.</li>
+<li>Märker <strong>Pull</strong> att grenen och dess uppströmsgren har gått isär, frågar den om den ska slå ihop eller göra rebase i stället för att stanna vid gits meddelande.</li>
+<li>En sammanslagning, cherry-pick, revert, rebase eller patchserie som stannar i en konflikt visar en banderoll ovanför historiken med <strong>Fortsätt</strong> och <strong>Avbryt…</strong>; en sammanslagningscommit återställs eller cherry-pickas mot sin första förälder.</li>
+<li>Markera två commits för att jämföra dem, eller flera för att cherry-picka dem på en gång. <strong>Jämför med arbetskopian</strong> och <strong>Spara som patch…</strong> finns i historikens meny, <strong>Tillämpa patchar…</strong> i Git-menyn.</li>
+<li>Sökfältet tar också filter — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — ensamma eller tillsammans med ord.</li>
+<li><strong>Bisect: markera som dålig</strong> och <strong>Bisect: markera som bra</strong> i historikens meny startar en bisect; banderollen erbjuder sedan <strong>Bra</strong>, <strong>Dålig</strong>, <strong>Hoppa över</strong> och <strong>Avsluta bisect</strong> tills git nämner den första dåliga commiten.</li>
+<li>Att stasha valda filer eller alla ändringar frågar efter ett meddelande och om ospårade filer ska med eller indexet ska vara kvar. Filer i Git LFS kan låsas och låsas upp, och deras filtyp spåras.</li>
+<li>I grenlistan kan en gren byta namn (<strong>Byt namn…</strong>), få en uppströmsgren (<strong>Ange uppströmsgren…</strong>) eller tas bort på sin server (<strong>Ta bort på fjärren…</strong>).</li>
+<li><strong>Inställningar ▸ Git</strong> bestämmer git-programmet, ditt globala namn och din e-post, hur <strong>Pull</strong> arbetar, fetch i bakgrunden, vad historiken visar och hur dess datum ser ut, signering, sign-off och hooks för commits samt blanksteg och kontextrader för diffar. Författare har färgade initialer i historiken.</li>
 </ul>
 <h2 id="historik-blame-och-webben">Historik, blame och webben</h2>
 <ul>
@@ -96,8 +109,7 @@ så att en halvfärdig ombasering inte måste avslutas i en terminal.</p>
 </ul>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Insticksprogrammet använder systemets Git i <code>/usr/bin/git</code>. Saknas Git meddelar kommandona att Git inte är
-  tillgängligt. (Xcode Command Line Tools innehåller det.)</li>
+<li>Insticksprogrammet använder systemets Git i <code>/usr/bin/git</code> eller programmet som valts i <strong>Inställningar ▸ Git</strong>. Saknas Git meddelar kommandona att Git inte är tillgängligt. (Xcode Command Line Tools innehåller det.)</li>
 <li>Arkivets status läses en gång per mapp och cachas, så att bläddra i ett stort arkiv förblir snabbt; cachen
   förnyas efter varje kommando som ändrar trädet, och följer även en incheckning som gjorts utanför
   programmet.</li>

@@ -40,10 +40,33 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   Git panel keeps its selection, its tab and its list while the file panel moves. Files stored by Git
   LFS are marked in the changes tree.
 - **Reflog…** lists every move of HEAD, and brings back a commit lost to a reset or a deleted branch
-  with a new branch on it. **Remotes & Submodules…** adds, renames, re-points and removes remotes and
-  updates submodules, with progress and Cancel.
+  with a new branch on it. **Repository Settings…** adds, renames, re-points and removes remotes, adds,
+  updates and removes submodules, manages worktrees and gives one repository its own name and e-mail
+  for commits, with progress and Cancel.
 - **Create Repository Here…** and **Clone Repository…** (with progress and Cancel) in the Git menu, and
   a list of recent repositories beside the panel's title.
+- **Settings ▸ Git.** The git program and your global name and e-mail; how Pull works (fast-forward
+  only, merge or rebase), whether the first push sets the upstream, pruning, a fetch in the background;
+  how much history loads, whether it shows remote branches, tags and stashes, and relative or absolute
+  dates; signing, sign-off, hooks and a subject length for commits; whitespace and context lines for
+  diffs; and cloning with submodules.
+- **Nothing that stops a day's work ends in git's error text.** The first push of a branch sets its
+  upstream. A push the remote rejects offers *Pull, then push* or a force push with a lease, and
+  **Force push (with lease)…** is on the Push button's right-click menu. A pull on diverged branches
+  asks whether to merge or rebase. A merge, cherry-pick, revert, rebase or patch series that stops in a
+  conflict puts a banner above the history with Continue and Abort, and a merge commit can be reverted
+  or cherry-picked against its first parent.
+- **A commit box for real messages** — several lines, Cmd+Return to commit, a subject counter, and a
+  menu of recent messages; Amend fills in the last message.
+- **More in the history.** Two selected commits are compared, several are cherry-picked in one go; a
+  commit is compared with the working tree, saved as a patch, or marked good or bad for a bisect that
+  the banner then walks to the first bad commit. **Apply Patches…** brings patches back in. The search
+  takes `author:`, `path:`, `since:` and `until:`, authors carry coloured initials, and dates read
+  "2 hours ago" when you want them to.
+- **Branches, stashes, worktrees and LFS.** A branch can be renamed, given an upstream or deleted on its
+  server; selected files can be stashed, with a message, untracked files or the index kept; worktrees
+  are added next to the repository and shown in a file panel; files in Git LFS are locked, unlocked
+  and their type tracked.
 
 ### Fixed
 

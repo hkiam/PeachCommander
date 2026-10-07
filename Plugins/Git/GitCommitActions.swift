@@ -40,8 +40,8 @@ enum GitCommitActions {
 
         busy?.startAnimation(nil)
         let arguments = kind == .revert
-            ? PluginGit.revertArguments(commit.hash)
-            : PluginGit.cherryPickArguments(commit.hash)
+            ? PluginGit.revertArguments(commit.hash, isMerge: commit.isMerge)
+            : PluginGit.cherryPickArguments(commit.hash, isMerge: commit.isMerge)
         let box = ServicesBox(services)     // the host's services are not Sendable; the box carries them
         DispatchQueue.global(qos: .userInitiated).async {
             let result = PluginGitRepo.run(["-C", root] + arguments, combined: true)
@@ -229,6 +229,31 @@ enum GitCommitActions {
         }
         run(PluginGit.resetArguments(mode, to: commit.hash), title: L("Reset"), root: root, services: services,
             busy: busy, done: done)
+    }
+
+    /// The same for a comparison: `file` at `from` against it at `to`, or against the file on disk.
+    static func compareFile(_ file: String, oldPath: String?, from: String, to: String?, root: String,
+                            services: PcHostServices, busy: NSProgressIndicator?) {
+        let before = oldPath ?? file
+        let box = ServicesBox(services)
+        busy?.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let older = PluginGitRepo.writeBlob(root: root, spec: "\(from):\(before)", path: before, base: .index)
+                ?? PluginGitRepo.writeEmptyBlob(path: file)
+            let newer = to.map { PluginGitRepo.writeBlob(root: root, spec: "\($0):\(file)", path: file, base: .head)
+                                 ?? PluginGitRepo.writeEmptyBlob(path: file) }
+                ?? (root as NSString).appendingPathComponent(file)
+            DispatchQueue.main.async {
+                let services = box.services
+                busy?.stopAnimation(nil)
+                guard let older, let newer else { return }
+                let leftTitle = "\(String(from.prefix(8))):\(before)"
+                let rightTitle = to.map { "\(String($0.prefix(8))):\(file)" } ?? L("Working tree")
+                older.withCString { a in newer.withCString { b in leftTitle.withCString { at in rightTitle.withCString { bt in
+                    services.compareFiles?(services.host, a, b, at, bt)
+                } } } }
+            }
+        }
     }
 
     static func report(_ services: PcHostServices, _ title: String, _ message: String) {

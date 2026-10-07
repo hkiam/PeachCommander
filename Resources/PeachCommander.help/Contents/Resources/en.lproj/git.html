@@ -46,11 +46,24 @@ there too, next to the commit that usually precedes them; all three show progres
 <p>The working copy, the history and the <strong>Commands ▸ Git</strong> menu offer more than committing:</p>
 <ul>
 <li>Selecting a staged or changed file shows its diff under the list; selected lines or a whole hunk can be staged, unstaged or discarded from its context menu.</li>
-<li>The commit box is a combo box: its list holds your last commit messages, to reuse or edit.</li>
+<li>The commit box takes several lines — a subject, a blank line, a body — commits with <strong>Cmd+Return</strong> and counts the subject's characters; the menu button beside it holds your last commit messages.</li>
 <li><strong>Show in the left panel</strong> and <strong>Show in the right panel</strong> take a file panel to a file of the list or of a commit's changes, while the Git panel stays as it is; files stored by Git LFS are marked <strong>LFS</strong>.</li>
 <li>Stashes appear in the history as small squares above the commit they were made on, with <strong>Apply stash</strong>, <strong>Pop stash</strong> and <strong>Drop stash…</strong> in their context menu.</li>
-<li><strong>Reflog…</strong> lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with <strong>New branch here…</strong>. <strong>Remotes &amp; Submodules…</strong> adds, renames, re-points and removes remotes and updates submodules.</li>
+<li><strong>Reflog…</strong> lists every move of HEAD; a commit lost to a reset or a deleted branch comes back with <strong>New branch here…</strong>.</li>
+<li><strong>Repository Settings…</strong> adds, renames, re-points and removes remotes, adds, updates and removes submodules, manages worktrees, and gives this repository alone a name and e-mail for commits.</li>
 <li><strong>Create Repository Here…</strong> and <strong>Clone Repository…</strong> work in the active panel's folder, and the clock beside the panel's title goes back to a recent repository.</li>
+</ul>
+<h2 id="when-git-stops-and-the-settings">When git stops, and the settings</h2>
+<ul>
+<li><strong>Push</strong> sets the upstream the first time a branch is pushed. If the remote has commits this branch lacks, it offers <strong>Pull, then push</strong> or <strong>Force push</strong>, always with a lease that refuses if someone pushed since your last fetch; <strong>Force push (with lease)…</strong> is also in the right-click menu of <strong>Push</strong>.</li>
+<li>If <strong>Pull</strong> finds that the branch and its upstream have diverged, it asks whether to merge or to rebase instead of stopping with git's message.</li>
+<li>A merge, cherry-pick, revert, rebase or patch series that stops in a conflict shows a banner above the history with <strong>Continue</strong> and <strong>Abort…</strong>; a merge commit is reverted or cherry-picked against its first parent.</li>
+<li>Select two commits to compare them, or several to cherry-pick them in one go. <strong>Compare with the working tree</strong> and <strong>Save as patch…</strong> are in the history's menu, <strong>Apply Patches…</strong> is in the Git menu.</li>
+<li>The search field also takes filters — <code>author:name</code>, <code>path:folder/</code>, <code>since:"2 weeks ago"</code>, <code>until:2026-10-01</code> — alone or together with words.</li>
+<li><strong>Bisect: mark as bad</strong> and <strong>Bisect: mark as good</strong> in the history's menu start a bisect; the banner then offers <strong>Good</strong>, <strong>Bad</strong>, <strong>Skip</strong> and <strong>End bisect</strong> until git names the first bad commit.</li>
+<li>Stashing selected files or all changes asks for a message and whether to include untracked files or keep the index. Files in Git LFS can be locked and unlocked, and their file type tracked.</li>
+<li>In the branch list a branch can be renamed (<strong>Rename…</strong>), given an upstream (<strong>Set upstream…</strong>) or deleted on its server (<strong>Delete on the remote…</strong>).</li>
+<li><strong>Settings ▸ Git</strong> sets the git program, your global name and e-mail, how <strong>Pull</strong> works, background fetch, what the history shows and how its dates look, signing, sign-off and hooks for commits, and whitespace and context lines for diffs. Authors in the history carry coloured initials.</li>
 </ul>
 <h2 id="history-blame-and-the-web">History, blame and the web</h2>
 <ul>
@@ -93,8 +106,7 @@ be finished in a terminal.</p>
 </ul>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>The plugin uses the system Git at <code>/usr/bin/git</code>. If Git isn't installed, the commands report that Git is
-  not available. (Installing the Xcode Command Line Tools provides it.)</li>
+<li>The plugin uses the system Git at <code>/usr/bin/git</code>, or the program chosen in <strong>Settings ▸ Git</strong>. If Git isn't installed, the commands report that Git is not available. (Installing the Xcode Command Line Tools provides it.)</li>
 <li>Repository status is read once per folder and cached, so scrolling a large repo stays fast; the cache
   refreshes after any command that changes the tree, and follows a commit made outside the app.</li>
 <li>Linked worktrees and submodules are supported: a file inside a submodule shows the <em>submodule's</em> status and

@@ -27,6 +27,8 @@ final class GitChangesView: NSView {
     /// The listed files Git LFS stores, by the repository's current `.gitattributes`.
     private var lfs: Set<String> = []
     private var commit: PluginGit.Commit?
+    /// Or a comparison: `from` against `to`, or against the working tree when `to` is nil.
+    private var range: (from: String, to: String?)?
     private var root: String?
     /// The commit / file being loaded; a late result for anything else is dropped.
     private var loadingFiles: String?
@@ -124,17 +126,31 @@ final class GitChangesView: NSView {
     // MARK: - Loading
 
     func show(commit: PluginGit.Commit, root: String) {
-        guard commit.hash != self.commit?.hash || root != self.root else { return }
+        guard commit.hash != self.commit?.hash || root != self.root || range != nil else { return }
         self.commit = commit
+        self.range = nil
+        load(key: commit.hash, root: root, names: PluginGit.nameStatusArguments(commit.hash),
+             empty: L("This commit changes no files."))
+    }
+
+    /// Two commits compared — or, with `to` nil, a commit and the working tree (phase 8). Read again each
+    /// time: the working tree may have moved since.
+    func show(from: String, to: String?, root: String) {
+        self.commit = nil
+        self.range = (from, to)
+        load(key: from + ".." + (to ?? "working tree"), root: root,
+             names: PluginGit.compareNameStatusArguments(from: from, to: to), empty: L("No differences."))
+    }
+
+    private func load(key: String, root: String, names: [String], empty: String) {
         self.root = root
-        loadingFiles = commit.hash
+        loadingFiles = key
         tree = []
         outline.reloadData()
         diff.show(lines: [], truncated: false, placeholder: "")
         busy.startAnimation(nil)
-        let hash = commit.hash
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let result = PluginGitRepo.run(["-C", root] + PluginGit.nameStatusArguments(hash))
+            let result = PluginGitRepo.run(["-C", root] + names)
             let files = PluginGit.parseNameStatus(result.out)
             // Which of them LFS stores — a pointer file's diff is three lines of hash, which reads as
             // nonsense unless the tree says what it is. The paths go on standard input, however many.
@@ -145,7 +161,7 @@ final class GitChangesView: NSView {
                 // Stopped before the staleness check: the indicator counts, and a dropped result that
                 // never stops it would leave it spinning.
                 self?.busy.stopAnimation(nil)
-                guard let self, self.loadingFiles == hash else { return }
+                guard let self, self.loadingFiles == key else { return }
                 self.lfs = lfs
                 self.tree = PluginGit.fileTree(files).map(TreeItem.init)
                 self.outline.reloadData()
@@ -156,8 +172,7 @@ final class GitChangesView: NSView {
                     (self.outline.item(atRow: $0) as? TreeItem)?.node.file != nil }) {
                     self.outline.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
                 } else {
-                    self.diff.show(lines: [], truncated: false,
-                                   placeholder: files.isEmpty ? L("This commit changes no files.") : "")
+                    self.diff.show(lines: [], truncated: false, placeholder: files.isEmpty ? empty : "")
                 }
             }
         }
@@ -180,14 +195,23 @@ final class GitChangesView: NSView {
     }
 
     private func loadDiff(_ file: PluginGit.ChangedFile) {
-        guard let commit, let root else { return }
-        let key = commit.hash + "\u{0}" + file.path
+        guard let root, let source = loadingFiles else { return }
+        let key = source + "\u{0}" + file.path
         loadingDiff = key
         // Both paths of a rename: limited to the new one, git sees an added file and diffs nothing.
         let paths = [file.oldPath, file.path].compactMap { $0 }
+        let options = GitSettingsStore.current.diffOptions
+        let arguments: [String]
+        if let range {
+            arguments = PluginGit.compareDiffArguments(from: range.from, to: range.to, paths: paths, options: options)
+        } else if let commit {
+            arguments = ["--no-optional-locks", "show", "--format=", "-m", "--first-parent", "--no-color"]
+                + options + [commit.hash, "--"] + paths
+        } else {
+            return
+        }
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let result = PluginGitRepo.run(["-C", root, "--no-optional-locks", "show", "--format=", "-m",
-                                            "--first-parent", "--no-color", commit.hash, "--"] + paths)
+            let result = PluginGitRepo.run(["-C", root] + arguments)
             let parsed = PluginGit.parseUnifiedDiff(result.out)
             DispatchQueue.main.async {
                 guard let self, self.loadingDiff == key else { return }
@@ -200,9 +224,14 @@ final class GitChangesView: NSView {
     // MARK: - Actions
 
     @objc private func compareSelected() {
-        guard let commit, let root, let file = selectedFile else { return }
-        GitCommitActions.compareFile(file.path, oldPath: file.oldPath, in: commit, root: root,
-                                     services: services, busy: busy)
+        guard let root, let file = selectedFile else { return }
+        if let range {
+            GitCommitActions.compareFile(file.path, oldPath: file.oldPath, from: range.from, to: range.to, root: root,
+                                         services: services, busy: busy)
+        } else if let commit {
+            GitCommitActions.compareFile(file.path, oldPath: file.oldPath, in: commit, root: root,
+                                         services: services, busy: busy)
+        }
     }
 
     /// Verification only: select the first file of the tree and show it in a file panel.

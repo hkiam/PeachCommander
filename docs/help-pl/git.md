@@ -50,11 +50,24 @@ Pod przyciskami panel pokazuje historię wszystkich gałęzi, gałęzi zdalnych 
 Kopia robocza, historia i menu **Polecenia ▸ Git** oferują więcej niż zatwierdzanie:
 
 - Zaznaczony przygotowany lub zmieniony plik pokazuje pod listą swój diff; zaznaczone wiersze lub cały fragment można z jego menu kontekstowego przygotować, cofnąć z przygotowania lub odrzucić.
-- Pole commita to pole kombi: jego lista zawiera twoje ostatnie opisy commitów do ponownego użycia lub edycji.
+- Pole commitu przyjmuje kilka wierszy — temat, pusty wiersz, treść —, zatwierdza przez **Cmd+Return** i liczy znaki tematu; przycisk menu obok przechowuje twoje ostatnie wiadomości commitów.
 - **Pokaż w lewym panelu** i **Pokaż w prawym panelu** przenoszą panel plików na plik z listy lub ze zmian commita, a panel Git zostaje bez zmian; pliki przechowywane przez Git LFS są oznaczone **LFS**.
 - Schowki pojawiają się w historii jako małe kwadraty nad commitem, na którym je utworzono, z **Zastosuj schowek**, **Zastosuj i usuń schowek** i **Usuń schowek…** w menu kontekstowym.
-- **Reflog…** wyświetla każde przesunięcie HEAD; commit utracony przez reset lub usuniętą gałąź wraca przez **Nowa gałąź tutaj…**. **Zdalne repozytoria i podmoduły…** dodaje, zmienia nazwy, przekierowuje i usuwa zdalne repozytoria oraz aktualizuje podmoduły.
+- **Reflog…** wyświetla każde przesunięcie HEAD; commit utracony przez reset lub usuniętą gałąź wraca przez **Nowa gałąź tutaj…**.
+- **Ustawienia repozytorium…** dodaje, zmienia nazwy, przekierowuje i usuwa zdalne repozytoria, dodaje, aktualizuje i usuwa podmoduły, zarządza worktree i nadaje tylko temu repozytorium nazwę i e-mail dla commitów.
 - **Utwórz tu repozytorium…** i **Klonuj repozytorium…** działają w folderze aktywnego panelu, a zegar obok tytułu panelu prowadzi z powrotem do ostatniego repozytorium.
+
+## Gdy git się zatrzymuje, i ustawienia
+
+- **Push** przy pierwszym wypchnięciu gałęzi ustawia gałąź nadrzędną. Jeśli zdalne repozytorium ma commity, których tej gałęzi brakuje, proponuje **Pobierz, potem wypchnij** albo **Wymuś wypchnięcie** — zawsze z lease, który odmawia, jeśli ktoś wypchnął od twojego ostatniego fetch; **Wymuś wypchnięcie (z lease)…** jest też w menu kontekstowym przycisku **Push**.
+- Gdy **Pull** stwierdzi, że gałąź i jej gałąź nadrzędna się rozeszły, pyta, czy scalić, czy zrobić rebase, zamiast zatrzymać się na komunikacie gita.
+- Scalanie, cherry-pick, revert, rebase lub seria łatek zatrzymane na konflikcie pokazują nad historią pasek z **Kontynuuj** i **Przerwij…**; commit scalający jest cofany lub przenoszony względem pierwszego rodzica.
+- Zaznacz dwa commity, aby je porównać, albo kilka, aby przenieść je naraz przez cherry-pick. **Porównaj z kopią roboczą** i **Zapisz jako łatkę…** są w menu historii, **Zastosuj łatki…** w menu Git.
+- Pole wyszukiwania przyjmuje też filtry — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — same lub razem ze słowami.
+- **Bisect: oznacz jako zły** i **Bisect: oznacz jako dobry** w menu historii zaczynają bisect; pasek oferuje potem **Dobry**, **Zły**, **Pomiń** i **Zakończ bisect**, aż git wskaże pierwszy zły commit.
+- Odłożenie wybranych plików lub wszystkich zmian do stasha pyta o wiadomość i o to, czy dołączyć nieśledzone pliki lub zachować indeks. Pliki w Git LFS można zablokować i odblokować, a ich typ pliku śledzić.
+- Na liście gałęzi gałąź można przemianować (**Zmień nazwę…**), nadać jej gałąź nadrzędną (**Ustaw gałąź nadrzędną…**) lub usunąć na jej serwerze (**Usuń w zdalnym…**).
+- **Ustawienia ▸ Git** określają program git, twoją globalną nazwę i e-mail, sposób działania **Pull**, fetch w tle, co pokazuje historia i jak wyglądają jej daty, podpisywanie, sign-off i hooki commitów oraz białe znaki i wiersze kontekstu w diffach. Autorzy mają w historii kolorowe inicjały.
 
 ## Historia, blame i sieć
 
@@ -106,8 +119,7 @@ zatwierdzenie** / **Przerwij**, żeby niedokończonej zmiany bazy nie trzeba by�
 
 ## Uwagi
 
-- Wtyczka używa systemowego Gita w `/usr/bin/git`. Jeśli Gita nie ma, polecenia zgłaszają, że Git jest
-  niedostępny. (Dostarczają go Xcode Command Line Tools.)
+- Wtyczka używa systemowego Gita w `/usr/bin/git` lub programu wybranego w **Ustawienia ▸ Git**. Jeśli Gita nie ma, polecenia zgłaszają, że Git jest niedostępny. (Dostarczają go Xcode Command Line Tools.)
 - Stan repozytorium jest czytany raz na folder i zapamiętywany, więc przewijanie dużego repozytorium pozostaje
   szybkie; pamięć odświeża się po każdym poleceniu zmieniającym drzewo i nadąża też za zatwierdzeniem zrobionym
   poza programem.

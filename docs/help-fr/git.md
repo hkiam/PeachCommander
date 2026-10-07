@@ -52,11 +52,24 @@ Sous ses boutons, le panneau affiche l’historique de toutes les branches, bran
 La copie de travail, l’historique et le menu **Commandes ▸ Git** offrent davantage que la validation :
 
 - Un fichier indexé ou modifié sélectionné montre son diff sous la liste ; des lignes sélectionnées ou un bloc entier s’indexent, se désindexent ou s’abandonnent depuis son menu contextuel.
-- Le champ de commit est une liste déroulante : elle contient vos derniers messages de commit, à réutiliser ou modifier.
+- Le champ de commit accepte plusieurs lignes — un sujet, une ligne vide, un corps —, valide avec **Cmd+Retour** et compte les caractères du sujet ; le bouton de menu à côté garde vos derniers messages de commit.
 - **Afficher dans le panneau de gauche** et **Afficher dans le panneau de droite** amènent un panneau de fichiers sur un fichier de la liste ou des modifications d’un commit, sans que le panneau Git bouge ; les fichiers stockés par Git LFS sont marqués **LFS**.
 - Les remisages apparaissent dans l’historique sous forme de petits carrés au-dessus du commit sur lequel ils ont été faits, avec **Appliquer le remisage**, **Appliquer et retirer le remisage** et **Supprimer le remisage…** dans leur menu contextuel.
-- **Reflog…** liste chaque déplacement de HEAD ; un commit perdu par un reset ou une branche supprimée revient avec **Nouvelle branche ici…**. **Dépôts distants et sous-modules…** ajoute, renomme, redirige et retire des dépôts distants et met à jour les sous-modules.
+- **Reflog…** liste chaque déplacement de HEAD ; un commit perdu par un reset ou une branche supprimée revient avec **Nouvelle branche ici…**.
+- **Réglages du dépôt…** ajoute, renomme, redirige et supprime des dépôts distants, ajoute, met à jour et supprime des sous-modules, gère les worktrees et donne à ce seul dépôt un nom et une adresse e-mail pour les commits.
 - **Créer un dépôt ici…** et **Cloner un dépôt…** agissent dans le dossier du panneau actif, et l’horloge à côté du titre du panneau ramène à un dépôt récent.
+
+## Quand git s’arrête, et les réglages
+
+- **Push** définit la branche amont lors du premier envoi d’une branche. Si le dépôt distant a des commits absents de cette branche, il propose **Tirer, puis pousser** ou **Forcer l’envoi**, toujours avec un bail qui refuse si quelqu’un a poussé depuis votre dernier fetch ; **Forcer l’envoi (avec bail)…** figure aussi dans le menu contextuel de **Push**.
+- Si **Pull** constate que la branche et sa branche amont ont divergé, il demande s’il faut fusionner ou rebaser au lieu de s’arrêter sur le message de git.
+- Une fusion, un cherry-pick, un revert, un rebase ou une série de patchs arrêtés sur un conflit affichent au-dessus de l’historique un bandeau avec **Continuer** et **Abandonner…** ; un commit de fusion est annulé ou repris par rapport à son premier parent.
+- Sélectionnez deux commits pour les comparer, ou plusieurs pour les reprendre d’un coup. **Comparer avec la copie de travail** et **Enregistrer comme patch…** sont dans le menu de l’historique, **Appliquer des patchs…** dans le menu Git.
+- Le champ de recherche accepte aussi des filtres — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — seuls ou avec des mots.
+- **Bisect : marquer comme mauvais** et **Bisect : marquer comme bon** dans le menu de l’historique lancent un bisect ; le bandeau propose alors **Bon**, **Mauvais**, **Ignorer** et **Terminer le bisect** jusqu’à ce que git nomme le premier mauvais commit.
+- Remiser des fichiers choisis ou toutes les modifications demande un message et s’il faut inclure les fichiers non suivis ou garder l’index. Les fichiers dans Git LFS peuvent être verrouillés et déverrouillés, et leur type de fichier suivi.
+- Dans la liste des branches, une branche peut être renommée (**Renommer…**), reliée à une branche amont (**Définir la branche amont…**) ou supprimée sur son serveur (**Supprimer sur le dépôt distant…**).
+- **Réglages ▸ Git** définit le programme git, vos nom et adresse e-mail globaux, le fonctionnement de **Pull**, le fetch en arrière-plan, ce que montre l’historique et l’aspect de ses dates, la signature, le sign-off et les hooks des commits, ainsi que les espaces et les lignes de contexte des diffs. Les auteurs portent des initiales colorées dans l’historique.
 
 ## Historique, blâme et le web
 
@@ -110,8 +123,7 @@ un terminal.
 
 ## Remarques
 
-- L’extension utilise le Git du système, à `/usr/bin/git`. Si Git n’est pas installé, les commandes signalent
-  qu’il n’est pas disponible. (Les Xcode Command Line Tools le fournissent.)
+- L’extension utilise le Git du système, à `/usr/bin/git`, ou le programme choisi dans **Réglages ▸ Git**. Si Git n’est pas installé, les commandes signalent que Git n’est pas disponible. (Les Command Line Tools de Xcode le fournissent.)
 - L’état du dépôt est lu une fois par dossier puis mis en cache, pour que le défilement d’un gros dépôt reste
   rapide ; le cache se rafraîchit après toute commande qui modifie l’arbre, et suit une validation faite hors
   de l’application.

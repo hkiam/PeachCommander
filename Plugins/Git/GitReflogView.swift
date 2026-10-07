@@ -181,7 +181,7 @@ extension GitReflogView: NSTableViewDataSource, NSTableViewDelegate {
         case "action": field.stringValue = entry.action
         case "subject": field.stringValue = entry.subject
         default:
-            field.stringValue = gitDateFormatter.string(from: entry.date)
+            field.stringValue = gitDisplayDate(entry.date)
             field.textColor = theme.secondaryText
         }
         field.toolTip = "\(entry.hash)\n\(entry.action)"

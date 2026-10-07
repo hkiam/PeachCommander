@@ -14,7 +14,15 @@ import AppKit
 
 @MainActor
 final class GitHistoryView: NSView {
-    enum Selection: Equatable { case workingCopy, commit(PluginGit.Commit) }
+    /// `several`: two or more commits selected (phase 8) — compared, oldest against newest, and offered
+    /// for a cherry-pick in the order they were made.
+    enum Selection: Equatable { case workingCopy, commit(PluginGit.Commit), several([PluginGit.Commit]) }
+
+    /// "Bisect: mark as good / bad" on one commit.
+    var onBisect: ((PluginGit.BisectMark, PluginGit.Commit) -> Void)?
+
+    /// "Compare with the working tree" on one commit.
+    var onCompareWithWorkingTree: ((PluginGit.Commit) -> Void)?
 
     /// The selection changed (nil: nothing, or the "load more" row).
     var onSelectionChange: ((Selection?) -> Void)?
@@ -90,6 +98,7 @@ final class GitHistoryView: NSView {
             }
             table.addTableColumn(column)
         }
+        table.allowsMultipleSelection = true
         table.dataSource = self
         table.delegate = self
         table.target = self
@@ -113,6 +122,12 @@ final class GitHistoryView: NSView {
             (nil, nil),
             (L("Revert commit"), #selector(revertSelected)),
             (L("Cherry-pick"), #selector(cherryPickSelected)),
+            (L("Cherry-pick the selected commits"), #selector(cherryPickSeveral)),
+            (L("Compare with the working tree"), #selector(compareWithWorkingTree)),
+            (L("Save as patch…"), #selector(savePatches)),
+            (nil, nil),
+            (L("Bisect: mark as bad"), #selector(bisectBad)),
+            (L("Bisect: mark as good"), #selector(bisectGood)),
             (L("Open on the web"), #selector(openSelectedOnTheWeb)),
             (nil, nil),
             (L("Only the current branch"), #selector(toggleScope)),
@@ -124,6 +139,7 @@ final class GitHistoryView: NSView {
         table.menu = menu
 
         searchField.placeholderString = L("Search commits: hash, author, message")
+        searchField.toolTip = L("Also: author:name, path:folder/, since:\"2 weeks ago\", until:2026-10-01")
         searchField.controlSize = .small
         searchField.font = .systemFont(ofSize: 11)
         // After a pause in typing rather than on every key: each search is up to three runs of git over
@@ -227,6 +243,12 @@ final class GitHistoryView: NSView {
     }
 
     var selection: Selection? {
+        let several = table.selectedRowIndexes.compactMap { row -> PluginGit.Commit? in
+            commits.indices.contains(row - offset) ? commits[row - offset] : nil
+        }
+        // In the history's order — newest first, topologically — which is the only order a series made
+        // in one second (a rebase, `git am`) still has; callers reverse it for oldest first.
+        if several.count >= 2 { return .several(several) }
         let row = table.selectedRow
         if row == 0, hasRepo, !searching { return .workingCopy }
         let index = row - offset
@@ -238,6 +260,10 @@ final class GitHistoryView: NSView {
         guard let index = commits.firstIndex(where: { $0.hash == hash }) else { return }
         table.selectRowIndexes(IndexSet(integer: index + offset), byExtendingSelection: false)
         table.scrollRowToVisible(index + offset)
+    }
+
+    func selectRows(_ rows: IndexSet) {
+        table.selectRowIndexes(rows, byExtendingSelection: false)
     }
 
     func selectRow(_ row: Int) {
@@ -327,7 +353,12 @@ final class GitHistoryView: NSView {
     /// "Only the current branch" without the context menu (the verification probe).
     func setOnlyCurrentBranch(_ on: Bool) { onlyCurrentBranch = on }
 
-    @objc private func copyHash() { selectedCommit.map { gitCopyToClipboard($0.hash) } }
+    @objc private func copyHash() {
+        // Several selected: all their hashes, one per line, newest first as listed.
+        let several = selectedSeveral
+        if several.count >= 2 { gitCopyToClipboard(several.map(\.hash).joined(separator: "\n")); return }
+        selectedCommit.map { gitCopyToClipboard($0.hash) }
+    }
     private var selectedStash: PluginGit.Commit? { selectedCommit.flatMap { PluginGit.isStash($0) ? $0 : nil } }
 
     @objc private func applyStash() { stash(.apply) }
@@ -373,6 +404,88 @@ final class GitHistoryView: NSView {
     @objc private func copySubject() { selectedCommit.map { gitCopyToClipboard($0.subject) } }
     @objc private func revertSelected() { runSequencer(.revert) }
     @objc private func cherryPickSelected() { runSequencer(.cherryPick) }
+
+    private var selectedSeveral: [PluginGit.Commit] {
+        if case .several(let commits)? = selection { return commits }
+        return []
+    }
+
+    @objc private func cherryPickSeveral() {
+        guard let root else { return }
+        guard let arguments = PluginGit.cherryPickSeriesArguments(selectedSeveral) else {
+            GitCommitActions.report(services, L("Cherry-pick"),
+                                    L("A merge commit cannot be picked as part of a series. Pick it on its own."))
+            return
+        }
+        if let repo = PluginGitRepo.status(root: root), PluginGit.refusal(forCommitActionIn: repo) != nil {
+            GitCommitActions.report(services, L("Cherry-pick"), L("The working tree has changes. Commit or stash them first."))
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = String(format: L("Cherry-pick %lld commits onto the current branch?"), selectedSeveral.count)
+        alert.informativeText = L("They are applied in the order they were made. A conflict stops the series; the panel then offers to continue or abort.")
+        alert.addButton(withTitle: L("Cherry-pick"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        GitCommitActions.run(arguments, title: L("Cherry-pick"), root: root, services: services, busy: busy) {
+            [weak self] in self?.onChanged?()
+        }
+    }
+
+    @objc private func bisectBad() { selectedCommit.map { onBisect?(.bad, $0) } }
+    @objc private func bisectGood() { selectedCommit.map { onBisect?(.good, $0) } }
+
+    /// The selected commit — or each of several, oldest first, numbered as `git format-patch` numbers
+    /// them — saved as a patch file to send or apply elsewhere.
+    @objc private func savePatches() {
+        guard let root else { return }
+        let several = Array(selectedSeveral.reversed())     // history order is newest first
+        let commits = several.count >= 2 ? several : selectedCommit.map { [$0] } ?? []
+        guard !commits.isEmpty else { return }
+        let directory: URL
+        if commits.count == 1 {
+            let panel = NSSavePanel()
+            panel.nameFieldStringValue = PluginGit.patchFileName(number: 1, subject: commits[0].subject)
+            guard panel.runModal() == .OK, let url = panel.url else { return }
+            directory = url.deletingLastPathComponent()
+            writePatches(commits, root: root, into: directory, firstName: url.lastPathComponent)
+        } else {
+            let panel = NSOpenPanel()
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = false
+            panel.canCreateDirectories = true
+            panel.prompt = L("Save patches here")
+            guard panel.runModal() == .OK, let url = panel.url else { return }
+            directory = url
+            writePatches(commits, root: root, into: directory, firstName: nil)
+        }
+    }
+
+    private func writePatches(_ commits: [PluginGit.Commit], root: String, into directory: URL, firstName: String?) {
+        let box = ServicesBox(services)
+        busy.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            var failed: String?
+            for (index, commit) in commits.enumerated() {
+                guard let data = PluginGitRepo.runData(["-C", root] + PluginGit.formatPatchArguments(commit.hash)) else {
+                    failed = commit.shortHash; break
+                }
+                let name = index == 0 && firstName != nil ? firstName! : PluginGit.patchFileName(number: index + 1, subject: commit.subject)
+                do { try data.write(to: directory.appendingPathComponent(name)) } catch { failed = commit.shortHash; break }
+            }
+            DispatchQueue.main.async {
+                self?.busy.stopAnimation(nil)
+                if let failed {
+                    GitCommitActions.report(box.services, L("Save as patch…"), String(format: L("The patch of %@ could not be written."), failed))
+                }
+            }
+        }
+    }
+
+    @objc private func compareWithWorkingTree() {
+        guard let commit = selectedCommit else { return }
+        onCompareWithWorkingTree?(commit)
+    }
     @objc private func reloadFromMenu() { onChanged?() }
 
     @objc private func toggleScope() {
@@ -433,10 +546,20 @@ extension GitHistoryView: NSMenuDelegate {
         let stashActions: Set<Selector> = [#selector(applyStash), #selector(popStash), #selector(dropStash)]
         let shared: Set<Selector> = [#selector(copyHash), #selector(copySubject), #selector(toggleScope),
                                      #selector(showReflog), #selector(reloadFromMenu)]
+        let severalActions: Set<Selector> = [#selector(cherryPickSeveral), #selector(savePatches)]
         let onStash = selectedStash != nil
+        let onSeveral = selectedSeveral.count >= 2
         for item in menu.items where !item.isSeparatorItem {
             guard let action = item.action else { continue }
-            item.isHidden = shared.contains(action) ? false : (stashActions.contains(action) ? !onStash : onStash)
+            if shared.contains(action) {
+                item.isHidden = false
+            } else if onSeveral {
+                item.isHidden = !severalActions.contains(action)      // several commits: what fits several
+            } else if severalActions.contains(action) {
+                item.isHidden = true
+            } else {
+                item.isHidden = stashActions.contains(action) ? !onStash : onStash
+            }
         }
         var previousVisibleIsSeparator = true
         for item in menu.items where item.isSeparatorItem || !item.isHidden {
@@ -457,6 +580,9 @@ extension GitHistoryView: NSMenuItemValidation {
             return hasRepo
         }
         if menuItem.action == #selector(reloadFromMenu) || menuItem.action == #selector(showReflog) { return hasRepo }
+        if menuItem.action == #selector(cherryPickSeveral) { return selectedSeveral.count >= 2 }
+        if menuItem.action == #selector(savePatches) { return selectedCommit != nil || selectedSeveral.count >= 2 }
+        if menuItem.action == #selector(copyHash) { return selectedCommit != nil || selectedSeveral.count >= 2 }
         return selectedCommit != nil
     }
 }
@@ -524,14 +650,14 @@ extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
             field.attributedStringValue = subjectText(commit)
             field.toolTip = commit.subject
         case "author":
-            field.stringValue = commit.author
-            field.textColor = theme.secondaryText
+            field.attributedStringValue = gitAuthorText(commit.author, color: theme.secondaryText)
         case "hash":
             field.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
             field.stringValue = commit.shortHash
             field.textColor = theme.secondaryText
         case "date":
-            field.stringValue = gitDateFormatter.string(from: commit.date)
+            field.stringValue = gitDisplayDate(commit.date)
+            field.toolTip = gitDateFormatter.string(from: commit.date)
             field.textColor = theme.secondaryText
         default:
             field.stringValue = ""

@@ -51,11 +51,24 @@ Sotto i pulsanti il pannello mostra la cronologia di tutti i rami, rami remoti e
 La copia di lavoro, la cronologia e il menu **Comandi ▸ Git** offrono più del solo commit:
 
 - Un file in stage o modificato selezionato mostra il suo diff sotto l’elenco; righe selezionate o un intero blocco si mettono in stage, si tolgono dallo stage o si scartano dal suo menu contestuale.
-- Il campo del commit è una casella combinata: il suo elenco contiene i tuoi ultimi messaggi di commit, da riusare o modificare.
+- Il campo del commit accetta più righe — un oggetto, una riga vuota, un testo —, esegue il commit con **Cmd+Invio** e conta i caratteri dell’oggetto; il pulsante menu accanto conserva i tuoi ultimi messaggi di commit.
 - **Mostra nel pannello sinistro** e **Mostra nel pannello destro** portano un pannello file su un file dell’elenco o delle modifiche di un commit, mentre il pannello Git resta com’è; i file memorizzati da Git LFS sono contrassegnati **LFS**.
 - Gli stash compaiono nella cronologia come piccoli quadrati sopra il commit su cui sono stati creati, con **Applica stash**, **Applica e rimuovi stash** ed **Elimina stash…** nel menu contestuale.
-- **Reflog…** elenca ogni spostamento di HEAD; un commit perso con un reset o un ramo eliminato torna con **Nuovo ramo qui…**. **Remoti e sottomoduli…** aggiunge, rinomina, reindirizza e rimuove remoti e aggiorna i sottomoduli.
+- **Reflog…** elenca ogni spostamento di HEAD; un commit perso con un reset o un ramo eliminato torna con **Nuovo ramo qui…**.
+- **Impostazioni del repository…** aggiunge, rinomina, reindirizza e rimuove remoti, aggiunge, aggiorna e rimuove sottomoduli, gestisce i worktree e dà solo a questo repository un nome e un’e-mail per i commit.
 - **Crea repository qui…** e **Clona repository…** lavorano nella cartella del pannello attivo, e l’orologio accanto al titolo del pannello riporta a un repository recente.
+
+## Quando git si ferma, e le impostazioni
+
+- **Push** imposta l’upstream al primo push di un ramo. Se il remoto ha commit che mancano a questo ramo, offre **Pull, poi push** o **Push forzato**, sempre con un lease che rifiuta se qualcuno ha fatto push dal tuo ultimo fetch; **Push forzato (con lease)…** è anche nel menu contestuale di **Push**.
+- Se **Pull** trova che il ramo e il suo upstream si sono separati, chiede se fare merge o rebase invece di fermarsi sul messaggio di git.
+- Un merge, un cherry-pick, un revert, un rebase o una serie di patch che si ferma su un conflitto mostra sopra la cronologia un banner con **Continua** e **Interrompi…**; un commit di merge viene annullato o applicato rispetto al suo primo genitore.
+- Seleziona due commit per confrontarli, o più commit per applicarli in un colpo con cherry-pick. **Confronta con la copia di lavoro** e **Salva come patch…** sono nel menu della cronologia, **Applica patch…** nel menu Git.
+- Il campo di ricerca accetta anche filtri — `author:name`, `path:folder/`, `since:"2 weeks ago"`, `until:2026-10-01` — da soli o insieme a parole.
+- **Bisect: segna come cattivo** e **Bisect: segna come buono** nel menu della cronologia avviano un bisect; il banner offre poi **Buono**, **Cattivo**, **Salta** e **Termina bisect** finché git non indica il primo commit cattivo.
+- Mettere nello stash file scelti o tutte le modifiche chiede un messaggio e se includere i file non tracciati o mantenere l’indice. I file in Git LFS si possono bloccare e sbloccare, e tracciarne il tipo di file.
+- Nell’elenco dei rami un ramo si può rinominare (**Rinomina…**), collegare a un upstream (**Imposta upstream…**) o eliminare sul suo server (**Elimina sul remoto…**).
+- **Impostazioni ▸ Git** stabilisce il programma git, il tuo nome e la tua e-mail globali, come lavora **Pull**, il fetch in background, cosa mostra la cronologia e come appaiono le sue date, firma, sign-off e hook dei commit, e spazi e righe di contesto dei diff. Gli autori portano iniziali colorate nella cronologia.
 
 ## Cronologia, blame e il web
 
@@ -107,8 +120,7 @@ rebase**, così un rebase lasciato a metà non deve essere finito in un terminal
 
 ## Note
 
-- Il plugin usa il Git di sistema in `/usr/bin/git`. Se Git non è installato, i comandi segnalano che non è
-  disponibile. (Gli Xcode Command Line Tools lo forniscono.)
+- Il plugin usa il Git di sistema in `/usr/bin/git`, o il programma scelto in **Impostazioni ▸ Git**. Se Git non è installato, i comandi segnalano che non è disponibile. (Gli strumenti da riga di comando di Xcode lo forniscono.)
 - Lo stato del repository viene letto una volta per cartella e messo in cache, così scorrere un repository
   grande resta veloce; la cache si aggiorna dopo ogni comando che cambia l’albero, e segue anche un commit
   fatto fuori dall’applicazione.

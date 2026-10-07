@@ -198,6 +198,8 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     guard let commandId, let services else { return }
     let id = String(cString: commandId)
     let svc = services.pointee
+    // Not `assumeIsolated`: a command declared asynchronous runs here off the main thread (F-422).
+    GitSettingsStore.adoptConfigRoot(svc)
     // The cursor item if there is one, else the *panel's directory* — not the process's working
     // directory, which is wherever the app was launched from and in a developer's case is another
     // repository entirely: the log window opened on PeachCommander itself while the panel was in the
@@ -262,6 +264,8 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         MainActor.assumeIsolated { showBranchesWindow(root: root, svc) }
     case "plugin.git.reflog":
         MainActor.assumeIsolated { showReflogWindow(root: root, svc) }
+    case "plugin.git.am":
+        MainActor.assumeIsolated { applyPatches(root: root, svc) }
     case "plugin.git.remotes":
         MainActor.assumeIsolated { showRemotesWindow(root: root, svc) }
     case "plugin.git.conflict":
@@ -455,41 +459,151 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); the alert
         // this may raise must be built there, and asserting it is honest where a hop would hide it.
         MainActor.assumeIsolated { openOnTheWeb(remote: remote.url, target: target, svc) }
-    case "plugin.git.push", "plugin.git.pull", "plugin.git.fetch", "plugin.git.submodules.update":
+    case "plugin.git.push", "plugin.git.push.force", "plugin.git.pull", "plugin.git.fetch",
+         "plugin.git.submodules.update":
         // Declared `"async": true` in the manifest, so this runs OFF the main thread (F-422): it may block
         // on git, report each line into the host's progress window, and be cancelled — which is the whole
         // difference between a push to an unreachable host and an application that appears to have died.
-        // Fetch as well since the panel shows every remote branch (phase 6): what the graph knows about the
-        // remotes is only as new as the last fetch, and Pull is the wrong way to refresh it.
-        let (title, arguments): (String, [String])
-        switch id {
-        case "plugin.git.push":  (title, arguments) = (L("Git Push"), ["-C", root, "push"])
-        case "plugin.git.fetch": (title, arguments) = (L("Fetch"), ["-C", root, "fetch", "--prune"])
-        case "plugin.git.submodules.update":
-            (title, arguments) = (L("Update submodules"), ["-C", root] + PluginGit.updateSubmodulesArguments)
-        default:                 (title, arguments) = (L("Git Pull"), ["-C", root, "pull", "--ff-only"])
-        }
-        let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
-        let result = PluginGitRepo.runCancellable(arguments) { line in
-            guard let handle else { return true }   // no progress window: nothing to cancel from either
-            // `svc.updateProgress?(…) != 0` is already a Bool — comparing an Optional<Int32> with 0 lifts
-            // the operator, and nil compares unequal, which is the "older host, keep going" answer. The
-            // `?? true` this used to carry was dead code the compiler pointed at.
-            return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 }
-        }
-        if let handle { svc.endProgress?(svc.host, handle) }
-        PluginGitRepo.invalidate()
-        let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
-        // Back to the main thread by hand: this code is no longer on it, and the services that touch the
-        // window insist on it.
-        DispatchQueue.main.async {
-            svc.reloadActivePanel?(svc.host)
-            svc.presentInfo?(svc.host, title, result.cancelled
-                ? L("Cancelled.")
-                : (message.isEmpty ? (result.ok ? L("Done.") : L("Failed.")) : message))
-        }
+        syncCommand(id, root: root, svc)
     default:
         break
+    }
+}
+
+// MARK: - Fetch, pull and push (phase 8)
+
+/// Run one git call with the host's progress window and Cancel. Off the main thread.
+private func withProgress(_ title: String, _ arguments: [String], _ svc: PcHostServices,
+                          environment: [String: String] = [:]) -> (out: String, ok: Bool, cancelled: Bool) {
+    let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
+    let result = PluginGitRepo.runCancellable(arguments, environment: environment) { line in
+        guard let handle else { return true }   // no progress window: nothing to cancel from either
+        return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 }
+    }
+    if let handle { svc.endProgress?(svc.host, handle) }
+    return result
+}
+
+/// A question asked from a background command: the alert has to run on the main thread. Returns the
+/// index of the button pressed, or nil for the last one (Cancel).
+private func ask(_ message: String, _ detail: String, buttons: [String], style: NSAlert.Style = .informational) -> Int? {
+    DispatchQueue.main.sync {
+        MainActor.assumeIsolated {
+            let alert = NSAlert()
+            alert.alertStyle = style
+            alert.messageText = message
+            alert.informativeText = detail
+            for title in buttons + [L("Cancel")] { alert.addButton(withTitle: title) }
+            let index = alert.runModal().rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
+            return index < buttons.count ? index : nil
+        }
+    }
+}
+
+/// Fetch, pull, push and force-push, by Settings ▸ Git — and the two places a sync used to leave the
+/// reader with nothing but git's error: a push refused because the remote moved on offers a pull (or a
+/// lease-protected force push), and a pull refused because the branches diverged offers merge or rebase.
+/// Success is said quietly in the panel when it is open; a failure still says so in an alert.
+private func syncCommand(_ id: String, root: String, _ svc: PcHostServices) {
+    let settings = GitSettingsStore.current
+    let git = ["-C", root]
+    var title = L("Git")
+    var result: (out: String, ok: Bool, cancelled: Bool) = ("", true, false)
+
+    // The pulls and pushes whose refusal is read run with git's messages in English (see
+    // `englishMessagesEnvironment`); what the reader is shown is git's text either way.
+    let english = PluginGit.englishMessagesEnvironment
+
+    /// `from`: the remote and branch to pull, for a branch that has no upstream yet to pull from.
+    func pull(from: [String] = []) {
+        title = L("Git Pull")
+        result = withProgress(title, git + settings.pullArguments + from, svc, environment: english)
+        guard !result.ok, !result.cancelled, PluginGit.isDivergedPullRefusal(result.out) else { return }
+        let choice = ask(L("The branches have diverged."),
+                         L("This branch and its upstream both have commits the other does not. Merge them into a merge commit, or replay this branch's commits on top of the upstream?"),
+                         buttons: [L("Rebase"), L("Merge")])
+        guard let choice else { result = (L("Cancelled."), false, true); return }
+        result = withProgress(title, git + PluginGit.pullArguments(choice == 0 ? .rebase : .merge) + from, svc,
+                              environment: english)
+    }
+
+    func push(force: Bool) {
+        title = force ? L("Force push") : L("Git Push")
+        let status = PluginGitRepo.status(root: root)
+        let remotes = PluginGit.parseRemotes(PluginGitRepo.run(git + PluginGit.remotesArguments).out).map(\.name)
+        // A branch without an upstream pushes to `origin` (or the only remote) and sets it there; the
+        // same remote and branch are what a force push or a pull after a refusal have to name, since
+        // neither has an upstream to fall back on.
+        let first = status?.upstream == nil
+            ? PluginGit.pushArguments(upstream: nil, remotes: remotes, setUpstream: true) : nil
+        let target = first.map { Array($0.dropFirst()) } ?? []            // --set-upstream <remote> HEAD
+        let pullSource = first.flatMap { args -> [String]? in
+            guard let status, !status.detached, !status.branch.isEmpty else { return nil }
+            return [args[2], status.branch]
+        } ?? []
+        func forcePush() {
+            title = L("Force push")
+            result = withProgress(title, git + PluginGit.forcePushArguments + target, svc, environment: english)
+        }
+        if force {
+            guard ask(L("Replace the remote branch with this one?"),
+                      L("Commits on the remote branch that are not in this one are dropped from it. The lease refuses if somebody pushed since this repository last fetched."),
+                      buttons: [L("Force push")], style: .warning) != nil else {
+                result = (L("Cancelled."), false, true); return
+            }
+            forcePush()
+            return
+        }
+        guard let arguments = PluginGit.pushArguments(upstream: status?.upstream, remotes: remotes,
+                                                      setUpstream: settings.pushSetsUpstream) else {
+            result = (L("This repository has no remote to push to. Add one under Repository Settings."), false, false)
+            return
+        }
+        result = withProgress(title, git + arguments, svc, environment: english)
+        guard !result.ok, !result.cancelled, PluginGit.isRejectedAsBehind(result.out) else { return }
+        let choice = ask(L("The remote branch has commits this one does not."),
+                         L("Pull them first and push again — or, after a rebase or an amend, replace the remote branch with this one (with a lease, so nobody else's new commits are lost)."),
+                         buttons: [L("Pull, then push"), L("Force push")])
+        switch choice {
+        case 0?:
+            pull(from: pullSource)
+            if result.ok { title = L("Git Push"); result = withProgress(title, git + arguments, svc, environment: english) }
+        case 1?:
+            forcePush()
+        default:
+            result = (L("Cancelled."), false, true)
+        }
+    }
+
+    switch id {
+    case "plugin.git.push": push(force: false)
+    case "plugin.git.push.force": push(force: true)
+    case "plugin.git.fetch":
+        title = L("Fetch")
+        result = withProgress(title, git + settings.fetchArguments, svc)
+    case "plugin.git.submodules.update":
+        title = L("Update submodules")
+        result = withProgress(title, git + PluginGit.updateSubmodulesArguments, svc)
+    default: pull()
+    }
+    PluginGitRepo.invalidate()
+    let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
+    let outcome = result
+    let heading = title
+    // Back to the main thread by hand: this code is no longer on it, and the services that touch the
+    // window insist on it.
+    DispatchQueue.main.async {
+        svc.reloadActivePanel?(svc.host)
+        MainActor.assumeIsolated {
+            if outcome.ok, let panel = panelView, panel.window != nil {
+                panel.flash(String(format: L("%@ — done."), heading))
+                panel.refreshAfterSync()
+            } else if outcome.cancelled {
+                panelView?.flash(L("Cancelled."))
+            } else {
+                svc.presentInfo?(svc.host, heading, message.isEmpty ? (outcome.ok ? L("Done.") : L("Failed.")) : message)
+            }
+        }
     }
 }
 
@@ -794,12 +908,9 @@ private func cloneRepository(into folder: String, _ svc: PcHostServices) {
         return
     }
     let title = L("Clone a repository")
-    let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
-    let result = PluginGitRepo.runCancellable(PluginGit.cloneArguments(url: url, into: target)) { line in
-        guard let handle else { return true }
-        return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 }
-    }
-    if let handle { svc.endProgress?(svc.host, handle) }
+    var cloneArguments = PluginGit.cloneArguments(url: url, into: target)
+    if GitSettingsStore.current.cloneRecursive { cloneArguments.insert("--recurse-submodules", at: 1) }
+    let result = withProgress(title, cloneArguments, svc)
     DispatchQueue.main.async {
         let svc = box.services
         if result.ok {
@@ -811,10 +922,38 @@ private func cloneRepository(into folder: String, _ svc: PcHostServices) {
     }
 }
 
+/// Apply patch files as commits (`git am --3way`). One that does not apply leaves `am` under way, which
+/// the panel's banner then offers to continue or abort.
+@MainActor
+private func applyPatches(root: String, _ svc: PcHostServices) {
+    let panel = NSOpenPanel()
+    panel.allowsMultipleSelection = true
+    panel.canChooseDirectories = false
+    panel.message = L("Patch files to apply as commits, in the order chosen")
+    guard panel.runModal() == .OK, !panel.urls.isEmpty else { return }
+    let files = panel.urls.map(\.path).sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    let box = ServicesBox(svc)
+    DispatchQueue.global(qos: .userInitiated).async {
+        let result = PluginGitRepo.run(["-C", root] + PluginGit.applyPatchesArguments(files), combined: true)
+        DispatchQueue.main.async {
+            let svc = box.services
+            PluginGitRepo.invalidate()
+            svc.reloadActivePanel?(svc.host)
+            if result.ok, let panel = panelView, panel.window != nil {
+                panel.flash(String(format: L("%lld patch(es) applied."), files.count))
+                panel.refreshAfterSync()
+            } else {
+                panelView?.refreshAfterSync()
+                svc.presentInfo?(svc.host, L("Apply patches"), result.out.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+        }
+    }
+}
+
 @MainActor
 func showRemotesWindow(root: String, _ svc: PcHostServices) {
-    showToolWindow(title: String(format: L("Remotes & Submodules — %@"), (root as NSString).lastPathComponent),
-                   view: GitRemotesView(services: svc, root: root), size: NSSize(width: 820, height: 480), svc)
+    showToolWindow(title: String(format: L("Repository Settings — %@"), (root as NSString).lastPathComponent),
+                   view: GitRemotesView(services: svc, root: root), size: NSSize(width: 860, height: 640), svc)
 }
 
 @MainActor
@@ -827,6 +966,8 @@ func showReflogWindow(root: String, _ svc: PcHostServices) {
 
 /// Views the plugin can build, by the id declared in Info.plist.
 private let gitPanelViewId = "plugin.git.panel"
+/// Settings ▸ Git (phase 8).
+private let gitSettingsViewId = "plugin.git.settings"
 
 /// The mounted panel view, weakly: the host owns it (PcMakeView/PcCloseView), and this is only so a palette
 /// change can be handed to it (F-431).
@@ -835,7 +976,12 @@ private let gitPanelViewId = "plugin.git.panel"
 @_cdecl("PcMakeView")
 public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
-    guard let viewId, let services, String(cString: viewId) == gitPanelViewId else { return nil }
+    guard let viewId, let services else { return nil }
+    GitSettingsStore.adoptConfigRoot(services.pointee)
+    if String(cString: viewId) == gitSettingsViewId {
+        return Unmanaged.passRetained(MainActor.assumeIsolated { GitSettingsView() }).toOpaque()
+    }
+    guard String(cString: viewId) == gitPanelViewId else { return nil }
     // The services struct is a stack value in the host; copy it, since the view outlives this call.
     let view = MainActor.assumeIsolated { GitPanelView(services: services.pointee) }
     // Weakly, so a theme change can reach the panel while the host owns its lifetime (F-431).
@@ -846,14 +992,15 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePoi
 @_cdecl("PcCloseView")
 public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
     guard let view else { return }
-    Unmanaged<GitPanelView>.fromOpaque(view).release()
+    Unmanaged<NSView>.fromOpaque(view).release()
 }
 
 @_cdecl("PcNotifyView")
 public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?,
                          _ value: UnsafePointer<CChar>?) {
     guard let view, let key, let value else { return }
-    let panel = Unmanaged<GitPanelView>.fromOpaque(view).takeUnretainedValue()
+    // The settings page is a view of this plugin too, and takes no notifications.
+    guard let panel = Unmanaged<NSView>.fromOpaque(view).takeUnretainedValue() as? GitPanelView else { return }
     let k = String(cString: key), v = String(cString: value)
     MainActor.assumeIsolated { panel.notify(key: k, value: v) }
 }
