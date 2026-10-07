@@ -35,6 +35,14 @@ enum FSLowLevel {
         return Int64(st.st_size)
     }
 
+    /// Size and allocated bytes in one `lstat`. The difference is what a placeholder still lacks —
+    /// see `BulkEntry.allocated`.
+    static func sizeAndAllocated(of path: String) -> (size: Int64, allocated: Int64) {
+        var st = stat()
+        guard lstatPath(path, &st) == 0 else { return (0, 0) }
+        return (Int64(st.st_size), Int64(st.st_blocks) * 512)
+    }
+
     static func facts(of path: String) -> FileFacts? {
         var st = stat()
         guard lstatPath(path, &st) == 0 else { return nil }
@@ -87,6 +95,9 @@ enum FSLowLevel {
         let name: String
         let kind: FSKind?
         let size: Int64
+        /// Bytes on disk. Below `size` for a sparse file — and for the placeholders the Windows App
+        /// fills in place while a coordinated read waits, which is how that wait can show progress.
+        let allocated: Int64
     }
 
     /// The entries of `dir` with their kind and size, read in batches rather than one `lstat` each.
@@ -108,7 +119,7 @@ enum FSLowLevel {
         wanted |= attrgroup_t(ATTR_CMN_NAME)
         wanted |= attrgroup_t(ATTR_CMN_OBJTYPE)
         attrList.commonattr = wanted
-        attrList.fileattr = attrgroup_t(ATTR_FILE_DATALENGTH)
+        attrList.fileattr = attrgroup_t(ATTR_FILE_DATALENGTH) | attrgroup_t(ATTR_FILE_DATAALLOCSIZE)
 
         var buffer = [UInt8](repeating: 0, count: 128 * 1024)
         var entries: [BulkEntry] = []
@@ -135,7 +146,8 @@ enum FSLowLevel {
     private static let vsymlink: UInt32 = 5
 
     /// Unpack one record. The wire order is the order of the attribute bits: the name reference, the
-    /// object type, then — file attributes coming after common ones — the data length.
+    /// object type, then — file attributes coming after common ones — the data length and the data
+    /// allocation size.
     private static func parseBulkRecord(_ record: UnsafeRawPointer) -> BulkEntry? {
         var cursor = record.advanced(by: MemoryLayout<UInt32>.size)
         let returned = cursor.loadUnaligned(as: attribute_set_t.self)
@@ -160,10 +172,16 @@ enum FSLowLevel {
         var size: Int64 = 0
         if (returned.fileattr & attrgroup_t(ATTR_FILE_DATALENGTH)) != 0 {
             size = Int64(cursor.loadUnaligned(as: off_t.self))
+            cursor = cursor.advanced(by: MemoryLayout<off_t>.size)
         } else if kind == .file {
             kind = nil   // a file whose size did not arrive: ask for it per file
         }
-        return BulkEntry(name: name, kind: kind, size: size)
+        // A volume that does not report it is taken as holding everything: nothing to wait for.
+        var allocated = size
+        if (returned.fileattr & attrgroup_t(ATTR_FILE_DATAALLOCSIZE)) != 0 {
+            allocated = Int64(cursor.loadUnaligned(as: off_t.self))
+        }
+        return BulkEntry(name: name, kind: kind, size: size, allocated: allocated)
     }
 
     /// Routed through `DeepPath` so a path past PATH_MAX answers instead of reporting "does not

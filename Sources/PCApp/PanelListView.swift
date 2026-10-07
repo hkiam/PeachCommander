@@ -318,7 +318,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// panel). `move` is true when the Command modifier was held. Paths are absolute.
     /// `intoFolder` is the absolute path of a folder row the files were dropped onto
     /// (F-067), or nil for a drop on the panel as a whole.
-    var onDropFiles: (([String], _ move: Bool, _ intoFolder: String?) -> Void)?
+    var onDropFiles: (([String], _ move: Bool, _ intoFolder: String?, _ fromOtherApp: Bool) -> Void)?
     /// A drag hovered over the folder row at `path` long enough to spring-load it
     /// (open it in this panel) — F-067.
     var onSpringLoadFolder: ((String) -> Void)?
@@ -2518,7 +2518,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
               !urls.isEmpty else { return false }
         // A `.on` drop onto a folder row copies/moves into that folder (F-067).
         let target = (dropOperation == .on) ? folderRow(row) : nil
-        onDropFiles?(urls.map { $0.path }, dropIsMove(), target)
+        // `draggingSource` is nil exactly when the drag began in another application.
+        onDropFiles?(urls.map { $0.path }, dropIsMove(), target, info.draggingSource == nil)
         return true
     }
 
@@ -2526,7 +2527,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Mimic a file drop onto table row `r` for automation (F-067): targets that
     /// row's folder if it is one, else the panel as a whole.
     func automationDropOnRow(_ r: Int, paths: [String], move: Bool) {
-        onDropFiles?(paths, move, folderRow(r))
+        onDropFiles?(paths, move, folderRow(r), false)
     }
     #endif
 

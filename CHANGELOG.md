@@ -23,6 +23,17 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   through `getattrlistbulk`, and the progress bar runs indeterminate until they are complete.
   Measured on an SMB share with 2000 files: counting took 1.9 s and now takes 0.4 s, and the first
   byte moves after about half a second instead of after the count.
+- **Files pasted from the Windows App arrived full of zeros.** The Windows App puts files copied in
+  a remote session on the pasteboard as placeholders of the right size and fetches their content
+  over RDP only when a reader asks through file coordination, as Finder does. The paste did not ask:
+  it cloned the empty placeholders at once, so the copies had the right size and no content. A paste,
+  and a drop from another app, now reads each folder and file coordinated before copying it, which
+  waits for the content; Stop ends the wait if the remote session never answers. A paste of files
+  Peach Commander copied itself skips this and stays as fast as before. The progress bar follows the
+  download as well: the Windows App writes the content into its placeholders in place, so what has
+  arrived can be measured from the bytes on disk, and the bar fills while it arrives instead of
+  standing at 0 % and jumping to 100 % once it is there. It never runs backwards when the copy itself
+  begins.
 
 ## [0.9.3] — 2026-09-25
 

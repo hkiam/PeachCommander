@@ -79,7 +79,7 @@ final class IconGridView: NSView, NSDraggingSource {
     /// A key the grid does not handle itself, handed on to the panel's own key handling.
     var onUnhandledKey: ((NSEvent) -> Void)?
     /// Files were dropped onto the grid (`move` true when Command was held).
-    var onDropFiles: (([String], _ move: Bool) -> Void)?
+    var onDropFiles: (([String], _ move: Bool, _ fromOtherApp: Bool) -> Void)?
     /// Pending drag gesture captured on mouseDown, promoted in mouseDragged.
     private var dragCandidate: (index: Int, point: NSPoint)?
 
@@ -367,7 +367,7 @@ final class IconGridView: NSView, NSDraggingSource {
         guard let urls = sender.draggingPasteboard.readObjects(
                 forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
               !urls.isEmpty else { return false }
-        onDropFiles?(urls.map { $0.path }, dropIsMove())
+        onDropFiles?(urls.map { $0.path }, dropIsMove(), sender.draggingSource == nil)
         return true
     }
 }

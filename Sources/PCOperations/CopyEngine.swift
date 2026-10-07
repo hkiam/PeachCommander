@@ -49,6 +49,7 @@ public final class CopyEngine {
         let counting = Task.detached(priority: .utility) { Self.countTotals(items, followSymlinks: follow, into: tally) }
         defer { counting.cancel() }
         self.tally = tally
+        self.topItems = items
         report()
 
         for src in items {
@@ -82,6 +83,8 @@ public final class CopyEngine {
         // The last report carries the finished totals, not whatever the count had reached when the
         // final byte went out — a small tree can be copied before its count returns.
         await counting.value
+        // Everything that was copied had arrived; a delivery too quick to be measured counts too.
+        state.bytesReceived = state.bytesToReceive
         report()
         return processed
     }
@@ -93,19 +96,24 @@ public final class CopyEngine {
         private let lock = NSLock()
         private var files = 0
         private var bytes: Int64 = 0
+        private var unreceived: Int64 = 0
         private var finished = false
 
-        func add(files: Int, bytes: Int64) {
-            lock.lock(); self.files += files; self.bytes += bytes; lock.unlock()
+        /// `unreceived` is what the files lack on disk — size beyond the allocated bytes. Only a
+        /// coordinated copy uses it: it is what another app still has to deliver.
+        func add(files: Int, bytes: Int64, unreceived: Int64 = 0) {
+            lock.lock(); self.files += files; self.bytes += bytes; self.unreceived += unreceived; lock.unlock()
         }
         func finish() { lock.lock(); finished = true; lock.unlock() }
-        var snapshot: (files: Int, bytes: Int64, finished: Bool) {
+        var snapshot: (files: Int, bytes: Int64, unreceived: Int64, finished: Bool) {
             lock.lock(); defer { lock.unlock() }
-            return (files, bytes, finished)
+            return (files, bytes, unreceived, finished)
         }
     }
 
     private var tally: Tally?
+    /// The items `run` was given — what a wait for a source measures the delivery across.
+    private var topItems: [String] = []
 
     /// Count what `items` will copy. Directory by directory through `getattrlistbulk`, so the cost on
     /// a network volume is a round trip per directory rather than two per file; per file only where
@@ -115,19 +123,21 @@ public final class CopyEngine {
         // Only needed for the followed-symlink walk below, where a link can point back at a folder
         // already on the stack. A plain tree walk cannot revisit a path.
         var seen = Set<String>()
-        func countOne(_ path: String, kind: FSKind, size: @autoclosure () -> Int64) {
+        func countOne(_ path: String, kind: FSKind,
+                      size: @autoclosure () -> (size: Int64, allocated: Int64)) {
             switch kind {
             case .file:
-                tally.add(files: 1, bytes: size())
+                let s = size()
+                tally.add(files: 1, bytes: s.size, unreceived: max(0, s.size - s.allocated))
             case .symlink:
                 // With `followSymlinks` the copy takes what the link points at, which may be a whole
                 // directory — counted as one file here, the total was short by everything inside it
                 // and the progress bar filled past its own end.
-                guard followSymlinks else { tally.add(files: 1, bytes: size()); return }
+                guard followSymlinks else { tally.add(files: 1, bytes: size().size); return }
                 let resolved = (path as NSString).resolvingSymlinksInPath
                 guard resolved != path, seen.insert(resolved).inserted,
                       let target = FSLowLevel.kind(of: resolved) else { return }
-                countOne(resolved, kind: target, size: FSLowLevel.size(of: resolved))
+                countOne(resolved, kind: target, size: FSLowLevel.sizeAndAllocated(of: resolved))
             case .directory:
                 stack.append(path)
             }
@@ -135,7 +145,7 @@ public final class CopyEngine {
         // The top-level items are named by the caller, so their kinds have to be asked for.
         for path in items {
             guard let kind = FSLowLevel.kind(of: path) else { continue }
-            countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+            countOne(path, kind: kind, size: FSLowLevel.sizeAndAllocated(of: path))
         }
         while let dir = stack.popLast() {
             if Task.isCancelled { return }
@@ -143,16 +153,16 @@ public final class CopyEngine {
                 for entry in entries {
                     let path = (dir as NSString).appendingPathComponent(entry.name)
                     if let kind = entry.kind {
-                        countOne(path, kind: kind, size: entry.size)
+                        countOne(path, kind: kind, size: (entry.size, entry.allocated))
                     } else if let kind = FSLowLevel.kind(of: path) {
-                        countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+                        countOne(path, kind: kind, size: FSLowLevel.sizeAndAllocated(of: path))
                     }
                 }
             } else if let children = DeepPath.contentsOfDirectory(dir) {
                 for child in children {
                     let path = (dir as NSString).appendingPathComponent(child)
                     if let kind = FSLowLevel.kind(of: path) {
-                        countOne(path, kind: kind, size: FSLowLevel.size(of: path))
+                        countOne(path, kind: kind, size: FSLowLevel.sizeAndAllocated(of: path))
                     }
                 }
             }
@@ -219,6 +229,8 @@ public final class CopyEngine {
         if !FSLowLevel.exists(dst) {
             guard mkdirPath(dst, 0o755) == 0 else { throw OperationError.cannotCreateDirectory(dst) }
         }
+        // Before listing: a presenter of the folder may still be creating what is inside it.
+        try await coordinateRead(src)
         let children = DeepPath.contentsOfDirectory(src) ?? []
         for child in children.sorted() {
             try await control.checkpoint()
@@ -343,7 +355,10 @@ public final class CopyEngine {
         }
 
         state.currentItem = (src as NSString).lastPathComponent
-        try await copyFileData(from: src, to: dst, size: size, appendMode: append)
+        // Until the presenter has answered, the bytes on disk may be a placeholder — see
+        // `CopyOptions.coordinateSourceReads`. The size is read again for the same reason.
+        let readSize = try await coordinateRead(src) ? FSLowLevel.size(of: src) : size
+        try await copyFileData(from: src, to: dst, size: readSize, appendMode: append)
         // On append we keep the target's own metadata (merging content, not replacing).
         if options.preserveMetadata, !append { copyMetadata(from: src, to: dst) }
         state.filesDone += 1
@@ -455,6 +470,122 @@ public final class CopyEngine {
 
     // MARK: - Metadata / helpers
 
+    /// A coordinated read of `src` with an empty accessor, when the options ask for one: by the time it
+    /// returns, the presenter of `src` has delivered. True when that happened, false when nothing was
+    /// coordinated or the coordination failed.
+    ///
+    /// Per folder and per file, because a coordinated read asks the presenter of exactly that item —
+    /// not the presenters of what a folder contains, nor of the folders above a file. Measured: a read
+    /// of a folder left every file presenter inside unasked, and reads of the files left the folder's
+    /// presenter unasked. So each presenter is asked once, by the read of its own item.
+    ///
+    /// Asynchronous and on its own queue because the wait is a download over RDP: blocking a thread
+    /// of the cooperative pool for that long starves every other task. Stop cancels the coordination
+    /// — a presenter whose session has gone away never answers, and the copy must not wait for it.
+    /// A coordination that fails otherwise is logged and the copy goes on: without a presenter it
+    /// reads what is there, as it always did.
+    @discardableResult
+    private func coordinateRead(_ src: String) async throws -> Bool {
+        guard options.coordinateSourceReads else { return false }
+        // What the sources lack has to be counted before any of it is asked for: counted while it
+        // arrives, the figure would come out short and the bar would overrun it.
+        while let tally, !tally.snapshot.finished {
+            try await control.checkpoint()
+            try? await Task.sleep(nanoseconds: 5_000_000)
+        }
+        let coordinator = NSFileCoordinator(filePresenter: nil)
+        let control = self.control
+        let watcher = Task {
+            while !Task.isCancelled {
+                if await control.isCancelled { coordinator.cancel(); return }
+                try? await Task.sleep(nanoseconds: 100_000_000)
+            }
+        }
+        defer { watcher.cancel() }
+        let intent = NSFileAccessIntent.readingIntent(with: URL(fileURLWithPath: src))
+        // The wait is where the time goes — the copy after it is a clone — so it is shown as a wait on
+        // this item rather than as a bar standing at the last figure.
+        state.currentItem = (src as NSString).lastPathComponent
+        state.isWaitingForSource = true
+        report()
+        let delivery = DeliveryMeter(items: topItems, followSymlinks: options.followSymlinks,
+                                     toReceive: state.bytesToReceive, received: state.bytesReceived)
+        let metering = state.bytesToReceive > state.bytesReceived
+            ? Task.detached(priority: .utility) { [state, progress] in
+                await delivery.watch(from: state, report: progress)
+            }
+            : nil
+        let error: Error? = await withCheckedContinuation { done in
+            coordinator.coordinate(with: [intent], queue: Self.coordinationQueue) { done.resume(returning: $0) }
+        }
+        // Awaited, not just cancelled: a report it sends after this one would put the wait back up.
+        metering?.cancel()
+        await metering?.value
+        if delivery.hasMeasured { delivery.measure() }   // a long wait: take what it ended with
+        state.bytesReceived = delivery.received
+        state.isWaitingForSource = false
+        report()
+        try await control.checkpoint()
+        guard let error else { return true }
+        logger.warning("Coordinated read of \(src) failed: \(error.localizedDescription)")
+        return false
+    }
+
+    /// How much of what the sources lacked has arrived, measured while a coordinated read waits.
+    ///
+    /// The Windows App writes the content into its placeholders in place — measured: the allocated
+    /// bytes grew from nothing to the full size over the download, the inode stayed the same — so
+    /// what the sources still lack, size beyond allocated, falls as the content arrives. It is the
+    /// same walk the totals were counted with, so the two figures agree. A writer that `fsync`s its
+    /// placeholder makes APFS allocate all of it at once; the bar then fills early, never backwards.
+    ///
+    /// Only after the wait has lasted a moment: a presenter that answers at once — any local source —
+    /// costs nothing but the wait. The reports go out from here with the state the wait began with,
+    /// so the engine's own state is touched only by the engine.
+    final class DeliveryMeter: @unchecked Sendable {
+        private let items: [String], followSymlinks: Bool, toReceive: Int64
+        private let lock = NSLock()
+        private var best: Int64
+        private var measured = false
+
+        init(items: [String], followSymlinks: Bool, toReceive: Int64, received: Int64) {
+            self.items = items; self.followSymlinks = followSymlinks
+            self.toReceive = toReceive; self.best = received
+        }
+
+        var received: Int64 { lock.lock(); defer { lock.unlock() }; return best }
+        var hasMeasured: Bool { lock.lock(); defer { lock.unlock() }; return measured }
+
+        /// One walk. Never lower than before — a figure that fell back would move the bar backwards —
+        /// and an unfinished walk counts for nothing, because it would read as everything delivered.
+        func measure() {
+            let now = Tally()
+            CopyEngine.countTotals(items, followSymlinks: followSymlinks, into: now)
+            let snapshot = now.snapshot
+            guard snapshot.finished else { return }
+            let arrived = min(toReceive, max(0, toReceive - snapshot.unreceived))
+            lock.lock(); best = max(best, arrived); measured = true; lock.unlock()
+        }
+
+        func watch(from state: OpProgress, report: @Sendable (OpProgress) -> Void) async {
+            var state = state
+            while true {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                if Task.isCancelled { return }
+                measure()
+                if Task.isCancelled { return }
+                state.bytesReceived = received
+                report(state)
+            }
+        }
+    }
+
+    private static let coordinationQueue: OperationQueue = {
+        let q = OperationQueue()
+        q.name = "CopyEngine.coordinatedRead"
+        return q
+    }()
+
     private func copyMetadata(from src: String, to dst: String) {
         DeepPath.copyMetadata(from: src, to: dst)
     }
@@ -519,6 +650,7 @@ public final class CopyEngine {
             state.filesTotal = max(counted.files, state.filesDone)
             state.bytesTotal = max(counted.bytes, state.bytesDone)
             state.isCounting = !counted.finished
+            if options.coordinateSourceReads { state.bytesToReceive = counted.unreceived }
         }
         progress(state)
     }

@@ -18,11 +18,37 @@ public struct OpProgress: Sendable, Equatable {
     /// The totals are still being counted while the work already runs, so they only grow and are not
     /// yet something to show a fraction of.
     public var isCounting: Bool
+    /// `currentItem` is being waited for: another app is still delivering it (see
+    /// `CopyOptions.coordinateSourceReads`). No byte moves meanwhile, so a fraction would sit still and
+    /// then jump — the bar shows activity instead.
+    public var isWaitingForSource: Bool
+    /// What the sources lacked on disk when the copy began — bytes another app still had to deliver —
+    /// and how much of it has arrived. Zero unless the copy reads its sources coordinated.
+    ///
+    /// Part of the one fraction rather than a second bar: the delivery is where a paste from a remote
+    /// session spends its time, and the copy after it is a clone. Counted together, the bar fills while
+    /// the content arrives and never runs backwards when the copy begins.
+    public var bytesToReceive: Int64
+    public var bytesReceived: Int64
+
+    /// Neither the totals nor the bytes done say how far the work is, so a fraction would mislead. A
+    /// wait whose delivery can be measured is not one of those.
+    public var isIndeterminate: Bool { isCounting || (isWaitingForSource && bytesToReceive == 0) }
+
+    /// How far the work is, from 0 to 1: bytes received and copied against both totals, or files when
+    /// there are no bytes to go by.
+    public var fraction: Double {
+        let total = bytesTotal + bytesToReceive
+        if total > 0 { return min(1, Double(bytesDone + min(bytesReceived, bytesToReceive)) / Double(total)) }
+        if filesTotal > 0 { return min(1, Double(filesDone) / Double(filesTotal)) }
+        return 0
+    }
 
     public init(filesTotal: Int = 0, filesDone: Int = 0,
                 bytesTotal: Int64 = 0, bytesDone: Int64 = 0,
                 currentItem: String = "", bytesPerSecond: Double = 0,
-                isCounting: Bool = false) {
+                isCounting: Bool = false, isWaitingForSource: Bool = false,
+                bytesToReceive: Int64 = 0, bytesReceived: Int64 = 0) {
         self.filesTotal = filesTotal
         self.filesDone = filesDone
         self.bytesTotal = bytesTotal
@@ -30,6 +56,9 @@ public struct OpProgress: Sendable, Equatable {
         self.currentItem = currentItem
         self.bytesPerSecond = bytesPerSecond
         self.isCounting = isCounting
+        self.isWaitingForSource = isWaitingForSource
+        self.bytesToReceive = bytesToReceive
+        self.bytesReceived = bytesReceived
     }
 }
 
@@ -148,6 +177,18 @@ public struct CopyOptions: Sendable {
     /// `TransferQueue.execute` and only its `[String]` of processed paths comes back out; threading a
     /// second return value through the queue would touch every operation to serve one of them.
     public var digestSink: (@Sendable (_ sourcePath: String, _ crc32Hex: String) -> Void)? = nil
+    /// Ask each source's file presenters for it — a coordinated read — before copying it.
+    ///
+    /// For sources another app hands over and fills in later. The Windows App puts files copied in a
+    /// remote session on the pasteboard as placeholders of the right size, all zeros, and fetches the
+    /// bytes over RDP only when a reader coordinates (its `RDCFilePresenter` answers
+    /// `relinquishPresentedItemToReader`). Finder coordinates and waits; an uncoordinated copy cloned
+    /// the empty placeholder in no time and produced files of the right size with nothing in them.
+    ///
+    /// Off by default: a panel-to-panel copy has no presenter to wait for. A paste of something another
+    /// app put on the pasteboard and a drop from another app set it. Every folder and every file is
+    /// read coordinated: a presenter is asked only by a read of its own item.
+    public var coordinateSourceReads: Bool = false
     public init() {}
 }
 

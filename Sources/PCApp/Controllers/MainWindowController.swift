@@ -10108,8 +10108,8 @@ final class PanelView: NSView {
         // table's visible-index model (-1 == "..").
         iconGrid.onCursorChanged = { [weak controller] index in controller?.tableView.focusVisibleIndex(index - 1) }
         iconGrid.onActivate = { [weak controller] index in controller?.tableView.activateVisibleIndex(index - 1) }
-        iconGrid.onDropFiles = { [weak controller] paths, move in
-            Task { @MainActor in await controller?.performDrop(paths: paths, move: move) }
+        iconGrid.onDropFiles = { [weak controller] paths, move, fromOtherApp in
+            Task { @MainActor in await controller?.performDrop(paths: paths, move: move, fromOtherApp: fromOtherApp) }
         }
         // The panel's whole keyboard vocabulary, handed to the view that implements it. Straight into
         // `keyDown` rather than through a synthetic re-dispatch: it is the same event, and the list is
@@ -10174,8 +10174,10 @@ final class PanelView: NSView {
         // packer plugin has advertised PC_CAP_BY_CONTENT, so with none installed Enter on
         // an unrecognised file behaves exactly as before and reads nothing.
         tableView.onProbeThenEnterArchive = nil
-        tableView.onDropFiles = { [weak controller] paths, move, intoFolder in
-            Task { @MainActor in await controller?.performDrop(paths: paths, move: move, into: intoFolder) }
+        tableView.onDropFiles = { [weak controller] paths, move, intoFolder, fromOtherApp in
+            Task { @MainActor in
+                await controller?.performDrop(paths: paths, move: move, into: intoFolder, fromOtherApp: fromOtherApp)
+            }
         }
         tableView.onSpringLoadFolder = { [weak controller] path in
             Task { @MainActor in await controller?.loadDirectory(path) }   // F-067 spring-load

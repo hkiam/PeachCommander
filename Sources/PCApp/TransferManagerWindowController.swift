@@ -119,7 +119,7 @@ final class TransferManagerWindowController: NSWindowController {
         bar.minValue = 0; bar.maxValue = 1
         bar.doubleValue = fraction(job.progress)
         if (job.status == .running || job.status == .paused)
-            && (job.progress.isCounting
+            && (job.progress.isIndeterminate
                 || (job.progress.bytesTotal == 0 && job.progress.filesTotal == 0)) {
             bar.isIndeterminate = true; bar.startAnimation(nil)
         }
@@ -182,11 +182,7 @@ final class TransferManagerWindowController: NSWindowController {
         return b
     }
 
-    private func fraction(_ p: OpProgress) -> Double {
-        if p.bytesTotal > 0 { return min(1, Double(p.bytesDone) / Double(p.bytesTotal)) }
-        if p.filesTotal > 0 { return min(1, Double(p.filesDone) / Double(p.filesTotal)) }
-        return 0
-    }
+    private func fraction(_ p: OpProgress) -> Double { p.fraction }
 
     private func detailText(_ job: TransferManager.Job) -> String {
         switch job.status {
@@ -196,8 +192,10 @@ final class TransferManagerWindowController: NSWindowController {
         case .failed: return String(localized: "Failed: ") + (job.errorText ?? "")
         case .paused, .running:
             let p = job.progress
-            let done = SelectionSummaryFormatter.dynamicSize(p.bytesDone)
-            let total = SelectionSummaryFormatter.dynamicSize(p.bytesTotal)
+            // While another app delivers a source, what has arrived is the figure that moves.
+            let receiving = p.isWaitingForSource && p.bytesToReceive > 0
+            let done = SelectionSummaryFormatter.dynamicSize(receiving ? p.bytesReceived : p.bytesDone)
+            let total = SelectionSummaryFormatter.dynamicSize(receiving ? p.bytesToReceive : p.bytesTotal)
             let speed = p.bytesPerSecond > 0 ? "  ·  \(SelectionSummaryFormatter.dynamicSize(Int64(p.bytesPerSecond)))/s" : ""
             let state = job.status == .paused ? String(localized: "Paused") : ""
             let files = "\(p.filesDone)/\(max(p.filesTotal, p.filesDone))"

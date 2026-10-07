@@ -12,6 +12,9 @@ import PCOperations
 /// Tracks the pasteboard change count at the moment of the last "cut".
 enum ClipboardState {
     static var cutChangeCount: Int = -1
+    /// The change count of the last file list Peach Commander itself put on the pasteboard. A paste of
+    /// that has no other app's placeholders in it, so it skips the coordinated read.
+    static var ownChangeCount: Int = -1
 }
 
 extension PanelController {
@@ -19,7 +22,7 @@ extension PanelController {
     func copyToClipboard() async {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }
-        writeToPasteboard(items)
+        ClipboardState.ownChangeCount = writeToPasteboard(items)
         ClipboardState.cutChangeCount = -1
     }
 
@@ -27,6 +30,7 @@ extension PanelController {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }
         let changeCount = writeToPasteboard(items)
+        ClipboardState.ownChangeCount = changeCount
         ClipboardState.cutChangeCount = changeCount
     }
 
@@ -36,8 +40,13 @@ extension PanelController {
         let dest = await getCurrentDirectory()
         let items = urls.map { $0.path }
         let isCut = pb.changeCount == ClipboardState.cutChangeCount
-        await runTransfer(isCut ? .move(items: items, toDirectory: dest, options: defaultCopyOptions())
-                                : .copy(items: items, toDirectory: dest, options: defaultCopyOptions()),
+        // Another app may have put placeholders there that it fills only for a coordinated reader —
+        // the Windows App does, for files copied in a remote session. What we put there ourselves
+        // has nothing to wait for.
+        var options = defaultCopyOptions()
+        options.coordinateSourceReads = pb.changeCount != ClipboardState.ownChangeCount
+        await runTransfer(isCut ? .move(items: items, toDirectory: dest, options: options)
+                                : .copy(items: items, toDirectory: dest, options: options),
                           title: isCut ? String(localized: "Moving") : String(localized: "Copying"))
         if isCut { ClipboardState.cutChangeCount = -1 }
     }

@@ -61,12 +61,13 @@ final class ProgressDialog: NSWindowController {
         currentItemLabel.stringValue = progress.currentItem
 
         // While the totals are still being counted they only grow, and a fraction of them would run
-        // backwards; the bar waits for the count to finish.
-        if progress.bytesTotal > 0, !progress.isCounting {
+        // backwards; the bar waits for the count to finish. While a source is still being delivered no
+        // byte moves, and a fraction would stand still and then jump.
+        if progress.bytesTotal > 0, !progress.isIndeterminate {
             totalProgressIndicator.isIndeterminate = false
             totalProgressIndicator.minValue = 0
             totalProgressIndicator.maxValue = 1
-            totalProgressIndicator.doubleValue = Double(progress.bytesDone) / Double(progress.bytesTotal)
+            totalProgressIndicator.doubleValue = progress.fraction
         } else {
             totalProgressIndicator.isIndeterminate = true
             totalProgressIndicator.startAnimation(nil)
@@ -75,8 +76,10 @@ final class ProgressDialog: NSWindowController {
         let filesFormat = String(localized: "%d / %d files")
         filesLabel.stringValue = String(format: filesFormat, progress.filesDone, progress.filesTotal)
 
-        let done = ByteSize(progress.bytesDone).formatted(style: .kb)
-        let total = ByteSize(progress.bytesTotal).formatted(style: .kb)
+        // While another app delivers a source, what has arrived is the figure that moves.
+        let receiving = progress.isWaitingForSource && progress.bytesToReceive > 0
+        let done = ByteSize(receiving ? progress.bytesReceived : progress.bytesDone).formatted(style: .kb)
+        let total = ByteSize(receiving ? progress.bytesToReceive : progress.bytesTotal).formatted(style: .kb)
         let bytesFormat = String(localized: "%@ / %@")
         bytesLabel.stringValue = String(format: bytesFormat, done, total)
 

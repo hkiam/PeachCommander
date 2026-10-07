@@ -486,7 +486,10 @@ extension PanelController {
     /// Drag & drop landed on this panel: copy (or move) the dropped paths into the
     /// panel's current directory. No target prompt — the destination is where the
     /// user dropped. Items already living in the destination are ignored.
-    func performDrop(paths: [String], move: Bool, into folder: String? = nil) async {
+    ///
+    /// `fromOtherApp` reads the sources coordinated: another app may have dropped placeholders it fills
+    /// only for a coordinated reader (see `CopyOptions.coordinateSourceReads`).
+    func performDrop(paths: [String], move: Bool, into folder: String? = nil, fromOtherApp: Bool = false) async {
         guard !isInArchive else { NSSound.beep(); return }   // dropping into an archive: not yet
         // A folder row was the drop target (F-067): copy/move into it; otherwise the
         // panel's current directory.
@@ -498,9 +501,11 @@ extension PanelController {
         }
         guard !items.isEmpty else { return }
         // Drops run in the background transfer manager so the user keeps working.
+        var options = defaultCopyOptions()
+        options.coordinateSourceReads = fromOtherApp
         let kind: OperationKind = move
-            ? .move(items: items, toDirectory: dest, options: defaultCopyOptions())
-            : .copy(items: items, toDirectory: dest, options: defaultCopyOptions())
+            ? .move(items: items, toDirectory: dest, options: options)
+            : .copy(items: items, toDirectory: dest, options: options)
         let verb = move ? String(localized: "Move") : String(localized: "Copy")
         enqueueBackground(kind, title: "\(verb) \(items.count) → \((dest as NSString).lastPathComponent)")
     }

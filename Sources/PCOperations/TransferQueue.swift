@@ -30,7 +30,7 @@ final class ProgressThrottle: @unchecked Sendable {
     private let continuation: AsyncStream<OpEvent>.Continuation
     private let minInterval: TimeInterval
     private var lastEmit = Date.distantPast
-    private var lastCounting = false
+    private var lastIndeterminate = false
     private let lock = NSLock()
 
     init(_ continuation: AsyncStream<OpEvent>.Continuation, hz: Double = 30) {
@@ -43,11 +43,12 @@ final class ProgressThrottle: @unchecked Sendable {
         let now = Date()
         // The report in which the count finishes always goes through: the totals are counted beside
         // the copy, and a small one ends inside the interval, where dropping that report would leave
-        // the totals unfinished for good.
+        // the totals unfinished for good. The same for the start and end of a wait for a source — a
+        // dropped start leaves the bar standing still for the whole download.
         guard now.timeIntervalSince(lastEmit) >= minInterval
-                || progress.isCounting != lastCounting else { return }
+                || progress.isIndeterminate != lastIndeterminate else { return }
         lastEmit = now
-        lastCounting = progress.isCounting
+        lastIndeterminate = progress.isIndeterminate
         continuation.yield(.progress(progress))
     }
 }

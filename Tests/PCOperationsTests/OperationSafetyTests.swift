@@ -387,8 +387,29 @@ final class OperationSafetyTests: XCTestCase {
         for entry in entries {
             let path = dir.appendingPathComponent(entry.name).path
             XCTAssertEqual(entry.kind, FSLowLevel.kind(of: path), entry.name)
-            if entry.kind == .file { XCTAssertEqual(entry.size, FSLowLevel.size(of: path), entry.name) }
+            if entry.kind == .file {
+                XCTAssertEqual(entry.size, FSLowLevel.size(of: path), entry.name)
+                XCTAssertEqual(entry.allocated, FSLowLevel.sizeAndAllocated(of: path).allocated, entry.name)
+            }
         }
+    }
+
+    /// A sparse placeholder — the right size, nothing on disk — is told apart from a written file. The
+    /// wait for a source another app fills in place measures its progress by this.
+    func test_theBulkListingSeesThatAPlaceholderHoldsNothingYet() throws {
+        let dir = try makeDirectory("sparse")
+        let placeholder = dir.appendingPathComponent("placeholder.bin")
+        fm.createFile(atPath: placeholder.path, contents: nil)
+        let h = try FileHandle(forWritingTo: placeholder)
+        try h.truncate(atOffset: 1 << 20)
+        try h.close()
+        _ = try write(String(repeating: "x", count: 1 << 16), "sparse/written.txt")
+
+        let entries = Dictionary(uniqueKeysWithValues:
+            try XCTUnwrap(FSLowLevel.bulkEntries(of: dir.path)).map { ($0.name, $0) })
+        XCTAssertEqual(entries["placeholder.bin"]?.size, 1 << 20)
+        XCTAssertEqual(entries["placeholder.bin"]?.allocated, 0)
+        XCTAssertGreaterThanOrEqual(entries["written.txt"]?.allocated ?? 0, 1 << 16)
     }
 
     /// A link pointing at itself must not recurse until the stack runs out.
