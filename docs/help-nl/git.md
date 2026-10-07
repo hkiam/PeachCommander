@@ -33,6 +33,17 @@ ernaast, waar de commit toch al plaatsvindt; beide tonen voortgang en kunnen wor
 
 Er wordt de *index* gecommit, niet `git commit -a`: wat u hebt gestaged, is wat er wordt gecommit.
 
+## Geschiedenis in het paneel
+
+Onder de knoppen toont het paneel de geschiedenis van alle branches, remote branches en tags als getekende graaf, met de werkkopie als eerste rij. Het gebied eronder volgt de selectie:
+
+![Het Git-paneel met de branchgraaf, de geselecteerde merge-commit en het gewijzigde bestand met inline diff](screenshots/git-panel.png)
+
+- **Lokale wijzigingen** toont de gestagede, gewijzigde en niet-gevolgde bestanden en het commitvak hierboven.
+- Een commit toont **Commit** — auteur, committer, datum, hash, ouders, refs, handtekening en volledig bericht — of **Wijzigingen**.
+- **Wijzigingen** toont de geraakte bestanden als boom en de diff van het gekozen bestand met regelnummers; dubbelklikken opent het vergelijkvenster.
+- Het contextmenu kopieert hash of onderwerp, draait terug, cherry-pickt, opent de commit op het web en beperkt de lijst tot **Alleen de huidige branch**.
+
 ## Geschiedenis, blame en het web
 
 - **Geschiedenis…** toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (`● main`,

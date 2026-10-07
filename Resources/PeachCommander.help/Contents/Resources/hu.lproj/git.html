@@ -32,6 +32,15 @@ követett</em> csoportokra bontja. Jelöljön ki fájlokat, és használja az <s
 véglegesítésbe hajtja bele a változást. A <strong>Letöltés</strong> és a <strong>Feltöltés</strong> mellette van, ott, ahol a
 véglegesítés amúgy is történik; mindkettő mutatja a haladást, és megszakítható.</p>
 <p>Az <em>index</em> kerül véglegesítésre, nem a <code>git commit -a</code>: az kerül be, amit előkészített.</p>
+<h2 id="elozmenyek-a-panelen">Előzmények a panelen</h2>
+<p>A gombok alatt a panel az összes ág, távoli ág és címke előzményét rajzolt gráfként mutatja, első sorában a munkapéldánnyal. Az alatta lévő terület a kijelölést követi:</p>
+<p><img alt="A Git panel az ággráffal, a kijelölt merge commit-tal és annak módosított fájljával, beágyazott diffel" src="images/git-panel.png" /></p>
+<ul>
+<li>A <strong>Helyi változások</strong> a stage-elt, módosított és nem követett fájlokat és a fent leírt commit-mezőt mutatja.</li>
+<li>Egy commit vagy a <strong>Commit</strong> nézetet mutatja — szerző, committer, dátum, hash, szülők, refek, aláírás és a teljes üzenet —, vagy a <strong>Változások</strong> nézetet.</li>
+<li>A <strong>Változások</strong> fában sorolja fel az érintett fájlokat, és sorszámokkal mutatja a kijelölt fájl diffjét; dupla kattintás megnyitja az összehasonlító ablakot.</li>
+<li>A helyi menü másolja a hash-t vagy a tárgyat, visszavon, cherry-pickel, megnyitja a commitot a weben, és a listát a <strong>Csak az aktuális ág</strong> beállításra szűkíti.</li>
+</ul>
 <h2 id="elozmenyek-blame-es-a-web">Előzmények, blame és a web</h2>
 <ul>
 <li>Az <strong>Előzmények…</strong> sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (<code>● main</code>,

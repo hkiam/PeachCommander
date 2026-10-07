@@ -32,6 +32,15 @@ scrieți un mesaj și apăsați <strong>Comite</strong> — cu <strong>Amendeaz�
 <strong>Trage</strong> și <strong>Împinge</strong> sunt alături, acolo unde comiterea are loc oricum; ambele arată progresul și pot fi
 anulate.</p>
 <p>Se comite <em>indexul</em>, nu <code>git commit -a</code>: ce ați pregătit este ce se comite.</p>
+<h2 id="istoricul-in-panou">Istoricul în panou</h2>
+<p>Sub butoane, panoul arată istoricul tuturor ramurilor, ramurilor la distanță și etichetelor ca graf desenat, cu copia de lucru pe primul rând. Zona de dedesubt urmează selecția:</p>
+<p><img alt="Panoul Git cu graful ramurilor, commit-ul de îmbinare selectat și fișierul său modificat cu diff încorporat" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Modificări locale</strong> arată fișierele pregătite, modificate și neurmărite și caseta de commit descrisă mai sus.</li>
+<li>Un commit arată fie <strong>Commit</strong> — autor, committer, dată, hash, părinți, ref-uri, semnătură și mesajul complet — fie <strong>Modificări</strong>.</li>
+<li><strong>Modificări</strong> listează fișierele atinse ca arbore și diff-ul fișierului ales cu numere de linie; un dublu clic deschide fereastra de comparare.</li>
+<li>Meniul contextual copiază hash-ul sau subiectul, anulează, face cherry-pick, deschide commit-ul pe web și limitează lista la <strong>Doar ramura curentă</strong>.</li>
+</ul>
 <h2 id="istoric-blame-si-web">Istoric, blame și web</h2>
 <ul>
 <li><strong>Istoric…</strong> listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (<code>● main</code>,

@@ -28,7 +28,16 @@
 <strong>暂存</strong>、<strong>取消暂存</strong> 或 <strong>丢弃…</strong>，输入一条消息并按 <strong>提交</strong> —— 用 <strong>修补</strong> 则把改动折进上一次提交。
 <strong>拉取</strong> 和 <strong>推送</strong> 就在旁边，即提交本来就发生的地方；两者都显示进度，也都可以中止。</p>
 <p>提交的是<em>索引</em>，不是 <code>git commit -a</code>：你暂存了什么，提交的就是什么。</p>
-<h2 id="_3">历史、追溯与网页</h2>
+<h2 id="_3">面板中的历史</h2>
+<p>面板在按钮下方以绘制的图形显示所有分支、远程分支和标签的历史，第一行是工作副本。下方区域跟随所选内容：</p>
+<p><img alt="Git 面板：分支图、选中的合并提交及其更改文件的内联 diff" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>本地更改</strong>显示已暂存、已更改和未跟踪的文件，以及上文所述的提交框。</li>
+<li>选中提交时显示 <strong>提交</strong>（作者、提交者、日期、哈希、父提交、引用、签名和完整消息）或 <strong>更改</strong>。</li>
+<li><strong>更改</strong>以树形列出改动的文件，并显示所选文件带行号的 diff；双击打开比较窗口。</li>
+<li>上下文菜单可复制哈希或主题、还原、拣选、在网页上打开提交，并将列表限制为<strong>仅当前分支</strong>。</li>
+</ul>
+<h2 id="_4">历史、追溯与网页</h2>
 <ul>
 <li><strong>历史…</strong> 以泳道图列出各次提交、指向每次提交的引用（<code>● main</code>、<code>↗ origin/main</code>、<code>⚑ v1.0</code>），以及每次提交
   触及的文件。回车或双击会在比较窗口中打开该文件的这一版本，与其父版本对照。<strong>回退提交</strong> 和 <strong>拣选</strong> 也在
@@ -39,28 +48,28 @@
 <li><strong>在网页中打开</strong> 会在 GitHub、GitLab、Bitbucket 或 Azure DevOps 上打开文件、提交或分支，地址由远端的 URL
   拼出——不需要账号，也不需要令牌。遇到它不认识链接形式的主机，它会给出仓库页面，而不是瞎猜。</li>
 </ul>
-<h2 id="_4">分支、贮藏与标签</h2>
+<h2 id="_5">分支、贮藏与标签</h2>
 <p><strong>分支、贮藏与标签…</strong> 把三者都列出来。切换、新建、合并或删除分支；推送、弹出或丢弃贮藏；创建、删除或推送标签，
 也可以切换到某个标签——标签不是分支，所以它会事先说明 HEAD 之后将处于分离状态。抓取、拉取和推送都在同一个窗口
 里，并且可以在运行途中中止。</p>
 <p>推送标签被特意做成单独的动作：<code>git push</code> 并不会把标签一起带上。</p>
-<h2 id="_5">冲突</h2>
+<h2 id="_6">冲突</h2>
 <p><strong>解决冲突…</strong> 列出光标所在文件的各个冲突区段，并为每一段作出决定：<em>我方</em>、<em>对方</em>、<em>两者</em>，或者先搁置。然后
 <strong>写入文件</strong> 或 <strong>写入并暂存</strong>。只要还有区段没有决定，它就拒绝暂存——Git 可是会照样把 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 标记提交
 进去——而对于标记读不懂的文件，它宁可不碰，也不去猜。若某个区段需要手工把两边穿插起来，<strong>在编辑器中打开</strong>
 只有一个按钮之遥。</p>
-<h2 id="_6">变基</h2>
+<h2 id="_7">变基</h2>
 <p><strong>变基…</strong> 列出领先于上游的那些提交——别人都还没有的那些——让你在改写分支之前把它们压缩、作为修补合入、丢弃、
 重排或改写说明。若变基停在冲突上，同一个窗口会变成 <strong>继续</strong> / <strong>跳过提交</strong> / <strong>中止变基</strong>，这样一次做了一半
 的变基不必再回终端里收尾。</p>
-<h2 id="_7">忽略文件，以及凭据</h2>
+<h2 id="_8">忽略文件，以及凭据</h2>
 <ul>
 <li><strong>忽略此文件…</strong>、<strong>忽略此文件类型…</strong> 和 <strong>忽略此文件夹…</strong> 会把合适的模式写进 <code>.gitignore</code> —— 锚定在该在的
   位置上，这样忽略<em>这个</em> <code>build</code> 文件夹，并不会把每个叫 <code>build</code> 的文件夹都忽略掉。</li>
 <li><strong>凭据…</strong> 报告这个仓库是怎样认证的：SSH 还是 HTTPS，是否配置了凭据助手，是否有 SSH 代理在运行并持有密钥。
   在有帮助的地方，它只给出一个动作——让 Git 把凭据交给 macOS 钥匙串保管。插件从不索要、显示或保存口令短语。</li>
 </ul>
-<h2 id="_8">说明</h2>
+<h2 id="_9">说明</h2>
 <ul>
 <li>插件使用 <code>/usr/bin/git</code> 处的系统 Git。若未安装 Git，这些命令会报告 Git 不可用。（安装 Xcode 命令行工具即可
   获得。）</li>

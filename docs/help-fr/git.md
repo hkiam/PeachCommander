@@ -34,6 +34,17 @@ affichent leur progression et peuvent être annulés.
 
 La validation porte sur l’*index*, pas sur `git commit -a` : ce que vous avez indexé est ce qui est validé.
 
+## L’historique dans le panneau
+
+Sous ses boutons, le panneau affiche l’historique de toutes les branches, branches distantes et étiquettes sous forme de graphe dessiné, la copie de travail en première ligne. La zone du dessous suit la sélection :
+
+![Le panneau Git avec le graphe des branches, le commit de fusion sélectionné et son fichier modifié avec le diff en ligne](screenshots/git-panel.png)
+
+- **Modifications locales** montre les fichiers indexés, modifiés et non suivis ainsi que la zone de commit décrite plus haut.
+- Un commit montre soit **Commit** — auteur, committer, date, hash, parents, réfs, signature et message complet — soit **Modifications**.
+- **Modifications** liste les fichiers touchés en arbre et le diff du fichier choisi avec numéros de ligne ; un double-clic ouvre la fenêtre de comparaison.
+- Le menu contextuel copie le hash ou le sujet, annule, fait un cherry-pick, ouvre le commit sur le web et limite la liste à **Uniquement la branche actuelle**.
+
 ## Historique, blâme et le web
 
 - **Historique…** liste les validations avec un graphe en couloirs, les références qui pointent sur chacune

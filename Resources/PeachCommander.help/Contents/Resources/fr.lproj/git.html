@@ -33,6 +33,15 @@ message et appuyez sur <strong>Valider</strong> — avec <strong>Amender</strong
 précédente. <strong>Tirer</strong> et <strong>Pousser</strong> sont juste à côté, là où la validation a lieu de toute façon ; les deux
 affichent leur progression et peuvent être annulés.</p>
 <p>La validation porte sur l’<em>index</em>, pas sur <code>git commit -a</code> : ce que vous avez indexé est ce qui est validé.</p>
+<h2 id="lhistorique-dans-le-panneau">L’historique dans le panneau</h2>
+<p>Sous ses boutons, le panneau affiche l’historique de toutes les branches, branches distantes et étiquettes sous forme de graphe dessiné, la copie de travail en première ligne. La zone du dessous suit la sélection :</p>
+<p><img alt="Le panneau Git avec le graphe des branches, le commit de fusion sélectionné et son fichier modifié avec le diff en ligne" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Modifications locales</strong> montre les fichiers indexés, modifiés et non suivis ainsi que la zone de commit décrite plus haut.</li>
+<li>Un commit montre soit <strong>Commit</strong> — auteur, committer, date, hash, parents, réfs, signature et message complet — soit <strong>Modifications</strong>.</li>
+<li><strong>Modifications</strong> liste les fichiers touchés en arbre et le diff du fichier choisi avec numéros de ligne ; un double-clic ouvre la fenêtre de comparaison.</li>
+<li>Le menu contextuel copie le hash ou le sujet, annule, fait un cherry-pick, ouvre le commit sur le web et limite la liste à <strong>Uniquement la branche actuelle</strong>.</li>
+</ul>
 <h2 id="historique-blame-et-le-web">Historique, blâme et le web</h2>
 <ul>
 <li><strong>Historique…</strong> liste les validations avec un graphe en couloirs, les références qui pointent sur chacune

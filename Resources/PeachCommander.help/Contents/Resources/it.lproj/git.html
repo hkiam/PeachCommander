@@ -32,6 +32,15 @@ un messaggio e premi <strong>Commit</strong> — con <strong>Amend</strong> per 
 <strong>Push</strong> stanno lì accanto, dove il commit avviene comunque; entrambi mostrano l’avanzamento e si possono
 annullare.</p>
 <p>Si committa l’<em>indice</em>, non <code>git commit -a</code>: quello che hai preparato è quello che viene committato.</p>
+<h2 id="cronologia-nel-pannello">Cronologia nel pannello</h2>
+<p>Sotto i pulsanti il pannello mostra la cronologia di tutti i rami, rami remoti e tag come grafo disegnato, con la copia di lavoro come prima riga. L’area sottostante segue la selezione:</p>
+<p><img alt="Il pannello Git con il grafo dei rami, il commit di merge selezionato e il suo file modificato con il diff in linea" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Modifiche locali</strong> mostra i file in stage, modificati e non tracciati e la casella di commit descritta sopra.</li>
+<li>Un commit mostra <strong>Commit</strong> — autore, committer, data, hash, genitori, ref, firma e messaggio completo — oppure <strong>Modifiche</strong>.</li>
+<li><strong>Modifiche</strong> elenca i file toccati come albero e il diff del file scelto con i numeri di riga; un doppio clic apre la finestra di confronto.</li>
+<li>Il menu contestuale copia hash o oggetto, annulla, fa cherry-pick, apre il commit sul web e limita l’elenco a <strong>Solo il ramo corrente</strong>.</li>
+</ul>
 <h2 id="cronologia-blame-e-il-web">Cronologia, blame e il web</h2>
 <ul>
 <li><strong>Cronologia…</strong> elenca i commit con un grafo a corsie, i riferimenti che puntano a ciascuno (<code>● main</code>,

@@ -597,6 +597,16 @@ SCENARIOS = [
                           "rowdump /Users/admin/git-row.txt", "wait 500",
                           "modaldump /Users/admin/git-modal.txt", "wait 2500",
                           "panelsdump /Users/admin/git-no-toolchain.txt", "wait 500"], 13),
+    # The Git panel as a client (phase 6): the demo repository's history — a branch, a merge and a tag,
+    # from demo-content.sh — with the merge selected and its Changes tab open. The panel writes its own
+    # report (`PC_GIT_PANEL_DUMP`), because what matters here is not visible in frames: which pane is on
+    # screen, what the history lists and in which lane, and whether the diff loaded. `windowlayout` runs
+    # first, for the conflict count and the frames; the dump is written last and is the one waited for.
+    ("git-panel", ["active left", "left /Users/admin/pc-demo/Projects/peach-app/src", "wait 1200",
+                   "focus main.swift", "wait 500",
+                   "contribcmd plugin.git.panel.show", "wait 3000",
+                   "windowlayout peach-app|depth=14|/Users/admin/git-panel-layout.txt",
+                   "wait 4000"], 16),
     # Formatting a file with very long lines used to freeze the window (F-414). The mapping from character
     # index to UTF-16 offset in the code view's drawing path was quadratic in the line length — asked once
     # per syntax token — so a 2 MB JSON Lines log with thirty ~68,000-character records needed 193,934 ms to
@@ -3909,6 +3919,24 @@ REPORTS = {
     # No developer toolchain in the guest: the column is there and empty, and nothing was put on screen
     # (F-415). Primary = the panel dump, written last.
     "git-no-toolchain": ("/Users/admin/git-no-toolchain.txt", ["pc-gitfake", "!ERROR"]),
+    # Phase 6. Every line is a claim the panel has got wrong at some point with zero conflicts to show
+    # for it: the history listing the stash's internal commits (`--all`; the negation), a merge whose
+    # second parent is not on its own lane, the detail area showing the working copy when a commit is
+    # selected, a tree with C-quoted paths, and three layout defects — the split view stopping short of
+    # the bottom (gravity areas) and the header or the buttons swallowing height (equal hugging). Each of
+    # the three was put back once and turned its line false before this was trusted.
+    "git-panel": ("/Users/admin/git-panel.txt",
+                  ["root=peach-app", "selection=Merge branch 'feature/utils'",
+                   "workingCopyShown=false", "tab=changes", "rows=5",
+                   "row1=lane0 [head:main,tag:v1.0] Merge branch 'feature/utils'",
+                   "row2=lane1 [branch:feature/utils] Add string helpers",
+                   "row4=lane0 [] Initial commit",
+                   "files=A src/utils.py", "diff added 1 def add(a, b):",
+                   "splitFillsPanel=true", "buttonsCompact=true", "headerCompact=true",
+                   "!index on", "!untracked files on"]),
+    "git-panel-layout": ("/Users/admin/git-panel-layout.txt",
+                         ["GitPanelView=", "GitHistoryView=", "GitChangesView=", "GitDiffView=",
+                          "!ERROR: no visible window"]),
     # The row carries the column but no status — the plugin found no git and said nothing.
     "git-no-toolchain-row": ("/Users/admin/git-row.txt",
                              ["git.git_status", "!Modified", "!Untracked", "!Geändert"]),
@@ -4761,6 +4789,9 @@ SCENARIO_ENV = {
     # answered here rather than left standing.
     "docker-lifecycle": {"PC_DOCKER_CONFIRM": "1"},
     "docker-settings": {"PC_DOCKER_SETTINGS_DUMP": "/Users/admin/docker-settings.txt"},
+    # The merge row, its Changes tab, and the panel's report — see the scenario.
+    "git-panel": {"PC_GIT_PANEL_ROW": "1", "PC_GIT_PANEL_TAB": "changes",
+                  "PC_GIT_PANEL_DUMP": "/Users/admin/git-panel.txt"},
 }
 
 

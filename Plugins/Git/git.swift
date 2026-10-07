@@ -608,7 +608,7 @@ private func promptCommitMessage() -> String? {
 /// actor itself, F-422) or is called back on the main queue by the code below — so the capture is sound and
 /// this box is where that reasoning lives, rather than in eight `@Sendable` warnings the compiler will turn
 /// into errors under the Swift 6 language mode (F-432).
-private final class ServicesBox: @unchecked Sendable {
+final class ServicesBox: @unchecked Sendable {
     let services: PcHostServices
     init(_ services: PcHostServices) { self.services = services }
 }

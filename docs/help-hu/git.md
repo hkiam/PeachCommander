@@ -33,6 +33,17 @@ véglegesítés amúgy is történik; mindkettő mutatja a haladást, és megsza
 
 Az *index* kerül véglegesítésre, nem a `git commit -a`: az kerül be, amit előkészített.
 
+## Előzmények a panelen
+
+A gombok alatt a panel az összes ág, távoli ág és címke előzményét rajzolt gráfként mutatja, első sorában a munkapéldánnyal. Az alatta lévő terület a kijelölést követi:
+
+![A Git panel az ággráffal, a kijelölt merge commit-tal és annak módosított fájljával, beágyazott diffel](screenshots/git-panel.png)
+
+- A **Helyi változások** a stage-elt, módosított és nem követett fájlokat és a fent leírt commit-mezőt mutatja.
+- Egy commit vagy a **Commit** nézetet mutatja — szerző, committer, dátum, hash, szülők, refek, aláírás és a teljes üzenet —, vagy a **Változások** nézetet.
+- A **Változások** fában sorolja fel az érintett fájlokat, és sorszámokkal mutatja a kijelölt fájl diffjét; dupla kattintás megnyitja az összehasonlító ablakot.
+- A helyi menü másolja a hash-t vagy a tárgyat, visszavon, cherry-pickel, megnyitja a commitot a weben, és a listát a **Csak az aktuális ág** beállításra szűkíti.
+
 ## Előzmények, blame és a web
 
 - Az **Előzmények…** sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (`● main`,

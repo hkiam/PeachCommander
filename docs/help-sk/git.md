@@ -32,6 +32,17 @@ kde sa aj tak zapisuje; obe ukazujú postup a dajú sa prerušiť.
 
 Zapisuje sa *index*, nie `git commit -a`: zapíše sa to, čo ste pripravili.
 
+## História v paneli
+
+Pod tlačidlami panel ukazuje históriu všetkých vetiev, vzdialených vetiev a tagov ako kreslený graf, s pracovnou kópiou v prvom riadku. Oblasť pod ním sleduje výber:
+
+![Panel Git s grafom vetiev, vybraným merge commitom a jeho zmeneným súborom s vloženým diffom](screenshots/git-panel.png)
+
+- **Lokálne zmeny** ukazuje pripravené, zmenené a nesledované súbory a pole pre commit opísané vyššie.
+- Commit ukazuje buď **Commit** — autora, committera, dátum, hash, rodičov, refy, podpis a celú správu — alebo **Zmeny**.
+- **Zmeny** vypíše dotknuté súbory ako strom a diff vybraného súboru s číslami riadkov; dvojklik otvorí okno porovnania.
+- Kontextová ponuka kopíruje hash alebo predmet, vracia, robí cherry-pick, otvára commit na webe a obmedzuje zoznam na **Len aktuálna vetva**.
+
 ## História, blame a web
 
 - **História…** vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (`● main`, `↗ origin/main`,

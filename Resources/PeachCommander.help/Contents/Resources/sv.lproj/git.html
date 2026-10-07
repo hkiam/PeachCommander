@@ -32,6 +32,15 @@ filer och använd <strong>Köa</strong>, <strong>Avköa</strong> eller <strong>K
 <strong>Amend</strong> viks ändringen i stället in i föregående incheckning. <strong>Pull</strong> och <strong>Push</strong> ligger bredvid, där
 incheckningen ändå sker; båda visar förlopp och kan avbrytas.</p>
 <p>Det är <em>indexet</em> som checkas in, inte <code>git commit -a</code>: det du har köat är det som checkas in.</p>
+<h2 id="historik-i-panelen">Historik i panelen</h2>
+<p>Under knapparna visar panelen historiken för alla grenar, fjärrgrenar och taggar som en ritad graf, med arbetskopian som första rad. Området nedanför följer markeringen:</p>
+<p><img alt="Git-panelen med grengrafen, vald merge-commit och den ändrade filen med inbäddad diff" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Lokala ändringar</strong> visar köade, ändrade och ospårade filer och commit-rutan som beskrivs ovan.</li>
+<li>En commit visar antingen <strong>Commit</strong> — författare, committer, datum, hash, föräldrar, refs, signatur och hela meddelandet — eller <strong>Ändringar</strong>.</li>
+<li><strong>Ändringar</strong> visar berörda filer som ett träd och diffen för vald fil med radnummer; ett dubbelklick öppnar jämförelsefönstret.</li>
+<li>Snabbmenyn kopierar hash eller ämne, återställer, cherry-pickar, öppnar commiten på webben och begränsar listan till <strong>Endast aktuell gren</strong>.</li>
+</ul>
 <h2 id="historik-blame-och-webben">Historik, blame och webben</h2>
 <ul>
 <li><strong>Historik…</strong> listar incheckningarna med en filgraf, referenserna som pekar på var och en (<code>● main</code>,

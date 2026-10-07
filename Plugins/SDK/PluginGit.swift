@@ -352,7 +352,7 @@ public enum PluginGit {
     /// One name pointing at a commit: a local branch, a remote-tracking branch or a tag. `head` is the
     /// branch HEAD is on, which git prints as "HEAD -> main" and a reader wants to see marked (F-425).
     public struct Ref: Sendable, Equatable {
-        public enum Kind: String, Sendable, Equatable { case head, branch, remote, tag }
+        public enum Kind: String, Sendable, Equatable { case head, branch, remote, tag, stash }
         public let name: String
         public let kind: Kind
         public init(name: String, kind: Kind) { self.name = name; self.kind = kind }
@@ -387,7 +387,15 @@ public enum PluginGit {
     static let recordSeparator = "\u{1E}"
 
     /// `git log` arguments for `parseLog`. `path` limits the history to one file (its file history).
-    public static func logArguments(limit: Int, path: String? = nil) -> [String] {
+    ///
+    /// `all` is the panel's history: every branch, remote branch and tag, so forks and branches show as
+    /// lanes. Named ref by ref rather than `--all`, which also walks `refs/stash` — whose parents are the
+    /// stash's internal "index on …" and "untracked files on …" commits — and `refs/notes`, neither of
+    /// which is history anybody committed. HEAD is added so a detached checkout is still shown.
+    ///
+    /// `--decorate=full` in every form: the short decoration cannot tell a local `feature/x` from the
+    /// remote `origin/main` — both are a name with a slash.
+    public static func logArguments(limit: Int, path: String? = nil, all: Bool = false) -> [String] {
         // `--topo-order`, not git's default date order: with date order a parent can be listed *before*
         // its child (a branch committed earlier than the commit it forked from), and then the lane waiting
         // for that parent never closes — the graph shows a branch running past the commit that ended it.
@@ -398,6 +406,8 @@ public enum PluginGit {
         var out = ["--no-optional-locks", "log", "--topo-order", "--max-count=\(limit)",
                    "--format=%H\(unitSeparator)%h\(unitSeparator)%P\(unitSeparator)%an"
                    + "\(unitSeparator)%at\(unitSeparator)%s\(unitSeparator)%D\(recordSeparator)"]
+        out.append("--decorate=full")
+        if all { out += ["--branches", "--remotes", "--tags", "HEAD"] }
         if let path, !path.isEmpty { out += ["--follow", "--", path] }
         return out
     }
@@ -498,6 +508,250 @@ public enum PluginGit {
             cells[lane] = "┘"      // this branch ends in the commit on this row
         }
         return cells.joined()
+    }
+
+    // MARK: - The panel's history: geometry, details, changes (phase 6)
+
+    /// One stroke of the drawn graph, in lane units. `upper` strokes run from the row's top edge (lane
+    /// `from`) to its middle (lane `to`); lower ones from the middle (`from`) to the bottom edge (`to`).
+    /// `color` is the lane whose colour the stroke takes.
+    public struct GraphLine: Sendable, Equatable {
+        public let from: Int
+        public let to: Int
+        public let upper: Bool
+        public let color: Int
+        public init(from: Int, to: Int, upper: Bool, color: Int) {
+            self.from = from; self.to = to; self.upper = upper; self.color = color
+        }
+    }
+
+    /// What a renderer draws for each row: the node's lane and the strokes around it. Kept here, not in
+    /// the view, so the geometry — which lane joins which — is tested rather than eyeballed.
+    ///
+    /// A lane that waits for another commit passes straight through. Lanes that wait for *this* commit
+    /// bend into its node from above (that is the node's own lane plus the `closed` ones). Below the node,
+    /// the first parent continues the node's lane and every further parent bends out to its lane.
+    public static func graphLines(_ rows: [GraphRow]) -> [(node: Int, lines: [GraphLine])] {
+        var out: [(node: Int, lines: [GraphLine])] = []
+        for (index, row) in rows.enumerated() {
+            var lines: [GraphLine] = []
+            let after = index + 1 < rows.count ? rows[index + 1].lanes : []
+            let incoming = Set([row.lane] + row.closed)
+            for (lane, waiting) in row.lanes.enumerated() where waiting != nil {
+                if incoming.contains(lane) {
+                    // The first row's `lanes` is a placeholder for the commit itself, not a lane from above.
+                    if index > 0 || lane != row.lane {
+                        lines.append(GraphLine(from: lane, to: row.lane, upper: true, color: lane))
+                    }
+                } else {
+                    lines.append(GraphLine(from: lane, to: lane, upper: true, color: lane))
+                    lines.append(GraphLine(from: lane, to: lane, upper: false, color: lane))
+                }
+            }
+            if row.lane < after.count, after[row.lane] != nil {
+                lines.append(GraphLine(from: row.lane, to: row.lane, upper: false, color: row.lane))
+            }
+            for lane in row.merged {
+                lines.append(GraphLine(from: row.lane, to: lane, upper: false, color: lane))
+            }
+            out.append((row.lane, lines))
+        }
+        return out
+    }
+
+    /// A file a commit touched, from `--name-status`. `oldPath` is set for a rename or copy.
+    public struct ChangedFile: Sendable, Equatable {
+        public let status: String
+        public let path: String
+        public let oldPath: String?
+        public init(status: String, path: String, oldPath: String? = nil) {
+            self.status = status; self.path = path; self.oldPath = oldPath
+        }
+    }
+
+    /// `git show` arguments for the files a commit touched, against its first parent — for a merge that is
+    /// the useful side, and a root commit lists its files as added. `-z` because without it git C-quotes
+    /// every path outside ASCII (`"Gr\303\274\303\237e.txt"`), the same defect `parseStatus` had to
+    /// leave behind (see the top of this file).
+    public static func nameStatusArguments(_ hash: String) -> [String] {
+        ["--no-optional-locks", "show", "--name-status", "-z", "--format=", "-m", "--first-parent", hash]
+    }
+
+    /// `nameStatusArguments` output: NUL-separated `M`, `path`, … and for a rename or copy `R100`, `old`,
+    /// `new`. The status is the letter alone; the similarity score of a rename is noise in a list.
+    public static func parseNameStatus(_ output: String) -> [ChangedFile] {
+        var files: [ChangedFile] = []
+        var fields = output.split(separator: "\0", omittingEmptySubsequences: false).map(String.init)[...]
+        while let status = fields.popFirst() {
+            // The first record of `show -m` can follow a newline; the letter is what matters.
+            let code = status.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let letter = code.first else { continue }
+            if letter == "R" || letter == "C" {
+                guard let old = fields.popFirst(), let new = fields.popFirst() else { break }
+                files.append(ChangedFile(status: String(letter), path: new, oldPath: old))
+            } else {
+                guard let path = fields.popFirst() else { break }
+                files.append(ChangedFile(status: String(letter), path: path))
+            }
+        }
+        return files
+    }
+
+    /// Everything the Commit tab shows about one commit.
+    public struct CommitDetails: Sendable, Equatable {
+        public let hash: String
+        public let parents: [String]
+        public let authorName: String
+        public let authorEmail: String
+        public let authorDate: Date
+        public let committerName: String
+        public let committerEmail: String
+        public let commitDate: Date
+        public let refs: [Ref]
+        /// git's `%G?`: G good, B bad, U good but untrusted, N none, … — empty when git could not say.
+        public let signature: String
+        public let message: String
+    }
+
+    /// `git show -s` for `parseDetails`. The message (`%B`) comes last: it may contain anything.
+    public static func detailsArguments(_ hash: String) -> [String] {
+        let fields = ["%H", "%P", "%an", "%ae", "%at", "%cn", "%ce", "%ct", "%D", "%G?", "%B"]
+        return ["--no-optional-locks", "show", "-s", "--decorate=full",
+                "--format=" + fields.joined(separator: unitSeparator), hash]
+    }
+
+    public static func parseDetails(_ output: String) -> CommitDetails? {
+        let fields = output.components(separatedBy: unitSeparator)
+        guard fields.count >= 11, !fields[0].isEmpty else { return nil }
+        func date(_ text: String) -> Date { Date(timeIntervalSince1970: Double(text) ?? 0) }
+        return CommitDetails(
+            hash: fields[0], parents: fields[1].split(separator: " ").map(String.init),
+            authorName: fields[2], authorEmail: fields[3], authorDate: date(fields[4]),
+            committerName: fields[5], committerEmail: fields[6], commitDate: date(fields[7]),
+            refs: parseRefs(fields[8]), signature: fields[9],
+            // A message that itself contained the separator is put back together rather than cut short.
+            message: fields[10...].joined(separator: unitSeparator)
+                .trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    /// A folder or a file in the Changes tree.
+    public struct FileTreeNode: Sendable, Equatable {
+        /// What the row shows: a file name, or a folder chain collapsed to `app/aktionen`.
+        public var name: String
+        /// Repository-relative path of the file or folder.
+        public var path: String
+        public var file: ChangedFile?
+        public var children: [FileTreeNode]
+        public var isFolder: Bool { file == nil }
+    }
+
+    /// The changed files as a tree: folders before files, each sorted the way Finder sorts, and a folder
+    /// whose only child is another folder merged into it — `services/cockpit/app` is one row, not three
+    /// rows that each hold nothing but the next.
+    public static func fileTree(_ files: [ChangedFile]) -> [FileTreeNode] {
+        final class Folder {
+            var folders: [String: Folder] = [:]
+            var files: [ChangedFile] = []
+        }
+        let top = Folder()
+        for file in files {
+            var folder = top
+            for part in file.path.split(separator: "/").dropLast().map(String.init) {
+                if let next = folder.folders[part] { folder = next } else {
+                    let next = Folder(); folder.folders[part] = next; folder = next
+                }
+            }
+            folder.files.append(file)
+        }
+        func order(_ a: String, _ b: String) -> Bool { a.localizedStandardCompare(b) == .orderedAscending }
+        func nodes(_ folder: Folder, prefix: String) -> [FileTreeNode] {
+            var out: [FileTreeNode] = []
+            for name in folder.folders.keys.sorted(by: order) {
+                var sub = folder.folders[name]!
+                var label = name
+                while sub.files.isEmpty, sub.folders.count == 1, let only = sub.folders.first {
+                    label += "/" + only.key
+                    sub = only.value
+                }
+                let path = prefix.isEmpty ? label : prefix + "/" + label
+                out.append(FileTreeNode(name: label, path: path, file: nil, children: nodes(sub, prefix: path)))
+            }
+            for file in folder.files.sorted(by: { order($0.path, $1.path) }) {
+                let name = (file.path as NSString).lastPathComponent
+                out.append(FileTreeNode(name: name, path: file.path, file: file, children: []))
+            }
+            return out
+        }
+        return nodes(top, prefix: "")
+    }
+
+    /// One line of a unified diff, as the inline view draws it.
+    public struct DiffLine: Sendable, Equatable {
+        public enum Kind: String, Sendable, Equatable { case hunk, context, added, removed, meta, binary }
+        public let kind: Kind
+        public let text: String
+        public let oldLine: Int?
+        public let newLine: Int?
+        public init(kind: Kind, text: String, oldLine: Int? = nil, newLine: Int? = nil) {
+            self.kind = kind; self.text = text; self.oldLine = oldLine; self.newLine = newLine
+        }
+    }
+
+    /// git's unified diff of one file, numbered. git computes the diff — this only reads it, so the panel
+    /// does not carry a second diff algorithm. The header lines before the first hunk are dropped except
+    /// the ones a reader needs (binary, rename, mode); past `limit` lines the rest is cut and `truncated`
+    /// says so, because a generated file of a hundred thousand lines would otherwise stall the panel.
+    public static func parseUnifiedDiff(_ text: String, limit: Int = 5000) -> (lines: [DiffLine], truncated: Bool) {
+        var lines: [DiffLine] = []
+        var old = 0, new = 0
+        var inHunk = false
+        var truncated = false
+        // Checked when a line is about to be *shown*, not per raw line: the trailing empty element of the
+        // split and the skipped headers would otherwise report a cut that removed nothing.
+        func add(_ line: DiffLine) -> Bool {
+            guard lines.count < limit else { truncated = true; return false }
+            lines.append(line)
+            return true
+        }
+        scan: for raw in text.split(separator: "\n", omittingEmptySubsequences: false) {
+            let line = String(raw)
+            if line.hasPrefix("@@") {
+                inHunk = true
+                // @@ -a,b +c,d @@ heading
+                let numbers = line.split(separator: " ").dropFirst().prefix(2)
+                for part in numbers {
+                    let start = Int(part.dropFirst().split(separator: ",").first ?? "") ?? 0
+                    if part.hasPrefix("-") { old = start } else if part.hasPrefix("+") { new = start }
+                }
+                guard add(DiffLine(kind: .hunk, text: line)) else { break scan }
+                continue
+            }
+            if line.hasPrefix("diff --git") { inHunk = false; continue }
+            if !inHunk {
+                if line.hasPrefix("Binary files") || line.hasPrefix("GIT binary patch") {
+                    guard add(DiffLine(kind: .binary, text: line)) else { break scan }
+                } else if ["rename from", "rename to", "new file mode", "deleted file mode",
+                           "old mode", "new mode", "copy from", "copy to"].contains(where: line.hasPrefix) {
+                    guard add(DiffLine(kind: .meta, text: line)) else { break scan }
+                }
+                continue
+            }
+            if line.hasPrefix("+") {
+                guard add(DiffLine(kind: .added, text: String(line.dropFirst()), newLine: new)) else { break scan }
+                new += 1
+            } else if line.hasPrefix("-") {
+                guard add(DiffLine(kind: .removed, text: String(line.dropFirst()), oldLine: old)) else { break scan }
+                old += 1
+            } else if line.hasPrefix("\\") {
+                // "\ No newline at end of file"
+                guard add(DiffLine(kind: .meta, text: line)) else { break scan }
+            } else if line.hasPrefix(" ") {
+                let context = DiffLine(kind: .context, text: String(line.dropFirst()), oldLine: old, newLine: new)
+                guard add(context) else { break scan }
+                old += 1; new += 1
+            }
+        }
+        return (lines, truncated)
     }
 
     // MARK: - Blame (phase 2)
@@ -756,13 +1010,17 @@ public enum PluginGit {
         return (root, prefix, gitDir)
     }
 
-    /// git's `%D` decoration: `HEAD -> main, origin/main, tag: v1.0`.
+    /// git's `%D` decoration: `HEAD -> main, origin/main, tag: v1.0` — or, under `--decorate=full`,
+    /// `HEAD -> refs/heads/main, refs/remotes/origin/main, tag: refs/tags/v1.0, refs/stash`, where the
+    /// prefix and not a guess about slashes says what a name is.
     public static func parseRefs(_ decoration: String) -> [Ref] {
         var refs: [Ref] = []
         for piece in decoration.components(separatedBy: ", ") {
             let text = piece.trimmingCharacters(in: .whitespaces)
             guard !text.isEmpty else { continue }
-            if text.hasPrefix("HEAD -> ") {
+            if let full = fullRef(text) {
+                refs.append(full)
+            } else if text.hasPrefix("HEAD -> ") {
                 refs.append(Ref(name: String(text.dropFirst(8)), kind: .head))
             } else if text.hasPrefix("tag: ") {
                 refs.append(Ref(name: String(text.dropFirst(5)), kind: .tag))
@@ -773,6 +1031,20 @@ public enum PluginGit {
             }
         }
         return refs
+    }
+
+    /// One `--decorate=full` piece, or nil when it is in the short form.
+    private static func fullRef(_ text: String) -> Ref? {
+        var name = text
+        var isHead = false
+        if name.hasPrefix("HEAD -> ") { name = String(name.dropFirst(8)); isHead = true }
+        if name.hasPrefix("tag: ") { name = String(name.dropFirst(5)) }
+        for (prefix, kind) in [("refs/heads/", Ref.Kind.branch), ("refs/remotes/", .remote),
+                               ("refs/tags/", .tag)] where name.hasPrefix(prefix) {
+            return Ref(name: String(name.dropFirst(prefix.count)), kind: isHead ? .head : kind)
+        }
+        if name == "refs/stash" { return Ref(name: "stash", kind: .stash) }
+        return nil
     }
 
     // MARK: - Tags (F-425)

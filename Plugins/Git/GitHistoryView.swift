@@ -1,0 +1,452 @@
+// SPDX-License-Identifier: Apache-2.0
+// GitHistoryView.swift — the panel's history: every branch as a drawn graph, the working copy on top.
+//
+// Phase 6 (the panel as a client). The log window already had a history, but as a separate window and
+// with the graph as box-drawing text. Here the graph is drawn — lanes, nodes, merges bending out and
+// branches bending back in — from `PluginGit.graphLines`, which is where the geometry is tested; this
+// view only strokes what it is given.
+//
+// The first row is not a commit: it is the working copy ("Local changes (3)"), the way Fork shows it.
+// Selecting it puts the staging list and the commit box in the panel's detail area, so the panel has one
+// list and one selection rather than a status list *and* a history competing for the same height.
+
+import AppKit
+
+@MainActor
+final class GitHistoryView: NSView {
+    enum Selection: Equatable { case workingCopy, commit(PluginGit.Commit) }
+
+    /// The selection changed (nil: nothing, or the "load more" row).
+    var onSelectionChange: ((Selection?) -> Void)?
+    var onLoadMore: (() -> Void)?
+    /// Something the context menu did moved HEAD or the refs; the panel reloads.
+    var onChanged: (() -> Void)?
+    /// "Only the current branch" was toggled; the panel reads `onlyCurrentBranch` for its next load.
+    var onScopeChange: (() -> Void)?
+
+    var root: String?
+    private(set) var onlyCurrentBranch = false
+
+    private let services: PcHostServices
+    private var theme: PluginTheme
+    private let table = GitTable()
+    private let scroll = NSScrollView()
+    private var commits: [PluginGit.Commit] = []
+    private var drawn: [(node: Int, lines: [PluginGit.GraphLine])] = []
+    private var laneCount = 1
+    private var changeCount = 0
+    private var hasMore = false
+    private var hasRepo = false
+    private var preferredWidth: [NSUserInterfaceItemIdentifier: CGFloat] = [:]
+    private let busy: NSProgressIndicator
+    /// Set while `update` reloads and reselects, so the selection it restores is reported once, by
+    /// `update` itself, rather than again by the delegate.
+    private var updating = false
+
+    init(services: PcHostServices, busy: NSProgressIndicator) {
+        self.services = services
+        self.theme = PluginTheme(services)
+        self.busy = busy
+        super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 240))
+        build()
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    private func build() {
+        table.rowHeight = 20
+        table.intercellSpacing = NSSize(width: 6, height: 0)     // the graph's lanes must meet row to row
+        table.style = .fullWidth
+        table.font = .systemFont(ofSize: 11)
+        table.columnAutoresizingStyle = .noColumnAutoresizing
+        for (id, title, width, flexible) in [
+            ("graph", "", 28, false), ("subject", L("Subject"), 320, true),
+            ("author", L("Author"), 120, true), ("hash", L("Hash"), 64, false),
+            ("date", L("Date"), 120, true),
+        ] as [(String, String, CGFloat, Bool)] {
+            let column = NSTableColumn(identifier: .init(id))
+            column.title = title
+            column.width = width
+            if flexible {
+                column.resizingMask = [.autoresizingMask, .userResizingMask]
+                column.minWidth = min(width, 70)
+                preferredWidth[column.identifier] = width
+            } else {
+                column.resizingMask = .userResizingMask
+            }
+            table.addTableColumn(column)
+        }
+        table.dataSource = self
+        table.delegate = self
+        table.target = self
+        table.doubleAction = #selector(activateRow)
+        table.onEnter = { [weak self] in self?.activateRow() }
+        table.menu = gitMenu([
+            (L("Copy commit hash"), #selector(copyHash)),
+            (L("Copy subject"), #selector(copySubject)),
+            (nil, nil),
+            (L("Revert commit"), #selector(revertSelected)),
+            (L("Cherry-pick"), #selector(cherryPickSelected)),
+            (L("Open on the web"), #selector(openSelectedOnTheWeb)),
+            (nil, nil),
+            (L("Only the current branch"), #selector(toggleScope)),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
+
+        scroll.documentView = table
+        scroll.hasVerticalScroller = true
+        scroll.hasHorizontalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.contentView.postsFrameChangedNotifications = true
+        NotificationCenter.default.addObserver(self, selector: #selector(clipFrameChanged(_:)),
+                                               name: NSView.frameDidChangeNotification,
+                                               object: scroll.contentView)
+        addSubview(scroll)
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        applyTheme(theme)
+    }
+
+    func applyTheme(_ theme: PluginTheme) {
+        self.theme = theme
+        table.backgroundColor = theme.background
+        scroll.backgroundColor = theme.background
+        scroll.drawsBackground = true
+        table.reloadData()
+    }
+
+    // MARK: - Data
+
+    /// Show a new history, keeping the selected commit selected when it is still there.
+    func update(commits: [PluginGit.Commit], hasRepo: Bool, changeCount: Int, hasMore: Bool) {
+        let previous = selection
+        // "Load more" was the selected row: after loading, the first of the new commits takes its place —
+        // not the working copy at the top, which would also swap the detail area away.
+        let loadedMore = self.hasMore && table.selectedRow > 0 && table.selectedRow == numberOfRows(in: table) - 1
+        let previousCount = self.commits.count
+        updating = true
+        defer { updating = false }
+        self.commits = commits
+        self.hasRepo = hasRepo
+        self.changeCount = changeCount
+        self.hasMore = hasMore
+        drawn = PluginGit.graphLines(PluginGit.graph(commits))
+        // Beyond ten lanes the subject is what suffers; the cell clips the strokes past that.
+        let lanes = drawn.map { row in max(row.node, row.lines.map { max($0.from, $0.to) }.max() ?? 0) + 1 }
+        laneCount = min(max(lanes.max() ?? 1, 1), 10)
+        table.tableColumn(withIdentifier: .init("graph"))?.width = GitGraphCell.width(lanes: laneCount)
+        table.reloadData()
+        fitColumns()
+
+        let row: Int
+        switch previous {
+        case .commit(let commit)?:
+            row = commits.firstIndex { $0.hash == commit.hash }.map { $0 + 1 } ?? (hasRepo ? 0 : -1)
+        case nil where loadedMore && commits.count > previousCount:
+            row = previousCount + 1
+        default:
+            row = hasRepo ? 0 : -1
+        }
+        if row >= 0 {
+            table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+            if loadedMore { table.scrollRowToVisible(row) }
+        } else {
+            table.deselectAll(nil)
+        }
+        // Reported here, once, whether or not the row changed: reloading with the same row selected posts
+        // no selection change, but the detail area must follow the new data (the change count moved).
+        onSelectionChange?(selection)
+    }
+
+    var selection: Selection? {
+        let row = table.selectedRow
+        if row == 0, hasRepo { return .workingCopy }
+        let index = row - 1
+        return commits.indices.contains(index) ? .commit(commits[index]) : nil
+    }
+
+    /// Select the commit with this hash, when it is loaded (a parent link in the Commit tab).
+    func select(hash: String) {
+        guard let index = commits.firstIndex(where: { $0.hash == hash }) else { return }
+        table.selectRowIndexes(IndexSet(integer: index + 1), byExtendingSelection: false)
+        table.scrollRowToVisible(index + 1)
+    }
+
+    func selectRow(_ row: Int) {
+        guard row >= 0, row < numberOfRows(in: table) else { return }
+        table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        table.scrollRowToVisible(row)
+    }
+
+    /// One line per row as the verification dump reports it: the lane, the refs and the subject.
+    func automationRows() -> [String] {
+        var out = ["rows=\(numberOfRows(in: table))"]
+        if hasRepo { out.append("row0=working-copy changes=\(changeCount)") }
+        for (index, commit) in commits.prefix(20).enumerated() {
+            let refs = commit.refs.map { "\($0.kind.rawValue):\($0.name)" }.joined(separator: ",")
+            out.append("row\(index + 1)=lane\(drawn[index].node) [\(refs)] \(commit.subject)")
+        }
+        return out
+    }
+
+    private var selectedCommit: PluginGit.Commit? {
+        if case .commit(let commit)? = selection { return commit }
+        return nil
+    }
+
+    // MARK: - Layout
+
+    @objc private func clipFrameChanged(_ note: Notification) { fitColumns() }
+
+    /// Narrow sidebars drop the columns that matter least first — the hash, then the author — and give the
+    /// subject what is left.
+    private func fitColumns() {
+        let width = scroll.contentView.bounds.width
+        table.tableColumn(withIdentifier: .init("hash"))?.isHidden = width < 560
+        table.tableColumn(withIdentifier: .init("author"))?.isHidden = width < 420
+        table.tableColumn(withIdentifier: .init("date"))?.isHidden = width < 300
+        gitFitColumns(table, preferred: preferredWidth)
+    }
+
+    // MARK: - Actions
+
+    /// Return or a double-click: on the last row, "Load more".
+    @objc func activateRow() {
+        if table.selectedRow == numberOfRows(in: table) - 1, hasMore { onLoadMore?() }
+    }
+
+    @objc private func copyHash() { selectedCommit.map { gitCopyToClipboard($0.hash) } }
+    @objc private func copySubject() { selectedCommit.map { gitCopyToClipboard($0.subject) } }
+    @objc private func revertSelected() { runSequencer(.revert) }
+    @objc private func cherryPickSelected() { runSequencer(.cherryPick) }
+    @objc private func reloadFromMenu() { onChanged?() }
+
+    @objc private func toggleScope() {
+        onlyCurrentBranch.toggle()
+        onScopeChange?()
+    }
+
+    private func runSequencer(_ kind: GitCommitActions.Sequencer) {
+        guard let root, let commit = selectedCommit else { return }
+        GitCommitActions.runSequencer(kind, commit: commit, root: root, services: services, busy: busy) {
+            [weak self] in self?.onChanged?()
+        }
+    }
+
+    @objc private func openSelectedOnTheWeb() {
+        guard let root, let commit = selectedCommit else { return }
+        GitCommitActions.openCommitOnTheWeb(hash: commit.hash, root: root, services: services)
+    }
+}
+
+extension GitHistoryView: NSMenuItemValidation {
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(toggleScope) {
+            menuItem.state = onlyCurrentBranch ? .on : .off
+            return hasRepo
+        }
+        if menuItem.action == #selector(reloadFromMenu) { return hasRepo }
+        return selectedCommit != nil
+    }
+}
+
+// MARK: - Table
+
+extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        guard hasRepo else { return 0 }
+        return 1 + commits.count + (hasMore ? 1 : 0)
+    }
+
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        guard let id = tableColumn?.identifier.rawValue else { return nil }
+        let index = row - 1
+        if id == "graph" {
+            let cell = (tableView.makeView(withIdentifier: .init("GitGraphCell"), owner: self) as? GitGraphCell)
+                ?? GitGraphCell()
+            cell.identifier = .init("GitGraphCell")
+            if row == 0 {
+                cell.configure(node: headLane(), lines: [], workingCopy: true, isHead: false, isMerge: false)
+            } else if commits.indices.contains(index) {
+                let isHead = commits[index].refs.contains { $0.kind == .head }
+                cell.configure(node: drawn[index].node, lines: drawn[index].lines, workingCopy: false,
+                               isHead: isHead, isMerge: commits[index].isMerge)
+            } else {
+                cell.configure(node: nil, lines: [], workingCopy: false, isHead: false, isMerge: false)
+            }
+            return cell
+        }
+        let field = (tableView.makeView(withIdentifier: .init("GitHistoryText"), owner: self) as? NSTextField)
+            ?? {
+                let f = NSTextField(labelWithString: "")
+                f.identifier = .init("GitHistoryText")
+                f.usesSingleLineMode = true
+                f.lineBreakMode = .byTruncatingTail
+                f.cell?.truncatesLastVisibleLine = true
+                return f
+            }()
+        field.font = .systemFont(ofSize: 11)
+        field.textColor = theme.text
+        field.toolTip = nil
+        if row == 0 {
+            field.attributedStringValue = NSAttributedString(string: "")
+            if id == "subject" {
+                field.font = .systemFont(ofSize: 11, weight: .semibold)
+                field.stringValue = changeCount == 0
+                    ? L("Working tree clean.")
+                    : String(format: L("Local changes (%lld)"), changeCount)
+            } else {
+                field.stringValue = ""
+            }
+            return field
+        }
+        guard commits.indices.contains(index) else {
+            field.stringValue = id == "subject" ? L("Load more") + " …" : ""
+            field.textColor = theme.accent
+            return field
+        }
+        let commit = commits[index]
+        switch id {
+        case "subject":
+            field.attributedStringValue = subjectText(commit)
+            field.toolTip = commit.subject
+        case "author":
+            field.stringValue = commit.author
+            field.textColor = theme.secondaryText
+        case "hash":
+            field.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+            field.stringValue = commit.shortHash
+            field.textColor = theme.secondaryText
+        case "date":
+            field.stringValue = gitDateFormatter.string(from: commit.date)
+            field.textColor = theme.secondaryText
+        default:
+            field.stringValue = ""
+        }
+        return field
+    }
+
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        guard !updating else { return }
+        onSelectionChange?(selection)
+    }
+
+    /// The lane HEAD's commit sits in, so the working copy's node is drawn above its own branch.
+    private func headLane() -> Int {
+        guard let index = commits.firstIndex(where: { $0.refs.contains { $0.kind == .head } }) else { return 0 }
+        return drawn[index].node
+    }
+
+    /// Ref badges first — branch, remote, tag, stash — then the subject.
+    private func subjectText(_ commit: PluginGit.Commit) -> NSAttributedString {
+        let out = NSMutableAttributedString()
+        for ref in commit.refs where !ref.name.hasSuffix("/HEAD") {
+            let color: NSColor
+            switch ref.kind {
+            case .head:   color = theme.accent
+            case .branch: color = .systemGreen
+            case .remote: color = .systemBlue
+            case .tag:    color = .systemOrange
+            case .stash:  color = .systemPurple
+            }
+            out.append(NSAttributedString(string: " \(ref.kind == .tag ? "⚑ " : "")\(ref.name) ", attributes: [
+                .font: NSFont.systemFont(ofSize: 10, weight: ref.kind == .head ? .bold : .medium),
+                .foregroundColor: color,
+                .backgroundColor: color.withAlphaComponent(0.15),
+            ]))
+            out.append(NSAttributedString(string: " ", attributes: [.font: NSFont.systemFont(ofSize: 11)]))
+        }
+        out.append(NSAttributedString(string: commit.subject, attributes: [
+            .font: NSFont.systemFont(ofSize: 11), .foregroundColor: theme.text,
+        ]))
+        return out
+    }
+}
+
+// MARK: - The graph cell
+
+/// One row of the graph: the strokes `PluginGit.graphLines` computed, and the node.
+@MainActor
+final class GitGraphCell: NSView {
+    static let laneWidth: CGFloat = 12
+    static func width(lanes: Int) -> CGFloat { CGFloat(lanes) * laneWidth + 8 }
+
+    /// Lane colours. System colours, so they hold in a dark palette as well as a light one.
+    static let palette: [NSColor] = [.systemBlue, .systemOrange, .systemGreen, .systemPurple,
+                                     .systemPink, .systemTeal, .systemYellow, .systemRed]
+
+    private var node: Int?
+    private var lines: [PluginGit.GraphLine] = []
+    private var workingCopy = false
+    private var isHead = false
+    private var isMerge = false
+
+    func configure(node: Int?, lines: [PluginGit.GraphLine], workingCopy: Bool, isHead: Bool, isMerge: Bool) {
+        self.node = node; self.lines = lines
+        self.workingCopy = workingCopy; self.isHead = isHead; self.isMerge = isMerge
+        needsDisplay = true
+    }
+
+    override var isFlipped: Bool { true }
+
+    private func x(_ lane: Int) -> CGFloat { 4 + CGFloat(lane) * Self.laneWidth + Self.laneWidth / 2 }
+    private func color(_ lane: Int) -> NSColor { Self.palette[lane % Self.palette.count] }
+
+    override func draw(_ dirtyRect: NSRect) {
+        // Clipped explicitly: built against the macOS 14 SDK a view no longer clips its drawing to its
+        // bounds, and lanes past the column's ten would be stroked across the subject beside it.
+        NSBezierPath(rect: bounds).setClip()
+        let top = bounds.minY, mid = bounds.midY, bottom = bounds.maxY
+        for line in lines {
+            let path = NSBezierPath()
+            path.lineWidth = 1.6
+            let (y0, y1) = line.upper ? (top, mid) : (mid, bottom)
+            let start = NSPoint(x: x(line.from), y: y0), end = NSPoint(x: x(line.to), y: y1)
+            path.move(to: start)
+            if line.from == line.to {
+                path.line(to: end)
+            } else {
+                // A lane change bends: vertical at both ends, so it meets the straight strokes cleanly.
+                let half = (y1 - y0) / 2
+                path.curve(to: end, controlPoint1: NSPoint(x: start.x, y: y0 + half),
+                           controlPoint2: NSPoint(x: end.x, y: y1 - half))
+            }
+            color(line.color).setStroke()
+            path.stroke()
+        }
+        guard let node else { return }
+        let radius: CGFloat = isHead ? 4.5 : 3.5
+        let dot = NSRect(x: x(node) - radius, y: mid - radius, width: radius * 2, height: radius * 2)
+        let circle = NSBezierPath(ovalIn: dot)
+        if workingCopy {
+            // The working copy is not a commit yet: an open, dashed ring.
+            circle.lineWidth = 1.4
+            circle.setLineDash([2, 1.5], count: 2, phase: 0)
+            color(node).setStroke()
+            circle.stroke()
+            return
+        }
+        if isMerge {
+            NSColor.textBackgroundColor.setFill()
+            circle.fill()
+            circle.lineWidth = 1.6
+            color(node).setStroke()
+            circle.stroke()
+        } else {
+            color(node).setFill()
+            circle.fill()
+        }
+        // HEAD wears a ring whatever kind of commit it is — a merge is often exactly where HEAD is.
+        if isHead {
+            let ring = NSBezierPath(ovalIn: dot.insetBy(dx: -2, dy: -2))
+            ring.lineWidth = 1
+            color(node).setStroke()
+            ring.stroke()
+        }
+    }
+}

@@ -33,6 +33,17 @@ there too, next to the commit that usually precedes them; both show progress and
 
 Committing uses the *index*, not `git commit -a`: what you staged is what is committed.
 
+## History in the panel
+
+Below its buttons the panel shows the history of every branch, remote branch and tag as a drawn graph, with the working copy as its first row. The area underneath follows the selection:
+
+![The Git panel with the branch graph, the merge commit selected and its changed file with an inline diff](screenshots/git-panel.png)
+
+- **Local changes** shows the staged, changed and untracked files and the commit box described above.
+- A commit shows either **Commit** — author, committer, date, hash, parents, refs, signature and the full message — or **Changes**.
+- **Changes** lists the touched files as a tree and the selected file's diff with line numbers; a double-click opens the compare window.
+- The context menu copies hash or subject, reverts, cherry-picks, opens the commit on the web, and limits the list to **Only the current branch**.
+
 ## History, blame and the web
 
 - **History…** lists the commits with a lane graph, the refs pointing at each one (`● main`,

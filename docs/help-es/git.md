@@ -34,6 +34,17 @@ progreso y pueden cancelarse.
 
 Se confirma el *índice*, no `git commit -a`: lo que preparó es lo que se confirma.
 
+## Historial en el panel
+
+Bajo sus botones, el panel muestra el historial de todas las ramas, ramas remotas y etiquetas como un grafo dibujado, con la copia de trabajo como primera fila. La zona inferior sigue la selección:
+
+![El panel de Git con el grafo de ramas, el commit de fusión seleccionado y su archivo cambiado con el diff en línea](screenshots/git-panel.png)
+
+- **Cambios locales** muestra los archivos preparados, cambiados y sin seguimiento y el cuadro de commit descrito arriba.
+- Un commit muestra **Commit** — autor, committer, fecha, hash, padres, refs, firma y mensaje completo — o **Cambios**.
+- **Cambios** lista los archivos afectados como árbol y el diff del archivo elegido con números de línea; un doble clic abre la ventana de comparación.
+- El menú contextual copia el hash o el asunto, revierte, hace cherry-pick, abre el commit en la web y limita la lista a **Solo la rama actual**.
+
 ## Historial, autoría y la web
 
 - **Historial…** enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una

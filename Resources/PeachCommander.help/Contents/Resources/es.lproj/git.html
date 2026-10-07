@@ -33,6 +33,15 @@ escriba un mensaje y pulse <strong>Confirmar</strong> — con <strong>Enmendar</
 anterior. <strong>Traer</strong> y <strong>Enviar</strong> están al lado, donde la confirmación ocurre de todos modos; ambos muestran
 progreso y pueden cancelarse.</p>
 <p>Se confirma el <em>índice</em>, no <code>git commit -a</code>: lo que preparó es lo que se confirma.</p>
+<h2 id="historial-en-el-panel">Historial en el panel</h2>
+<p>Bajo sus botones, el panel muestra el historial de todas las ramas, ramas remotas y etiquetas como un grafo dibujado, con la copia de trabajo como primera fila. La zona inferior sigue la selección:</p>
+<p><img alt="El panel de Git con el grafo de ramas, el commit de fusión seleccionado y su archivo cambiado con el diff en línea" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Cambios locales</strong> muestra los archivos preparados, cambiados y sin seguimiento y el cuadro de commit descrito arriba.</li>
+<li>Un commit muestra <strong>Commit</strong> — autor, committer, fecha, hash, padres, refs, firma y mensaje completo — o <strong>Cambios</strong>.</li>
+<li><strong>Cambios</strong> lista los archivos afectados como árbol y el diff del archivo elegido con números de línea; un doble clic abre la ventana de comparación.</li>
+<li>El menú contextual copia el hash o el asunto, revierte, hace cherry-pick, abre el commit en la web y limita la lista a <strong>Solo la rama actual</strong>.</li>
+</ul>
 <h2 id="historial-autoria-y-la-web">Historial, autoría y la web</h2>
 <ul>
 <li><strong>Historial…</strong> enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una

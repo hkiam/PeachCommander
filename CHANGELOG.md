@@ -15,6 +15,24 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+### Added
+
+- **The Git panel is a Git client.** Below its buttons it shows the history of every branch, remote
+  branch and tag as a drawn graph — lanes, merges bending out, branches bending back, ref badges —
+  with the working copy as its first row, which keeps the staging list and the commit box. A commit
+  shows either **Commit** (author and committer, hash, parents as links, refs, signature, the whole
+  message) or **Changes**: the touched files as a tree and the selected file's diff, numbered and
+  coloured, side by side with the tree when the panel is wide. Double-click still opens the compare
+  window. The context menu copies, reverts, cherry-picks, opens the commit on the web and limits the
+  list to the current branch.
+
+### Fixed
+
+- **The Git log window did not fill when it was made larger.** Its commit list kept the width of its
+  columns, 824 points, inside a pane of 729, so the date column was cut off at the edge and no column
+  grew. The columns now share the pane's width in their declared proportions and scroll sideways only
+  below their minimums.
+
 ## [0.9.4] — 2026-10-07
 
 Copies that start at once from a slow share, and files pasted from a Windows App session that arrive

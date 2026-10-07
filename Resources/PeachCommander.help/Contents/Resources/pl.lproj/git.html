@@ -31,6 +31,15 @@ wtyczka, więc można ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wt
 naciśnij <strong>Zatwierdź</strong> — z <strong>Popraw</strong> zmiana zostanie wtopiona w poprzednie zatwierdzenie. <strong>Pobierz</strong> i
 <strong>Wyślij</strong> są obok, tam gdzie zatwierdzanie i tak się odbywa; oba pokazują postęp i można je przerwać.</p>
 <p>Zatwierdzany jest <em>indeks</em>, nie <code>git commit -a</code>: zatwierdzane jest to, co przygotowano.</p>
+<h2 id="historia-w-panelu">Historia w panelu</h2>
+<p>Pod przyciskami panel pokazuje historię wszystkich gałęzi, gałęzi zdalnych i tagów jako rysowany graf, z kopią roboczą w pierwszym wierszu. Obszar poniżej podąża za zaznaczeniem:</p>
+<p><img alt="Panel Git z grafem gałęzi, zaznaczonym commitem scalenia i jego zmienionym plikiem z wbudowanym diffem" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Zmiany lokalne</strong> pokazuje pliki przygotowane, zmienione i nieśledzone oraz opisane wyżej pole commita.</li>
+<li>Commit pokazuje <strong>Commit</strong> — autora, committera, datę, hash, rodziców, refy, podpis i pełny opis — albo <strong>Zmiany</strong>.</li>
+<li><strong>Zmiany</strong> wyświetla zmienione pliki jako drzewo i diff wybranego pliku z numerami wierszy; dwukrotne kliknięcie otwiera okno porównania.</li>
+<li>Menu kontekstowe kopiuje hash lub temat, cofa, robi cherry-pick, otwiera commit w sieci i ogranicza listę do <strong>Tylko bieżąca gałąź</strong>.</li>
+</ul>
 <h2 id="historia-blame-i-siec">Historia, blame i sieć</h2>
 <ul>
 <li><strong>Historia…</strong> wypisuje zatwierdzenia z grafem torów, referencje wskazujące na każde z nich (<code>● main</code>,

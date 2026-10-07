@@ -32,6 +32,17 @@ sporočilo in pritisnite **Objavi** — z **Popravi** se sprememba zloži v prej
 
 Objavi se *kazalo*, ne `git commit -a`: objavljeno je tisto, kar ste pripravili.
 
+## Zgodovina v plošči
+
+Pod gumbi plošča prikazuje zgodovino vseh vej, oddaljenih vej in oznak kot narisan graf, z delovno kopijo v prvi vrstici. Območje pod njo sledi izbiri:
+
+![Plošča Git z grafom vej, izbranim commitom združitve in njegovo spremenjeno datoteko z vgrajenim diffom](screenshots/git-panel.png)
+
+- **Lokalne spremembe** prikaže pripravljene, spremenjene in nesledene datoteke ter zgoraj opisano polje za commit.
+- Commit prikaže bodisi **Commit** — avtorja, committerja, datum, hash, starše, refe, podpis in celotno sporočilo — bodisi **Spremembe**.
+- **Spremembe** našteje spremenjene datoteke kot drevo in diff izbrane datoteke s številkami vrstic; dvoklik odpre okno za primerjavo.
+- Priročni meni kopira hash ali zadevo, razveljavi, naredi cherry-pick, odpre commit na spletu in omeji seznam na **Samo trenutna veja**.
+
 ## Zgodovina, blame in splet
 
 - **Zgodovina…** našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (`● main`,

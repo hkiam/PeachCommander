@@ -40,7 +40,24 @@ final class GitPanelView: NSView {
     private let refreshButton = NSButton()
     private let pullButton = NSButton()
     private let pushButton = NSButton()
-    private let busy = NSProgressIndicator()
+    /// Counted: the panel's reload, the Changes tab and the commit actions all share it.
+    private let busy = GitBusyIndicator()
+
+    // Phase 6: the history and what is shown for its selection.
+    private let mainSplit = NSSplitView()
+    private var history: GitHistoryView!
+    private var commitDetail: GitCommitDetailView!
+    private var changes: GitChangesView!
+    private let workingCopyPane = NSStackView()
+    private let commitPane = NSStackView()
+    private let detailTabs = NSSegmentedControl(labels: [], trackingMode: .selectOne, target: nil, action: nil)
+    private var commits: [PluginGit.Commit] = []
+    private var limit = GitPanelView.pageSize
+    /// Bumped by every reload; a result from an older one is dropped. Without it a slow `log` of the
+    /// repository the cursor just left could land after the new one's and put the old repository back.
+    private var generation = 0
+    private var showingWorkingCopy = true
+    private static let pageSize = 300
 
     /// Host services, copied — the host's is a stack value and must not be kept by pointer.
     private let services: PcHostServices
@@ -64,7 +81,9 @@ final class GitPanelView: NSView {
             let directory = key == "cursorPath" ? (value as NSString).deletingLastPathComponent : value
             guard directory != self.directory else { return }
             self.directory = directory
-            reload()
+            // A folder change inside the same repository does not move its history: the status is
+            // re-read, the log (and how far "Load more" went) is kept.
+            reload(history: false)
         case "theme":
             applyTheme()
         default:
@@ -104,6 +123,9 @@ final class GitPanelView: NSView {
         buttons.orientation = .horizontal
         buttons.spacing = 4
         buttons.distribution = .fillEqually
+        // The split view below takes the panel's height, not this row: equal hugging let AppKit hand a
+        // quarter of the panel to a row of buttons.
+        buttons.setHuggingPriority(.defaultHigh, for: .vertical)
 
         outline.headerView = nil
         outline.rowHeight = 18
@@ -144,17 +166,90 @@ final class GitPanelView: NSView {
         busy.controlSize = .small
         busy.isDisplayedWhenStopped = false
 
-        let commitRow = NSStackView(views: [messageField, amendCheckbox, commitButton, busy])
+        let commitRow = NSStackView(views: [messageField, amendCheckbox, commitButton])
         commitRow.orientation = .horizontal
         commitRow.spacing = 6
         messageField.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        let stack = NSStackView(views: [header, buttons, scroll, commitRow])
+        // The working copy: the staging list and the commit box, shown when the history's first row —
+        // "Local changes" — is selected (phase 6).
+        workingCopyPane.setViews([scroll, commitRow], in: .top)
+        workingCopyPane.orientation = .vertical
+        workingCopyPane.alignment = .width
+        workingCopyPane.distribution = .fill
+        scroll.setContentHuggingPriority(.init(200), for: .vertical)
+        workingCopyPane.spacing = 6
+        for child in [scroll, commitRow] as [NSView] {
+            child.widthAnchor.constraint(equalTo: workingCopyPane.widthAnchor).isActive = true
+        }
+
+        // A commit: its details or its changes, one at a time.
+        history = GitHistoryView(services: services, busy: busy)
+        commitDetail = GitCommitDetailView(theme: theme)
+        changes = GitChangesView(services: services, busy: busy)
+        detailTabs.segmentCount = 2
+        detailTabs.setLabel(L("Commit"), forSegment: 0)
+        detailTabs.setLabel(L("Changes"), forSegment: 1)
+        detailTabs.selectedSegment = 1
+        detailTabs.controlSize = .small
+        detailTabs.font = .systemFont(ofSize: 11)
+        detailTabs.target = self
+        detailTabs.action = #selector(detailTabChanged)
+        commitPane.setViews([detailTabs, commitDetail, changes], in: .top)
+        commitPane.orientation = .vertical
+        commitPane.alignment = .centerX
+        commitPane.distribution = .fill          // the tab's content takes the height, see `stack` below
+        commitPane.spacing = 4
+        detailTabs.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        commitDetail.setContentHuggingPriority(.init(200), for: .vertical)
+        changes.setContentHuggingPriority(.init(200), for: .vertical)
+        for child in [commitDetail, changes] as [NSView] {
+            child.widthAnchor.constraint(equalTo: commitPane.widthAnchor).isActive = true
+        }
+        commitDetail.isHidden = true
+        commitDetail.onSelectCommit = { [weak self] hash in self?.history.select(hash: hash) }
+        commitPane.isHidden = true
+
+        let detail = NSStackView(views: [workingCopyPane, commitPane])
+        detail.orientation = .vertical
+        detail.alignment = .width
+        detail.distribution = .fill
+        for child in [workingCopyPane, commitPane] as [NSView] {
+            child.widthAnchor.constraint(equalTo: detail.widthAnchor).isActive = true
+        }
+        history.onSelectionChange = { [weak self] selection in self?.show(selection) }
+        history.onLoadMore = { [weak self] in
+            guard let self else { return }
+            self.limit += Self.pageSize
+            self.reload()
+        }
+        history.onChanged = { [weak self] in self?.refreshNow() }
+        history.onScopeChange = { [weak self] in self?.reload() }
+        mainSplit.isVertical = false
+        mainSplit.dividerStyle = .thin
+        mainSplit.addArrangedSubview(history)
+        mainSplit.addArrangedSubview(detail)
+        mainSplit.translatesAutoresizingMaskIntoConstraints = false
+        mainSplit.setContentHuggingPriority(.init(200), for: .vertical)
+
+        // The spinner beside the header, where it is on screen whatever the detail area shows — in the
+        // commit row it was hidden whenever a commit rather than the working copy was selected.
+        let headerRow = NSStackView(views: [header, busy])
+        headerRow.orientation = .horizontal
+        headerRow.spacing = 6
+        headerRow.setHuggingPriority(.defaultHigh, for: .vertical)      // as the buttons, see there
+        header.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        header.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let stack = NSStackView(views: [headerRow, buttons, mainSplit])
         stack.orientation = .vertical
         stack.alignment = .width
+        // `.fill`, not the default gravity areas: those leave the leftover height empty below the split
+        // view instead of giving it to the view that hugs least.
+        stack.distribution = .fill
         // Same as the log window: `.width` alone does not stretch a scroll or split view inside a stack,
         // so the ones that should fill the window say so (F-419).
-        for child in [header, buttons, scroll, commitRow] as [NSView] {
+        for child in [headerRow, buttons, mainSplit] as [NSView] {
             child.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -16).isActive = true
         }
         stack.spacing = 6
@@ -167,14 +262,20 @@ final class GitPanelView: NSView {
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
             stack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            // A container may legitimately be zero-sized while hidden, so this is a preference rather
-            // than a rule: a required height against a collapsed dock is an Auto Layout conflict
-            // (CONVENTIONS.md).
-            scroll.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor, multiplier: 0.4),
         ])
-        for constraint in constraints where constraint.firstItem === scroll {
-            constraint.priority = .init(999)
-        }
+        // Preferences, not rules: a container may legitimately be zero-sized while hidden, and a required
+        // height against a collapsed dock is an Auto Layout conflict (CONVENTIONS.md). The history takes
+        // two fifths of the split, the detail the rest; the divider still drags.
+        let historyShare = history.heightAnchor.constraint(equalTo: mainSplit.heightAnchor, multiplier: 0.4)
+        historyShare.priority = .init(500)
+        let historyMinimum = history.heightAnchor.constraint(greaterThanOrEqualToConstant: 80)
+        historyMinimum.priority = .init(999)
+        let detailMinimum = detail.heightAnchor.constraint(greaterThanOrEqualToConstant: 120)
+        detailMinimum.priority = .init(999)
+        let fill = mainSplit.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor, multiplier: 0.6)
+        fill.priority = .init(999)
+        NSLayoutConstraint.activate([historyShare, historyMinimum, detailMinimum, fill])
+        mainSplit.setHoldingPriority(.init(260), forSubviewAt: 0)
         applyTheme()
     }
 
@@ -200,6 +301,9 @@ final class GitPanelView: NSView {
         messageField.drawsBackground = true
         amendCheckbox.contentTintColor = theme.text
         outline.reloadData()
+        history?.applyTheme(theme)
+        commitDetail?.applyTheme(theme)
+        changes?.applyTheme(theme)
     }
 
     // MARK: - Loading
@@ -232,23 +336,54 @@ final class GitPanelView: NSView {
     }
 
     /// Re-read the repository off the main thread and rebuild the list on it.
-    private func reload() {
+    ///
+    /// `history: false` keeps the loaded log when the repository is the same one — a folder change inside
+    /// it. Another repository always gets its history read, from the first page.
+    private func reload(history: Bool = true) {
         let directory = self.directory.isEmpty ? hostDirectory() : self.directory
         self.directory = directory
         busy.startAnimation(nil)
+        generation += 1
+        let generation = self.generation
+        let previousRoot = root, kept = self.commits
+        let pageLimit = self.limit, firstPage = Self.pageSize, all = !self.history.onlyCurrentBranch
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let located = PluginGitRepo.locate(directory)
-            let status = located.flatMap { PluginGitRepo.status(root: $0.root) }
+            let sameRepo = located?.root == previousRoot
+            let limit = sameRepo ? pageLimit : firstPage
+            // Status and log are independent, so they run side by side; the log of every branch is the
+            // slower of the two on a large repository.
+            var status: PluginGit.RepoStatus?
+            var commits: [PluginGit.Commit] = []
+            let group = DispatchGroup()
+            if let located {
+                DispatchQueue.global(qos: .userInitiated).async(group: group) {
+                    status = PluginGitRepo.status(root: located.root)
+                }
+                if history || !sameRepo {
+                    let arguments = ["-C", located.root] + PluginGit.logArguments(limit: limit, all: all)
+                    commits = PluginGit.parseLog(PluginGitRepo.run(arguments).out)
+                } else {
+                    commits = kept
+                }
+            }
+            group.wait()
             DispatchQueue.main.async {
-                guard let self else { return }
-                self.busy.stopAnimation(nil)
+                self?.busy.stopAnimation(nil)
+                guard let self, self.generation == generation else { return }
+                self.limit = limit
                 self.root = located?.root
                 self.status = status
                 self.groups = status.map { PluginGit.grouped($0) } ?? []
+                self.commits = commits
                 self.outline.reloadData()
                 self.outline.expandItem(nil, expandChildren: true)
+                self.history.root = located?.root
+                self.history.update(commits: commits, hasRepo: located != nil,
+                                    changeCount: self.changeCount, hasMore: commits.count >= limit)
                 self.updateHeader()
                 self.updateButtons()
+                self.applyAutomationProbe()
             }
         }
     }
@@ -272,19 +407,112 @@ final class GitPanelView: NSView {
         if status.ahead > 0 || status.behind > 0 {
             text += String(format: "  ↑%lld ↓%lld", status.ahead, status.behind)
         }
-        let changes = status.files.values.filter { !PluginGit.sections(for: $0).isEmpty }.count
-        text += changes == 0
+        text += changeCount == 0
             ? "  ·  " + L("Working tree clean.")
-            : "  ·  " + String(format: L("%lld change(s)"), changes)
+            : "  ·  " + String(format: L("%lld change(s)"), changeCount)
         header.stringValue = text
+    }
+
+    private var changeCount: Int {
+        status?.files.values.filter { !PluginGit.sections(for: $0).isEmpty }.count ?? 0
+    }
+
+    // MARK: - The detail area (phase 6)
+
+    private var probeApplied = false
+
+    /// Verification only: `PC_GIT_PANEL_ROW=<n>` selects history row n (0 is the working copy) and
+    /// `PC_GIT_PANEL_TAB=commit|changes` picks the tab, once, after the first load — so an automation run
+    /// can lay out the commit views, which no script can reach with a click. `PC_GIT_PANEL_ACTIVATE=1`
+    /// then does what a double-click on that row does ("Load more" on the last row). Read from the environment
+    /// and from the argument domain, because the VM harness passes a scenario's variables as arguments.
+    private func applyAutomationProbe() {
+        guard !probeApplied, root != nil else { return }
+        probeApplied = true
+        func probe(_ key: String) -> String? {
+            if let value = ProcessInfo.processInfo.environment[key], !value.isEmpty { return value }
+            let value = UserDefaults.standard.string(forKey: key)
+            return (value?.isEmpty ?? true) ? nil : value
+        }
+        if let tab = probe("PC_GIT_PANEL_TAB") { detailTabs.selectedSegment = tab == "commit" ? 0 : 1 }
+        if let row = probe("PC_GIT_PANEL_ROW").flatMap(Int.init) { history.selectRow(row) }
+        if probe("PC_GIT_PANEL_ACTIVATE") != nil { history.activateRow() }
+        // `PC_GIT_PANEL_DUMP=<file>`: what the panel shows, written once the selected commit's changes
+        // have had time to load — the VM scenario's report. A layout dump alone cannot say which pane
+        // is on screen or what the history lists, and both have been wrong with zero conflicts.
+        if let path = probe("PC_GIT_PANEL_DUMP") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                guard let self else { return }
+                try? self.automationReport().write(toFile: path, atomically: true, encoding: .utf8)
+            }
+        }
+    }
+
+    private func automationReport() -> String {
+        layoutSubtreeIfNeeded()
+        var lines = ["root=\(root.map { ($0 as NSString).lastPathComponent } ?? "<none>")"]
+        switch history.selection {
+        case .workingCopy?: lines.append("selection=working-copy")
+        case .commit(let commit)?: lines.append("selection=\(commit.subject)")
+        case nil: lines.append("selection=<none>")
+        }
+        lines.append("workingCopyShown=\(!workingCopyPane.isHidden)")
+        lines.append("tab=\(detailTabs.selectedSegment == 0 ? "commit" : "changes")")
+        lines += history.automationRows()
+        if !commitPane.isHidden, detailTabs.selectedSegment == 1 { lines += changes.automationSummary() }
+        // The three layout defects this panel has had, each as a yes/no: the split view stopping short of
+        // the bottom (gravity areas), and the header or the button row swallowing height (equal hugging).
+        let buttonsHeight = stageButton.superview?.frame.height ?? 0
+        let headerHeight = header.superview?.frame.height ?? 0
+        lines.append("splitFillsPanel=\(abs(mainSplit.frame.minY - 8) < 1.5)")
+        lines.append("buttonsCompact=\(buttonsHeight > 0 && buttonsHeight <= 32)")
+        lines.append("headerCompact=\(headerHeight > 0 && headerHeight <= 32)")
+        lines.append("historyHeight=\(Int(history.frame.height)) detailHeight=\(Int(mainSplit.frame.height - history.frame.height))")
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Follow the history's selection: the working copy, or one commit's details or changes.
+    private func show(_ selection: GitHistoryView.Selection?) {
+        switch selection {
+        case .workingCopy?, nil:
+            showingWorkingCopy = true
+            workingCopyPane.isHidden = false
+            commitPane.isHidden = true
+        case .commit(let commit)?:
+            showingWorkingCopy = false
+            workingCopyPane.isHidden = true
+            commitPane.isHidden = false
+            showDetail(of: commit)
+        }
+        updateButtons()
+    }
+
+    @objc private func detailTabChanged() {
+        if case .commit(let commit)? = history.selection { showDetail(of: commit) }
+    }
+
+    /// Only the visible tab loads: the Changes tab runs git twice per commit, and arrowing through the
+    /// history should not pay for a tab nobody is looking at.
+    private func showDetail(of commit: PluginGit.Commit) {
+        guard let root else { return }
+        let onChanges = detailTabs.selectedSegment == 1
+        commitDetail.isHidden = onChanges
+        changes.isHidden = !onChanges
+        if onChanges {
+            changes.show(commit: commit, root: root)
+        } else {
+            commitDetail.show(commit: commit, root: root)
+        }
     }
 
     private func updateButtons() {
         let selected = selectedFiles()
         let hasRepo = root != nil
-        stageButton.isEnabled = hasRepo && !selected.isEmpty
-        unstageButton.isEnabled = hasRepo && selected.contains { $0.file.isStaged }
-        discardButton.isEnabled = hasRepo && !selected.isEmpty
+        // Staging acts on the working copy's list, which is only on screen while its row is selected.
+        let staging = hasRepo && showingWorkingCopy
+        stageButton.isEnabled = staging && !selected.isEmpty
+        unstageButton.isEnabled = staging && selected.contains { $0.file.isStaged }
+        discardButton.isEnabled = staging && !selected.isEmpty
         refreshButton.isEnabled = hasRepo
         commitButton.isEnabled = hasRepo && (amendCheckbox.state == .on || anythingStaged)
         messageField.isEnabled = hasRepo

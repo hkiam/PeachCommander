@@ -34,6 +34,17 @@ lassen sich abbrechen.
 
 Committet wird der *Index*, nicht `git commit -a`: was Sie bereitgestellt haben, wird committet.
 
+## Historie im Panel
+
+Unter seinen Schaltflächen zeigt das Panel die Historie aller Branches, Remote-Branches und Tags als gezeichneten Graphen, mit der Arbeitskopie als erster Zeile. Der Bereich darunter folgt der Auswahl:
+
+![Das Git-Panel mit dem Branch-Graphen, dem ausgewählten Merge-Commit und seiner geänderten Datei samt Inline-Diff](screenshots/git-panel.png)
+
+- **Lokale Änderungen** zeigt die gestagten, geänderten und nicht verfolgten Dateien und das oben beschriebene Commit-Feld.
+- Ein Commit zeigt entweder **Commit** — Autor, Committer, Datum, Hash, Eltern, Refs, Signatur und die ganze Nachricht — oder **Änderungen**.
+- **Änderungen** listet die berührten Dateien als Baum und den Diff der gewählten Datei mit Zeilennummern; ein Doppelklick öffnet das Vergleichsfenster.
+- Das Kontextmenü kopiert Hash oder Betreff, nimmt zurück, cherry-pickt, öffnet den Commit im Browser und beschränkt die Liste auf **Nur der aktuelle Branch**.
+
 ## Historie, Blame und das Web
 
 - **Historie…** listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (`● main`,

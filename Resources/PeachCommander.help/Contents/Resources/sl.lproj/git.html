@@ -31,6 +31,15 @@ zato ga lahko izklopite ali odstranite v <strong>Nastavitve ▸ Vtičniki…</st
 sporočilo in pritisnite <strong>Objavi</strong> — z <strong>Popravi</strong> se sprememba zloži v prejšnjo objavo. <strong>Potegni</strong> in
 <strong>Potisni</strong> sta zraven, tam, kjer objava tako ali tako poteka; oba kažeta napredek in ju je mogoče prekiniti.</p>
 <p>Objavi se <em>kazalo</em>, ne <code>git commit -a</code>: objavljeno je tisto, kar ste pripravili.</p>
+<h2 id="zgodovina-v-plosci">Zgodovina v plošči</h2>
+<p>Pod gumbi plošča prikazuje zgodovino vseh vej, oddaljenih vej in oznak kot narisan graf, z delovno kopijo v prvi vrstici. Območje pod njo sledi izbiri:</p>
+<p><img alt="Plošča Git z grafom vej, izbranim commitom združitve in njegovo spremenjeno datoteko z vgrajenim diffom" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Lokalne spremembe</strong> prikaže pripravljene, spremenjene in nesledene datoteke ter zgoraj opisano polje za commit.</li>
+<li>Commit prikaže bodisi <strong>Commit</strong> — avtorja, committerja, datum, hash, starše, refe, podpis in celotno sporočilo — bodisi <strong>Spremembe</strong>.</li>
+<li><strong>Spremembe</strong> našteje spremenjene datoteke kot drevo in diff izbrane datoteke s številkami vrstic; dvoklik odpre okno za primerjavo.</li>
+<li>Priročni meni kopira hash ali zadevo, razveljavi, naredi cherry-pick, odpre commit na spletu in omeji seznam na <strong>Samo trenutna veja</strong>.</li>
+</ul>
 <h2 id="zgodovina-blame-in-splet">Zgodovina, blame in splet</h2>
 <ul>
 <li><strong>Zgodovina…</strong> našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (<code>● main</code>,

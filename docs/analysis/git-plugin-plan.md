@@ -333,6 +333,38 @@ and pull gained from it. There is deliberately no cancel for the run: git's sequ
 safely mid-flight, and Abort is the operation that undoes what it leaves behind. Scope it to *the commits ahead of the upstream*, with squash / fixup / drop /
 reorder / reword — "clean up what I have not pushed yet", not a general rebase editor.
 
+### Phase 6 — The panel as a client · **built**
+
+Asked for: the panel as the place a Fork or SourceTree user works from, not a status list with a
+separate log window beside it. Built:
+
+* **History of every branch in the panel** (`GitHistoryView`): `log --branches --remotes --tags HEAD
+  --decorate=full` — not `--all`, which also walks the stash's internal "index on …" commits and
+  `refs/notes` — the graph
+  *drawn* — lanes, nodes, merges bending out and branches bending back — from `PluginGit.graphLines`,
+  which is where the geometry is tested. Ref badges per kind; `--decorate=full` because the short form
+  cannot tell a local `feature/x` from `origin/main`. "Only the current branch" in the context menu.
+* **The working copy is the first row** ("Local changes (n)"). Selecting it shows the existing staging
+  list and commit box — moved, not rewritten — so the panel has one list and one selection.
+* **Commit | Changes** below the history for a commit. Commit: author and committer apart, hash, parents
+  as links, refs, `%G?` signature verdict, the full message. Changes: the touched files as a tree
+  (single-child folders collapsed) and the selected file's diff, inline.
+* **The inline diff relaxes §3.1's "no second diff view"** — deliberately. It is git's own unified diff,
+  numbered and tinted (`PluginGit.parseUnifiedDiff`); nothing here computes a diff, so the concern that
+  rule was about — a second diff *implementation* with its own defects — does not arise. The host's
+  compare window stays one double-click away for anything long or subtle.
+* `gitFitColumns` (GitTable.swift) and `GitCommitActions` are shared with the log window.
+* Paths come from `show --name-status -z`: without `-z` git C-quotes every path outside ASCII and the
+  tree showed `"Gr\303\274\303\237e.txt"` with an empty diff — the defect `parseStatus` had already
+  fixed for the status. A rename is compared under its old name in the parent, a deletion against an
+  empty file.
+
+Next, in the order of the feature comparison made for this phase: a `PATH` that reaches Homebrew's
+`git-lfs`, `gpg` and credential helpers (to be reproduced first — a Finder-launched app inherits
+`/usr/bin:/bin:…`); the full history context menu (checkout a commit, merge, rebase onto, branch and
+tag here, reset); recent commit messages; stashes in the graph; hunk and line staging in the working
+copy's diff; a reflog view; remotes and submodule actions; init, clone and recent repositories.
+
 ### Deliberately out of scope
 
 Still out, after the re-examination in phase 5: a **merge editor** with base and result panes (5a

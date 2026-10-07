@@ -2946,7 +2946,14 @@ extension MainWindowController {
             for sub in view.subviews {
                 let f = sub.frame
                 text += String(repeating: "  ", count: depth)
-                    + "\(type(of: sub))=\(Int(f.width))x\(Int(f.height))@\(Int(f.minX)),\(Int(f.minY))\n"
+                    + "\(type(of: sub))=\(Int(f.width))x\(Int(f.height))@\(Int(f.minX)),\(Int(f.minY))"
+                    + (sub.isHidden ? " hidden" : "")
+                // A table's frame can follow the window while its columns do not, so the frame
+                // alone cannot see "the window grew and the last column stayed where it was".
+                if let table = sub as? NSTableView {
+                    text += " columns=" + table.tableColumns.map { String(Int($0.width)) }.joined(separator: ",")
+                }
+                text += "\n"
                 if depth < maxDepth { walk(sub, depth + 1) }
             }
         }

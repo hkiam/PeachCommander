@@ -33,6 +33,17 @@ incheckningen ändå sker; båda visar förlopp och kan avbrytas.
 
 Det är *indexet* som checkas in, inte `git commit -a`: det du har köat är det som checkas in.
 
+## Historik i panelen
+
+Under knapparna visar panelen historiken för alla grenar, fjärrgrenar och taggar som en ritad graf, med arbetskopian som första rad. Området nedanför följer markeringen:
+
+![Git-panelen med grengrafen, vald merge-commit och den ändrade filen med inbäddad diff](screenshots/git-panel.png)
+
+- **Lokala ändringar** visar köade, ändrade och ospårade filer och commit-rutan som beskrivs ovan.
+- En commit visar antingen **Commit** — författare, committer, datum, hash, föräldrar, refs, signatur och hela meddelandet — eller **Ändringar**.
+- **Ändringar** visar berörda filer som ett träd och diffen för vald fil med radnummer; ett dubbelklick öppnar jämförelsefönstret.
+- Snabbmenyn kopierar hash eller ämne, återställer, cherry-pickar, öppnar commiten på webben och begränsar listan till **Endast aktuell gren**.
+
 ## Historik, blame och webben
 
 - **Historik…** listar incheckningarna med en filgraf, referenserna som pekar på var och en (`● main`,

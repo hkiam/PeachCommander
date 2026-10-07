@@ -450,6 +450,27 @@ screenshots:
       - contribcmd plugin.git.status
       - wait 2000
 
+  # The panel as a client (phase 6): the history graph of the demo repository — a branch, a merge
+  # and a tag, from demo-content.sh — with the merge selected and its Changes tab open. The row and
+  # the tab are chosen by the panel's own probe, since no script can click a table row.
+  - id: git-panel
+    feature: git
+    alt: "The Git panel with the branch graph, the merge commit selected and its changed file with an inline diff"
+    caption: "Git panel — every branch as a graph, and the selected commit's changes."
+    pages: [git]
+    dark: true
+    settle: 12
+    env:
+      PC_GIT_PANEL_ROW: "1"
+      PC_GIT_PANEL_TAB: "changes"
+    script:
+      - left /Users/admin/pc-demo/Projects/peach-app/src
+      - active l
+      - focus main.swift
+      - wait 500
+      - contribcmd plugin.git.panel.show
+      - wait 3000
+
   - id: uninstaller
     feature: uninstaller
     alt: "The Uninstaller plugin's review window listing an app and its leftover files with sizes"

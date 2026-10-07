@@ -32,6 +32,17 @@ naciśnij **Zatwierdź** — z **Popraw** zmiana zostanie wtopiona w poprzednie 
 
 Zatwierdzany jest *indeks*, nie `git commit -a`: zatwierdzane jest to, co przygotowano.
 
+## Historia w panelu
+
+Pod przyciskami panel pokazuje historię wszystkich gałęzi, gałęzi zdalnych i tagów jako rysowany graf, z kopią roboczą w pierwszym wierszu. Obszar poniżej podąża za zaznaczeniem:
+
+![Panel Git z grafem gałęzi, zaznaczonym commitem scalenia i jego zmienionym plikiem z wbudowanym diffem](screenshots/git-panel.png)
+
+- **Zmiany lokalne** pokazuje pliki przygotowane, zmienione i nieśledzone oraz opisane wyżej pole commita.
+- Commit pokazuje **Commit** — autora, committera, datę, hash, rodziców, refy, podpis i pełny opis — albo **Zmiany**.
+- **Zmiany** wyświetla zmienione pliki jako drzewo i diff wybranego pliku z numerami wierszy; dwukrotne kliknięcie otwiera okno porównania.
+- Menu kontekstowe kopiuje hash lub temat, cofa, robi cherry-pick, otwiera commit w sieci i ogranicza listę do **Tylko bieżąca gałąź**.
+
 ## Historia, blame i sieć
 
 - **Historia…** wypisuje zatwierdzenia z grafem torów, referencje wskazujące na każde z nich (`● main`,

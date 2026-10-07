@@ -177,7 +177,18 @@ if command -v git >/dev/null 2>&1; then
     git init -q
     git config user.email demo@example.com
     git config user.name "Demo User"
-    git add -A && git commit -q -m "Initial commit"
+    git symbolic-ref HEAD refs/heads/main
+    # A small history with a branch, a merge and a tag, so the Git panel's graph has something to
+    # draw. Every file ends up exactly as written above — screenshots show this tree's listing.
+    cp README.md /tmp/pc-readme.full && head -1 /tmp/pc-readme.full > README.md
+    git add README.md src/main.swift && git commit -q -m "Initial commit"
+    git checkout -q -b feature/utils
+    git add src/utils.py && git commit -q -m "Add string helpers"
+    git checkout -q main
+    cp /tmp/pc-readme.full README.md && rm -f /tmp/pc-readme.full
+    git add README.md && git commit -q -m "Describe the app in the README"
+    git merge -q --no-ff -m "Merge branch 'feature/utils'" feature/utils
+    git tag v1.0
     # dirty the tree: modify a tracked file + add an untracked one
     printf '\n// TODO: polish greeting\n' >> src/main.swift
     printf 'print("staged change")\n' > src/new_feature.swift

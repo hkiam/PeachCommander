@@ -31,6 +31,15 @@ Vyberte súbory a použite <strong>Pripraviť</strong>, <strong>Zrušiť prípra
 <strong>Zapísať</strong> — s <strong>Opraviť</strong> sa zmena vloží do predošlého zápisu. <strong>Stiahnuť</strong> a <strong>Odoslať</strong> ležia vedľa, tam,
 kde sa aj tak zapisuje; obe ukazujú postup a dajú sa prerušiť.</p>
 <p>Zapisuje sa <em>index</em>, nie <code>git commit -a</code>: zapíše sa to, čo ste pripravili.</p>
+<h2 id="historia-v-paneli">História v paneli</h2>
+<p>Pod tlačidlami panel ukazuje históriu všetkých vetiev, vzdialených vetiev a tagov ako kreslený graf, s pracovnou kópiou v prvom riadku. Oblasť pod ním sleduje výber:</p>
+<p><img alt="Panel Git s grafom vetiev, vybraným merge commitom a jeho zmeneným súborom s vloženým diffom" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Lokálne zmeny</strong> ukazuje pripravené, zmenené a nesledované súbory a pole pre commit opísané vyššie.</li>
+<li>Commit ukazuje buď <strong>Commit</strong> — autora, committera, dátum, hash, rodičov, refy, podpis a celú správu — alebo <strong>Zmeny</strong>.</li>
+<li><strong>Zmeny</strong> vypíše dotknuté súbory ako strom a diff vybraného súboru s číslami riadkov; dvojklik otvorí okno porovnania.</li>
+<li>Kontextová ponuka kopíruje hash alebo predmet, vracia, robí cherry-pick, otvára commit na webe a obmedzuje zoznam na <strong>Len aktuálna vetva</strong>.</li>
+</ul>
 <h2 id="historia-blame-a-web">História, blame a web</h2>
 <ul>
 <li><strong>História…</strong> vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (<code>● main</code>, <code>↗ origin/main</code>,

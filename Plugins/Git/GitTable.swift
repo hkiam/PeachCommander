@@ -86,3 +86,82 @@ func gitCopyToClipboard(_ text: String) {
     pasteboard.clearContents()
     pasteboard.setString(text, forType: .string)
 }
+
+/// Give a list's width to its flexible columns in their declared proportions, so the list always fills
+/// its pane. `preferred` names the flexible columns and their weights; any other column keeps its width,
+/// and a hidden one counts for nothing.
+///
+/// AppKit's autoresizing styles did not do this: measured, a table already wider than its clip view — the
+/// log window's commit list opens 824 points wide in a 442-point pane — is left alone when the pane grows,
+/// so in a 1373-point window it was still 824 inside 729, the date column cut off at the edge; and
+/// `sizeToFit` under `.uniform` shares space *equally*, which made the date column as wide as the subject.
+/// Below the minimums the list scrolls horizontally rather than clipping.
+///
+/// Call it from the clip view's own frame change, not from the container's `layout()`: the scroll view
+/// tiles after its container has laid out, so there the clip still had its old width, and a stale table
+/// frame turned the difference into columns pinned at their minimums. `tile()` first for the same
+/// reason — a column width set without it leaves the frame from before. The table's
+/// `columnAutoresizingStyle` must be `.noColumnAutoresizing`, or AppKit fights it.
+@MainActor
+func gitFitColumns(_ table: NSTableView, preferred: [NSUserInterfaceItemIdentifier: CGFloat]) {
+    guard let clip = table.enclosingScrollView?.contentView, clip.bounds.width > 0 else { return }
+    table.tile()
+    // What the columns occupy, not the table's frame: without autoresizing the frame never gets narrower
+    // than the clip, so it cannot say that the columns stop short of the edge. The leading inset is
+    // counted once more for the trailing one.
+    let visible = table.tableColumns.indices.filter { !table.tableColumns[$0].isHidden }
+    guard let first = visible.first, let last = visible.last else { return }
+    let used = table.rect(ofColumn: last).maxX + table.rect(ofColumn: first).minX
+    let delta = clip.bounds.width - used
+    guard abs(delta) > 0.5 else { return }
+    let flexible = table.tableColumns.filter { !$0.isHidden && preferred[$0.identifier] != nil }
+    var target = flexible.reduce(0) { $0 + $1.width } + delta
+    // A column whose share falls below its minimum takes the minimum, and the rest is shared again among
+    // the others — otherwise the clamped ones overflow the pane while the subject stays wide.
+    var open = flexible
+    var settled = false
+    while !settled {
+        settled = true
+        let weight = open.reduce(0) { $0 + (preferred[$1.identifier] ?? 0) }
+        guard weight > 0 else { break }
+        for column in open where target * (preferred[column.identifier] ?? 0) / weight < column.minWidth {
+            column.width = column.minWidth
+            target -= column.minWidth
+            open.removeAll { $0 === column }
+            settled = false
+        }
+        if settled {
+            for column in open {
+                column.width = (target * (preferred[column.identifier] ?? 0) / weight).rounded(.down)
+            }
+        }
+    }
+}
+
+/// Dates as the plugin's lists and detail views show them: medium date, short time, the reader's locale.
+@MainActor
+let gitDateFormatter: DateFormatter = {
+    let f = DateFormatter()
+    f.dateStyle = .medium
+    f.timeStyle = .short
+    return f
+}()
+
+/// A spinner that several loads can share: it spins while any of them is running. Starting and stopping a
+/// plain NSProgressIndicator is not counted, so the first load to finish stopped it while the panel's
+/// Changes tab was still reading its diff. Every start must be paired with exactly one stop.
+@MainActor
+final class GitBusyIndicator: NSProgressIndicator {
+    private var running = 0
+
+    override func startAnimation(_ sender: Any?) {
+        running += 1
+        if running == 1 { super.startAnimation(sender) }
+    }
+
+    override func stopAnimation(_ sender: Any?) {
+        guard running > 0 else { return }
+        running -= 1
+        if running == 0 { super.stopAnimation(sender) }
+    }
+}

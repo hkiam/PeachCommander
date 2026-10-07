@@ -306,6 +306,190 @@ final class PluginGitTests: XCTestCase {
         XCTAssertTrue(PluginGit.graphText(rows[3], width: 2).contains("┘"))
     }
 
+    // MARK: - The panel's history (phase 6)
+
+    func testAllHistoryNamesTheRefsItWalks() {
+        let args = PluginGit.logArguments(limit: 10, all: true)
+        for ref in ["--branches", "--remotes", "--tags", "HEAD"] { XCTAssertTrue(args.contains(ref), ref) }
+        XCTAssertFalse(args.contains("--all"),
+                       "--all walks refs/stash, whose internal index and untracked commits are not history")
+        XCTAssertFalse(PluginGit.logArguments(limit: 10).contains("--branches"))
+    }
+
+    func testEveryLogAsksForFullDecoration() {
+        // The short form cannot tell a local feature/x from origin/main — with or without `all`.
+        XCTAssertTrue(PluginGit.logArguments(limit: 10).contains("--decorate=full"))
+        XCTAssertTrue(PluginGit.logArguments(limit: 10, all: true).contains("--decorate=full"))
+        XCTAssertTrue(PluginGit.logArguments(limit: 10, path: "a.swift").contains("--decorate=full"))
+    }
+
+    func testFullDecorationSaysWhatEachRefIs() {
+        let refs = PluginGit.parseRefs(
+            "HEAD -> refs/heads/main, refs/remotes/origin/main, refs/heads/feature/x, tag: refs/tags/v1.0, refs/stash")
+        XCTAssertEqual(refs, [
+            .init(name: "main", kind: .head), .init(name: "origin/main", kind: .remote),
+            .init(name: "feature/x", kind: .branch), .init(name: "v1.0", kind: .tag),
+            .init(name: "stash", kind: .stash),
+        ])
+        // The short form still parses as before.
+        XCTAssertEqual(PluginGit.parseRefs("HEAD -> main, tag: v1"),
+                       [.init(name: "main", kind: .head), .init(name: "v1", kind: .tag)])
+    }
+
+    /// A linear history: one lane, joined above and below every node except at the two ends.
+    func testGraphLinesOfALinearHistory() {
+        let commits = PluginGit.parseLog(
+            logRecord("a", "a", "b", "A", "3", "third")
+            + logRecord("b", "b", "c", "A", "2", "second")
+            + logRecord("c", "c", "", "A", "1", "first"))
+        let drawn = PluginGit.graphLines(PluginGit.graph(commits))
+        XCTAssertEqual(drawn.map(\.node), [0, 0, 0])
+        XCTAssertEqual(drawn[0].lines, [.init(from: 0, to: 0, upper: false, color: 0)],
+                       "the newest commit has nothing above it")
+        XCTAssertEqual(drawn[1].lines, [.init(from: 0, to: 0, upper: true, color: 0),
+                                        .init(from: 0, to: 0, upper: false, color: 0)])
+        XCTAssertEqual(drawn[2].lines, [.init(from: 0, to: 0, upper: true, color: 0)],
+                       "the root has no parent, so nothing below it")
+    }
+
+    /// A merge bends out to its second parent's lane, the branch runs in that lane, and the lane bends
+    /// back into the base where the two converge.
+    func testGraphLinesOfAMerge() {
+        let commits = PluginGit.parseLog(
+            logRecord("m", "m", "a b", "A", "5", "merge")
+            + logRecord("a", "a", "base", "A", "4", "on main")
+            + logRecord("b", "b", "base", "A", "3", "on branch")
+            + logRecord("base", "base", "", "A", "1", "base"))
+        let drawn = PluginGit.graphLines(PluginGit.graph(commits))
+        XCTAssertTrue(drawn[0].lines.contains(.init(from: 0, to: 1, upper: false, color: 1)),
+                      "the merge reaches out to lane 1 below its node")
+        XCTAssertTrue(drawn[1].lines.contains(.init(from: 1, to: 1, upper: true, color: 1))
+                      && drawn[1].lines.contains(.init(from: 1, to: 1, upper: false, color: 1)),
+                      "lane 1 passes the main-line commit straight through")
+        XCTAssertEqual(drawn[2].node, 1)
+        XCTAssertTrue(drawn[3].lines.contains(.init(from: 1, to: 0, upper: true, color: 1)),
+                      "the branch lane bends into the base it converges on")
+        XCTAssertFalse(drawn[3].lines.contains { !$0.upper }, "nothing continues below the root")
+    }
+
+    func testNameStatusIsAskedForUnquoted() {
+        XCTAssertTrue(PluginGit.nameStatusArguments("abc").contains("-z"),
+                      "without -z git C-quotes every path outside ASCII")
+        XCTAssertEqual(PluginGit.nameStatusArguments("abc").last, "abc")
+    }
+
+    func testParseNameStatusKeepsRenamesOldPath() {
+        let files = PluginGit.parseNameStatus("M\0README.md\0R100\0old/name.txt\0new/name.txt\0A\0docs/Grüße.md\0")
+        XCTAssertEqual(files, [
+            .init(status: "M", path: "README.md"),
+            .init(status: "R", path: "new/name.txt", oldPath: "old/name.txt"),
+            .init(status: "A", path: "docs/Grüße.md"),
+        ])
+    }
+
+    func testParseDetails() {
+        let us = "\u{1F}"
+        let out = ["abc", "p1 p2", "Ada", "ada@x", "1700000000", "Bob", "bob@x", "1700000100",
+                   "HEAD -> refs/heads/main", "G", "Subject\n\nBody line\n"].joined(separator: us)
+        let details = PluginGit.parseDetails(out)
+        XCTAssertEqual(details?.parents, ["p1", "p2"])
+        XCTAssertEqual(details?.committerEmail, "bob@x")
+        XCTAssertEqual(details?.commitDate, Date(timeIntervalSince1970: 1700000100))
+        XCTAssertEqual(details?.refs, [.init(name: "main", kind: .head)])
+        XCTAssertEqual(details?.signature, "G")
+        XCTAssertEqual(details?.message, "Subject\n\nBody line")
+        XCTAssertNil(PluginGit.parseDetails(""))
+    }
+
+    func testFileTreeCollapsesSingleChildFoldersAndPutsFoldersFirst() {
+        let files = ["services/cockpit/app/aktionen/datenbank.py", "services/cockpit/app/auth.py",
+                     "services/cockpit/tests/conftest.py", "README.md"]
+            .map { PluginGit.ChangedFile(status: "M", path: $0) }
+        let tree = PluginGit.fileTree(files)
+        XCTAssertEqual(tree.map(\.name), ["services/cockpit", "README.md"])
+        let cockpit = tree[0]
+        XCTAssertEqual(cockpit.path, "services/cockpit")
+        XCTAssertEqual(cockpit.children.map(\.name), ["app", "tests"])
+        XCTAssertEqual(cockpit.children[0].children.map(\.name), ["aktionen", "auth.py"],
+                       "a folder before the files beside it")
+        XCTAssertEqual(cockpit.children[0].children[0].children.first?.file?.path,
+                       "services/cockpit/app/aktionen/datenbank.py")
+    }
+
+    func testParseUnifiedDiffNumbersBothSides() {
+        let diff = """
+        diff --git a/f.py b/f.py
+        index 1..2 100644
+        --- a/f.py
+        +++ b/f.py
+        @@ -31,3 +31,3 @@ import threading
+         keep
+        -import pymssql
+        +from x import y
+         tail
+        \\ No newline at end of file
+        """
+        let (lines, truncated) = PluginGit.parseUnifiedDiff(diff)
+        XCTAssertFalse(truncated)
+        XCTAssertEqual(lines.map(\.kind), [.hunk, .context, .removed, .added, .context, .meta],
+                       "the header lines before the hunk are not shown")
+        XCTAssertEqual(lines[1].oldLine, 31); XCTAssertEqual(lines[1].newLine, 31)
+        XCTAssertEqual(lines[2].oldLine, 32); XCTAssertNil(lines[2].newLine)
+        XCTAssertEqual(lines[3].newLine, 32); XCTAssertEqual(lines[3].text, "from x import y")
+        XCTAssertEqual(lines[4].oldLine, 33); XCTAssertEqual(lines[4].newLine, 33)
+    }
+
+    func testParseUnifiedDiffReportsBinaryAndCutsLongDiffs() {
+        let binary = PluginGit.parseUnifiedDiff("diff --git a/x b/x\nBinary files a/x and b/x differ\n")
+        XCTAssertEqual(binary.lines.map(\.kind), [.binary])
+        let long = "@@ -1,0 +1,10 @@\n" + (1...10).map { "+line \($0)" }.joined(separator: "\n")
+        let cut = PluginGit.parseUnifiedDiff(long, limit: 4)
+        XCTAssertTrue(cut.truncated)
+        XCTAssertEqual(cut.lines.count, 4)
+        // Exactly at the limit, with git's trailing newline: nothing was cut, so nothing is reported.
+        let exact = PluginGit.parseUnifiedDiff("@@ -1,0 +1,3 @@\n+a\n+b\n+c\n", limit: 4)
+        XCTAssertFalse(exact.truncated)
+        XCTAssertEqual(exact.lines.count, 4)
+    }
+
+    /// The real thing: a commit that touches a file with an umlaut in its name, read through git.
+    func testNameStatusOfANonASCIIPathAgainstRealGit() throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        let executable = try XCTUnwrap(found, "no git on this machine")
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        @discardableResult
+        func git(_ arguments: [String]) throws -> String {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", dir.path] + arguments
+            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
+            var environment = ProcessInfo.processInfo.environment
+            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+            environment["GIT_CONFIG_NOSYSTEM"] = "1"
+            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
+            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+            process.environment = environment
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return String(decoding: data, as: UTF8.self)
+        }
+        try git(["init", "-q"])
+        try "hi".write(to: dir.appendingPathComponent("Grüße.txt"), atomically: true, encoding: .utf8)
+        try git(["add", "-A"])
+        try git(["commit", "-q", "-m", "add"])
+        let files = PluginGit.parseNameStatus(try git(PluginGit.nameStatusArguments("HEAD")))
+        XCTAssertEqual(files.map(\.path), ["Grüße.txt"],
+                       "the path as it is on disk, not git's quoted \"Gr\\303\\274\\303\\237e.txt\"")
+    }
+
     func testGraphTextIsWideEnoughForTheLaneItDraws() {
         let row = PluginGit.GraphRow(lane: 3, lanes: ["a", "b", nil, "d"], merged: [])
         let text = PluginGit.graphText(row)

@@ -32,6 +32,15 @@ Plug-ins…</strong>.</p>
 druk op <strong>Commit</strong> — met <strong>Amend</strong> om de wijziging in de vorige commit te vouwen. <strong>Pull</strong> en <strong>Push</strong> staan
 ernaast, waar de commit toch al plaatsvindt; beide tonen voortgang en kunnen worden afgebroken.</p>
 <p>Er wordt de <em>index</em> gecommit, niet <code>git commit -a</code>: wat u hebt gestaged, is wat er wordt gecommit.</p>
+<h2 id="geschiedenis-in-het-paneel">Geschiedenis in het paneel</h2>
+<p>Onder de knoppen toont het paneel de geschiedenis van alle branches, remote branches en tags als getekende graaf, met de werkkopie als eerste rij. Het gebied eronder volgt de selectie:</p>
+<p><img alt="Het Git-paneel met de branchgraaf, de geselecteerde merge-commit en het gewijzigde bestand met inline diff" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Lokale wijzigingen</strong> toont de gestagede, gewijzigde en niet-gevolgde bestanden en het commitvak hierboven.</li>
+<li>Een commit toont <strong>Commit</strong> — auteur, committer, datum, hash, ouders, refs, handtekening en volledig bericht — of <strong>Wijzigingen</strong>.</li>
+<li><strong>Wijzigingen</strong> toont de geraakte bestanden als boom en de diff van het gekozen bestand met regelnummers; dubbelklikken opent het vergelijkvenster.</li>
+<li>Het contextmenu kopieert hash of onderwerp, draait terug, cherry-pickt, opent de commit op het web en beperkt de lijst tot <strong>Alleen de huidige branch</strong>.</li>
+</ul>
 <h2 id="geschiedenis-blame-en-het-web">Geschiedenis, blame en het web</h2>
 <ul>
 <li><strong>Geschiedenis…</strong> toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (<code>● main</code>,

@@ -31,6 +31,15 @@ sporet</em>. Vælg filer og brug <strong>Stage</strong>, <strong>Unstage</strong
 med <strong>Amend</strong> foldes ændringen i stedet ind i den forrige commit. <strong>Pull</strong> og <strong>Push</strong> ligger ved siden af,
 der hvor commit alligevel sker; begge viser forløb og kan afbrydes.</p>
 <p>Der committes <em>indekset</em>, ikke <code>git commit -a</code>: det, du har staget, er det, der bliver committet.</p>
+<h2 id="historik-i-panelet">Historik i panelet</h2>
+<p>Under knapperne viser panelet historikken for alle grene, fjerngrene og tags som en tegnet graf, med arbejdskopien som første række. Området nedenunder følger markeringen:</p>
+<p><img alt="Git-panelet med grengrafen, det valgte merge-commit og den ændrede fil med indlejret diff" src="images/git-panel.png" /></p>
+<ul>
+<li><strong>Lokale ændringer</strong> viser de stagede, ændrede og usporede filer og commit-feltet beskrevet ovenfor.</li>
+<li>Et commit viser enten <strong>Commit</strong> — forfatter, committer, dato, hash, forældre, refs, signatur og hele beskeden — eller <strong>Ændringer</strong>.</li>
+<li><strong>Ændringer</strong> viser de berørte filer som et træ og diffen for den valgte fil med linjenumre; et dobbeltklik åbner sammenligningsvinduet.</li>
+<li>Kontekstmenuen kopierer hash eller emne, tilbagefører, cherry-picker, åbner commit'et på nettet og begrænser listen til <strong>Kun den aktuelle gren</strong>.</li>
+</ul>
 <h2 id="historik-blame-og-nettet">Historik, blame og nettet</h2>
 <ul>
 <li><strong>Historik…</strong> viser commits med en banegraf, de refs, der peger på hver enkelt (<code>● main</code>, <code>↗ origin/main</code>,

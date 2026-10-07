@@ -33,6 +33,17 @@ anulate.
 
 Se comite *indexul*, nu `git commit -a`: ce ați pregătit este ce se comite.
 
+## Istoricul în panou
+
+Sub butoane, panoul arată istoricul tuturor ramurilor, ramurilor la distanță și etichetelor ca graf desenat, cu copia de lucru pe primul rând. Zona de dedesubt urmează selecția:
+
+![Panoul Git cu graful ramurilor, commit-ul de îmbinare selectat și fișierul său modificat cu diff încorporat](screenshots/git-panel.png)
+
+- **Modificări locale** arată fișierele pregătite, modificate și neurmărite și caseta de commit descrisă mai sus.
+- Un commit arată fie **Commit** — autor, committer, dată, hash, părinți, ref-uri, semnătură și mesajul complet — fie **Modificări**.
+- **Modificări** listează fișierele atinse ca arbore și diff-ul fișierului ales cu numere de linie; un dublu clic deschide fereastra de comparare.
+- Meniul contextual copiază hash-ul sau subiectul, anulează, face cherry-pick, deschide commit-ul pe web și limitează lista la **Doar ramura curentă**.
+
 ## Istoric, blame și web
 
 - **Istoric…** listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (`● main`,

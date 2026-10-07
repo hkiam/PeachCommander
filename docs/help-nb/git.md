@@ -32,6 +32,17 @@ siden av, der committen uansett skjer; begge viser framdrift og kan avbrytes.
 
 Det er *indeksen* som committes, ikke `git commit -a`: det du har klargjort, er det som blir committet.
 
+## Historikk i panelet
+
+Under knappene viser panelet historikken for alle grener, fjerngrener og tagger som en tegnet graf, med arbeidskopien som første rad. Området under følger markeringen:
+
+![Git-panelet med grengrafen, valgt merge-commit og den endrede filen med innebygd diff](screenshots/git-panel.png)
+
+- **Lokale endringer** viser de stagede, endrede og usporede filene og commit-feltet beskrevet over.
+- En commit viser enten **Commit** — forfatter, committer, dato, hash, foreldre, refs, signatur og hele meldingen — eller **Endringer**.
+- **Endringer** viser de berørte filene som et tre og diffen for valgt fil med linjenumre; et dobbeltklikk åpner sammenligningsvinduet.
+- Kontekstmenyen kopierer hash eller emne, tilbakefører, cherry-picker, åpner commiten på nettet og begrenser listen til **Bare gjeldende gren**.
+
 ## Historikk, blame og nettet
 
 - **Historikk…** lister commitene med en banegraf, refene som peker på hver av dem (`● main`,

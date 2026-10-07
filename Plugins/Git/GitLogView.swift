@@ -41,6 +41,8 @@ final class GitLogView: NSView {
     private let webButton = NSButton()
     private var limit = 100
     private let split = NSSplitView()
+    /// The widths the columns are declared with — the proportions a resize keeps.
+    private var preferredWidth: [NSUserInterfaceItemIdentifier: CGFloat] = [:]
 
     init(services: PcHostServices, root: String, path: String?) {
         self.services = services
@@ -85,10 +87,19 @@ final class GitLogView: NSView {
             table.rowHeight = 17
             table.usesAlternatingRowBackgroundColors = true
             table.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+            // `gitFitColumns` sizes the columns, so AppKit must not do it as well (see there).
+            table.columnAutoresizingStyle = .noColumnAutoresizing
             for (id, title, width) in columns {
                 let column = NSTableColumn(identifier: .init(id))
                 column.title = title
                 column.width = width
+                if id == "graph" || id == "status" {
+                    column.resizingMask = .userResizingMask      // a marker column keeps its width
+                } else {
+                    column.resizingMask = [.autoresizingMask, .userResizingMask]
+                    column.minWidth = min(width, 60)
+                    preferredWidth[column.identifier] = width
+                }
                 table.addTableColumn(column)
             }
             table.dataSource = self
@@ -139,8 +150,16 @@ final class GitLogView: NSView {
 
         let left = NSScrollView(); left.documentView = commitTable
         left.hasVerticalScroller = true
+        left.hasHorizontalScroller = true   // below the columns' minimums, scroll rather than clip
+        left.autohidesScrollers = true      // …and only then: with legacy scrollers it would stand there empty
         let right = NSScrollView(); right.documentView = fileTable
         right.hasVerticalScroller = true
+        for scroll in [left, right] {
+            scroll.contentView.postsFrameChangedNotifications = true
+            NotificationCenter.default.addObserver(self, selector: #selector(clipFrameChanged(_:)),
+                                                   name: NSView.frameDidChangeNotification,
+                                                   object: scroll.contentView)
+        }
         split.isVertical = true
         split.dividerStyle = .thin
         split.addArrangedSubview(left)
@@ -202,6 +221,14 @@ final class GitLogView: NSView {
         rightMinimum.priority = .init(999)
         ratio.priority = .init(500)
         NSLayoutConstraint.activate([leftMinimum, rightMinimum, ratio])
+    }
+
+    /// Fit the columns whenever a list's pane changes width (see `gitFitColumns` for why it is the clip
+    /// view's frame change, and not this view's `layout()`, that drives it).
+    @objc private func clipFrameChanged(_ note: Notification) {
+        for table in [commitTable, fileTable] where table.enclosingScrollView?.contentView === note.object as? NSView {
+            gitFitColumns(table, preferred: preferredWidth)
+        }
     }
 
     /// Cmd+R reloads, wherever the focus happens to be — a commit made in a terminal used to leave this
@@ -281,17 +308,8 @@ final class GitLogView: NSView {
         busy.startAnimation(nil)
         let root = self.root
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            // `--name-status` against the first parent: for a merge that is the useful side, and for a
-            // root commit there is no parent, so `show` is asked instead.
-            let arguments = ["-C", root, "--no-optional-locks", "show", "--name-status",
-                             "--format=", "-m", "--first-parent", commit.hash]
-            let result = PluginGitRepo.run(arguments)
-            var files: [(String, String)] = []
-            for line in result.out.split(separator: "\n", omittingEmptySubsequences: true) {
-                let parts = line.split(separator: "\t", omittingEmptySubsequences: true).map(String.init)
-                guard parts.count >= 2 else { continue }
-                files.append((String(parts[0].prefix(1)), parts.last!))
-            }
+            let result = PluginGitRepo.run(["-C", root] + PluginGit.nameStatusArguments(commit.hash))
+            let files = PluginGit.parseNameStatus(result.out).map { (status: $0.status, path: $0.path) }
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.busy.stopAnimation(nil)
@@ -307,118 +325,36 @@ final class GitLogView: NSView {
     @objc private func diffSelectedFile() {
         let commitRow = commitTable.selectedRow
         guard commits.indices.contains(commitRow) else { return }
-        let commit = commits[commitRow]
         let fileRow = fileTable.selectedRow
         guard files.indices.contains(fileRow) else {
             report(L("Git"), L("Select a file of that commit."))
             return
         }
-        let file = files[fileRow].path
-        let parent = commit.parents.first
-        busy.startAnimation(nil)
-        let root = self.root
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let newer = PluginGitRepo.writeBlob(root: root, spec: "\(commit.hash):\(file)",
-                                                path: file, base: .head)
-            let older = parent.flatMap {
-                PluginGitRepo.writeBlob(root: root, spec: "\($0):\(file)", path: file, base: .index)
-            }
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.busy.stopAnimation(nil)
-                guard let newer else {
-                    self.report(L("Git"), L("That version could not be read."))
-                    return
-                }
-                // A file added by this commit has no older side; comparing it with an empty temp file is
-                // more honest than refusing, and it is what the reference products show.
-                let left = older ?? PluginGitRepo.writeEmptyBlob(path: file)
-                let leftTitle = parent.map { "\(String($0.prefix(8))):\(file)" } ?? L("(added)")
-                let rightTitle = "\(String(commit.hash.prefix(8))):\(file)"
-                guard let left else { return }
-                left.withCString { a in
-                    newer.withCString { b in
-                        leftTitle.withCString { at in
-                            rightTitle.withCString { bt in
-                                self.services.compareFiles?(self.services.host, a, b, at, bt)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        GitCommitActions.compareFile(files[fileRow].path, in: commits[commitRow], root: root,
+                                     services: services, busy: busy)
     }
 
     // MARK: - Revert and cherry-pick (phase 4, F-419)
 
-    private enum Sequencer { case revert, cherryPick }
+    @objc private func revertSelectedCommit() { runSequencer(.revert) }
+    @objc private func cherryPickSelectedCommit() { runSequencer(.cherryPick) }
 
-    @objc private func revertSelectedCommit() { run(.revert) }
-    @objc private func cherryPickSelectedCommit() { run(.cherryPick) }
-
-    /// Undo a commit on top of the branch, or replay it here.
-    ///
-    /// Both refuse before they start when the working tree is not clean: git's sequencer requires that and
-    /// says so in terms of overwritten local changes, which reads as if the chosen commit were the problem.
-    /// A conflicting result is *not* an error — git stops mid-sequence and leaves the conflict markers, and
-    /// saying that plainly is more use than a red "failed", since the next step is the conflict command.
-    private func run(_ kind: Sequencer) {
-        let title = kind == .revert ? L("Revert commit") : L("Cherry-pick")
+    private func runSequencer(_ kind: GitCommitActions.Sequencer) {
         guard commits.indices.contains(commitTable.selectedRow) else {
-            report(title, L("Select a commit first."))
+            report(kind == .revert ? L("Revert commit") : L("Cherry-pick"), L("Select a commit first."))
             return
         }
-        let commit = commits[commitTable.selectedRow]
-        if let repo = PluginGitRepo.status(root: root),
-           let refusal = PluginGit.refusal(forCommitActionIn: repo) {
-            report(title, refusal == .conflictOpen
-                ? L("There is an unresolved conflict. Finish it first.")
-                : L("The working tree has changes. Commit or stash them first."))
-            return
-        }
-
-        let alert = NSAlert()
-        alert.messageText = kind == .revert
-            ? String(format: L("Revert %@?"), commit.shortHash)
-            : String(format: L("Cherry-pick %@ onto the current branch?"), commit.shortHash)
-        alert.informativeText = commit.subject
-        alert.addButton(withTitle: kind == .revert ? L("Revert") : L("Cherry-pick"))
-        alert.addButton(withTitle: L("Cancel"))
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
-
-        busy.startAnimation(nil)
-        let root = self.root
-        let arguments = kind == .revert
-            ? PluginGit.revertArguments(commit.hash)
-            : PluginGit.cherryPickArguments(commit.hash)
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let result = PluginGitRepo.run(["-C", root] + arguments, combined: true)
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.busy.stopAnimation(nil)
-                PluginGitRepo.invalidate()          // HEAD and the index both moved
-                self.services.reloadActivePanel?(self.services.host)
-                let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
-                self.report(title, message.isEmpty ? L("Done.") : message)
-                self.reload()
-            }
-        }
+        GitCommitActions.runSequencer(kind, commit: commits[commitTable.selectedRow], root: root,
+                                      services: services, busy: busy) { [weak self] in self?.reload() }
     }
 
-    /// This commit on the hosting service — no API and no token, just the remote's URL (F-421).
     @objc private func openSelectedOnTheWeb() {
         guard commits.indices.contains(commitTable.selectedRow) else {
             report(L("Git"), L("Select a commit first."))
             return
         }
-        let hash = commits[commitTable.selectedRow].hash
-        let upstream = PluginGitRepo.status(root: root)?.upstream
-        let remote = PluginGitRepo.remote(root: root, upstream: upstream)
-        guard !remote.url.isEmpty else {
-            report(L("Git"), String(format: L("“%@” has no remote to open."), remote.name))
-            return
-        }
-        openOnTheWeb(remote: remote.url, target: .commit(hash), services)
+        GitCommitActions.openCommitOnTheWeb(hash: commits[commitTable.selectedRow].hash, root: root,
+                                            services: services)
     }
 
     private func report(_ title: String, _ message: String) {
@@ -492,6 +428,7 @@ extension GitLogView: NSTableViewDataSource, NSTableViewDelegate {
         case .remote: return "↗ " + ref.name
         case .tag:    return "⚑ " + ref.name
         case .branch: return ref.name
+        case .stash:  return "≡ " + ref.name
         }
     }
 
