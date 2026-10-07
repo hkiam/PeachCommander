@@ -442,13 +442,18 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); the alert
         // this may raise must be built there, and asserting it is honest where a hop would hide it.
         MainActor.assumeIsolated { openOnTheWeb(remote: remote.url, target: target, svc) }
-    case "plugin.git.push", "plugin.git.pull":
+    case "plugin.git.push", "plugin.git.pull", "plugin.git.fetch":
         // Declared `"async": true` in the manifest, so this runs OFF the main thread (F-422): it may block
         // on git, report each line into the host's progress window, and be cancelled — which is the whole
         // difference between a push to an unreachable host and an application that appears to have died.
-        let isPush = id == "plugin.git.push"
-        let title = isPush ? L("Git Push") : L("Git Pull")
-        let arguments = isPush ? ["-C", root, "push"] : ["-C", root, "pull", "--ff-only"]
+        // Fetch as well since the panel shows every remote branch (phase 6): what the graph knows about the
+        // remotes is only as new as the last fetch, and Pull is the wrong way to refresh it.
+        let (title, arguments): (String, [String])
+        switch id {
+        case "plugin.git.push":  (title, arguments) = (L("Git Push"), ["-C", root, "push"])
+        case "plugin.git.fetch": (title, arguments) = (L("Fetch"), ["-C", root, "fetch", "--prune"])
+        default:                 (title, arguments) = (L("Git Pull"), ["-C", root, "pull", "--ff-only"])
+        }
         let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
         let result = PluginGitRepo.runCancellable(arguments) { line in
             guard let handle else { return true }   // no progress window: nothing to cancel from either

@@ -138,6 +138,18 @@ func gitFitColumns(_ table: NSTableView, preferred: [NSUserInterfaceItemIdentifi
     }
 }
 
+/// A column the reader dragged makes the current widths the proportions `gitFitColumns` keeps — otherwise
+/// the next window resize put every column back to its declared share and undid the drag. Only a drag
+/// counts: the header names the column being resized while the reader drags it, and nothing while
+/// `gitFitColumns` sets widths itself.
+@MainActor
+func gitAdoptDraggedWidths(_ table: NSTableView, preferred: inout [NSUserInterfaceItemIdentifier: CGFloat]) {
+    guard let header = table.headerView, header.resizedColumn >= 0 else { return }
+    for column in table.tableColumns where preferred[column.identifier] != nil {
+        preferred[column.identifier] = column.width
+    }
+}
+
 /// Dates as the plugin's lists and detail views show them: medium date, short time, the reader's locale.
 @MainActor
 let gitDateFormatter: DateFormatter = {

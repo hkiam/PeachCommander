@@ -27,8 +27,8 @@ Det er et plugin, så du kan slå det fra eller fjerne det under **Konfiguration
 
 **Kommandoer ▸ Git ▸ Panel** fastgør en visning, der grupperer arbejdstræet i *staged*, *ændret* og *ikke
 sporet*. Vælg filer og brug **Stage**, **Unstage** eller **Kassér…**, skriv en besked og tryk på **Commit** —
-med **Amend** foldes ændringen i stedet ind i den forrige commit. **Pull** og **Push** ligger ved siden af,
-der hvor commit alligevel sker; begge viser forløb og kan afbrydes.
+med **Amend** foldes ændringen i stedet ind i den forrige commit. **Fetch**, **Pull** og **Push** ligger ved siden af,
+der hvor commit alligevel sker; alle tre viser forløb og kan afbrydes.
 
 Der committes *indekset*, ikke `git commit -a`: det, du har staget, er det, der bliver committet.
 

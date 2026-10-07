@@ -39,6 +39,7 @@ final class GitPanelView: NSView {
     private let discardButton = NSButton()
     private let refreshButton = NSButton()
     private let pullButton = NSButton()
+    private let fetchButton = NSButton()
     private let pushButton = NSButton()
     /// Counted: the panel's reload, the Changes tab and the commit actions all share it.
     private let busy = GitBusyIndicator()
@@ -111,15 +112,22 @@ final class GitPanelView: NSView {
         header.lineBreakMode = .byTruncatingTail
         header.maximumNumberOfLines = 1
 
-        for (button, title, action) in [
-            (stageButton, L("Stage"), #selector(stageSelected)),
-            (unstageButton, L("Unstage"), #selector(unstageSelected)),
-            (discardButton, L("Discard…"), #selector(discardSelected)),
-            (pullButton, L("Pull"), #selector(pull)),
-            (pushButton, L("Push"), #selector(push)),
-            (refreshButton, L("Refresh"), #selector(refreshNow)),
-        ] as [(NSButton, String, Selector)] {
+        // Each button carries a symbol as well as its title: in the sidebar the row is too narrow for seven
+        // titles — "Stag…", "Unst…" was all it showed — and `layout()` then drops the titles, keeping the
+        // symbol and, as the tooltip, the title.
+        for (button, title, symbol, action) in [
+            (stageButton, L("Stage"), "plus.circle", #selector(stageSelected)),
+            (unstageButton, L("Unstage"), "minus.circle", #selector(unstageSelected)),
+            (discardButton, L("Discard…"), "arrow.uturn.backward.circle", #selector(discardSelected)),
+            (fetchButton, L("Fetch"), "arrow.triangle.2.circlepath", #selector(fetch)),
+            (pullButton, L("Pull"), "arrow.down.circle", #selector(pull)),
+            (pushButton, L("Push"), "arrow.up.circle", #selector(push)),
+            (refreshButton, L("Refresh"), "arrow.clockwise", #selector(refreshNow)),
+        ] as [(NSButton, String, String, Selector)] {
             button.title = title
+            button.toolTip = title
+            button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
+            button.imagePosition = .imageLeading
             button.bezelStyle = .rounded
             button.controlSize = .small
             button.font = .systemFont(ofSize: 11)
@@ -131,7 +139,7 @@ final class GitPanelView: NSView {
         amendCheckbox.font = .systemFont(ofSize: 11)
 
         let buttons = NSStackView(views: [stageButton, unstageButton, discardButton,
-                                         pullButton, pushButton, refreshButton])
+                                         fetchButton, pullButton, pushButton, refreshButton])
         buttons.orientation = .horizontal
         buttons.spacing = 4
         buttons.distribution = .fillEqually
@@ -327,6 +335,18 @@ final class GitPanelView: NSView {
 
     @objc private func refreshNow() { PluginGitRepo.invalidate(); reload() }
 
+    /// Below this width the buttons show their symbols only, with the title as the tooltip.
+    private static let titledButtonsWidth: CGFloat = 520
+
+    override func layout() {
+        super.layout()
+        let position: NSControl.ImagePosition = bounds.width < Self.titledButtonsWidth ? .imageOnly : .imageLeading
+        for button in [stageButton, unstageButton, discardButton, fetchButton, pullButton, pushButton, refreshButton]
+        where button.imagePosition != position {
+            button.imagePosition = position
+        }
+    }
+
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
             refreshNow()
@@ -338,6 +358,7 @@ final class GitPanelView: NSView {
     /// Sync where the commit is made. Routed back through the host by command id rather than run here:
     /// those two commands are declared asynchronous (F-422), so this way they keep the progress window and
     /// the Cancel button instead of becoming a second, silent implementation inside the panel (F-424).
+    @objc private func fetch() { invoke("plugin.git.fetch") }
     @objc private func pull() { invoke("plugin.git.pull") }
     @objc private func push() { invoke("plugin.git.push") }
 
@@ -600,6 +621,9 @@ final class GitPanelView: NSView {
         unstageButton.isEnabled = staging && selected.contains { $0.file.isStaged }
         discardButton.isEnabled = staging && !selected.isEmpty
         refreshButton.isEnabled = hasRepo
+        fetchButton.isEnabled = hasRepo
+        pullButton.isEnabled = hasRepo
+        pushButton.isEnabled = hasRepo
         commitButton.isEnabled = hasRepo && (amendCheckbox.state == .on || anythingStaged)
         messageField.isEnabled = hasRepo
         amendCheckbox.isEnabled = hasRepo

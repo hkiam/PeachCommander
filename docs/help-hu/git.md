@@ -28,8 +28,8 @@ Bővítmény, így kikapcsolható vagy eltávolítható a **Beállítások ▸ B
 A **Parancsok ▸ Git ▸ Panel** olyan nézetet dokkol, amely a munkafát *előkészített*, *módosított* és *nem
 követett* csoportokra bontja. Jelöljön ki fájlokat, és használja az **Előkészítés**, **Visszavonás** vagy
 **Eldobás…** gombot, írjon üzenetet, és nyomja meg a **Véglegesítés** gombot — a **Módosítás** az előző
-véglegesítésbe hajtja bele a változást. A **Letöltés** és a **Feltöltés** mellette van, ott, ahol a
-véglegesítés amúgy is történik; mindkettő mutatja a haladást, és megszakítható.
+véglegesítésbe hajtja bele a változást. A **Fetch**, a **Letöltés** és a **Feltöltés** mellette van, ott, ahol a
+véglegesítés amúgy is történik; mindhárom mutatja a haladást, és megszakítható.
 
 Az *index* kerül véglegesítésre, nem a `git commit -a`: az kerül be, amit előkészített.
 

@@ -443,42 +443,15 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(withHash.commits.last?.hash, "h", "the hash search's commit is shown wherever it is")
     }
 
-    /// A temporary repository with git isolated from this machine's configuration; `git` runs in it.
-    private func withTempRepo(_ body: (_ git: (_ arguments: [String], _ author: String) throws -> (out: String, ok: Bool)) throws -> Void) throws {
-        let found = PluginGit.resolveExecutable(
-            setting: nil,
-            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-            exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(found, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-        try body { arguments, author in
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
-            var environment = ProcessInfo.processInfo.environment
-            // No locale, as when the app is started from Finder: the case the search has to survive.
-            for key in ["LANG", "LC_ALL", "LC_CTYPE"] { environment[key] = nil }
-            environment.merge(PluginGit.searchEnvironment) { _, new in new }
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_AUTHOR_NAME"] = author
-            environment["GIT_AUTHOR_EMAIL"] = "\(author.lowercased())@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            process.environment = environment
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
-        }
-    }
-
     /// Against real git: message, body, author name and e-mail and a hash prefix all find their commit,
     /// case-insensitively also outside ASCII, and a hash outside the current branch is not on it.
     func testSearchAgainstRealGit() throws {
-        try withTempRepo { git in
+        let repo = try TempRepo()
+        // Stdout only, in the search's environment — the locale-less case it has to survive.
+        func git(_ arguments: [String], _ author: String) throws -> (out: String, ok: Bool) {
+            try repo.git(arguments, environment: PluginGit.searchEnvironment, author: author, combined: false)
+        }
+        do {
             func search(_ query: String, all: Bool = true) throws -> [String] {
                 let results = try PluginGit.searchArguments(query, limit: 50, all: all)
                     .map { PluginGit.parseLog(try git($0, "Ada").out) }
@@ -591,33 +564,10 @@ final class PluginGitTests: XCTestCase {
 
     /// The real thing: a commit that touches a file with an umlaut in its name, read through git.
     func testNameStatusOfANonASCIIPathAgainstRealGit() throws {
-        let found = PluginGit.resolveExecutable(
-            setting: nil,
-            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-            exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(found, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-
+        let repo = try TempRepo()
+        let dir = repo.dir
         @discardableResult
-        func git(_ arguments: [String]) throws -> String {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
-            var environment = ProcessInfo.processInfo.environment
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            process.environment = environment
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return String(decoding: data, as: UTF8.self)
-        }
+        func git(_ arguments: [String]) throws -> String { try repo.git(arguments, combined: false).out }
         try git(["init", "-q"])
         try "hi".write(to: dir.appendingPathComponent("Grüße.txt"), atomically: true, encoding: .utf8)
         try git(["add", "-A"])
@@ -1202,39 +1152,10 @@ final class PluginGitTests: XCTestCase {
     /// that broke the old parser — a non-ASCII name, a space, a rename, a staged and an unstaged edit,
     /// an untracked file — runs the actual status call and asserts what comes back.
     func testAgainstRealGit() throws {
-        let git = PluginGit.resolveExecutable(setting: nil,
-                                              isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-                                              exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(git, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-
-        func run(_ arguments: [String]) throws {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            process.standardOutput = FileHandle.nullDevice
-            process.standardError = FileHandle.nullDevice
-            var environment = ProcessInfo.processInfo.environment
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"     // the machine's config must not decide
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            process.environment = environment
-            try process.run(); process.waitUntilExit()
-        }
-        func status() throws -> String {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + PluginGit.statusArguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return String(decoding: data, as: UTF8.self)
-        }
+        let repo = try TempRepo()
+        let dir = repo.dir
+        func run(_ arguments: [String]) throws { try repo.git(arguments) }
+        func status() throws -> String { try repo.git(PluginGit.statusArguments, combined: false).out }
 
         try run(["init", "-q", "-b", "main", "."])
         try "one\n".write(to: dir.appendingPathComponent("Größe mit Leerzeichen.txt"), atomically: true,
@@ -1273,34 +1194,12 @@ final class PluginGitTests: XCTestCase {
     /// run them. `GIT_EDITOR=false` makes that check real: an editor that gets launched fails, so a
     /// missing `--no-edit` turns into a failed test rather than a window nobody can close (F-419).
     func testRevertAndCherryPickAgainstRealGit() throws {
-        let found = PluginGit.resolveExecutable(
-            setting: nil,
-            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-            exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(found, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-
+        let repo = try TempRepo()
+        let dir = repo.dir
+        // Any editor launch is a failure, not a hang.
         @discardableResult
         func git(_ arguments: [String]) throws -> (out: String, ok: Bool) {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
-            var environment = ProcessInfo.processInfo.environment
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_TERMINAL_PROMPT"] = "0"
-            environment["GIT_EDITOR"] = "false"     // any editor launch is a failure, not a hang
-            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            process.environment = environment
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+            try repo.git(arguments, environment: ["GIT_EDITOR": "false"])
         }
         func read(_ name: String) -> String? {
             try? String(contentsOf: dir.appendingPathComponent(name), encoding: .utf8)
@@ -1348,34 +1247,12 @@ final class PluginGitTests: XCTestCase {
     /// the parser reads, including the labels, and that the resolved text satisfies git rather than only
     /// looking right.
     func testResolvingARealConflict() throws {
-        let found = PluginGit.resolveExecutable(
-            setting: nil,
-            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-            exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(found, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-
+        let repo = try TempRepo()
+        let dir = repo.dir
+        // Any editor launch is a failure, not a hang.
         @discardableResult
         func git(_ arguments: [String]) throws -> (out: String, ok: Bool) {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
-            var environment = ProcessInfo.processInfo.environment
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_TERMINAL_PROMPT"] = "0"
-            environment["GIT_EDITOR"] = "false"
-            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            process.environment = environment
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+            try repo.git(arguments, environment: ["GIT_EDITOR": "false"])
         }
         let file = dir.appendingPathComponent("shared.txt")
 
@@ -1423,35 +1300,12 @@ final class PluginGitTests: XCTestCase {
     /// Without `GIT_EDITOR=true` the squash would try to open an editor for the combined message and the
     /// rebase would stop half-way, which is exactly the failure this proves cannot happen.
     func testInteractiveRebaseAgainstRealGit() throws {
-        let found = PluginGit.resolveExecutable(
-            setting: nil,
-            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
-            exists: { FileManager.default.fileExists(atPath: $0) })
-        let executable = try XCTUnwrap(found, "no git on this machine")
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("pcgit-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: dir) }
-
+        let repo = try TempRepo()
+        let dir = repo.dir
         @discardableResult
         func git(_ arguments: [String], environment extra: [String: String] = [:])
             throws -> (out: String, ok: Bool) {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = ["-C", dir.path] + arguments
-            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
-            var environment = ProcessInfo.processInfo.environment
-            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
-            environment["GIT_CONFIG_NOSYSTEM"] = "1"
-            environment["GIT_TERMINAL_PROMPT"] = "0"
-            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
-            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
-            environment.merge(extra) { _, new in new }
-            process.environment = environment
-            try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+            try repo.git(arguments, environment: extra)
         }
 
         try git(["init", "-q", "-b", "main", "."])
@@ -1498,5 +1352,54 @@ final class PluginGitTests: XCTestCase {
         XCTAssertFalse(PluginGit.rebaseIsRunning(gitDir: gitDir) {
             FileManager.default.fileExists(atPath: $0)
         })
+    }
+}
+
+/// A temporary repository for the tests that run real git, removed again when the test is done.
+///
+/// git is isolated from this machine: no global or system configuration, no terminal prompt, a fixed
+/// committer — and no locale, the way an app started from Finder runs it, which is the case the plugin
+/// has to work in (the search's case folding failed exactly there).
+private final class TempRepo {
+    let dir: URL
+    private let executable: String
+
+    init() throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        executable = try XCTUnwrap(found, "no git on this machine")
+        dir = FileManager.default.temporaryDirectory.appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    }
+
+    deinit { try? FileManager.default.removeItem(at: dir) }
+
+    /// `combined` puts git's stderr into the output, which is what the tests asserting git's own messages
+    /// want; the parsers' tests read stdout alone.
+    @discardableResult
+    func git(_ arguments: [String], environment extra: [String: String] = [:], author: String = "T",
+             combined: Bool = true) throws -> (out: String, ok: Bool) {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = ["-C", dir.path] + arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = combined ? pipe : FileHandle.nullDevice
+        var environment = ProcessInfo.processInfo.environment
+        for key in ["LANG", "LC_ALL", "LC_CTYPE", "LC_MESSAGES"] { environment[key] = nil }
+        environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+        environment["GIT_CONFIG_NOSYSTEM"] = "1"
+        environment["GIT_TERMINAL_PROMPT"] = "0"
+        environment["GIT_AUTHOR_NAME"] = author
+        environment["GIT_AUTHOR_EMAIL"] = author == "T" ? "t@example.com" : "\(author.lowercased())@example.com"
+        environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+        environment.merge(extra) { _, new in new }
+        process.environment = environment
+        try process.run()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
     }
 }

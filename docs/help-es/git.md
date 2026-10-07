@@ -29,7 +29,7 @@ Complementos…**.
 **Comandos ▸ Git ▸ Panel** acopla una vista que agrupa el árbol de trabajo en *preparado*, *modificado* y
 *sin seguimiento*. Seleccione archivos y use **Preparar**, **Quitar de preparación** o **Descartar…**,
 escriba un mensaje y pulse **Confirmar** — con **Enmendar** para plegar el cambio en la confirmación
-anterior. **Traer** y **Enviar** están al lado, donde la confirmación ocurre de todos modos; ambos muestran
+anterior. **Fetch**, **Traer** y **Enviar** están al lado, donde la confirmación ocurre de todos modos; los tres muestran
 progreso y pueden cancelarse.
 
 Se confirma el *índice*, no `git commit -a`: lo que preparó es lo que se confirma.

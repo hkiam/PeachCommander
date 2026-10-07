@@ -412,6 +412,11 @@ extension GitLogView: NSTableViewDataSource, NSTableViewDelegate {
         return field
     }
 
+    func tableViewColumnDidResize(_ notification: Notification) {
+        guard let table = notification.object as? NSTableView else { return }
+        gitAdoptDraggedWidths(table, preferred: &preferredWidth)
+    }
+
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard let table = notification.object as? NSTableView, table === commitTable,
               commits.indices.contains(table.selectedRow) else { return }

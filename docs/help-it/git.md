@@ -27,8 +27,8 @@ installato sul tuo Mac. È un plugin, quindi puoi disattivarlo o rimuoverlo in *
 
 **Comandi ▸ Git ▸ Pannello** aggancia una vista che raggruppa l’albero di lavoro in *preparato*, *modificato*
 e *non tracciato*. Seleziona dei file e usa **Prepara**, **Togli dalla preparazione** o **Scarta…**, scrivi
-un messaggio e premi **Commit** — con **Amend** per ripiegare la modifica nel commit precedente. **Pull** e
-**Push** stanno lì accanto, dove il commit avviene comunque; entrambi mostrano l’avanzamento e si possono
+un messaggio e premi **Commit** — con **Amend** per ripiegare la modifica nel commit precedente. **Fetch**, **Pull** e
+**Push** stanno lì accanto, dove il commit avviene comunque; tutti e tre mostrano l’avanzamento e si possono
 annullare.
 
 Si committa l’*indice*, non `git commit -a`: quello che hai preparato è quello che viene committato.

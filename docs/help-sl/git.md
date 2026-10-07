@@ -27,8 +27,8 @@ zato ga lahko izklopite ali odstranite v **Nastavitve ▸ Vtičniki…**.
 
 **Ukazi ▸ Git ▸ Pladenj** zasidra pogled, ki delovno drevo razdeli na *pripravljeno*, *spremenjeno* in
 *nesledeno*. Izberite datoteke in uporabite **Pripravi**, **Umakni iz priprave** ali **Zavrzi…**, vpišite
-sporočilo in pritisnite **Objavi** — z **Popravi** se sprememba zloži v prejšnjo objavo. **Potegni** in
-**Potisni** sta zraven, tam, kjer objava tako ali tako poteka; oba kažeta napredek in ju je mogoče prekiniti.
+sporočilo in pritisnite **Objavi** — z **Popravi** se sprememba zloži v prejšnjo objavo. **Fetch**, **Potegni** in
+**Potisni** so zraven, tam, kjer objava tako ali tako poteka; vsi trije kažejo napredek in jih je mogoče prekiniti.
 
 Objavi se *kazalo*, ne `git commit -a`: objavljeno je tisto, kar ste pripravili.
 

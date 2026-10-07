@@ -28,8 +28,8 @@ installerad på din Mac. Det är ett insticksprogram, så du kan stänga av det 
 
 **Kommandon ▸ Git ▸ Panel** dockar en vy som grupperar arbetsträdet i *köad*, *ändrad* och *ospårad*. Välj
 filer och använd **Köa**, **Avköa** eller **Kasta…**, skriv ett meddelande och tryck på **Checka in** — med
-**Amend** viks ändringen i stället in i föregående incheckning. **Pull** och **Push** ligger bredvid, där
-incheckningen ändå sker; båda visar förlopp och kan avbrytas.
+**Amend** viks ändringen i stället in i föregående incheckning. **Fetch**, **Pull** och **Push** ligger bredvid, där
+incheckningen ändå sker; alla tre visar förlopp och kan avbrytas.
 
 Det är *indexet* som checkas in, inte `git commit -a`: det du har köat är det som checkas in.
 

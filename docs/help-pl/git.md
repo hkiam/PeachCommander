@@ -27,8 +27,8 @@ wtyczka, więc można ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki�
 
 **Polecenia ▸ Git ▸ Panel** dokuje widok, który dzieli drzewo robocze na *przygotowane*, *zmienione* i
 *nieśledzone*. Zaznacz pliki i użyj **Przygotuj**, **Cofnij przygotowanie** lub **Odrzuć…**, wpisz komunikat i
-naciśnij **Zatwierdź** — z **Popraw** zmiana zostanie wtopiona w poprzednie zatwierdzenie. **Pobierz** i
-**Wyślij** są obok, tam gdzie zatwierdzanie i tak się odbywa; oba pokazują postęp i można je przerwać.
+naciśnij **Zatwierdź** — z **Popraw** zmiana zostanie wtopiona w poprzednie zatwierdzenie. **Fetch**, **Pobierz** i
+**Wyślij** są obok, tam gdzie zatwierdzanie i tak się odbywa; wszystkie trzy pokazują postęp i można je przerwać.
 
 Zatwierdzany jest *indeks*, nie `git commit -a`: zatwierdzane jest to, co przygotowano.
 

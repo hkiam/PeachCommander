@@ -29,7 +29,7 @@ Plugins…** ausschalten oder entfernen.
 **Befehle ▸ Git ▸ Panel** dockt eine Ansicht an, die den Arbeitsbaum nach *gestaged*, *geändert* und *nicht
 verfolgt* gruppiert. Wählen Sie Dateien aus und nutzen Sie **Stage**, **Unstage** oder **Verwerfen…**, tippen
 Sie eine Nachricht und drücken **Commit** — mit **Amend** wird die Änderung in den vorigen Commit gefaltet.
-**Pull** und **Push** liegen daneben, dort, wo der Commit ohnehin passiert; beide zeigen Fortschritt und
+**Fetch**, **Pull** und **Push** liegen daneben, dort, wo der Commit ohnehin passiert; alle drei zeigen Fortschritt und
 lassen sich abbrechen.
 
 Committet wird der *Index*, nicht `git commit -a`: was Sie bereitgestellt haben, wird committet.

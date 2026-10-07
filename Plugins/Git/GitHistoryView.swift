@@ -389,6 +389,10 @@ extension GitHistoryView: NSTableViewDataSource, NSTableViewDelegate {
         return field
     }
 
+    func tableViewColumnDidResize(_ notification: Notification) {
+        gitAdoptDraggedWidths(table, preferred: &preferredWidth)
+    }
+
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard !updating else { return }
         onSelectionChange?(selection)

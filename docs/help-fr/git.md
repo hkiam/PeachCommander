@@ -29,7 +29,7 @@ supprimer dans **Configuration ▸ Extensions…**.
 **Commandes ▸ Git ▸ Panneau** ancre une vue qui groupe la copie de travail en *indexé*, *modifié* et *non
 suivi*. Sélectionnez des fichiers et utilisez **Indexer**, **Désindexer** ou **Abandonner…**, saisissez un
 message et appuyez sur **Valider** — avec **Amender** pour replier la modification dans la validation
-précédente. **Tirer** et **Pousser** sont juste à côté, là où la validation a lieu de toute façon ; les deux
+précédente. **Fetch**, **Tirer** et **Pousser** sont juste à côté, là où la validation a lieu de toute façon ; les trois
 affichent leur progression et peuvent être annulés.
 
 La validation porte sur l’*index*, pas sur `git commit -a` : ce que vous avez indexé est ce qui est validé.

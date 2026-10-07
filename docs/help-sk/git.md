@@ -27,8 +27,8 @@ to zásuvný modul, takže ho môžete vypnúť alebo odstrániť v **Konfigurá
 
 **Príkazy ▸ Git ▸ Panel** ukotví pohľad, ktorý delí pracovný strom na *pripravené*, *zmenené* a *nesledované*.
 Vyberte súbory a použite **Pripraviť**, **Zrušiť prípravu** alebo **Zahodiť…**, napíšte správu a stlačte
-**Zapísať** — s **Opraviť** sa zmena vloží do predošlého zápisu. **Stiahnuť** a **Odoslať** ležia vedľa, tam,
-kde sa aj tak zapisuje; obe ukazujú postup a dajú sa prerušiť.
+**Zapísať** — s **Opraviť** sa zmena vloží do predošlého zápisu. **Fetch**, **Stiahnuť** a **Odoslať** ležia vedľa, tam,
+kde sa aj tak zapisuje; všetky tri ukazujú postup a dajú sa prerušiť.
 
 Zapisuje sa *index*, nie `git commit -a`: zapíše sa to, čo ste pripravili.
 

@@ -28,7 +28,7 @@ dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din **Con
 **Comenzi ▸ Git ▸ Panou** andochează o vedere care grupează arborele de lucru în *pregătit*, *modificat* și
 *neurmărit*. Selectați fișiere și folosiți **Pregătește**, **Retrage din pregătire** sau **Renunță…**,
 scrieți un mesaj și apăsați **Comite** — cu **Amendează**, modificarea este pliată în comiterea precedentă.
-**Trage** și **Împinge** sunt alături, acolo unde comiterea are loc oricum; ambele arată progresul și pot fi
+**Fetch**, **Trage** și **Împinge** sunt alături, acolo unde comiterea are loc oricum; toate trei arată progresul și pot fi
 anulate.
 
 Se comite *indexul*, nu `git commit -a`: ce ați pregătit este ce se comite.

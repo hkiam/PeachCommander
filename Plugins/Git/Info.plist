@@ -61,6 +61,16 @@
 				<string>Pull</string>
 			</dict>
 			<dict>
+				<key>async</key>
+				<true/>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.fetch</string>
+				<key>title</key>
+				<string>Fetch</string>
+			</dict>
+			<dict>
 				<key>category</key>
 				<string>Commands</string>
 				<key>id</key>
@@ -401,6 +411,18 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>130</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.fetch</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>125</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>

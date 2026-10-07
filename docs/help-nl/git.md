@@ -28,8 +28,8 @@ Plug-ins…**.
 
 **Opdrachten ▸ Git ▸ Paneel** zet een weergave vast die de werkmap groepeert in *gestaged*, *gewijzigd* en
 *niet gevolgd*. Selecteer bestanden en gebruik **Stage**, **Unstage** of **Weggooien…**, typ een bericht en
-druk op **Commit** — met **Amend** om de wijziging in de vorige commit te vouwen. **Pull** en **Push** staan
-ernaast, waar de commit toch al plaatsvindt; beide tonen voortgang en kunnen worden afgebroken.
+druk op **Commit** — met **Amend** om de wijziging in de vorige commit te vouwen. **Fetch**, **Pull** en **Push** staan
+ernaast, waar de commit toch al plaatsvindt; alle drie tonen voortgang en kunnen worden afgebroken.
 
 Er wordt de *index* gecommit, niet `git commit -a`: wat u hebt gestaged, is wat er wordt gecommit.
 

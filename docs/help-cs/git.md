@@ -27,8 +27,8 @@ zásuvný modul, takže jej můžete vypnout nebo odebrat v **Konfigurace ▸ Z�
 
 **Příkazy ▸ Git ▸ Panel** ukotví pohled, který dělí pracovní strom na *připravené*, *změněné* a *nesledované*.
 Vyberte soubory a použijte **Připravit**, **Zrušit přípravu** nebo **Zahodit…**, napište zprávu a stiskněte
-**Zapsat** — s **Opravit** se změna vloží do předchozího zápisu. **Stáhnout** a **Odeslat** leží vedle, tam,
-kde se stejně zapisuje; obojí ukazuje postup a lze je přerušit.
+**Zapsat** — s **Opravit** se změna vloží do předchozího zápisu. **Fetch**, **Stáhnout** a **Odeslat** leží vedle, tam,
+kde se stejně zapisuje; všechny tři ukazují postup a lze je přerušit.
 
 Zapisuje se *index*, nikoli `git commit -a`: zapíše se to, co jste připravili.
 

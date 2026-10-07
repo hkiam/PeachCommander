@@ -27,8 +27,8 @@ din. Det er et programtillegg, så du kan slå det av eller fjerne det under **K
 
 **Kommandoer ▸ Git ▸ Panel** fester en visning som grupperer arbeidstreet i *klargjort*, *endret* og *ikke
 sporet*. Velg filer og bruk **Klargjør**, **Fjern klargjøring** eller **Forkast…**, skriv en melding og trykk
-**Commit** — med **Amend** foldes endringen inn i forrige commit i stedet. **Pull** og **Push** ligger ved
-siden av, der committen uansett skjer; begge viser framdrift og kan avbrytes.
+**Commit** — med **Amend** foldes endringen inn i forrige commit i stedet. **Fetch**, **Pull** og **Push** ligger ved
+siden av, der committen uansett skjer; alle tre viser framdrift og kan avbrytes.
 
 Det er *indeksen* som committes, ikke `git commit -a`: det du har klargjort, er det som blir committet.
 

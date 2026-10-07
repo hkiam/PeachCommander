@@ -28,8 +28,8 @@ plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
 
 **Commands ▸ Git ▸ Panel** docks a view showing the working tree grouped into *staged*, *changed* and
 *untracked*. Select files and use **Stage**, **Unstage** or **Discard…**, type a message and press
-**Commit** — with **Amend** to fold the change into the previous commit instead. **Pull** and **Push** are
-there too, next to the commit that usually precedes them; both show progress and can be cancelled.
+**Commit** — with **Amend** to fold the change into the previous commit instead. **Fetch**, **Pull** and **Push** are
+there too, next to the commit that usually precedes them; all three show progress and can be cancelled.
 
 Committing uses the *index*, not `git commit -a`: what you staged is what is committed.
 
