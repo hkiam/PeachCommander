@@ -46,7 +46,9 @@ final class ButtonBarView: NSView {
         stack.edgeInsets = NSEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         stack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stack)
-        registerForDraggedTypes([.fileURL])   // F-342: drop a program on free space to add it
+        // F-342: drop a program on free space to add it. File URLs only — a promised file (a mail out
+        // of Outlook) is never a program; the buttons themselves take those.
+        registerForDraggedTypes([.fileURL])
         stackConstraintsH = [
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -325,7 +327,10 @@ final class ButtonBarView: NSView {
 final class DroppableButton: NSButton {
     var onDropFiles: (([String]) -> Void)?
 
-    override init(frame: NSRect) { super.init(frame: frame); registerForDraggedTypes([.fileURL]) }
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        registerForDraggedTypes(FileDragPasteboard.draggedTypes)   // file URLs and file promises (Outlook mail)
+    }
 
     convenience init(title: String, target: AnyObject?, action: Selector?) {
         self.init(frame: .zero)
@@ -337,12 +342,23 @@ final class DroppableButton: NSButton {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        onDropFiles != nil && Self.files(from: sender).count > 0 ? .copy : []
+        onDropFiles != nil && FileDragPasteboard.carriesFiles(sender) ? .copy : []
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard let onDropFiles else { return false }
         let files = Self.files(from: sender)
-        guard let onDropFiles, !files.isEmpty else { return false }
+        if files.isEmpty {
+            // A mail out of Outlook: the program gets the file the promise wrote into staging. It is
+            // left there for the program to read — moving it on would be guessing where it belongs.
+            let promises = FileDragPasteboard.filePromises(from: sender)
+            guard !promises.isEmpty else { return false }
+            FileDragPasteboard.receive(promises) { paths in
+                guard !paths.isEmpty else { NSSound.beep(); return }
+                onDropFiles(paths)
+            }
+            return true
+        }
         onDropFiles(files)
         return true
     }

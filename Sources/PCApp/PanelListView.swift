@@ -524,7 +524,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         dataSource = self
         delegate = self
         rowHeight = Metrics.rowHeight
-        registerForDraggedTypes([.fileURL])
+        registerForDraggedTypes(FileDragPasteboard.draggedTypes)   // file URLs and file promises (Outlook mail)
         setDraggingSourceOperationMask([.copy, .move], forLocal: true)
         setDraggingSourceOperationMask([.copy, .move], forLocal: false)
 
@@ -2492,9 +2492,15 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
                                               options: [.urlReadingFileURLsOnly: true])
     }
 
+    /// A drag of files that do not exist yet — a mail out of Outlook, an attachment out of Mail.
+    private func carriesOnlyPromises(_ info: NSDraggingInfo) -> Bool {
+        !canReadFileURLs(info) && !FileDragPasteboard.filePromises(from: info).isEmpty
+    }
+
     func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo,
                    proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
-        guard canReadFileURLs(info) else { cancelSpringLoad(); return [] }
+        let promised = carriesOnlyPromises(info)
+        guard promised || canReadFileURLs(info) else { cancelSpringLoad(); return [] }
         // If the pointer is over a folder row, target that folder ("drop into"); the
         // whole panel otherwise (F-067). Use the pointer's row, not the proposed
         // between-rows row, so we can offer a `.on` drop.
@@ -2507,20 +2513,35 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             tableView.setDropRow(-1, dropOperation: .above)
             cancelSpringLoad()
         }
-        return dropIsMove() ? .move : .copy
+        // A promised file has no original to move away from: it is always a copy.
+        return promised ? .copy : (dropIsMove() ? .move : .copy)
     }
 
     func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo,
                    row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
         cancelSpringLoad()
+        // A `.on` drop onto a folder row copies/moves into that folder (F-067).
+        let target = (dropOperation == .on) ? folderRow(row) : nil
+        if carriesOnlyPromises(info) {
+            dropPromises(FileDragPasteboard.filePromises(from: info), into: target)
+            return true
+        }
         guard let urls = info.draggingPasteboard.readObjects(
                 forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
               !urls.isEmpty else { return false }
-        // A `.on` drop onto a folder row copies/moves into that folder (F-067).
-        let target = (dropOperation == .on) ? folderRow(row) : nil
         // `draggingSource` is nil exactly when the drag began in another application.
         onDropFiles?(urls.map { $0.path }, dropIsMove(), target, info.draggingSource == nil)
         return true
+    }
+
+    /// Files a drop only promised — a mail out of Outlook. The source writes them into a staging folder
+    /// first; from there they are moved on like any other drop, so remote panels and the conflict
+    /// dialog behave the same.
+    private func dropPromises(_ promises: [NSFilePromiseReceiver], into target: String?) {
+        FileDragPasteboard.receive(promises) { [weak self] paths in
+            guard !paths.isEmpty else { NSSound.beep(); return }
+            self?.onDropFiles?(paths, true, target, false)
+        }
     }
 
     #if DEBUG

@@ -135,7 +135,7 @@ final class IconGridView: NSView, NSDraggingSource {
         clip.postsBoundsChangedNotifications = true
         NotificationCenter.default.addObserver(self, selector: #selector(clipScrolled),
                                                name: NSView.boundsDidChangeNotification, object: clip)
-        registerForDraggedTypes([.fileURL])
+        registerForDraggedTypes(FileDragPasteboard.draggedTypes)   // file URLs and file promises (Outlook mail)
         relayout()
     }
     @objc private func clipResized() { relayout(); needsDisplay = true; onVisibleRangeChanged?() }
@@ -355,15 +355,34 @@ final class IconGridView: NSView, NSDraggingSource {
                                               options: [.urlReadingFileURLsOnly: true])
     }
 
+    /// A drag of files that do not exist yet — a mail out of Outlook, an attachment out of Mail.
+    private func carriesOnlyPromises(_ info: NSDraggingInfo) -> Bool {
+        !canReadFileURLs(info) && !FileDragPasteboard.filePromises(from: info).isEmpty
+    }
+
+    private func dropOperation(for sender: NSDraggingInfo) -> NSDragOperation {
+        if canReadFileURLs(sender) { return dropIsMove() ? .move : .copy }
+        // A promised file has no original to move away from: it is always a copy.
+        return carriesOnlyPromises(sender) ? .copy : []
+    }
+
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        canReadFileURLs(sender) ? (dropIsMove() ? .move : .copy) : []
+        dropOperation(for: sender)
     }
 
     override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
-        canReadFileURLs(sender) ? (dropIsMove() ? .move : .copy) : []
+        dropOperation(for: sender)
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        if carriesOnlyPromises(sender) {
+            // Staged first, then moved on like any other drop — see `FileDragPasteboard.receive`.
+            FileDragPasteboard.receive(FileDragPasteboard.filePromises(from: sender)) { [weak self] paths in
+                guard !paths.isEmpty else { NSSound.beep(); return }
+                self?.onDropFiles?(paths, true, false)
+            }
+            return true
+        }
         guard let urls = sender.draggingPasteboard.readObjects(
                 forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL],
               !urls.isEmpty else { return false }

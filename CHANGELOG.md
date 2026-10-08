@@ -97,6 +97,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Fixed
 
+- **A mail dragged out of Outlook could not be dropped on a panel.** Outlook — like Mail for an
+  attachment and Photos for a picture — offers a file that is written only once the drop target names
+  a folder for it, and the panels took nothing but files that already existed. The panel list, the
+  icon views, the workspace chips and the button bar's buttons now take such a drop: the mail arrives
+  as an `.eml` in the folder it was dropped on, through the same copy as every other drop, conflict
+  dialog included. On a workspace chip it goes into that workspace's active folder, never its basket.
 - **The Rebase window's heading was garbled in Chinese, Korean and Russian.** Their translations of
   "%lld commit(s) ahead of %@" put the two values in the other order without saying so, which hands
   the count to the text placeholder. Positions now say which is which, and the plugin translation check

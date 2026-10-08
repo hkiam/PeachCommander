@@ -99,7 +99,7 @@ final class WorkspaceBarView: NSView {
         super.init(frame: frameRect)
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
-        registerForDraggedTypes([.fileURL])
+        registerForDraggedTypes(FileDragPasteboard.draggedTypes)   // file URLs and file promises (Outlook mail)
     }
 
     required init?(coder: NSCoder) {
@@ -388,7 +388,7 @@ final class WorkspaceBarView: NSView {
     /// Re-read on every update so the badge on the drag image follows the modifier key under the
     /// user's thumb rather than whatever was held when the drag began.
     private func dragUpdate(_ sender: NSDraggingInfo) -> NSDragOperation {
-        guard onDropFiles != nil, !FileDragPasteboard.paths(from: sender).isEmpty else {
+        guard onDropFiles != nil, FileDragPasteboard.carriesFiles(sender) else {
             dropTarget = nil
             return []
         }
@@ -397,15 +397,30 @@ final class WorkspaceBarView: NSView {
         // Free space is refused: unlike the button bar there is nothing sensible to create there, and
         // an accepted drop that does nothing is worse than one that was never offered.
         guard dropTarget != nil else { return [] }
-        return operation(for: sender)
+        return carriesOnlyPromises(sender) ? .copy : operation(for: sender)
+    }
+
+    /// A drag of files that do not exist yet — a mail out of Outlook, an attachment out of Mail.
+    private func carriesOnlyPromises(_ sender: NSDraggingInfo) -> Bool {
+        FileDragPasteboard.paths(from: sender).isEmpty && !FileDragPasteboard.filePromises(from: sender).isEmpty
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         defer { dropTarget = nil }
-        let paths = FileDragPasteboard.paths(from: sender)
         let point = convert(sender.draggingLocation, from: nil)
         guard let index = chipFrames.firstIndex(where: { $0.contains(point) }),
-              !paths.isEmpty, let onDropFiles else { return false }
+              let onDropFiles else { return false }
+        if carriesOnlyPromises(sender) {
+            // Never into the basket: its entry would point into the staging folder, at a file that is
+            // only passing through. Into the workspace's active folder instead, moved out of staging.
+            FileDragPasteboard.receive(FileDragPasteboard.filePromises(from: sender)) { paths in
+                guard !paths.isEmpty else { NSSound.beep(); return }
+                onDropFiles(index, paths, .moveIntoActiveFolder)
+            }
+            return true
+        }
+        let paths = FileDragPasteboard.paths(from: sender)
+        guard !paths.isEmpty else { return false }
         onDropFiles(index, paths, intent(for: sender))
         return true
     }
