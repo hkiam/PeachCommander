@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander je zgrajen za tipkovnico: skoraj vse, kar počnete z miško, ima tipko. Ta stran združuje privzete bližnjice po opravilu, tako da lahko najdete tisto, ki jo potrebujete, na prvi pogled. Tipke, prikazane tu, so iz privzete sheme **TC Classic** (tiste, ki jo pričakujejo dolgoletni uporabniki Total Commander). Če imate raje tipke v slogu Mac, preklopite na shemo **macOS Native** v meniju Konfiguracija, kjer se ista dejanja premaknejo na kombinacije s tipko Command (na primer Cmd+C za kopiranje, Cmd+F za iskanje). Lahko tudi preglasite katero koli posamezno tipko.
+Peach Commander je zgrajen za tipkovnico: skoraj vse, kar počnete z miško, ima tipko. Ta stran združuje privzete bližnjice po opravilu, tako da lahko najdete tisto, ki jo potrebujete, na prvi pogled. Tipke, prikazane tu, so iz privzete sheme **Total Commander (klasičen)** (tiste, ki jo pričakujejo dolgoletni uporabniki Total Commander). Če imate raje tipke v slogu Mac, preklopite na shemo **macOS** na strani **Tipkovnica** v **Konfiguracija ▸ Nastavitve…**, kjer se ista dejanja premaknejo na kombinacije s tipko Command (na primer Cmd+C za kopiranje, Cmd+F za iskanje). Lahko tudi preglasite katero koli posamezno tipko.
 
 ## Funkcijske tipke
 
@@ -107,6 +107,6 @@ Mnogo osnovnih dejanj je na funkcijskih tipkah. Če pritisk F5 spremeni glasnost
 
 ## Opombe
 
-- Nekaj tipk TC Classic je v sporu s sistemskimi bližnjicami macOS. Ctrl+Levo, Ctrl+Desno, Ctrl+Gor in Ctrl+Dol uporabljata Mission Control in Spaces; če ne delujejo v Peach Commander, jih prilagodite v Sistemskih nastavitvah ali jih ponovno preslikajte v meniju Konfiguracija.
-- Shema macOS Native premakne pogosta dejanja na tipko Command, medtem ko dejanja funkcijskih tipk ostanejo enaka. Preklopite shemo, ali spremenite katero koli posamezno tipko, iz menija Konfiguracija.
+- Nekaj tipk sheme Total Commander (klasičen) je v sporu s sistemskimi bližnjicami macOS. Ctrl+Levo, Ctrl+Desno, Ctrl+Gor in Ctrl+Dol uporabljata Mission Control in Spaces; če ne delujejo v Peach Commander, jih prilagodite v Sistemskih nastavitvah ali jih ponovno preslikajte v **Konfiguracija ▸ Uredi bližnjice…**.
+- Shema macOS premakne pogosta dejanja na tipko Command, medtem ko dejanja funkcijskih tipk ostanejo enaka. Shemo preklopite na strani **Tipkovnica** v **Konfiguracija ▸ Nastavitve…**, katero koli posamezno tipko pa spremenite v **Konfiguracija ▸ Uredi bližnjice…**.
 - Pritisnite Esc, da prekličete pogovorno okno, počistite ukazno vrstico ali zaprete podokno Hitrega ogleda.

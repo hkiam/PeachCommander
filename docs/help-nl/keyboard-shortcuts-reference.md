@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander is gemaakt voor het toetsenbord: bijna alles wat je met de muis doet, heeft een toets. Deze pagina groepeert de standaardsneltoetsen per taak, zodat je in één oogopslag de juiste vindt. De hier getoonde toetsen zijn het standaardschema **TC Classic** (dat langdurige Total Commander-gebruikers verwachten). Verkies je Mac-toetsen, schakel dan over naar het schema **macOS Native** in het menu Configuratie, waar dezelfde acties naar Command-combinaties verhuizen (bijvoorbeeld Cmd+C om te kopiëren, Cmd+F om te zoeken). Je kunt ook elke afzonderlijke toets overschrijven.
+Peach Commander is gemaakt voor het toetsenbord: bijna alles wat je met de muis doet, heeft een toets. Deze pagina groepeert de standaardsneltoetsen per taak, zodat je in één oogopslag de juiste vindt. De hier getoonde toetsen zijn het standaardschema **Total Commander (klassiek)** (dat langdurige Total Commander-gebruikers verwachten). Verkies je Mac-toetsen, schakel dan over naar het schema **macOS** op de pagina **Toetsenbord** van **Configuratie ▸ Instellingen…**, waar dezelfde acties naar Command-combinaties verhuizen (bijvoorbeeld Cmd+C om te kopiëren, Cmd+F om te zoeken). Je kunt ook elke afzonderlijke toets overschrijven.
 
 ## Functietoetsen
 
@@ -107,6 +107,6 @@ Veel kernacties zitten op de functietoetsen. Verandert F5 je volume in plaats va
 
 ## Opmerkingen
 
-- Enkele TC Classic-toetsen botsen met macOS-systeemsneltoetsen. Ctrl+Left, Ctrl+Right, Ctrl+Up en Ctrl+Down worden door Mission Control en Spaces gebruikt; werken ze niet in Peach Commander, pas ze dan aan in Systeeminstellingen of wijs ze opnieuw toe in het menu Configuratie.
-- Het schema macOS Native verplaatst veelgebruikte acties naar de Command-toets terwijl de functietoetsacties hetzelfde blijven. Wissel van schema, of wijzig een enkele toets, via het menu Configuratie.
+- Enkele toetsen van het schema Total Commander (klassiek) botsen met macOS-systeemsneltoetsen. Ctrl+Left, Ctrl+Right, Ctrl+Up en Ctrl+Down worden door Mission Control en Spaces gebruikt; werken ze niet in Peach Commander, pas ze dan aan in Systeeminstellingen of wijs ze opnieuw toe in **Configuratie ▸ Sneltoetsen bewerken…**.
+- Het schema macOS verplaatst veelgebruikte acties naar de Command-toets terwijl de functietoetsacties hetzelfde blijven. Wissel van schema op de pagina **Toetsenbord** van **Configuratie ▸ Instellingen…**, en wijzig een enkele toets in **Configuratie ▸ Sneltoetsen bewerken…**.
 - Druk op Esc om een venster te annuleren, de opdrachtregel te wissen of het Quick View-paneel te sluiten.

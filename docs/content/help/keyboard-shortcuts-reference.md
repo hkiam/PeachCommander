@@ -7,7 +7,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander is built for the keyboard: almost everything you do with the mouse has a key for it. This page groups the default shortcuts by task so you can find the one you need at a glance. Keys shown here are the default **TC Classic** scheme (the one long-time Total Commander users expect). If you prefer Mac-style keys, switch to the **macOS Native** scheme in the Configuration menu, where the same actions move to Command-key combinations (for example Cmd+C to copy, Cmd+F to search). You can also override any individual key.
+Peach Commander is built for the keyboard: almost everything you do with the mouse has a key for it. This page groups the default shortcuts by task so you can find the one you need at a glance. Keys shown here are the default **Total Commander (classic)** scheme (the one long-time Total Commander users expect). If you prefer Mac-style keys, switch to the **macOS** scheme on the **Keyboard** page of **Configuration ▸ Settings…**, where the same actions move to Command-key combinations (for example Cmd+C to copy, Cmd+F to search). You can also override any individual key.
 
 ## Function keys
 
@@ -108,6 +108,6 @@ Many core actions live on the function keys. If pressing F5 changes your volume 
 
 ## Notes
 
-- A few TC Classic keys clash with macOS system shortcuts. Ctrl+Left, Ctrl+Right, Ctrl+Up, and Ctrl+Down are used by Mission Control and Spaces; if they don't work in Peach Commander, adjust them in System Settings or remap them in the Configuration menu.
-- The macOS Native scheme moves common actions to the Command key while keeping the function-key actions the same. Switch schemes, or change any single key, from the Configuration menu.
+- A few keys of the Total Commander (classic) scheme clash with macOS system shortcuts. Ctrl+Left, Ctrl+Right, Ctrl+Up, and Ctrl+Down are used by Mission Control and Spaces; if they don't work in Peach Commander, adjust them in System Settings or remap them in **Configuration ▸ Edit Shortcuts…**.
+- The macOS scheme moves common actions to the Command key while keeping the function-key actions the same. Switch schemes on the **Keyboard** page of **Configuration ▸ Settings…**, and change any single key in **Configuration ▸ Edit Shortcuts…**.
 - Press Esc to cancel a dialog, clear the command line, or close the Quick View panel.

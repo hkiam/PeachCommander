@@ -10,22 +10,22 @@ Peach Commander je postavený tak, aby sa ovládal z klávesnice. Dodáva sa s d
 
 ## Prepnutie schémy klávesnice
 
-1. Otvorte ponuku **Konfigurácia**.
-2. Vyberte **Schéma klávesnice**, potom vyberte jednu:
-   - **TC Classic** (predvolená) zachováva tradičné klávesy, s kombináciami založenými na Ctrl ako Ctrl+R na obnovenie panela.
-   - **macOS Native** mapuje tie isté akcie na známe klávesy Mac tam, kde to dáva zmysel, napríklad Cmd+C na kopírovanie súborov a Cmd+F na hľadanie.
-3. Zaškrtnutie zobrazuje aktívnu schému. Zmena sa prejaví okamžite v ponukách a lište skratiek.
+1. Otvorte **Nastavenia** (Cmd+, alebo **Konfigurácia > Nastavenia…**) a vyberte stránku **Klávesnica**.
+2. V ponuke **Schéma** vyberte schému:
+   - **Total Commander (klasický)** (predvolená) zachováva tradičné klávesy, s kombináciami založenými na Ctrl ako Ctrl+R na obnovenie panela.
+   - **macOS** mapuje tie isté akcie na známe klávesy Mac tam, kde to dáva zmysel, napríklad Cmd+C na kopírovanie súborov a Cmd+F na hľadanie.
+3. Zmena sa prejaví okamžite v ponukách a lište skratiek. Tlačidlo **Upraviť skratky…** je hneď pod ňou, pretože jednotlivé preradenia sa vrstvia navrch schémy, ktorú ste vybrali.
 
 ## Prispôsobenie skratiek
 
-1. Vyberte **Konfigurácia > Klávesové skratky…**.
+1. Vyberte **Konfigurácia > Upraviť skratky…**, alebo kliknite na **Upraviť skratky…** na stránke Klávesnica v Nastaveniach.
 2. Nájdite príkaz pomocou vyhľadávacieho poľa, potom vyberte jeho riadok.
-3. Kliknite na **Zaznamenať…** a stlačte požadovanú kombináciu klávesov. Priradí sa okamžite.
+3. Kliknite na **Nahrať…** a stlačte požadovanú kombináciu klávesov. Priradí sa okamžite.
 4. Ak túto kombináciu už používal iný príkaz, upozornenie vám povie, ktorému príkazu bola odobratá.
 5. Použite **Vymazať** na odstránenie skratky príkazu, alebo **Obnoviť predvolené** na zahodenie všetkých vašich zmien a návrat k pôvodným klávesám schémy.
 
 ![Editor klávesových skratiek uvádzajúci príkazy s ich priradenými klávesmi](screenshots/keys-editor.png)
-*(Obrázok: nájdite príkaz, potom použite Zaznamenať, Vymazať alebo Obnoviť predvolené na zmenu jeho skratky.)*
+*(Obrázok: nájdite príkaz, potom použite Nahrať, Vymazať alebo Obnoviť predvolené na zmenu jeho skratky.)*
 
 ## Prehliadanie všetkých príkazov
 
@@ -40,9 +40,8 @@ Peach Commander je postavený tak, aby sa ovládal z klávesnice. Dodáva sa s d
 
 | Akcia | Cesta v ponuke |
 |---|---|
-| Vybrať klasickú schému | Konfigurácia > Schéma klávesnice > TC Classic |
-| Vybrať schému Mac | Konfigurácia > Schéma klávesnice > macOS Native |
-| Upraviť skratky | Konfigurácia > Klávesové skratky… |
+| Vybrať schému | Nastavenia > Klávesnica > Schéma |
+| Upraviť skratky | Konfigurácia > Upraviť skratky… |
 | Prehliadať všetky príkazy | Konfigurácia > Prehliadač príkazov… |
 | Obnoviť aktívny panel | F2 (aj Ctrl+R) |
 

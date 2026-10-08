@@ -293,7 +293,7 @@ Because the beta builds are not signed or notarized, Gatekeeper blocks the first
 4. Select files (**Insert** / **Space**), then use the function keys: **F3** View · **F4** Edit · **F5** Copy · **F6** Move · **F7** New folder · **F8** Delete.
 5. Press **F1** for the built-in Help Book, in your language.
 
-Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboard Scheme ▸ TC Classic**), or switch to Mac-style shortcuts (**macOS Native**).
+Coming from Total Commander? Keep the keys you know (**Total Commander (classic)**, the default), or switch to Mac-style shortcuts (**macOS**) on the **Keyboard** page of **Configuration ▸ Settings…**.
 
 ## 🗺️ Roadmap
 

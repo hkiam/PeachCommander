@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander est conçu pour le clavier : presque tout ce que vous faites à la souris a une touche. Cette page regroupe les raccourcis par défaut par tâche pour que vous trouviez celui qu'il vous faut d'un coup d'œil. Les touches indiquées ici sont celles du schéma **TC Classic** par défaut (celui qu'attendent les utilisateurs de longue date de Total Commander). Si vous préférez les touches à la façon Mac, basculez vers le schéma **macOS Native** dans le menu Configuration, où les mêmes actions passent à des combinaisons avec la touche Commande (par exemple Cmd+C pour copier, Cmd+F pour rechercher). Vous pouvez aussi remplacer n'importe quelle touche individuelle.
+Peach Commander est conçu pour le clavier : presque tout ce que vous faites à la souris a une touche. Cette page regroupe les raccourcis par défaut par tâche pour que vous trouviez celui qu'il vous faut d'un coup d'œil. Les touches indiquées ici sont celles du schéma **Total Commander (classique)** par défaut (celui qu'attendent les utilisateurs de longue date de Total Commander). Si vous préférez les touches à la façon Mac, basculez vers le schéma **macOS** dans la page **Clavier** de **Configuration ▸ Réglages…**, où les mêmes actions passent à des combinaisons avec la touche Commande (par exemple Cmd+C pour copier, Cmd+F pour rechercher). Vous pouvez aussi remplacer n'importe quelle touche individuelle.
 
 ## Touches de fonction
 
@@ -107,6 +107,6 @@ De nombreuses actions fondamentales sont sur les touches de fonction. Si appuyer
 
 ## Remarques
 
-- Quelques touches TC Classic entrent en conflit avec les raccourcis système macOS. Ctrl+Gauche, Ctrl+Droite, Ctrl+Haut et Ctrl+Bas sont utilisés par Mission Control et Spaces ; s'ils ne fonctionnent pas dans Peach Commander, ajustez-les dans les Réglages Système ou réassignez-les dans le menu Configuration.
-- Le schéma macOS Native déplace les actions courantes vers la touche Commande tout en conservant les actions des touches de fonction. Changez de schéma, ou changez n'importe quelle touche, depuis le menu Configuration.
+- Quelques touches du schéma Total Commander (classique) entrent en conflit avec les raccourcis système macOS. Ctrl+Gauche, Ctrl+Droite, Ctrl+Haut et Ctrl+Bas sont utilisés par Mission Control et Spaces ; s'ils ne fonctionnent pas dans Peach Commander, ajustez-les dans les Réglages Système ou réassignez-les dans **Configuration ▸ Modifier les raccourcis…**.
+- Le schéma macOS déplace les actions courantes vers la touche Commande tout en conservant les actions des touches de fonction. Changez de schéma dans la page **Clavier** de **Configuration ▸ Réglages…**, et changez n'importe quelle touche dans **Configuration ▸ Modifier les raccourcis…**.
 - Appuyez sur Échap pour annuler un dialogue, effacer la ligne de commande ou fermer le panneau d'aperçu rapide.

@@ -21,8 +21,8 @@ Peach Commander ships with two keyboard layouts. Pick the one that matches how y
 To switch:
 
 1. Open the **Configuration** menu.
-2. Open **Settings** (Cmd+,) and pick the **Keys** page.
-3. Select **TC Classic**.
+2. Open **Settings…** (Cmd+,) and pick the **Keyboard** page.
+3. Select **Total Commander (classic)** in the **Scheme** menu.
 
 That single choice restores the function-key commands you have been pressing for years. For the full list of keys in each scheme, see [Keyboard shortcuts](keyboard-shortcuts.md).
 
@@ -95,7 +95,7 @@ Because the type model matches, an existing Total Commander plugin can be **sour
 ## Frequently asked questions
 
 **Will my F-keys work right away?**
-Yes, once you select the TC Classic keyboard scheme (Step 1). The default on a fresh install may be macOS-native, so check that first if F5 does not copy.
+Yes — the Total Commander (classic) scheme is the default on a fresh install. If F5 does not copy, someone switched to the macOS scheme; switch back as in Step 1.
 
 **Can I bring my passwords across?**
 No, and this is on purpose. You re-enter each FTP/SFTP password once, and macOS then stores it securely in the Keychain.

@@ -91,7 +91,7 @@ Maybe you want one of these actions — or any of the roughly 150 built-in comma
 
 Use **Clear** to remove a command's shortcut, or **Restore Defaults** to discard all your changes and return to the current scheme's original keys.
 
-> **Two schemes to start from.** If you're new to shortcuts, first pick the scheme closest to your habits on the **Keys** page in Settings (Cmd+,) — **TC Classic** (Ctrl-based, the default) or **macOS Native** (Cmd-based). Your personal rebindings layer on top and survive switching schemes. Full details are in [Keyboard & shortcuts](keyboard-shortcuts.md).
+> **Two schemes to start from.** If you're new to shortcuts, first pick the scheme closest to your habits on the **Keyboard** page in Settings (Cmd+,) — **Total Commander (classic)** (Ctrl-based, the default) or **macOS** (Cmd-based). Your personal rebindings layer on top and survive switching schemes. Full details are in [Keyboard & shortcuts](keyboard-shortcuts.md).
 
 **Not sure which command to bind?** Choose **Configuration > Command Browser…**, search by name or description, and double-click to run a command on the active panel. It's the quickest way to discover what's available before you assign a key.
 

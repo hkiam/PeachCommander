@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander jest zbudowany dla klawiatury: prawie wszystko, co robisz myszą, ma klawisz. Ta strona grupuje domyślne skróty według zadania, dzięki czemu możesz znaleźć potrzebny na pierwszy rzut oka. Klawisze pokazane tutaj pochodzą z domyślnego schematu **TC Classic** (tego, którego oczekują wieloletni użytkownicy Total Commandera). Jeśli wolisz klawisze w stylu Mac, przełącz się na schemat **macOS Native** w menu Konfiguracja, gdzie te same akcje przechodzą na kombinacje z klawiszem Command (na przykład Cmd+C do kopiowania, Cmd+F do wyszukiwania). Możesz też zastąpić dowolny pojedynczy klawisz.
+Peach Commander jest zbudowany dla klawiatury: prawie wszystko, co robisz myszą, ma klawisz. Ta strona grupuje domyślne skróty według zadania, dzięki czemu możesz znaleźć potrzebny na pierwszy rzut oka. Klawisze pokazane tutaj pochodzą z domyślnego schematu **Total Commander (klasyczny)** (tego, którego oczekują wieloletni użytkownicy Total Commandera). Jeśli wolisz klawisze w stylu Mac, przełącz się na schemat **macOS** na stronie **Klawiatura** w **Konfiguracja ▸ Ustawienia…**, gdzie te same akcje przechodzą na kombinacje z klawiszem Command (na przykład Cmd+C do kopiowania, Cmd+F do wyszukiwania). Możesz też zastąpić dowolny pojedynczy klawisz.
 
 ## Klawisze funkcyjne
 
@@ -107,6 +107,6 @@ Wiele podstawowych akcji znajduje się na klawiszach funkcyjnych. Jeśli naciśn
 
 ## Uwagi
 
-- Kilka klawiszy TC Classic koliduje ze skrótami systemowymi macOS. Ctrl+Lewo, Ctrl+Prawo, Ctrl+Góra i Ctrl+Dół są używane przez Mission Control i Spaces; jeśli nie działają w Peach Commanderze, dostosuj je w Ustawieniach systemowych lub przemapuj je w menu Konfiguracja.
-- Schemat macOS Native przenosi popularne akcje na klawisz Command, zachowując akcje klawiszy funkcyjnych bez zmian. Przełącz schemat lub zmień dowolny pojedynczy klawisz z menu Konfiguracja.
+- Kilka klawiszy schematu Total Commander (klasyczny) koliduje ze skrótami systemowymi macOS. Ctrl+Lewo, Ctrl+Prawo, Ctrl+Góra i Ctrl+Dół są używane przez Mission Control i Spaces; jeśli nie działają w Peach Commanderze, dostosuj je w Ustawieniach systemowych lub przemapuj je w **Konfiguracja ▸ Edytuj skróty…**.
+- Schemat macOS przenosi popularne akcje na klawisz Command, zachowując akcje klawiszy funkcyjnych bez zmian. Schemat przełączysz na stronie **Klawiatura** w **Konfiguracja ▸ Ustawienia…**, a dowolny pojedynczy klawisz zmienisz w **Konfiguracja ▸ Edytuj skróty…**.
 - Naciśnij Esc, aby anulować okno dialogowe, wyczyścić wiersz poleceń lub zamknąć panel Szybkiego podglądu.

@@ -10,22 +10,22 @@ Peach Commander está diseñado para controlarse desde el teclado. Viene con dos
 
 ## Cambiar de esquema de teclado
 
-1. Abra el menú **Configuración**.
-2. Elija **Esquema de teclado** y, a continuación, seleccione uno:
-   - **TC Classic** (el predeterminado) mantiene las teclas tradicionales, con combinaciones basadas en Ctrl como Ctrl+R para actualizar un panel.
-   - **macOS Native** asigna las mismas acciones a las teclas habituales de Mac cuando tiene sentido, por ejemplo Cmd+C para copiar archivos y Cmd+F para buscar.
-3. Una marca de verificación indica el esquema activo. El cambio surte efecto de inmediato en los menús y en la barra de atajos.
+1. Abra **Ajustes** (Cmd+, o **Configuración > Ajustes…**) y elija la página **Teclado**.
+2. Elija un esquema en el menú **Esquema**:
+   - **Total Commander (clásico)** (el predeterminado) mantiene las teclas tradicionales, con combinaciones basadas en Ctrl como Ctrl+R para actualizar un panel.
+   - **macOS** asigna las mismas acciones a las teclas habituales de Mac cuando tiene sentido, por ejemplo Cmd+C para copiar archivos y Cmd+F para buscar.
+3. El cambio surte efecto de inmediato en los menús y en la barra de atajos. **Editar atajos…** está justo debajo, porque las reasignaciones individuales se superponen al esquema que haya elegido.
 
 ## Personalizar los atajos
 
-1. Elija **Configuración > Atajos de teclado…**.
+1. Elija **Configuración > Editar atajos…**, o haga clic en **Editar atajos…** en la página Teclado de Ajustes.
 2. Encuentre un comando usando el campo de búsqueda y, a continuación, seleccione su fila.
 3. Haga clic en **Grabar…** y pulse la combinación de teclas que quiera. Se asigna de inmediato.
 4. Si esa combinación ya la usaba otro comando, un aviso le indica de qué comando se ha quitado.
-5. Use **Borrar** para eliminar el atajo de un comando, o **Restaurar valores predeterminados** para descartar todos sus cambios y volver a las teclas originales del esquema.
+5. Use **Borrar** para eliminar el atajo de un comando, o **Restaurar valores por omisión** para descartar todos sus cambios y volver a las teclas originales del esquema.
 
 ![El editor de atajos de teclado con una lista de comandos y sus teclas asignadas](screenshots/keys-editor.png)
-*(Figura: Busque un comando y, a continuación, use Grabar, Borrar o Restaurar valores predeterminados para cambiar su atajo.)*
+*(Figura: Busque un comando y, a continuación, use Grabar, Borrar o Restaurar valores por omisión para cambiar su atajo.)*
 
 ## Explorar todos los comandos
 
@@ -40,9 +40,8 @@ Peach Commander está diseñado para controlarse desde el teclado. Viene con dos
 
 | Acción | Ruta de menú |
 |---|---|
-| Elegir el esquema clásico | Configuración > Esquema de teclado > TC Classic |
-| Elegir el esquema de Mac | Configuración > Esquema de teclado > macOS Native |
-| Editar los atajos | Configuración > Atajos de teclado… |
+| Elegir un esquema | Ajustes > Teclado > Esquema |
+| Editar los atajos | Configuración > Editar atajos… |
 | Explorar todos los comandos | Configuración > Explorador de comandos… |
 | Actualizar el panel activo | F2 (también Ctrl+R) |
 

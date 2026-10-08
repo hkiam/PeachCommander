@@ -10,22 +10,22 @@ A Peach Commandert billentyűzetről való vezérlésre építették. Két kész
 
 ## Billentyűzetséma váltása
 
-1. Nyissa meg a **Konfiguráció** menüt.
-2. Válassza a **Billentyűzetséma** lehetőséget, majd válasszon egyet:
-   - **TC Classic** (alapértelmezett) megtartja a hagyományos billentyűket, Ctrl-alapú kombinációkkal, mint a Ctrl+R egy panel frissítéséhez.
-   - **macOS Native** ugyanazokat a műveleteket ismerős Mac-billentyűkre képezi le, ahol értelme van, például a Cmd+C fájlok másolásához és a Cmd+F kereséshez.
-3. Egy pipa mutatja az aktív sémát. A változás azonnal életbe lép a menükben és a billentyűparancs-sávban.
+1. Nyissa meg a **Beállítások** ablakot (Cmd+, vagy **Konfiguráció > Beállítások…**), és válassza a **Billentyűzet** oldalt.
+2. Válasszon egy sémát a **Séma** menüből:
+   - **Total Commander (klasszikus)** (alapértelmezett) megtartja a hagyományos billentyűket, Ctrl-alapú kombinációkkal, mint a Ctrl+R egy panel frissítéséhez.
+   - **macOS** ugyanazokat a műveleteket ismerős Mac-billentyűkre képezi le, ahol értelme van, például a Cmd+C fájlok másolásához és a Cmd+F kereséshez.
+3. A változás azonnal életbe lép a menükben és a billentyűparancs-sávban. A **Gyorsbillentyűk szerkesztése…** gomb közvetlenül alatta található, mert az egyes újrahozzárendelések a választott séma tetejére rétegződnek.
 
 ## Billentyűparancsok testreszabása
 
-1. Válassza a **Konfiguráció > Billentyűparancsok…** lehetőséget.
+1. Válassza a **Konfiguráció > Gyorsbillentyűk szerkesztése…** lehetőséget, vagy kattintson a **Gyorsbillentyűk szerkesztése…** gombra a Beállítások Billentyűzet oldalán.
 2. Keressen meg egy parancsot a keresőmező segítségével, majd jelölje ki a sorát.
 3. Kattintson a **Rögzítés…** gombra és nyomja meg a kívánt billentyűkombinációt. Azonnal hozzárendelődik.
 4. Ha azt a kombinációt már egy másik parancs használta, egy értesítés megmondja, melyik parancstól vették el.
-5. Használja a **Törlés**-t egy parancs billentyűparancsának eltávolításához, vagy az **Alapértelmezések visszaállítása**-t az összes változtatása elvetéséhez és a séma eredeti billentyűihez való visszatéréshez.
+5. Használja a **Törlés**-t egy parancs billentyűparancsának eltávolításához, vagy az **Alapértékek visszaállítása**-t az összes változtatása elvetéséhez és a séma eredeti billentyűihez való visszatéréshez.
 
 ![A billentyűparancs-szerkesztő felsorolja a parancsokat a hozzárendelt billentyűikkel](screenshots/keys-editor.png)
-*(Ábra: keressen egy parancsot, majd használja a Rögzítés, Törlés vagy Alapértelmezések visszaállítása lehetőséget a billentyűparancsa megváltoztatásához.)*
+*(Ábra: keressen egy parancsot, majd használja a Rögzítés, Törlés vagy Alapértékek visszaállítása lehetőséget a billentyűparancsa megváltoztatásához.)*
 
 ## Az összes parancs böngészése
 
@@ -40,9 +40,8 @@ A Peach Commandert billentyűzetről való vezérlésre építették. Két kész
 
 | Művelet | Menüútvonal |
 |---|---|
-| A klasszikus séma választása | Konfiguráció > Billentyűzetséma > TC Classic |
-| A Mac-séma választása | Konfiguráció > Billentyűzetséma > macOS Native |
-| Billentyűparancsok szerkesztése | Konfiguráció > Billentyűparancsok… |
+| Séma választása | Beállítások > Billentyűzet > Séma |
+| Billentyűparancsok szerkesztése | Konfiguráció > Gyorsbillentyűk szerkesztése… |
 | Az összes parancs böngészése | Konfiguráció > Parancsböngésző… |
 | Az aktív panel frissítése | F2 (szintén Ctrl+R) |
 

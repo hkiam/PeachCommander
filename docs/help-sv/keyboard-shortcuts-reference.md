@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander är byggt för tangentbordet: nästan allt du gör med musen har en tangent för sig. Den här sidan grupperar standardkortkommandona efter uppgift så att du kan hitta det du behöver med en blick. Tangenterna som visas här är standardschemat **TC Classic** (det som mångåriga Total Commander-användare förväntar sig). Om du föredrar Mac-liknande tangenter, byt till schemat **macOS Native** i Konfiguration-menyn, där samma åtgärder flyttas till Command-tangentkombinationer (till exempel Cmd+C för att kopiera, Cmd+F för att söka). Du kan även åsidosätta valfri enskild tangent.
+Peach Commander är byggt för tangentbordet: nästan allt du gör med musen har en tangent för sig. Den här sidan grupperar standardkortkommandona efter uppgift så att du kan hitta det du behöver med en blick. Tangenterna som visas här är standardschemat **Total Commander (klassisk)** (det som mångåriga Total Commander-användare förväntar sig). Om du föredrar Mac-liknande tangenter, byt till schemat **macOS** på sidan **Tangentbord** i **Konfiguration ▸ Inställningar…**, där samma åtgärder flyttas till Command-tangentkombinationer (till exempel Cmd+C för att kopiera, Cmd+F för att söka). Du kan även åsidosätta valfri enskild tangent.
 
 ## Funktionstangenter
 
@@ -107,6 +107,6 @@ Många grundläggande åtgärder finns på funktionstangenterna. Om ett tryck p�
 
 ## Anteckningar
 
-- Ett fåtal TC Classic-tangenter krockar med macOS systemkortkommandon. Ctrl+Left, Ctrl+Right, Ctrl+Up och Ctrl+Down används av Mission Control och Spaces; om de inte fungerar i Peach Commander, justera dem i Systeminställningar eller mappa om dem i Konfiguration-menyn.
-- Schemat macOS Native flyttar vanliga åtgärder till Command-tangenten samtidigt som funktionstangentsåtgärderna behålls desamma. Byt schema, eller ändra valfri enskild tangent, från Konfiguration-menyn.
+- Ett fåtal tangenter i schemat Total Commander (klassisk) krockar med macOS systemkortkommandon. Ctrl+Left, Ctrl+Right, Ctrl+Up och Ctrl+Down används av Mission Control och Spaces; om de inte fungerar i Peach Commander, justera dem i Systeminställningar eller mappa om dem i **Konfiguration ▸ Redigera kortkommandon…**.
+- Schemat macOS flyttar vanliga åtgärder till Command-tangenten samtidigt som funktionstangentsåtgärderna behålls desamma. Byt schema på sidan **Tangentbord** i **Konfiguration ▸ Inställningar…**, och ändra valfri enskild tangent i **Konfiguration ▸ Redigera kortkommandon…**.
 - Tryck på Esc för att avbryta en dialog, rensa kommandoraden, eller stänga Quick View-panelen.

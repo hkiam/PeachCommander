@@ -10,22 +10,22 @@ Peach Commander er bygget for å styres fra tastaturet. Den leveres med to ferdi
 
 ## Bytt tastaturoppsett
 
-1. Åpne **Konfigurasjon**-menyen.
-2. Velg **Tastaturoppsett**, og velg deretter ett:
-   - **TC Classic** (standard) beholder de tradisjonelle tastene, med Ctrl-baserte kombinasjoner som Ctrl+R for å oppdatere et panel.
-   - **macOS Native** tilordner de samme handlingene til kjente Mac-taster der det gir mening, for eksempel Cmd+C for å kopiere filer og Cmd+F for å søke.
-3. Et hakemerke viser det aktive oppsettet. Endringen trer i kraft med en gang på tvers av menyene og snarveislinjen.
+1. Åpne **Innstillinger** (Cmd+, eller **Konfigurasjon > Innstillinger…**) og velg siden **Tastatur**.
+2. Velg et oppsett fra **Oppsett**-menyen:
+   - **Total Commander (classic)** (standard) beholder de tradisjonelle tastene, med Ctrl-baserte kombinasjoner som Ctrl+R for å oppdatere et panel.
+   - **macOS** tilordner de samme handlingene til kjente Mac-taster der det gir mening, for eksempel Cmd+C for å kopiere filer og Cmd+F for å søke.
+3. Endringen trer i kraft med en gang på tvers av menyene og snarveislinjen. **Rediger snarveier…** ligger rett under, fordi enkeltvise ombindinger legges oppå det oppsettet du valgte.
 
 ## Tilpass snarveier
 
-1. Velg **Konfigurasjon > Tastatursnarveier…**.
+1. Velg **Konfigurasjon > Rediger snarveier…**, eller klikk **Rediger snarveier…** på Tastatur-siden i Innstillinger.
 2. Finn en kommando med søkefeltet, og velg deretter raden dens.
 3. Klikk **Ta opp…** og trykk tastkombinasjonen du vil ha. Den tilordnes med en gang.
 4. Hvis den kombinasjonen allerede ble brukt av en annen kommando, forteller en melding hvilken kommando den ble tatt fra.
-5. Bruk **Tøm** for å fjerne en kommandos snarvei, eller **Gjenopprett standard** for å forkaste alle endringene dine og gå tilbake til oppsettets opprinnelige taster.
+5. Bruk **Tøm** for å fjerne en kommandos snarvei, eller **Gjenopprett standardverdier** for å forkaste alle endringene dine og gå tilbake til oppsettets opprinnelige taster.
 
 ![Tastatursnarveisredigereren som lister kommandoer med de tilordnede tastene](screenshots/keys-editor.png)
-*(Figur: Søk etter en kommando, og bruk deretter Ta opp, Tøm eller Gjenopprett standard for å endre snarveien.)*
+*(Figur: Søk etter en kommando, og bruk deretter Ta opp, Tøm eller Gjenopprett standardverdier for å endre snarveien.)*
 
 ## Bla gjennom alle kommandoer
 
@@ -40,9 +40,8 @@ Peach Commander er bygget for å styres fra tastaturet. Den leveres med to ferdi
 
 | Handling | Menybane |
 |---|---|
-| Velg det klassiske oppsettet | Konfigurasjon > Tastaturoppsett > TC Classic |
-| Velg Mac-oppsettet | Konfigurasjon > Tastaturoppsett > macOS Native |
-| Rediger snarveier | Konfigurasjon > Tastatursnarveier… |
+| Velg et oppsett | Innstillinger > Tastatur > Oppsett |
+| Rediger snarveier | Konfigurasjon > Rediger snarveier… |
 | Bla gjennom alle kommandoer | Konfigurasjon > Kommandoutforsker… |
 | Oppdater det aktive panelet | F2 (også Ctrl+R) |
 

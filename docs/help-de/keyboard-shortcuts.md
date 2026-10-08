@@ -10,22 +10,22 @@ Peach Commander ist dafür gebaut, von der Tastatur aus gesteuert zu werden. Er 
 
 ## Kurzbefehl-Schemata wechseln
 
-1. Öffnen Sie das Menü **Konfiguration**.
-2. Wählen Sie **Tastaturschema** und dann eines aus:
-   - **TC Classic** (die Voreinstellung) behält die traditionellen Tasten bei, mit Ctrl-basierten Kombinationen wie Ctrl+R zum Aktualisieren eines Panels.
-   - **macOS Native** bildet dieselben Aktionen dort, wo es sinnvoll ist, auf vertraute Mac-Tasten ab, zum Beispiel Cmd+C zum Kopieren von Dateien und Cmd+F zum Suchen.
-3. Ein Häkchen zeigt das aktive Schema an. Die Änderung wird sofort in den Menüs und der Kurzbefehlleiste wirksam.
+1. Öffnen Sie die **Einstellungen** (Cmd+, oder **Konfiguration > Einstellungen…**) und wählen Sie die Seite **Tastatur**.
+2. Wählen Sie im Menü **Schema** ein Schema aus:
+   - **Total Commander (klassisch)** (die Voreinstellung) behält die traditionellen Tasten bei, mit Ctrl-basierten Kombinationen wie Ctrl+R zum Aktualisieren eines Panels.
+   - **macOS** bildet dieselben Aktionen dort, wo es sinnvoll ist, auf vertraute Mac-Tasten ab, zum Beispiel Cmd+C zum Kopieren von Dateien und Cmd+F zum Suchen.
+3. Die Änderung wird sofort in den Menüs und der Kurzbefehlleiste wirksam. **Kürzel bearbeiten…** steht direkt darunter, denn einzelne Neubelegungen werden über das jeweils gewählte Schema gelegt.
 
 ## Kurzbefehle anpassen
 
-1. Wählen Sie **Konfiguration > Tastaturkurzbefehle…**.
+1. Wählen Sie **Konfiguration > Kürzel bearbeiten…** oder klicken Sie in den Einstellungen auf der Seite Tastatur auf **Kürzel bearbeiten…**.
 2. Finden Sie einen Befehl über das Suchfeld und wählen Sie dann seine Zeile aus.
 3. Klicken Sie auf **Aufnehmen…** und drücken Sie die gewünschte Tastenkombination. Sie wird sofort zugewiesen.
 4. Falls diese Kombination bereits von einem anderen Befehl verwendet wurde, teilt Ihnen ein Hinweis mit, von welchem Befehl sie übernommen wurde.
-5. Verwenden Sie **Löschen**, um den Kurzbefehl eines Befehls zu entfernen, oder **Standard wiederherstellen**, um alle Ihre Änderungen zu verwerfen und zu den Originaltasten des Schemas zurückzukehren.
+5. Verwenden Sie **Leeren**, um den Kurzbefehl eines Befehls zu entfernen, oder **Standardwerte wiederherstellen**, um alle Ihre Änderungen zu verwerfen und zu den Originaltasten des Schemas zurückzukehren.
 
 ![Der Editor für Tastaturkurzbefehle mit einer Liste von Befehlen und ihren zugewiesenen Tasten](screenshots/keys-editor.png)
-*(Abbildung: Suchen Sie einen Befehl und verwenden Sie dann Aufnehmen, Löschen oder Standard wiederherstellen, um seinen Kurzbefehl zu ändern.)*
+*(Abbildung: Suchen Sie einen Befehl und verwenden Sie dann Aufnehmen, Leeren oder Standardwerte wiederherstellen, um seinen Kurzbefehl zu ändern.)*
 
 ## Alle Befehle durchsuchen
 
@@ -40,9 +40,8 @@ Peach Commander ist dafür gebaut, von der Tastatur aus gesteuert zu werden. Er 
 
 | Aktion | Menüpfad |
 |---|---|
-| Das klassische Schema wählen | Konfiguration > Tastaturschema > TC Classic |
-| Das Mac-Schema wählen | Konfiguration > Tastaturschema > macOS Native |
-| Kurzbefehle bearbeiten | Konfiguration > Tastaturkurzbefehle… |
+| Ein Schema wählen | Einstellungen > Tastatur > Schema |
+| Kurzbefehle bearbeiten | Konfiguration > Kürzel bearbeiten… |
 | Alle Befehle durchsuchen | Konfiguration > Befehlsbrowser… |
 | Aktives Panel aktualisieren | F2 (auch Ctrl+R) |
 

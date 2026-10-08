@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander er bygget for tastaturet: nesten alt du gjør med musen har en tast for det. Denne siden grupperer standardsnarveiene etter oppgave, så du kan finne den du trenger med ett blikk. Tastene som vises her er standardoppsettet **TC Classic** (det som mangeårige Total Commander-brukere forventer). Foretrekker du Mac-stil-taster, bytt til **macOS Native**-oppsettet i Konfigurasjon-menyen, der de samme handlingene flytter til Command-tastkombinasjoner (for eksempel Cmd+C for å kopiere, Cmd+F for å søke). Du kan også overstyre hvilken som helst enkelttast.
+Peach Commander er bygget for tastaturet: nesten alt du gjør med musen har en tast for det. Denne siden grupperer standardsnarveiene etter oppgave, så du kan finne den du trenger med ett blikk. Tastene som vises her er standardoppsettet **Total Commander (classic)** (det som mangeårige Total Commander-brukere forventer). Foretrekker du Mac-stil-taster, bytt til **macOS**-oppsettet på siden **Tastatur** i **Konfigurasjon ▸ Innstillinger…**, der de samme handlingene flytter til Command-tastkombinasjoner (for eksempel Cmd+C for å kopiere, Cmd+F for å søke). Du kan også overstyre hvilken som helst enkelttast.
 
 ## Funksjonstaster
 
@@ -107,6 +107,6 @@ Mange kjernehandlinger bor på funksjonstastene. Hvis det å trykke F5 endrer vo
 
 ## Merknader
 
-- Noen få TC Classic-taster kolliderer med macOS-systemsnarveier. Ctrl+Venstre, Ctrl+Høyre, Ctrl+Opp og Ctrl+Ned brukes av Mission Control og Spaces; hvis de ikke virker i Peach Commander, juster dem i Systeminnstillinger eller tilordne dem på nytt i Konfigurasjon-menyen.
-- macOS Native-oppsettet flytter vanlige handlinger til Command-tasten mens det beholder funksjonstasthandlingene de samme. Bytt oppsett, eller endre hvilken som helst enkelttast, fra Konfigurasjon-menyen.
+- Noen få taster i Total Commander (classic)-oppsettet kolliderer med macOS-systemsnarveier. Ctrl+Venstre, Ctrl+Høyre, Ctrl+Opp og Ctrl+Ned brukes av Mission Control og Spaces; hvis de ikke virker i Peach Commander, juster dem i Systeminnstillinger eller tilordne dem på nytt i **Konfigurasjon ▸ Rediger snarveier…**.
+- macOS-oppsettet flytter vanlige handlinger til Command-tasten mens det beholder funksjonstasthandlingene de samme. Bytt oppsett på siden **Tastatur** i **Konfigurasjon ▸ Innstillinger…**, og endre hvilken som helst enkelttast i **Konfigurasjon ▸ Rediger snarveier…**.
 - Trykk Esc for å avbryte en dialog, tømme kommandolinjen eller lukke hurtigvisningspanelet.

@@ -13,8 +13,8 @@ Peach Commander is built to be driven from the keyboard. It ships with two ready
 
 1. Open **Settings** (Cmd+, or **Configuration > Settings…**) and pick the **Keyboard** page.
 2. Choose a scheme from the **Scheme** menu:
-   - **TC Classic** (the default) keeps the traditional keys, with Ctrl-based combinations such as Ctrl+R to refresh a panel.
-   - **macOS Native** maps the same actions onto familiar Mac keys where it makes sense, for example Cmd+C to copy files and Cmd+F to search.
+   - **Total Commander (classic)** (the default) keeps the traditional keys, with Ctrl-based combinations such as Ctrl+R to refresh a panel.
+   - **macOS** maps the same actions onto familiar Mac keys where it makes sense, for example Cmd+C to copy files and Cmd+F to search.
 3. The change takes effect immediately across the menus and shortcut bar. **Edit Shortcuts…** sits right below, because individual rebindings layer on top of whichever scheme you picked.
 
 ## Customize shortcuts

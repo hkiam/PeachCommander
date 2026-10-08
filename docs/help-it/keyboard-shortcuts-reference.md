@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander è costruito per la tastiera: quasi tutto ciò che fai con il mouse ha un tasto. Questa pagina raggruppa le scorciatoie predefinite per compito, così puoi trovare quella che ti serve con un colpo d'occhio. I tasti mostrati qui sono quelli dello schema predefinito **TC Classic** (quello che si aspettano gli utenti di lunga data di Total Commander). Se preferisci i tasti in stile Mac, passa allo schema **macOS Native** nel menu Configurazione, dove le stesse azioni passano a combinazioni con il tasto Comando (per esempio Cmd+C per copiare, Cmd+F per cercare). Puoi anche sostituire qualsiasi singolo tasto.
+Peach Commander è costruito per la tastiera: quasi tutto ciò che fai con il mouse ha un tasto. Questa pagina raggruppa le scorciatoie predefinite per compito, così puoi trovare quella che ti serve con un colpo d'occhio. I tasti mostrati qui sono quelli dello schema predefinito **Total Commander (classico)** (quello che si aspettano gli utenti di lunga data di Total Commander). Se preferisci i tasti in stile Mac, passa allo schema **macOS** nella pagina **Tastiera** di **Configurazione ▸ Impostazioni…**, dove le stesse azioni passano a combinazioni con il tasto Comando (per esempio Cmd+C per copiare, Cmd+F per cercare). Puoi anche sostituire qualsiasi singolo tasto.
 
 ## Tasti funzione
 
@@ -107,6 +107,6 @@ Molte azioni fondamentali risiedono sui tasti funzione. Se premere F5 cambia il 
 
 ## Note
 
-- Alcuni tasti TC Classic entrano in conflitto con le scorciatoie di sistema macOS. Ctrl+Sinistra, Ctrl+Destra, Ctrl+Su e Ctrl+Giù sono usati da Mission Control e Spaces; se non funzionano in Peach Commander, regolali in Impostazioni di Sistema o riassegnali nel menu Configurazione.
-- Lo schema macOS Native sposta le azioni comuni sul tasto Comando mantenendo invariate le azioni dei tasti funzione. Cambia schema, o cambia qualsiasi singolo tasto, dal menu Configurazione.
+- Alcuni tasti dello schema Total Commander (classico) entrano in conflitto con le scorciatoie di sistema macOS. Ctrl+Sinistra, Ctrl+Destra, Ctrl+Su e Ctrl+Giù sono usati da Mission Control e Spaces; se non funzionano in Peach Commander, regolali in Impostazioni di Sistema o riassegnali in **Configurazione ▸ Modifica scorciatoie…**.
+- Lo schema macOS sposta le azioni comuni sul tasto Comando mantenendo invariate le azioni dei tasti funzione. Cambia schema nella pagina **Tastiera** di **Configurazione ▸ Impostazioni…**, e cambia qualsiasi singolo tasto in **Configurazione ▸ Modifica scorciatoie…**.
 - Premi Esc per annullare una finestra, cancellare la riga di comando o chiudere il pannello di Anteprima rapida.

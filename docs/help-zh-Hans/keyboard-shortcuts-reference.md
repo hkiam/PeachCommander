@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander 为键盘而生：你用鼠标做的几乎每件事都有对应的按键。本页按任务对默认快捷键进行分组，以便你一眼就能找到所需的那一个。此处显示的按键是默认的 **TC Classic** 方案（长期使用 Total Commander 的用户所熟悉的那套）。如果你偏好 Mac 风格的按键，请在“配置”菜单中切换到 **macOS Native** 方案，在那里相同的操作会移到 Command 组合键上（例如用 Cmd+C 复制、用 Cmd+F 搜索）。你也可以覆盖任何单个按键。
+Peach Commander 为键盘而生：你用鼠标做的几乎每件事都有对应的按键。本页按任务对默认快捷键进行分组，以便你一眼就能找到所需的那一个。此处显示的按键是默认的 **Total Commander（经典）** 方案（长期使用 Total Commander 的用户所熟悉的那套）。如果你偏好 Mac 风格的按键，请在 **配置 ▸ 设置…** 的 **键盘** 页面上切换到 **macOS** 方案，在那里相同的操作会移到 Command 组合键上（例如用 Cmd+C 复制、用 Cmd+F 搜索）。你也可以覆盖任何单个按键。
 
 ## 功能键
 
@@ -107,6 +107,6 @@ Peach Commander 为键盘而生：你用鼠标做的几乎每件事都有对应�
 
 ## 说明
 
-- 少数 TC Classic 按键与 macOS 系统快捷键冲突。Ctrl+Left、Ctrl+Right、Ctrl+Up 和 Ctrl+Down 被“调度中心”和“空间”使用；如果它们在 Peach Commander 中不起作用，请在“系统设置”中调整它们，或在“配置”菜单中重新映射它们。
-- macOS Native 方案将常用操作移到 Command 键上，同时保持功能键操作不变。可从“配置”菜单切换方案，或更改任何单个按键。
+- Total Commander（经典）方案中的少数按键与 macOS 系统快捷键冲突。Ctrl+Left、Ctrl+Right、Ctrl+Up 和 Ctrl+Down 被“调度中心”和“空间”使用；如果它们在 Peach Commander 中不起作用，请在“系统设置”中调整它们，或在 **配置 ▸ 编辑快捷键…** 中重新映射它们。
+- macOS 方案将常用操作移到 Command 键上，同时保持功能键操作不变。可在 **配置 ▸ 设置…** 的 **键盘** 页面上切换方案，并在 **配置 ▸ 编辑快捷键…** 中更改任何单个按键。
 - 按 Esc 可取消对话框、清除命令行，或关闭 Quick View 面板。

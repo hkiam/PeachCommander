@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander está diseñado para el teclado: casi todo lo que hace con el ratón tiene una tecla asociada. Esta página agrupa los atajos predeterminados por tarea para que pueda encontrar el que necesita de un vistazo. Las teclas que se muestran aquí corresponden al esquema **TC Classic** predeterminado (el que esperan los usuarios veteranos de Total Commander). Si prefiere las teclas al estilo de Mac, cambie al esquema **macOS Native** en el menú Configuración, donde las mismas acciones pasan a combinaciones con la tecla Command (por ejemplo, Cmd+C para copiar, Cmd+F para buscar). También puede invalidar cualquier tecla individual.
+Peach Commander está diseñado para el teclado: casi todo lo que hace con el ratón tiene una tecla asociada. Esta página agrupa los atajos predeterminados por tarea para que pueda encontrar el que necesita de un vistazo. Las teclas que se muestran aquí corresponden al esquema **Total Commander (clásico)** predeterminado (el que esperan los usuarios veteranos de Total Commander). Si prefiere las teclas al estilo de Mac, cambie al esquema **macOS** en la página **Teclado** de **Configuración ▸ Ajustes…**, donde las mismas acciones pasan a combinaciones con la tecla Command (por ejemplo, Cmd+C para copiar, Cmd+F para buscar). También puede invalidar cualquier tecla individual.
 
 ## Teclas de función
 
@@ -107,6 +107,6 @@ Muchas acciones básicas residen en las teclas de función. Si al pulsar F5 se c
 
 ## Notas
 
-- Algunas teclas de TC Classic chocan con los atajos del sistema de macOS. Ctrl+Left, Ctrl+Right, Ctrl+Up y Ctrl+Down las usan Mission Control y Spaces; si no funcionan en Peach Commander, ajústelas en Ajustes del Sistema o reasígnelas en el menú Configuración.
-- El esquema macOS Native traslada las acciones comunes a la tecla Command mientras mantiene iguales las acciones de las teclas de función. Cambie de esquema, o modifique cualquier tecla individual, desde el menú Configuración.
+- Algunas teclas del esquema Total Commander (clásico) chocan con los atajos del sistema de macOS. Ctrl+Left, Ctrl+Right, Ctrl+Up y Ctrl+Down las usan Mission Control y Spaces; si no funcionan en Peach Commander, ajústelas en Ajustes del Sistema o reasígnelas en **Configuración ▸ Editar atajos…**.
+- El esquema macOS traslada las acciones comunes a la tecla Command mientras mantiene iguales las acciones de las teclas de función. Cambie de esquema en la página **Teclado** de **Configuración ▸ Ajustes…** y modifique cualquier tecla individual en **Configuración ▸ Editar atajos…**.
 - Pulse Esc para cancelar un cuadro de diálogo, borrar la línea de comandos o cerrar el panel de Vista rápida.

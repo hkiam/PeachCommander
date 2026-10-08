@@ -10,15 +10,15 @@ Peach Commander jest zbudowany do sterowania z klawiatury. Dostarczany jest z dw
 
 ## Przełącz schemat klawiatury
 
-1. Otwórz menu **Konfiguracja**.
-2. Wybierz **Schemat klawiatury**, a następnie wybierz jeden:
-   - **TC Classic** (domyślny) zachowuje tradycyjne klawisze, z kombinacjami opartymi na Ctrl, takimi jak Ctrl+R do odświeżenia panelu.
-   - **macOS Native** mapuje te same akcje na znane klawisze Mac tam, gdzie ma to sens, na przykład Cmd+C do kopiowania plików i Cmd+F do wyszukiwania.
-3. Znacznik wyboru pokazuje aktywny schemat. Zmiana wchodzi w życie natychmiast w menu i pasku skrótów.
+1. Otwórz **Ustawienia** (Cmd+, lub **Konfiguracja > Ustawienia…**) i wybierz stronę **Klawiatura**.
+2. Wybierz schemat z menu **Schemat**:
+   - **Total Commander (klasyczny)** (domyślny) zachowuje tradycyjne klawisze, z kombinacjami opartymi na Ctrl, takimi jak Ctrl+R do odświeżenia panelu.
+   - **macOS** mapuje te same akcje na znane klawisze Mac tam, gdzie ma to sens, na przykład Cmd+C do kopiowania plików i Cmd+F do wyszukiwania.
+3. Zmiana wchodzi w życie natychmiast w menu i pasku skrótów. Przycisk **Edytuj skróty…** znajduje się tuż poniżej, ponieważ pojedyncze zmiany przypisań są nakładane na wybrany schemat.
 
 ## Dostosuj skróty
 
-1. Wybierz **Konfiguracja > Skróty klawiaturowe…**.
+1. Wybierz **Konfiguracja > Edytuj skróty…** lub kliknij **Edytuj skróty…** na stronie Klawiatura w Ustawieniach.
 2. Znajdź polecenie za pomocą pola wyszukiwania, a następnie zaznacz jego wiersz.
 3. Kliknij **Nagraj…** i naciśnij żądaną kombinację klawiszy. Zostaje przypisana od razu.
 4. Jeśli ta kombinacja była już używana przez inne polecenie, powiadomienie informuje, któremu poleceniu została odebrana.
@@ -40,9 +40,8 @@ Peach Commander jest zbudowany do sterowania z klawiatury. Dostarczany jest z dw
 
 | Akcja | Ścieżka menu |
 |---|---|
-| Wybierz schemat klasyczny | Konfiguracja > Schemat klawiatury > TC Classic |
-| Wybierz schemat Mac | Konfiguracja > Schemat klawiatury > macOS Native |
-| Edytuj skróty | Konfiguracja > Skróty klawiaturowe… |
+| Wybierz schemat | Ustawienia > Klawiatura > Schemat |
+| Edytuj skróty | Konfiguracja > Edytuj skróty… |
 | Przeglądaj wszystkie polecenia | Konfiguracja > Przeglądarka poleceń… |
 | Odśwież aktywny panel | F2 (także Ctrl+R) |
 

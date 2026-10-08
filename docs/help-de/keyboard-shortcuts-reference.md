@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander ist für die Tastatur gebaut: Für fast alles, was Sie mit der Maus tun, gibt es eine Taste. Diese Seite gruppiert die Standard-Kurzbefehle nach Aufgaben, damit Sie den gesuchten auf einen Blick finden. Die hier gezeigten Tasten entsprechen dem Standardschema **TC Classic** (jenes, das langjährige Total-Commander-Nutzer erwarten). Wenn Sie Mac-typische Tasten bevorzugen, wechseln Sie im Menü Konfiguration zum Schema **macOS Native**, in dem dieselben Aktionen auf Command-Tastenkombinationen liegen (zum Beispiel Cmd+C zum Kopieren, Cmd+F zum Suchen). Sie können auch jede einzelne Taste überschreiben.
+Peach Commander ist für die Tastatur gebaut: Für fast alles, was Sie mit der Maus tun, gibt es eine Taste. Diese Seite gruppiert die Standard-Kurzbefehle nach Aufgaben, damit Sie den gesuchten auf einen Blick finden. Die hier gezeigten Tasten entsprechen dem Standardschema **Total Commander (klassisch)** (jenes, das langjährige Total-Commander-Nutzer erwarten). Wenn Sie Mac-typische Tasten bevorzugen, wechseln Sie auf der Seite **Tastatur** unter **Konfiguration ▸ Einstellungen…** zum Schema **macOS**, in dem dieselben Aktionen auf Command-Tastenkombinationen liegen (zum Beispiel Cmd+C zum Kopieren, Cmd+F zum Suchen). Sie können auch jede einzelne Taste überschreiben.
 
 ## Funktionstasten
 
@@ -107,6 +107,6 @@ Viele Kernaktionen liegen auf den Funktionstasten. Wenn F5 die Lautstärke ände
 
 ## Hinweise
 
-- Einige TC-Classic-Tasten kollidieren mit macOS-Systemkurzbefehlen. Ctrl+Left, Ctrl+Right, Ctrl+Up und Ctrl+Down werden von Mission Control und Spaces verwendet; falls sie in Peach Commander nicht funktionieren, passen Sie sie in den Systemeinstellungen an oder belegen Sie sie im Menü Konfiguration neu.
-- Das Schema macOS Native verlagert gängige Aktionen auf die Command-Taste und lässt die Funktionstasten-Aktionen unverändert. Wechseln Sie das Schema oder ändern Sie eine einzelne Taste über das Menü Konfiguration.
+- Einige Tasten des Schemas Total Commander (klassisch) kollidieren mit macOS-Systemkurzbefehlen. Ctrl+Left, Ctrl+Right, Ctrl+Up und Ctrl+Down werden von Mission Control und Spaces verwendet; falls sie in Peach Commander nicht funktionieren, passen Sie sie in den Systemeinstellungen an oder belegen Sie sie unter **Konfiguration ▸ Kürzel bearbeiten…** neu.
+- Das Schema macOS verlagert gängige Aktionen auf die Command-Taste und lässt die Funktionstasten-Aktionen unverändert. Das Schema wechseln Sie auf der Seite **Tastatur** unter **Konfiguration ▸ Einstellungen…**, einzelne Tasten ändern Sie unter **Konfiguration ▸ Kürzel bearbeiten…**.
 - Drücken Sie Esc, um einen Dialog abzubrechen, die Befehlszeile zu leeren oder das Quick-View-Panel zu schließen.

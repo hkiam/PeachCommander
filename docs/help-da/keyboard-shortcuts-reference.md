@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander er bygget til tastaturet: næsten alt, du gør med musen, har en tast. Denne side grupperer standardgenvejene efter opgave, så du kan finde den, du har brug for, med et blik. Tasterne vist her er standardskemaet **TC Classic** (det, mangeårige Total Commander-brugere forventer). Hvis du foretrækker Mac-tastar, skift til **macOS Native**-skemaet i Konfiguration-menuen, hvor de samme handlinger flyttes til Command-tastkombinationer (for eksempel Cmd+C for at kopiere, Cmd+F for at søge). Du kan også tilsidesætte enhver enkelt tast.
+Peach Commander er bygget til tastaturet: næsten alt, du gør med musen, har en tast. Denne side grupperer standardgenvejene efter opgave, så du kan finde den, du har brug for, med et blik. Tasterne vist her er standardskemaet **Total Commander (klassisk)** (det, mangeårige Total Commander-brugere forventer). Hvis du foretrækker Mac-tastar, skift til **macOS**-skemaet på siden **Tastatur** i **Konfiguration ▸ Indstillinger…**, hvor de samme handlinger flyttes til Command-tastkombinationer (for eksempel Cmd+C for at kopiere, Cmd+F for at søge). Du kan også tilsidesætte enhver enkelt tast.
 
 ## Funktionstaster
 
@@ -107,6 +107,6 @@ Mange kernehandlinger bor på funktionstasterne. Hvis et tryk på F5 ændrer din
 
 ## Bemærkninger
 
-- Nogle få TC Classic-taster kolliderer med macOS-systemgenveje. Ctrl+Venstre, Ctrl+Højre, Ctrl+Op og Ctrl+Ned bruges af Mission Control og Spaces; hvis de ikke virker i Peach Commander, justér dem i Systemindstillinger eller ombind dem i Konfiguration-menuen.
-- macOS Native-skemaet flytter almindelige handlinger til Command-tasten, mens funktionstasthandlingerne beholdes de samme. Skift skema, eller ændr enhver enkelt tast, fra Konfiguration-menuen.
+- Nogle få taster i Total Commander (klassisk)-skemaet kolliderer med macOS-systemgenveje. Ctrl+Venstre, Ctrl+Højre, Ctrl+Op og Ctrl+Ned bruges af Mission Control og Spaces; hvis de ikke virker i Peach Commander, justér dem i Systemindstillinger eller ombind dem i **Konfiguration ▸ Rediger genveje…**.
+- macOS-skemaet flytter almindelige handlinger til Command-tasten, mens funktionstasthandlingerne beholdes de samme. Skift skema på siden **Tastatur** i **Konfiguration ▸ Indstillinger…**, og ændr enhver enkelt tast i **Konfiguration ▸ Rediger genveje…**.
 - Tryk på Esc for at annullere en dialog, rydde kommandolinjen eller lukke Hurtigvisning-panelet.

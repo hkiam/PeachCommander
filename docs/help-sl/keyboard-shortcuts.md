@@ -10,17 +10,17 @@ Peach Commander je zasnovan za upravljanje s tipkovnice. Prihaja z dvema priprav
 
 ## Preklapljanje tipkovnih shem
 
-1. Odprite meni **Konfiguracija**.
-2. Izberite **Tipkovna shema**, nato izberite eno:
-   - **TC Classic** (privzeta) ohranja tradicionalne tipke, s kombinacijami na osnovi Ctrl, kot je Ctrl+R za osvežitev podokna.
-   - **macOS Native** ista dejanja tam, kjer je to smiselno, preslika na znane tipke Mac, na primer Cmd+C za kopiranje datotek in Cmd+F za iskanje.
-3. Kljukica prikazuje aktivno shemo. Sprememba začne veljati takoj po vseh menijih in v vrstici bližnjic.
+1. Odprite **Nastavitve** (Cmd+, ali **Konfiguracija > Nastavitve…**) in izberite stran **Tipkovnica**.
+2. V meniju **Shema** izberite shemo:
+   - **Total Commander (klasičen)** (privzeta) ohranja tradicionalne tipke, s kombinacijami na osnovi Ctrl, kot je Ctrl+R za osvežitev podokna.
+   - **macOS** ista dejanja tam, kjer je to smiselno, preslika na znane tipke Mac, na primer Cmd+C za kopiranje datotek in Cmd+F za iskanje.
+3. Sprememba začne veljati takoj po vseh menijih in v vrstici bližnjic. Gumb **Uredi bližnjice…** je tik pod njim, ker se posamezne preslikave nadgradijo na shemo, ki ste jo izbrali.
 
 ## Prilagajanje bližnjic
 
-1. Izberite **Konfiguracija > Tipkovne bližnjice …**.
+1. Izberite **Konfiguracija > Uredi bližnjice…** ali kliknite **Uredi bližnjice…** na strani Tipkovnica v Nastavitvah.
 2. Poiščite ukaz z iskalnim poljem, nato izberite njegovo vrstico.
-3. Kliknite **Posnemi …** in pritisnite želeno kombinacijo tipk. Dodeljena je takoj.
+3. Kliknite **Posnemi…** in pritisnite želeno kombinacijo tipk. Dodeljena je takoj.
 4. Če je bila ta kombinacija že uporabljena pri drugem ukazu, vas obvestilo obvesti, kateremu ukazu je bila odvzeta.
 5. Uporabite **Počisti**, da odstranite bližnjico ukaza, ali **Obnovi privzeto**, da zavržete vse spremembe in se vrnete na izvirne tipke sheme.
 
@@ -29,9 +29,9 @@ Peach Commander je zasnovan za upravljanje s tipkovnice. Prihaja z dvema priprav
 
 ## Brskanje po vseh ukazih
 
-1. Izberite **Konfiguracija > Brskalnik ukazov …**.
+1. Izberite **Konfiguracija > Brskalnik ukazov…**.
 2. V iskalno polje vnesite besedilo, da filtrirate po imenu, kategoriji ali opisu.
-3. Dvakrat kliknite ukaz ali ga izberite in kliknite **Poženi**, da ga izvedete na aktivnem podoknu.
+3. Dvakrat kliknite ukaz ali ga izberite in kliknite **Zaženi**, da ga izvedete na aktivnem podoknu.
 
 ![Brskalnik ukazov, ki prikazuje iskalni seznam ukazov](screenshots/command-browser.png)
 *(Slika: Vsi ukazi na enem iskalnem seznamu, s kratkim opisom vsakega.)*
@@ -40,10 +40,9 @@ Peach Commander je zasnovan za upravljanje s tipkovnice. Prihaja z dvema priprav
 
 | Dejanje | Pot v meniju |
 |---|---|
-| Izbira klasične sheme | Konfiguracija > Tipkovna shema > TC Classic |
-| Izbira sheme Mac | Konfiguracija > Tipkovna shema > macOS Native |
-| Urejanje bližnjic | Konfiguracija > Tipkovne bližnjice … |
-| Brskanje po vseh ukazih | Konfiguracija > Brskalnik ukazov … |
+| Izbira sheme | Nastavitve > Tipkovnica > Shema |
+| Urejanje bližnjic | Konfiguracija > Uredi bližnjice… |
+| Brskanje po vseh ukazih | Konfiguracija > Brskalnik ukazov… |
 | Osvežitev aktivnega podokna | F2 (tudi Ctrl+R) |
 
 ## Opombe

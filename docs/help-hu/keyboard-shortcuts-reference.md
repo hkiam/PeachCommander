@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-A Peach Commandert a billentyűzetre építették: szinte mindenhez, amit egérrel csinál, van billentyű. Ez az oldal feladat szerint csoportosítja az alapértelmezett billentyűparancsokat, hogy egy pillantással megtalálja a szükségeset. Az itt látott billentyűk az alapértelmezett **TC Classic** sémából valók (amelyet a régóta Total Commandert használók várnak). Ha inkább Mac-stílusú billentyűket szeretne, váltson a **macOS Native** sémára a Konfiguráció menüben, ahol ugyanazok a műveletek a Command-billentyű kombinációkra kerülnek (például Cmd+C másoláshoz, Cmd+F kereséshez). Bármely egyedi billentyűt is felülírhat.
+A Peach Commandert a billentyűzetre építették: szinte mindenhez, amit egérrel csinál, van billentyű. Ez az oldal feladat szerint csoportosítja az alapértelmezett billentyűparancsokat, hogy egy pillantással megtalálja a szükségeset. Az itt látott billentyűk az alapértelmezett **Total Commander (klasszikus)** sémából valók (amelyet a régóta Total Commandert használók várnak). Ha inkább Mac-stílusú billentyűket szeretne, váltson a **macOS** sémára a **Konfiguráció ▸ Beállítások…** **Billentyűzet** oldalán, ahol ugyanazok a műveletek a Command-billentyű kombinációkra kerülnek (például Cmd+C másoláshoz, Cmd+F kereséshez). Bármely egyedi billentyűt is felülírhat.
 
 ## Funkcióbillentyűk
 
@@ -107,6 +107,6 @@ Sok alapvető művelet a funkcióbillentyűkön található. Ha az F5 megnyomás
 
 ## Megjegyzések
 
-- Néhány TC Classic billentyű ütközik a macOS rendszer-billentyűparancsokkal. A Ctrl+Balra, Ctrl+Jobbra, Ctrl+Fel és Ctrl+Le a Mission Control és a Spaces által használt; ha nem működnek a Peach Commanderben, állítsa be őket a Rendszerbeállításokban, vagy képezze le újra őket a Konfiguráció menüben.
-- A macOS Native séma a gyakori műveleteket a Command-billentyűre helyezi, miközben a funkcióbillentyű-műveleteket változatlanul hagyja. Váltson sémát, vagy változtasson meg bármely egyedi billentyűt, a Konfiguráció menüből.
+- A Total Commander (klasszikus) séma néhány billentyűje ütközik a macOS rendszer-billentyűparancsokkal. A Ctrl+Balra, Ctrl+Jobbra, Ctrl+Fel és Ctrl+Le a Mission Control és a Spaces által használt; ha nem működnek a Peach Commanderben, állítsa be őket a Rendszerbeállításokban, vagy képezze le újra őket a **Konfiguráció ▸ Gyorsbillentyűk szerkesztése…** menüpontban.
+- A macOS séma a gyakori műveleteket a Command-billentyűre helyezi, miközben a funkcióbillentyű-műveleteket változatlanul hagyja. Sémát a **Konfiguráció ▸ Beállítások…** **Billentyűzet** oldalán válthat, bármely egyedi billentyűt pedig a **Konfiguráció ▸ Gyorsbillentyűk szerkesztése…** menüpontban változtathat meg.
 - Nyomja meg az Esc-et egy párbeszéd megszakításához, a parancssor törléséhez vagy a Gyorsnézet panel bezárásához.

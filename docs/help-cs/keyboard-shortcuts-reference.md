@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander je vytvořen pro klávesnici: téměř vše, co děláte myší, má klávesu. Tato stránka seskupuje výchozí zkratky podle úlohy, abyste tu, kterou potřebujete, našli na první pohled. Klávesy zde uvedené jsou z výchozího schématu **TC Classic** (toho, které očekávají dlouholetí uživatelé Total Commanderu). Pokud preferujete klávesy ve stylu Mac, přepněte na schéma **macOS Native** v nabídce Konfigurace, kde se stejné akce přesunou na kombinace s klávesou Command (například Cmd+C pro kopírování, Cmd+F pro hledání). Můžete také přepsat kteroukoli jednotlivou klávesu.
+Peach Commander je vytvořen pro klávesnici: téměř vše, co děláte myší, má klávesu. Tato stránka seskupuje výchozí zkratky podle úlohy, abyste tu, kterou potřebujete, našli na první pohled. Klávesy zde uvedené jsou z výchozího schématu **Total Commander (klasický)** (toho, které očekávají dlouholetí uživatelé Total Commanderu). Pokud preferujete klávesy ve stylu Mac, přepněte na schéma **macOS** na stránce **Klávesnice** v **Konfigurace ▸ Nastavení…**, kde se stejné akce přesunou na kombinace s klávesou Command (například Cmd+C pro kopírování, Cmd+F pro hledání). Můžete také přepsat kteroukoli jednotlivou klávesu.
 
 ## Funkční klávesy
 
@@ -107,6 +107,6 @@ Mnoho základních akcí sídlí na funkčních klávesách. Pokud stisk F5 změ
 
 ## Poznámky
 
-- Několik kláves TC Classic koliduje se systémovými zkratkami macOS. Ctrl+Vlevo, Ctrl+Vpravo, Ctrl+Nahoru a Ctrl+Dolů používá Mission Control a Spaces; pokud v Peach Commanderu nefungují, upravte je v Nastavení systému nebo je znovu namapujte v nabídce Konfigurace.
-- Schéma macOS Native přesouvá běžné akce na klávesu Command, přičemž akce funkčních kláves zůstávají stejné. Přepněte schéma, nebo změňte kteroukoli jednotlivou klávesu, z nabídky Konfigurace.
+- Několik kláves schématu Total Commander (klasický) koliduje se systémovými zkratkami macOS. Ctrl+Vlevo, Ctrl+Vpravo, Ctrl+Nahoru a Ctrl+Dolů používá Mission Control a Spaces; pokud v Peach Commanderu nefungují, upravte je v Nastavení systému nebo je znovu namapujte v **Konfigurace ▸ Upravit zkratky…**.
+- Schéma macOS přesouvá běžné akce na klávesu Command, přičemž akce funkčních kláves zůstávají stejné. Schéma přepnete na stránce **Klávesnice** v **Konfigurace ▸ Nastavení…** a kteroukoli jednotlivou klávesu změníte v **Konfigurace ▸ Upravit zkratky…**.
 - Stiskem Esc zrušíte dialog, vymažete příkazový řádek nebo zavřete panel Rychlého náhledu.

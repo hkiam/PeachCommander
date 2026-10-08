@@ -10,15 +10,15 @@ Peach Commander je vytvořen tak, aby se ovládal z klávesnice. Dodává se se 
 
 ## Přepnutí schématu klávesnice
 
-1. Otevřete nabídku **Konfigurace**.
-2. Zvolte **Schéma klávesnice**, poté vyberte jedno:
-   - **TC Classic** (výchozí) zachovává tradiční klávesy, s kombinacemi založenými na Ctrl jako Ctrl+R pro obnovení panelu.
-   - **macOS Native** mapuje stejné akce na známé klávesy Mac tam, kde to dává smysl, například Cmd+C pro kopírování souborů a Cmd+F pro hledání.
-3. Zaškrtnutí ukazuje aktivní schéma. Změna se projeví ihned v nabídkách i liště zkratek.
+1. Otevřete **Nastavení** (Cmd+, nebo **Konfigurace > Nastavení…**) a vyberte stránku **Klávesnice**.
+2. V nabídce **Schéma** zvolte schéma:
+   - **Total Commander (klasický)** (výchozí) zachovává tradiční klávesy, s kombinacemi založenými na Ctrl jako Ctrl+R pro obnovení panelu.
+   - **macOS** mapuje stejné akce na známé klávesy Mac tam, kde to dává smysl, například Cmd+C pro kopírování souborů a Cmd+F pro hledání.
+3. Změna se projeví ihned v nabídkách i liště zkratek. Tlačítko **Upravit zkratky…** je hned pod tím, protože jednotlivá přeřazení se nasazují nad to schéma, které jste zvolili.
 
 ## Přizpůsobení zkratek
 
-1. Zvolte **Konfigurace > Klávesové zkratky…**.
+1. Zvolte **Konfigurace > Upravit zkratky…**, nebo klepněte na **Upravit zkratky…** na stránce Klávesnice v Nastavení.
 2. Najděte příkaz pomocí vyhledávacího pole, poté vyberte jeho řádek.
 3. Klepněte na **Zaznamenat…** a stiskněte požadovanou kombinaci kláves. Přiřadí se ihned.
 4. Pokud tuto kombinaci již používal jiný příkaz, upozornění vám sdělí, kterému příkazu byla odebrána.
@@ -40,9 +40,8 @@ Peach Commander je vytvořen tak, aby se ovládal z klávesnice. Dodává se se 
 
 | Akce | Cesta v nabídce |
 |---|---|
-| Zvolit klasické schéma | Konfigurace > Schéma klávesnice > TC Classic |
-| Zvolit schéma Mac | Konfigurace > Schéma klávesnice > macOS Native |
-| Upravit zkratky | Konfigurace > Klávesové zkratky… |
+| Zvolit schéma | Nastavení > Klávesnice > Schéma |
+| Upravit zkratky | Konfigurace > Upravit zkratky… |
 | Procházet všechny příkazy | Konfigurace > Prohlížeč příkazů… |
 | Obnovit aktivní panel | F2 (také Ctrl+R) |
 

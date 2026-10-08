@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander je postavený pre klávesnicu: takmer všetko, čo robíte myšou, má kláves. Táto stránka zoskupuje predvolené skratky podľa úlohy, takže tú, ktorú potrebujete, nájdete na prvý pohľad. Klávesy zobrazené tu sú z predvolenej schémy **TC Classic** (tej, ktorú očakávajú dlhoroční používatelia Total Commanderu). Ak preferujete klávesy v štýle Mac, prepnite na schému **macOS Native** v ponuke Konfigurácia, kde sa tie isté akcie presunú na kombinácie s klávesom Command (napríklad Cmd+C na kopírovanie, Cmd+F na hľadanie). Môžete tiež prepísať ktorýkoľvek jednotlivý kláves.
+Peach Commander je postavený pre klávesnicu: takmer všetko, čo robíte myšou, má kláves. Táto stránka zoskupuje predvolené skratky podľa úlohy, takže tú, ktorú potrebujete, nájdete na prvý pohľad. Klávesy zobrazené tu sú z predvolenej schémy **Total Commander (klasický)** (tej, ktorú očakávajú dlhoroční používatelia Total Commanderu). Ak preferujete klávesy v štýle Mac, prepnite na schému **macOS** na stránke **Klávesnica** v **Konfigurácia ▸ Nastavenia…**, kde sa tie isté akcie presunú na kombinácie s klávesom Command (napríklad Cmd+C na kopírovanie, Cmd+F na hľadanie). Môžete tiež prepísať ktorýkoľvek jednotlivý kláves.
 
 ## Funkčné klávesy
 
@@ -107,6 +107,6 @@ Mnoho základných akcií sídli na funkčných klávesoch. Ak stlačenie F5 zme
 
 ## Poznámky
 
-- Niekoľko klávesov TC Classic koliduje so systémovými skratkami macOS. Ctrl+Vľavo, Ctrl+Vpravo, Ctrl+Nahor a Ctrl+Nadol používa Mission Control a Spaces; ak v Peach Commanderi nefungujú, upravte ich v Systémových nastaveniach alebo ich premapujte v ponuke Konfigurácia.
-- Schéma macOS Native presúva bežné akcie na kláves Command, pričom akcie funkčných klávesov zostávajú rovnaké. Prepnite schému, alebo zmeňte ktorýkoľvek jednotlivý kláves, z ponuky Konfigurácia.
+- Niekoľko klávesov schémy Total Commander (klasický) koliduje so systémovými skratkami macOS. Ctrl+Vľavo, Ctrl+Vpravo, Ctrl+Nahor a Ctrl+Nadol používa Mission Control a Spaces; ak v Peach Commanderi nefungujú, upravte ich v Systémových nastaveniach alebo ich premapujte v **Konfigurácia ▸ Upraviť skratky…**.
+- Schéma macOS presúva bežné akcie na kláves Command, pričom akcie funkčných klávesov zostávajú rovnaké. Schému prepnete na stránke **Klávesnica** v **Konfigurácia ▸ Nastavenia…** a ktorýkoľvek jednotlivý kláves zmeníte v **Konfigurácia ▸ Upraviť skratky…**.
 - Stlačte Esc na zrušenie dialógu, vymazanie príkazového riadka alebo zatvorenie panela Rýchleho zobrazenia.
