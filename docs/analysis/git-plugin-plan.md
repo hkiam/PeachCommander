@@ -460,6 +460,40 @@ Each as planned, with the deviations measured or argued here:
   branch — pushed first when it has no upstream, prefilled from its commits. Review comments are not
   done; the web link is one click away.
 
+### Phase 10 — Commit messages changed after the fact · **built**
+
+Asked for after phase 9: a message changed afterwards, one at a time and by find and replace across many
+— typically a token pasted into a message and pushed. Before this, Amend reached the last commit and the
+Rebase window one reword per run (`GIT_EDITOR` is one file for every reword), through a real rebase that
+needs a clean working tree and stumbles over merges.
+
+* **Mechanism: commit objects written directly, not a rebase.** Each commit from the edited ones up to
+  the chosen branches' tips is read (`cat-file --batch`), given its new message and its rewritten
+  parents, and written back (`hash-object -w --stdin-paths`, names computed here and checked against
+  git's). Trees are untouched objects, so nothing is checked out, nothing can conflict, any number of
+  messages change in one run, merges keep both parents, and author, committer, dates, encoding and
+  trailers stay byte for byte. A signature cannot survive (it signed the old bytes): it is dropped, or
+  made anew through `commit-tree -S` when Settings ▸ Git ▸ Sign commits is on. Annotated tags get a new
+  tag object; lightweight ones move. `filter-repo` was the alternative and is not installed by default;
+  `filter-branch --msg-filter` is deprecated and checks out every commit.
+* **The walk** is bounded by the edited commits' parents, and widens to the tips' whole history when one
+  edited commit is an ancestor of another's parent (which the bound would hide) — tested.
+* **The refs move in one `update-ref --stdin` transaction**, each only from where it was read; old and
+  new tips are kept under `refs/pc-backup/<stamp>/` (not shown in the history, which names its refs).
+  Undo moves them back only if none moved since. Pushed branches (their upstream holds an old commit)
+  are offered a force push with lease afterwards.
+* **For a secret**, "Remove old commits…" deletes the backup, expires the reflog entries the current
+  refs do not reach — the stash's reflog left alone, since it *is* the stash list, so not `--all` — and
+  runs `gc --prune=now`, then checks each old commit with `cat-file -e` and names the refs still holding
+  it (a remote-tracking ref until the force push, a tag left out, a stash). It says plainly that the
+  server, forks and other clones are beyond reach and a pushed secret has to be revoked.
+* **Confirmation** before every change: the rewrite lists each message before → after, the number of
+  commits that get new hashes, the branches and tags to move (each can be left out), pushed commits and
+  signatures; force push, undo and removal ask too. Return cancels in all of them; the action takes a
+  click.
+* Out of scope: secrets in *file contents* of old commits — a rewrite of trees, filter-repo's job, which
+  could be built on the same core later.
+
 ### Deliberately out of scope
 
 Still out, after the re-examination in phase 5: a **merge editor** with base and result panes (5a

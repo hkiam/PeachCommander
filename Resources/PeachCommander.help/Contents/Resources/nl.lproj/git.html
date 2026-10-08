@@ -106,6 +106,15 @@ Voor een gebied waarin beide kanten met de hand verweven moeten worden, is <stro
 squashen, als fixup toevoegen, weggooien, herordenen of hernoemen voordat de branch wordt herschreven. Loopt
 een rebase vast op een conflict, dan wordt hetzelfde venster <strong>Doorgaan</strong> / <strong>Commit overslaan</strong> / <strong>Rebase
 afbreken</strong>, zodat een half afgemaakte rebase niet in een terminal hoeft te worden voltooid.</p>
+<h2 id="commit-berichten-achteraf-wijzigen">Commit-berichten achteraf wijzigen</h2>
+<ul>
+<li><strong>Bericht bewerken…</strong> in het menu van de geschiedenis opent het bericht van één commit om te bewerken; met meerdere commits geselecteerd heet het <strong>Berichten bewerken…</strong>, en <strong>Zoeken en vervangen in berichten…</strong> — ook <strong>Commit-berichten bewerken…</strong> in het Git-menu — doorzoekt de berichten van de huidige branch, van de nog niet gepushte commits of van alle branches en tags.</li>
+<li>De lijst toont de commits waarvan het bericht verandert. Het bericht van de geselecteerde staat er zoals het is, met de overeenkomsten gemarkeerd, en zoals het wordt, en daarin kun je ook typen; <strong>Laten zoals het is</strong> haalt een commit er weer uit.</li>
+<li><strong>Geheimen zoeken…</strong> zoekt naar tokens, sleutels en wachtwoorden in de getoonde berichten en vult ze in de zoekterm in; <strong>Zwartlakken</strong> zet <code>***REDACTED***</code> in als vervanging.</li>
+<li><strong>Toepassen…</strong> vraagt eerst: het toont elke wijziging, hoeveel commits nieuwe hashes krijgen en welke branches en tags verplaatst worden, en waarschuwt voor commits die al gepusht zijn. De commits worden direct geschreven, dus er wordt niets uitgecheckt en niets kan conflicteren; bestanden, auteurs en datums blijven zoals ze waren. Een handtekening vervalt, of wordt opnieuw gemaakt als <strong>Commits ondertekenen</strong> aanstaat in <strong>Instellingen ▸ Git</strong>.</li>
+<li>De oude commits worden bewaard: <strong>Ongedaan maken</strong> zet de branches terug zolang geen ervan sindsdien is verplaatst. Een al gepushte branch wordt op zijn remote vervangen met <strong>Geforceerd pushen…</strong>, met lease.</li>
+<li>Voor een geheim verwijdert <strong>Oude commits verwijderen…</strong> de reservekopie en de reflog-items die niets meer bereikt, ruimt op (prune) en zegt daarna of er nog een oude commit is. Gepushte commits kunnen op de server en in andere klonen nog bereikbaar zijn, dus een gepusht geheim moet bovendien worden ingetrokken.</li>
+</ul>
 <h2 id="bestanden-negeren-en-inloggegevens">Bestanden negeren, en inloggegevens</h2>
 <ul>
 <li><strong>Dit bestand negeren…</strong>, <strong>Dit bestandstype negeren…</strong> en <strong>Deze map negeren…</strong> zetten het juiste patroon

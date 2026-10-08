@@ -105,6 +105,15 @@ obou stran, je <strong>Otevřít v editoru</strong> jedno tlačítko daleko.</p>
 připojit jako opravu, zahodit, přeskládat nebo přepsat jejich zprávu, než se větev přepíše. Zastaví-li se
 přeskládání na konfliktu, stane se z téhož okna <strong>Pokračovat</strong> / <strong>Přeskočit zápis</strong> / <strong>Přerušit
 přeskládání</strong>, aby se rozdělané přeskládání nemuselo dokončovat v terminálu.</p>
+<h2 id="dodatecna-zmena-zprav-commitu">Dodatečná změna zpráv commitů</h2>
+<ul>
+<li><strong>Upravit zprávu…</strong> v nabídce historie otevře zprávu jednoho commitu k úpravě; při více vybraných commitech je to <strong>Upravit zprávy…</strong> a <strong>Najít a nahradit ve zprávách…</strong> — také <strong>Upravit zprávy commitů…</strong> v nabídce Git — prohledá zprávy aktuální větve, dosud neodeslaných commitů nebo všech větví a tagů.</li>
+<li>Seznam ukazuje commity, jejichž zpráva se změní. Zpráva vybraného je zobrazena tak, jak je, s vyznačenými shodami, a tak, jak bude, a do té lze psát; <strong>Nechat, jak je</strong> commit zase vyřadí.</li>
+<li><strong>Najít tajemství…</strong> hledá tokeny, klíče a hesla ve zprávách v seznamu a vyplní je do hledání; <strong>Začernit</strong> vloží <code>***REDACTED***</code> jako náhradu.</li>
+<li><strong>Použít…</strong> se nejprve zeptá: vypíše každou změnu, kolik commitů dostane nové hashe a které větve a tagy se posunou, a varuje před commity, které už byly odeslány. Commity se zapisují přímo, takže se nic nepřepíná a nic nemůže být v konfliktu; soubory, autoři a data zůstanou, jak byly. Podpis zmizí, nebo se vytvoří znovu, když je v <strong>Nastavení ▸ Git</strong> zapnuto <strong>Podepisovat commity</strong>.</li>
+<li>Staré commity se uchovají: <strong>Zpět</strong> vrátí větve, dokud se od té doby žádná z nich neposunula. Větev, která už byla odeslána, se na svém remote nahradí pomocí <strong>Vynutit odeslání…</strong>, s lease.</li>
+<li>U tajemství <strong>Odstranit staré commity…</strong> smaže zálohu a záznamy reflogu, na které už nic nedosáhne, provede prune a pak řekne, zda tu ještě nějaký starý commit je. Odeslané commity mohou být stále dosažitelné na serveru a v jiných klonech, takže odeslané tajemství je navíc třeba zneplatnit.</li>
+</ul>
 <h2 id="ignorovani-souboru-a-prihlasovaci-udaje">Ignorování souborů a přihlašovací údaje</h2>
 <ul>
 <li><strong>Ignorovat tento soubor…</strong>, <strong>Ignorovat tento typ souboru…</strong> a <strong>Ignorovat tuto složku…</strong> zapíší správný

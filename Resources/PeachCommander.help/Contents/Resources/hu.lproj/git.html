@@ -106,6 +106,15 @@ egy szakaszhoz kézzel kell összefésülni a két oldalt, a <strong>Megnyitás 
 meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, átrendezni vagy átfogalmazni, mielőtt az ág
 újraíródik. Ha az újraalapozás ütközésen akad meg, ugyanaz az ablak <strong>Folytatás</strong> / <strong>Véglegesítés kihagyása</strong>
 / <strong>Megszakítás</strong> lesz, hogy a félbehagyott újraalapozást ne kelljen terminálban befejezni.</p>
+<h2 id="commit-uzenetek-utolagos-modositasa">Commit-üzenetek utólagos módosítása</h2>
+<ul>
+<li>Az előzmények menüjében az <strong>Üzenet szerkesztése…</strong> egy commit üzenetét nyitja meg szerkesztésre; több kijelölt commitnál ez <strong>Üzenetek szerkesztése…</strong>, a <strong>Keresés és csere az üzenetekben…</strong> pedig — a Git menüben <strong>Commit-üzenetek szerkesztése…</strong> néven is — az aktuális ág, a még fel nem töltött commitok vagy az összes ág és tag üzeneteiben keres.</li>
+<li>A lista azokat a commitokat mutatja, amelyek üzenete változik. A kijelölt commit üzenete látszik úgy, ahogy most van, megjelölt találatokkal, és úgy, ahogy lesz, ebbe pedig írni is lehet; a <strong>Maradjon így</strong> újra kiveszi a commitot.</li>
+<li>A <strong>Titkok keresése…</strong> tokeneket, kulcsokat és jelszavakat keres a listázott üzenetekben, és beírja őket a keresésbe; a <strong>Kitakarás</strong> a <code>***REDACTED***</code> szöveget adja meg cserének.</li>
+<li>Az <strong>Alkalmazás…</strong> előbb rákérdez: felsorol minden változást, hogy hány commit kap új hasht, és mely ágak és tagek kerülnek át, és figyelmeztet a már feltöltött commitokra. A commitok közvetlenül íródnak, így semmi sem lesz kikérve, és semmi sem ütközhet; a fájlok, szerzők és dátumok maradnak, ahogy voltak. Az aláírás eltűnik, vagy újra elkészül, ha a <strong>Beállítások ▸ Git</strong> alatt be van kapcsolva a <strong>Commitok aláírása</strong>.</li>
+<li>A régi commitok megmaradnak: a <strong>Visszavonás</strong> visszaállítja az ágakat, amíg azóta egyikük sem mozdult el. A már feltöltött ágat a <strong>Kényszerített feltöltés…</strong> cseréli le a távoli tárolón, lease-szel.</li>
+<li>Titok esetén a <strong>Régi commitok eltávolítása…</strong> törli a biztonsági másolatot és a reflog azon bejegyzéseit, amelyeket már semmi sem ér el, prune-t futtat, majd megmondja, maradt-e még régi commit. A feltöltött commitok a szerveren és más klónokban még elérhetők lehetnek, ezért a feltöltött titkot ezen felül vissza is kell vonni.</li>
+</ul>
 <h2 id="fajlok-mellozese-es-a-hitelesito-adatok">Fájlok mellőzése és a hitelesítő adatok</h2>
 <ul>
 <li><strong>Ezt a fájlt mellőzni…</strong>, <strong>Ezt a fájltípust mellőzni…</strong> és <strong>Ezt a mappát mellőzni…</strong> a megfelelő mintát

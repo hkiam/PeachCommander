@@ -120,6 +120,15 @@ branche. Si un rebasage s’arrête sur un conflit, la même fenêtre devient **
 validation** / **Abandonner le rebasage**, de sorte qu’un rebasage à moitié fait n’a pas à être terminé dans
 un terminal.
 
+## Modifier les messages de commit après coup
+
+- **Modifier le message…** dans le menu de l’historique ouvre le message d’un commit pour le modifier ; avec plusieurs commits sélectionnés, c’est **Modifier les messages…**, et **Rechercher et remplacer dans les messages…** — aussi **Modifier les messages de commit…** dans le menu Git — parcourt les messages de la branche actuelle, des commits pas encore poussés ou de toutes les branches et étiquettes.
+- La liste montre les commits dont le message change. Le message du commit sélectionné est affiché tel qu’il est, avec les correspondances marquées, et tel qu’il sera, où vous pouvez aussi écrire ; **Laisser tel quel** retire un commit.
+- **Rechercher des secrets…** recherche des jetons, clés et mots de passe dans les messages listés et les place dans la recherche ; **Caviarder** met `***REDACTED***` comme remplacement.
+- **Appliquer…** demande d’abord : il liste chaque modification, combien de commits reçoivent de nouveaux hashs et quelles branches et étiquettes sont déplacées, et avertit des commits déjà poussés. Les commits sont écrits directement, donc rien n’est extrait et rien ne peut entrer en conflit ; fichiers, auteurs et dates restent tels qu’ils étaient. Une signature est supprimée, ou refaite quand **Signer les commits** est activé dans **Réglages ▸ Git**.
+- Les anciens commits sont conservés : **Défaire** remet les branches en place tant qu’aucune n’a bougé depuis. Une branche déjà poussée est remplacée sur son dépôt distant avec **Forcer l’envoi…**, avec un bail.
+- Pour un secret, **Supprimer les anciens commits…** efface la sauvegarde et les entrées du reflog que plus rien n’atteint, fait un prune, puis indique si un ancien commit est encore là. Les commits poussés peuvent encore être accessibles sur le serveur et dans d’autres clones, donc un secret poussé doit aussi être révoqué.
+
 ## Ignorer des fichiers, et les identifiants
 
 - **Ignorer ce fichier…**, **Ignorer ce type de fichier…** et **Ignorer ce dossier…** ajoutent le motif qui

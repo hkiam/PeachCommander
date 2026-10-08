@@ -117,6 +117,15 @@ squasha, lägga till som fixup, kasta, ordna om eller formulera om dem innan gre
 ombasering i en konflikt blir samma fönster **Fortsätt** / **Hoppa över incheckning** / **Avbryt ombasering**,
 så att en halvfärdig ombasering inte måste avslutas i en terminal.
 
+## Ändra commit-meddelanden i efterhand
+
+- **Redigera meddelande…** i historikens meny öppnar en commits meddelande för redigering; med flera commits markerade heter det **Redigera meddelanden…**, och **Sök och ersätt i meddelanden…** — också **Redigera commit-meddelanden…** i Git-menyn — söker i meddelandena på den aktuella grenen, i de commits som inte pushats än eller på alla grenar och taggar.
+- Listan visar de commits vars meddelande ändras. Den markerades meddelande visas som det är, med träffarna markerade, och som det kommer att bli, och där går det också att skriva; **Lämna som det är** tar ut en commit igen.
+- **Sök hemligheter…** söker efter tokens, nycklar och lösenord i de listade meddelandena och fyller i sökningen efter dem; **Maskera** sätter in `***REDACTED***` som ersättning.
+- **Verkställ…** frågar först: den listar varje ändring, hur många commits som får nya hashar och vilka grenar och taggar som flyttas, och varnar för commits som redan har pushats. Commits skrivs direkt, så inget checkas ut och inget kan hamna i konflikt; filer, författare och datum förblir som de var. En signatur tas bort, eller görs på nytt när **Signera commits** är på i **Inställningar ▸ Git**.
+- De gamla commits behålls: **Ångra** sätter tillbaka grenarna så länge ingen av dem har flyttats sedan dess. En gren som redan har pushats ersätts på sitt fjärrarkiv med **Tvinga push…**, med en lease.
+- För en hemlighet raderar **Ta bort gamla commits…** säkerhetskopian och de reflog-poster som inget når längre, rensar och säger sedan om någon gammal commit finns kvar. Commits som pushats kan fortfarande nås på servern och i andra kloner, så en hemlighet som pushats måste också återkallas.
+
 ## Att ignorera filer, och inloggningsuppgifter
 
 - **Ignorera den här filen…**, **Ignorera den här filtypen…** och **Ignorera den här mappen…** skriver rätt

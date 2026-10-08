@@ -105,6 +105,15 @@ prebrati, raje ne dotakne, kot da bi ugibal. Za območje, ki ga je treba ročno 
 pripeti kot popravek, zavreči, prerazporediti ali preubesediti, preden se veja prepiše. Če se prestavljanje
 ustavi ob sporu, isto okno postane <strong>Nadaljuj</strong> / <strong>Preskoči objavo</strong> / <strong>Prekini prestavljanje</strong>, da
 napol opravljenega prestavljanja ni treba dokončati v terminalu.</p>
+<h2 id="naknadno-spreminjanje-sporocil-commitov">Naknadno spreminjanje sporočil commitov</h2>
+<ul>
+<li><strong>Uredi sporočilo…</strong> v meniju zgodovine odpre sporočilo enega commita za urejanje; pri več izbranih commitih je to <strong>Uredi sporočila…</strong>, <strong>Poišči in zamenjaj v sporočilih…</strong> — tudi <strong>Uredi sporočila commitov…</strong> v meniju Git — pa preišče sporočila trenutne veje, še nepotisnjenih commitov ali vseh vej in oznak.</li>
+<li>Seznam pokaže commite, katerih sporočilo se spremeni. Sporočilo izbranega je prikazano, kakršno je, z označenimi zadetki, in kakršno bo, in vanj lahko tudi pišeš; <strong>Pusti, kot je</strong> commit spet izloči.</li>
+<li><strong>Poišči skrivnosti…</strong> išče žetone, ključe in gesla v navedenih sporočilih in jih vpiše v iskanje; <strong>Zakrij</strong> vstavi <code>***REDACTED***</code> kot zamenjavo.</li>
+<li><strong>Uporabi…</strong> najprej vpraša: našteje vsako spremembo, koliko commitov dobi nove hashe ter katere veje in oznake se premaknejo, in opozori na commite, ki so že potisnjeni. Commiti se zapišejo neposredno, zato se nič ne izvleče in nič ne more priti v spor; datoteke, avtorji in datumi ostanejo, kot so bili. Podpis se odstrani ali pa se ustvari znova, če je v <strong>Nastavitve ▸ Git</strong> vklopljeno <strong>Podpisuj commite</strong>.</li>
+<li>Stari commiti se ohranijo: <strong>Razveljavi</strong> vrne veje nazaj, dokler se nobena od njih medtem ni premaknila. Veja, ki je bila že potisnjena, se na svojem oddaljenem zamenja s <strong>Prisilno potisni…</strong>, z lease.</li>
+<li>Za skrivnost <strong>Odstrani stare commite…</strong> izbriše varnostno kopijo in vnose reflog, ki jih nič več ne doseže, izvede prune in nato pove, ali je še kakšen star commit. Potisnjeni commiti so lahko še dosegljivi na strežniku in v drugih klonih, zato je treba potisnjeno skrivnost tudi preklicati.</li>
+</ul>
 <h2 id="prezrtje-datotek-in-poverilnice">Prezrtje datotek in poverilnice</h2>
 <ul>
 <li><strong>Prezri to datoteko…</strong>, <strong>Prezri to vrsto datotek…</strong> in <strong>Prezri to mapo…</strong> vpišejo pravi vzorec v

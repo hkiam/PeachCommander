@@ -107,6 +107,15 @@ are încă — și vă lasă să le comprimați, să le atașați ca reparație,
 reformulați înainte ca ramura să fie rescrisă. Dacă o rebazare se oprește într-un conflict, aceeași fereastră
 devine <strong>Continuă</strong> / <strong>Sari peste comitere</strong> / <strong>Abandonează</strong>, astfel încât o rebazare pe jumătate făcută nu
 trebuie încheiată într-un terminal.</p>
+<h2 id="schimbarea-ulterioara-a-mesajelor-de-commit">Schimbarea ulterioară a mesajelor de commit</h2>
+<ul>
+<li><strong>Editează mesajul…</strong> din meniul istoricului deschide mesajul unui commit pentru editare; cu mai multe commit-uri selectate se numește <strong>Editează mesajele…</strong>, iar <strong>Caută și înlocuiește în mesaje…</strong> — și <strong>Editează mesajele de commit…</strong> din meniul Git — caută în mesajele ramurii curente, ale commit-urilor neîmpinse încă sau ale tuturor ramurilor și etichetelor.</li>
+<li>Lista arată commit-urile al căror mesaj se schimbă. Mesajul celui selectat apare așa cum este, cu potrivirile marcate, și așa cum va fi, unde se poate și scrie; <strong>Lasă așa</strong> scoate din nou un commit.</li>
+<li><strong>Caută secrete…</strong> caută tokenuri, chei și parole în mesajele listate și le completează în căutare; <strong>Maschează</strong> pune <code>***REDACTED***</code> ca înlocuire.</li>
+<li><strong>Aplică…</strong> întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când <strong>Semnează commit-urile</strong> este activat în <strong>Setări ▸ Git</strong>.</li>
+<li>Commit-urile vechi sunt păstrate: <strong>Desfă</strong> readuce ramurile atâta timp cât niciuna nu s-a mutat între timp. O ramură deja împinsă este înlocuită pe remote-ul ei cu <strong>Împinge forțat…</strong>, cu lease.</li>
+<li>Pentru un secret, <strong>Elimină commit-urile vechi…</strong> șterge copia de rezervă și intrările din reflog la care nu mai ajunge nimic, face curățenie (prune) și spune apoi dacă mai există un commit vechi. Commit-urile împinse pot fi încă accesibile pe server și în alte clone, așa că un secret împins trebuie și revocat.</li>
+</ul>
 <h2 id="ignorarea-fisierelor-si-datele-de-autentificare">Ignorarea fișierelor și datele de autentificare</h2>
 <ul>
 <li><strong>Ignoră acest fișier…</strong>, <strong>Ignoră acest tip de fișier…</strong> și <strong>Ignoră acest dosar…</strong> adaugă tiparul potrivit

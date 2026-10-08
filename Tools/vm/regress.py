@@ -630,6 +630,28 @@ SCENARIOS = [
                    "contribcmd plugin.git.panel.show", "wait 3500",
                    "windowlayout Merge —|depth=10|/Users/admin/git-merge-layout.txt",
                    "wait 4000"], 18),
+    # Phase 10: commit messages changed after the fact. The probe makes a history with a token in two
+    # messages, one of them on a branch merged back; the panel opens the messages window with a find and
+    # replace and applies it, every question answered yes (PC_GIT_PANEL_MESSAGES[_APPLY]). The dump says
+    # what the window reported; the second probe reads the branches' subjects as git has them now — the
+    # token must be gone from both, and the merge still a merge.
+    ("git-messages", ["probe /Users/admin/git-messages-seed.txt|rm -rf ~/pc-messages && mkdir ~/pc-messages && "
+                      "cd ~/pc-messages && export GIT_AUTHOR_NAME=Demo GIT_AUTHOR_EMAIL=demo@example.com "
+                      "GIT_COMMITTER_NAME=Demo GIT_COMMITTER_EMAIL=demo@example.com && git init -q && "
+                      "git symbolic-ref HEAD refs/heads/main && echo a > f.txt && git add f.txt && "
+                      "git commit -qm base && echo b >> f.txt && git commit -qam 'Deploy with ghp_TESTTOKEN123' && "
+                      "git checkout -qb side && echo s > s.txt && git add s.txt && "
+                      "git commit -qm 'Side uses ghp_TESTTOKEN123 too' && git checkout -q main && "
+                      "echo c >> f.txt && git commit -qam More && git merge -q --no-ff side -m 'Merge side' && "
+                      "echo d >> f.txt && git commit -qam Last && git log --oneline | wc -l",
+                      "wait 1500", "active left", "left /Users/admin/pc-messages", "wait 1200",
+                      "focus f.txt", "wait 500",
+                      "contribcmd plugin.git.panel.show", "wait 4000",
+                      "windowlayout Commit Messages|depth=8|/Users/admin/git-messages-layout.txt",
+                      "wait 3000",
+                      "probe /Users/admin/git-messages-log.txt|cd ~/pc-messages && "
+                      "git log --format=%s main side && git rev-list --merges --count main && git status --short",
+                      "wait 6000"], 22),
     # The panel's search, typed before the first load by the probe. Upper case on purpose: the search
     # is case-insensitive, and a message match must not depend on how the reader typed it.
     ("git-search", ["active left", "left /Users/admin/pc-demo/Projects/peach-app/src", "wait 1200",
@@ -3978,6 +4000,17 @@ REPORTS = {
                   ["operation=merge", "mergeUnreadable=", "mergeBase=true", "mergeConflicts=1",
                    "mergeOurs=ours2|", "mergeBaseText=base2|", "mergeTheirs=theirs2|",
                    "mergeStageEnabled=false", "bannerFits=true"]),
+    # The window applied the replacement: five commits new (the two edited, the merge and those after
+    # them), both branches moved, and the backup kept for Undo. Written last (8 s after the first load),
+    # after the log probe, because the primary report ends the run.
+    "git-messages": ("/Users/admin/git-messages.txt",
+                     ["messagesBackup=5 commits rewritten; moved: main, side.", "messagesLog=",
+                      "row5=lane0 [] Deploy with ***REDACTED***", "!ghp_TESTTOKEN123"]),
+    # As git has it afterwards: no token on either branch, the merge still one, nothing left modified.
+    "git-messages-log": ("/Users/admin/git-messages-log.txt",
+                         ["Deploy with ***REDACTED***", "Side uses ***REDACTED*** too", "Merge side", "!ghp_", "!M "]),
+    "git-messages-layout": ("/Users/admin/git-messages-layout.txt",
+                            ["window=Commit Messages — pc-messages", "NSSplitView=960x", "!ERROR: no visible window"]),
     "git-merge-layout": ("/Users/admin/git-merge-layout.txt",
                          # The dump starts below the content view, so the window's title says
                          # whose it is; the split is the editor's.
@@ -4852,6 +4885,8 @@ SCENARIO_ENV = {
     "git-files": {"PC_GIT_PANEL_ROW": "1", "PC_GIT_PANEL_TAB": "files",
                   "PC_GIT_PANEL_DUMP": "/Users/admin/git-files.txt"},
     "git-merge": {"PC_GIT_PANEL_MERGE": "theirs", "PC_GIT_PANEL_DUMP": "/Users/admin/git-merge.txt"},
+    "git-messages": {"PC_GIT_PANEL_MESSAGES": "ghp_TESTTOKEN123|***REDACTED***", "PC_GIT_PANEL_MESSAGES_APPLY": "1",
+                     "PC_GIT_PANEL_DUMP": "/Users/admin/git-messages.txt"},
 }
 
 

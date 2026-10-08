@@ -2434,6 +2434,316 @@ private final class HostingStub: URLProtocol {
     override func stopLoading() {}
 }
 
+// MARK: - Commit messages changed after the fact (phase 10)
+
+extension PluginGitTests {
+
+    private func commitFile(_ repo: TempRepo, _ name: String, _ text: String, message: String,
+                            date: String) throws {
+        try text.write(to: repo.dir.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        try repo.git(["add", name])
+        try repo.git(["commit", "-q", "-m", message],
+                     environment: ["GIT_AUTHOR_DATE": date, "GIT_COMMITTER_DATE": date], author: "Ann")
+    }
+
+    private func head(_ repo: TempRepo, _ ref: String = "HEAD") throws -> String {
+        try repo.git(["rev-parse", ref], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    func testACommitObjectIsReadAndWrittenBackByteForByte() {
+        let raw = "tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904\nparent aaaa\nparent bbbb\n"
+            + "author Jörg <j@x> 1700000000 +0200\ncommitter C <c@x> 1700000001 -0500\n"
+            + "gpgsig -----BEGIN PGP SIGNATURE-----\n \n abc\n -----END PGP SIGNATURE-----\n"
+            + "\nSubject\n\nBody\n"
+        let data = Data(raw.utf8)
+        let commit = PluginGit.parseCommitObject(data)!
+        XCTAssertEqual(commit.serialized(), data)
+        XCTAssertEqual(commit.parents, ["aaaa", "bbbb"])
+        XCTAssertTrue(commit.isSigned)
+        XCTAssertEqual(commit.messageText, "Subject\n\nBody\n")
+
+        let rewritten = PluginGit.rewrittenCommit(commit, parents: ["cccc", "bbbb"], message: Data("New\n".utf8))
+        let text = String(data: rewritten.serialized(), encoding: .utf8)!
+        XCTAssertEqual(text, "tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904\nparent cccc\nparent bbbb\n"
+            + "author Jörg <j@x> 1700000000 +0200\ncommitter C <c@x> 1700000001 -0500\n\nNew\n")
+        XCTAssertFalse(rewritten.isSigned)
+
+        let env = PluginGit.identityEnvironment(commit)!
+        XCTAssertEqual(env["GIT_AUTHOR_NAME"], "Jörg")
+        XCTAssertEqual(env["GIT_AUTHOR_DATE"], "@1700000000 +0200")
+        XCTAssertEqual(env["GIT_COMMITTER_DATE"], "@1700000001 -0500")
+    }
+
+    func testARootCommitGetsNoParentAndAnotherEncodingIsNotEditable() {
+        let root = PluginGit.parseCommitObject(Data("tree t\nauthor A <a> 1 +0000\ncommitter A <a> 1 +0000\n\nm\n".utf8))!
+        XCTAssertEqual(PluginGit.rewrittenCommit(root, parents: [], message: nil), root)
+        let latin = PluginGit.parseCommitObject(Data("tree t\nauthor A <a> 1 +0000\ncommitter A <a> 1 +0000\nencoding ISO-8859-1\n\nm\n".utf8))!
+        XCTAssertFalse(latin.isUTF8)
+        XCTAssertNil(latin.messageText)
+        XCTAssertFalse(PluginGit.canSignAnew(latin))
+    }
+
+    func testTheHashComputedHereIsGitsAndTheBatchIsRead() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q"])
+        try commitFile(repo, "a", "1", message: "first", date: "1700000000 +0100")
+        let hash = try head(repo)
+        let batch = PluginGit.parseCatFileBatch(try repo.gitData(["cat-file", "--batch"], combined: false,
+                                                                 input: Data("\(hash)\nnope\n".utf8)).out)
+        XCTAssertEqual(batch.count, 1)
+        let object = try XCTUnwrap(batch[hash])
+        XCTAssertEqual(object.type, "commit")
+        XCTAssertEqual(PluginGit.objectHash(type: "commit", content: object.content), hash)
+    }
+
+    func testFindAndReplaceInMessages() {
+        var replacement = PluginGit.MessageReplacement(find: "Token $1", replacement: "$1")
+        XCTAssertEqual(replacement.apply(to: "a token $1 b"), "a $1 b", "literal both ways, case ignored")
+        replacement.caseSensitive = true
+        XCTAssertEqual(replacement.matches(in: "a token $1 b"), [])
+        let regex = PluginGit.MessageReplacement(find: #"key=(\w+)"#, replacement: "key=<$1>", regex: true)
+        XCTAssertEqual(regex.apply(to: "key=abc and KEY=d"), "key=<abc> and key=<d>")
+        let word = PluginGit.MessageReplacement(find: "pass", replacement: "x", wholeWord: true)
+        XCTAssertEqual(word.apply(to: "pass password pass."), "x password x.")
+        XCTAssertNil(PluginGit.MessageReplacement(find: "(", replacement: "", regex: true).expression)
+        XCTAssertNil(PluginGit.MessageReplacement(find: "", replacement: "").expression)
+    }
+
+    func testSecretsAreFoundAndRedacted() {
+        let token = "ghp_" + String(repeating: "a1B2", count: 9)
+        let message = """
+            Deploy with \(token)
+            password: hunter22secret
+            remote https://bob:s3cr3tpw@example.com/x.git
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            b3BlbnNzaC1rZXk
+            -----END OPENSSH PRIVATE KEY-----
+            password = ***REDACTED***
+            """
+        let findings = PluginGit.secretFindings(in: message)
+        XCTAssertEqual(findings.map(\.kind), ["GitHub token", "Private key", "Password in a URL", "Password or key"])
+        XCTAssertEqual(findings[0].value, token)
+        XCTAssertEqual(findings[2].value, "s3cr3tpw")
+        XCTAssertEqual(findings[3].value, "hunter22secret")
+        let redacted = PluginGit.redaction(of: findings.map(\.value)).apply(to: message)
+        XCTAssertTrue(PluginGit.secretFindings(in: redacted).isEmpty, redacted)
+        XCTAssertTrue(redacted.contains("Deploy with ***REDACTED***"))
+        XCTAssertTrue(redacted.contains("https://bob:***REDACTED***@example.com"))
+        XCTAssertEqual(PluginGit.maskedSecret("hunter22secret"), "hunt…et (14)")
+        XCTAssertEqual(PluginGit.maskedSecret("abc"), "••••")
+    }
+
+    func testATypedMessageIsStoredTheWayGitStoresOne() {
+        XCTAssertEqual(PluginGit.normalizedMessage("\n Subject  \r\n\nBody\t\n\n\n"), " Subject\n\nBody\n")
+        XCTAssertEqual(PluginGit.normalizedMessage(" \n\n"), "")
+    }
+
+    func testBackupStampsSortAndParse() {
+        let stamp = PluginGit.backupStamp(Date(timeIntervalSince1970: 1_700_000_000))
+        XCTAssertEqual(stamp, "messages-20231114-221320")
+        XCTAssertEqual(PluginGit.backupDate(stamp), Date(timeIntervalSince1970: 1_700_000_000))
+        XCTAssertEqual(PluginGit.backupStamps("refs/pc-backup/messages-1/old/heads/a\nrefs/pc-backup/messages-2/new/heads/a\n"),
+                       ["messages-2", "messages-1"])
+    }
+
+    /// The whole thing against git: a history with a merge, a branch and both kinds of tag; two messages
+    /// changed in one run. Trees, authors, committers and dates stay; the working tree is not touched; the
+    /// refs move; undo puts them back; and the clean-up leaves the old commit nowhere.
+    func testMessagesAreRewrittenAcrossAMergeAndUndoneAndCleanedUp() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try commitFile(repo, "a", "1", message: "A", date: "1700000000 +0100")
+        try commitFile(repo, "b", "2", message: "B with ghp_secret", date: "1700000100 +0100")
+        let b = try head(repo)
+        try repo.git(["tag", "-a", "v1", "-m", "release one"])
+        try repo.git(["checkout", "-q", "-b", "side"])
+        try commitFile(repo, "s", "3", message: "S", date: "1700000200 -0700")
+        try repo.git(["checkout", "-q", "main"])
+        try commitFile(repo, "c", "4", message: "C", date: "1700000300 +0100")
+        try repo.git(["merge", "-q", "--no-ff", "side", "-m", "Merge side"],
+                     environment: ["GIT_AUTHOR_DATE": "1700000400 +0100", "GIT_COMMITTER_DATE": "1700000400 +0100"])
+        try commitFile(repo, "d", "5", message: "D\n\nwith body", date: "1700000500 +0100")
+        let d = try head(repo)
+        try repo.git(["tag", "light"])
+        try "dirty".write(to: repo.dir.appendingPathComponent("a"), atomically: true, encoding: .utf8)
+        try repo.git(["stash", "-q"])
+        try "dirty again".write(to: repo.dir.appendingPathComponent("a"), atomically: true, encoding: .utf8)
+
+        let identity = ["log", "--format=%T %an %ae %ad %cn %ce %cd", "--date=raw", "main"]
+        let before = try repo.git(identity, combined: false).out
+        let oldMain = try head(repo, "main"), oldSide = try head(repo, "side")
+
+        let refs = PluginGit.parseContainingRefs(
+            try repo.git(PluginGit.containingRefsArguments([b, d]), combined: false).out, currentBranch: "refs/heads/main")
+        XCTAssertEqual(Set(refs.map(\.name)), ["refs/heads/main", "refs/heads/side", "refs/tags/v1", "refs/tags/light", "refs/stash"])
+
+        let result = PluginGit.rewriteMessages([b: "B\n", d: "D\n\nwith a better body\n"],
+                                               refs: ["refs/heads/main", "refs/heads/side", "refs/tags/v1", "refs/tags/light"],
+                                               sign: false, stamp: "messages-1", git: repo.call)
+        if case .failure(let error) = result { XCTFail("\(error)") }
+        let report = try result.get()
+        XCTAssertEqual(report.mapping.count, 5, "B, C, S, the merge and D")
+        XCTAssertEqual(Set(report.moved.map(\.ref)), ["refs/heads/main", "refs/heads/side", "refs/tags/v1", "refs/tags/light"])
+
+        XCTAssertEqual(try repo.git(identity, combined: false).out, before, "trees, people and dates are what they were")
+        XCTAssertEqual(try repo.git(["rev-list", "--parents", "-1", "main~1"], combined: false).out.split(separator: " ").count, 3,
+                       "the merge is still a merge")
+        XCTAssertEqual(try repo.git(["log", "--format=%s", "main"], combined: false).out, "D\nMerge side\nC\nS\nB\nA\n")
+        XCTAssertEqual(try repo.git(["log", "-1", "--format=%B", "main"], combined: false).out, "D\n\nwith a better body\n\n")
+        XCTAssertEqual(try repo.git(["rev-parse", "v1^{commit}"], combined: false).out, try repo.git(["rev-parse", "main~3"], combined: false).out)
+        XCTAssertEqual(try repo.git(["cat-file", "-p", "v1"], combined: false).out.components(separatedBy: "\n").last(where: { !$0.isEmpty }), "release one")
+        XCTAssertEqual(try head(repo, "light"), try head(repo, "main"))
+        XCTAssertEqual(try repo.git(["status", "--porcelain"], combined: false).out, " M a\n", "the working tree is as it was")
+        XCTAssertTrue(try repo.git(["fsck", "--strict", "--no-dangling"]).ok)
+        XCTAssertEqual(PluginGit.backupStamps(try repo.git(["for-each-ref", "--format=%(refname)"], combined: false).out), ["messages-1"])
+
+        // Undo, then redo, then remove the old commits for good.
+        XCTAssertEqual(PluginGit.undoRewrite(stamp: "messages-1", git: repo.call),
+                       .undone(["refs/heads/main", "refs/heads/side", "refs/tags/light", "refs/tags/v1"]))
+        XCTAssertEqual(try head(repo, "main"), oldMain)
+        XCTAssertEqual(try head(repo, "side"), oldSide)
+        XCTAssertEqual(PluginGit.undoRewrite(stamp: "messages-1", git: repo.call), .noBackup)
+
+        let again = try PluginGit.rewriteMessages([b: "B\n"], refs: ["refs/heads/main", "refs/heads/side", "refs/tags/v1"],
+                                                  sign: false, stamp: "messages-2", git: repo.call).get()
+        let cleaning = PluginGit.cleanUpRewrite(stamp: again.stamp, old: [b], git: repo.call)
+        if case .failure(let error) = cleaning { XCTFail("\(error)") }
+        let clean = try cleaning.get()
+        // The stash was made on D, which still holds the old B — so it stays, and says why.
+        XCTAssertEqual(clean.removed, [])
+        XCTAssertTrue(clean.remaining[b]?.contains("refs/tags/light") == true, "\(clean.remaining)")
+        XCTAssertEqual(try repo.git(["stash", "list"], combined: false).out.components(separatedBy: "\n").filter { !$0.isEmpty }.count, 1,
+                       "the stash list survives the clean-up")
+        try repo.git(["tag", "-d", "light"])
+        try repo.git(["stash", "drop", "-q"])
+        let gone = try PluginGit.cleanUpRewrite(stamp: nil, old: [b], git: repo.call).get()
+        XCTAssertEqual(gone.removed, [b])
+        XCTAssertFalse(try repo.git(["cat-file", "-e", b]).ok)
+    }
+
+    /// Edited commits one behind the other: the second's parent is a descendant of the first, so bounding
+    /// the walk by parents would hide the first — the walk widens instead.
+    func testTwoEditsOnOneLineAndUndoRefusedAfterNewWork() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try commitFile(repo, "a", "1", message: "one", date: "1700000000 +0000")
+        let one = try head(repo)
+        try commitFile(repo, "a", "2", message: "two", date: "1700000001 +0000")
+        try commitFile(repo, "a", "3", message: "three", date: "1700000002 +0000")
+        let three = try head(repo)
+        let report = try PluginGit.rewriteMessages([one: "ONE\n", three: "THREE\n"], refs: ["refs/heads/main"],
+                                                   sign: false, stamp: "messages-3", git: repo.call).get()
+        XCTAssertEqual(report.mapping.count, 3)
+        XCTAssertEqual(try repo.git(["log", "--format=%s"], combined: false).out, "THREE\ntwo\nONE\n")
+        try commitFile(repo, "a", "4", message: "four", date: "1700000003 +0000")
+        XCTAssertEqual(PluginGit.undoRewrite(stamp: "messages-3", git: repo.call), .moved(["refs/heads/main"]))
+        XCTAssertEqual(PluginGit.rewriteMessages([one: "x\n"], refs: ["refs/heads/nope"], sign: false, stamp: "m",
+                                                 git: repo.call), .failure(.notReachable))
+    }
+
+    func testTheMessagesListingAndWhatWasPushed() throws {
+        let remote = try TempRepo(), repo = try TempRepo()
+        try remote.git(["init", "-q", "--bare", "-b", "main"])
+        try repo.git(["init", "-q", "-b", "main"])
+        try commitFile(repo, "a", "1", message: "pushed\n\nbody\u{1F}odd", date: "1700000000 +0000")
+        let pushed = try head(repo)
+        try repo.git(["remote", "add", "origin", remote.dir.path])
+        try repo.git(["push", "-q", "-u", "origin", "main"])
+        try commitFile(repo, "a", "2", message: "local", date: "1700000001 +0000")
+
+        let all = PluginGit.parseMessages(try repo.git(PluginGit.messagesArguments(.currentBranch), combined: false).out)
+        XCTAssertEqual(all.map(\.subject), ["local", "pushed"])
+        XCTAssertEqual(all[1].message, "pushed\n\nbody\u{1F}odd\n")
+        XCTAssertEqual(all[1].author, "Ann")
+        XCTAssertEqual(PluginGit.parseMessages(try repo.git(PluginGit.messagesArguments(.notPushed), combined: false).out).map(\.subject), ["local"])
+        XCTAssertEqual(PluginGit.parseMessages(try repo.git(PluginGit.messagesArguments(.commits([pushed])), combined: false).out).map(\.hash), [pushed])
+
+        let refs = PluginGit.parseContainingRefs(try repo.git(PluginGit.containingRefsArguments([pushed]), combined: false).out,
+                                                 currentBranch: "refs/heads/main")
+        let main = try XCTUnwrap(PluginGit.pushedBranches(refs).first)
+        XCTAssertTrue(main.isCurrent)
+        XCTAssertEqual(PluginGit.forcePushArguments(for: main),
+                       ["push", "--force-with-lease", "--force-if-includes", "origin", "refs/heads/main:refs/heads/main"])
+
+        _ = try PluginGit.rewriteMessages([pushed: "PUSHED\n"], refs: ["refs/heads/main"], sign: false, stamp: "messages-4", git: repo.call).get()
+        let push = try repo.git(PluginGit.forcePushArguments(for: main)!)
+        XCTAssertTrue(push.ok, push.out)
+        XCTAssertEqual(try remote.git(["log", "--format=%s", "main"], combined: false).out, "local\nPUSHED\n")
+    }
+}
+
+extension PluginGitTests {
+
+    /// Review of phase 10: a commit that cannot be signed again (it carries an encoding header) between
+    /// signable ones. It is written unsigned at once, so its child's `commit-tree -p` finds it; the others
+    /// are signed, and each signed one is, signature aside, exactly the commit meant.
+    func testSigningAgainSurvivesACommitThatCannotBeSigned() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        let key = repo.dir.appendingPathComponent("key").path
+        let made = Process()
+        made.executableURL = URL(fileURLWithPath: "/usr/bin/ssh-keygen")
+        made.arguments = ["-q", "-t", "ed25519", "-N", "", "-f", key]
+        try made.run(); made.waitUntilExit()
+        guard made.terminationStatus == 0 else { throw XCTSkip("ssh-keygen could not make a key") }
+        try repo.git(["config", "gpg.format", "ssh"])
+        try repo.git(["config", "user.signingkey", key])
+        try commitFile(repo, "a", "1", message: "one", date: "1700000000 +0000")
+        let one = try head(repo)
+        try repo.git(["-c", "i18n.commitEncoding=ISO-8859-1", "commit", "-q", "--allow-empty", "-m", "latin"],
+                     environment: ["GIT_AUTHOR_DATE": "1700000001 +0000", "GIT_COMMITTER_DATE": "1700000001 +0000"])
+        try commitFile(repo, "a", "3", message: "three", date: "1700000002 +0000")
+
+        let report = try PluginGit.rewriteMessages([one: "ONE\n"], refs: ["refs/heads/main"], sign: true,
+                                                   stamp: "messages-s", git: repo.call).get()
+        XCTAssertEqual(report.mapping.count, 3)
+        XCTAssertEqual(report.notSigned, 1, "the commit with an encoding header")
+        let signedHeads = try repo.git(["log", "--format=%H"], combined: false).out.split(separator: "\n").map { hash in
+            try repo.git(["cat-file", "commit", String(hash)], combined: false).out.contains("\ngpgsig ")
+        }
+        XCTAssertEqual(signedHeads, [true, false, true])
+        XCTAssertEqual(try repo.git(["log", "--format=%s %an %ad", "--date=raw"], combined: false).out,
+                       "three Ann 1700000002 +0000\nlatin T 1700000001 +0000\nONE Ann 1700000000 +0000\n")
+        XCTAssertTrue(try repo.git(["fsck", "--strict", "--no-dangling"]).ok)
+    }
+
+    func testAMessageThatIsNotUTF8IsNotRewrittenAndAMessageGetsItsBlankLine() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try commitFile(repo, "a", "1", message: "one", date: "1700000000 +0000")
+        let tree = try repo.git(["rev-parse", "HEAD^{tree}"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        var raw = Data("tree \(tree)\nauthor A <a@x> 1700000001 +0000\ncommitter A <a@x> 1700000001 +0000\n\nM".utf8)
+        raw.append(contentsOf: [0xFC, 0x6C, 0x6C, 0x0A])          // "Müll" in Latin-1, no encoding header
+        let bad = try repo.gitData(["hash-object", "-t", "commit", "-w", "--stdin", "--literally"], combined: false, input: raw)
+        let hash = String(decoding: bad.out, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+        try repo.git(["update-ref", "refs/heads/odd", hash])
+        XCTAssertEqual(PluginGit.rewriteMessages([hash: "x\n"], refs: ["refs/heads/odd"], sign: false, stamp: "m", git: repo.call),
+                       .failure(.notUTF8([hash])))
+
+        let headless = PluginGit.CommitObject(headers: ["tree t"], message: Data(), hasSeparator: false)
+        XCTAssertEqual(String(data: PluginGit.rewrittenCommit(headless, parents: [], message: Data("m\n".utf8)).serialized(), encoding: .utf8),
+                       "tree t\n\nm\n")
+    }
+
+    /// Without any reflog (`core.logAllRefUpdates=false`) the clean-up still runs — naming HEAD to
+    /// `reflog expire` would fail — and the backup is kept until the reflogs are done.
+    func testTheCleanUpRunsWithoutReflogs() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try repo.git(["config", "core.logAllRefUpdates", "false"])
+        try commitFile(repo, "a", "1", message: "one ghp_x", date: "1700000000 +0000")
+        let one = try head(repo)
+        try commitFile(repo, "a", "2", message: "two", date: "1700000001 +0000")
+        try? FileManager.default.removeItem(at: repo.dir.appendingPathComponent(".git/logs"))
+        XCTAssertFalse(try repo.git(["reflog", "exists", "HEAD"]).ok)
+        let report = try PluginGit.rewriteMessages([one: "one\n"], refs: ["refs/heads/main"], sign: false,
+                                                   stamp: "messages-n", git: repo.call).get()
+        let clean = try PluginGit.cleanUpRewrite(stamp: report.stamp, old: [one], git: repo.call).get()
+        XCTAssertEqual(clean.removed, [one])
+        XCTAssertEqual(PluginGit.backupStamps(try repo.git(["for-each-ref", "--format=%(refname)"], combined: false).out), [])
+    }
+}
+
 private final class TempRepo {
     let dir: URL
     private let executable: String
@@ -2455,6 +2765,13 @@ private final class TempRepo {
     @discardableResult
     func git(_ arguments: [String], environment extra: [String: String] = [:], author: String = "T",
              combined: Bool = true, input: Data? = nil) throws -> (out: String, ok: Bool) {
+        let result = try gitData(arguments, environment: extra, author: author, combined: combined, input: input)
+        return (String(decoding: result.out, as: UTF8.self), result.ok)
+    }
+
+    /// The same, with git's output as bytes — `cat-file --batch` hands back objects, not text.
+    func gitData(_ arguments: [String], environment extra: [String: String] = [:], author: String = "T",
+                 combined: Bool = true, input: Data? = nil) throws -> (out: Data, ok: Bool) {
         let process = Process()
         if let input {
             let stdin = Pipe()
@@ -2466,7 +2783,9 @@ private final class TempRepo {
         process.arguments = ["-C", dir.path] + arguments
         let pipe = Pipe()
         process.standardOutput = pipe
-        process.standardError = combined ? pipe : FileHandle.nullDevice
+        // Without `combined`, git's complaint still comes back when it fails — after its output.
+        let errors = Pipe()
+        process.standardError = combined ? pipe : errors
         var environment = ProcessInfo.processInfo.environment
         for key in ["LANG", "LC_ALL", "LC_CTYPE", "LC_MESSAGES"] { environment[key] = nil }
         environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
@@ -2479,7 +2798,16 @@ private final class TempRepo {
         process.environment = environment
         try process.run()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let complaint = combined ? Data() : errors.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
-        return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+        let ok = process.terminationStatus == 0
+        return (ok ? data : data + complaint, ok)
+    }
+
+    /// The rewrite's way to git, without stderr: git's warnings must not end up in an object name.
+    var call: PluginGit.GitCall {
+        { arguments, input, environment in
+            (try? self.gitData(arguments, environment: environment, combined: false, input: input)) ?? (Data(), false)
+        }
     }
 }

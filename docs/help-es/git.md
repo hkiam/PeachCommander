@@ -118,6 +118,15 @@ aplastarlas, corregirlas, descartarlas, reordenarlas o reescribir su mensaje ant
 un rebase se detiene en un conflicto, la misma ventana pasa a **Continuar** / **Saltar confirmación** /
 **Abortar rebase**, de modo que un rebase a medias no tiene que terminarse en un terminal.
 
+## Cambiar mensajes de commit después
+
+- **Editar mensaje…** en el menú del historial abre el mensaje de un commit para editarlo; con varios commits seleccionados es **Editar mensajes…**, y **Buscar y reemplazar en los mensajes…** — también **Editar mensajes de commit…** en el menú Git — busca en los mensajes de la rama actual, de los commits aún no enviados o de todas las ramas y etiquetas.
+- La lista muestra los commits cuyo mensaje cambia. El mensaje del seleccionado se muestra tal como es, con las coincidencias marcadas, y tal como quedará, donde también se puede escribir; **Dejar como está** vuelve a sacar un commit.
+- **Buscar secretos…** busca tokens, claves y contraseñas en los mensajes de la lista y los pone en la búsqueda; **Censurar** pone `***REDACTED***` como reemplazo.
+- **Aplicar…** pregunta antes: enumera cada cambio, cuántos commits reciben hashes nuevos y qué ramas y etiquetas se mueven, y avisa de los commits que ya se enviaron. Los commits se escriben directamente, así que no se extrae nada y nada puede entrar en conflicto; los archivos, autores y fechas quedan como estaban. Una firma desaparece, o se vuelve a crear si **Firmar commits** está activado en **Ajustes ▸ Git**.
+- Los commits antiguos se conservan: **Deshacer** devuelve las ramas mientras ninguna se haya movido desde entonces. Una rama que ya se envió se sustituye en su remoto con **Forzar envío…**, con arrendamiento.
+- Para un secreto, **Eliminar commits antiguos…** borra la copia de seguridad y las entradas del reflog que ya nada alcanza, hace prune y después indica si aún queda algún commit antiguo. Los commits enviados pueden seguir siendo accesibles en el servidor y en otros clones, así que un secreto que se envió también debe revocarse.
+
 ## Ignorar archivos, y las credenciales
 
 - **Ignorar este archivo…**, **Ignorar este tipo de archivo…** e **Ignorar esta carpeta…** añaden el patrón

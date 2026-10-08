@@ -109,6 +109,15 @@ laisse les écraser, les corriger, les abandonner, les réordonner ou les reform
 branche. Si un rebasage s’arrête sur un conflit, la même fenêtre devient <strong>Continuer</strong> / <strong>Sauter la
 validation</strong> / <strong>Abandonner le rebasage</strong>, de sorte qu’un rebasage à moitié fait n’a pas à être terminé dans
 un terminal.</p>
+<h2 id="modifier-les-messages-de-commit-apres-coup">Modifier les messages de commit après coup</h2>
+<ul>
+<li><strong>Modifier le message…</strong> dans le menu de l’historique ouvre le message d’un commit pour le modifier ; avec plusieurs commits sélectionnés, c’est <strong>Modifier les messages…</strong>, et <strong>Rechercher et remplacer dans les messages…</strong> — aussi <strong>Modifier les messages de commit…</strong> dans le menu Git — parcourt les messages de la branche actuelle, des commits pas encore poussés ou de toutes les branches et étiquettes.</li>
+<li>La liste montre les commits dont le message change. Le message du commit sélectionné est affiché tel qu’il est, avec les correspondances marquées, et tel qu’il sera, où vous pouvez aussi écrire ; <strong>Laisser tel quel</strong> retire un commit.</li>
+<li><strong>Rechercher des secrets…</strong> recherche des jetons, clés et mots de passe dans les messages listés et les place dans la recherche ; <strong>Caviarder</strong> met <code>***REDACTED***</code> comme remplacement.</li>
+<li><strong>Appliquer…</strong> demande d’abord : il liste chaque modification, combien de commits reçoivent de nouveaux hashs et quelles branches et étiquettes sont déplacées, et avertit des commits déjà poussés. Les commits sont écrits directement, donc rien n’est extrait et rien ne peut entrer en conflit ; fichiers, auteurs et dates restent tels qu’ils étaient. Une signature est supprimée, ou refaite quand <strong>Signer les commits</strong> est activé dans <strong>Réglages ▸ Git</strong>.</li>
+<li>Les anciens commits sont conservés : <strong>Défaire</strong> remet les branches en place tant qu’aucune n’a bougé depuis. Une branche déjà poussée est remplacée sur son dépôt distant avec <strong>Forcer l’envoi…</strong>, avec un bail.</li>
+<li>Pour un secret, <strong>Supprimer les anciens commits…</strong> efface la sauvegarde et les entrées du reflog que plus rien n’atteint, fait un prune, puis indique si un ancien commit est encore là. Les commits poussés peuvent encore être accessibles sur le serveur et dans d’autres clones, donc un secret poussé doit aussi être révoqué.</li>
+</ul>
 <h2 id="ignorer-des-fichiers-et-les-identifiants">Ignorer des fichiers, et les identifiants</h2>
 <ul>
 <li><strong>Ignorer ce fichier…</strong>, <strong>Ignorer ce type de fichier…</strong> et <strong>Ignorer ce dossier…</strong> ajoutent le motif qui

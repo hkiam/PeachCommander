@@ -115,6 +115,15 @@ fixuppe, kassere, omordne eller omformulere dem, før grenen skrives om. Standse
 bliver det samme vindue til **Fortsæt** / **Spring commit over** / **Afbryd rebase**, så en halvfærdig rebase
 ikke skal gøres færdig i en terminal.
 
+## At ændre commit-beskeder bagefter
+
+- **Redigér besked…** i historikkens menu åbner ét commits besked til redigering; med flere commits valgt hedder det **Redigér beskeder…**, og **Søg og erstat i beskeder…** — også **Redigér commit-beskeder…** i Git-menuen — gennemsøger beskederne på den aktuelle gren, i de commits, der ikke er pushet endnu, eller på alle grene og tags.
+- Listen viser de commits, hvis besked ændres. Det valgtes besked vises, som den er, med træfferne markeret, og som den bliver, og der kan man også skrive; **Lad være som det er** tager et commit ud igen.
+- **Find hemmeligheder…** søger efter tokens, nøgler og adgangskoder i de viste beskeder og udfylder søgningen med dem; **Censurér** indsætter `***REDACTED***` som erstatning.
+- **Anvend…** spørger først: den viser hver ændring, hvor mange commits der får nye hashes, og hvilke grene og tags der flyttes, og advarer om commits, der allerede er pushet. Commits skrives direkte, så intet tjekkes ud, og intet kan komme i konflikt; filer, forfattere og datoer forbliver, som de var. En signatur fjernes, eller den laves igen, når **Signér commits** er slået til under **Indstillinger ▸ Git**.
+- De gamle commits bevares: **Fortryd** sætter grenene tilbage, så længe ingen af dem har flyttet sig siden. En gren, der allerede er pushet, erstattes på sit fjernlager med **Gennemtving push…**, med lease.
+- For en hemmelighed sletter **Fjern gamle commits…** sikkerhedskopien og de reflog-poster, som intet når mere, rydder op med prune og fortæller derefter, om et gammelt commit stadig findes. Pushede commits kan stadig være tilgængelige på serveren og i andre kloner, så en hemmelighed, der er pushet, skal også tilbagekaldes.
+
 ## At ignorere filer, og adgangsoplysninger
 
 - **Ignorér denne fil…**, **Ignorér denne filtype…** og **Ignorér denne mappe…** skriver det rigtige mønster

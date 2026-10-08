@@ -106,6 +106,15 @@ regione che va intrecciata a mano da entrambi i lati, <strong>Apri nell’editor
 fare squash, fixup, scartarli, riordinarli o riscriverne il messaggio prima di riscrivere il branch. Se un
 rebase si ferma su un conflitto, la stessa finestra diventa <strong>Continua</strong> / <strong>Salta commit</strong> / <strong>Annulla
 rebase</strong>, così un rebase lasciato a metà non deve essere finito in un terminale.</p>
+<h2 id="cambiare-i-messaggi-di-commit-in-seguito">Cambiare i messaggi di commit in seguito</h2>
+<ul>
+<li><strong>Modifica messaggio…</strong> nel menu della cronologia apre il messaggio di un commit per modificarlo; con più commit selezionati diventa <strong>Modifica messaggi…</strong>, e <strong>Trova e sostituisci nei messaggi…</strong> — anche <strong>Modifica messaggi di commit…</strong> nel menu Git — cerca nei messaggi del ramo attuale, dei commit non ancora inviati o di tutti i rami e i tag.</li>
+<li>L’elenco mostra i commit il cui messaggio cambia. Il messaggio di quello selezionato appare com’è, con le corrispondenze evidenziate, e come sarà, e lì si può anche scrivere; <strong>Lascia com’è</strong> toglie di nuovo un commit.</li>
+<li><strong>Trova segreti…</strong> cerca token, chiavi e password nei messaggi elencati e li inserisce nella ricerca; <strong>Oscura</strong> mette <code>***REDACTED***</code> come sostituzione.</li>
+<li><strong>Applica…</strong> chiede prima: elenca ogni modifica, quanti commit ricevono nuovi hash e quali rami e tag vengono spostati, e avvisa dei commit già inviati. I commit vengono scritti direttamente, quindi non viene fatto alcun checkout e nulla può andare in conflitto; file, autori e date restano come erano. Una firma viene rimossa, o rifatta se <strong>Firma i commit</strong> è attivo in <strong>Impostazioni ▸ Git</strong>.</li>
+<li>I vecchi commit vengono conservati: <strong>Ripristina</strong> riporta indietro i rami finché nessuno di essi si è spostato da allora. Un ramo già inviato viene sostituito sul suo remoto con <strong>Push forzato…</strong>, con lease.</li>
+<li>Per un segreto, <strong>Rimuovi vecchi commit…</strong> elimina il backup e le voci del reflog che nulla raggiunge più, esegue il prune e poi dice se c’è ancora un vecchio commit. I commit inviati possono essere ancora raggiungibili sul server e in altri cloni, quindi un segreto inviato deve anche essere revocato.</li>
+</ul>
 <h2 id="ignorare-file-e-le-credenziali">Ignorare file, e le credenziali</h2>
 <ul>
 <li><strong>Ignora questo file…</strong>, <strong>Ignora questo tipo di file…</strong> e <strong>Ignora questa cartella…</strong> aggiungono il

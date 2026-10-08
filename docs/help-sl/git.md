@@ -116,6 +116,15 @@ pripeti kot popravek, zavreči, prerazporediti ali preubesediti, preden se veja 
 ustavi ob sporu, isto okno postane **Nadaljuj** / **Preskoči objavo** / **Prekini prestavljanje**, da
 napol opravljenega prestavljanja ni treba dokončati v terminalu.
 
+## Naknadno spreminjanje sporočil commitov
+
+- **Uredi sporočilo…** v meniju zgodovine odpre sporočilo enega commita za urejanje; pri več izbranih commitih je to **Uredi sporočila…**, **Poišči in zamenjaj v sporočilih…** — tudi **Uredi sporočila commitov…** v meniju Git — pa preišče sporočila trenutne veje, še nepotisnjenih commitov ali vseh vej in oznak.
+- Seznam pokaže commite, katerih sporočilo se spremeni. Sporočilo izbranega je prikazano, kakršno je, z označenimi zadetki, in kakršno bo, in vanj lahko tudi pišeš; **Pusti, kot je** commit spet izloči.
+- **Poišči skrivnosti…** išče žetone, ključe in gesla v navedenih sporočilih in jih vpiše v iskanje; **Zakrij** vstavi `***REDACTED***` kot zamenjavo.
+- **Uporabi…** najprej vpraša: našteje vsako spremembo, koliko commitov dobi nove hashe ter katere veje in oznake se premaknejo, in opozori na commite, ki so že potisnjeni. Commiti se zapišejo neposredno, zato se nič ne izvleče in nič ne more priti v spor; datoteke, avtorji in datumi ostanejo, kot so bili. Podpis se odstrani ali pa se ustvari znova, če je v **Nastavitve ▸ Git** vklopljeno **Podpisuj commite**.
+- Stari commiti se ohranijo: **Razveljavi** vrne veje nazaj, dokler se nobena od njih medtem ni premaknila. Veja, ki je bila že potisnjena, se na svojem oddaljenem zamenja s **Prisilno potisni…**, z lease.
+- Za skrivnost **Odstrani stare commite…** izbriše varnostno kopijo in vnose reflog, ki jih nič več ne doseže, izvede prune in nato pove, ali je še kakšen star commit. Potisnjeni commiti so lahko še dosegljivi na strežniku in v drugih klonih, zato je treba potisnjeno skrivnost tudi preklicati.
+
 ## Prezrtje datotek in poverilnice
 
 - **Prezri to datoteko…**, **Prezri to vrsto datotek…** in **Prezri to mapo…** vpišejo pravi vzorec v

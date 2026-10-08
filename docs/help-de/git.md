@@ -118,6 +118,15 @@ squashen, als Fixup anhängen, verwerfen, umsortieren oder umbenennen, bevor der
 Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu **Fortsetzen** / **Commit überspringen**
 / **Rebase abbrechen**, damit ein halb fertiges Rebase nicht im Terminal beendet werden muss.
 
+## Commit-Nachrichten nachträglich ändern
+
+- **Nachricht bearbeiten…** im Menü der Historie öffnet die Nachricht eines Commits zum Bearbeiten; bei mehreren ausgewählten Commits heißt es **Nachrichten bearbeiten…**, und **In Nachrichten suchen und ersetzen…** — auch **Commit-Nachrichten bearbeiten…** im Git-Menü — durchsucht die Nachrichten des aktuellen Branches, der noch nicht gepushten Commits oder aller Branches und Tags.
+- Die Liste zeigt die Commits, deren Nachricht sich ändert. Die Nachricht des ausgewählten steht da, wie sie ist, mit markierten Treffern, und wie sie sein wird, und dort lässt sich auch hineinschreiben; **So lassen** nimmt einen Commit wieder heraus.
+- **Secrets suchen…** sucht in den gelisteten Nachrichten nach Tokens, Schlüsseln und Passwörtern und trägt sie in die Suche ein; **Schwärzen** setzt `***REDACTED***` als Ersatz ein.
+- **Anwenden…** fragt vorher: Es listet jede Änderung, wie viele Commits neue Hashes bekommen und welche Branches und Tags umgesetzt werden, und warnt vor Commits, die schon gepusht sind. Die Commits werden direkt geschrieben, also wird nichts ausgecheckt und nichts kann in Konflikt geraten; Dateien, Autoren und Daten bleiben, wie sie waren. Eine Signatur entfällt, oder sie wird neu erstellt, wenn **Commits signieren** in **Einstellungen ▸ Git** eingeschaltet ist.
+- Die alten Commits werden aufbewahrt: **Rückgängig** setzt die Branches zurück, solange sich keiner davon seitdem bewegt hat. Ein schon gepushter Branch wird auf seinem Remote mit **Push erzwingen…** ersetzt, mit Lease.
+- Für ein Secret löscht **Alte Commits entfernen…** die Sicherung und die Reflog-Einträge, die nichts mehr erreicht, räumt auf und sagt danach, ob noch ein alter Commit da ist. Gepushte Commits können auf dem Server und in anderen Klonen noch erreichbar sein, darum muss ein gepushtes Secret zusätzlich widerrufen werden.
+
 ## Dateien ignorieren, und Zugangsdaten
 
 - **Diese Datei ignorieren…**, **Diesen Dateityp ignorieren…** und **Diesen Ordner ignorieren…** tragen das

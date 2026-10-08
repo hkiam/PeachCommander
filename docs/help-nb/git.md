@@ -116,6 +116,15 @@ til som fixup, forkaste, omordne eller omformulere dem før grenen skrives om. S
 blir det samme vinduet til **Fortsett** / **Hopp over commit** / **Avbryt rebase**, slik at en halvferdig
 rebase ikke må fullføres i en terminal.
 
+## Å endre commit-meldinger i ettertid
+
+- **Rediger melding…** i historikkens meny åpner meldingen til én commit for redigering; med flere commits valgt heter det **Rediger meldinger…**, og **Søk og erstatt i meldinger…** — også **Rediger commit-meldinger…** i Git-menyen — søker i meldingene til gjeldende gren, til commits som ikke er pushet ennå, eller til alle grener og tagger.
+- Listen viser commitene der meldingen endres. Meldingen til den valgte vises slik den er, med treffene markert, og slik den blir, og der kan du også skrive; **La være som den er** tar en commit ut igjen.
+- **Finn hemmeligheter…** leter etter tokener, nøkler og passord i de oppførte meldingene og fyller dem inn i søket; **Sladd** setter inn `***REDACTED***` som erstatning.
+- **Bruk…** spør først: den lister hver endring, hvor mange commits som får nye hasher og hvilke grener og tagger som flyttes, og advarer mot commits som allerede er pushet. Commitene skrives direkte, så ingenting sjekkes ut og ingenting kan komme i konflikt; filer, forfattere og datoer forblir som de var. En signatur fjernes, eller lages på nytt når **Signer commits** er slått på i **Innstillinger ▸ Git**.
+- De gamle commitene beholdes: **Angre** setter grenene tilbake så lenge ingen av dem har flyttet seg siden. En gren som allerede er pushet, erstattes på fjernlageret med **Tving push…**, med lease.
+- For en hemmelighet sletter **Fjern gamle commits…** sikkerhetskopien og reflog-oppføringene som ingenting lenger når, rydder opp (prune) og sier deretter om en gammel commit fortsatt finnes. Commits som er pushet, kan fortsatt nås på serveren og i andre kloner, så en pushet hemmelighet må i tillegg tilbakekalles.
+
 ## Å ignorere filer, og legitimasjon
 
 - **Ignorer denne filen…**, **Ignorer denne filtypen…** og **Ignorer denne mappen…** skriver riktig mønster i

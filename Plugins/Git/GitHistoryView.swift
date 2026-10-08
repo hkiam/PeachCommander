@@ -119,6 +119,9 @@ final class GitHistoryView: NSView {
             (L("Rebase the current branch onto this…"), #selector(rebaseOntoSelected)),
             (L("Interactive rebase from here…"), #selector(interactiveRebaseFromHere)),
             (L("Reset the current branch to here…"), #selector(resetToSelected)),
+            (L("Edit message…"), #selector(editMessage)),
+            (L("Edit messages…"), #selector(editMessages)),
+            (L("Find and replace in messages…"), #selector(replaceInMessages)),
             (nil, nil),
             (L("Revert commit"), #selector(revertSelected)),
             (L("Cherry-pick"), #selector(cherryPickSelected)),
@@ -520,6 +523,25 @@ final class GitHistoryView: NSView {
     @objc private func rebaseOntoSelected() { act { GitCommitActions.rebaseOnto($0, root: $1, services: $2, busy: $3, done: $4) } }
     @objc private func resetToSelected() { act { GitCommitActions.reset(to: $0, root: $1, services: $2, busy: $3, done: $4) } }
 
+    /// The commit messages window (phase 10): on this commit, on the selected ones, or on the current
+    /// branch for find and replace. Stashes are not commits of the history and are left out.
+    @objc private func editMessage() {
+        guard let root, let commit = selectedCommit, !PluginGit.isStash(commit) else { return }
+        showMessagesWindow(root: root, commits: [commit.hash], services)
+    }
+
+    @objc private func editMessages() {
+        guard let root else { return }
+        let commits = selectedSeveral.filter { !PluginGit.isStash($0) }.map(\.hash)
+        guard !commits.isEmpty else { return }
+        showMessagesWindow(root: root, commits: commits, services)
+    }
+
+    @objc private func replaceInMessages() {
+        guard let root else { return }
+        showMessagesWindow(root: root, services)
+    }
+
     /// The Rebase window, starting at this commit. Only below the current branch's tip: from a commit HEAD
     /// does not contain, the list would be HEAD's own commits and the rebase would move the branch there.
     @objc private func interactiveRebaseFromHere() {
@@ -545,8 +567,8 @@ extension GitHistoryView: NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         let stashActions: Set<Selector> = [#selector(applyStash), #selector(popStash), #selector(dropStash)]
         let shared: Set<Selector> = [#selector(copyHash), #selector(copySubject), #selector(toggleScope),
-                                     #selector(showReflog), #selector(reloadFromMenu)]
-        let severalActions: Set<Selector> = [#selector(cherryPickSeveral), #selector(savePatches)]
+                                     #selector(showReflog), #selector(reloadFromMenu), #selector(replaceInMessages)]
+        let severalActions: Set<Selector> = [#selector(cherryPickSeveral), #selector(savePatches), #selector(editMessages)]
         let onStash = selectedStash != nil
         let onSeveral = selectedSeveral.count >= 2
         for item in menu.items where !item.isSeparatorItem {
@@ -580,7 +602,10 @@ extension GitHistoryView: NSMenuItemValidation {
             return hasRepo
         }
         if menuItem.action == #selector(reloadFromMenu) || menuItem.action == #selector(showReflog) { return hasRepo }
-        if menuItem.action == #selector(cherryPickSeveral) { return selectedSeveral.count >= 2 }
+        if menuItem.action == #selector(cherryPickSeveral) || menuItem.action == #selector(editMessages) {
+            return selectedSeveral.count >= 2
+        }
+        if menuItem.action == #selector(replaceInMessages) { return hasRepo }
         if menuItem.action == #selector(savePatches) { return selectedCommit != nil || selectedSeveral.count >= 2 }
         if menuItem.action == #selector(copyHash) { return selectedCommit != nil || selectedSeveral.count >= 2 }
         return selectedCommit != nil

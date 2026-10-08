@@ -118,6 +118,15 @@ reformulați înainte ca ramura să fie rescrisă. Dacă o rebazare se oprește 
 devine **Continuă** / **Sari peste comitere** / **Abandonează**, astfel încât o rebazare pe jumătate făcută nu
 trebuie încheiată într-un terminal.
 
+## Schimbarea ulterioară a mesajelor de commit
+
+- **Editează mesajul…** din meniul istoricului deschide mesajul unui commit pentru editare; cu mai multe commit-uri selectate se numește **Editează mesajele…**, iar **Caută și înlocuiește în mesaje…** — și **Editează mesajele de commit…** din meniul Git — caută în mesajele ramurii curente, ale commit-urilor neîmpinse încă sau ale tuturor ramurilor și etichetelor.
+- Lista arată commit-urile al căror mesaj se schimbă. Mesajul celui selectat apare așa cum este, cu potrivirile marcate, și așa cum va fi, unde se poate și scrie; **Lasă așa** scoate din nou un commit.
+- **Caută secrete…** caută tokenuri, chei și parole în mesajele listate și le completează în căutare; **Maschează** pune `***REDACTED***` ca înlocuire.
+- **Aplică…** întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când **Semnează commit-urile** este activat în **Setări ▸ Git**.
+- Commit-urile vechi sunt păstrate: **Desfă** readuce ramurile atâta timp cât niciuna nu s-a mutat între timp. O ramură deja împinsă este înlocuită pe remote-ul ei cu **Împinge forțat…**, cu lease.
+- Pentru un secret, **Elimină commit-urile vechi…** șterge copia de rezervă și intrările din reflog la care nu mai ajunge nimic, face curățenie (prune) și spune apoi dacă mai există un commit vechi. Commit-urile împinse pot fi încă accesibile pe server și în alte clone, așa că un secret împins trebuie și revocat.
+
 ## Ignorarea fișierelor și datele de autentificare
 
 - **Ignoră acest fișier…**, **Ignoră acest tip de fișier…** și **Ignoră acest dosar…** adaugă tiparul potrivit

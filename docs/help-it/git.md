@@ -117,6 +117,15 @@ fare squash, fixup, scartarli, riordinarli o riscriverne il messaggio prima di r
 rebase si ferma su un conflitto, la stessa finestra diventa **Continua** / **Salta commit** / **Annulla
 rebase**, così un rebase lasciato a metà non deve essere finito in un terminale.
 
+## Cambiare i messaggi di commit in seguito
+
+- **Modifica messaggio…** nel menu della cronologia apre il messaggio di un commit per modificarlo; con più commit selezionati diventa **Modifica messaggi…**, e **Trova e sostituisci nei messaggi…** — anche **Modifica messaggi di commit…** nel menu Git — cerca nei messaggi del ramo attuale, dei commit non ancora inviati o di tutti i rami e i tag.
+- L’elenco mostra i commit il cui messaggio cambia. Il messaggio di quello selezionato appare com’è, con le corrispondenze evidenziate, e come sarà, e lì si può anche scrivere; **Lascia com’è** toglie di nuovo un commit.
+- **Trova segreti…** cerca token, chiavi e password nei messaggi elencati e li inserisce nella ricerca; **Oscura** mette `***REDACTED***` come sostituzione.
+- **Applica…** chiede prima: elenca ogni modifica, quanti commit ricevono nuovi hash e quali rami e tag vengono spostati, e avvisa dei commit già inviati. I commit vengono scritti direttamente, quindi non viene fatto alcun checkout e nulla può andare in conflitto; file, autori e date restano come erano. Una firma viene rimossa, o rifatta se **Firma i commit** è attivo in **Impostazioni ▸ Git**.
+- I vecchi commit vengono conservati: **Ripristina** riporta indietro i rami finché nessuno di essi si è spostato da allora. Un ramo già inviato viene sostituito sul suo remoto con **Push forzato…**, con lease.
+- Per un segreto, **Rimuovi vecchi commit…** elimina il backup e le voci del reflog che nulla raggiunge più, esegue il prune e poi dice se c’è ancora un vecchio commit. I commit inviati possono essere ancora raggiungibili sul server e in altri cloni, quindi un segreto inviato deve anche essere revocato.
+
 ## Ignorare file, e le credenziali
 
 - **Ignora questo file…**, **Ignora questo tipo di file…** e **Ignora questa cartella…** aggiungono il

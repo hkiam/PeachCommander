@@ -117,6 +117,15 @@ meg —, és hagyja őket összevonni, javításként hozzáfűzni, eldobni, át
 újraíródik. Ha az újraalapozás ütközésen akad meg, ugyanaz az ablak **Folytatás** / **Véglegesítés kihagyása**
 / **Megszakítás** lesz, hogy a félbehagyott újraalapozást ne kelljen terminálban befejezni.
 
+## Commit-üzenetek utólagos módosítása
+
+- Az előzmények menüjében az **Üzenet szerkesztése…** egy commit üzenetét nyitja meg szerkesztésre; több kijelölt commitnál ez **Üzenetek szerkesztése…**, a **Keresés és csere az üzenetekben…** pedig — a Git menüben **Commit-üzenetek szerkesztése…** néven is — az aktuális ág, a még fel nem töltött commitok vagy az összes ág és tag üzeneteiben keres.
+- A lista azokat a commitokat mutatja, amelyek üzenete változik. A kijelölt commit üzenete látszik úgy, ahogy most van, megjelölt találatokkal, és úgy, ahogy lesz, ebbe pedig írni is lehet; a **Maradjon így** újra kiveszi a commitot.
+- A **Titkok keresése…** tokeneket, kulcsokat és jelszavakat keres a listázott üzenetekben, és beírja őket a keresésbe; a **Kitakarás** a `***REDACTED***` szöveget adja meg cserének.
+- Az **Alkalmazás…** előbb rákérdez: felsorol minden változást, hogy hány commit kap új hasht, és mely ágak és tagek kerülnek át, és figyelmeztet a már feltöltött commitokra. A commitok közvetlenül íródnak, így semmi sem lesz kikérve, és semmi sem ütközhet; a fájlok, szerzők és dátumok maradnak, ahogy voltak. Az aláírás eltűnik, vagy újra elkészül, ha a **Beállítások ▸ Git** alatt be van kapcsolva a **Commitok aláírása**.
+- A régi commitok megmaradnak: a **Visszavonás** visszaállítja az ágakat, amíg azóta egyikük sem mozdult el. A már feltöltött ágat a **Kényszerített feltöltés…** cseréli le a távoli tárolón, lease-szel.
+- Titok esetén a **Régi commitok eltávolítása…** törli a biztonsági másolatot és a reflog azon bejegyzéseit, amelyeket már semmi sem ér el, prune-t futtat, majd megmondja, maradt-e még régi commit. A feltöltött commitok a szerveren és más klónokban még elérhetők lehetnek, ezért a feltöltött titkot ezen felül vissza is kell vonni.
+
 ## Fájlok mellőzése és a hitelesítő adatok
 
 - **Ezt a fájlt mellőzni…**, **Ezt a fájltípust mellőzni…** és **Ezt a mappát mellőzni…** a megfelelő mintát

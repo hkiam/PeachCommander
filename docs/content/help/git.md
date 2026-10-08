@@ -116,6 +116,15 @@ fix up, drop, reorder or reword them before rewriting the branch. If a rebase st
 window becomes **Continue** / **Skip commit** / **Abort rebase**, so a half-finished rebase does not have to
 be finished in a terminal.
 
+## Changing commit messages afterwards
+
+- **Edit message…** in the history's menu opens one commit's message for editing; with several commits selected it is **Edit messages…**, and **Find and replace in messages…** — also **Edit Commit Messages…** in the Git menu — searches the messages of the current branch, of the commits not pushed yet or of all branches and tags.
+- The list shows the commits whose message changes. The selected one's message is shown as it is, with the matches marked, and as it will be, which can be typed into; **Leave as it is** takes a commit out again.
+- **Find secrets…** looks for tokens, keys and passwords in the listed messages and fills in the search for them; **Redact** puts `***REDACTED***` in as the replacement.
+- **Apply…** asks first: it lists every change, how many commits get new hashes and which branches and tags move, and warns about commits that were already pushed. The commits are written directly, so nothing is checked out and nothing can conflict; files, authors and dates stay as they were. A signature is removed, or made again when **Sign commits** is on in **Settings ▸ Git**.
+- The old commits are kept: **Undo** puts the branches back as long as none of them has moved since. A branch that was already pushed is replaced at its remote with **Force-push…**, with a lease.
+- For a secret, **Remove old commits…** deletes the backup and the reflog entries nothing reaches any more, prunes, and then says whether an old commit is still there. Commits that were pushed may still be reachable at the server and in other clones, so a secret that was pushed has to be revoked as well.
+
 ## Ignoring files, and credentials
 
 - **Ignore This File…**, **Ignore This File Type…** and **Ignore This Folder…** add the right pattern to

@@ -97,6 +97,7 @@ public func PcNotifyThemeChanged() {
             (window.contentView as? GitRemotesView)?.applyTheme()
             (window.contentView as? GitMergeView)?.applyTheme()
             (window.contentView as? GitPullRequestsView)?.applyTheme()
+            (window.contentView as? GitMessagesView)?.applyTheme()
         }
         panelView?.applyTheme()
     }
@@ -438,6 +439,8 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // first click — `MainActor.assumeIsolated` off the main thread does not fail politely, it traps,
         // which is the same trap F-422 fixed one level down in the host bridge (F-426).
         MainActor.assumeIsolated { showCommitOfBlamedLine(svc) }
+    case "plugin.git.messages":
+        MainActor.assumeIsolated { showMessagesWindow(root: root, svc) }
     case "plugin.git.rebase":
         // The commits ahead of the upstream, and what to do with each (F-423). A window rather than a
         // command with arguments: the plan is the point, and it is built by looking at the list.
@@ -845,6 +848,16 @@ func showRebaseWindow(root: String, base: String? = nil, _ svc: PcHostServices) 
     showToolWindow(title: String(format: L("Rebase — %@"), name),
                    view: GitRebaseView(services: svc, root: root, base: base),
                    size: NSSize(width: 720, height: 420), svc)
+}
+
+/// Commit messages changed after the fact (phase 10): the commits given, or — none given — the current
+/// branch, ready for find and replace.
+@MainActor
+func showMessagesWindow(root: String, commits: [String] = [], _ svc: PcHostServices) {
+    let view = GitMessagesView(services: svc, root: root, commits: commits)
+    view.onChanged = { panelView?.refreshAfterSync() }
+    showToolWindow(title: String(format: L("Commit Messages — %@"), (root as NSString).lastPathComponent), view: view,
+                   size: NSSize(width: 980, height: 640), svc)
 }
 
 @MainActor

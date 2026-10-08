@@ -107,6 +107,15 @@ que necesita entrelazar ambos lados a mano, <strong>Abrir en el editor</strong> 
 aplastarlas, corregirlas, descartarlas, reordenarlas o reescribir su mensaje antes de reescribir la rama. Si
 un rebase se detiene en un conflicto, la misma ventana pasa a <strong>Continuar</strong> / <strong>Saltar confirmación</strong> /
 <strong>Abortar rebase</strong>, de modo que un rebase a medias no tiene que terminarse en un terminal.</p>
+<h2 id="cambiar-mensajes-de-commit-despues">Cambiar mensajes de commit después</h2>
+<ul>
+<li><strong>Editar mensaje…</strong> en el menú del historial abre el mensaje de un commit para editarlo; con varios commits seleccionados es <strong>Editar mensajes…</strong>, y <strong>Buscar y reemplazar en los mensajes…</strong> — también <strong>Editar mensajes de commit…</strong> en el menú Git — busca en los mensajes de la rama actual, de los commits aún no enviados o de todas las ramas y etiquetas.</li>
+<li>La lista muestra los commits cuyo mensaje cambia. El mensaje del seleccionado se muestra tal como es, con las coincidencias marcadas, y tal como quedará, donde también se puede escribir; <strong>Dejar como está</strong> vuelve a sacar un commit.</li>
+<li><strong>Buscar secretos…</strong> busca tokens, claves y contraseñas en los mensajes de la lista y los pone en la búsqueda; <strong>Censurar</strong> pone <code>***REDACTED***</code> como reemplazo.</li>
+<li><strong>Aplicar…</strong> pregunta antes: enumera cada cambio, cuántos commits reciben hashes nuevos y qué ramas y etiquetas se mueven, y avisa de los commits que ya se enviaron. Los commits se escriben directamente, así que no se extrae nada y nada puede entrar en conflicto; los archivos, autores y fechas quedan como estaban. Una firma desaparece, o se vuelve a crear si <strong>Firmar commits</strong> está activado en <strong>Ajustes ▸ Git</strong>.</li>
+<li>Los commits antiguos se conservan: <strong>Deshacer</strong> devuelve las ramas mientras ninguna se haya movido desde entonces. Una rama que ya se envió se sustituye en su remoto con <strong>Forzar envío…</strong>, con arrendamiento.</li>
+<li>Para un secreto, <strong>Eliminar commits antiguos…</strong> borra la copia de seguridad y las entradas del reflog que ya nada alcanza, hace prune y después indica si aún queda algún commit antiguo. Los commits enviados pueden seguir siendo accesibles en el servidor y en otros clones, así que un secreto que se envió también debe revocarse.</li>
+</ul>
 <h2 id="ignorar-archivos-y-las-credenciales">Ignorar archivos, y las credenciales</h2>
 <ul>
 <li><strong>Ignorar este archivo…</strong>, <strong>Ignorar este tipo de archivo…</strong> e <strong>Ignorar esta carpeta…</strong> añaden el patrón

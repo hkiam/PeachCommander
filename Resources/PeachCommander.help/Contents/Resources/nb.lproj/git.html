@@ -105,6 +105,15 @@ flettes for hånd, er <strong>Åpne i editor</strong> én knapp unna.</p>
 til som fixup, forkaste, omordne eller omformulere dem før grenen skrives om. Stopper en rebase i en konflikt,
 blir det samme vinduet til <strong>Fortsett</strong> / <strong>Hopp over commit</strong> / <strong>Avbryt rebase</strong>, slik at en halvferdig
 rebase ikke må fullføres i en terminal.</p>
+<h2 id="a-endre-commit-meldinger-i-ettertid">Å endre commit-meldinger i ettertid</h2>
+<ul>
+<li><strong>Rediger melding…</strong> i historikkens meny åpner meldingen til én commit for redigering; med flere commits valgt heter det <strong>Rediger meldinger…</strong>, og <strong>Søk og erstatt i meldinger…</strong> — også <strong>Rediger commit-meldinger…</strong> i Git-menyen — søker i meldingene til gjeldende gren, til commits som ikke er pushet ennå, eller til alle grener og tagger.</li>
+<li>Listen viser commitene der meldingen endres. Meldingen til den valgte vises slik den er, med treffene markert, og slik den blir, og der kan du også skrive; <strong>La være som den er</strong> tar en commit ut igjen.</li>
+<li><strong>Finn hemmeligheter…</strong> leter etter tokener, nøkler og passord i de oppførte meldingene og fyller dem inn i søket; <strong>Sladd</strong> setter inn <code>***REDACTED***</code> som erstatning.</li>
+<li><strong>Bruk…</strong> spør først: den lister hver endring, hvor mange commits som får nye hasher og hvilke grener og tagger som flyttes, og advarer mot commits som allerede er pushet. Commitene skrives direkte, så ingenting sjekkes ut og ingenting kan komme i konflikt; filer, forfattere og datoer forblir som de var. En signatur fjernes, eller lages på nytt når <strong>Signer commits</strong> er slått på i <strong>Innstillinger ▸ Git</strong>.</li>
+<li>De gamle commitene beholdes: <strong>Angre</strong> setter grenene tilbake så lenge ingen av dem har flyttet seg siden. En gren som allerede er pushet, erstattes på fjernlageret med <strong>Tving push…</strong>, med lease.</li>
+<li>For en hemmelighet sletter <strong>Fjern gamle commits…</strong> sikkerhetskopien og reflog-oppføringene som ingenting lenger når, rydder opp (prune) og sier deretter om en gammel commit fortsatt finnes. Commits som er pushet, kan fortsatt nås på serveren og i andre kloner, så en pushet hemmelighet må i tillegg tilbakekalles.</li>
+</ul>
 <h2 id="a-ignorere-filer-og-legitimasjon">Å ignorere filer, og legitimasjon</h2>
 <ul>
 <li><strong>Ignorer denne filen…</strong>, <strong>Ignorer denne filtypen…</strong> og <strong>Ignorer denne mappen…</strong> skriver riktig mønster i

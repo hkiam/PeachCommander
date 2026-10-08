@@ -142,6 +142,48 @@ enum PluginGitRepo {
         return process.terminationStatus == 0 ? data : nil
     }
 
+    /// The rewrite's way to git (phase 10, `PluginGit.GitCall`): stdout as bytes — `cat-file --batch`
+    /// hands back objects — and, when git fails, what it said on stderr after it.
+    static func call(root: String) -> PluginGit.GitCall {
+        { arguments, input, extra in
+            guard let executable = executable() else { return (Data(L("Git was not found on this Mac.").utf8), false) }
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", root] + arguments
+            var environment = Self.environment()
+            environment.merge(extra) { _, new in new }
+            process.environment = environment
+            let out = Pipe(), errors = Pipe()
+            process.standardOutput = out
+            process.standardError = errors
+            let stdin = input.map { _ in Pipe() }
+            if let stdin { process.standardInput = stdin }
+            do { try process.run() } catch { return (Data(L("Git could not be started.").utf8), false) }
+            if let stdin, let input {
+                // A git that exits before reading its stdin (`commit-tree` refusing a parent) must give
+                // the writer an error, not the app a SIGPIPE — as TextPipe does.
+                _ = fcntl(stdin.fileHandleForWriting.fileDescriptor, F_SETNOSIGPIPE, 1)
+                DispatchQueue.global(qos: .utility).async {
+                    try? stdin.fileHandleForWriting.write(contentsOf: input)
+                    try? stdin.fileHandleForWriting.close()
+                }
+            }
+            // stderr on its own queue too: a chatty `gc` must not fill its pipe while stdout is read.
+            let complaint = GitDataBox()
+            let group = DispatchGroup()
+            group.enter()
+            DispatchQueue.global(qos: .utility).async {
+                complaint.data = errors.fileHandleForReading.readDataToEndOfFile()
+                group.leave()
+            }
+            let data = out.fileHandleForReading.readDataToEndOfFile()
+            group.wait()
+            process.waitUntilExit()
+            let ok = process.terminationStatus == 0
+            return (ok ? data : data + complaint.data, ok)
+        }
+    }
+
     /// Run git while something else watches: `progress` is called with each line git writes and returns
     /// false to stop it (F-422).
     ///
@@ -381,4 +423,30 @@ final class GitCancellation: @unchecked Sendable {
         lock.unlock()
         running.forEach { $0.terminate() }
     }
+}
+
+/// stderr read on another queue, handed back after `wait()` — the group orders the two.
+private final class GitDataBox: @unchecked Sendable { var data = Data() }
+
+/// Work in a repository that others must wait for (phase 10): `gc --prune=now` deletes objects nothing
+/// refers to *yet*, so a fetch writing objects beside it can lose them. The panel's quiet fetch and the
+/// clean-up after a message rewrite exclude each other through this.
+@MainActor
+enum GitActivity {
+    private static var fetching: Set<String> = []
+    private static var pruning: Set<String> = []
+
+    static func begin(fetching root: String) -> Bool {
+        guard !pruning.contains(root) else { return false }
+        fetching.insert(root)
+        return true
+    }
+    static func end(fetching root: String) { fetching.remove(root) }
+
+    static func begin(pruning root: String) -> Bool {
+        guard !fetching.contains(root), !pruning.contains(root) else { return false }
+        pruning.insert(root)
+        return true
+    }
+    static func end(pruning root: String) { pruning.remove(root) }
 }

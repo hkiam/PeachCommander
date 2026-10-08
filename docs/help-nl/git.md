@@ -117,6 +117,15 @@ squashen, als fixup toevoegen, weggooien, herordenen of hernoemen voordat de bra
 een rebase vast op een conflict, dan wordt hetzelfde venster **Doorgaan** / **Commit overslaan** / **Rebase
 afbreken**, zodat een half afgemaakte rebase niet in een terminal hoeft te worden voltooid.
 
+## Commit-berichten achteraf wijzigen
+
+- **Bericht bewerken…** in het menu van de geschiedenis opent het bericht van één commit om te bewerken; met meerdere commits geselecteerd heet het **Berichten bewerken…**, en **Zoeken en vervangen in berichten…** — ook **Commit-berichten bewerken…** in het Git-menu — doorzoekt de berichten van de huidige branch, van de nog niet gepushte commits of van alle branches en tags.
+- De lijst toont de commits waarvan het bericht verandert. Het bericht van de geselecteerde staat er zoals het is, met de overeenkomsten gemarkeerd, en zoals het wordt, en daarin kun je ook typen; **Laten zoals het is** haalt een commit er weer uit.
+- **Geheimen zoeken…** zoekt naar tokens, sleutels en wachtwoorden in de getoonde berichten en vult ze in de zoekterm in; **Zwartlakken** zet `***REDACTED***` in als vervanging.
+- **Toepassen…** vraagt eerst: het toont elke wijziging, hoeveel commits nieuwe hashes krijgen en welke branches en tags verplaatst worden, en waarschuwt voor commits die al gepusht zijn. De commits worden direct geschreven, dus er wordt niets uitgecheckt en niets kan conflicteren; bestanden, auteurs en datums blijven zoals ze waren. Een handtekening vervalt, of wordt opnieuw gemaakt als **Commits ondertekenen** aanstaat in **Instellingen ▸ Git**.
+- De oude commits worden bewaard: **Ongedaan maken** zet de branches terug zolang geen ervan sindsdien is verplaatst. Een al gepushte branch wordt op zijn remote vervangen met **Geforceerd pushen…**, met lease.
+- Voor een geheim verwijdert **Oude commits verwijderen…** de reservekopie en de reflog-items die niets meer bereikt, ruimt op (prune) en zegt daarna of er nog een oude commit is. Gepushte commits kunnen op de server en in andere klonen nog bereikbaar zijn, dus een gepusht geheim moet bovendien worden ingetrokken.
+
 ## Bestanden negeren, en inloggegevens
 
 - **Dit bestand negeren…**, **Dit bestandstype negeren…** en **Deze map negeren…** zetten het juiste patroon

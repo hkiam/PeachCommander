@@ -104,6 +104,15 @@ sider flettes i hånden, er <strong>Åbn i editor</strong> én knap væk.</p>
 fixuppe, kassere, omordne eller omformulere dem, før grenen skrives om. Standser en rebase i en konflikt,
 bliver det samme vindue til <strong>Fortsæt</strong> / <strong>Spring commit over</strong> / <strong>Afbryd rebase</strong>, så en halvfærdig rebase
 ikke skal gøres færdig i en terminal.</p>
+<h2 id="at-ndre-commit-beskeder-bagefter">At ændre commit-beskeder bagefter</h2>
+<ul>
+<li><strong>Redigér besked…</strong> i historikkens menu åbner ét commits besked til redigering; med flere commits valgt hedder det <strong>Redigér beskeder…</strong>, og <strong>Søg og erstat i beskeder…</strong> — også <strong>Redigér commit-beskeder…</strong> i Git-menuen — gennemsøger beskederne på den aktuelle gren, i de commits, der ikke er pushet endnu, eller på alle grene og tags.</li>
+<li>Listen viser de commits, hvis besked ændres. Det valgtes besked vises, som den er, med træfferne markeret, og som den bliver, og der kan man også skrive; <strong>Lad være som det er</strong> tager et commit ud igen.</li>
+<li><strong>Find hemmeligheder…</strong> søger efter tokens, nøgler og adgangskoder i de viste beskeder og udfylder søgningen med dem; <strong>Censurér</strong> indsætter <code>***REDACTED***</code> som erstatning.</li>
+<li><strong>Anvend…</strong> spørger først: den viser hver ændring, hvor mange commits der får nye hashes, og hvilke grene og tags der flyttes, og advarer om commits, der allerede er pushet. Commits skrives direkte, så intet tjekkes ud, og intet kan komme i konflikt; filer, forfattere og datoer forbliver, som de var. En signatur fjernes, eller den laves igen, når <strong>Signér commits</strong> er slået til under <strong>Indstillinger ▸ Git</strong>.</li>
+<li>De gamle commits bevares: <strong>Fortryd</strong> sætter grenene tilbage, så længe ingen af dem har flyttet sig siden. En gren, der allerede er pushet, erstattes på sit fjernlager med <strong>Gennemtving push…</strong>, med lease.</li>
+<li>For en hemmelighed sletter <strong>Fjern gamle commits…</strong> sikkerhedskopien og de reflog-poster, som intet når mere, rydder op med prune og fortæller derefter, om et gammelt commit stadig findes. Pushede commits kan stadig være tilgængelige på serveren og i andre kloner, så en hemmelighed, der er pushet, skal også tilbagekaldes.</li>
+</ul>
 <h2 id="at-ignorere-filer-og-adgangsoplysninger">At ignorere filer, og adgangsoplysninger</h2>
 <ul>
 <li><strong>Ignorér denne fil…</strong>, <strong>Ignorér denne filtype…</strong> og <strong>Ignorér denne mappe…</strong> skriver det rigtige mønster

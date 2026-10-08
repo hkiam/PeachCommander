@@ -116,6 +116,15 @@ pripojiť ako opravu, zahodiť, preskladať alebo prepísať ich správu, než s
 zastaví na konflikte, z toho istého okna sa stane **Pokračovať** / **Preskočiť zápis** / **Prerušiť
 preskladanie**, aby sa rozrobené preskladanie nemuselo dokončovať v termináli.
 
+## Dodatočná zmena správ commitov
+
+- **Upraviť správu…** v ponuke histórie otvorí správu jedného commitu na úpravu; pri viacerých vybraných commitoch je to **Upraviť správy…** a **Nájsť a nahradiť v správach…** — aj **Upraviť správy commitov…** v ponuke Git — prehľadá správy aktuálnej vetvy, ešte neodoslaných commitov alebo všetkých vetiev a tagov.
+- Zoznam ukazuje commity, ktorých správa sa mení. Správa vybraného sa zobrazí taká, aká je, s označenými zhodami, a taká, aká bude, a dá sa do nej aj písať; **Nechať tak** commit opäť vyradí.
+- **Nájsť tajné údaje…** hľadá v uvedených správach tokeny, kľúče a heslá a vyplní ich do hľadania; **Začierniť** vloží ako náhradu `***REDACTED***`.
+- **Použiť…** sa najprv opýta: vypíše každú zmenu, koľko commitov dostane nové hashe a ktoré vetvy a tagy sa posunú, a upozorní na commity, ktoré už boli odoslané. Commity sa zapíšu priamo, takže sa nič nevyťahuje a nič nemôže byť v konflikte; súbory, autori a dátumy zostanú, ako boli. Podpis sa odstráni, alebo sa vytvorí znova, ak je v **Nastavenia ▸ Git** zapnuté **Podpisovať commity**.
+- Staré commity sa uchovajú: **Vrátiť späť** vráti vetvy, pokiaľ sa odvtedy žiadna z nich neposunula. Vetva, ktorá už bola odoslaná, sa na svojom remote nahradí cez **Vynútiť odoslanie…**, s lease.
+- Pri tajnom údaji **Odstrániť staré commity…** zmaže zálohu a záznamy reflogu, na ktoré už nič nedosiahne, vykoná prune a potom povie, či tam ešte zostal nejaký starý commit. Odoslané commity môžu byť stále dosiahnuteľné na serveri a v iných klonoch, preto treba odoslaný tajný údaj aj zneplatniť.
+
 ## Ignorovanie súborov a prihlasovacie údaje
 
 - **Ignorovať tento súbor…**, **Ignorovať tento typ súboru…** a **Ignorovať tento priečinok…** zapíšu správny

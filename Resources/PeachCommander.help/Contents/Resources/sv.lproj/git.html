@@ -106,6 +106,15 @@ samman för hand är <strong>Öppna i redigeraren</strong> en knapp bort.</p>
 squasha, lägga till som fixup, kasta, ordna om eller formulera om dem innan grenen skrivs om. Stannar en
 ombasering i en konflikt blir samma fönster <strong>Fortsätt</strong> / <strong>Hoppa över incheckning</strong> / <strong>Avbryt ombasering</strong>,
 så att en halvfärdig ombasering inte måste avslutas i en terminal.</p>
+<h2 id="andra-commit-meddelanden-i-efterhand">Ändra commit-meddelanden i efterhand</h2>
+<ul>
+<li><strong>Redigera meddelande…</strong> i historikens meny öppnar en commits meddelande för redigering; med flera commits markerade heter det <strong>Redigera meddelanden…</strong>, och <strong>Sök och ersätt i meddelanden…</strong> — också <strong>Redigera commit-meddelanden…</strong> i Git-menyn — söker i meddelandena på den aktuella grenen, i de commits som inte pushats än eller på alla grenar och taggar.</li>
+<li>Listan visar de commits vars meddelande ändras. Den markerades meddelande visas som det är, med träffarna markerade, och som det kommer att bli, och där går det också att skriva; <strong>Lämna som det är</strong> tar ut en commit igen.</li>
+<li><strong>Sök hemligheter…</strong> söker efter tokens, nycklar och lösenord i de listade meddelandena och fyller i sökningen efter dem; <strong>Maskera</strong> sätter in <code>***REDACTED***</code> som ersättning.</li>
+<li><strong>Verkställ…</strong> frågar först: den listar varje ändring, hur många commits som får nya hashar och vilka grenar och taggar som flyttas, och varnar för commits som redan har pushats. Commits skrivs direkt, så inget checkas ut och inget kan hamna i konflikt; filer, författare och datum förblir som de var. En signatur tas bort, eller görs på nytt när <strong>Signera commits</strong> är på i <strong>Inställningar ▸ Git</strong>.</li>
+<li>De gamla commits behålls: <strong>Ångra</strong> sätter tillbaka grenarna så länge ingen av dem har flyttats sedan dess. En gren som redan har pushats ersätts på sitt fjärrarkiv med <strong>Tvinga push…</strong>, med en lease.</li>
+<li>För en hemlighet raderar <strong>Ta bort gamla commits…</strong> säkerhetskopian och de reflog-poster som inget når längre, rensar och säger sedan om någon gammal commit finns kvar. Commits som pushats kan fortfarande nås på servern och i andra kloner, så en hemlighet som pushats måste också återkallas.</li>
+</ul>
 <h2 id="att-ignorera-filer-och-inloggningsuppgifter">Att ignorera filer, och inloggningsuppgifter</h2>
 <ul>
 <li><strong>Ignorera den här filen…</strong>, <strong>Ignorera den här filtypen…</strong> och <strong>Ignorera den här mappen…</strong> skriver rätt

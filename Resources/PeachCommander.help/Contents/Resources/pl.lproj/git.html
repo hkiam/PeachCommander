@@ -105,6 +105,15 @@ znaczników nie potrafi odczytać, zamiast ich zgadywać. Gdy obszar wymaga ręc
 i pozwala je zgnieść, dołączyć jako poprawkę, porzucić, przestawić albo przeredagować, zanim gałąź zostanie
 przepisana. Gdy zmiana bazy zatrzyma się na konflikcie, to samo okno staje się <strong>Kontynuuj</strong> / <strong>Pomiń
 zatwierdzenie</strong> / <strong>Przerwij</strong>, żeby niedokończonej zmiany bazy nie trzeba było kończyć w terminalu.</p>
+<h2 id="zmiana-komunikatow-commitow-po-fakcie">Zmiana komunikatów commitów po fakcie</h2>
+<ul>
+<li><strong>Edytuj komunikat…</strong> w menu historii otwiera do edycji komunikat jednego commita; przy kilku zaznaczonych commitach nazywa się to <strong>Edytuj komunikaty…</strong>, a <strong>Znajdź i zastąp w komunikatach…</strong> — także <strong>Edytuj komunikaty commitów…</strong> w menu Git — przeszukuje komunikaty bieżącej gałęzi, jeszcze niewypchniętych commitów albo wszystkich gałęzi i tagów.</li>
+<li>Lista pokazuje commity, których komunikat się zmienia. Komunikat zaznaczonego widać takim, jaki jest, z oznaczonymi trafieniami, i takim, jaki będzie, i tam też można pisać; <strong>Zostaw bez zmian</strong> wyjmuje commit z powrotem.</li>
+<li><strong>Znajdź sekrety…</strong> szuka tokenów, kluczy i haseł w wymienionych komunikatach i wpisuje je do wyszukiwania; <strong>Zaczernij</strong> wstawia <code>***REDACTED***</code> jako zamiennik.</li>
+<li><strong>Zastosuj…</strong> najpierw pyta: wymienia każdą zmianę, ile commitów otrzyma nowe hashe i które gałęzie i tagi się przesuną, oraz ostrzega przed commitami, które już wypchnięto. Commity są zapisywane bezpośrednio, więc nic nie jest wybierane (checkout) i nic nie może wejść w konflikt; pliki, autorzy i daty pozostają, jakie były. Podpis znika albo jest tworzony na nowo, gdy w <strong>Ustawienia ▸ Git</strong> włączono <strong>Podpisuj commity</strong>.</li>
+<li>Stare commity są zachowywane: <strong>Cofnij</strong> przywraca gałęzie, dopóki żadna z nich się od tego czasu nie przesunęła. Już wypchniętą gałąź zastępuje się na jej zdalnym repozytorium przez <strong>Wymuś wypchnięcie…</strong>, z lease.</li>
+<li>Dla sekretu <strong>Usuń stare commity…</strong> kasuje kopię zapasową i wpisy reflogu, do których nic już nie prowadzi, sprząta (prune), a potem mówi, czy jakiś stary commit nadal istnieje. Wypchnięte commity mogą nadal być osiągalne na serwerze i w innych klonach, więc wypchnięty sekret trzeba dodatkowo unieważnić.</li>
+</ul>
 <h2 id="ignorowanie-plikow-i-dane-dostepu">Ignorowanie plików i dane dostępu</h2>
 <ul>
 <li><strong>Ignoruj ten plik…</strong>, <strong>Ignoruj ten typ pliku…</strong> i <strong>Ignoruj ten folder…</strong> wpisują właściwy wzorzec do

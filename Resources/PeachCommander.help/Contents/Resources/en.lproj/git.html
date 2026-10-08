@@ -104,6 +104,15 @@ interleaved by hand, <strong>Open in editor</strong> is one button away.</p>
 fix up, drop, reorder or reword them before rewriting the branch. If a rebase stops in a conflict, the same
 window becomes <strong>Continue</strong> / <strong>Skip commit</strong> / <strong>Abort rebase</strong>, so a half-finished rebase does not have to
 be finished in a terminal.</p>
+<h2 id="changing-commit-messages-afterwards">Changing commit messages afterwards</h2>
+<ul>
+<li><strong>Edit message…</strong> in the history's menu opens one commit's message for editing; with several commits selected it is <strong>Edit messages…</strong>, and <strong>Find and replace in messages…</strong> — also <strong>Edit Commit Messages…</strong> in the Git menu — searches the messages of the current branch, of the commits not pushed yet or of all branches and tags.</li>
+<li>The list shows the commits whose message changes. The selected one's message is shown as it is, with the matches marked, and as it will be, which can be typed into; <strong>Leave as it is</strong> takes a commit out again.</li>
+<li><strong>Find secrets…</strong> looks for tokens, keys and passwords in the listed messages and fills in the search for them; <strong>Redact</strong> puts <code>***REDACTED***</code> in as the replacement.</li>
+<li><strong>Apply…</strong> asks first: it lists every change, how many commits get new hashes and which branches and tags move, and warns about commits that were already pushed. The commits are written directly, so nothing is checked out and nothing can conflict; files, authors and dates stay as they were. A signature is removed, or made again when <strong>Sign commits</strong> is on in <strong>Settings ▸ Git</strong>.</li>
+<li>The old commits are kept: <strong>Undo</strong> puts the branches back as long as none of them has moved since. A branch that was already pushed is replaced at its remote with <strong>Force-push…</strong>, with a lease.</li>
+<li>For a secret, <strong>Remove old commits…</strong> deletes the backup and the reflog entries nothing reaches any more, prunes, and then says whether an old commit is still there. Commits that were pushed may still be reachable at the server and in other clones, so a secret that was pushed has to be revoked as well.</li>
+</ul>
 <h2 id="ignoring-files-and-credentials">Ignoring files, and credentials</h2>
 <ul>
 <li><strong>Ignore This File…</strong>, <strong>Ignore This File Type…</strong> and <strong>Ignore This Folder…</strong> add the right pattern to

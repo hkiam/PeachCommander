@@ -105,6 +105,15 @@ oboch strán, je <strong>Otvoriť v editore</strong> jedno tlačidlo ďaleko.</p
 pripojiť ako opravu, zahodiť, preskladať alebo prepísať ich správu, než sa vetva prepíše. Ak sa preskladanie
 zastaví na konflikte, z toho istého okna sa stane <strong>Pokračovať</strong> / <strong>Preskočiť zápis</strong> / <strong>Prerušiť
 preskladanie</strong>, aby sa rozrobené preskladanie nemuselo dokončovať v termináli.</p>
+<h2 id="dodatocna-zmena-sprav-commitov">Dodatočná zmena správ commitov</h2>
+<ul>
+<li><strong>Upraviť správu…</strong> v ponuke histórie otvorí správu jedného commitu na úpravu; pri viacerých vybraných commitoch je to <strong>Upraviť správy…</strong> a <strong>Nájsť a nahradiť v správach…</strong> — aj <strong>Upraviť správy commitov…</strong> v ponuke Git — prehľadá správy aktuálnej vetvy, ešte neodoslaných commitov alebo všetkých vetiev a tagov.</li>
+<li>Zoznam ukazuje commity, ktorých správa sa mení. Správa vybraného sa zobrazí taká, aká je, s označenými zhodami, a taká, aká bude, a dá sa do nej aj písať; <strong>Nechať tak</strong> commit opäť vyradí.</li>
+<li><strong>Nájsť tajné údaje…</strong> hľadá v uvedených správach tokeny, kľúče a heslá a vyplní ich do hľadania; <strong>Začierniť</strong> vloží ako náhradu <code>***REDACTED***</code>.</li>
+<li><strong>Použiť…</strong> sa najprv opýta: vypíše každú zmenu, koľko commitov dostane nové hashe a ktoré vetvy a tagy sa posunú, a upozorní na commity, ktoré už boli odoslané. Commity sa zapíšu priamo, takže sa nič nevyťahuje a nič nemôže byť v konflikte; súbory, autori a dátumy zostanú, ako boli. Podpis sa odstráni, alebo sa vytvorí znova, ak je v <strong>Nastavenia ▸ Git</strong> zapnuté <strong>Podpisovať commity</strong>.</li>
+<li>Staré commity sa uchovajú: <strong>Vrátiť späť</strong> vráti vetvy, pokiaľ sa odvtedy žiadna z nich neposunula. Vetva, ktorá už bola odoslaná, sa na svojom remote nahradí cez <strong>Vynútiť odoslanie…</strong>, s lease.</li>
+<li>Pri tajnom údaji <strong>Odstrániť staré commity…</strong> zmaže zálohu a záznamy reflogu, na ktoré už nič nedosiahne, vykoná prune a potom povie, či tam ešte zostal nejaký starý commit. Odoslané commity môžu byť stále dosiahnuteľné na serveri a v iných klonoch, preto treba odoslaný tajný údaj aj zneplatniť.</li>
+</ul>
 <h2 id="ignorovanie-suborov-a-prihlasovacie-udaje">Ignorovanie súborov a prihlasovacie údaje</h2>
 <ul>
 <li><strong>Ignorovať tento súbor…</strong>, <strong>Ignorovať tento typ súboru…</strong> a <strong>Ignorovať tento priečinok…</strong> zapíšu správny

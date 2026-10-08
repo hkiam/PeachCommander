@@ -107,6 +107,15 @@ Region, die beide Seiten von Hand verschränkt braucht, ist <strong>Im Editor ö
 squashen, als Fixup anhängen, verwerfen, umsortieren oder umbenennen, bevor der Branch neu geschrieben wird.
 Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu <strong>Fortsetzen</strong> / <strong>Commit überspringen</strong>
 / <strong>Rebase abbrechen</strong>, damit ein halb fertiges Rebase nicht im Terminal beendet werden muss.</p>
+<h2 id="commit-nachrichten-nachtraglich-andern">Commit-Nachrichten nachträglich ändern</h2>
+<ul>
+<li><strong>Nachricht bearbeiten…</strong> im Menü der Historie öffnet die Nachricht eines Commits zum Bearbeiten; bei mehreren ausgewählten Commits heißt es <strong>Nachrichten bearbeiten…</strong>, und <strong>In Nachrichten suchen und ersetzen…</strong> — auch <strong>Commit-Nachrichten bearbeiten…</strong> im Git-Menü — durchsucht die Nachrichten des aktuellen Branches, der noch nicht gepushten Commits oder aller Branches und Tags.</li>
+<li>Die Liste zeigt die Commits, deren Nachricht sich ändert. Die Nachricht des ausgewählten steht da, wie sie ist, mit markierten Treffern, und wie sie sein wird, und dort lässt sich auch hineinschreiben; <strong>So lassen</strong> nimmt einen Commit wieder heraus.</li>
+<li><strong>Secrets suchen…</strong> sucht in den gelisteten Nachrichten nach Tokens, Schlüsseln und Passwörtern und trägt sie in die Suche ein; <strong>Schwärzen</strong> setzt <code>***REDACTED***</code> als Ersatz ein.</li>
+<li><strong>Anwenden…</strong> fragt vorher: Es listet jede Änderung, wie viele Commits neue Hashes bekommen und welche Branches und Tags umgesetzt werden, und warnt vor Commits, die schon gepusht sind. Die Commits werden direkt geschrieben, also wird nichts ausgecheckt und nichts kann in Konflikt geraten; Dateien, Autoren und Daten bleiben, wie sie waren. Eine Signatur entfällt, oder sie wird neu erstellt, wenn <strong>Commits signieren</strong> in <strong>Einstellungen ▸ Git</strong> eingeschaltet ist.</li>
+<li>Die alten Commits werden aufbewahrt: <strong>Rückgängig</strong> setzt die Branches zurück, solange sich keiner davon seitdem bewegt hat. Ein schon gepushter Branch wird auf seinem Remote mit <strong>Push erzwingen…</strong> ersetzt, mit Lease.</li>
+<li>Für ein Secret löscht <strong>Alte Commits entfernen…</strong> die Sicherung und die Reflog-Einträge, die nichts mehr erreicht, räumt auf und sagt danach, ob noch ein alter Commit da ist. Gepushte Commits können auf dem Server und in anderen Klonen noch erreichbar sein, darum muss ein gepushtes Secret zusätzlich widerrufen werden.</li>
+</ul>
 <h2 id="dateien-ignorieren-und-zugangsdaten">Dateien ignorieren, und Zugangsdaten</h2>
 <ul>
 <li><strong>Diese Datei ignorieren…</strong>, <strong>Diesen Dateityp ignorieren…</strong> und <strong>Diesen Ordner ignorieren…</strong> tragen das

@@ -704,6 +704,8 @@ final class GitPanelView: NSView {
 
     private func fetchInBackground() {
         guard window != nil, !fetching, let root else { return }
+        // Not beside the clean-up after a message rewrite: its prune could take this fetch's objects.
+        guard GitActivity.begin(fetching: root) else { return }
         fetching = true
         let arguments = ["-C", root] + GitSettingsStore.current.fetchArguments
         // A host that does not answer would hold `fetching` — and every later fetch — for good; after
@@ -713,6 +715,7 @@ final class GitPanelView: NSView {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             _ = PluginGitRepo.run(arguments, cancel: cancel)
             DispatchQueue.main.async {
+                GitActivity.end(fetching: root)
                 guard let self else { return }
                 self.fetching = false
                 PluginGitRepo.invalidate()
@@ -1090,6 +1093,22 @@ final class GitPanelView: NSView {
                 }
             }
         }
+        // Phase 10: `PC_GIT_PANEL_MESSAGES=<find>|<replace>` opens the commit messages window on the current
+        // branch with that search; `PC_GIT_PANEL_MESSAGES_APPLY=1` then applies it, every question answered yes
+        // (`=ask` shows the confirmation for real, to be looked at).
+        if let spec = probe("PC_GIT_PANEL_MESSAGES"), let root {
+            let parts = spec.components(separatedBy: "|")
+            let applyMode = probe("PC_GIT_PANEL_MESSAGES_APPLY")
+            let apply = applyMode != nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self else { return }
+                showMessagesWindow(root: root, self.services)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    Self.messagesView()?.automationRun(find: parts[0], replace: parts.count > 1 ? parts[1] : "", apply: apply,
+                                                         ask: applyMode == "ask")
+                }
+            }
+        }
         if probe("PC_GIT_PANEL_PR") != nil {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in self?.openPullRequests() }
         }
@@ -1100,7 +1119,8 @@ final class GitPanelView: NSView {
             }
         }
         if let path = probe("PC_GIT_PANEL_DUMP") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + (reveal == nil ? 2.5 : 5.0)) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + (reveal == nil ? 2.5 : 5.0)
+                                          + (probe("PC_GIT_PANEL_MESSAGES") != nil ? 8.0 : 0)) { [weak self] in
                 guard let self else { return }
                 try? self.automationReport().write(toFile: path, atomically: true, encoding: .utf8)
             }
@@ -1143,8 +1163,13 @@ final class GitPanelView: NSView {
         lines.append("flowMenu=" + flowButton.itemArray.dropFirst().map { $0.isSeparatorItem ? "-" : $0.title }.joined(separator: "|"))
         lines.append("ci=\(ciButton.isHidden ? "hidden" : ciButton.toolTip ?? "")")
         lines += Self.mergeView()?.automationSummary() ?? []
+        lines += Self.messagesView()?.automationSummary() ?? []
         for window in NSApp.windows { if let view = window.contentView as? GitPullRequestsView { lines += view.automationSummary() } }
         return lines.joined(separator: "\n") + "\n"
+    }
+
+    private static func messagesView() -> GitMessagesView? {
+        NSApp.windows.lazy.compactMap { $0.contentView as? GitMessagesView }.first
     }
 
     private static func mergeView() -> GitMergeView? {

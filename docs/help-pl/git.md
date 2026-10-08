@@ -116,6 +116,15 @@ i pozwala je zgnieść, dołączyć jako poprawkę, porzucić, przestawić albo 
 przepisana. Gdy zmiana bazy zatrzyma się na konflikcie, to samo okno staje się **Kontynuuj** / **Pomiń
 zatwierdzenie** / **Przerwij**, żeby niedokończonej zmiany bazy nie trzeba było kończyć w terminalu.
 
+## Zmiana komunikatów commitów po fakcie
+
+- **Edytuj komunikat…** w menu historii otwiera do edycji komunikat jednego commita; przy kilku zaznaczonych commitach nazywa się to **Edytuj komunikaty…**, a **Znajdź i zastąp w komunikatach…** — także **Edytuj komunikaty commitów…** w menu Git — przeszukuje komunikaty bieżącej gałęzi, jeszcze niewypchniętych commitów albo wszystkich gałęzi i tagów.
+- Lista pokazuje commity, których komunikat się zmienia. Komunikat zaznaczonego widać takim, jaki jest, z oznaczonymi trafieniami, i takim, jaki będzie, i tam też można pisać; **Zostaw bez zmian** wyjmuje commit z powrotem.
+- **Znajdź sekrety…** szuka tokenów, kluczy i haseł w wymienionych komunikatach i wpisuje je do wyszukiwania; **Zaczernij** wstawia `***REDACTED***` jako zamiennik.
+- **Zastosuj…** najpierw pyta: wymienia każdą zmianę, ile commitów otrzyma nowe hashe i które gałęzie i tagi się przesuną, oraz ostrzega przed commitami, które już wypchnięto. Commity są zapisywane bezpośrednio, więc nic nie jest wybierane (checkout) i nic nie może wejść w konflikt; pliki, autorzy i daty pozostają, jakie były. Podpis znika albo jest tworzony na nowo, gdy w **Ustawienia ▸ Git** włączono **Podpisuj commity**.
+- Stare commity są zachowywane: **Cofnij** przywraca gałęzie, dopóki żadna z nich się od tego czasu nie przesunęła. Już wypchniętą gałąź zastępuje się na jej zdalnym repozytorium przez **Wymuś wypchnięcie…**, z lease.
+- Dla sekretu **Usuń stare commity…** kasuje kopię zapasową i wpisy reflogu, do których nic już nie prowadzi, sprząta (prune), a potem mówi, czy jakiś stary commit nadal istnieje. Wypchnięte commity mogą nadal być osiągalne na serwerze i w innych klonach, więc wypchnięty sekret trzeba dodatkowo unieważnić.
+
 ## Ignorowanie plików i dane dostępu
 
 - **Ignoruj ten plik…**, **Ignoruj ten typ pliku…** i **Ignoruj ten folder…** wpisują właściwy wzorzec do

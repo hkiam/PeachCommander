@@ -17,6 +17,17 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Added
 
+- **Change commit messages afterwards — one, several, or by find and replace.** **Edit message…** and
+  **Edit messages…** in the Git panel's history, and **Find and replace in messages…** (also **Edit
+  Commit Messages…** in the Git menu) for the current branch, the commits not pushed yet or all branches
+  and tags. The window lists the commits that change, shows each message as it is with the matches
+  marked and as it will be, editable, and **Find secrets…** looks for tokens, keys and passwords and
+  redacts them. Applying asks first — every change before and after, how many commits get new hashes,
+  which branches and tags move — and then writes the commits directly: no checkout, no conflicts, any
+  number of messages and merges included, files, authors and dates unchanged. The old commits are kept
+  for **Undo**; pushed branches are force-pushed with a lease on request; and for a secret, **Remove old
+  commits…** clears the backup and the unreachable reflog entries, prunes and reports whether anything
+  still holds an old commit — with the reminder that a pushed secret has to be revoked.
 - **The Git panel is a Git client.** Below its buttons it shows the history of every branch, remote
   branch and tag as a drawn graph — lanes, merges bending out, branches bending back, ref badges —
   with the working copy as its first row, which keeps the staging list and the commit box. A commit

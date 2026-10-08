@@ -116,6 +116,15 @@ připojit jako opravu, zahodit, přeskládat nebo přepsat jejich zprávu, než 
 přeskládání na konfliktu, stane se z téhož okna **Pokračovat** / **Přeskočit zápis** / **Přerušit
 přeskládání**, aby se rozdělané přeskládání nemuselo dokončovat v terminálu.
 
+## Dodatečná změna zpráv commitů
+
+- **Upravit zprávu…** v nabídce historie otevře zprávu jednoho commitu k úpravě; při více vybraných commitech je to **Upravit zprávy…** a **Najít a nahradit ve zprávách…** — také **Upravit zprávy commitů…** v nabídce Git — prohledá zprávy aktuální větve, dosud neodeslaných commitů nebo všech větví a tagů.
+- Seznam ukazuje commity, jejichž zpráva se změní. Zpráva vybraného je zobrazena tak, jak je, s vyznačenými shodami, a tak, jak bude, a do té lze psát; **Nechat, jak je** commit zase vyřadí.
+- **Najít tajemství…** hledá tokeny, klíče a hesla ve zprávách v seznamu a vyplní je do hledání; **Začernit** vloží `***REDACTED***` jako náhradu.
+- **Použít…** se nejprve zeptá: vypíše každou změnu, kolik commitů dostane nové hashe a které větve a tagy se posunou, a varuje před commity, které už byly odeslány. Commity se zapisují přímo, takže se nic nepřepíná a nic nemůže být v konfliktu; soubory, autoři a data zůstanou, jak byly. Podpis zmizí, nebo se vytvoří znovu, když je v **Nastavení ▸ Git** zapnuto **Podepisovat commity**.
+- Staré commity se uchovají: **Zpět** vrátí větve, dokud se od té doby žádná z nich neposunula. Větev, která už byla odeslána, se na svém remote nahradí pomocí **Vynutit odeslání…**, s lease.
+- U tajemství **Odstranit staré commity…** smaže zálohu a záznamy reflogu, na které už nic nedosáhne, provede prune a pak řekne, zda tu ještě nějaký starý commit je. Odeslané commity mohou být stále dosažitelné na serveru a v jiných klonech, takže odeslané tajemství je navíc třeba zneplatnit.
+
 ## Ignorování souborů a přihlašovací údaje
 
 - **Ignorovat tento soubor…**, **Ignorovat tento typ souboru…** a **Ignorovat tuto složku…** zapíší správný
