@@ -12,7 +12,7 @@
 <h1>Amazon S3 与 S3 兼容存储</h1>
 <p>S3 存储桶可以像任何文件夹一样在面板中浏览。在“网络”菜单中选择 <strong>连接到 Amazon S3…</strong>，填入终端节点和你的密钥，存储就会出现在活动面板中——<strong>顶层是存储桶列表</strong>，其下每个存储桶都是一个普通目录。</p>
 <p>它适用于 Amazon S3，也适用于所有讲同一协议的服务：MinIO、Ceph/RADOS Gateway、Cloudflare R2、Wasabi、Backblaze B2 和 DigitalOcean Spaces 都可以访问。</p>
-<p>它是一个插件，因此可以在 <strong>配置 ▸ 插件…</strong> 中关闭或移除。</p>
+<p>它是一个插件，因此可以在 <strong>配置 ▸ 管理插件…</strong> 中关闭或移除。</p>
 <h2 id="_1">连接</h2>
 <p><strong>服务</strong> 菜单会填好两项无法猜测的设置——是否使用 HTTPS，以及终端节点是否需要路径式寻址——而终端节点本身留给你，因为它通常与你的账户有关。这两项设置出错时都像是别的问题：对裸 IP 地址使用虚拟主机式寻址会得到名称解析错误，对 Amazon 使用路径式寻址会得到“没有这个存储桶”，读起来像是存储桶不存在。</p>
 <p><strong>私有访问密钥</strong> 通过宿主程序进入 <strong>钥匙串</strong>，绝不写入配置文件。下次连接时把该栏留空，就会使用已保存的密钥。</p>

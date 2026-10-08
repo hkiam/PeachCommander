@@ -61,7 +61,7 @@ Pour retirer plusieurs éléments à la fois, utilisez le **collecteur** : clic 
 
 ## Réglages
 
-Carte du disque ajoute sa propre page à la fenêtre des Réglages (**Configuration ▸ Réglages ▸ Carte du disque**) :
+Carte du disque ajoute sa propre page à la fenêtre des Réglages (**Configuration ▸ Réglages… ▸ Carte du disque**) :
 
 - **Style de graphique** — treemap ou sunburst.
 - **Codage couleur** — par type de fichier (catégorie) ou par taille (carte de chaleur).

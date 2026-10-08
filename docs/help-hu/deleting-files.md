@@ -35,7 +35,7 @@ Ha egyes elemeket nem lehet eltávolítani – például mert zárolva vannak, v
 
 ## Megjegyzések
 
-- **Megerősítés.** Alapértelmezés szerint a Peach Commander megerősítést kér a törlés előtt. Ezt kikapcsolhatja a **Beállítások > Megerősítés** menüpontban a **Megerősítés törlés előtt** kikapcsolásával. Ennek ellenére kezelje óvatosan a végleges törléseket, mivel azok nem vonhatók vissza.
-- **Az F8 alapértelmezett viselkedése.** Az F8 normál esetben a Kukába helyezi az elemeket. Ha inkább azt szeretné, hogy az F8 alapértelmezés szerint véglegesen töröljön, módosítsa a törlési beállítást a **Beállítások > Művelet** beállításokban. A Shift+F8 ettől a beállítástól függetlenül mindig véglegesen töröl.
+- **Megerősítés.** Alapértelmezés szerint a Peach Commander megerősítést kér a törlés előtt. Ezt kikapcsolhatja a **Konfiguráció > Beállítások… > Megerősítés** oldalon a **Megerősítés törlés előtt** kikapcsolásával. Ennek ellenére kezelje óvatosan a végleges törléseket, mivel azok nem vonhatók vissza.
+- **Az F8 alapértelmezett viselkedése.** Az F8 normál esetben a Kukába helyezi az elemeket. Ha inkább azt szeretné, hogy az F8 alapértelmezés szerint véglegesen töröljön, kapcsolja ki a **Törlés a Kukába** beállítást a **Konfiguráció > Beállítások… > Megerősítés** oldalon. A Shift+F8 ettől a beállítástól függetlenül mindig véglegesen töröl.
 - **Törlés archívumon belül.** Amikor egy támogatott archívumon belül böngészik, a törlés eltávolítja a kijelölt bejegyzéseket az archívumból. A csak olvasható helyek, például egyes hálózati vagy bővítménymappák, így nem módosíthatók.
 - **Mappák.** Egy mappa törlése eltávolít mindent, ami benne van. Győződjön meg róla, hogy a megfelelő elemeket jelölte ki, mielőtt megerősíti, különösen végleges törlés esetén.

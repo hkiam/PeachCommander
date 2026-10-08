@@ -26,11 +26,11 @@ Az ablaknak ezek az oldalai vannak, sorrendben:
 - **Elrendezés** — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése, valamint annak megválasztása, milyen oldalakat kínál az oldalsó panel.
 - **Megjelenítés** — hogyan listázódnak a fájlok és mappák, beleértve a dátumformátumot.
 - **Ikonok** — az ikonok megjelenése a fájllistákban.
-- **Művelet** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).
+- **Művelet** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor), és hogy a másolatokat ellenőrzőösszeggel ellenőrzi-e.
 - **Színek** — egyéni panelszínek, vagy hagyja őket az aktuális témát követni.
-- **Megerősítés** — mely műveletek kérnek először megerősítést, mint a törlés.
+- **Megerősítés** — mely műveletek kérnek először megerősítést, mint a törlés, és hogy a törlés a Kukába helyezi-e az elemeket.
 - **Szerkesztés/megtekintés** — hogy a szerkesztőben való mentés megtart-e `.bak` biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.
-- **Másolás/törlés** — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.
+- **Másolás/törlés** — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, és egy opcionális sebességkorlát beállítása.
 - **Zip/csomagoló** — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.
 - **Bővítmények** — a telepített bővítmények be- vagy kikapcsolása.
 - **Lapok** — hogyan nyílnak meg és viselkednek a mappalapok.
@@ -52,7 +52,7 @@ Az engedélyezett bővítmények saját oldalakat adhatnak a beépítettek után
 
 A konfigurációja egyszerű szövegfájlokban tárolódik a személyes Application Support mappáján belül, a `~/Library/Application Support/PeachCommander` alatt. A megnyitásához menjen az **Egyéb** oldalra és kattintson a **Konfigurációs mappa megnyitása** gombra. A mentett FTP-jelszavak nem ezekben a fájlokban tárolódnak; biztonságosan a macOS kulcskarikában vannak.
 
-A beállítások írásra kerülnek, ahogy megváltoztatja őket. Bármikor kikényszeríthet egy mentést is a **Konfiguráció > Beállítások mentése** lehetőséggel, és tárolhatja az aktuális ablakhelyzetet és panelelrendezést a **Konfiguráció > Pozíció mentése** lehetőséggel.
+A beállítások írásra kerülnek, ahogy megváltoztatja őket; kézzel nincs mit menteni.
 
 ## Beállítások áthozatala a Total Commanderből
 

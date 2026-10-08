@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 El sistema de archivos de un contenedor Docker se puede explorar en un panel como cualquier carpeta, y un volumen de Docker también. Elija **Conectar con Docker…** en el menú Red, o haga clic en la ficha **Docker** de la barra de unidades, y el motor aparecerá en el panel activo.
 
-Es un complemento y **se entrega desactivado**. Actívelo en **Configuración ▸ Complementos…**. Empieza desactivado porque una conexión al demonio de Docker tiene en su Mac los mismos permisos que usted; véase *A qué puede acceder* más abajo.
+Es un complemento y **se entrega desactivado**. Actívelo en **Configuración ▸ Gestionar plugins…**. Empieza desactivado porque una conexión al demonio de Docker tiene en su Mac los mismos permisos que usted; véase *A qué puede acceder* más abajo.
 
 ## Lo que ve
 
@@ -83,7 +83,7 @@ Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suy
 
 ## Ajustes
 
-**Configuración ▸ Ajustes ▸ Docker** tiene todo esto. Los mismos valores están en un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`, que es lo que hay que editar si prepara una máquina desde un script:
+**Configuración ▸ Ajustes… ▸ Docker** tiene todo esto. Los mismos valores están en un archivo pequeño en `~/Library/Application Support/PeachCommander/Docker/docker.ini`, que es lo que hay que editar si prepara una máquina desde un script:
 
 - `Endpoint` — una dirección que usar en lugar de la encontrada.
 - `ExecFallback` — `0` hace que el complemento use la API de archivo de Docker y nada más: entonces nunca ejecutará nada dentro de un contenedor, a costa de no poder listar un directorio muy grande, ni borrar, ni renombrar.

@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Git-pluginet viser tilstanden i et Git-arkiv direkte i filpanelet — ingen separat app, ingen terminal. Det
 tilføjer to kolonner, en undermenu **Git**, et fastgjort panel til at stage og committe og vinduer til
 historik, blame, grene, konflikter og rebasing. Det bruger den `git`, der allerede er installeret på din Mac.
-Det er et plugin, så du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**.
+Det er et plugin, så du kan slå det fra eller fjerne det under **Konfiguration ▸ Administrer plugins…**.
 
 ## Hvad det tilføjer
 

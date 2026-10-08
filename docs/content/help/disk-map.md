@@ -62,7 +62,7 @@ To remove several items at once, use the **Collector**: right-click ▸ **Mark f
 
 ## Settings
 
-Disk Map adds its own page to the Settings window (**Configuration ▸ Settings ▸ Disk Map**):
+Disk Map adds its own page to the Settings window (**Configuration ▸ Settings… ▸ Disk Map**):
 
 - **Chart style** — treemap or sunburst.
 - **Color coding** — by file type (category) or by size (heatmap).

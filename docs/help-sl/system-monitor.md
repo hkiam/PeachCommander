@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Vtičnik System Monitor postavi prikaz dejavnosti vašega Maca v realnem času kar v naslovno vrstico okna: majhne čipe za procesor, pomnilnik, disk, omrežje in — kjer jih strojna oprema izpostavi — GPE, baterijo in senzorje. Vsak čip se posodobi enkrat na sekundo; kliknite ga za pojavno okno z zgodovinskim grafom in podrobno razčlenitvijo. Ker gre za vtičnik, ga lahko omogočite, nastavite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
+Vtičnik System Monitor postavi prikaz dejavnosti vašega Maca v realnem času kar v naslovno vrstico okna: majhne čipe za procesor, pomnilnik, disk, omrežje in — kjer jih strojna oprema izpostavi — GPE, baterijo in senzorje. Vsak čip se posodobi enkrat na sekundo; kliknite ga za pojavno okno z zgodovinskim grafom in podrobno razčlenitvijo. Ker gre za vtičnik, ga lahko omogočite, nastavite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Čipi v naslovni vrstici
 
@@ -24,7 +24,7 @@ Kliknite čip, da odprete pojavno okno z veliko trenutno vrednostjo, mini-grafom
 
 ## Nastavitev
 
-Izberite **Ukazi ▸ System Monitor…** (ali odprite **Konfiguracija ▸ Nastavitve ▸ System Monitor**), da nastavite prikaz:
+Izberite **Ukazi ▸ System Monitor…** (ali odprite **Konfiguracija ▸ Nastavitve… ▸ System Monitor**), da nastavite prikaz:
 
 - **Prikaži sistemski monitor v naslovni vrstici** — glavni preklop za čipe.
 - **Profil** — prednastavitve *Minimalno*, *Srednje* ali *Maksimalno*, ki izberejo smiseln nabor modulov.

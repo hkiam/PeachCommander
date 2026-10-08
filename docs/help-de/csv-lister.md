@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Drücken Sie **F3** auf einer `.csv`- oder `.tsv`-Datei, und sie öffnet sich als echte Tabelle — Spalten, Überschriften, Sortierung und Filter — statt als Textzeilen mit Kommas darin.
 
-Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins…** abschalten oder entfernen. Ohne es zeigt F3 die Datei als reinen Text, was bei einer kleinen durchaus lesbar bleibt.
+Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins verwalten…** abschalten oder entfernen. Ohne es zeigt F3 die Datei als reinen Text, was bei einer kleinen durchaus lesbar bleibt.
 
 ## Das Trennzeichen wird ermittelt, nicht angenommen
 

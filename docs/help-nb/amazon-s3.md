@@ -10,7 +10,7 @@ En S3-bucket kan utforskes i et panel som enhver annen mappe. Velg **Koble til A
 
 Det virker med Amazon S3 og med alt som snakker samme protokoll: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 og DigitalOcean Spaces er alle tilgjengelige.
 
-Det er et programtillegg, så du kan slå det av eller fjerne det under **Konfigurasjon ▸ Programtillegg…**.
+Det er et programtillegg, så du kan slå det av eller fjerne det under **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Tilkobling
 

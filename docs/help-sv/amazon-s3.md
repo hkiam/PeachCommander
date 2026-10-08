@@ -10,7 +10,7 @@ En S3-bucket kan bläddras i en panel som vilken mapp som helst. Välj **Anslut 
 
 Det fungerar med Amazon S3 och med allt som talar samma protokoll: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 och DigitalOcean Spaces går alla att nå.
 
-Det är ett insticksprogram, så du kan stänga av det eller ta bort det under **Konfiguration ▸ Insticksprogram…**.
+Det är ett insticksprogram, så du kan stänga av det eller ta bort det under **Konfiguration ▸ Hantera plugin-program…**.
 
 ## Ansluta
 

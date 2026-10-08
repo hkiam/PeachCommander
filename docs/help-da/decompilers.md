@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Tryk **F3** på en oversat fil, og se kildetekst i stedet for byte. To plugins gør det — et til Java (`.class`, `.jar`, `.apk`, `.dex`) og et til .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — og de opfører sig ens, så denne side dækker begge. Hvert af dem kan slås fra eller fjernes for sig under **Konfiguration ▸ Plugins…**.
+Tryk **F3** på en oversat fil, og se kildetekst i stedet for byte. To plugins gør det — et til Java (`.class`, `.jar`, `.apk`, `.dex`) og et til .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — og de opfører sig ens, så denne side dækker begge. Hvert af dem kan slås fra eller fjernes for sig under **Konfiguration ▸ Administrer plugins…**.
 
 Et arkiv vises som et træ af sine klasser; en enkelt klasse som én fil. **Dekompiler til kildetekst** i menuen Kommandoer skriver resultatet ud og lægger det i et panel, så du kan søge, sammenligne og kopiere i det som i enhver anden mappe med kildetekst.
 

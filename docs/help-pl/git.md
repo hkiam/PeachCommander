@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Wtyczka Git pokazuje stan repozytorium Git wprost w panelu plików — bez osobnej aplikacji i bez terminala.
 Dodaje dwie kolumny, podmenu **Git**, zadokowany panel do przygotowywania i zatwierdzania zmian oraz okna
 historii, blame, gałęzi, konfliktów i zmiany bazy. Korzysta z `git`, który jest już zainstalowany na Macu. To
-wtyczka, więc można ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+wtyczka, więc można ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Co dodaje
 

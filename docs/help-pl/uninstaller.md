@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Przeciągnięcie aplikacji do Kosza zostawia jej pliki pomocnicze, pamięci podręczne, preferencje i kontenery rozrzucone po Twoich folderach Library. Wtyczka Uninstaller usuwa aplikację **oraz** te pozostałości: znajduje wszystko, co aplikacja po sobie zostawiła, pokazuje Ci listę z rozmiarem każdej pozycji i przenosi to wszystko do Kosza po Twoim potwierdzeniu. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+Przeciągnięcie aplikacji do Kosza zostawia jej pliki pomocnicze, pamięci podręczne, preferencje i kontenery rozrzucone po Twoich folderach Library. Wtyczka Uninstaller usuwa aplikację **oraz** te pozostałości: znajduje wszystko, co aplikacja po sobie zostawiła, pokazuje Ci listę z rozmiarem każdej pozycji i przenosi to wszystko do Kosza po Twoim potwierdzeniu. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Odinstaluj aplikację pod kursorem
 

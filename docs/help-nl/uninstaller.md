@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Een app naar de Prullenmand slepen laat de bijbehorende ondersteuningsbestanden, caches, voorkeuren en containers verspreid over je Bibliotheek-mappen achter. De Uninstaller-plug-in verwijdert een applicatie **én** die overblijfselen: hij vindt alles wat de app heeft achtergelaten, toont je de lijst met een grootte per item en verplaatst het geheel naar de Prullenmand zodra je bevestigt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**.
+Een app naar de Prullenmand slepen laat de bijbehorende ondersteuningsbestanden, caches, voorkeuren en containers verspreid over je Bibliotheek-mappen achter. De Uninstaller-plug-in verwijdert een applicatie **én** die overblijfselen: hij vindt alles wat de app heeft achtergelaten, toont je de lijst met een grootte per item en verplaatst het geheel naar de Prullenmand zodra je bevestigt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins beheren…**.
 
 ## Een app onder de cursor deïnstalleren
 

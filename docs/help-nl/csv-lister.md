@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Druk op **F3** op een `.csv`- of `.tsv`-bestand en het opent als een echte tabel — kolommen, koppen, sortering en een filter — in plaats van als tekstregels met komma’s erin.
 
-Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**. Zonder hem toont F3 het bestand als platte tekst, wat voor een klein bestand nog prima leesbaar is.
+Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins beheren…**. Zonder hem toont F3 het bestand als platte tekst, wat voor een klein bestand nog prima leesbaar is.
 
 ## Het scheidingsteken wordt afgeleid, niet aangenomen
 

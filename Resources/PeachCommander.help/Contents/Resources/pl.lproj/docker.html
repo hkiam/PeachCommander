@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Kontenery i wolumeny Dockera</h1>
 <p>System plików kontenera Dockera można przeglądać w panelu jak każdy folder, a wolumen Dockera tak samo. Wybierz <strong>Połącz z Dockerem…</strong> z menu Sieć albo kliknij przycisk <strong>Docker</strong> na pasku napędów, a silnik pojawi się w aktywnym panelu.</p>
-<p>To wtyczka i <strong>jest dostarczana wyłączona</strong>. Włącz ją w <strong>Konfiguracja ▸ Wtyczki…</strong>. Startuje wyłączona, ponieważ połączenie z demonem Dockera ma na Twoim Macu te same uprawnienia co Ty — zobacz <em>Do czego ma dostęp</em> poniżej.</p>
+<p>To wtyczka i <strong>jest dostarczana wyłączona</strong>. Włącz ją w <strong>Konfiguracja ▸ Zarządzaj wtyczkami…</strong>. Startuje wyłączona, ponieważ połączenie z demonem Dockera ma na Twoim Macu te same uprawnienia co Ty — zobacz <em>Do czego ma dostęp</em> poniżej.</p>
 <h2 id="co-widzisz">Co widzisz</h2>
 <p>Najwyższy poziom to trzy foldery:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym folderem nie ma ich wcale.</p>
 <p><strong>Dziennik jest także plikiem.</strong> W katalogu głównym każdego kontenera leży <code>docker-logs.txt</code> — który nie jest plikiem w kontenerze: jego odczyt pyta silnik o dziennik. F3 na nim otwiera go w podglądzie, więc działa wyszukiwanie podglądu, skok do wiersza i wybór kodowania, czego osobne okno dać nie może. Kontener, który naprawdę niesie plik o tej nazwie, pokazuje własny, a do wirtualnego nic nie da się zapisać.</p>
 <h2 id="ustawienia">Ustawienia</h2>
-<p><strong>Konfiguracja ▸ Ustawienia ▸ Docker</strong> zawiera to wszystko. Te same wartości leżą w małym pliku w <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, który edytujesz, gdy przygotowujesz maszynę skryptem:</p>
+<p><strong>Konfiguracja ▸ Ustawienia… ▸ Docker</strong> zawiera to wszystko. Te same wartości leżą w małym pliku w <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, który edytujesz, gdy przygotowujesz maszynę skryptem:</p>
 <ul>
 <li><code>Endpoint</code> — adres używany zamiast znalezionego.</li>
 <li><code>ExecFallback</code> — <code>0</code> sprawia, że wtyczka używa wyłącznie archiwalnego API Dockera: nigdy wtedy niczego nie uruchamia w kontenerze, kosztem niemożności wypisania bardzo dużego katalogu, usunięcia i zmiany nazwy.</li>

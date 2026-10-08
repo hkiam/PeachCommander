@@ -35,7 +35,7 @@ Hvis noen elementer ikke kan fjernes — for eksempel fordi de er låst eller du
 
 ## Merknader
 
-- **Bekreftelse.** Som standard ber Peach Commander deg om å bekrefte før sletting. Du kan slå dette av i **Konfigurasjon > Bekreftelse** ved å fjerne **Bekreft før sletting**. Behandle likevel permanente slettinger med forsiktighet, siden de ikke kan angres.
-- **Standardoppførsel for F8.** Normalt flytter F8 elementer til Papirkurven. Hvis du foretrekker at F8 sletter permanent som standard, endre slettealternativet i innstillingene under **Konfigurasjon > Operasjon**. Shift+F8 sletter alltid permanent uavhengig av denne innstillingen.
+- **Bekreftelse.** Som standard ber Peach Commander deg om å bekrefte før sletting. Du kan slå dette av i **Konfigurasjon > Innstillinger… > Bekreftelse** ved å fjerne **Bekreft før sletting**. Behandle likevel permanente slettinger med forsiktighet, siden de ikke kan angres.
+- **Standardoppførsel for F8.** Normalt flytter F8 elementer til Papirkurven. Hvis du foretrekker at F8 sletter permanent som standard, fjerner du haken for **Slett til papirkurv** på siden **Konfigurasjon > Innstillinger… > Bekreftelse**. Shift+F8 sletter alltid permanent uavhengig av denne innstillingen.
 - **Sletting inne i arkiver.** Når du blar inne i et støttet arkiv, fjerner sletting de valgte oppføringene fra arkivet. Skrivebeskyttede plasseringer, som noen nettverks- eller programtilleggsmapper, kan ikke endres på denne måten.
 - **Mapper.** Sletting av en mappe fjerner alt inni den. Sørg for at du har merket de rette elementene før du bekrefter, spesielt for en permanent sletting.

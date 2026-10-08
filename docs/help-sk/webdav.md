@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Server WebDAV — Nextcloud, ownCloud, Synology, univerzitné úložisko — sa dá prechádzať v paneli ako každý priečinok. Zvoľte **Pripojiť WebDAV…** v ponuke Sieť, zadajte URL a server sa objaví v aktívnom paneli.
 
-Je to plugin: môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Pluginy…**.
+Je to plugin: môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Spravovať zásuvné moduly…**.
 
 ## Pripojenie
 

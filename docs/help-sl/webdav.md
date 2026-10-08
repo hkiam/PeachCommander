@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Strežnik WebDAV — Nextcloud, ownCloud, Synology, univerzitetna shramba — lahko prebrskate v plošči kot vsako mapo. Izberite **Povezava WebDAV…** v meniju Omrežje, navedite naslov URL in strežnik se pojavi v dejavni plošči.
 
-To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Vtičniki…**.
+To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Povezovanje
 

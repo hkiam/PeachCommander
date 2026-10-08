@@ -26,11 +26,11 @@ Okno ma następujące strony, w kolejności:
 - **Układ** — pokaż lub ukryj pasek dysków, pasek kart, pasek ścieżki i pasek stanu oraz wybierz, które strony oferuje panel boczny.
 - **Wyświetlanie** — jak wymieniane są pliki i foldery, w tym format daty.
 - **Ikony** — wygląd ikon na listach plików.
-- **Operacja** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).
+- **Operacja** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń) oraz czy kopie są weryfikowane sumą kontrolną.
 - **Kolory** — niestandardowe kolory paneli, lub pozostaw je podążające za bieżącym motywem.
-- **Potwierdzenie** — które akcje najpierw proszą o potwierdzenie, jak usuwanie.
+- **Potwierdzenie** — które akcje najpierw proszą o potwierdzenie, jak usuwanie, oraz czy usuwanie przenosi elementy do Kosza.
 - **Edytuj/Wyświetl** — czy zapis w edytorze zachowuje kopię zapasową `.bak`, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.
-- **Kopiuj/Usuń** — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.
+- **Kopiuj/Usuń** — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki i ustaw opcjonalny limit prędkości.
 - **Zip/Pakowanie** — domyślny format archiwum i poziom kompresji używane przy pakowaniu.
 - **Wtyczki** — włącz lub wyłącz zainstalowane wtyczki.
 - **Karty** — jak otwierają się i zachowują karty folderów.
@@ -52,7 +52,7 @@ Włączone wtyczki mogą dodawać własne strony po wbudowanych — na przykład
 
 Twoja konfiguracja jest przechowywana w plikach zwykłego tekstu wewnątrz Twojego osobistego folderu Application Support, w `~/Library/Application Support/PeachCommander`. Aby go otworzyć, przejdź do strony **Różne** i kliknij **Otwórz folder konfiguracji**. Zapisane hasła FTP nie są przechowywane w tych plikach; są bezpiecznie przechowywane w pęku kluczy macOS.
 
-Ustawienia są zapisywane w miarę ich zmiany. Możesz również wymusić zapis w dowolnej chwili za pomocą **Konfiguracja > Zapisz ustawienia** oraz zapisać bieżące położenie okna i układ paneli za pomocą **Konfiguracja > Zapisz położenie**.
+Ustawienia są zapisywane w miarę ich zmiany; nie trzeba niczego zapisywać ręcznie.
 
 ## Przeniesienie ustawień z Total Commandera
 

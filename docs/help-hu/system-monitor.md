@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-A System Monitor bővítmény a Mac tevékenységének valós idejű kijelzését helyezi közvetlenül az ablak címsorába: kis chipek a processzorhoz, memóriához, lemezhez, hálózathoz, és — ahol a hardver közzéteszi őket — GPU-hoz, akkumulátorhoz és érzékelőkhöz. Minden chip másodpercenként egyszer frissül; kattintson egyre egy előugró ablakért, amely egy előzménygrafikont és részletes bontást mutat. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények…** menüpontból engedélyezheti, konfigurálhatja vagy eltávolíthatja.
+A System Monitor bővítmény a Mac tevékenységének valós idejű kijelzését helyezi közvetlenül az ablak címsorába: kis chipek a processzorhoz, memóriához, lemezhez, hálózathoz, és — ahol a hardver közzéteszi őket — GPU-hoz, akkumulátorhoz és érzékelőkhöz. Minden chip másodpercenként egyszer frissül; kattintson egyre egy előugró ablakért, amely egy előzménygrafikont és részletes bontást mutat. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények kezelése…** menüpontból engedélyezheti, konfigurálhatja vagy eltávolíthatja.
 
 ## A címsor chipjei
 
@@ -24,7 +24,7 @@ Kattintson egy chipre egy előugró ablak megnyitásához, amelyben a nagy aktu�
 
 ## Konfigurálás
 
-Válassza a **Parancsok ▸ System Monitor…** lehetőséget (vagy nyissa meg a **Konfiguráció ▸ Beállítások ▸ System Monitor** oldalt) a kijelzés konfigurálásához:
+Válassza a **Parancsok ▸ System Monitor…** lehetőséget (vagy nyissa meg a **Konfiguráció ▸ Beállítások… ▸ System Monitor** oldalt) a kijelzés konfigurálásához:
 
 - **Rendszermonitor megjelenítése a címsorban** — a chipek fő be/ki kapcsolója.
 - **Profil** — *Minimális*, *Közepes* vagy *Maximális* előbeállítások, amelyek a modulok ésszerű készletét választják ki.

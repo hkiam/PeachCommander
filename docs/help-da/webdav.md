@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 En WebDAV-server — Nextcloud, ownCloud, en Synology, et universitets fillager — kan gennemses i et panel som enhver anden mappe. Vælg **Forbind via WebDAV…** i menuen Netværk, angiv en URL, og serveren dukker op i det aktive panel.
 
-Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**.
+Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Administrer plugins…**.
 
 ## At forbinde
 

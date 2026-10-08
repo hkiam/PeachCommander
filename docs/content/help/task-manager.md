@@ -7,7 +7,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-The Task Manager plugin turns the running processes on your Mac into a folder you can browse. It appears as a **TaskManager** drive in the drive bar; open it and every process is a row you can sort, inspect like a file, or end — using the same keys you already use for files. It's a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
+The Task Manager plugin turns the running processes on your Mac into a folder you can browse. It appears as a **TaskManager** drive in the drive bar; open it and every process is a row you can sort, inspect like a file, or end — using the same keys you already use for files. It's a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## Open it
 

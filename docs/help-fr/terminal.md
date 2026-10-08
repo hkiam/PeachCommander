@@ -10,7 +10,7 @@ Peach Commander peut faire tourner un vrai shell dans sa propre fenêtre, dans u
 
 Ce n’est pas la même chose que **Ouvrir un terminal ici**, qui lance l’app Terminal d’Apple dans le dossier courant et vous laisse avec deux fenêtres. Celui-ci reste là où sont vos fichiers, et il les connaît.
 
-C’est une extension : si vous n’en voulez pas, désactivez-la ou supprimez-la dans **Configuration ▸ Extensions…**, et le dock s’en va avec elle.
+C’est une extension : si vous n’en voulez pas, désactivez-la ou supprimez-la dans **Configuration ▸ Gérer les modules externes…**, et le dock s’en va avec elle.
 
 ![Le terminal intégré, ancré sous les deux panneaux de fichiers](screenshots/terminal.png)
 *(Figure : le shell s’exécute dans le dossier affiché par le panneau actif.)*
@@ -38,7 +38,7 @@ Tant que le terminal a le focus, les **touches de fonction lui reviennent**, pas
 
 Sur la plupart des claviers hors des États-Unis, `@`, `~`, `|`, `\` et les accolades se tapent avec la touche Option. Ces frappes atteignent le shell sous la forme des caractères imprimés sur les touches.
 
-- L'autre possibilité est de traiter Option comme la touche Méta, ce qu'attendent Alt+B, Alt+F et les raccourcis Emacs : le terminal envoie alors Échap avant la touche au lieu du caractère. Activez-la sous **Configuration ▸ Modules ▸ Terminal** avec **Utiliser Option comme touche Méta**.
+- L'autre possibilité est de traiter Option comme la touche Méta, ce qu'attendent Alt+B, Alt+F et les raccourcis Emacs : le terminal envoie alors Échap avant la touche au lieu du caractère. Activez-la sous **Configuration ▸ Réglages… ▸ Terminal** avec **Utiliser Option comme touche Méta**.
 - Le changement s'applique aussitôt, aux terminaux déjà ouverts comme aux nouveaux.
 
 ## Le pont vers le panneau

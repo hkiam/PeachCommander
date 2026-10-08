@@ -11,7 +11,7 @@ An S3 bucket can be browsed in a panel like any folder. Choose **Amazon S3 Conne
 
 It works with Amazon S3 and with anything that speaks the same protocol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 and DigitalOcean Spaces are all reachable.
 
-It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
+It is a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## Connecting
 

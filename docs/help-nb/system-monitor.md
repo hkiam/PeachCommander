@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-System Monitor-programtillegget plasserer en sanntidsavlesning av Mac-ens aktivitet rett i vinduets tittellinje: små brikker for CPU, minne, disk, nettverk og – der maskinvaren avslører dem – GPU, batteri og sensorer. Hver brikke oppdateres én gang i sekundet; klikk på en for et sprettoppvindu med en historikkgraf og en detaljert oversikt. Det er et programtillegg, så du kan aktivere, konfigurere eller fjerne det i **Konfigurasjon ▸ Programtillegg…**.
+System Monitor-programtillegget plasserer en sanntidsavlesning av Mac-ens aktivitet rett i vinduets tittellinje: små brikker for CPU, minne, disk, nettverk og – der maskinvaren avslører dem – GPU, batteri og sensorer. Hver brikke oppdateres én gang i sekundet; klikk på en for et sprettoppvindu med en historikkgraf og en detaljert oversikt. Det er et programtillegg, så du kan aktivere, konfigurere eller fjerne det i **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Brikkene i tittellinjen
 
@@ -24,7 +24,7 @@ Klikk på en brikke for å åpne et sprettoppvindu med den store gjeldende verdi
 
 ## Konfigurer det
 
-Velg **Kommandoer ▸ System Monitor…** (eller åpne **Konfigurasjon ▸ Innstillinger ▸ System Monitor**) for å konfigurere avlesningen:
+Velg **Kommandoer ▸ System Monitor…** (eller åpne **Konfigurasjon ▸ Innstillinger… ▸ System Monitor**) for å konfigurere avlesningen:
 
 - **Vis systemovervåker i tittellinjen** – hovedbryteren av/på for brikkene.
 - **Profil** – forhåndsinnstillingene *Minimal*, *Medium* eller *Maksimal* som velger et fornuftig sett med moduler.

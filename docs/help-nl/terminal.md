@@ -10,7 +10,7 @@ Peach Commander kan een echte shell in zijn eigen venster draaien, in een strook
 
 Dit is niet hetzelfde als **Open Terminal hier**, dat Apple's Terminal-app in de huidige map start en u met twee vensters achterlaat. De ingebouwde blijft waar uw bestanden zijn, en weet ervan.
 
-Het is een plug-in: wilt u hem niet, schakel hem dan uit of verwijder hem via **Configuratie ▸ Plug-ins…**, en het dock gaat mee.
+Het is een plug-in: wilt u hem niet, schakel hem dan uit of verwijder hem via **Configuratie ▸ Plug-ins beheren…**, en het dock gaat mee.
 
 ![De ingebouwde terminal, vastgezet onder de twee bestandspanelen](screenshots/terminal.png)
 *(Afbeelding: de shell draait in de map die het actieve paneel toont.)*
@@ -38,7 +38,7 @@ Zolang de terminal de focus heeft, gaan de **functietoetsen daarheen**, niet naa
 
 Op de meeste toetsenborden buiten de Verenigde Staten worden `@`, `~`, `|`, `\` en de accolades met de Option-toets getypt. Die aanslagen bereiken de shell als de tekens die op de toetsen staan.
 
-- Het alternatief is Option als Meta-toets te behandelen, wat Alt+B, Alt+F en de Emacs-toetsbindingen willen: de terminal stuurt dan Esc vóór de toets in plaats van het teken. Zet het aan onder **Configuratie ▸ Plug-ins ▸ Terminal** met **Option gebruiken als Meta-toets**.
+- Het alternatief is Option als Meta-toets te behandelen, wat Alt+B, Alt+F en de Emacs-toetsbindingen willen: de terminal stuurt dan Esc vóór de toets in plaats van het teken. Zet het aan onder **Configuratie ▸ Instellingen… ▸ Terminal** met **Option gebruiken als Meta-toets**.
 - De wijziging werkt meteen, ook voor terminals die al open staan en niet alleen voor nieuwe.
 
 ## De brug terug naar het paneel

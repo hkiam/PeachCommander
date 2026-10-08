@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 System plików kontenera Dockera można przeglądać w panelu jak każdy folder, a wolumen Dockera tak samo. Wybierz **Połącz z Dockerem…** z menu Sieć albo kliknij przycisk **Docker** na pasku napędów, a silnik pojawi się w aktywnym panelu.
 
-To wtyczka i **jest dostarczana wyłączona**. Włącz ją w **Konfiguracja ▸ Wtyczki…**. Startuje wyłączona, ponieważ połączenie z demonem Dockera ma na Twoim Macu te same uprawnienia co Ty — zobacz *Do czego ma dostęp* poniżej.
+To wtyczka i **jest dostarczana wyłączona**. Włącz ją w **Konfiguracja ▸ Zarządzaj wtyczkami…**. Startuje wyłączona, ponieważ połączenie z demonem Dockera ma na Twoim Macu te same uprawnienia co Ty — zobacz *Do czego ma dostęp* poniżej.
 
 ## Co widzisz
 
@@ -83,7 +83,7 @@ Pozycje pojawiają się wyłącznie wewnątrz napędu Dockera; nad własnym fold
 
 ## Ustawienia
 
-**Konfiguracja ▸ Ustawienia ▸ Docker** zawiera to wszystko. Te same wartości leżą w małym pliku w `~/Library/Application Support/PeachCommander/Docker/docker.ini`, który edytujesz, gdy przygotowujesz maszynę skryptem:
+**Konfiguracja ▸ Ustawienia… ▸ Docker** zawiera to wszystko. Te same wartości leżą w małym pliku w `~/Library/Application Support/PeachCommander/Docker/docker.ini`, który edytujesz, gdy przygotowujesz maszynę skryptem:
 
 - `Endpoint` — adres używany zamiast znalezionego.
 - `ExecFallback` — `0` sprawia, że wtyczka używa wyłącznie archiwalnego API Dockera: nigdy wtedy niczego nie uruchamia w kontenerze, kosztem niemożności wypisania bardzo dużego katalogu, usunięcia i zmiany nazwy.

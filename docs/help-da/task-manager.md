@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Task Manager-pluginet gør de kørende processer på din Mac til en mappe, du kan gennemse. Det vises som et **TaskManager**-drev i drevlinjen; åbn det, og hver proces er en række, du kan sortere, granske som en fil eller afslutte — med de samme taster, du allerede bruger til filer. Det er et plugin, så du kan slå det fra eller fjerne det i **Konfiguration ▸ Plugins…**.
+Task Manager-pluginet gør de kørende processer på din Mac til en mappe, du kan gennemse. Det vises som et **TaskManager**-drev i drevlinjen; åbn det, og hver proces er en række, du kan sortere, granske som en fil eller afslutte — med de samme taster, du allerede bruger til filer. Det er et plugin, så du kan slå det fra eller fjerne det i **Konfiguration ▸ Administrer plugins…**.
 
 ## Åbn det
 

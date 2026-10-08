@@ -17,7 +17,7 @@ Gdy folder zawiera setki elementów, rzadko musisz przewijać. Peach Commander p
 5. Backspace cofa ostatnią literę, a Esc kończy wyszukiwanie. Backspace edytuje tylko trwające wyszukiwanie; poza nim nadal przechodzi do folderu nadrzędnego.
 6. Wpisany tekst czyści się po krótkiej pauzie, więc możesz w dowolnej chwili rozpocząć nowe wyszukiwanie.
 
-Domyślnie zwykłe litery trafiają do wiersza poleceń, a szybkie wyszukiwanie jest uruchamiane skrótem Ctrl+Option+litera (klasyczne zachowanie). Możesz przełączyć szybkie wyszukiwanie tak, aby zamiast tego reagowało na zwykłe pisanie, lub wyłączyć je w ustawieniach Konfiguracji.
+Domyślnie zwykłe litery trafiają do wiersza poleceń, a szybkie wyszukiwanie jest uruchamiane skrótem Ctrl+Option+litera (klasyczne zachowanie). Możesz przełączyć szybkie wyszukiwanie tak, aby zamiast tego reagowało na zwykłe pisanie, lub wyłączyć je na stronie **Operacja** w **Konfiguracja ▸ Ustawienia…**.
 
 ## Filtrowanie listy (szybki filtr)
 

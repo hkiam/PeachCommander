@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-El complemento System Monitor coloca una lectura en tiempo real de la actividad de su Mac directamente en la barra de título de la ventana: pequeñas fichas para CPU, memoria, disco, red y —donde el hardware las expone— GPU, batería y sensores. Cada ficha se actualiza una vez por segundo; haga clic en una para obtener una ventana emergente con un gráfico de historial y un desglose detallado. Al ser un complemento, puede activarlo, configurarlo o eliminarlo desde **Configuración ▸ Complementos…**.
+El complemento System Monitor coloca una lectura en tiempo real de la actividad de su Mac directamente en la barra de título de la ventana: pequeñas fichas para CPU, memoria, disco, red y —donde el hardware las expone— GPU, batería y sensores. Cada ficha se actualiza una vez por segundo; haga clic en una para obtener una ventana emergente con un gráfico de historial y un desglose detallado. Al ser un complemento, puede activarlo, configurarlo o eliminarlo desde **Configuración ▸ Gestionar plugins…**.
 
 ## Las fichas de la barra de título
 
@@ -24,7 +24,7 @@ Haga clic en una ficha para abrir una ventana emergente con el valor actual en g
 
 ## Configurarlo
 
-Elija **Comandos ▸ System Monitor…** (o abra **Configuración ▸ Ajustes ▸ System Monitor**) para configurar la lectura:
+Elija **Comandos ▸ System Monitor…** (o abra **Configuración ▸ Ajustes… ▸ System Monitor**) para configurar la lectura:
 
 - **Mostrar el monitor del sistema en la barra de título** — el interruptor principal de las fichas.
 - **Perfil** — los preajustes *Mínimo*, *Medio* o *Máximo*, que eligen un conjunto sensato de módulos.

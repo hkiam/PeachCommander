@@ -10,7 +10,7 @@ related: [plugins, webdav, ftp-and-sftp, copying-files]
 
 Работает с Amazon S3 и со всем, что говорит на том же протоколе: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 и DigitalOcean Spaces доступны.
 
-Это плагин, поэтому его можно отключить или удалить в **Конфигурация ▸ Плагины…**.
+Это плагин, поэтому его можно отключить или удалить в **Конфигурация ▸ Управление плагинами…**.
 
 ## Подключение
 

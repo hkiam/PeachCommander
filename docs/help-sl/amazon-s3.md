@@ -10,7 +10,7 @@ Vedro S3 lahko v podoknu brskate kot vsako mapo. Izberite **Poveži z Amazon S3�
 
 Deluje z Amazon S3 in z vsem, kar govori isti protokol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 in DigitalOcean Spaces so dosegljivi.
 
-Je vtičnik, zato ga lahko izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
+Je vtičnik, zato ga lahko izklopite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Povezovanje
 

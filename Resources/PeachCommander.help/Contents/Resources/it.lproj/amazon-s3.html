@@ -12,7 +12,7 @@
 <h1>Amazon S3 e storage compatibili con S3</h1>
 <p>Un bucket S3 si può esplorare in un pannello come qualsiasi cartella. Scegli <strong>Connetti ad Amazon S3…</strong> dal menu Rete, inserisci l’endpoint e le tue chiavi, e lo storage appare nel pannello attivo — con l’<strong>elenco dei bucket come livello superiore</strong> e ogni bucket come una normale directory sottostante.</p>
 <p>Funziona con Amazon S3 e con tutto ciò che parla lo stesso protocollo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 e DigitalOcean Spaces sono tutti raggiungibili.</p>
-<p>È un plugin, quindi puoi disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>.</p>
+<p>È un plugin, quindi puoi disattivarlo o rimuoverlo in <strong>Configurazione ▸ Gestisci plugin…</strong>.</p>
 <h2 id="connessione">Connessione</h2>
 <p>Il menu <strong>Servizio</strong> compila le due impostazioni che non si possono indovinare — se usare HTTPS e se l’endpoint richiede l’indirizzamento per percorso — e lascia a te l’endpoint, perché di solito dipende dal tuo account. Entrambe fallirebbero in un modo che sembra qualcos’altro: l’indirizzamento virtual-hosted verso un semplice indirizzo IP è un errore di risoluzione dei nomi, e l’indirizzamento per percorso verso Amazon è un «bucket inesistente» che si legge come un bucket mancante.</p>
 <p>La <strong>chiave di accesso segreta</strong> finisce nel <strong>Portachiavi</strong> tramite l’applicazione host, mai in un file di configurazione. Lascia il campo vuoto a una connessione successiva e verrà usata quella salvata.</p>

@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Pulse F3 sobre un archivo `.md` o `.html` y aparecerá con formato en lugar de como código fuente: títulos, listas, tablas, enlaces, listas de tareas y bloques de código coloreados según el lenguaje. Los diagramas escritos como bloques ` ```mermaid ` se dibujan, y las matemáticas escritas entre signos de dólar se componen.
 
-Esto es un plugin. Todo lo de esta página proviene de **Markdown and HTML**, que puede desactivar en **Configuración ▸ Plugins…** — más abajo se explica qué cambia si lo hace.
+Esto es un plugin. Todo lo de esta página proviene de **Markdown and HTML**, que puede desactivar en **Configuración ▸ Gestionar plugins…** — más abajo se explica qué cambia si lo hace.
 
 ## Dónde aparece la vista con formato
 
@@ -27,7 +27,7 @@ Un bloque de código cuyo lenguaje es `mermaid` se convierte en un diagrama; `$�
 
 Un documento sin diagramas ni fórmulas no carga ninguno de los dos motores, así que un README normal no cuesta nada adicional. Un diagrama que no se puede leer muestra el error donde estaba el bloque, con el texto del bloque debajo, en lugar de desaparecer.
 
-Ambos se pueden desactivar por separado en **Configuración ▸ Ajustes ▸ Markdown**, donde también se ve qué versión está en uso y de dónde viene.
+Ambos se pueden desactivar por separado en **Configuración ▸ Ajustes… ▸ Markdown**, donde también se ve qué versión está en uso y de dónde viene.
 
 ## Su propia versión
 
@@ -56,7 +56,7 @@ La página con formato está deliberadamente aislada, porque un archivo Markdown
 
 ## Desactivarlo
 
-Desactive el plugin en **Configuración ▸ Plugins…** y los archivos `.md` y `.html` se abrirán como texto. El esquema sigue funcionando, el coloreado de sintaxis sigue funcionando, y nada más cambia — simplemente ya no se ofrece la vista con formato. Lo mismo ocurre si en la página de ajustes del plugin solo desactiva la vista con formato.
+Desactive el plugin en **Configuración ▸ Gestionar plugins…** y los archivos `.md` y `.html` se abrirán como texto. El esquema sigue funcionando, el coloreado de sintaxis sigue funcionando, y nada más cambia — simplemente ya no se ofrece la vista con formato. Lo mismo ocurre si en la página de ajustes del plugin solo desactiva la vista con formato.
 
 ## Límites
 

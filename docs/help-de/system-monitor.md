@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Das System-Monitor-Plugin blendet eine Live-Anzeige der Aktivität Ihres Macs direkt in die Titelleiste des Fensters ein: kleine Chips für CPU, Speicher, Festplatte, Netzwerk und — sofern die Hardware sie bereitstellt — GPU, Batterie und Sensoren. Jeder Chip wird einmal pro Sekunde aktualisiert; klicken Sie auf einen, um ein Pop-up mit einem Verlaufsdiagramm und einer detaillierten Aufschlüsselung zu erhalten. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins…** aktivieren, konfigurieren oder entfernen.
+Das System-Monitor-Plugin blendet eine Live-Anzeige der Aktivität Ihres Macs direkt in die Titelleiste des Fensters ein: kleine Chips für CPU, Speicher, Festplatte, Netzwerk und — sofern die Hardware sie bereitstellt — GPU, Batterie und Sensoren. Jeder Chip wird einmal pro Sekunde aktualisiert; klicken Sie auf einen, um ein Pop-up mit einem Verlaufsdiagramm und einer detaillierten Aufschlüsselung zu erhalten. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins verwalten…** aktivieren, konfigurieren oder entfernen.
 
 ## Die Chips in der Titelleiste
 
@@ -24,7 +24,7 @@ Klicken Sie auf einen Chip, um ein Pop-up mit dem großen aktuellen Wert, einer 
 
 ## Konfigurieren
 
-Wählen Sie **Befehle ▸ System Monitor…** (oder öffnen Sie **Konfiguration ▸ Einstellungen ▸ System Monitor**), um die Anzeige zu konfigurieren:
+Wählen Sie **Befehle ▸ System Monitor…** (oder öffnen Sie **Konfiguration ▸ Einstellungen… ▸ System Monitor**), um die Anzeige zu konfigurieren:
 
 - **System-Monitor in Titelleiste anzeigen** — der Hauptschalter für die Chips.
 - **Profil** — die Voreinstellungen *Minimal*, *Mittel* oder *Maximal*, die eine sinnvolle Auswahl an Modulen treffen.

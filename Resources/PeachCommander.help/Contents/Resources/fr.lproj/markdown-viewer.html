@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Markdown et HTML dans la visionneuse</h1>
 <p>Appuyez sur F3 sur un fichier <code>.md</code> ou <code>.html</code> et il apparaît mis en forme plutôt qu'en source : titres, listes, tableaux, liens, listes de tâches et blocs de code colorés selon le langage. Les diagrammes écrits comme blocs <code>```mermaid</code> sont dessinés, et les mathématiques écrites entre signes dollar sont composées.</p>
-<p>C'est un plugin. Tout ce qui est décrit ici vient de <strong>Markdown and HTML</strong>, que vous pouvez désactiver dans <strong>Configuration ▸ Plugins…</strong> — voyez plus bas ce qui change alors.</p>
+<p>C'est un plugin. Tout ce qui est décrit ici vient de <strong>Markdown and HTML</strong>, que vous pouvez désactiver dans <strong>Configuration ▸ Gérer les modules externes…</strong> — voyez plus bas ce qui change alors.</p>
 <h2 id="ou-apparait-la-vue-mise-en-forme">Où apparaît la vue mise en forme</h2>
 <ul>
 <li><strong>La visionneuse (F3).</strong> La page mise en forme. Le menu <strong>Affichage</strong> propose toujours Texte, Code et Hex, la source est donc à un clic, et le nom du plugin figure aussi dans cette liste.</li>
@@ -24,7 +24,7 @@
 <h2 id="diagrammes-et-mathematiques">Diagrammes et mathématiques</h2>
 <p>Un bloc de code dont le langage est <code>mermaid</code> devient un diagramme ; <code>$…$</code> et <code>$$…$$</code> deviennent des mathématiques composées. Les deux sont dessinés <strong>sur votre Mac</strong>, par des moteurs livrés dans le plugin — rien n'est téléchargé, et aucune partie de votre document n'est envoyée où que ce soit. Un signe dollar dans un bloc de code ou du code en ligne reste un signe dollar.</p>
 <p>Un document sans diagramme ni formule ne charge aucun des deux moteurs : un README ordinaire ne coûte donc rien de plus. Un diagramme illisible affiche l'erreur là où le bloc se trouvait, avec le texte du bloc en dessous, au lieu de disparaître.</p>
-<p>Les deux peuvent être désactivés séparément dans <strong>Configuration ▸ Réglages ▸ Markdown</strong>, où l'on voit aussi quelle version est utilisée et d'où elle vient.</p>
+<p>Les deux peuvent être désactivés séparément dans <strong>Configuration ▸ Réglages… ▸ Markdown</strong>, où l'on voit aussi quelle version est utilisée et d'où elle vient.</p>
 <h2 id="votre-propre-version">Votre propre version</h2>
 <p>Si vous avez besoin d'une version plus récente ou différente de Mermaid ou de KaTeX, placez-la dans le dossier qu'ouvre le bouton <strong>Engine Folder…</strong> et elle sera utilisée à la place de celle fournie. Les noms de fichiers sont <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> et <code>auto-render.min.js</code>. Rien n'est jamais récupéré sur Internet pour vous.</p>
 <h2 id="creer-un-pdf">Créer un PDF</h2>
@@ -44,7 +44,7 @@
 <li><strong>Les scripts et le HTML du document ne s'exécutent jamais.</strong> Le HTML écrit dans un fichier Markdown est montré comme du texte, et un fichier <code>.html</code> est affiché avec les scripts désactivés.</li>
 </ul>
 <h2 id="le-desactiver">Le désactiver</h2>
-<p>Désactivez le plugin dans <strong>Configuration ▸ Plugins…</strong>, et les fichiers <code>.md</code> et <code>.html</code> s'ouvrent en texte. Le plan continue de fonctionner, la coloration syntaxique aussi, et rien d'autre ne change — la vue mise en forme n'est simplement plus proposée. Il en va de même si vous ne désactivez que la vue mise en forme sur la page de réglages du plugin.</p>
+<p>Désactivez le plugin dans <strong>Configuration ▸ Gérer les modules externes…</strong>, et les fichiers <code>.md</code> et <code>.html</code> s'ouvrent en texte. Le plan continue de fonctionner, la coloration syntaxique aussi, et rien d'autre ne change — la vue mise en forme n'est simplement plus proposée. Il en va de même si vous ne désactivez que la vue mise en forme sur la page de réglages du plugin.</p>
 <h2 id="limites">Limites</h2>
 <ul>
 <li>Les fichiers dépassant une taille limite (8 Mo par défaut, sur la page de réglages) s'ouvrent en texte. Transformer un très gros document généré en page mise en forme est lent, et la visionneuse de texte l'ouvre immédiatement.</li>

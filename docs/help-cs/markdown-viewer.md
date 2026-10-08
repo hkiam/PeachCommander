@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Stiskněte F3 na souboru `.md` nebo `.html` a zobrazí se formátovaný, ne jako zdrojový text: nadpisy, seznamy, tabulky, odkazy, seznamy úkolů a bloky kódu obarvené podle jazyka. Diagramy zapsané jako bloky ` ```mermaid ` se nakreslí a matematika mezi znaky dolaru se vysází.
 
-Toto je zásuvný modul. Vše na této stránce pochází z **Markdown and HTML**, který můžete vypnout v **Konfigurace ▸ Zásuvné moduly…** — níže je popsáno, co se pak změní.
+Toto je zásuvný modul. Vše na této stránce pochází z **Markdown and HTML**, který můžete vypnout v **Konfigurace ▸ Spravovat zásuvné moduly…** — níže je popsáno, co se pak změní.
 
 ## Kde se formátovaný pohled objeví
 
@@ -27,7 +27,7 @@ Blok kódu s jazykem `mermaid` se stane diagramem; `$…$` a `$$…$$` se stanou
 
 Dokument bez diagramu a bez formule nenačte ani jeden nástroj, obyčejný README tedy nestojí nic navíc. Diagram, který nelze přečíst, zobrazí chybu tam, kde blok byl, s jeho vlastním textem pod ní, místo aby zmizel.
 
-Obojí lze vypnout zvlášť v **Konfigurace ▸ Nastavení ▸ Markdown**, kde je také vidět, která verze se používá a odkud pochází.
+Obojí lze vypnout zvlášť v **Konfigurace ▸ Nastavení… ▸ Markdown**, kde je také vidět, která verze se používá a odkud pochází.
 
 ## Vaše vlastní verze
 
@@ -56,7 +56,7 @@ Formátovaná stránka je záměrně odříznutá, protože soubor Markdown je o
 
 ## Vypnutí
 
-Vypněte modul v **Konfigurace ▸ Zásuvné moduly…** a soubory `.md` a `.html` se otevřou jako text. Přehled dál funguje, barvení syntaxe dál funguje a nic jiného se nemění — formátovaný pohled se prostě už nenabízí. Totéž platí, pokud na stránce nastavení modulu vypnete jen formátovaný pohled.
+Vypněte modul v **Konfigurace ▸ Spravovat zásuvné moduly…** a soubory `.md` a `.html` se otevřou jako text. Přehled dál funguje, barvení syntaxe dál funguje a nic jiného se nemění — formátovaný pohled se prostě už nenabízí. Totéž platí, pokud na stránce nastavení modulu vypnete jen formátovaný pohled.
 
 ## Omezení
 

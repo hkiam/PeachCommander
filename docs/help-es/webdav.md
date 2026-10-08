@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Un servidor WebDAV —Nextcloud, ownCloud, un Synology, el almacenamiento de una universidad— se puede explorar en un panel como cualquier carpeta. Elige **Conectar por WebDAV…** en el menú Red, indica una URL y el servidor aparece en el panel activo.
 
-Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Plugins…**.
+Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Gestionar plugins…**.
 
 ## Conectar
 

@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Appuyez sur **F3** sur un fichier compilé et voyez du code source plutôt que des octets. Deux extensions le font — une pour Java (`.class`, `.jar`, `.apk`, `.dex`) et une pour .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — et elles se comportent de la même façon, d’où cette page commune. Chacune peut être désactivée ou supprimée séparément dans **Configuration ▸ Extensions…**.
+Appuyez sur **F3** sur un fichier compilé et voyez du code source plutôt que des octets. Deux extensions le font — une pour Java (`.class`, `.jar`, `.apk`, `.dex`) et une pour .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — et elles se comportent de la même façon, d’où cette page commune. Chacune peut être désactivée ou supprimée séparément dans **Configuration ▸ Gérer les modules externes…**.
 
 Une archive apparaît comme une arborescence de ses classes ; une classe seule apparaît comme un fichier. **Décompiler vers les sources** dans le menu Commandes écrit le résultat et le place dans un panneau, pour y chercher, comparer et copier comme dans n’importe quel dossier de sources.
 

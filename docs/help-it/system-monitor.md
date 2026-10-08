@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Il plugin System Monitor mette una lettura in tempo reale dell'attività del vostro Mac direttamente nella barra del titolo della finestra: piccoli chip per processore, memoria, disco, rete e — dove l'hardware li espone — GPU, batteria e sensori. Ogni chip si aggiorna una volta al secondo; fate clic su uno per una finestra a comparsa con un grafico della cronologia e un dettaglio approfondito. Trattandosi di un plugin, potete abilitarlo, configurarlo o rimuoverlo da **Configurazione ▸ Plugin…**.
+Il plugin System Monitor mette una lettura in tempo reale dell'attività del vostro Mac direttamente nella barra del titolo della finestra: piccoli chip per processore, memoria, disco, rete e — dove l'hardware li espone — GPU, batteria e sensori. Ogni chip si aggiorna una volta al secondo; fate clic su uno per una finestra a comparsa con un grafico della cronologia e un dettaglio approfondito. Trattandosi di un plugin, potete abilitarlo, configurarlo o rimuoverlo da **Configurazione ▸ Gestisci plugin…**.
 
 ## I chip nella barra del titolo
 
@@ -24,7 +24,7 @@ Fate clic su un chip per aprire una finestra a comparsa con il grande valore cor
 
 ## Configurarlo
 
-Scegliete **Comandi ▸ System Monitor…** (o aprite **Configurazione ▸ Impostazioni ▸ System Monitor**) per configurare la lettura:
+Scegliete **Comandi ▸ System Monitor…** (o aprite **Configurazione ▸ Impostazioni… ▸ System Monitor**) per configurare la lettura:
 
 - **Mostra il monitor di sistema nella barra del titolo** — l'interruttore principale per i chip.
 - **Profilo** — le preimpostazioni *Minimal*, *Medium* o *Maximal* che scelgono un insieme sensato di moduli.

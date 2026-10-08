@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Å dra en app til Papirkurven etterlater støttefilene, hurtiglagrene, innstillingene og beholderne dens spredt utover Library-mappene dine. Uninstaller-programtillegget fjerner et program **og** disse restene: det finner alt appen etterlot seg, viser deg listen med en størrelse for hvert element, og flytter alt til Papirkurven når du bekrefter. Det er et programtillegg, så du kan slå det av eller fjerne det i **Konfigurasjon ▸ Programtillegg…**.
+Å dra en app til Papirkurven etterlater støttefilene, hurtiglagrene, innstillingene og beholderne dens spredt utover Library-mappene dine. Uninstaller-programtillegget fjerner et program **og** disse restene: det finner alt appen etterlot seg, viser deg listen med en størrelse for hvert element, og flytter alt til Papirkurven når du bekrefter. Det er et programtillegg, så du kan slå det av eller fjerne det i **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Avinstaller en app under markøren
 

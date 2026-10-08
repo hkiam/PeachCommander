@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-System Monitor-insticksprogrammet placerar en avläsning i realtid av din Macs aktivitet direkt i fönstrets namnlist: små brickor för CPU, minne, disk, nätverk och — där maskinvaran exponerar dem — GPU, batteri och sensorer. Varje bricka uppdateras en gång i sekunden; klicka på en för ett popup-fönster med en historikgraf och en detaljerad uppdelning. Det är ett insticksprogram, så du kan aktivera, konfigurera eller ta bort det i **Konfiguration ▸ Insticksprogram…**.
+System Monitor-insticksprogrammet placerar en avläsning i realtid av din Macs aktivitet direkt i fönstrets namnlist: små brickor för CPU, minne, disk, nätverk och — där maskinvaran exponerar dem — GPU, batteri och sensorer. Varje bricka uppdateras en gång i sekunden; klicka på en för ett popup-fönster med en historikgraf och en detaljerad uppdelning. Det är ett insticksprogram, så du kan aktivera, konfigurera eller ta bort det i **Konfiguration ▸ Hantera plugin-program…**.
 
 ## Brickorna i namnlisten
 
@@ -24,7 +24,7 @@ Klicka på en bricka för att öppna ett popup-fönster med det stora aktuella v
 
 ## Konfigurera det
 
-Välj **Kommandon ▸ System Monitor…** (eller öppna **Konfiguration ▸ Inställningar ▸ System Monitor**) för att konfigurera avläsningen:
+Välj **Kommandon ▸ System Monitor…** (eller öppna **Konfiguration ▸ Inställningar… ▸ System Monitor**) för att konfigurera avläsningen:
 
 - **Visa systemövervakaren i namnlisten** — huvudströmbrytaren av/på för brickorna.
 - **Profil** — förinställningarna *Minimal*, *Medium* eller *Maximal* som väljer en rimlig uppsättning moduler.

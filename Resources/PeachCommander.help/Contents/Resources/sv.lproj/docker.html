@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker-containrar och -volymer</h1>
 <p>En Docker-containers filsystem kan bläddras i en panel som vilken mapp som helst, och det gäller även en Docker-volym. Välj <strong>Anslut till Docker…</strong> i menyn Nätverk, eller klicka på brickan <strong>Docker</strong> i enhetslisten, så visas motorn i den aktiva panelen.</p>
-<p>Det är ett insticksprogram och det <strong>levereras avstängt</strong>. Slå på det under <strong>Konfiguration ▸ Insticksprogram…</strong>. Det börjar avstängt eftersom en anslutning till Docker-tjänsten har samma rättigheter på din Mac som du själv — se <em>Vad det når</em> nedan.</p>
+<p>Det är ett insticksprogram och det <strong>levereras avstängt</strong>. Slå på det under <strong>Konfiguration ▸ Hantera plugin-program…</strong>. Det börjar avstängt eftersom en anslutning till Docker-tjänsten har samma rättigheter på din Mac som du själv — se <em>Vad det når</em> nedan.</p>
 <h2 id="vad-du-ser">Vad du ser</h2>
 <p>Den översta nivån är tre mappar:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls.</p>
 <p><strong>Loggen är också en fil.</strong> I roten av varje container ligger <code>docker-logs.txt</code> — som inte är en fil i containern: att läsa den ber motorn om loggen. F3 på den öppnar den i visaren, så dess sökning, hopp till en rad och val av teckenkodning gäller alla, vilket ett eget fönster inte kan ge. En container som verkligen har en fil med det namnet visar sin egen, och till den virtuella går det inte att skriva.</p>
 <h2 id="installningar">Inställningar</h2>
-<p><strong>Konfiguration ▸ Inställningar ▸ Docker</strong> innehåller allt detta. Samma värden finns i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som är den du redigerar om du sätter upp en maskin från ett skript:</p>
+<p><strong>Konfiguration ▸ Inställningar… ▸ Docker</strong> innehåller allt detta. Samma värden finns i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som är den du redigerar om du sätter upp en maskin från ett skript:</p>
 <ul>
 <li><code>Endpoint</code> — en adress att använda i stället för den som hittades.</li>
 <li><code>ExecFallback</code> — <code>0</code> gör att insticksprogrammet bara använder Dockers arkiv-API: det kör då aldrig något inuti en container, till priset av att inte kunna lista en mycket stor katalog, radera eller byta namn.</li>

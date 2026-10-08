@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Premi F3 su un file `.md` o `.html` e apparirà formattato invece che come sorgente: titoli, elenchi, tabelle, collegamenti, elenchi di attività e blocchi di codice colorati per linguaggio. I diagrammi scritti come blocchi ` ```mermaid ` vengono disegnati, e la matematica scritta tra segni di dollaro viene composta.
 
-Questo è un plugin. Tutto ciò che è descritto qui viene da **Markdown and HTML**, che puoi disattivare in **Configurazione ▸ Plugin…** — più sotto è spiegato cosa cambia.
+Questo è un plugin. Tutto ciò che è descritto qui viene da **Markdown and HTML**, che puoi disattivare in **Configurazione ▸ Gestisci plugin…** — più sotto è spiegato cosa cambia.
 
 ## Dove appare la vista formattata
 
@@ -27,7 +27,7 @@ Un blocco di codice il cui linguaggio è `mermaid` diventa un diagramma; `$…$`
 
 Un documento senza diagrammi né formule non carica nessuno dei due motori, quindi un normale README non costa nulla in più. Un diagramma che non può essere letto mostra l'errore dove si trovava il blocco, con il testo del blocco sotto, invece di scomparire.
 
-Entrambi possono essere disattivati separatamente in **Configurazione ▸ Impostazioni ▸ Markdown**, dove si vede anche quale versione è in uso e da dove proviene.
+Entrambi possono essere disattivati separatamente in **Configurazione ▸ Impostazioni… ▸ Markdown**, dove si vede anche quale versione è in uso e da dove proviene.
 
 ## La tua versione
 
@@ -56,7 +56,7 @@ La pagina formattata è deliberatamente isolata, perché un file Markdown è con
 
 ## Disattivarlo
 
-Disattiva il plugin in **Configurazione ▸ Plugin…** e i file `.md` e `.html` si apriranno come testo. La struttura continua a funzionare, la colorazione della sintassi continua a funzionare, e nulla altro cambia — la vista formattata semplicemente non viene più offerta. Lo stesso vale se nella pagina delle impostazioni del plugin disattivi solo la vista formattata.
+Disattiva il plugin in **Configurazione ▸ Gestisci plugin…** e i file `.md` e `.html` si apriranno come testo. La struttura continua a funzionare, la colorazione della sintassi continua a funzionare, e nulla altro cambia — la vista formattata semplicemente non viene più offerta. Lo stesso vale se nella pagina delle impostazioni del plugin disattivi solo la vista formattata.
 
 ## Limiti
 

@@ -63,7 +63,7 @@ Druga smer: vaš skript, ki ga zaganja Peach Commander.
 
 To je vstavek in je dobavljen **izklopljen**, ker zagon programa po vaši izbiri zmore vse, kar zmore preostanek aplikacije, in več stvari, ki jih nič od tega ne pokriva. Dva stikala, obe izklopljeni, dokler jih ne nastavite:
 
-1. **Konfiguracija ▸ Vstavki…** — vklopite **Scripting**.
+1. **Konfiguracija ▸ Upravljaj vtičnike…** — vklopite **Scripting**.
 2. **Nastavitve ▸ UI** — vklopite **Dovoli izvajanje skriptov**. Na tej strani je zato, ker gre za enako vrsto dovoljenja kot pri lupini pomočnika, in oboje sodi skupaj.
 
 Nato postavite skript v `scripts/` znotraj svoje nastavitvene mape — **Ukazi ▸ Odpri mapo skriptov** vas pripelje tja in prvič tam pusti primer. Datoteka `.applescript`, `.scpt` ali `.jxa` v tej mapi *je* skript; ni ničesar za prijaviti.

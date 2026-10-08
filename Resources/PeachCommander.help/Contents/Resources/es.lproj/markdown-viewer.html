@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Markdown y HTML en el visor</h1>
 <p>Pulse F3 sobre un archivo <code>.md</code> o <code>.html</code> y aparecerá con formato en lugar de como código fuente: títulos, listas, tablas, enlaces, listas de tareas y bloques de código coloreados según el lenguaje. Los diagramas escritos como bloques <code>```mermaid</code> se dibujan, y las matemáticas escritas entre signos de dólar se componen.</p>
-<p>Esto es un plugin. Todo lo de esta página proviene de <strong>Markdown and HTML</strong>, que puede desactivar en <strong>Configuración ▸ Plugins…</strong> — más abajo se explica qué cambia si lo hace.</p>
+<p>Esto es un plugin. Todo lo de esta página proviene de <strong>Markdown and HTML</strong>, que puede desactivar en <strong>Configuración ▸ Gestionar plugins…</strong> — más abajo se explica qué cambia si lo hace.</p>
 <h2 id="donde-aparece-la-vista-con-formato">Dónde aparece la vista con formato</h2>
 <ul>
 <li><strong>El visor (F3).</strong> La página con formato. El menú <strong>Vista</strong> sigue ofreciendo Texto, Código y Hex, así que el código fuente está a un clic, y el nombre del plugin también figura en esa lista.</li>
@@ -24,7 +24,7 @@
 <h2 id="diagramas-y-matematicas">Diagramas y matemáticas</h2>
 <p>Un bloque de código cuyo lenguaje es <code>mermaid</code> se convierte en un diagrama; <code>$…$</code> y <code>$$…$$</code> se convierten en matemáticas compuestas. Ambos se dibujan <strong>en su Mac</strong>, con motores que vienen dentro del plugin — no se descarga nada, y ninguna parte de su documento se envía a ningún sitio. Un signo de dólar dentro de un bloque de código o de código en línea sigue siendo un signo de dólar.</p>
 <p>Un documento sin diagramas ni fórmulas no carga ninguno de los dos motores, así que un README normal no cuesta nada adicional. Un diagrama que no se puede leer muestra el error donde estaba el bloque, con el texto del bloque debajo, en lugar de desaparecer.</p>
-<p>Ambos se pueden desactivar por separado en <strong>Configuración ▸ Ajustes ▸ Markdown</strong>, donde también se ve qué versión está en uso y de dónde viene.</p>
+<p>Ambos se pueden desactivar por separado en <strong>Configuración ▸ Ajustes… ▸ Markdown</strong>, donde también se ve qué versión está en uso y de dónde viene.</p>
 <h2 id="su-propia-version">Su propia versión</h2>
 <p>Si necesita una versión más nueva o distinta de Mermaid o KaTeX, colóquela en la carpeta que abre el botón <strong>Engine Folder…</strong> y se usará en lugar de la incluida. Los nombres de archivo son <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> y <code>auto-render.min.js</code>. Nunca se descarga nada de internet en su nombre.</p>
 <h2 id="crear-un-pdf">Crear un PDF</h2>
@@ -44,7 +44,7 @@
 <li><strong>Los scripts y el HTML del documento nunca se ejecutan.</strong> El HTML escrito dentro de un archivo Markdown se muestra como texto, y un archivo <code>.html</code> se muestra con la ejecución de scripts desactivada.</li>
 </ul>
 <h2 id="desactivarlo">Desactivarlo</h2>
-<p>Desactive el plugin en <strong>Configuración ▸ Plugins…</strong> y los archivos <code>.md</code> y <code>.html</code> se abrirán como texto. El esquema sigue funcionando, el coloreado de sintaxis sigue funcionando, y nada más cambia — simplemente ya no se ofrece la vista con formato. Lo mismo ocurre si en la página de ajustes del plugin solo desactiva la vista con formato.</p>
+<p>Desactive el plugin en <strong>Configuración ▸ Gestionar plugins…</strong> y los archivos <code>.md</code> y <code>.html</code> se abrirán como texto. El esquema sigue funcionando, el coloreado de sintaxis sigue funcionando, y nada más cambia — simplemente ya no se ofrece la vista con formato. Lo mismo ocurre si en la página de ajustes del plugin solo desactiva la vista con formato.</p>
 <h2 id="limites">Límites</h2>
 <ul>
 <li>Los archivos por encima de un límite de tamaño (8 MB de forma predeterminada, en la página de ajustes) se abren como texto. Convertir un documento generado muy grande en una página con formato es lento, y el visor de texto lo abre de inmediato.</li>

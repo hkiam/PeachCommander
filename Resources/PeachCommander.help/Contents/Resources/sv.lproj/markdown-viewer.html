@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Markdown och HTML i visaren</h1>
 <p>Tryck F3 på en <code>.md</code>- eller <code>.html</code>-fil och den visas formaterad i stället för som källtext: rubriker, listor, tabeller, länkar, uppgiftslistor och kodblock färgade efter språk. Diagram skrivna som <code>```mermaid</code>-block ritas, och matematik skriven mellan dollartecken sätts.</p>
-<p>Det här är ett plugin. Allt på den här sidan kommer från <strong>Markdown and HTML</strong>, som du kan stänga av i <strong>Konfiguration ▸ Plugins…</strong> — längre ned står vad som då ändras.</p>
+<p>Det här är ett plugin. Allt på den här sidan kommer från <strong>Markdown and HTML</strong>, som du kan stänga av i <strong>Konfiguration ▸ Hantera plugin-program…</strong> — längre ned står vad som då ändras.</p>
 <h2 id="var-den-formaterade-vyn-visas">Var den formaterade vyn visas</h2>
 <ul>
 <li><strong>Visaren (F3).</strong> Den formaterade sidan. Menyn <strong>Vy</strong> erbjuder fortfarande Text, Kod och Hex, så källtexten är ett klick bort, och pluginets namn står också i listan.</li>
@@ -24,7 +24,7 @@
 <h2 id="diagram-och-matematik">Diagram och matematik</h2>
 <p>Ett kodblock med språket <code>mermaid</code> blir ett diagram; <code>$…$</code> och <code>$$…$$</code> blir satt matematik. Båda ritas <strong>på din Mac</strong>, av motorer som följer med i pluginet — inget laddas ned, och ingen del av ditt dokument skickas någonstans. Ett dollartecken inuti ett kodblock eller inline-kod förblir ett dollartecken.</p>
 <p>Ett dokument utan diagram och utan formel laddar ingen av motorerna, så en vanlig README kostar inget extra. Ett diagram som inte kan läsas visar felet där blocket stod, med blockets egen text under, i stället för att försvinna.</p>
-<p>Båda kan stängas av separat i <strong>Konfiguration ▸ Inställningar ▸ Markdown</strong>, där man också ser vilken version som används och varifrån den kommer.</p>
+<p>Båda kan stängas av separat i <strong>Konfiguration ▸ Inställningar… ▸ Markdown</strong>, där man också ser vilken version som används och varifrån den kommer.</p>
 <h2 id="din-egen-version">Din egen version</h2>
 <p>Behöver du en nyare eller annan version av Mermaid eller KaTeX, lägg den i mappen som knappen <strong>Engine Folder…</strong> öppnar, och den används i stället för den medföljande. Filnamnen är <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> och <code>auto-render.min.js</code>. Inget hämtas någonsin från internet för din räkning.</p>
 <h2 id="gora-en-pdf">Göra en PDF</h2>
@@ -44,7 +44,7 @@
 <li><strong>Dokumentets egna skript och HTML körs aldrig.</strong> HTML som står i en Markdown-fil visas som text, och en <code>.html</code>-fil visas med skript avstängda.</li>
 </ul>
 <h2 id="stanga-av-det">Stänga av det</h2>
-<p>Stäng av pluginet i <strong>Konfiguration ▸ Plugins…</strong>, och <code>.md</code>- och <code>.html</code>-filer öppnas som text. Översikten fungerar fortfarande, syntaxfärgningen fungerar fortfarande, och inget annat ändras — den formaterade vyn erbjuds bara inte. Detsamma gäller om du bara stänger av den formaterade vyn på pluginets inställningssida.</p>
+<p>Stäng av pluginet i <strong>Konfiguration ▸ Hantera plugin-program…</strong>, och <code>.md</code>- och <code>.html</code>-filer öppnas som text. Översikten fungerar fortfarande, syntaxfärgningen fungerar fortfarande, och inget annat ändras — den formaterade vyn erbjuds bara inte. Detsamma gäller om du bara stänger av den formaterade vyn på pluginets inställningssida.</p>
 <h2 id="granser">Gränser</h2>
 <ul>
 <li>Filer över en storleksgräns (8 MB som standard, på inställningssidan) öppnas som text i stället. Att göra ett mycket stort genererat dokument till en formaterad sida är långsamt, och textvisaren öppnar det direkt.</li>

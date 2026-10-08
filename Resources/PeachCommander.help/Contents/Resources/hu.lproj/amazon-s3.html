@@ -12,7 +12,7 @@
 <h1>Amazon S3 és S3-kompatibilis tárolók</h1>
 <p>Egy S3-bucket a panelen ugyanúgy böngészhető, mint bármelyik mappa. Válassza a <strong>Kapcsolódás az Amazon S3-hoz…</strong> parancsot a Hálózat menüből, adja meg a végpontot és a kulcsokat, és a tároló megjelenik az aktív panelen — a <strong>bucketek listájával a legfelső szinten</strong>, alatta pedig minden bucket egy közönséges könyvtárként.</p>
 <p>Működik az Amazon S3-mal és mindennel, ami ugyanezt a protokollt beszéli: a MinIO, a Ceph/RADOS Gateway, a Cloudflare R2, a Wasabi, a Backblaze B2 és a DigitalOcean Spaces mind elérhető.</p>
-<p>Bővítmény, tehát a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt kikapcsolható vagy eltávolítható.</p>
+<p>Bővítmény, tehát a <strong>Konfiguráció ▸ Bővítmények kezelése…</strong> alatt kikapcsolható vagy eltávolítható.</p>
 <h2 id="kapcsolodas">Kapcsolódás</h2>
 <p>A <strong>Szolgáltatás</strong> menü kitölti azt a két beállítást, amit nem lehet kitalálni — hogy HTTPS-t kell-e használni, és hogy a végpont igényel-e útvonal alapú címzést —, a végpontot magát viszont önre hagyja, mert az általában a fiókjától függ. Mindkét beállítás úgy hibázik, hogy másnak látszik: a virtuális gazdanév alapú címzés egy puszta IP-cím ellen névfeloldási hiba, az útvonal alapú címzés az Amazon ellen pedig „nincs ilyen bucket”, ami hiányzó bucketnek olvasható.</p>
 <p>A <strong>titkos hozzáférési kulcs</strong> a gazdaalkalmazáson keresztül a <strong>Kulcskarikára</strong> kerül, soha nem konfigurációs fájlba. Hagyja a mezőt egy későbbi kapcsolódásnál üresen, és a mentett kulcsot használja.</p>

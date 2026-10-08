@@ -35,7 +35,7 @@ Si algunos elementos no pueden eliminarse —por ejemplo, porque están bloquead
 
 ## Notas
 
-- **Confirmación.** De forma predeterminada, Peach Commander le pide confirmación antes de eliminar. Puede desactivarlo en **Configuración > Confirmación** desmarcando **Confirmar antes de eliminar**. Aun así, trate las eliminaciones permanentes con cuidado, ya que no pueden deshacerse.
-- **Comportamiento predeterminado de F8.** Normalmente, F8 mueve los elementos a la Papelera. Si prefiere que F8 elimine permanentemente de forma predeterminada, cambie la opción de eliminación en los ajustes de **Configuración > Operación**. Shift+F8 siempre elimina permanentemente, independientemente de este ajuste.
+- **Confirmación.** De forma predeterminada, Peach Commander le pide confirmación antes de eliminar. Puede desactivarlo en **Configuración > Ajustes… > Confirmación** desmarcando **Confirmar antes de eliminar**. Aun así, trate las eliminaciones permanentes con cuidado, ya que no pueden deshacerse.
+- **Comportamiento predeterminado de F8.** Normalmente, F8 mueve los elementos a la Papelera. Si prefiere que F8 elimine permanentemente de forma predeterminada, desmarque **Eliminar a la papelera** en la página **Configuración > Ajustes… > Confirmación**. Shift+F8 siempre elimina permanentemente, independientemente de este ajuste.
 - **Eliminar dentro de archivos comprimidos.** Cuando está examinando el interior de un archivo comprimido compatible, eliminar quita las entradas seleccionadas del archivo comprimido. Las ubicaciones de solo lectura, como algunas carpetas de red o de complementos, no pueden modificarse de esta manera.
 - **Carpetas.** Eliminar una carpeta quita todo lo que contiene. Asegúrese de haber seleccionado los elementos correctos antes de confirmar, especialmente en una eliminación permanente.

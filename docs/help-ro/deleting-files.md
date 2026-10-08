@@ -35,7 +35,7 @@ Dacă unele elemente nu pot fi eliminate — de exemplu pentru că sunt blocate 
 
 ## Note
 
-- **Confirmare.** În mod implicit, Peach Commander vă cere să confirmați înainte de a șterge. Puteți dezactiva aceasta în **Configurație > Confirmare** debifând **Confirmă înainte de ștergere**. Chiar și așa, tratați ștergerile definitive cu grijă, deoarece nu pot fi anulate.
-- **Comportamentul implicit al lui F8.** În mod normal, F8 mută elementele în Coșul de gunoi. Dacă preferați ca F8 să șteargă definitiv în mod implicit, modificați opțiunea de ștergere din setările **Configurație > Operațiune**. Shift+F8 șterge întotdeauna definitiv, indiferent de această setare.
+- **Confirmare.** În mod implicit, Peach Commander vă cere să confirmați înainte de a șterge. Puteți dezactiva aceasta în **Configurație > Configurări… > Confirmare** debifând **Confirmă înainte de ștergere**. Chiar și așa, tratați ștergerile definitive cu grijă, deoarece nu pot fi anulate.
+- **Comportamentul implicit al lui F8.** În mod normal, F8 mută elementele în Coșul de gunoi. Dacă preferați ca F8 să șteargă definitiv în mod implicit, debifați **Mută în Coș** pe pagina **Configurație > Configurări… > Confirmare**. Shift+F8 șterge întotdeauna definitiv, indiferent de această setare.
 - **Ștergerea în interiorul arhivelor.** Când navigați în interiorul unei arhive acceptate, ștergerea elimină intrările selectate din arhivă. Locațiile doar-citire, cum ar fi unele foldere de rețea sau de plugin, nu pot fi modificate în acest fel.
 - **Foldere.** Ștergerea unui folder elimină tot ce se află în el. Asigurați-vă că ați selectat elementele corecte înainte de a confirma, mai ales pentru o ștergere definitivă.

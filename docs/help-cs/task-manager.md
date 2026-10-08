@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Zásuvný modul Task Manager promění běžící procesy vašeho Macu ve složku, kterou můžete procházet. Objeví se jako disk **TaskManager** v liště disků; otevřete jej a každý proces je řádek, který můžete řadit, zkoumat jako soubor nebo ukončit — pomocí stejných kláves, jaké již používáte pro soubory. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce **Konfigurace ▸ Zásuvné moduly…**.
+Zásuvný modul Task Manager promění běžící procesy vašeho Macu ve složku, kterou můžete procházet. Objeví se jako disk **TaskManager** v liště disků; otevřete jej a každý proces je řádek, který můžete řadit, zkoumat jako soubor nebo ukončit — pomocí stejných kláves, jaké již používáte pro soubory. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce **Konfigurace ▸ Spravovat zásuvné moduly…**.
 
 ## Otevření
 

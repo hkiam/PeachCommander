@@ -37,7 +37,7 @@ Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină pro
 
 ## Activarea sau dezactivarea pluginurilor
 
-1. Alegeți Configurație ▸ Pluginuri… pentru a deschide fereastra de pluginuri.
+1. Alegeți Configurație ▸ Gestionează pluginurile… pentru a deschide fereastra de pluginuri.
 2. Fiecare plugin instalat apare în listă cu nume, tip și o casetă „Activat".
 3. Bifați sau debifați caseta pentru a activa sau dezactiva un plugin. Modificările intră în vigoare imediat — pluginurile activate își adaugă meniurile, coloanele și funcțiile; cele dezactivate stau deoparte.
 
@@ -50,8 +50,8 @@ Un plugin descărcat vine ca **pachet de plugin** — un fișier cu extensia `.p
 
 - **Faceți dublu clic pe el** în Finder. Peach Commander se deschide și întreabă.
 - **Apăsați Enter pe el** într-un panou. Peach Commander este un manager de fișiere — fișierul este de obicei deja acolo.
-- **Trageți-l pe fereastra de pluginuri** (Configurație ▸ Pluginuri…).
-- Alegeți **Configurație ▸ Pluginuri… ▸ Instalează…** și selectați pachetul, un `.zip` care conține un plugin sau un bundle de plugin dezarhivat.
+- **Trageți-l pe fereastra de pluginuri** (Configurație ▸ Gestionează pluginurile…).
+- Alegeți **Configurație ▸ Gestionează pluginurile… ▸ Instalează…** și selectați pachetul, un `.zip` care conține un plugin sau un bundle de plugin dezarhivat.
 
 Înainte să se încarce ceva, o fereastră de dialog indică numele, versiunea, identificatorul și tipul pluginului, precum și tipurile de fișiere pe care le va prelua — un plugin care revendică `.iso`, de exemplu, devine cititorul aplicației pentru acele fișiere. Nu se instalează nimic până nu apăsați **Instalează**.
 

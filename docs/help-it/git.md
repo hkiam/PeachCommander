@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Il plugin Git porta lo stato di un repository Git direttamente nel pannello dei file — nessuna applicazione a
 parte, nessun terminale. Aggiunge due colonne, un sottomenu **Git**, un pannello agganciato per preparare e
 committare, e finestre per la cronologia, il blame, i branch, i conflitti e il rebase. Usa il `git` già
-installato sul tuo Mac. È un plugin, quindi puoi disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**.
+installato sul tuo Mac. È un plugin, quindi puoi disattivarlo o rimuoverlo in **Configurazione ▸ Gestisci plugin…**.
 
 ## Che cosa aggiunge
 

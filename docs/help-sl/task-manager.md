@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Vtičnik Task Manager spremeni izvajajoče se procese na vašem Macu v mapo, po kateri lahko brskate. Pojavi se kot disk **TaskManager** v vrstici diskov; odprite ga in vsak proces je vrstica, ki jo lahko razvrstite, preučite kot datoteko ali končate — z istimi tipkami, ki jih že uporabljate za datoteke. Ker gre za vtičnik, ga lahko izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
+Vtičnik Task Manager spremeni izvajajoče se procese na vašem Macu v mapo, po kateri lahko brskate. Pojavi se kot disk **TaskManager** v vrstici diskov; odprite ga in vsak proces je vrstica, ki jo lahko razvrstite, preučite kot datoteko ali končate — z istimi tipkami, ki jih že uporabljate za datoteke. Ker gre za vtičnik, ga lahko izklopite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Odpiranje
 

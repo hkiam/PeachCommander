@@ -61,7 +61,7 @@ For at fjerne flere emner på én gang skal du bruge **Samleren**: højreklik �
 
 ## Indstillinger
 
-Diskkort tilføjer sin egen side til Indstillinger-vinduet (**Konfiguration ▸ Indstillinger ▸ Diskkort**):
+Diskkort tilføjer sin egen side til Indstillinger-vinduet (**Konfiguration ▸ Indstillinger… ▸ Diskkort**):
 
 - **Diagramstil** — trækort eller solstråle.
 - **Farvekodning** — efter filtype (kategori) eller efter størrelse (varmekort).

@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Přetažení aplikace do Koše ponechá její podpůrné soubory, mezipaměti, předvolby a kontejnery rozeseté po vašich složkách Library. Zásuvný modul Uninstaller odstraní aplikaci **i** tyto zbytky: najde vše, co po sobě aplikace zanechala, zobrazí vám seznam s velikostí u každé položky a po vašem potvrzení vše přesune do Koše. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce **Konfigurace ▸ Zásuvné moduly…**.
+Přetažení aplikace do Koše ponechá její podpůrné soubory, mezipaměti, předvolby a kontejnery rozeseté po vašich složkách Library. Zásuvný modul Uninstaller odstraní aplikaci **i** tyto zbytky: najde vše, co po sobě aplikace zanechala, zobrazí vám seznam s velikostí u každé položky a po vašem potvrzení vše přesune do Koše. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce **Konfigurace ▸ Spravovat zásuvné moduly…**.
 
 ## Odinstalování aplikace pod kurzorem
 

@@ -17,7 +17,7 @@ Lorsqu'un dossier contient des centaines d'éléments, vous n'avez que rarement 
 5. Appuyez sur Retour arrière pour reprendre la dernière lettre, ou sur Esc pour terminer la recherche. Retour arrière ne modifie que la recherche en cours ; le reste du temps, il remonte toujours au dossier parent.
 6. Le texte saisi s'efface après une courte pause, ce qui vous permet de lancer une nouvelle recherche à tout moment.
 
-Par défaut, les lettres simples vont dans la ligne de commande et la recherche rapide se déclenche avec Ctrl+Option+lettre (le comportement classique). Vous pouvez faire réagir la recherche rapide à la saisie simple, ou la désactiver, dans les réglages de Configuration.
+Par défaut, les lettres simples vont dans la ligne de commande et la recherche rapide se déclenche avec Ctrl+Option+lettre (le comportement classique). Vous pouvez faire réagir la recherche rapide à la saisie simple, ou la désactiver, sur la page **Opération** de **Configuration ▸ Réglages…**.
 
 ## Filtrer la liste (filtre rapide)
 

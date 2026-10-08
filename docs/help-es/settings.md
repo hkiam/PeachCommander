@@ -26,11 +26,11 @@ La ventana tiene estas páginas, en orden:
 - **Disposición** — muestra u oculta la barra de unidades, la barra de pestañas, la barra de ruta y la barra de estado, y elige qué páginas ofrece el panel lateral.
 - **Visualización** — cómo se listan los archivos y carpetas, incluido el formato de fecha.
 - **Iconos** — el aspecto de los iconos en las listas de archivos.
-- **Operación** — comportamiento general, como qué ocurre al escribir en un panel (búsqueda rápida frente a la línea de comandos).
+- **Operación** — comportamiento general, como qué ocurre al escribir en un panel (búsqueda rápida frente a la línea de comandos) y si las copias se verifican con una suma de comprobación.
 - **Colores** — colores de panel personalizados, o déjalos seguir el tema actual.
-- **Confirmación** — qué acciones piden confirmación primero, como eliminar.
+- **Confirmación** — qué acciones piden confirmación primero, como eliminar, y si eliminar mueve los elementos a la Papelera.
 - **Editar/Ver** — si al guardar en el editor se conserva una copia de seguridad `.bak`, los programas usados para editar y ver archivos, las asociaciones por tipo y cuánto puede costar una vista previa en ubicaciones de red y dentro de archivos comprimidos.
-- **Copiar/Eliminar** — conservar los metadatos de los archivos, usar clonado rápido, copiar solo archivos más nuevos, verificar tras copiar, enviar las eliminaciones a la Papelera y fijar un límite de velocidad opcional.
+- **Copiar/Eliminar** — conservar los metadatos de los archivos, usar clonado rápido, copiar solo archivos más nuevos y fijar un límite de velocidad opcional.
 - **Zip/Compresor** — el formato de archivo comprimido y el nivel de compresión por omisión al comprimir.
 - **Plugins** — activa o desactiva los complementos instalados.
 - **Pestañas** — cómo se abren y se comportan las pestañas de carpeta.
@@ -52,7 +52,7 @@ Los complementos activados pueden añadir sus propias páginas tras las integrad
 
 Tu configuración se guarda en archivos de texto plano dentro de tu carpeta Application Support personal, en `~/Library/Application Support/PeachCommander`. Para abrirla, ve a la página **Varios** y haz clic en **Abrir carpeta de configuración**. Las contraseñas de FTP guardadas no se almacenan en estos archivos; se guardan de forma segura en el llavero de macOS.
 
-Los ajustes se escriben a medida que los cambias. También puedes forzar un guardado en cualquier momento con **Configuración > Guardar ajustes**, y almacenar la posición actual de la ventana y la disposición de los paneles con **Configuración > Guardar posición**.
+Los ajustes se escriben a medida que los cambias; no hay nada que guardar a mano.
 
 ## Traer ajustes desde Total Commander
 

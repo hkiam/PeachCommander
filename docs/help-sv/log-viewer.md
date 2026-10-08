@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Sätt markören på en loggfil och välj **Visa som logg…** för att öppna den i ett fönster byggt för loggar i stället för för text: en rad per rad, nivån på varje rad igenkänd och färgad, ett filter, och en följning som håller jämna steg medan filen fortfarande skrivs.
 
-Det är ett tillägg: du kan stänga av det eller ta bort det under **Konfiguration ▸ Tillägg…**. Utan det visar F3 en logg som vilken annan textfil som helst.
+Det är ett tillägg: du kan stänga av det eller ta bort det under **Konfiguration ▸ Hantera plugin-program…**. Utan det visar F3 en logg som vilken annan textfil som helst.
 
 ![Loggvisaren med en tjänstelogg, varje nivå i sin egen färg](screenshots/log-viewer.png)
 *(Figur: varje nivå får sin egen färg, och vyn följer filen vidare.)*

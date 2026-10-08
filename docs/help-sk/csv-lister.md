@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Stlačte **F3** na súbore `.csv` alebo `.tsv` a otvorí sa ako skutočná tabuľka — stĺpce, záhlavie, zoraďovanie a filter — namiesto ako textové riadky s čiarkami.
 
-Je to plugin: môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Pluginy…**. Bez neho zobrazí F3 súbor ako obyčajný text, čo je pri malom súbore stále dobre čitateľné.
+Je to plugin: môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Spravovať zásuvné moduly…**. Bez neho zobrazí F3 súbor ako obyčajný text, čo je pri malom súbore stále dobre čitateľné.
 
 ## Oddeľovač sa zistí, nepredpokladá sa
 

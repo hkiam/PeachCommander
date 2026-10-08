@@ -37,7 +37,7 @@ De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv
 
 ## Slå plugins til eller fra
 
-1. Vælg Konfiguration ▸ Plugins… for at åbne pluginvinduet.
+1. Vælg Konfiguration ▸ Administrer plugins… for at åbne pluginvinduet.
 2. Hvert installeret plugin vises på listen med navn, type og et "Aktiveret"-afkrydsningsfelt.
 3. Markér eller fjern markeringen i feltet for at aktivere eller deaktivere et plugin. Ændringer træder i kraft med det samme — aktiverede plugins tilføjer deres menuer, kolonner og funktioner; deaktiverede holder sig væk.
 
@@ -50,8 +50,8 @@ Et plugin, du henter, kommer som en **pluginpakke** — en fil, der ender på `.
 
 - **Dobbeltklik på den** i Finder. Peach Commander åbner og spørger.
 - **Tryk Enter på den** i et panel. Peach Commander er en filhåndtering — filen ligger som regel allerede dér.
-- **Træk den til pluginvinduet** (Konfiguration ▸ Plugins…).
-- Vælg **Konfiguration ▸ Plugins… ▸ Installer…** og vælg pakken, en `.zip` med et plugin i, eller et udpakket pluginbundle.
+- **Træk den til pluginvinduet** (Konfiguration ▸ Administrer plugins…).
+- Vælg **Konfiguration ▸ Administrer plugins… ▸ Installer…** og vælg pakken, en `.zip` med et plugin i, eller et udpakket pluginbundle.
 
 Før noget som helst indlæses, viser en dialog pluginets navn, version, identifikator og type samt hvilke filtyper det overtager — et plugin, der kræver `.iso`, bliver appens læser for de filer. Intet installeres, før du klikker **Installer**.
 

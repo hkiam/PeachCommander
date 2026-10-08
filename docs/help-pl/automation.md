@@ -63,7 +63,7 @@ Druga strona: Twój skrypt, uruchamiany przez Peach Commandera.
 
 To wtyczka, i jest dostarczana **wyłączona**, bo uruchomienie wybranego programu potrafi wszystko, co potrafi reszta aplikacji, oraz kilka rzeczy, których nie obejmuje nic z niej. Dwa przełączniki, oba wyłączone, dopóki ich nie ustawisz:
 
-1. **Konfiguracja ▸ Wtyczki…** — włącz **Scripting**.
+1. **Konfiguracja ▸ Zarządzaj wtyczkami…** — włącz **Scripting**.
 2. **Ustawienia ▸ AI** — włącz **Zezwalaj na uruchamianie skryptów**. Jest na tej stronie, bo to ten sam rodzaj uprawnienia co powłoka asystenta, a te dwa idą w parze.
 
 Następnie umieść skrypt w `scripts/` w folderze konfiguracji — **Polecenia ▸ Otwórz folder skryptów** zaprowadzi Cię tam i za pierwszym razem zostawi przykład. Plik `.applescript`, `.scpt` lub `.jxa` w tym folderze *jest* skryptem; nie ma czego rejestrować.

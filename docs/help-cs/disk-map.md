@@ -61,7 +61,7 @@ K odstranění několika položek naráz použijte **Sběrač**: u každé polo�
 
 ## Nastavení
 
-Mapa disku přidává vlastní stránku do okna Nastavení (**Konfigurace ▸ Nastavení ▸ Mapa disku**):
+Mapa disku přidává vlastní stránku do okna Nastavení (**Konfigurace ▸ Nastavení… ▸ Mapa disku**):
 
 - **Styl grafu** — treemap nebo sunburst.
 - **Barevné kódování** — podle typu souboru (kategorie) nebo podle velikosti (teplotní mapa).

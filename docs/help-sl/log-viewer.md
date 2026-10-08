@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Postavite kazalec na datoteko dnevnika in izberite **Pokaži kot dnevnik…**, da se odpre v oknu, zgrajenem za dnevnike in ne za besedilo: ena vrstica na vrstico, raven vsake prepoznana in obarvana, filter in sledenje, ki drži korak, medtem ko se datoteka še zapisuje.
 
-To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Vtičniki…**. Brez njega F3 pokaže dnevnik tako kot vsako drugo besedilno datoteko.
+To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Upravljaj vtičnike…**. Brez njega F3 pokaže dnevnik tako kot vsako drugo besedilno datoteko.
 
 ![Pregledovalnik dnevnikov s storitvenim dnevnikom, vsaka raven v svoji barvi](screenshots/log-viewer.png)
 *(Slika: vsaka raven ima svojo barvo, pogled pa še naprej sledi datoteki.)*

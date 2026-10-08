@@ -37,7 +37,7 @@ De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:
 
 ## Plug-ins in- of uitschakelen
 
-1. Kies Configuratie ▸ Plug-ins… om het plug-invenster te openen.
+1. Kies Configuratie ▸ Plug-ins beheren… om het plug-invenster te openen.
 2. Elke geïnstalleerde plug-in verschijnt in de lijst met naam, type en een aankruisvak "Ingeschakeld".
 3. Vink het aan of uit om een plug-in in of uit te schakelen. Wijzigingen werken meteen — ingeschakelde plug-ins voegen hun menu's, kolommen en functies toe; uitgeschakelde blijven buiten beeld.
 
@@ -50,8 +50,8 @@ Een plug-in die je downloadt komt als **plug-inpakket** — een bestand dat eind
 
 - **Dubbelklik erop** in de Finder. Peach Commander opent en vraagt het je.
 - **Druk op Enter** erop in een paneel. Peach Commander is een bestandsbeheerder: daar staat het bestand meestal toch al.
-- **Sleep het naar het plug-invenster** (Configuratie ▸ Plug-ins…).
-- Kies **Configuratie ▸ Plug-ins… ▸ Installeren…** en kies het pakket, een `.zip` met een plug-in erin, of een uitgepakte plug-inbundel.
+- **Sleep het naar het plug-invenster** (Configuratie ▸ Plug-ins beheren…).
+- Kies **Configuratie ▸ Plug-ins beheren… ▸ Installeren…** en kies het pakket, een `.zip` met een plug-in erin, of een uitgepakte plug-inbundel.
 
 Voordat er iets wordt geladen, noemt een venster de naam, versie, identificatie en het type van de plug-in, en welke bestandstypen ze overneemt — een plug-in die `.iso` opeist, wordt de lezer van de app voor die bestanden. Er wordt niets geïnstalleerd tot je op **Installeren** klikt.
 

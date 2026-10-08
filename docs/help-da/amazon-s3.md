@@ -10,7 +10,7 @@ En S3-bucket kan gennemses i et panel som enhver anden mappe. Vælg **Forbind ti
 
 Det virker med Amazon S3 og med alt, der taler samme protokol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 og DigitalOcean Spaces kan alle nås.
 
-Det er et plugin, så du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**.
+Det er et plugin, så du kan slå det fra eller fjerne det under **Konfiguration ▸ Administrer plugins…**.
 
 ## Forbindelse
 

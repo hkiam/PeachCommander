@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Un server WebDAV — Nextcloud, ownCloud, un Synology, depozitul de fișiere al unei universități — poate fi răsfoit într-un panou ca orice dosar. Alegeți **Conectare WebDAV…** din meniul Rețea, dați un URL, iar serverul apare în panoul activ.
 
-Este o extensie: o puteți dezactiva sau elimina din **Configurație ▸ Extensii…**.
+Este o extensie: o puteți dezactiva sau elimina din **Configurație ▸ Gestionează pluginurile…**.
 
 ## Conectarea
 

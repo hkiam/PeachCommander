@@ -26,11 +26,11 @@ Okno ima te strani, po vrsti:
 - **Postavitev** — prikaži ali skrij vrstico diskov, vrstico zavihkov, vrstico poti in vrstico stanja ter izberi, katere strani ponuja stranski pladenj.
 - **Prikaz** — kako so našteti datoteke in mape, vključno z obliko datuma.
 - **Ikone** — videz ikon v seznamih datotek.
-- **Operacija** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).
+- **Operacija** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici) in ali se kopije preverjajo s kontrolno vsoto.
 - **Barve** — poljubne barve podoken, ali jih pustite slediti trenutni temi.
-- **Potrditev** — katera dejanja najprej prosijo za potrditev, kot je brisanje.
+- **Potrditev** — katera dejanja najprej prosijo za potrditev, kot je brisanje, in ali brisanje premakne elemente v Koš.
 - **Uredi/prikaži** — ali shranjevanje v urejevalniku ohrani varnostno kopijo `.bak`, programi, uporabljeni za urejanje in pregledovanje datotek, povezave po vrsti in koliko sme stati predogled na omrežnih mestih in v arhivih.
-- **Kopiranje/brisanje** — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke, preveri po kopiranju, pošlji brisanja v Koš in nastavi izbirno omejitev hitrosti.
+- **Kopiranje/brisanje** — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke in nastavi izbirno omejitev hitrosti.
 - **Zip/pakirnik** — privzeta oblika arhiva in raven stiskanja, uporabljena pri pakiranju.
 - **Vtičniki** — vklopi ali izklopi nameščene vtičnike.
 - **Zavihki** — kako se zavihki map odpirajo in obnašajo.
@@ -52,7 +52,7 @@ Omogočeni vtičniki lahko dodajo svoje strani za vgrajenimi — na primer **Zem
 
 Vaša konfiguracija je hranjena v datotekah navadnega besedila znotraj vaše osebne mape Application Support, na `~/Library/Application Support/PeachCommander`. Za odpiranje pojdite na stran **Razno** in kliknite **Odpri mapo konfiguracije**. Shranjena gesla FTP niso shranjena v teh datotekah; varno so hranjena v ključavnici macOS.
 
-Nastavitve se zapisujejo, ko jih spreminjate. Shranjevanje lahko tudi vsililite kadar koli z **Konfiguracija > Shrani nastavitve** ter shranite trenutni položaj okna in postavitev podoken z **Konfiguracija > Shrani položaj**.
+Nastavitve se zapisujejo, ko jih spreminjate; ročno ni treba shraniti ničesar.
 
 ## Prenos nastavitev iz Total Commander
 

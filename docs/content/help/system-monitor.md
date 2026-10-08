@@ -7,7 +7,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-The System Monitor plugin puts a live readout of your Mac's activity right in the window's title bar: small chips for CPU, memory, disk, network, and — where the hardware exposes them — GPU, battery, and sensors. Each chip updates once a second; click one for a pop-up with a history graph and a detailed breakdown. It's a plugin, so you can enable, configure, or remove it in **Configuration ▸ Plugins…**.
+The System Monitor plugin puts a live readout of your Mac's activity right in the window's title bar: small chips for CPU, memory, disk, network, and — where the hardware exposes them — GPU, battery, and sensors. Each chip updates once a second; click one for a pop-up with a history graph and a detailed breakdown. It's a plugin, so you can enable, configure, or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## The title-bar chips
 
@@ -25,7 +25,7 @@ Click a chip to open a pop-up with the big current value, a **HISTORY** sparklin
 
 ## Configure it
 
-Choose **Commands ▸ System Monitor…** (or open **Configuration ▸ Settings ▸ System Monitor**) to configure the readout:
+Choose **Commands ▸ System Monitor…** (or open **Configuration ▸ Settings… ▸ System Monitor**) to configure the readout:
 
 - **Show system monitor in title bar** — the master on/off for the chips.
 - **Profile** — *Minimal*, *Medium*, or *Maximal* presets that pick a sensible set of modules.

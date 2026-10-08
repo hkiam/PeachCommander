@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Le système de fichiers d’un conteneur Docker se parcourt dans un panneau comme n’importe quel dossier, et un volume Docker également. Choisissez **Se connecter à Docker…** dans le menu Réseau, ou cliquez sur la pastille **Docker** dans la barre de volumes, et le moteur apparaît dans le panneau actif.
 
-C’est une extension, et elle est **livrée désactivée**. Activez-la dans **Configuration ▸ Extensions…**. Elle démarre désactivée parce qu’une connexion au démon Docker dispose sur votre Mac des mêmes droits que vous — voir *Ce à quoi elle accède* plus bas.
+C’est une extension, et elle est **livrée désactivée**. Activez-la dans **Configuration ▸ Gérer les modules externes…**. Elle démarre désactivée parce qu’une connexion au démon Docker dispose sur votre Mac des mêmes droits que vous — voir *Ce à quoi elle accède* plus bas.
 
 ## Ce que vous voyez
 
@@ -83,7 +83,7 @@ Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur 
 
 ## Réglages
 
-**Configuration ▸ Réglages ▸ Docker** contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini`, à modifier si vous préparez une machine par script :
+**Configuration ▸ Réglages… ▸ Docker** contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans `~/Library/Application Support/PeachCommander/Docker/docker.ini`, à modifier si vous préparez une machine par script :
 
 - `Endpoint` — une adresse à utiliser à la place de celle qui a été trouvée.
 - `ExecFallback` — `0` limite l’extension à l’API d’archive de Docker : elle n’exécutera alors jamais rien dans un conteneur, au prix de ne pas pouvoir lister un très gros dossier, ni supprimer, ni renommer.

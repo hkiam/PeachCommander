@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Pluginul Task Manager transformă procesele care rulează pe Mac-ul dvs. într-un folder pe care îl puteți parcurge. Apare ca o unitate **TaskManager** în bara de unități; deschideți-o și fiecare proces este un rând pe care îl puteți sorta, examina ca pe un fișier sau încheia — folosind aceleași taste pe care le folosiți deja pentru fișiere. Fiind un plugin, îl puteți dezactiva sau elimina din **Configurație ▸ Pluginuri…**.
+Pluginul Task Manager transformă procesele care rulează pe Mac-ul dvs. într-un folder pe care îl puteți parcurge. Apare ca o unitate **TaskManager** în bara de unități; deschideți-o și fiecare proces este un rând pe care îl puteți sorta, examina ca pe un fișier sau încheia — folosind aceleași taste pe care le folosiți deja pentru fișiere. Fiind un plugin, îl puteți dezactiva sau elimina din **Configurație ▸ Gestionează pluginurile…**.
 
 ## Deschiderea
 

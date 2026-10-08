@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Premete **F3** su un file `.csv` o `.tsv` e si apre come una vera tabella — colonne, intestazioni, ordinamento e filtro — invece che come righe di testo con delle virgole.
 
-È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**. Senza di esso, F3 mostra il file come testo semplice, il che per uno piccolo resta perfettamente leggibile.
+È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Gestisci plugin…**. Senza di esso, F3 mostra il file come testo semplice, il che per uno piccolo resta perfettamente leggibile.
 
 ## Il delimitatore viene dedotto, non presunto
 

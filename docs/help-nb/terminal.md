@@ -10,7 +10,7 @@ Peach Commander kan kjøre et ekte skall i sitt eget vindu, i en stripe nederst 
 
 Dette er ikke det samme som **Åpne Terminal her**, som starter Apples Terminal i gjeldende mappe og etterlater deg med to vinduer. Den innebygde blir der filene dine er, og vet om dem.
 
-Det er et programtillegg: vil du ikke ha det, slå det av eller fjern det under **Konfigurasjon ▸ Programtillegg…**, så følger dokken med.
+Det er et programtillegg: vil du ikke ha det, slå det av eller fjern det under **Konfigurasjon ▸ Administrer programtillegg…**, så følger dokken med.
 
 ![Den innebygde terminalen, festet under de to filpanelene](screenshots/terminal.png)
 *(Figur: skallet kjører i mappen det aktive panelet viser.)*
@@ -38,7 +38,7 @@ Så lenge terminalen har fokus, går **funksjonstastene dit**, ikke til filpanel
 
 På de fleste tastaturer utenfor USA skrives `@`, `~`, `|`, `\` og krøllparentesene med Tilvalg-tasten. Disse tastetrykkene når skallet som tegnene som står på tastene.
 
-- Alternativet er å behandle Tilvalg som Meta-tasten, som er det Alt+B, Alt+F og Emacs-tastebindingene vil ha: terminalen sender da Esc før tasten i stedet for tegnet. Slå det på under **Konfigurasjon ▸ Programtillegg ▸ Terminal** med **Bruk Tilvalg som Meta-tast**.
+- Alternativet er å behandle Tilvalg som Meta-tasten, som er det Alt+B, Alt+F og Emacs-tastebindingene vil ha: terminalen sender da Esc før tasten i stedet for tegnet. Slå det på under **Konfigurasjon ▸ Innstillinger… ▸ Terminal** med **Bruk Tilvalg som Meta-tast**.
 - Endringen gjelder med én gang, også for terminaler som allerede er åpne, ikke først for nye.
 
 ## Broen tilbake til panelet

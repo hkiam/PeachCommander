@@ -10,7 +10,7 @@ Peach Commander poate rula un shell adevărat în propria fereastră, într-o ba
 
 Nu este același lucru cu **Deschide Terminal aici**, care lansează aplicația Terminal de la Apple în dosarul curent și vă lasă cu două ferestre. Cel încorporat rămâne unde sunt fișierele dumneavoastră și știe de ele.
 
-Este o extensie: dacă nu o doriți, dezactivați-o sau eliminați-o din **Configurație ▸ Extensii…**, iar docul pleacă odată cu ea.
+Este o extensie: dacă nu o doriți, dezactivați-o sau eliminați-o din **Configurație ▸ Gestionează pluginurile…**, iar docul pleacă odată cu ea.
 
 ![Terminalul încorporat, andocat sub cele două panouri de fișiere](screenshots/terminal.png)
 *(Figura: shell-ul rulează în dosarul afișat de panoul activ.)*
@@ -38,7 +38,7 @@ Cât timp terminalul are focalizarea, **tastele funcționale merg acolo**, nu la
 
 Pe majoritatea tastaturilor din afara Statelor Unite, `@`, `~`, `|`, `\` și acoladele se tastează cu tasta Option. Aceste apăsări ajung la interpretorul de comenzi drept caracterele imprimate pe taste.
 
-- Alternativa este să tratați Option ca tastă Meta, ceea ce cer Alt+B, Alt+F și combinațiile Emacs: terminalul trimite atunci Esc înaintea tastei în loc de caracter. Activați-o la **Configurație ▸ Extensii ▸ Terminal** cu **Folosește Option ca tastă Meta**.
+- Alternativa este să tratați Option ca tastă Meta, ceea ce cer Alt+B, Alt+F și combinațiile Emacs: terminalul trimite atunci Esc înaintea tastei în loc de caracter. Activați-o la **Configurație ▸ Configurări… ▸ Terminal** cu **Folosește Option ca tastă Meta**.
 - Schimbarea se aplică imediat, și terminalelor deja deschise, nu doar celor noi.
 
 ## Puntea înapoi spre panou

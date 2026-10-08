@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Nyomja meg az **F3** billentyűt egy lefordított fájlon, és bájtok helyett forráskódot lát. Ezt két bővítmény végzi — egy a Javához (`.class`, `.jar`, `.apk`, `.dex`) és egy a .NET-hez (`.dll`, `.exe`, `.winmd`, `.netmodule`) —, és egyformán viselkednek, ezért ez az oldal mindkettőt lefedi. Mindkettő külön kikapcsolható vagy eltávolítható a **Konfiguráció ▸ Bővítmények…** alatt.
+Nyomja meg az **F3** billentyűt egy lefordított fájlon, és bájtok helyett forráskódot lát. Ezt két bővítmény végzi — egy a Javához (`.class`, `.jar`, `.apk`, `.dex`) és egy a .NET-hez (`.dll`, `.exe`, `.winmd`, `.netmodule`) —, és egyformán viselkednek, ezért ez az oldal mindkettőt lefedi. Mindkettő külön kikapcsolható vagy eltávolítható a **Konfiguráció ▸ Bővítmények kezelése…** alatt.
 
 Egy archívum az osztályai fájaként jelenik meg, egyetlen osztály egy fájlként. A **Visszafejtés forrássá** a Parancsok menüben kiírja az eredményt és egy panelbe teszi, így kereshet, összehasonlíthat és másolhat benne, mint bármely más forrásmappában.
 

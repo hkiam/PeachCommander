@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Drücken Sie F3 auf einer `.md`- oder `.html`-Datei, und sie erscheint formatiert statt als Quelltext: Überschriften, Listen, Tabellen, Links, Aufgabenlisten und Codeblöcke, nach Sprache gefärbt. Diagramme, die als ` ```mermaid `-Block geschrieben sind, werden gezeichnet, und Mathematik zwischen Dollarzeichen wird gesetzt.
 
-Das ist ein Plugin. Alles auf dieser Seite kommt von **Markdown and HTML**, das Sie in **Konfiguration ▸ Plugins…** abschalten können — was sich dann ändert, steht weiter unten.
+Das ist ein Plugin. Alles auf dieser Seite kommt von **Markdown and HTML**, das Sie in **Konfiguration ▸ Plugins verwalten…** abschalten können — was sich dann ändert, steht weiter unten.
 
 ## Wo die formatierte Ansicht erscheint
 
@@ -27,7 +27,7 @@ Ein Codeblock mit der Sprache `mermaid` wird zu einem Diagramm; `$…$` und `$$�
 
 Ein Dokument ohne Diagramm und ohne Formel lädt keinen der beiden Programmteile, eine gewöhnliche README kostet also nichts zusätzlich. Ein Diagramm, das nicht gelesen werden kann, zeigt den Fehler dort, wo der Block stand, mit dem Text des Blocks darunter, statt zu verschwinden.
 
-Beides lässt sich getrennt abschalten in **Konfiguration ▸ Einstellungen ▸ Markdown**, wo auch steht, welche Fassung im Einsatz ist und woher sie kommt.
+Beides lässt sich getrennt abschalten in **Konfiguration ▸ Einstellungen… ▸ Markdown**, wo auch steht, welche Fassung im Einsatz ist und woher sie kommt.
 
 ## Ihre eigene Fassung
 
@@ -56,7 +56,7 @@ Die formatierte Seite ist bewusst abgeschottet, denn eine Markdown-Datei ist Inh
 
 ## Abschalten
 
-Schalten Sie das Plugin in **Konfiguration ▸ Plugins…** ab, und `.md`- und `.html`-Dateien öffnen sich als Text. Die Gliederung funktioniert weiter, die Syntaxfärbung funktioniert weiter, und sonst ändert sich nichts — die formatierte Ansicht wird einfach nicht mehr angeboten. Dasselbe gilt, wenn Sie auf der Einstellungsseite des Plugins nur die formatierte Ansicht abschalten.
+Schalten Sie das Plugin in **Konfiguration ▸ Plugins verwalten…** ab, und `.md`- und `.html`-Dateien öffnen sich als Text. Die Gliederung funktioniert weiter, die Syntaxfärbung funktioniert weiter, und sonst ändert sich nichts — die formatierte Ansicht wird einfach nicht mehr angeboten. Dasselbe gilt, wenn Sie auf der Einstellungsseite des Plugins nur die formatierte Ansicht abschalten.
 
 ## Grenzen
 

@@ -63,7 +63,7 @@ L’autre sens : un script à vous, exécuté par Peach Commander.
 
 C’est un module, et il est livré **désactivé**, parce qu’exécuter un programme de votre choix peut faire tout ce que fait le reste de l’application, et plusieurs choses qu’elle ne couvre pas. Deux interrupteurs, tous deux éteints jusqu’à ce que vous les activiez :
 
-1. **Configuration ▸ Modules…** — activez **Scripting**.
+1. **Configuration ▸ Gérer les modules externes…** — activez **Scripting**.
 2. **Réglages ▸ IA** — activez **Autoriser l’exécution de scripts**. C’est sur cette page parce qu’il s’agit du même genre d’autorisation que le shell de l’assistant, et que les deux vont ensemble.
 
 Placez ensuite un script dans `scripts/` à l’intérieur de votre dossier de configuration — **Commandes ▸ Ouvrir le dossier des scripts** vous y conduit et y laisse un exemple la première fois. Un fichier `.applescript`, `.scpt` ou `.jxa` dans ce dossier *est* un script ; il n’y a rien à déclarer.

@@ -35,7 +35,7 @@ Ak niektoré položky nie je možné odstrániť — napríklad preto, že sú z
 
 ## Poznámky
 
-- **Potvrdenie.** Peach Commander vás predvolene požiada o potvrdenie pred odstránením. Toto môžete vypnúť v **Nastavenia ▸ Potvrdenie** zrušením možnosti **Potvrdiť pred odstránením**. Aj tak sa k trvalému odstráneniu správajte opatrne, keďže sa nedá vrátiť späť.
-- **Predvolené správanie F8.** Kláves F8 zvyčajne presúva položky do Koša. Ak uprednostňujete, aby F8 predvolene odstraňoval natrvalo, zmeňte možnosť odstránenia v nastaveniach **Nastavenia ▸ Operácia**. Shift+F8 vždy odstraňuje natrvalo bez ohľadu na toto nastavenie.
+- **Potvrdenie.** Peach Commander vás predvolene požiada o potvrdenie pred odstránením. Toto môžete vypnúť v **Konfigurácia ▸ Nastavenia… ▸ Potvrdenie** zrušením možnosti **Potvrdiť pred odstránením**. Aj tak sa k trvalému odstráneniu správajte opatrne, keďže sa nedá vrátiť späť.
+- **Predvolené správanie F8.** Kláves F8 zvyčajne presúva položky do Koša. Ak uprednostňujete, aby F8 predvolene odstraňoval natrvalo, zrušte začiarknutie možnosti **Odstrániť do Koša** na stránke **Konfigurácia ▸ Nastavenia… ▸ Potvrdenie**. Shift+F8 vždy odstraňuje natrvalo bez ohľadu na toto nastavenie.
 - **Odstraňovanie vnútri archívov.** Keď prehliadate vnútri podporovaného archívu, odstránenie odstráni vybrané položky z archívu. Umiestnenia len na čítanie, ako sú niektoré sieťové priečinky alebo priečinky zásuvných modulov, nie je možné takto meniť.
 - **Priečinky.** Odstránenie priečinka odstráni všetko, čo je v ňom. Pred potvrdením sa uistite, že ste vybrali správne položky, najmä pri trvalom odstránení.

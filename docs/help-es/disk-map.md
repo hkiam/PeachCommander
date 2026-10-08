@@ -61,7 +61,7 @@ Para eliminar varios elementos a la vez, use el **Recopilador**: haga clic con e
 
 ## Ajustes
 
-Mapa de disco añade su propia página a la ventana de Ajustes (**Configuración ▸ Ajustes ▸ Mapa de disco**):
+Mapa de disco añade su propia página a la ventana de Ajustes (**Configuración ▸ Ajustes… ▸ Mapa de disco**):
 
 - **Estilo de gráfico**: mapa de árbol o gráfico solar.
 - **Codificación por colores**: por tipo de archivo (categoría) o por tamaño (mapa de calor).

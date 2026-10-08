@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Ha egy appot a Kukába húz, a támogatófájljai, gyorsítótárai, beállításai és tárolói szétszórva maradnak a Library-mappáiban. Az Uninstaller bővítmény eltávolít egy alkalmazást **és** ezeket a maradványokat: megtalál mindent, amit az app hátrahagyott, megmutatja a listát, mindegyikhez mérettel, és mindent a Kukába helyez, amint Ön megerősíti. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények…** menüpontból kikapcsolhatja vagy eltávolíthatja.
+Ha egy appot a Kukába húz, a támogatófájljai, gyorsítótárai, beállításai és tárolói szétszórva maradnak a Library-mappáiban. Az Uninstaller bővítmény eltávolít egy alkalmazást **és** ezeket a maradványokat: megtalál mindent, amit az app hátrahagyott, megmutatja a listát, mindegyikhez mérettel, és mindent a Kukába helyez, amint Ön megerősíti. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények kezelése…** menüpontból kikapcsolhatja vagy eltávolíthatja.
 
 ## A kurzor alatti app eltávolítása
 

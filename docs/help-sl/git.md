@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Vtičnik Git prikaže stanje skladišča Git naravnost v pladnju datotek — brez ločene aplikacije in brez
 terminala. Doda dva stolpca, podmeni **Git**, zasidran pladenj za pripravo in objavo sprememb ter okna za
 zgodovino, blame, veje, spore in prestavljanje. Uporablja `git`, ki je na vašem Macu že nameščen. Je vtičnik,
-zato ga lahko izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
+zato ga lahko izklopite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Kaj doda
 

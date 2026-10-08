@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Zásuvný modul Task Manager premení bežiace procesy na vašom Macu na priečinok, ktorý môžete prehliadať. Objaví sa ako disk **TaskManager** v lište diskov; otvorte ho a každý proces je riadok, ktorý môžete triediť, skúmať ako súbor alebo ukončiť — pomocou tých istých klávesov, ktoré už používate pre súbory. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
+Zásuvný modul Task Manager premení bežiace procesy na vašom Macu na priečinok, ktorý môžete prehliadať. Objaví sa ako disk **TaskManager** v lište diskov; otvorte ho a každý proces je riadok, ktorý môžete triediť, skúmať ako súbor alebo ukončiť — pomocou tých istých klávesov, ktoré už používate pre súbory. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v **Konfigurácia ▸ Spravovať zásuvné moduly…**.
 
 ## Otvorenie
 

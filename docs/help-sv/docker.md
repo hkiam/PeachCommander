@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 En Docker-containers filsystem kan bläddras i en panel som vilken mapp som helst, och det gäller även en Docker-volym. Välj **Anslut till Docker…** i menyn Nätverk, eller klicka på brickan **Docker** i enhetslisten, så visas motorn i den aktiva panelen.
 
-Det är ett insticksprogram och det **levereras avstängt**. Slå på det under **Konfiguration ▸ Insticksprogram…**. Det börjar avstängt eftersom en anslutning till Docker-tjänsten har samma rättigheter på din Mac som du själv — se *Vad det når* nedan.
+Det är ett insticksprogram och det **levereras avstängt**. Slå på det under **Konfiguration ▸ Hantera plugin-program…**. Det börjar avstängt eftersom en anslutning till Docker-tjänsten har samma rättigheter på din Mac som du själv — se *Vad det når* nedan.
 
 ## Vad du ser
 
@@ -83,7 +83,7 @@ Posterna visas bara inuti en Docker-enhet; över en egen mapp finns de inte alls
 
 ## Inställningar
 
-**Konfiguration ▸ Inställningar ▸ Docker** innehåller allt detta. Samma värden finns i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som är den du redigerar om du sätter upp en maskin från ett skript:
+**Konfiguration ▸ Inställningar… ▸ Docker** innehåller allt detta. Samma värden finns i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som är den du redigerar om du sätter upp en maskin från ett skript:
 
 - `Endpoint` — en adress att använda i stället för den som hittades.
 - `ExecFallback` — `0` gör att insticksprogrammet bara använder Dockers arkiv-API: det kör då aldrig något inuti en container, till priset av att inte kunna lista en mycket stor katalog, radera eller byta namn.

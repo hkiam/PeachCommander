@@ -11,7 +11,7 @@ Peach Commander can run a real shell inside its own window, in a strip across th
 
 This is not the same thing as **Open Terminal Here**, which launches Apple's Terminal app in the current folder and leaves you with two windows. The built-in one stays where your files are, and knows about them.
 
-It is a plugin, so if you do not want it, turn it off or remove it in **Configuration ▸ Plugins…** and the dock goes with it.
+It is a plugin, so if you do not want it, turn it off or remove it in **Configuration ▸ Manage Plugins…** and the dock goes with it.
 
 ![The built-in terminal docked below the two file panels](screenshots/terminal.png)
 *(Figure: the shell runs in the folder the active panel shows.)*
@@ -39,7 +39,7 @@ While the terminal has the focus the **function keys go to it**, not to the file
 
 On most keyboards outside the United States, `@`, `~`, `|`, `\` and the curly brackets are typed with the Option key. Those keystrokes reach the shell as the characters printed on the keys.
 
-- The alternative is to treat Option as the Meta key, which is what Alt+B and Alt+F and the Emacs bindings want: the terminal then sends Esc before the key instead of the character. Switch it on under **Configuration ▸ Plugins ▸ Terminal** with **Use Option as the Meta key**.
+- The alternative is to treat Option as the Meta key, which is what Alt+B and Alt+F and the Emacs bindings want: the terminal then sends Esc before the key instead of the character. Switch it on under **Configuration ▸ Settings… ▸ Terminal** with **Use Option as the Meta key**.
 - The change applies at once, to terminals that are already open as well as to new ones.
 
 ## The bridge back to the panel

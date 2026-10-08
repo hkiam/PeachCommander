@@ -63,7 +63,7 @@ Celălalt sens: un script al dumneavoastră, rulat de Peach Commander.
 
 Acesta este un plugin și este livrat **dezactivat**, deoarece rularea unui program la alegerea dumneavoastră poate face tot ce face restul aplicației și câteva lucruri pe care nimic din ea nu acoperă. Două comutatoare, ambele oprite până le puneți:
 
-1. **Configurație ▸ Pluginuri…** — activați **Scripting**.
+1. **Configurație ▸ Gestionează pluginurile…** — activați **Scripting**.
 2. **Configurări ▸ IA** — activați **Permite rularea scripturilor**. Se află pe acea pagină pentru că este același tip de permisiune ca shell-ul asistentului, iar cele două merg împreună.
 
 Apoi puneți un script în `scripts/` din dosarul dumneavoastră de configurare — **Comenzi ▸ Deschide dosarul de scripturi** vă duce acolo și lasă un exemplu prima dată. Un fișier `.applescript`, `.scpt` sau `.jxa` din acel dosar *este* un script; nu e nimic de înregistrat.

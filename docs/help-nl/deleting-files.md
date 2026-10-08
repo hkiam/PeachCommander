@@ -35,7 +35,7 @@ Als sommige items niet kunnen worden verwijderd — bijvoorbeeld omdat ze vergre
 
 ## Opmerkingen
 
-- **Bevestiging.** Standaard vraagt Peach Commander om bevestiging vóór het verwijderen. Je kunt dit uitzetten in **Configuratie > Bevestiging** door **Bevestigen vóór verwijderen** uit te schakelen. Behandel definitieve verwijderingen ook dan met zorg, aangezien ze niet ongedaan kunnen worden gemaakt.
-- **Standaardgedrag van F8.** Normaal verplaatst F8 items naar de Prullenmand. Als je liever hebt dat F8 standaard definitief verwijdert, wijzig je de verwijderoptie in de instellingen **Configuratie > Bewerking**. Shift+F8 verwijdert altijd definitief, ongeacht deze instelling.
+- **Bevestiging.** Standaard vraagt Peach Commander om bevestiging vóór het verwijderen. Je kunt dit uitzetten in **Configuratie > Instellingen… > Bevestiging** door **Bevestigen vóór verwijderen** uit te schakelen. Behandel definitieve verwijderingen ook dan met zorg, aangezien ze niet ongedaan kunnen worden gemaakt.
+- **Standaardgedrag van F8.** Normaal verplaatst F8 items naar de Prullenmand. Als je liever hebt dat F8 standaard definitief verwijdert, schakel je **Naar prullenmand verwijderen** uit op de pagina **Configuratie > Instellingen… > Bevestiging**. Shift+F8 verwijdert altijd definitief, ongeacht deze instelling.
 - **Verwijderen binnen archieven.** Wanneer je binnen een ondersteund archief bladert, verwijdert verwijderen de geselecteerde items uit het archief. Alleen-lezenlocaties, zoals sommige netwerk- of plug-inmappen, kunnen op deze manier niet worden gewijzigd.
 - **Mappen.** Het verwijderen van een map verwijdert alles wat erin zit. Zorg dat je de juiste items hebt geselecteerd voordat je bevestigt, vooral bij een definitieve verwijdering.

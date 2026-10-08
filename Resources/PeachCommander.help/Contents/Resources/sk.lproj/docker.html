@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Kontajnery a zväzky Dockeru</h1>
 <p>Súborový systém kontajnera Dockeru možno prezerať v paneli ako ktorýkoľvek priečinok a to isté platí pre zväzok Dockeru. Zvoľte <strong>Pripojiť k Dockeru…</strong> v ponuke Sieť alebo kliknite na štítok <strong>Docker</strong> v lište jednotiek a stroj sa objaví v aktívnom paneli.</p>
-<p>Je to zásuvný modul a <strong>dodáva sa vypnutý</strong>. Zapnite ho v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>. Začína vypnutý, pretože spojenie s démonom Dockeru má na vašom Macu rovnaké práva ako vy sami — pozri <em>K čomu má prístup</em> nižšie.</p>
+<p>Je to zásuvný modul a <strong>dodáva sa vypnutý</strong>. Zapnite ho v <strong>Konfigurácia ▸ Spravovať zásuvné moduly…</strong>. Začína vypnutý, pretože spojenie s démonom Dockeru má na vašom Macu rovnaké práva ako vy sami — pozri <em>K čomu má prístup</em> nižšie.</p>
 <h2 id="co-uvidite">Čo uvidíte</h2>
 <p>Najvyššiu úroveň tvoria tri priečinky:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Položky sa objavia len vnútri jednotky Dockeru; nad vlastným priečinkom tam nie sú vôbec.</p>
 <p><strong>Protokol je zároveň súbor.</strong> V koreni každého kontajnera leží <code>docker-logs.txt</code> — ktorý nie je súborom v kontajneri: jeho čítanie si vyžiada protokol od enginu. F3 naň ho otvorí v prehliadači, takže platí jeho hľadanie, skok na riadok aj voľba kódovania — čo samostatné okno dať nemôže. Kontajner, ktorý súbor toho mena naozaj nesie, ukáže svoj vlastný, a do virtuálneho sa nedá nič zapísať.</p>
 <h2 id="nastavenia">Nastavenia</h2>
-<p><strong>Konfigurácia ▸ Nastavenia ▸ Docker</strong> obsahuje všetko z toho. Tie isté hodnoty ležia v malom súbore v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ktorý upravíte, keď stroj pripravujete skriptom:</p>
+<p><strong>Konfigurácia ▸ Nastavenia… ▸ Docker</strong> obsahuje všetko z toho. Tie isté hodnoty ležia v malom súbore v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ktorý upravíte, keď stroj pripravujete skriptom:</p>
 <ul>
 <li><code>Endpoint</code> — adresa, ktorá sa použije namiesto nájdenej.</li>
 <li><code>ExecFallback</code> — <code>0</code> spôsobí, že modul používa výhradne archívne API Dockeru: nikdy potom vnútri kontajnera nič nespustí, za cenu toho, že nedokáže vypísať veľmi veľký adresár, mazať ani premenovávať.</li>

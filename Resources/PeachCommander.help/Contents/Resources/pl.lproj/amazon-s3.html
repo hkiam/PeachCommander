@@ -12,7 +12,7 @@
 <h1>Amazon S3 i magazyny zgodne z S3</h1>
 <p>Bucket S3 można przeglądać w panelu jak każdy folder. Wybierz <strong>Połącz z Amazon S3…</strong> z menu Sieć, podaj punkt końcowy i klucze, a magazyn pojawi się w aktywnym panelu — z <strong>listą bucketów jako najwyższym poziomem</strong>, a każdy bucket będzie zwykłym katalogiem poniżej.</p>
 <p>Działa z Amazon S3 i ze wszystkim, co mówi tym samym protokołem: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 i DigitalOcean Spaces są dostępne.</p>
-<p>To wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<p>To wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Zarządzaj wtyczkami…</strong>.</p>
 <h2 id="aczenie">Łączenie</h2>
 <p>Menu <strong>Usługa</strong> wypełnia dwa ustawienia, których nie da się odgadnąć — czy używać HTTPS i czy punkt końcowy wymaga adresowania w stylu ścieżki — a sam punkt końcowy pozostawia tobie, bo zwykle zależy od konta. Oba te ustawienia zawodzą w sposób wyglądający na coś innego: adresowanie przez nazwę hosta wobec zwykłego adresu IP to błąd rozwiązywania nazw, a adresowanie w stylu ścieżki wobec Amazona to „nie ma takiego bucketa”, co czyta się jak brakujący bucket.</p>
 <p><strong>Tajny klucz dostępu</strong> trafia przez program nadrzędny do <strong>Pęku kluczy</strong>, nigdy do pliku konfiguracyjnego. Zostaw pole puste przy następnym połączeniu i zostanie użyty zapisany.</p>

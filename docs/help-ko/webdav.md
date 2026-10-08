@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 WebDAV 서버 — Nextcloud, ownCloud, Synology, 대학의 파일 저장소 — 는 여느 폴더와 마찬가지로 패널에서 탐색할 수 있습니다. 네트워크 메뉴에서 **WebDAV 연결…** 을 고르고 URL을 지정하면, 서버가 활성 패널에 나타납니다.
 
-플러그인이므로 **구성 ▸ 플러그인…** 에서 끄거나 제거할 수 있습니다.
+플러그인이므로 **구성 ▸ 플러그인 관리…** 에서 끄거나 제거할 수 있습니다.
 
 ## 연결하기
 

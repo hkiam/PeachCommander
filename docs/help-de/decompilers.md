@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Drücken Sie **F3** auf einer kompilierten Datei und sehen Sie Quelltext statt Bytes. Zwei Plugins tun das — eines für Java (`.class`, `.jar`, `.apk`, `.dex`) und eines für .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — und sie verhalten sich gleich, deshalb behandelt diese Seite beide. Jedes lässt sich einzeln unter **Konfiguration ▸ Plugins…** abschalten oder entfernen.
+Drücken Sie **F3** auf einer kompilierten Datei und sehen Sie Quelltext statt Bytes. Zwei Plugins tun das — eines für Java (`.class`, `.jar`, `.apk`, `.dex`) und eines für .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — und sie verhalten sich gleich, deshalb behandelt diese Seite beide. Jedes lässt sich einzeln unter **Konfiguration ▸ Plugins verwalten…** abschalten oder entfernen.
 
 Ein Archiv erscheint als Baum seiner Klassen, eine einzelne Klasse als eine Datei. **In Quelltext dekompilieren** im Menü Befehle schreibt das Ergebnis heraus und legt es in ein Panel, sodass Sie darin suchen, vergleichen und kopieren können wie in jedem anderen Quelltextordner.
 

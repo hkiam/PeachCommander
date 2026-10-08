@@ -9,7 +9,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Press **F3** on a `.csv` or `.tsv` file and it opens as a real table — columns, headers, sorting and a filter — instead of as lines of text with commas in them.
 
-It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**. Without it, F3 shows the file as plain text, which is still perfectly readable for a small one.
+It is a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**. Without it, F3 shows the file as plain text, which is still perfectly readable for a small one.
 
 ## The delimiter is worked out, not assumed
 

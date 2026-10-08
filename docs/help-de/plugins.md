@@ -37,7 +37,7 @@ Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:
 
 ## Plugins ein- oder ausschalten
 
-1. Wählen Sie Konfiguration ▸ Plugins…, um das Plugin-Fenster zu öffnen.
+1. Wählen Sie Konfiguration ▸ Plugins verwalten…, um das Plugin-Fenster zu öffnen.
 2. Jedes installierte Plugin erscheint in der Liste mit seinem Namen, seinem Typ und einem Kontrollkästchen „Aktiviert".
 3. Aktivieren oder deaktivieren Sie das Kontrollkästchen, um ein Plugin ein- oder auszuschalten. Änderungen werden sofort wirksam — aktivierte Plugins fügen ihre Menüs, Spalten und Funktionen hinzu; deaktivierte bleiben unauffällig.
 
@@ -50,8 +50,8 @@ Ein heruntergeladenes Plugin kommt als **Plugin-Paket** — eine Datei mit der E
 
 - **Doppelklicken Sie es** im Finder. Peach Commander öffnet sich und fragt nach.
 - **Drücken Sie Enter darauf** in einem Panel. Peach Commander ist ein Dateimanager — dort liegt die Datei ohnehin meistens schon.
-- **Ziehen Sie es auf das Plugin-Fenster** (Konfiguration ▸ Plugins…).
-- Wählen Sie **Konfiguration ▸ Plugins… ▸ Installieren…** und wählen Sie das Paket, eine `.zip` mit einem Plugin darin oder ein entpacktes Plugin-Bundle.
+- **Ziehen Sie es auf das Plugin-Fenster** (Konfiguration ▸ Plugins verwalten…).
+- Wählen Sie **Konfiguration ▸ Plugins verwalten… ▸ Installieren…** und wählen Sie das Paket, eine `.zip` mit einem Plugin darin oder ein entpacktes Plugin-Bundle.
 
 Bevor irgendetwas geladen wird, nennt ein Dialog Name, Version, Bezeichner und Typ des Plugins sowie die Dateitypen, die es übernehmen wird — ein Plugin, das etwa `.iso` beansprucht, wird zum Leseprogramm der App für diese Dateien. Nichts wird installiert, bevor Sie auf **Installieren** klicken.
 

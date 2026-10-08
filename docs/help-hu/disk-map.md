@@ -61,7 +61,7 @@ Több elem egyszerre eltávolításához használja a **gyűjtőt**: jobb kattin
 
 ## Beállítások
 
-A Lemeztérkép saját oldalt ad a Beállítások ablakhoz (**Konfiguráció ▸ Beállítások ▸ Lemeztérkép**):
+A Lemeztérkép saját oldalt ad a Beállítások ablakhoz (**Konfiguráció ▸ Beállítások… ▸ Lemeztérkép**):
 
 - **Diagramstílus** — fatérkép vagy napkitörés.
 - **Színkódolás** — fájltípus (kategória) vagy méret (hőtérkép) szerint.

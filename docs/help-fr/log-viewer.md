@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Placez le curseur sur un fichier journal et choisissez **Afficher comme journal…** pour l’ouvrir dans une fenêtre conçue pour les journaux plutôt que pour du texte : une ligne par ligne, le niveau de chacune reconnu et coloré, un filtre, et un suivi qui tient le rythme pendant que le fichier s’écrit encore.
 
-C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Extensions…**. Sans elle, F3 affiche un journal comme n’importe quel autre fichier texte.
+C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Gérer les modules externes…**. Sans elle, F3 affiche un journal comme n’importe quel autre fichier texte.
 
 ![La visionneuse de journaux affichant un journal de service, chaque niveau dans sa propre couleur](screenshots/log-viewer.png)
 *(Figure : chaque niveau a sa propre couleur, et la vue continue de suivre le fichier.)*

@@ -26,11 +26,11 @@ Het venster heeft deze pagina's, op volgorde:
 - **Indeling** — toon of verberg de schijvenbalk, tabbalk, padbalk en statusbalk, en kies welke pagina's het zijpaneel aanbiedt.
 - **Weergave** — hoe bestanden en mappen worden weergegeven, inclusief de datumnotatie.
 - **Symbolen** — het uiterlijk van symbolen in de bestandslijsten.
-- **Bewerking** — algemeen gedrag, zoals wat er gebeurt als je in een paneel typt (snelzoeken versus de opdrachtregel).
+- **Bewerking** — algemeen gedrag, zoals wat er gebeurt als je in een paneel typt (snelzoeken versus de opdrachtregel) en of kopieën met een controlesom worden gecontroleerd.
 - **Kleuren** — aangepaste paneelkleuren, of laat ze het huidige thema volgen.
-- **Bevestiging** — welke acties eerst om bevestiging vragen, zoals verwijderen.
+- **Bevestiging** — welke acties eerst om bevestiging vragen, zoals verwijderen, en of verwijderen items naar de prullenmand verplaatst.
 - **Bewerken/weergeven** — of bewaren in de editor een `.bak`-back-upkopie houdt, de programma's om bestanden te bewerken en te bekijken, koppelingen per type, en wat een voorvertoning mag kosten op netwerklocaties en in archieven.
-- **Kopiëren/verwijderen** — bestandsmetadata behouden, snel klonen, alleen nieuwere bestanden kopiëren, controleren na kopiëren, verwijderingen naar de prullenmand sturen, en een optionele snelheidslimiet instellen.
+- **Kopiëren/verwijderen** — bestandsmetadata behouden, snel klonen, alleen nieuwere bestanden kopiëren, en een optionele snelheidslimiet instellen.
 - **Zip/inpakker** — het standaard archiefformaat en compressieniveau bij inpakken.
 - **Plug-ins** — schakel geïnstalleerde plug-ins in of uit.
 - **Tabbladen** — hoe maptabbladen openen en zich gedragen.
@@ -52,7 +52,7 @@ Ingeschakelde plug-ins kunnen na de ingebouwde pagina's hun eigen pagina toevoeg
 
 Je configuratie wordt bewaard in platte-tekstbestanden in je persoonlijke Application Support-map, op `~/Library/Application Support/PeachCommander`. Ga naar de pagina **Diversen** en klik op **Open configuratiemap** om deze te openen. Opgeslagen FTP-wachtwoorden staan niet in deze bestanden; ze worden veilig bewaard in de macOS-sleutelhanger.
 
-Instellingen worden weggeschreven terwijl je ze wijzigt. Je kunt ook op elk moment forceren op te slaan met **Configuratie > Instellingen bewaren**, en de huidige vensterpositie en paneellay-out opslaan met **Configuratie > Positie bewaren**.
+Instellingen worden weggeschreven terwijl je ze wijzigt; je hoeft niets met de hand op te slaan.
 
 ## Instellingen overnemen uit Total Commander
 

@@ -10,7 +10,7 @@ Egy S3-bucket a panelen ugyanúgy böngészhető, mint bármelyik mappa. Válass
 
 Működik az Amazon S3-mal és mindennel, ami ugyanezt a protokollt beszéli: a MinIO, a Ceph/RADOS Gateway, a Cloudflare R2, a Wasabi, a Backblaze B2 és a DigitalOcean Spaces mind elérhető.
 
-Bővítmény, tehát a **Konfiguráció ▸ Bővítmények…** alatt kikapcsolható vagy eltávolítható.
+Bővítmény, tehát a **Konfiguráció ▸ Bővítmények kezelése…** alatt kikapcsolható vagy eltávolítható.
 
 ## Kapcsolódás
 

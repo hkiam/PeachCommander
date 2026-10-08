@@ -12,7 +12,7 @@
 <h1>Amazon S3 og S3-kompatibel lagring</h1>
 <p>En S3-bucket kan gennemses i et panel som enhver anden mappe. Vælg <strong>Forbind til Amazon S3…</strong> i menuen Netværk, udfyld endepunkt og dine nøgler, og lagringen dukker op i det aktive panel — med <strong>bucketlisten som øverste niveau</strong> og hver bucket som en almindelig mappe nedenunder.</p>
 <p>Det virker med Amazon S3 og med alt, der taler samme protokol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 og DigitalOcean Spaces kan alle nås.</p>
-<p>Det er et plugin, så du kan slå det fra eller fjerne det under <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<p>Det er et plugin, så du kan slå det fra eller fjerne det under <strong>Konfiguration ▸ Administrer plugins…</strong>.</p>
 <h2 id="forbindelse">Forbindelse</h2>
 <p>Menuen <strong>Tjeneste</strong> udfylder de to indstillinger, man ikke kan gætte — om der bruges HTTPS, og om endepunktet kræver sti-baseret adressering — og lader endepunktet selv være op til dig, da det typisk afhænger af din konto. Begge indstillinger fejler på en måde, der ligner noget andet: virtuel værtsadressering mod en nøgen IP-adresse er en navneopslagsfejl, og sti-baseret adressering mod Amazon er et »ingen sådan bucket«, der læses som en manglende bucket.</p>
 <p>Den <strong>hemmelige adgangsnøgle</strong> havner via værtsprogrammet i <strong>Nøglering</strong>, aldrig i en konfigurationsfil. Lad feltet stå tomt ved en senere forbindelse, og den gemte bruges.</p>

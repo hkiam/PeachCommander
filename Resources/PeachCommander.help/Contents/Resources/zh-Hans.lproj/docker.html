@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker 容器与卷</h1>
 <p>Docker 容器的文件系统可以像任何文件夹一样在面板中浏览，Docker 卷也一样。在网络菜单中选择<strong>连接到 Docker…</strong>，或点击驱动器栏中的 <strong>Docker</strong> 标签，引擎便会出现在活动面板中。</p>
-<p>这是一个插件，并且<strong>出厂时是关闭的</strong>。请在<strong>配置 ▸ 插件…</strong>中开启。它默认关闭，是因为与 Docker 守护进程的连接在这台 Mac 上拥有与你相同的权限——见下文的<em>它能访问什么</em>。</p>
+<p>这是一个插件，并且<strong>出厂时是关闭的</strong>。请在<strong>配置 ▸ 管理插件…</strong>中开启。它默认关闭，是因为与 Docker 守护进程的连接在这台 Mac 上拥有与你相同的权限——见下文的<em>它能访问什么</em>。</p>
 <h2 id="_1">你会看到什么</h2>
 <p>顶层是三个文件夹：</p>
 <ul>
@@ -61,7 +61,7 @@
 <p>这些条目只在 Docker 驱动器内出现；在你自己的文件夹上根本不存在。</p>
 <p><strong>日志同时也是一个文件。</strong> 每个容器的根目录下都有 <code>docker-logs.txt</code>——它并不是容器里的文件：读取它是向引擎索取日志。在它上面按 F3 会在查看器中打开，于是查看器的搜索、跳转到某一行和编码选择都适用，这是单独一个窗口给不了的。真正带有同名文件的容器显示它自己的那个，而虚拟的这个无法写入。</p>
 <h2 id="_7">设置</h2>
-<p><strong>配置 ▸ 设置 ▸ Docker</strong> 里有全部这些。同样的值也在 <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> 的一个小文件里——用脚本准备机器时改的就是它：</p>
+<p><strong>配置 ▸ 设置… ▸ Docker</strong> 里有全部这些。同样的值也在 <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> 的一个小文件里——用脚本准备机器时改的就是它：</p>
 <ul>
 <li><code>Endpoint</code> — 用来代替自动找到的地址。</li>
 <li><code>ExecFallback</code> — 设为 <code>0</code> 时，插件只使用 Docker 的归档 API：它便绝不会在容器内执行任何东西，代价是无法列出非常大的目录，也无法删除和重命名。</li>

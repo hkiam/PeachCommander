@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Premete **F3** su un file compilato e vedrete codice sorgente invece di byte. Lo fanno due plugin — uno per Java (`.class`, `.jar`, `.apk`, `.dex`) e uno per .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — e si comportano allo stesso modo, perciò questa pagina copre entrambi. Ciascuno si può disattivare o rimuovere per conto suo in **Configurazione ▸ Plugin…**.
+Premete **F3** su un file compilato e vedrete codice sorgente invece di byte. Lo fanno due plugin — uno per Java (`.class`, `.jar`, `.apk`, `.dex`) e uno per .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — e si comportano allo stesso modo, perciò questa pagina copre entrambi. Ciascuno si può disattivare o rimuovere per conto suo in **Configurazione ▸ Gestisci plugin…**.
 
 Un archivio compare come albero delle sue classi; una singola classe come un file. **Decompila nei sorgenti** nel menu Comandi scrive il risultato e lo mette in un pannello, così potete cercarci dentro, confrontare e copiare come in qualsiasi altra cartella di sorgenti.
 

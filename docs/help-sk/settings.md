@@ -26,11 +26,11 @@ Okno má tieto stránky, v poradí:
 - **Rozloženie** — zobraziť alebo skryť lištu diskov, lištu kariet, lištu cesty a stavovú lištu a vybrať, ktoré stránky bočný panel nabízí.
 - **Zobrazenie** — ako sa vypisujú súbory a priečinky, vrátane formátu dátumu.
 - **Ikony** — vzhľad ikon v zoznamoch súborov.
-- **Operácia** — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku).
+- **Operácia** — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku) a či sa kópie overujú kontrolným súčtom.
 - **Farby** — vlastné farby panelov, alebo ich nechajte sledovať aktuálnu tému.
-- **Potvrdenie** — ktoré akcie najprv žiadajú potvrdenie, ako mazanie.
+- **Potvrdenie** — ktoré akcie najprv žiadajú potvrdenie, ako mazanie, a či mazanie presúva položky do Koša.
 - **Upraviť/zobraziť** — či sa pri ukladaní v editore uchová záložná kópia `.bak`, programy použité na úpravu a zobrazenie súborov asociácie podľa typu a koľko smie stáť náhľad v sieťových umiestneniach a v archívoch.
-- **Kopírovať/odstrániť** — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory, overiť po kopírovaní, posielať mazania do Koša a nastaviť voliteľné obmedzenie rýchlosti.
+- **Kopírovať/odstrániť** — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory a nastaviť voliteľné obmedzenie rýchlosti.
 - **Zip/baličkovač** — predvolený formát archívu a úroveň kompresie použité pri balení.
 - **Zásuvné moduly** — zapnúť alebo vypnúť nainštalované zásuvné moduly.
 - **Karty** — ako sa karty priečinkov otvárajú a správajú.
@@ -52,7 +52,7 @@ Povolené zásuvné moduly môžu pridať vlastné stránky za vstavané — nap
 
 Vaša konfigurácia je uchovaná v súboroch obyčajného textu vnútri vášho osobného priečinka Application Support, na `~/Library/Application Support/PeachCommander`. Na jeho otvorenie prejdite na stránku **Rôzne** a kliknite na **Otvoriť konfiguračný priečinok**. Uložené heslá FTP nie sú uložené v týchto súboroch; sú bezpečne uchované vo zväzku kľúčov macOS.
 
-Nastavenia sa zapisujú, ako ich meníte. Uloženie môžete tiež vynútiť kedykoľvek pomocou **Konfigurácia > Uložiť nastavenia** a uložiť aktuálnu polohu okna a rozloženie panelov pomocou **Konfigurácia > Uložiť polohu**.
+Nastavenia sa zapisujú, ako ich meníte; nie je nič, čo by bolo treba ukladať ručne.
 
 ## Prenesenie nastavení z Total Commanderu
 

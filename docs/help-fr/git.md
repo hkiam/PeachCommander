@@ -10,7 +10,7 @@ L’extension Git fait apparaître l’état d’un dépôt Git directement dans
 d’application à part, pas de terminal. Elle ajoute deux colonnes, un sous-menu **Git**, un panneau ancré pour
 indexer et valider, et des fenêtres pour l’historique, le blâme, les branches, les conflits et le rebasage.
 Elle pilote le `git` déjà installé sur votre Mac. C’est une extension : vous pouvez la désactiver ou la
-supprimer dans **Configuration ▸ Extensions…**.
+supprimer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## Ce qu’elle ajoute
 

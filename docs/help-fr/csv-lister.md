@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Appuyez sur **F3** sur un fichier `.csv` ou `.tsv` et il s’ouvre comme un vrai tableau — colonnes, en-têtes, tri et filtre — au lieu de lignes de texte contenant des virgules.
 
-C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Extensions…**. Sans elle, F3 affiche le fichier en texte brut, ce qui reste tout à fait lisible pour un petit fichier.
+C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Gérer les modules externes…**. Sans elle, F3 affiche le fichier en texte brut, ce qui reste tout à fait lisible pour un petit fichier.
 
 ## Le séparateur est déduit, pas supposé
 

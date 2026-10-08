@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Tryck **F3** på en kompilerad fil och se källkod i stället för byte. Två tillägg gör det — ett för Java (`.class`, `.jar`, `.apk`, `.dex`) och ett för .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — och de beter sig likadant, så den här sidan täcker båda. Vart och ett kan stängas av eller tas bort för sig under **Konfiguration ▸ Tillägg…**.
+Tryck **F3** på en kompilerad fil och se källkod i stället för byte. Två tillägg gör det — ett för Java (`.class`, `.jar`, `.apk`, `.dex`) och ett för .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — och de beter sig likadant, så den här sidan täcker båda. Vart och ett kan stängas av eller tas bort för sig under **Konfiguration ▸ Hantera plugin-program…**.
 
 Ett arkiv visas som ett träd av sina klasser; en ensam klass som en fil. **Dekompilera till källkod** i menyn Kommandon skriver ut resultatet och lägger det i en panel, så att du kan söka, jämföra och kopiera i det som i vilken annan källkodsmapp som helst.
 

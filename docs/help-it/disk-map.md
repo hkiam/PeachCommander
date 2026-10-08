@@ -61,7 +61,7 @@ Per rimuovere più elementi in una volta, usate il **Raccoglitore**: clic destro
 
 ## Impostazioni
 
-Mappa del disco aggiunge una propria pagina alla finestra delle Impostazioni (**Configurazione ▸ Impostazioni ▸ Mappa del disco**):
+Mappa del disco aggiunge una propria pagina alla finestra delle Impostazioni (**Configurazione ▸ Impostazioni… ▸ Mappa del disco**):
 
 - **Stile del grafico** — treemap o sunburst.
 - **Codifica dei colori** — per tipo di file (categoria) o per dimensione (mappa di calore).

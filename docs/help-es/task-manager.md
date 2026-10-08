@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-El complemento Task Manager convierte los procesos en ejecución de su Mac en una carpeta que puede explorar. Aparece como una unidad **TaskManager** en la barra de unidades; ábrala y cada proceso es una fila que puede ordenar, inspeccionar como un archivo o finalizar, usando las mismas teclas que ya utiliza para los archivos. Al ser un complemento, puede desactivarlo o eliminarlo desde **Configuración ▸ Complementos…**.
+El complemento Task Manager convierte los procesos en ejecución de su Mac en una carpeta que puede explorar. Aparece como una unidad **TaskManager** en la barra de unidades; ábrala y cada proceso es una fila que puede ordenar, inspeccionar como un archivo o finalizar, usando las mismas teclas que ya utiliza para los archivos. Al ser un complemento, puede desactivarlo o eliminarlo desde **Configuración ▸ Gestionar plugins…**.
 
 ## Abrirlo
 

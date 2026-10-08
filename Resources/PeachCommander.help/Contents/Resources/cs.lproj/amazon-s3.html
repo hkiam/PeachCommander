@@ -12,7 +12,7 @@
 <h1>Amazon S3 a úložiště kompatibilní s S3</h1>
 <p>Bucket S3 lze v panelu prohlížet jako každou složku. Zvolte <strong>Připojit k Amazon S3…</strong> v nabídce Síť, zadejte endpoint a klíče, a úložiště se objeví v aktivním panelu — se <strong>seznamem bucketů jako nejvyšší úrovní</strong> a každým bucketem jako běžným adresářem pod ní.</p>
 <p>Funguje s Amazon S3 a se vším, co mluví stejným protokolem: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 a DigitalOcean Spaces jsou dostupné.</p>
-<p>Je to zásuvný modul, takže jej lze vypnout nebo odebrat v <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<p>Je to zásuvný modul, takže jej lze vypnout nebo odebrat v <strong>Konfigurace ▸ Spravovat zásuvné moduly…</strong>.</p>
 <h2 id="pripojeni">Připojení</h2>
 <p>Nabídka <strong>Služba</strong> vyplní dvě nastavení, která nelze uhádnout — zda použít HTTPS a zda endpoint potřebuje adresování cestou — a samotný endpoint nechá na vás, protože obvykle závisí na vašem účtu. Obě nastavení selhávají způsobem, který vypadá jako něco jiného: adresování přes jméno hostitele proti holé IP adrese je chyba překladu jmen, a adresování cestou proti Amazonu je „takový bucket neexistuje“, což se čte jako chybějící bucket.</p>
 <p><strong>Tajný přístupový klíč</strong> míří přes hostitelskou aplikaci do <strong>Klíčenky</strong>, nikdy do konfiguračního souboru. Nechte pole při dalším připojení prázdné a použije se uložený.</p>

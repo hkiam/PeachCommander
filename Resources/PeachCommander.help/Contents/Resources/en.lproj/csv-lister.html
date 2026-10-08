@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>CSV files as a table</h1>
 <p>Press <strong>F3</strong> on a <code>.csv</code> or <code>.tsv</code> file and it opens as a real table — columns, headers, sorting and a filter — instead of as lines of text with commas in them.</p>
-<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>. Without it, F3 shows the file as plain text, which is still perfectly readable for a small one.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Manage Plugins…</strong>. Without it, F3 shows the file as plain text, which is still perfectly readable for a small one.</p>
 <h2 id="the-delimiter-is-worked-out-not-assumed">The delimiter is worked out, not assumed</h2>
 <p>Comma, semicolon, tab, pipe and colon are all candidates. The plugin counts each of them across the first twenty lines and picks the one that appears the same number of times on the most lines — a file whose every row has four semicolons is a semicolon file, whatever its extension says. That matters in practice: a <code>.csv</code> exported by a spreadsheet on a German system is usually semicolon-separated, and a <code>.tsv</code> is not always tab-separated.</p>
 <p>The first line is treated as the header row and becomes the column titles.</p>

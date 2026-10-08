@@ -17,7 +17,7 @@ Når en mappe inneholder hundrevis av elementer, trenger du sjelden å rulle. Pe
 5. Trykk Backspace for å ta tilbake siste bokstav, eller Esc for å avslutte søket. Backspace redigerer bare et søk som pågår; ellers går det fortsatt til mappen over.
 6. Den innskrevne teksten fjernes etter en kort pause, slik at du kan starte et nytt søk når som helst.
 
-Som standard går rene bokstaver til kommandolinjen, og hurtigsøk utløses med Ctrl+Option+bokstav (den klassiske oppførselen). Du kan bytte hurtigsøk til å svare på ren skriving i stedet, eller slå det av, i Konfigurasjon-innstillingene.
+Som standard går rene bokstaver til kommandolinjen, og hurtigsøk utløses med Ctrl+Option+bokstav (den klassiske oppførselen). Du kan bytte hurtigsøk til å svare på ren skriving i stedet, eller slå det av, på siden **Operasjon** i **Konfigurasjon ▸ Innstillinger…**.
 
 ## Filtrer listen (hurtigfilter)
 

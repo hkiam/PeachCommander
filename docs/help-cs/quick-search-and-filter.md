@@ -15,7 +15,7 @@ Když složka obsahuje stovky položek, jen zřídka potřebujete rolovat. Peach
 3. Pokračujte v psaní pro zpřesnění shody, nebo přecházejte mezi shodami klávesami ↑ a ↓, dokud je hledání zobrazeno. Opětovné stisknutí téhož písmene rovněž prochází položky, které jím začínají.
 4. Napsaný text se po krátké pauze vymaže, takže nové hledání můžete začít kdykoli.
 
-Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a rychlé hledání se spouští pomocí Ctrl+Option+písmeno (klasické chování). Rychlé hledání můžete přepnout tak, aby reagovalo na obyčejné psaní, nebo jej vypnout, v nastavení konfigurace.
+Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a rychlé hledání se spouští pomocí Ctrl+Option+písmeno (klasické chování). Rychlé hledání můžete přepnout tak, aby reagovalo na obyčejné psaní, nebo jej vypnout, na stránce **Operace** v **Konfigurace ▸ Nastavení…**.
 
 ## Filtrování seznamu (rychlý filtr)
 

@@ -9,7 +9,7 @@ related: [plugins, viewing-files, searching]
 
 Put the cursor on a log file and choose **View as Log…** to open it in a window built for logs rather than for text: one row per line, the level of each line recognised and coloured, a filter, and a tail that keeps up while the file is still being written.
 
-It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**. Without it, F3 shows a log the way it shows any other text file.
+It is a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**. Without it, F3 shows a log the way it shows any other text file.
 
 ![The log viewer showing a service log with each level in its own colour](screenshots/log-viewer.png)
 *(Figure: each level gets its own colour, and the view keeps following the file.)*

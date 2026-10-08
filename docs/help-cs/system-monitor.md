@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Zásuvný modul System Monitor umístí živý přehled aktivity vašeho Macu přímo do záhlaví okna: malé čipy pro procesor, paměť, disk, síť a — tam, kde to hardware zpřístupňuje — GPU, baterii a senzory. Každý čip se aktualizuje jednou za sekundu; kliknutím na některý zobrazíte vyskakovací okno s grafem historie a podrobným rozpisem. Je to zásuvný modul, takže jej můžete povolit, nakonfigurovat nebo odebrat v nabídce **Konfigurace ▸ Zásuvné moduly…**.
+Zásuvný modul System Monitor umístí živý přehled aktivity vašeho Macu přímo do záhlaví okna: malé čipy pro procesor, paměť, disk, síť a — tam, kde to hardware zpřístupňuje — GPU, baterii a senzory. Každý čip se aktualizuje jednou za sekundu; kliknutím na některý zobrazíte vyskakovací okno s grafem historie a podrobným rozpisem. Je to zásuvný modul, takže jej můžete povolit, nakonfigurovat nebo odebrat v nabídce **Konfigurace ▸ Spravovat zásuvné moduly…**.
 
 ## Čipy v záhlaví
 
@@ -24,7 +24,7 @@ Kliknutím na čip otevřete vyskakovací okno s velkou aktuální hodnotou, spa
 
 ## Konfigurace
 
-Zvolte **Příkazy ▸ System Monitor…** (nebo otevřete **Konfigurace ▸ Nastavení ▸ System Monitor**) ke konfiguraci přehledu:
+Zvolte **Příkazy ▸ System Monitor…** (nebo otevřete **Konfigurace ▸ Nastavení… ▸ System Monitor**) ke konfiguraci přehledu:
 
 - **Zobrazit systémový monitor v záhlaví** — hlavní vypínač čipů.
 - **Profil** — předvolby *Minimal*, *Medium* nebo *Maximal*, které vyberou rozumnou sadu modulů.

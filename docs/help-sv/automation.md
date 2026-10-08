@@ -63,7 +63,7 @@ Den andra riktningen: ett skript av dig, kört av Peach Commander.
 
 Detta är ett tillägg, och det levereras **avstängt**, eftersom att köra ett program du väljer kan göra allt som resten av programmet kan och flera saker som inget av det täcker. Två reglar, båda av tills du slår på dem:
 
-1. **Konfiguration ▸ Tillägg…** — slå på **Scripting**.
+1. **Konfiguration ▸ Hantera plugin-program…** — slå på **Scripting**.
 2. **Inställningar ▸ AI** — slå på **Tillåt att skript körs**. Det ligger på den sidan därför att det är samma slags tillstånd som assistentens skal, och de två hör ihop.
 
 Lägg sedan ett skript i `scripts/` inuti din konfigurationsmapp — **Kommandon ▸ Öppna skriptmappen** tar dig dit och lämnar ett exempel första gången. En fil `.applescript`, `.scpt` eller `.jxa` i den mappen *är* ett skript; det finns inget att registrera.

@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Un serveur WebDAV — Nextcloud, ownCloud, un Synology, un espace de stockage universitaire — se parcourt dans un panneau comme n’importe quel dossier. Choisissez **Connexion WebDAV…** dans le menu Réseau, indiquez une URL, et le serveur apparaît dans le panneau actif.
 
-C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Extensions…**.
+C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## Se connecter
 

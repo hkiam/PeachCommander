@@ -9,7 +9,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Press F3 on a `.md` or `.html` file and it appears formatted rather than as source: headings, lists, tables, links, task lists, and code blocks coloured by language. Diagrams written as ` ```mermaid ` blocks are drawn, and mathematics written between dollar signs is typeset.
 
-This is a plugin. Everything on this page comes from **Markdown and HTML**, which you can switch off in **Configuration ▸ Plugins…** — see below for what changes if you do.
+This is a plugin. Everything on this page comes from **Markdown and HTML**, which you can switch off in **Configuration ▸ Manage Plugins…** — see below for what changes if you do.
 
 ## Where the rendered view appears
 
@@ -28,7 +28,7 @@ A fenced block whose language is `mermaid` becomes a diagram; `$…$` and `$$…
 
 A document with no diagram and no formula loads neither engine, so an ordinary README costs nothing extra. A diagram that cannot be parsed shows the error where the block was, with the block's own text below it, rather than disappearing.
 
-Both can be switched off separately in **Configuration ▸ Settings ▸ Markdown**, which is also where you can see which engine version is in use and where it came from.
+Both can be switched off separately in **Configuration ▸ Settings… ▸ Markdown**, which is also where you can see which engine version is in use and where it came from.
 
 ## Your own engine version
 
@@ -57,7 +57,7 @@ The formatted page is deliberately sealed off, because a Markdown file is conten
 
 ## Switching it off
 
-Turn the plugin off in **Configuration ▸ Plugins…**, and `.md` and `.html` files open as text. The outline still works, syntax colouring still works, and nothing else changes — the formatted view is simply not offered. The same is true if you switch only the rendered view off on the plugin's settings page.
+Turn the plugin off in **Configuration ▸ Manage Plugins…**, and `.md` and `.html` files open as text. The outline still works, syntax colouring still works, and nothing else changes — the formatted view is simply not offered. The same is true if you switch only the rendered view off on the plugin's settings page.
 
 ## Limits
 

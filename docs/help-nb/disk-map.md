@@ -61,7 +61,7 @@ For å fjerne flere elementer på én gang, bruk **Samleren**: høyreklikk ▸ *
 
 ## Innstillinger
 
-Diskkart legger til sin egen side i Innstillinger-vinduet (**Konfigurasjon ▸ Innstillinger ▸ Diskkart**):
+Diskkart legger til sin egen side i Innstillinger-vinduet (**Konfigurasjon ▸ Innstillinger… ▸ Diskkart**):
 
 - **Diagramstil** — tremapp eller soleksplosjon.
 - **Fargekoding** — etter filtype (kategori) eller etter størrelse (varmekart).

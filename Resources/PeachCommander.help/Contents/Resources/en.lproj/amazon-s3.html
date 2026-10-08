@@ -12,7 +12,7 @@
 <h1>Amazon S3 and S3-compatible storage</h1>
 <p>An S3 bucket can be browsed in a panel like any folder. Choose <strong>Amazon S3 Connect…</strong> from the Network menu, fill in the endpoint and your keys, and the storage appears in the active panel — with the <strong>bucket list as its top level</strong>, and each bucket an ordinary directory below it.</p>
 <p>It works with Amazon S3 and with anything that speaks the same protocol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 and DigitalOcean Spaces are all reachable.</p>
-<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Manage Plugins…</strong>.</p>
 <h2 id="connecting">Connecting</h2>
 <p>The <strong>Service</strong> menu fills in the two settings you cannot guess — whether to use HTTPS and whether the endpoint needs path-style addressing — and leaves the endpoint itself for you, since it is usually specific to your account. Both settings fail in ways that look like something else: virtual-hosted addressing against a bare IP address is a name-lookup error, and path-style addressing against Amazon is a "no such bucket" that reads as a missing bucket.</p>
 <p>The <strong>secret access key</strong> goes into the <strong>Keychain</strong> through the host, never into a configuration file. Leave the field empty on a later connection and the saved one is used.</p>

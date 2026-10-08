@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Markdown and HTML in the viewer</h1>
 <p>Press F3 on a <code>.md</code> or <code>.html</code> file and it appears formatted rather than as source: headings, lists, tables, links, task lists, and code blocks coloured by language. Diagrams written as <code>```mermaid</code> blocks are drawn, and mathematics written between dollar signs is typeset.</p>
-<p>This is a plugin. Everything on this page comes from <strong>Markdown and HTML</strong>, which you can switch off in <strong>Configuration ▸ Plugins…</strong> — see below for what changes if you do.</p>
+<p>This is a plugin. Everything on this page comes from <strong>Markdown and HTML</strong>, which you can switch off in <strong>Configuration ▸ Manage Plugins…</strong> — see below for what changes if you do.</p>
 <h2 id="where-the-rendered-view-appears">Where the rendered view appears</h2>
 <ul>
 <li><strong>The viewer (F3).</strong> The formatted page. The <strong>View</strong> popup still offers Text, Code and Hex, so the source is one click away, and the plugin's own name is in that list too.</li>
@@ -24,7 +24,7 @@
 <h2 id="diagrams-and-mathematics">Diagrams and mathematics</h2>
 <p>A fenced block whose language is <code>mermaid</code> becomes a diagram; <code>$…$</code> and <code>$$…$$</code> become set mathematics. Both are drawn <strong>on your Mac</strong>, by engines that ship inside the plugin — nothing is downloaded, and no part of your document is sent anywhere. A dollar sign inside a code block or inline code stays a dollar sign.</p>
 <p>A document with no diagram and no formula loads neither engine, so an ordinary README costs nothing extra. A diagram that cannot be parsed shows the error where the block was, with the block's own text below it, rather than disappearing.</p>
-<p>Both can be switched off separately in <strong>Configuration ▸ Settings ▸ Markdown</strong>, which is also where you can see which engine version is in use and where it came from.</p>
+<p>Both can be switched off separately in <strong>Configuration ▸ Settings… ▸ Markdown</strong>, which is also where you can see which engine version is in use and where it came from.</p>
 <h2 id="your-own-engine-version">Your own engine version</h2>
 <p>If you need a newer or different build of Mermaid or KaTeX, put it in the folder the <strong>Engine Folder…</strong> button opens and it is used instead of the bundled one. The file names are <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> and <code>auto-render.min.js</code>. Nothing is ever fetched from the internet for you.</p>
 <h2 id="making-a-pdf">Making a PDF</h2>
@@ -44,7 +44,7 @@
 <li><strong>A document's own scripts and HTML never run.</strong> HTML written inside a Markdown file is shown as text, and an <code>.html</code> file is displayed with scripting switched off.</li>
 </ul>
 <h2 id="switching-it-off">Switching it off</h2>
-<p>Turn the plugin off in <strong>Configuration ▸ Plugins…</strong>, and <code>.md</code> and <code>.html</code> files open as text. The outline still works, syntax colouring still works, and nothing else changes — the formatted view is simply not offered. The same is true if you switch only the rendered view off on the plugin's settings page.</p>
+<p>Turn the plugin off in <strong>Configuration ▸ Manage Plugins…</strong>, and <code>.md</code> and <code>.html</code> files open as text. The outline still works, syntax colouring still works, and nothing else changes — the formatted view is simply not offered. The same is true if you switch only the rendered view off on the plugin's settings page.</p>
 <h2 id="limits">Limits</h2>
 <ul>
 <li>Files above a size limit (8 MB by default, on the settings page) open as text instead. Turning a very large generated document into a formatted page is slow, and the text viewer opens it at once.</li>

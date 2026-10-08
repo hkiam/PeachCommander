@@ -38,7 +38,7 @@ The remaining built-in plugins are smaller and don't need a page of their own:
 
 ## Turn plugins on or off
 
-1. Choose Configuration ▸ Plugins… to open the plugin window.
+1. Choose Configuration ▸ Manage Plugins… to open the plugin window.
 2. Each installed plugin appears in the list with its name, type, and an Enabled checkbox.
 3. Select or clear the checkbox to enable or disable a plugin. Changes take effect immediately — enabled plugins add their menus, columns, and features; disabled ones stay out of the way.
 
@@ -51,8 +51,8 @@ A plugin you download arrives as a **plugin package** — a file ending in `.pcp
 
 - **Double-click it** in the Finder. Peach Commander opens and asks.
 - **Press Enter on it** in a panel. Peach Commander is a file manager, so this is usually where the file already is.
-- **Drag it onto the plugin window** (Configuration ▸ Plugins…).
-- **Choose Configuration ▸ Plugins… ▸ Install…** and pick the package, a `.zip` containing a plugin, or an unpacked plugin bundle.
+- **Drag it onto the plugin window** (Configuration ▸ Manage Plugins…).
+- **Choose Configuration ▸ Manage Plugins… ▸ Install…** and pick the package, a `.zip` containing a plugin, or an unpacked plugin bundle.
 
 Before anything is loaded, a dialog tells you the plugin's name, version, identifier and type, and which file types it will take over — a plugin that claims `.iso`, for example, becomes the app's reader for those files. Nothing is installed until you click **Install**.
 

@@ -26,11 +26,11 @@ Das Fenster enthält diese Seiten, in dieser Reihenfolge:
 - **Layout** — Laufwerksleiste, Tab-Leiste, Pfadleiste und Statusleiste ein- oder ausblenden und festlegen, welche Seiten das Seitenfenster anbietet.
 - **Anzeige** — wie Dateien und Ordner aufgelistet werden, einschließlich des Datumsformats.
 - **Symbole** — Erscheinungsbild der Symbole in den Dateilisten.
-- **Vorgang** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).
+- **Vorgang** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile) und ob Kopien mit einer Prüfsumme überprüft werden.
 - **Farben** — benutzerdefinierte Panel-Farben, oder dem aktuellen Thema folgen lassen.
-- **Bestätigung** — welche Aktionen zuerst eine Bestätigung verlangen, etwa das Löschen.
+- **Bestätigung** — welche Aktionen zuerst eine Bestätigung verlangen, etwa das Löschen, und ob Löschen Elemente in den Papierkorb verschiebt.
 - **Bearbeiten/Ansehen** — ob beim Sichern im Editor eine `.bak`-Sicherungskopie aufbewahrt wird, die Programme zum Bearbeiten und Ansehen von Dateien die Zuordnungen pro Dateityp sowie das, was eine Vorschau an Netzwerkorten und in Archiven kosten darf.
-- **Kopieren/Löschen** — Dateimetadaten bewahren, schnelles Klonen verwenden, nur neuere Dateien kopieren, nach dem Kopieren überprüfen, Löschungen in den Papierkorb legen und ein optionales Geschwindigkeitslimit festlegen.
+- **Kopieren/Löschen** — Dateimetadaten bewahren, schnelles Klonen verwenden, nur neuere Dateien kopieren und ein optionales Geschwindigkeitslimit festlegen.
 - **Zip/Packer** — das Standard-Archivformat und die Kompressionsstufe, die beim Packen verwendet werden.
 - **Plugins** — installierte Plugins ein- oder ausschalten.
 - **Tabs** — wie sich Ordner-Tabs öffnen und verhalten.
@@ -52,7 +52,7 @@ Aktivierte Plugins können nach den integrierten Seiten eigene Seiten hinzufüge
 
 Ihre Konfiguration wird in einfachen Textdateien in Ihrem persönlichen Application-Support-Ordner unter `~/Library/Application Support/PeachCommander` aufbewahrt. Um ihn zu öffnen, gehen Sie zur Seite **Sonstiges** und klicken Sie auf **Konfigurationsordner öffnen**. Gespeicherte FTP-Passwörter werden nicht in diesen Dateien abgelegt; sie werden sicher im macOS-Schlüsselbund aufbewahrt.
 
-Einstellungen werden geschrieben, während Sie sie ändern. Sie können jederzeit auch ein Speichern erzwingen mit **Konfiguration > Einstellungen sichern** und die aktuelle Fensterposition und das Panel-Layout mit **Konfiguration > Position sichern** ablegen.
+Einstellungen werden geschrieben, während Sie sie ändern; von Hand zu sichern gibt es nichts.
 
 ## Einstellungen aus Total Commander übernehmen
 

@@ -17,7 +17,7 @@ När en mapp innehåller hundratals objekt behöver du sällan rulla. Peach Comm
 5. Tryck Backsteg för att ta tillbaka sista bokstaven, eller Esc för att avsluta sökningen. Backsteg redigerar bara en pågående sökning; annars går det fortfarande till överordnad mapp.
 6. Den inskrivna texten rensas efter en kort paus, så du kan börja en ny sökning när som helst.
 
-Som standard går vanliga bokstäver till kommandoraden och snabbsökning utlöses med Ctrl+Option+bokstav (det klassiska beteendet). Du kan ändra så att snabbsökning svarar på vanlig inskrivning i stället, eller stänga av den, i Konfigurationsinställningarna.
+Som standard går vanliga bokstäver till kommandoraden och snabbsökning utlöses med Ctrl+Option+bokstav (det klassiska beteendet). Du kan ändra så att snabbsökning svarar på vanlig inskrivning i stället, eller stänga av den, på sidan **Åtgärd** i **Konfiguration ▸ Inställningar…**.
 
 ## Filtrera listan (snabbfilter)
 

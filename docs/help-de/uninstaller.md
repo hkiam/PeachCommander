@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Wenn Sie eine App in den Papierkorb ziehen, bleiben ihre Support-Dateien, Caches, Einstellungen und Container über Ihre Library-Ordner verstreut zurück. Das Uninstaller-Plugin entfernt eine Anwendung **und** diese Überreste: Es findet alles, was die App hinterlassen hat, zeigt Ihnen die Liste mit einer Größenangabe für jedes Element und verschiebt alles in den Papierkorb, sobald Sie bestätigen. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins…** ausschalten oder entfernen.
+Wenn Sie eine App in den Papierkorb ziehen, bleiben ihre Support-Dateien, Caches, Einstellungen und Container über Ihre Library-Ordner verstreut zurück. Das Uninstaller-Plugin entfernt eine Anwendung **und** diese Überreste: Es findet alles, was die App hinterlassen hat, zeigt Ihnen die Liste mit einer Größenangabe für jedes Element und verschiebt alles in den Papierkorb, sobald Sie bestätigen. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins verwalten…** ausschalten oder entfernen.
 
 ## Eine App unter dem Cursor deinstallieren
 

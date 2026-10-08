@@ -63,7 +63,7 @@ Den anden retning: et script fra dig, kørt af Peach Commander.
 
 Dette er et plugin, og det leveres **slået fra**, fordi det at køre et program efter dit valg kan gøre alt, hvad resten af programmet kan, og flere ting, som intet af det dækker. To kontakter, begge slået fra, indtil du sætter dem:
 
-1. **Konfiguration ▸ Plugins…** — slå **Scripting** til.
+1. **Konfiguration ▸ Administrer plugins…** — slå **Scripting** til.
 2. **Indstillinger ▸ AI** — slå **Tillad, at scripts kører** til. Det står på den side, fordi det er samme slags tilladelse som assistentens skal, og de to hører sammen.
 
 Læg derefter et script i `scripts/` inde i din konfigurationsmappe — **Kommandoer ▸ Åbn scriptmappen** fører dig dertil og efterlader et eksempel den første gang. En fil `.applescript`, `.scpt` eller `.jxa` i den mappe *er* et script; der er intet at registrere.

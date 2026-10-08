@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Markdown e HTML nel visualizzatore</h1>
 <p>Premi F3 su un file <code>.md</code> o <code>.html</code> e apparirà formattato invece che come sorgente: titoli, elenchi, tabelle, collegamenti, elenchi di attività e blocchi di codice colorati per linguaggio. I diagrammi scritti come blocchi <code>```mermaid</code> vengono disegnati, e la matematica scritta tra segni di dollaro viene composta.</p>
-<p>Questo è un plugin. Tutto ciò che è descritto qui viene da <strong>Markdown and HTML</strong>, che puoi disattivare in <strong>Configurazione ▸ Plugin…</strong> — più sotto è spiegato cosa cambia.</p>
+<p>Questo è un plugin. Tutto ciò che è descritto qui viene da <strong>Markdown and HTML</strong>, che puoi disattivare in <strong>Configurazione ▸ Gestisci plugin…</strong> — più sotto è spiegato cosa cambia.</p>
 <h2 id="dove-appare-la-vista-formattata">Dove appare la vista formattata</h2>
 <ul>
 <li><strong>Il visualizzatore (F3).</strong> La pagina formattata. Il menu <strong>Vista</strong> offre ancora Testo, Codice ed Hex, quindi il sorgente è a un clic di distanza, e in quell'elenco compare anche il nome del plugin.</li>
@@ -24,7 +24,7 @@
 <h2 id="diagrammi-e-matematica">Diagrammi e matematica</h2>
 <p>Un blocco di codice il cui linguaggio è <code>mermaid</code> diventa un diagramma; <code>$…$</code> e <code>$$…$$</code> diventano matematica composta. Entrambi vengono disegnati <strong>sul tuo Mac</strong>, da motori che vengono forniti dentro il plugin — non viene scaricato nulla, e nessuna parte del tuo documento viene inviata da nessuna parte. Un segno di dollaro dentro un blocco di codice o del codice in linea resta un segno di dollaro.</p>
 <p>Un documento senza diagrammi né formule non carica nessuno dei due motori, quindi un normale README non costa nulla in più. Un diagramma che non può essere letto mostra l'errore dove si trovava il blocco, con il testo del blocco sotto, invece di scomparire.</p>
-<p>Entrambi possono essere disattivati separatamente in <strong>Configurazione ▸ Impostazioni ▸ Markdown</strong>, dove si vede anche quale versione è in uso e da dove proviene.</p>
+<p>Entrambi possono essere disattivati separatamente in <strong>Configurazione ▸ Impostazioni… ▸ Markdown</strong>, dove si vede anche quale versione è in uso e da dove proviene.</p>
 <h2 id="la-tua-versione">La tua versione</h2>
 <p>Se ti serve una versione più recente o diversa di Mermaid o KaTeX, mettila nella cartella che apre il pulsante <strong>Engine Folder…</strong> e verrà usata al posto di quella fornita. I nomi dei file sono <code>mermaid.min.js</code>, <code>katex.min.js</code>, <code>katex.min.css</code> e <code>auto-render.min.js</code>. Non viene mai scaricato nulla da internet per te.</p>
 <h2 id="creare-un-pdf">Creare un PDF</h2>
@@ -44,7 +44,7 @@
 <li><strong>Gli script e l'HTML del documento non vengono mai eseguiti.</strong> L'HTML scritto dentro un file Markdown è mostrato come testo, e un file <code>.html</code> è visualizzato con gli script disattivati.</li>
 </ul>
 <h2 id="disattivarlo">Disattivarlo</h2>
-<p>Disattiva il plugin in <strong>Configurazione ▸ Plugin…</strong> e i file <code>.md</code> e <code>.html</code> si apriranno come testo. La struttura continua a funzionare, la colorazione della sintassi continua a funzionare, e nulla altro cambia — la vista formattata semplicemente non viene più offerta. Lo stesso vale se nella pagina delle impostazioni del plugin disattivi solo la vista formattata.</p>
+<p>Disattiva il plugin in <strong>Configurazione ▸ Gestisci plugin…</strong> e i file <code>.md</code> e <code>.html</code> si apriranno come testo. La struttura continua a funzionare, la colorazione della sintassi continua a funzionare, e nulla altro cambia — la vista formattata semplicemente non viene più offerta. Lo stesso vale se nella pagina delle impostazioni del plugin disattivi solo la vista formattata.</p>
 <h2 id="limiti">Limiti</h2>
 <ul>
 <li>I file oltre un limite di dimensione (8 MB per impostazione predefinita, nella pagina delle impostazioni) si aprono come testo. Trasformare un documento generato molto grande in una pagina formattata è lento, e il visualizzatore di testo lo apre subito.</li>

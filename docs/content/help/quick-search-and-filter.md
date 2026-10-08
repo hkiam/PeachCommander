@@ -18,7 +18,7 @@ When a folder holds hundreds of items, you rarely need to scroll. Peach Commande
 5. Press Backspace to take back the last letter, or Esc to end the search. Backspace only edits the search while one is running; at any other time it still goes to the parent folder.
 6. The search ends on its own after a couple of seconds without typing, so you can start a new one at any time.
 
-By default, plain letters go to the command line and quick search is triggered with Ctrl+Option+letter (the classic behavior). You can switch quick search to respond to plain typing instead, or turn it off, in Configuration settings.
+By default, plain letters go to the command line and quick search is triggered with Ctrl+Option+letter (the classic behavior). You can switch quick search to respond to plain typing instead, or turn it off, on the **Operation** page of **Configuration ▸ Settings…**.
 
 ## Filter the list (quick filter)
 

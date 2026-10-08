@@ -35,7 +35,7 @@ Si certains éléments ne peuvent pas être retirés — par exemple parce qu'il
 
 ## Remarques
 
-- **Confirmation.** Par défaut, Peach Commander vous demande de confirmer avant de supprimer. Vous pouvez désactiver cela dans **Configuration > Confirmation** en décochant **Confirmer avant de supprimer**. Malgré cela, traitez les suppressions définitives avec précaution, car elles sont irréversibles.
-- **Comportement par défaut de F8.** Normalement, F8 place les éléments dans la Corbeille. Si vous préférez que F8 supprime définitivement par défaut, modifiez l'option de suppression dans les réglages **Configuration > Opération**. Shift+F8 supprime toujours définitivement, quel que soit ce réglage.
+- **Confirmation.** Par défaut, Peach Commander vous demande de confirmer avant de supprimer. Vous pouvez désactiver cela dans **Configuration > Réglages… > Confirmation** en décochant **Confirmer avant de supprimer**. Malgré cela, traitez les suppressions définitives avec précaution, car elles sont irréversibles.
+- **Comportement par défaut de F8.** Normalement, F8 place les éléments dans la Corbeille. Si vous préférez que F8 supprime définitivement par défaut, décochez **Placer dans la corbeille** sur la page **Configuration > Réglages… > Confirmation**. Shift+F8 supprime toujours définitivement, quel que soit ce réglage.
 - **Supprimer à l'intérieur des archives.** Lorsque vous parcourez une archive prise en charge, supprimer retire les entrées sélectionnées de l'archive. Les emplacements en lecture seule, tels que certains dossiers réseau ou d'extensions, ne peuvent pas être modifiés de cette manière.
 - **Dossiers.** Supprimer un dossier retire tout ce qu'il contient. Assurez-vous d'avoir sélectionné les bons éléments avant de confirmer, en particulier pour une suppression définitive.

@@ -9,7 +9,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 A Docker container's filesystem can be browsed in a panel like any folder, and so can a Docker volume. Choose **Docker Connect…** from the Network menu, or click the **Docker** chip in the drive bar, and the engine appears in the active panel.
 
-It is a plugin, and it **ships switched off**. Turn it on in **Configuration ▸ Plugins…**. It starts off because a connection to a Docker daemon carries the same rights on your Mac as you do — see *What it can reach* below.
+It is a plugin, and it **ships switched off**. Turn it on in **Configuration ▸ Manage Plugins…**. It starts off because a connection to a Docker daemon carries the same rights on your Mac as you do — see *What it can reach* below.
 
 ## What you see
 
@@ -85,7 +85,7 @@ The one thing it creates is a **throwaway container** — and only to reach a vo
 
 ## Settings
 
-**Configuration ▸ Settings ▸ Docker** has all of it. The same values live in a small file at
+**Configuration ▸ Settings… ▸ Docker** has all of it. The same values live in a small file at
 `~/Library/Application Support/PeachCommander/Docker/docker.ini`, which is what to edit if you are
 setting a machine up from a script:
 

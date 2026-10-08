@@ -66,7 +66,7 @@ Das Menü **Gehe zu** bringt das aktive Panel zu den Ordnern, die Sie am häufig
 
 ## Tipps
 
-- Ein Panel hält sich selbst aktuell: eine Datei, die ein anderes Programm im gerade angezeigten Ordner anlegt, ändert oder löscht, erscheint von selbst — Cursor und Markierungen bleiben, wo sie waren. Schalten Sie es unter **Konfiguration ▸ Einstellungen ▸ Anzeige** ab, wenn ein Ordner, in den ständig geschrieben wird, dauernd aktualisiert wird.
+- Ein Panel hält sich selbst aktuell: eine Datei, die ein anderes Programm im gerade angezeigten Ordner anlegt, ändert oder löscht, erscheint von selbst — Cursor und Markierungen bleiben, wo sie waren. Schalten Sie es unter **Konfiguration ▸ Einstellungen… ▸ Anzeige** ab, wenn ein Ordner, in den ständig geschrieben wird, dauernd aktualisiert wird.
 - Jedes Panel behält seinen eigenen Verlauf, sodass Zurück und Vorwärts nur die aktive Seite betreffen.
 - Wenn ein eingegebener Pfad kein gültiger Ordner ist, behält die Pfadleiste stillschweigend Ihren letzten Ort bei, statt zu navigieren.
-- Papierkorb und iCloud Drive im Menü Gehe zu haben keinen Standard-Kurzbefehl, aber Sie können unter **Konfiguration ▸ Einstellungen ▸ Tastatur** einen zuweisen.
+- Papierkorb und iCloud Drive im Menü Gehe zu haben keinen Standard-Kurzbefehl, aber Sie können unter **Konfiguration ▸ Kürzel bearbeiten…** einen zuweisen.

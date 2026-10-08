@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Naciśnij F3 na pliku `.md` lub `.html` i pojawi się sformatowany, a nie jako źródło: nagłówki, listy, tabele, odnośniki, listy zadań i bloki kodu pokolorowane według języka. Diagramy zapisane jako bloki ` ```mermaid ` są rysowane, a matematyka między znakami dolara jest składana.
 
-To wtyczka. Wszystko na tej stronie pochodzi z **Markdown and HTML**, którą można wyłączyć w **Konfiguracja ▸ Wtyczki…** — niżej opisano, co się wtedy zmienia.
+To wtyczka. Wszystko na tej stronie pochodzi z **Markdown and HTML**, którą można wyłączyć w **Konfiguracja ▸ Zarządzaj wtyczkami…** — niżej opisano, co się wtedy zmienia.
 
 ## Gdzie pojawia się widok sformatowany
 
@@ -27,7 +27,7 @@ Blok kodu o języku `mermaid` staje się diagramem; `$…$` i `$$…$$` stają s
 
 Dokument bez diagramu i bez formuły nie ładuje żadnego silnika, więc zwyczajny README nie kosztuje nic dodatkowo. Diagram, którego nie da się odczytać, pokazuje błąd tam, gdzie był blok, z jego własnym tekstem poniżej, zamiast zniknąć.
 
-Oba można wyłączyć osobno w **Konfiguracja ▸ Ustawienia ▸ Markdown**, gdzie widać także, która wersja jest używana i skąd pochodzi.
+Oba można wyłączyć osobno w **Konfiguracja ▸ Ustawienia… ▸ Markdown**, gdzie widać także, która wersja jest używana i skąd pochodzi.
 
 ## Własna wersja
 
@@ -56,7 +56,7 @@ Strona sformatowana jest celowo odcięta, bo plik Markdown to treść, która pr
 
 ## Wyłączanie
 
-Wyłącz wtyczkę w **Konfiguracja ▸ Wtyczki…**, a pliki `.md` i `.html` otworzą się jako tekst. Zestawienie nadal działa, kolorowanie składni nadal działa i nic więcej się nie zmienia — widok sformatowany po prostu nie jest już oferowany. To samo dotyczy wyłączenia samego widoku sformatowanego na stronie ustawień wtyczki.
+Wyłącz wtyczkę w **Konfiguracja ▸ Zarządzaj wtyczkami…**, a pliki `.md` i `.html` otworzą się jako tekst. Zestawienie nadal działa, kolorowanie składni nadal działa i nic więcej się nie zmienia — widok sformatowany po prostu nie jest już oferowany. To samo dotyczy wyłączenia samego widoku sformatowanego na stronie ustawień wtyczki.
 
 ## Ograniczenia
 

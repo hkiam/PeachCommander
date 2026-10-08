@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Pluginul Git arată starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată și fără
 terminal. Adaugă două coloane, un submeniu **Git**, un panou andocat pentru pregătire și comitere și ferestre
 pentru istoric, blame, ramuri, conflicte și rebazare. Folosește `git`-ul deja instalat pe Mac-ul
-dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din **Configurație ▸ Pluginuri…**.
+dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din **Configurație ▸ Gestionează pluginurile…**.
 
 ## Ce adaugă
 

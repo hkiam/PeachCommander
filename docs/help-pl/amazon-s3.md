@@ -10,7 +10,7 @@ Bucket S3 można przeglądać w panelu jak każdy folder. Wybierz **Połącz z A
 
 Działa z Amazon S3 i ze wszystkim, co mówi tym samym protokołem: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 i DigitalOcean Spaces są dostępne.
 
-To wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+To wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Łączenie
 

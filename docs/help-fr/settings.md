@@ -26,11 +26,11 @@ La fenêtre comporte ces pages, dans l'ordre :
 - **Disposition** — afficher ou masquer la barre de lecteurs, la barre d'onglets, la barre de chemin et la barre d'état, et choisir les pages proposées par le panneau latéral.
 - **Affichage** — comment les fichiers et dossiers sont listés, y compris le format de date.
 - **Icônes** — l'apparence des icônes dans les listes de fichiers.
-- **Opération** — comportement général, comme ce qui se passe quand vous saisissez dans un panneau (recherche rapide ou ligne de commande).
+- **Opération** — comportement général, comme ce qui se passe quand vous saisissez dans un panneau (recherche rapide ou ligne de commande) et si les copies sont vérifiées par une somme de contrôle.
 - **Couleurs** — couleurs personnalisées des panneaux, ou les laisser suivre le thème actuel.
-- **Confirmation** — quelles actions vous demandent d'abord de confirmer, comme la suppression.
+- **Confirmation** — quelles actions vous demandent d'abord de confirmer, comme la suppression, et si la suppression place les éléments dans la Corbeille.
 - **Modifier/Afficher** — si l'enregistrement dans l'éditeur conserve une copie de sauvegarde `.bak`, les programmes utilisés pour modifier et afficher les fichiers, les associations par type, et ce qu'un aperçu a le droit de coûter sur les emplacements réseau et dans les archives.
-- **Copier/Supprimer** — préserver les métadonnées des fichiers, utiliser le clonage rapide, ne copier que les fichiers plus récents, vérifier après copie, envoyer les suppressions à la corbeille et définir une limite de vitesse facultative.
+- **Copier/Supprimer** — préserver les métadonnées des fichiers, utiliser le clonage rapide, ne copier que les fichiers plus récents et définir une limite de vitesse facultative.
 - **Zip/Compresseur** — le format d'archive et le niveau de compression par défaut utilisés quand vous compressez.
 - **Modules externes** — activer ou désactiver les extensions installées.
 - **Onglets** — comment les onglets de dossiers s'ouvrent et se comportent.
@@ -52,7 +52,7 @@ Les extensions activées peuvent ajouter leurs propres pages après les pages in
 
 Votre configuration est conservée dans des fichiers en texte brut à l'intérieur de votre dossier Application Support personnel, à `~/Library/Application Support/PeachCommander`. Pour l'ouvrir, allez à la page **Divers** et cliquez sur **Ouvrir le dossier de configuration**. Les mots de passe FTP enregistrés ne sont pas stockés dans ces fichiers ; ils sont conservés en sécurité dans le trousseau macOS.
 
-Les réglages sont écrits à mesure que vous les changez. Vous pouvez aussi forcer un enregistrement à tout moment avec **Configuration > Enregistrer les réglages**, et mémoriser la position actuelle de la fenêtre et la disposition des panneaux avec **Configuration > Enregistrer la position**.
+Les réglages sont écrits à mesure que vous les changez. Il n'y a rien à enregistrer à la main.
 
 ## Récupérer des réglages depuis Total Commander
 

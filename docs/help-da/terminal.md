@@ -10,7 +10,7 @@ Peach Commander kan køre en rigtig skal i sit eget vindue, i en stribe nederst 
 
 Det er ikke det samme som **Åbn Terminal her**, som starter Apples Terminal i den aktuelle mappe og efterlader dig med to vinduer. Den indbyggede bliver, hvor dine filer er, og kender dem.
 
-Det er et plugin: vil du ikke have det, så slå det fra eller fjern det under **Konfiguration ▸ Plugins…**, og dokken følger med.
+Det er et plugin: vil du ikke have det, så slå det fra eller fjern det under **Konfiguration ▸ Administrer plugins…**, og dokken følger med.
 
 ![Den indbyggede terminal, forankret under de to filpaneler](screenshots/terminal.png)
 *(Figur: shellen kører i den mappe, det aktive panel viser.)*
@@ -38,7 +38,7 @@ Så længe terminalen har fokus, går **funktionstasterne dertil**, ikke til fil
 
 På de fleste tastaturer uden for USA skrives `@`, `~`, `|`, `\` og de krøllede parenteser med Option-tasten. Disse tastetryk når frem til skallen som de tegn, der står på tasterne.
 
-- Alternativet er at behandle Option som Meta-tasten, hvilket er det Alt+B, Alt+F og Emacs-tastebindingerne vil have: terminalen sender så Esc før tasten i stedet for tegnet. Slå det til under **Konfiguration ▸ Plugins ▸ Terminal** med **Brug Option som Meta-tast**.
+- Alternativet er at behandle Option som Meta-tasten, hvilket er det Alt+B, Alt+F og Emacs-tastebindingerne vil have: terminalen sender så Esc før tasten i stedet for tegnet. Slå det til under **Konfiguration ▸ Indstillinger… ▸ Terminal** med **Brug Option som Meta-tast**.
 - Ændringen gælder straks, også for terminaler der allerede er åbne, og ikke først for nye.
 
 ## Broen tilbage til panelet

@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Pritisnite F3 na datoteki `.md` ali `.html` in prikazala se bo oblikovana, ne kot izvorno besedilo: naslovi, seznami, tabele, povezave, seznami opravil in bloki kode, obarvani po jeziku. Diagrami, zapisani kot bloki ` ```mermaid `, se narišejo, matematika med znaki za dolar pa se stavi.
 
-To je vstavek. Vse na tej strani prihaja iz **Markdown and HTML**, ki ga lahko izklopite v **Konfiguracija ▸ Vstavki…** — spodaj je opisano, kaj se takrat spremeni.
+To je vstavek. Vse na tej strani prihaja iz **Markdown and HTML**, ki ga lahko izklopite v **Konfiguracija ▸ Upravljaj vtičnike…** — spodaj je opisano, kaj se takrat spremeni.
 
 ## Kje se oblikovani prikaz pojavi
 
@@ -27,7 +27,7 @@ Blok kode z jezikom `mermaid` postane diagram; `$…$` in `$$…$$` postaneta st
 
 Dokument brez diagrama in brez formule ne naloži nobenega pripomočka, zato navaden README ne stane nič dodatnega. Diagram, ki ga ni mogoče prebrati, pokaže napako tam, kjer je bil blok, z besedilom bloka pod njo, namesto da bi izginil.
 
-Oboje je mogoče izklopiti ločeno v **Konfiguracija ▸ Nastavitve ▸ Markdown**, kjer je tudi vidno, katera različica je v uporabi in od kod prihaja.
+Oboje je mogoče izklopiti ločeno v **Konfiguracija ▸ Nastavitve… ▸ Markdown**, kjer je tudi vidno, katera različica je v uporabi in od kod prihaja.
 
 ## Vaša lastna različica
 
@@ -56,7 +56,7 @@ Oblikovana stran je namenoma odrezana, ker je datoteka Markdown vsebina, ki prih
 
 ## Izklop
 
-Izklopite vstavek v **Konfiguracija ▸ Vstavki…** in datoteke `.md` ter `.html` se bodo odprle kot besedilo. Pregled še naprej deluje, barvanje skladnje še naprej deluje in nič drugega se ne spremeni — oblikovani prikaz preprosto ni več na voljo. Isto velja, če na strani z možnostmi vstavka izklopite samo oblikovani prikaz.
+Izklopite vstavek v **Konfiguracija ▸ Upravljaj vtičnike…** in datoteke `.md` ter `.html` se bodo odprle kot besedilo. Pregled še naprej deluje, barvanje skladnje še naprej deluje in nič drugega se ne spremeni — oblikovani prikaz preprosto ni več na voljo. Isto velja, če na strani z možnostmi vstavka izklopite samo oblikovani prikaz.
 
 ## Omejitve
 

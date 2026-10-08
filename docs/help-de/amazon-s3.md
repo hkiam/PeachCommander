@@ -10,7 +10,7 @@ Ein S3-Bucket lässt sich in einem Panel durchsuchen wie jeder Ordner. Wählen S
 
 Es funktioniert mit Amazon S3 und mit allem, was dasselbe Protokoll spricht: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 und DigitalOcean Spaces sind alle erreichbar.
 
-Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins…** abschalten oder entfernen.
+Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins verwalten…** abschalten oder entfernen.
 
 ## Verbinden
 

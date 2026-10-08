@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Zet de cursor op een logbestand en kies **Tonen als log…** om het te openen in een venster dat voor logs is gemaakt en niet voor tekst: één rij per regel, het niveau van elke regel herkend en gekleurd, een filter, en een tail die bijblijft terwijl het bestand nog wordt geschreven.
 
-Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**. Zonder hem toont F3 een log zoals elk ander tekstbestand.
+Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins beheren…**. Zonder hem toont F3 een log zoals elk ander tekstbestand.
 
 ![De logviewer met een servicelog, elk niveau in zijn eigen kleur](screenshots/log-viewer.png)
 *(Afbeelding: elk niveau krijgt zijn eigen kleur en de weergave blijft het bestand volgen.)*

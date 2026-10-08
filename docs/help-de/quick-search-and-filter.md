@@ -17,7 +17,7 @@ Wenn ein Ordner Hunderte von Objekten enthält, müssen Sie selten scrollen. Pea
 5. Mit Backspace nehmen Sie den letzten Buchstaben zurück, mit Esc beenden Sie die Suche. Backspace bearbeitet nur die laufende Suche; sonst führt es weiterhin in den übergeordneten Ordner.
 6. Die Suche endet von selbst nach ein paar Sekunden ohne Eingabe, sodass Sie jederzeit eine neue starten können.
 
-Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnellsuche wird mit Ctrl+Option+Buchstabe ausgelöst (das klassische Verhalten). Sie können die Schnellsuche so umstellen, dass sie stattdessen auf einfaches Tippen reagiert, oder sie ausschalten, in den Konfigurationseinstellungen.
+Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnellsuche wird mit Ctrl+Option+Buchstabe ausgelöst (das klassische Verhalten). Sie können die Schnellsuche so umstellen, dass sie stattdessen auf einfaches Tippen reagiert, oder sie ausschalten, auf der Seite **Vorgang** unter **Konfiguration ▸ Einstellungen…**.
 
 ## Die Liste filtern (Schnellfilter)
 

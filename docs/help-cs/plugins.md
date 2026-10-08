@@ -37,7 +37,7 @@ Zbývající vestavěné zásuvné moduly jsou menší a nepotřebují vlastní 
 
 ## Zapnutí nebo vypnutí zásuvných modulů
 
-1. Zvolte Konfigurace ▸ Zásuvné moduly… pro otevření okna zásuvných modulů.
+1. Zvolte Konfigurace ▸ Spravovat zásuvné moduly… pro otevření okna zásuvných modulů.
 2. Každý nainstalovaný zásuvný modul se objeví v seznamu s názvem, typem a zaškrtávacím polem „Povoleno“.
 3. Zaškrtnutím nebo zrušením zaškrtnutí pole povolíte nebo zakážete zásuvný modul. Změny se projeví ihned — povolené zásuvné moduly přidají své nabídky, sloupce a funkce; zakázané se drží stranou.
 
@@ -50,8 +50,8 @@ Stažený zásuvný modul přichází jako **balíček zásuvného modulu** — 
 
 - **Poklepejte na něj** ve Finderu. Peach Commander se otevře a zeptá se.
 - **Stiskněte na něm Enter** v panelu. Peach Commander je správce souborů — soubor tam obvykle beztak už je.
-- **Přetáhněte jej na okno zásuvných modulů** (Konfigurace ▸ Zásuvné moduly…).
-- Zvolte **Konfigurace ▸ Zásuvné moduly… ▸ Instalovat…** a vyberte balíček, `.zip` se zásuvným modulem nebo rozbalený balík zásuvného modulu.
+- **Přetáhněte jej na okno zásuvných modulů** (Konfigurace ▸ Spravovat zásuvné moduly…).
+- Zvolte **Konfigurace ▸ Spravovat zásuvné moduly… ▸ Instalovat…** a vyberte balíček, `.zip` se zásuvným modulem nebo rozbalený balík zásuvného modulu.
 
 Než se cokoli načte, dialog uvede název, verzi, identifikátor a typ zásuvného modulu i to, které typy souborů převezme — modul, který si nárokuje `.iso`, se pro tyto soubory stane čtečkou aplikace. Nic se nenainstaluje, dokud nekliknete na **Instalovat**.
 

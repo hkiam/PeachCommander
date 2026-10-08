@@ -10,7 +10,7 @@ El complemento Git muestra el estado de un repositorio Git directamente en el pa
 aplicación aparte y sin terminal. Añade dos columnas, un submenú **Git**, un panel acoplado para preparar y
 confirmar, y ventanas para el historial, la autoría, las ramas, los conflictos y el rebase. Usa el `git` que
 ya está instalado en su Mac. Es un complemento, así que puede desactivarlo o quitarlo en **Configuración ▸
-Complementos…**.
+Gestionar plugins…**.
 
 ## Qué añade
 

@@ -10,7 +10,7 @@ Peach Commander kan köra ett riktigt skal i sitt eget fönster, i en remsa län
 
 Det här är inte samma sak som **Öppna Terminal här**, som startar Apples Terminal i den aktuella mappen och lämnar dig med två fönster. Den inbyggda stannar där dina filer är, och känner till dem.
 
-Det är ett tillägg: vill du inte ha det, stäng av eller ta bort det under **Konfiguration ▸ Tillägg…**, så försvinner dockan med det.
+Det är ett tillägg: vill du inte ha det, stäng av eller ta bort det under **Konfiguration ▸ Hantera plugin-program…**, så försvinner dockan med det.
 
 ![Den inbyggda terminalen, fäst under de två filpanelerna](screenshots/terminal.png)
 *(Figur: skalet körs i mappen som den aktiva panelen visar.)*
@@ -38,7 +38,7 @@ Så länge terminalen har fokus går **funktionstangenterna dit**, inte till fil
 
 På de flesta tangentbord utanför USA skrivs `@`, `~`, `|`, `\` och klammerparenteserna med Alternativ-tangenten. De tangenttryckningarna når skalet som de tecken som står på tangenterna.
 
-- Alternativet är att behandla Alternativ som Meta-tangent, vilket är vad Alt+B, Alt+F och Emacs-tangentbindningarna vill ha: terminalen skickar då Esc före tangenten i stället för tecknet. Slå på det under **Konfiguration ▸ Tillägg ▸ Terminal** med **Använd Alternativ som Meta-tangent**.
+- Alternativet är att behandla Alternativ som Meta-tangent, vilket är vad Alt+B, Alt+F och Emacs-tangentbindningarna vill ha: terminalen skickar då Esc före tangenten i stället för tecknet. Slå på det under **Konfiguration ▸ Inställningar… ▸ Terminal** med **Använd Alternativ som Meta-tangent**.
 - Ändringen gäller genast, även för terminaler som redan är öppna och inte först för nya.
 
 ## Bron tillbaka till panelen

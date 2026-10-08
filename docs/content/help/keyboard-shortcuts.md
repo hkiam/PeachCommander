@@ -11,7 +11,7 @@ Peach Commander is built to be driven from the keyboard. It ships with two ready
 
 ## Switch keyboard schemes
 
-1. Open **Settings** (Cmd+, or **Configuration > Settings…**) and pick the **Keys** page.
+1. Open **Settings** (Cmd+, or **Configuration > Settings…**) and pick the **Keyboard** page.
 2. Choose a scheme from the **Scheme** menu:
    - **TC Classic** (the default) keeps the traditional keys, with Ctrl-based combinations such as Ctrl+R to refresh a panel.
    - **macOS Native** maps the same actions onto familiar Mac keys where it makes sense, for example Cmd+C to copy files and Cmd+F to search.
@@ -19,7 +19,7 @@ Peach Commander is built to be driven from the keyboard. It ships with two ready
 
 ## Customize shortcuts
 
-1. Choose **Configuration > Edit Shortcuts…**, or click **Edit Shortcuts…** on the Keys page in Settings.
+1. Choose **Configuration > Edit Shortcuts…**, or click **Edit Shortcuts…** on the Keyboard page in Settings.
 2. Find a command using the search field, then select its row.
 3. Click **Record…** and press the key combination you want. It's assigned right away.
 4. If that combination was already used by another command, a notice tells you which command it was taken from.
@@ -41,7 +41,7 @@ Peach Commander is built to be driven from the keyboard. It ships with two ready
 
 | Action | Menu path |
 |---|---|
-| Choose a scheme | Settings > Keys > Scheme |
+| Choose a scheme | Settings > Keyboard > Scheme |
 | Edit shortcuts | Configuration > Edit Shortcuts… |
 | Browse all commands | Configuration > Command Browser… |
 | Refresh the active panel | F2 (also Ctrl+R) |

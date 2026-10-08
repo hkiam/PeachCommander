@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-A Task Manager bővítmény a Macen futó folyamatokat egy böngészhető mappává alakítja. Egy **TaskManager** meghajtóként jelenik meg a meghajtósávban; nyissa meg, és minden folyamat egy sor, amelyet rendezhet, fájlként vizsgálhat vagy bezárhat — ugyanazokkal a billentyűkkel, amelyeket már a fájlokhoz is használ. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények…** menüpontból kikapcsolhatja vagy eltávolíthatja.
+A Task Manager bővítmény a Macen futó folyamatokat egy böngészhető mappává alakítja. Egy **TaskManager** meghajtóként jelenik meg a meghajtósávban; nyissa meg, és minden folyamat egy sor, amelyet rendezhet, fájlként vizsgálhat vagy bezárhat — ugyanazokkal a billentyűkkel, amelyeket már a fájlokhoz is használ. Mivel bővítményről van szó, a **Konfiguráció ▸ Bővítmények kezelése…** menüpontból kikapcsolhatja vagy eltávolíthatja.
 
 ## Megnyitás
 

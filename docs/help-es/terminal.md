@@ -10,7 +10,7 @@ Peach Commander puede ejecutar una terminal real dentro de su propia ventana, en
 
 No es lo mismo que **Abrir Terminal aquí**, que lanza la app Terminal de Apple en la carpeta actual y te deja con dos ventanas. La integrada se queda donde están tus archivos, y sabe de ellos.
 
-Es un plugin: si no lo quieres, desactívalo o elimínalo en **Configuración ▸ Plugins…**, y el dock se va con él.
+Es un plugin: si no lo quieres, desactívalo o elimínalo en **Configuración ▸ Gestionar plugins…**, y el dock se va con él.
 
 ![La terminal integrada, anclada bajo los dos paneles de archivos](screenshots/terminal.png)
 *(Figura: el shell se ejecuta en la carpeta que muestra el panel activo.)*
@@ -38,7 +38,7 @@ Mientras la terminal tiene el foco, las **teclas de función van a ella**, no al
 
 En la mayoría de los teclados fuera de los Estados Unidos, `@`, `~`, `|`, `\` y las llaves se escriben con la tecla Opción. Esas pulsaciones llegan al intérprete de órdenes como los caracteres impresos en las teclas.
 
-- La alternativa es tratar Opción como la tecla Meta, que es lo que quieren Alt+B, Alt+F y los atajos de Emacs: el terminal envía entonces Esc antes de la tecla en lugar del carácter. Actívela en **Configuración ▸ Complementos ▸ Terminal** con **Usar Opción como tecla Meta**.
+- La alternativa es tratar Opción como la tecla Meta, que es lo que quieren Alt+B, Alt+F y los atajos de Emacs: el terminal envía entonces Esc antes de la tecla en lugar del carácter. Actívela en **Configuración ▸ Ajustes… ▸ Terminal** con **Usar Opción como tecla Meta**.
 - El cambio se aplica de inmediato, tanto a los terminales ya abiertos como a los nuevos.
 
 ## El puente de vuelta al panel

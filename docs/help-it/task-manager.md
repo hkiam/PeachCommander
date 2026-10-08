@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Il plugin Task Manager trasforma i processi in esecuzione sul vostro Mac in una cartella che potete sfogliare. Compare come un'unità **TaskManager** nella barra dei dischi; apritela e ogni processo è una riga che potete ordinare, esaminare come un file o terminare — usando gli stessi tasti che già usate per i file. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da **Configurazione ▸ Plugin…**.
+Il plugin Task Manager trasforma i processi in esecuzione sul vostro Mac in una cartella che potete sfogliare. Compare come un'unità **TaskManager** nella barra dei dischi; apritela e ogni processo è una riga che potete ordinare, esaminare come un file o terminare — usando gli stessi tasti che già usate per i file. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da **Configurazione ▸ Gestisci plugin…**.
 
 ## Aprirlo
 

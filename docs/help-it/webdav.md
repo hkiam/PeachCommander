@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Un server WebDAV — Nextcloud, ownCloud, un Synology, l’archivio di un’università — si può sfogliare in un pannello come qualsiasi cartella. Scegliete **Connessione WebDAV…** dal menu Rete, indicate un URL e il server compare nel pannello attivo.
 
-È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**.
+È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Gestisci plugin…**.
 
 ## Connettersi
 

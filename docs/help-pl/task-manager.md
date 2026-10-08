@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Wtyczka Task Manager zamienia procesy działające na Twoim Macu w folder, który możesz przeglądać. Pojawia się jako dysk **TaskManager** na pasku dysków; otwórz go, a każdy proces jest wierszem, który możesz sortować, badać jak plik lub zakończyć — używając tych samych klawiszy, których już używasz do plików. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+Wtyczka Task Manager zamienia procesy działające na Twoim Macu w folder, który możesz przeglądać. Pojawia się jako dysk **TaskManager** na pasku dysków; otwórz go, a każdy proces jest wierszem, który możesz sortować, badać jak plik lub zakończyć — używając tych samych klawiszy, których już używasz do plików. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Otwórz
 

@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Git-programtillegget viser tilstanden til et Git-arkiv rett i filpanelet — ingen egen app, ingen terminal. Det
 legger til to kolonner, en undermeny **Git**, et festet panel for å klargjøre og committe, og vinduer for
 historikk, blame, grener, konflikter og rebasing. Det bruker den `git` som allerede er installert på Macen
-din. Det er et programtillegg, så du kan slå det av eller fjerne det under **Konfigurasjon ▸ Programtillegg…**.
+din. Det er et programtillegg, så du kan slå det av eller fjerne det under **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Hva det legger til
 

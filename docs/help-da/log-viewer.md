@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Sæt markøren på en logfil, og vælg **Vis som log…** for at åbne den i et vindue bygget til logfiler frem for til tekst: én række pr. linje, niveauet for hver linje genkendt og farvet, et filter, og en følgning der holder trit, mens filen stadig skrives.
 
-Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**. Uden det viser F3 en logfil som enhver anden tekstfil.
+Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Administrer plugins…**. Uden det viser F3 en logfil som enhver anden tekstfil.
 
 ![Logfremviseren med en servicelog, hvert niveau i sin egen farve](screenshots/log-viewer.png)
 *(Figur: hvert niveau får sin egen farve, og visningen følger filen videre.)*

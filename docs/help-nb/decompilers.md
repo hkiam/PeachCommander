@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Trykk **F3** på en kompilert fil og se kildekode i stedet for byte. To programtillegg gjør dette — ett for Java (`.class`, `.jar`, `.apk`, `.dex`) og ett for .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — og de oppfører seg likt, så denne siden dekker begge. Hvert av dem kan slås av eller fjernes for seg under **Konfigurasjon ▸ Programtillegg…**.
+Trykk **F3** på en kompilert fil og se kildekode i stedet for byte. To programtillegg gjør dette — ett for Java (`.class`, `.jar`, `.apk`, `.dex`) og ett for .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — og de oppfører seg likt, så denne siden dekker begge. Hvert av dem kan slås av eller fjernes for seg under **Konfigurasjon ▸ Administrer programtillegg…**.
 
 Et arkiv vises som et tre av klassene sine; en enkelt klasse som én fil. **Dekompiler til kilde** i Kommandoer-menyen skriver ut resultatet og legger det i et panel, så du kan søke, sammenligne og kopiere i det som i enhver annen kildekodemappe.
 

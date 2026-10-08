@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker-containere og -volumer</h1>
 <p>Filsystemet til en Docker-container kan bla gjennom i et panel som en hvilken som helst mappe, og det samme gjelder et Docker-volum. Velg <strong>Koble til Docker…</strong> i Nettverk-menyen, eller klikk på <strong>Docker</strong>-brikken i stasjonslinjen, og motoren vises i det aktive panelet.</p>
-<p>Dette er et programtillegg, og det <strong>leveres avslått</strong>. Slå det på under <strong>Konfigurasjon ▸ Programtillegg…</strong>. Det starter avslått fordi en tilkobling til Docker-tjenesten har de samme rettighetene på Macen din som du selv har — se <em>Hva det når</em> nedenfor.</p>
+<p>Dette er et programtillegg, og det <strong>leveres avslått</strong>. Slå det på under <strong>Konfigurasjon ▸ Administrer programtillegg…</strong>. Det starter avslått fordi en tilkobling til Docker-tjenesten har de samme rettighetene på Macen din som du selv har — se <em>Hva det når</em> nedenfor.</p>
 <h2 id="hva-du-ser">Hva du ser</h2>
 <p>Øverste nivå er tre mapper:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de ikke der i det hele tatt.</p>
 <p><strong>Loggen er også en fil.</strong> I roten av hver container ligger <code>docker-logs.txt</code> — som ikke er en fil i containeren: å lese den ber motoren om loggen. F3 på den åpner den i fremviseren, så søket, hoppet til en linje og valget av tegnsett gjelder alle, noe et eget vindu ikke kan gi. En container som faktisk har en fil med det navnet, viser sin egen, og til den virtuelle kan ingenting skrives.</p>
 <h2 id="innstillinger">Innstillinger</h2>
-<p><strong>Konfigurasjon ▸ Innstillinger ▸ Docker</strong> inneholder alt dette. De samme verdiene ligger i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som er den du redigerer hvis du setter opp en maskin fra et skript:</p>
+<p><strong>Konfigurasjon ▸ Innstillinger… ▸ Docker</strong> inneholder alt dette. De samme verdiene ligger i en liten fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som er den du redigerer hvis du setter opp en maskin fra et skript:</p>
 <ul>
 <li><code>Endpoint</code> — en adresse som skal brukes i stedet for den som ble funnet.</li>
 <li><code>ExecFallback</code> — <code>0</code> gjør at programtillegget bare bruker Dockers arkiv-API: det kjører da aldri noe inne i en container, mot at det ikke kan liste en svært stor mappe, slette eller gi nytt navn.</li>

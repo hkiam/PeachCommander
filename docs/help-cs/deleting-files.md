@@ -35,7 +35,7 @@ Pokud některé položky nelze odstranit — například proto, že jsou uzamče
 
 ## Poznámky
 
-- **Potvrzení.** Ve výchozím nastavení vás Peach Commander před smazáním požádá o potvrzení. Můžete to vypnout v **Konfigurace > Potvrzení** zrušením volby **Potvrzovat před smazáním**. I tak se k trvalému mazání chovejte opatrně, protože je nelze vrátit zpět.
-- **Výchozí chování F8.** Normálně F8 přesouvá položky do Koše. Pokud dáváte přednost tomu, aby F8 ve výchozím stavu mazalo trvale, změňte možnost mazání v nastavení **Konfigurace > Operace**. Shift+F8 vždy maže trvale bez ohledu na toto nastavení.
+- **Potvrzení.** Ve výchozím nastavení vás Peach Commander před smazáním požádá o potvrzení. Můžete to vypnout v **Konfigurace > Nastavení… > Potvrzení** zrušením volby **Potvrdit před odstraněním**. I tak se k trvalému mazání chovejte opatrně, protože je nelze vrátit zpět.
+- **Výchozí chování F8.** Normálně F8 přesouvá položky do Koše. Pokud dáváte přednost tomu, aby F8 ve výchozím stavu mazalo trvale, zrušte zaškrtnutí volby **Odstranit do koše** na stránce **Konfigurace > Nastavení… > Potvrzení**. Shift+F8 vždy maže trvale bez ohledu na toto nastavení.
 - **Mazání uvnitř archivů.** Když procházíte uvnitř podporovaného archivu, mazání odstraní vybrané položky z archivu. Umístění jen pro čtení, například některé síťové složky nebo složky zásuvných modulů, nelze tímto způsobem měnit.
 - **Složky.** Smazání složky odstraní vše uvnitř ní. Před potvrzením se ujistěte, že jste vybrali správné položky, zejména u trvalého smazání.

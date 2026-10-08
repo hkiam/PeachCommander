@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Tryck F3 på en `.md`- eller `.html`-fil och den visas formaterad i stället för som källtext: rubriker, listor, tabeller, länkar, uppgiftslistor och kodblock färgade efter språk. Diagram skrivna som ` ```mermaid `-block ritas, och matematik skriven mellan dollartecken sätts.
 
-Det här är ett plugin. Allt på den här sidan kommer från **Markdown and HTML**, som du kan stänga av i **Konfiguration ▸ Plugins…** — längre ned står vad som då ändras.
+Det här är ett plugin. Allt på den här sidan kommer från **Markdown and HTML**, som du kan stänga av i **Konfiguration ▸ Hantera plugin-program…** — längre ned står vad som då ändras.
 
 ## Var den formaterade vyn visas
 
@@ -27,7 +27,7 @@ Ett kodblock med språket `mermaid` blir ett diagram; `$…$` och `$$…$$` blir
 
 Ett dokument utan diagram och utan formel laddar ingen av motorerna, så en vanlig README kostar inget extra. Ett diagram som inte kan läsas visar felet där blocket stod, med blockets egen text under, i stället för att försvinna.
 
-Båda kan stängas av separat i **Konfiguration ▸ Inställningar ▸ Markdown**, där man också ser vilken version som används och varifrån den kommer.
+Båda kan stängas av separat i **Konfiguration ▸ Inställningar… ▸ Markdown**, där man också ser vilken version som används och varifrån den kommer.
 
 ## Din egen version
 
@@ -56,7 +56,7 @@ Den formaterade sidan är avsiktligt avskild, för en Markdown-fil är innehåll
 
 ## Stänga av det
 
-Stäng av pluginet i **Konfiguration ▸ Plugins…**, och `.md`- och `.html`-filer öppnas som text. Översikten fungerar fortfarande, syntaxfärgningen fungerar fortfarande, och inget annat ändras — den formaterade vyn erbjuds bara inte. Detsamma gäller om du bara stänger av den formaterade vyn på pluginets inställningssida.
+Stäng av pluginet i **Konfiguration ▸ Hantera plugin-program…**, och `.md`- och `.html`-filer öppnas som text. Översikten fungerar fortfarande, syntaxfärgningen fungerar fortfarande, och inget annat ändras — den formaterade vyn erbjuds bara inte. Detsamma gäller om du bara stänger av den formaterade vyn på pluginets inställningssida.
 
 ## Gränser
 

@@ -27,11 +27,11 @@ The window has these pages, in order:
 - **Layout** — show or hide the drive bar, tab bar, path bar, and status bar, and choose which pages the side panel offers.
 - **Display** — how files and folders are listed, including the date format.
 - **Icons** — icon appearance in the file lists.
-- **Operation** — general behavior, such as what happens when you type in a panel (quick search versus the command line).
+- **Operation** — general behavior, such as what happens when you type in a panel (quick search versus the command line) and whether copies are verified with a checksum.
 - **Colors** — custom panel colors, or leave them following the current theme.
-- **Confirmation** — which actions ask you to confirm first, such as deleting.
+- **Confirmation** — which actions ask you to confirm first, such as deleting, and whether deleting moves items to the Trash.
 - **Edit/View** — whether saving in the editor keeps a `.bak` backup copy, the programs used to edit and view files, per-type associations, and what a preview may cost on network locations and inside archives.
-- **Copy/Delete** — preserve file metadata, use fast cloning, copy only newer files, verify after copying, send deletions to the Trash, and set an optional speed limit.
+- **Copy/Delete** — preserve file metadata, use fast cloning, copy only newer files, and set an optional speed limit.
 - **Zip/Packer** — the default archive format and compression level used when you pack.
 - **Plugins** — turn installed plugins on or off.
 - **Tabs** — how folder tabs open and behave.
@@ -53,7 +53,7 @@ Enabled plugins can add their own pages after the built-in ones — for example 
 
 Your configuration is kept in plain text files inside your personal Application Support folder, at `~/Library/Application Support/PeachCommander`. To open it, go to the **Misc** page and click **Open Config Folder**. Saved FTP passwords are not stored in these files; they are kept securely in the macOS Keychain.
 
-Settings are written as you change them. You can also force a save at any time with **Configuration > Save Settings**, and store the current window position and panel layout with **Configuration > Save Position**.
+Settings are written as you change them; there is nothing to save by hand.
 
 ## Bringing settings over from Total Commander
 

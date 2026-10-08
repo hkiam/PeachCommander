@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Coloca el cursor sobre un archivo de registro y elige **Ver como registro…** para abrirlo en una ventana pensada para registros y no para texto: una fila por línea, el nivel de cada una reconocido y coloreado, un filtro, y un seguimiento que va al día mientras el archivo se sigue escribiendo.
 
-Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Plugins…**. Sin él, F3 muestra un registro como cualquier otro archivo de texto.
+Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Gestionar plugins…**. Sin él, F3 muestra un registro como cualquier otro archivo de texto.
 
 ![El visor de registros mostrando un registro de servicio, cada nivel con su propio color](screenshots/log-viewer.png)
 *(Figura: cada nivel recibe su propio color y la vista sigue leyendo el archivo.)*

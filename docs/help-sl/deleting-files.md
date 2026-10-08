@@ -35,7 +35,7 @@ Elementi, poslani v Koš, ostanejo tam, dokler ga ne izpraznite, tako da jih lah
 
 ## Opombe
 
-- **Potrditev.** Peach Commander privzeto zahteva potrditev pred brisanjem. To lahko izklopite v **Konfiguracija > Potrditev** tako, da počistite **Potrdi pred brisanjem**. Kljub temu s trajnimi brisanji ravnajte previdno, saj jih ni mogoče razveljaviti.
-- **Privzeto vedenje F8.** Običajno F8 premakne elemente v Koš. Če želite, da F8 privzeto briše trajno, spremenite možnost brisanja v nastavitvah **Konfiguracija > Operacija**. Ne glede na to nastavitev Shift+F8 vedno briše trajno.
+- **Potrditev.** Peach Commander privzeto zahteva potrditev pred brisanjem. To lahko izklopite v **Konfiguracija > Nastavitve… > Potrditev** tako, da počistite **Potrdi pred brisanjem**. Kljub temu s trajnimi brisanji ravnajte previdno, saj jih ni mogoče razveljaviti.
+- **Privzeto vedenje F8.** Običajno F8 premakne elemente v Koš. Če želite, da F8 privzeto briše trajno, počistite **Premakni v Koš** na strani **Konfiguracija > Nastavitve… > Potrditev**. Ne glede na to nastavitev Shift+F8 vedno briše trajno.
 - **Brisanje znotraj arhivov.** Ko brskate znotraj podprtega arhiva, brisanje odstrani izbrane vnose iz arhiva. Mest samo za branje, kot so nekatere omrežne mape ali mape vtičnikov, na ta način ni mogoče spremeniti.
 - **Mape.** Brisanje mape odstrani vse, kar je v njej. Pred potrditvijo se prepričajte, da ste izbrali prave elemente, zlasti pri trajnem brisanju.

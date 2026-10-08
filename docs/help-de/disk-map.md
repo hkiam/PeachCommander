@@ -61,7 +61,7 @@ Um mehrere Elemente auf einmal zu entfernen, verwenden Sie den **Collector**: Kl
 
 ## Einstellungen
 
-Disk Map fügt dem Einstellungsfenster eine eigene Seite hinzu (**Konfiguration ▸ Einstellungen ▸ Disk Map**):
+Disk Map fügt dem Einstellungsfenster eine eigene Seite hinzu (**Konfiguration ▸ Einstellungen… ▸ Disk Map**):
 
 - **Diagrammstil** — Treemap oder Sunburst.
 - **Farbcodierung** — nach Dateityp (Kategorie) oder nach Größe (Heatmap).

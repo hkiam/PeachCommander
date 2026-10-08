@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Het bestandssysteem van een Docker-container is in een venster te doorzoeken als elke andere map, en een Docker-volume ook. Kies **Verbinden met Docker…** in het menu Netwerk, of klik op de knop **Docker** in de schijvenbalk, en de engine verschijnt in het actieve venster.
 
-Het is een plug-in en wordt **uitgeschakeld geleverd**. Zet hem aan bij **Configuratie ▸ Plug-ins…**. Hij begint uitgeschakeld omdat een verbinding met de Docker-daemon op uw Mac dezelfde rechten heeft als u — zie *Waar hij bij kan* verderop.
+Het is een plug-in en wordt **uitgeschakeld geleverd**. Zet hem aan bij **Configuratie ▸ Plug-ins beheren…**. Hij begint uitgeschakeld omdat een verbinding met de Docker-daemon op uw Mac dezelfde rechten heeft als u — zie *Waar hij bij kan* verderop.
 
 ## Wat u ziet
 
@@ -83,7 +83,7 @@ De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn z
 
 ## Instellingen
 
-**Configuratie ▸ Instellingen ▸ Docker** bevat dit alles. Dezelfde waarden staan in een klein bestand op `~/Library/Application Support/PeachCommander/Docker/docker.ini`, dat u bewerkt als u een machine vanuit een script inricht:
+**Configuratie ▸ Instellingen… ▸ Docker** bevat dit alles. Dezelfde waarden staan in een klein bestand op `~/Library/Application Support/PeachCommander/Docker/docker.ini`, dat u bewerkt als u een machine vanuit een script inricht:
 
 - `Endpoint` — een adres dat in plaats van het gevonden adres wordt gebruikt.
 - `ExecFallback` — `0` laat de plug-in uitsluitend Dockers archief-API gebruiken: hij voert dan nooit iets uit in een container, ten koste van het opsommen van een zeer grote map, verwijderen en hernoemen.

@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-L'extension System Monitor place un relevé en temps réel de l'activité de votre Mac directement dans la barre de titre de la fenêtre : de petites pastilles pour le processeur, la mémoire, le disque, le réseau et — là où le matériel les expose — le GPU, la batterie et les capteurs. Chaque pastille se met à jour une fois par seconde ; cliquez sur l'une d'elles pour une fenêtre surgissante avec un graphique d'historique et un détail complet. C'est une extension, vous pouvez donc l'activer, la configurer ou la retirer dans **Configuration ▸ Extensions…**.
+L'extension System Monitor place un relevé en temps réel de l'activité de votre Mac directement dans la barre de titre de la fenêtre : de petites pastilles pour le processeur, la mémoire, le disque, le réseau et — là où le matériel les expose — le GPU, la batterie et les capteurs. Chaque pastille se met à jour une fois par seconde ; cliquez sur l'une d'elles pour une fenêtre surgissante avec un graphique d'historique et un détail complet. C'est une extension, vous pouvez donc l'activer, la configurer ou la retirer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## Les pastilles de la barre de titre
 
@@ -24,7 +24,7 @@ Cliquez sur une pastille pour ouvrir une fenêtre surgissante avec la grande val
 
 ## La configurer
 
-Choisissez **Commandes ▸ System Monitor…** (ou ouvrez **Configuration ▸ Réglages ▸ System Monitor**) pour configurer le relevé :
+Choisissez **Commandes ▸ System Monitor…** (ou ouvrez **Configuration ▸ Réglages… ▸ System Monitor**) pour configurer le relevé :
 
 - **Afficher le moniteur système dans la barre de titre** — l'interrupteur principal des pastilles.
 - **Profil** — préréglages *Minimal*, *Moyen* ou *Maximal* qui choisissent un ensemble de modules judicieux.

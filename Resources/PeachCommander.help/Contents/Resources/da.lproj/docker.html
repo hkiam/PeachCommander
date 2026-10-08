@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker-containere og -volumener</h1>
 <p>En Docker-containers filsystem kan gennemses i et panel som enhver anden mappe, og det samme gælder et Docker-volumen. Vælg <strong>Opret forbindelse til Docker…</strong> i menuen Netværk, eller klik på <strong>Docker</strong>-brikken i drevlinjen, og motoren vises i det aktive panel.</p>
-<p>Det er et plugin, og det <strong>leveres slået fra</strong>. Slå det til under <strong>Konfiguration ▸ Plugins…</strong>. Det starter slået fra, fordi en forbindelse til Docker-dæmonen har de samme rettigheder på din Mac som du selv — se <em>Hvad det kan nå</em> nedenfor.</p>
+<p>Det er et plugin, og det <strong>leveres slået fra</strong>. Slå det til under <strong>Konfiguration ▸ Administrer plugins…</strong>. Det starter slået fra, fordi en forbindelse til Docker-dæmonen har de samme rettigheder på din Mac som du selv — se <em>Hvad det kan nå</em> nedenfor.</p>
 <h2 id="hvad-du-ser">Hvad du ser</h2>
 <p>Øverste niveau er tre mapper:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Punkterne vises kun inde i et Docker-drev; over en af dine egne mapper er de der slet ikke.</p>
 <p><strong>Loggen er også en fil.</strong> I roden af hver container ligger <code>docker-logs.txt</code> — som ikke er en fil i containeren: at læse den beder motoren om loggen. F3 på den åbner den i fremviseren, så dens søgning, spring til en linje og valg af tegnsæt alle gælder, hvilket et vindue for sig ikke kan give. En container, der virkelig har en fil med det navn, viser sin egen, og der kan ikke skrives til den virtuelle.</p>
 <h2 id="indstillinger">Indstillinger</h2>
-<p><strong>Konfiguration ▸ Indstillinger ▸ Docker</strong> indeholder det hele. De samme værdier ligger i en lille fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som er den, man retter, hvis man sætter en maskine op fra et script:</p>
+<p><strong>Konfiguration ▸ Indstillinger… ▸ Docker</strong> indeholder det hele. De samme værdier ligger i en lille fil i <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, som er den, man retter, hvis man sætter en maskine op fra et script:</p>
 <ul>
 <li><code>Endpoint</code> — en adresse, der skal bruges i stedet for den fundne.</li>
 <li><code>ExecFallback</code> — <code>0</code> får pluginet til kun at bruge Dockers arkiv-API: det kører så aldrig noget inde i en container, til gengæld for ikke at kunne vise en meget stor mappe, slette eller omdøbe.</li>

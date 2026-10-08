@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker-konténerek és -kötetek</h1>
 <p>Egy Docker-konténer fájlrendszere ugyanúgy böngészhető egy panelben, mint bármelyik mappa, és ez a Docker-kötetekre is igaz. Válassza a <strong>Kapcsolódás a Dockerhez…</strong> parancsot a Hálózat menüből, vagy kattintson a <strong>Docker</strong> gombra a meghajtósávon, és a motor megjelenik az aktív panelben.</p>
-<p>Ez egy bővítmény, és <strong>kikapcsolva kerül szállításra</strong>. Kapcsolja be a <strong>Konfiguráció ▸ Bővítmények…</strong> ablakban. Azért indul kikapcsolva, mert a Docker-démonhoz való kapcsolat ugyanazokkal a jogokkal rendelkezik az Ön Macjén, mint Ön maga — lásd <em>Mihez fér hozzá</em> alább.</p>
+<p>Ez egy bővítmény, és <strong>kikapcsolva kerül szállításra</strong>. Kapcsolja be a <strong>Konfiguráció ▸ Bővítmények kezelése…</strong> ablakban. Azért indul kikapcsolva, mert a Docker-démonhoz való kapcsolat ugyanazokkal a jogokkal rendelkezik az Ön Macjén, mint Ön maga — lásd <em>Mihez fér hozzá</em> alább.</p>
 <h2 id="amit-lat">Amit lát</h2>
 <p>A legfelső szint három mappa:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött egyáltalán nincsenek ott.</p>
 <p><strong>A napló egyben fájl is.</strong> Minden konténer gyökerében ott van a <code>docker-logs.txt</code> — amely nem a konténer fájlja: az olvasása a motortól kéri el a naplót. Az F3 megnyitja a megjelenítőben, így annak keresése, sorra ugrása és kódolásválasztása mind érvényes, amit egy saját ablak nem tud megadni. Az a konténer, amely valóban hoz egy ilyen nevű fájlt, a sajátját mutatja, a virtuálisba pedig nem lehet írni.</p>
 <h2 id="beallitasok">Beállítások</h2>
-<p>A <strong>Konfiguráció ▸ Beállítások ▸ Docker</strong> mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:</p>
+<p>A <strong>Konfiguráció ▸ Beállítások… ▸ Docker</strong> mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code> helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:</p>
 <ul>
 <li><code>Endpoint</code> — a megtalált helyett használandó cím.</li>
 <li><code>ExecFallback</code> — a <code>0</code> hatására a bővítmény kizárólag a Docker archívum-API-ját használja: ekkor soha nem futtat semmit egy konténerben, annak árán, hogy nem tud kilistázni nagyon nagy könyvtárat, törölni vagy átnevezni.</li>

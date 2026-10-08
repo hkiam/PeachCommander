@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Task Manager-insticksprogrammet förvandlar de processer som körs på din Mac till en mapp du kan bläddra i. Det visas som en **TaskManager**-enhet i enhetsraden; öppna den och varje process är en rad du kan sortera, granska som en fil eller avsluta — med samma tangenter som du redan använder för filer. Det är ett insticksprogram, så du kan slå av det eller ta bort det i **Konfiguration ▸ Insticksprogram…**.
+Task Manager-insticksprogrammet förvandlar de processer som körs på din Mac till en mapp du kan bläddra i. Det visas som en **TaskManager**-enhet i enhetsraden; öppna den och varje process är en rad du kan sortera, granska som en fil eller avsluta — med samma tangenter som du redan använder för filer. Det är ett insticksprogram, så du kan slå av det eller ta bort det i **Konfiguration ▸ Hantera plugin-program…**.
 
 ## Öppna det
 

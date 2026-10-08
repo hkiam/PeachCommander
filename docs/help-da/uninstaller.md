@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-At trække en app til papirkurven efterlader dens supportfiler, caches, indstillinger og containere spredt ud over dine Library-mapper. Uninstaller-pluginet fjerner et program **og** de rester: det finder alt, appen har efterladt, viser dig listen med en størrelse for hvert emne og flytter det hele til papirkurven, når du bekræfter. Det er et plugin, så du kan slå det fra eller fjerne det i **Konfiguration ▸ Plugins…**.
+At trække en app til papirkurven efterlader dens supportfiler, caches, indstillinger og containere spredt ud over dine Library-mapper. Uninstaller-pluginet fjerner et program **og** de rester: det finder alt, appen har efterladt, viser dig listen med en størrelse for hvert emne og flytter det hele til papirkurven, når du bekræfter. Det er et plugin, så du kan slå det fra eller fjerne det i **Konfiguration ▸ Administrer plugins…**.
 
 ## Afinstallér en app under markøren
 

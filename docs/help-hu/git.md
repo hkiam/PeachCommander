@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelen mutatja meg — külön alkalmazás és terminál
 nélkül. Két oszlopot, egy **Git** almenüt, egy dokkolt panelt az előkészítéshez és a véglegesítéshez, valamint
 előzmény-, blame-, ág-, ütközés- és újraalapozó ablakokat ad hozzá. A Macen már meglévő `git`-et használja.
-Bővítmény, így kikapcsolható vagy eltávolítható a **Konfiguráció ▸ Bővítmények…** alatt.
+Bővítmény, így kikapcsolható vagy eltávolítható a **Konfiguráció ▸ Bővítmények kezelése…** alatt.
 
 ## Mit ad hozzá
 

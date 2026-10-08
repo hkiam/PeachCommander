@@ -10,7 +10,7 @@ Git-insticksprogrammet visar tillståndet i ett Git-arkiv direkt i filpanelen �
 terminal. Det lägger till två kolumner, en undermeny **Git**, en dockad panel för att köa och checka in, och
 fönster för historik, blame, grenar, konflikter och ombasering. Det använder den `git` som redan är
 installerad på din Mac. Det är ett insticksprogram, så du kan stänga av det eller ta bort det under
-**Konfiguration ▸ Insticksprogram…**.
+**Konfiguration ▸ Hantera plugin-program…**.
 
 ## Vad det lägger till
 

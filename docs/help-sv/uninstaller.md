@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Att dra en app till papperskorgen lämnar dess stödfiler, cacheminnen, inställningar och behållare utspridda över dina Library-mappar. Uninstaller-insticksprogrammet tar bort ett program **och** de kvarlämnade filerna: det hittar allt appen lämnat efter sig, visar dig listan med en storlek för varje objekt och flyttar allt till papperskorgen när du bekräftar. Det är ett insticksprogram, så du kan slå av det eller ta bort det i **Konfiguration ▸ Insticksprogram…**.
+Att dra en app till papperskorgen lämnar dess stödfiler, cacheminnen, inställningar och behållare utspridda över dina Library-mappar. Uninstaller-insticksprogrammet tar bort ett program **och** de kvarlämnade filerna: det hittar allt appen lämnat efter sig, visar dig listan med en storlek för varje objekt och flyttar allt till papperskorgen när du bekräftar. Det är ett insticksprogram, så du kan slå av det eller ta bort det i **Konfiguration ▸ Hantera plugin-program…**.
 
 ## Avinstallera en app under markören
 

@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Das Dateisystem eines Docker-Containers lässt sich in einem Panel durchsuchen wie jeder Ordner, und ein Docker-Volume ebenso. Wählen Sie **Mit Docker verbinden…** im Menü Netz, oder klicken Sie auf den Chip **Docker** in der Laufwerksleiste, und die Engine erscheint im aktiven Panel.
 
-Es ist ein Plugin, und es **wird abgeschaltet ausgeliefert**. Einschalten können Sie es unter **Konfiguration ▸ Plugins…**. Es beginnt abgeschaltet, weil eine Verbindung zum Docker-Daemon auf Ihrem Mac dieselben Rechte hat wie Sie selbst — siehe *Worauf es zugreifen kann* weiter unten.
+Es ist ein Plugin, und es **wird abgeschaltet ausgeliefert**. Einschalten können Sie es unter **Konfiguration ▸ Plugins verwalten…**. Es beginnt abgeschaltet, weil eine Verbindung zum Docker-Daemon auf Ihrem Mac dieselben Rechte hat wie Sie selbst — siehe *Worauf es zugreifen kann* weiter unten.
 
 ## Was Sie sehen
 
@@ -83,7 +83,7 @@ Die Einträge erscheinen nur innerhalb eines Docker-Laufwerks; über einem eigen
 
 ## Einstellungen
 
-**Konfiguration ▸ Einstellungen ▸ Docker** enthält alles davon. Dieselben Werte liegen in einer kleinen Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`, die Sie bearbeiten, wenn Sie einen Rechner per Skript einrichten:
+**Konfiguration ▸ Einstellungen… ▸ Docker** enthält alles davon. Dieselben Werte liegen in einer kleinen Datei unter `~/Library/Application Support/PeachCommander/Docker/docker.ini`, die Sie bearbeiten, wenn Sie einen Rechner per Skript einrichten:
 
 - `Endpoint` — eine Adresse, die statt der gefundenen verwendet wird.
 - `ExecFallback` — `0` lässt das Plugin ausschließlich Dockers Archiv-API verwenden: Es führt dann nie etwas in einem Container aus, um den Preis, sehr große Verzeichnisse nicht auflisten und nicht löschen oder umbenennen zu können.

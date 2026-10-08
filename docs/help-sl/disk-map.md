@@ -61,7 +61,7 @@ Za odstranitev več elementov naenkrat uporabite **zbiralnik**: desni klik ▸ *
 
 ## Nastavitve
 
-Zemljevid diska doda svojo stran v okno Nastavitve (**Konfiguracija ▸ Nastavitve ▸ Zemljevid diska**):
+Zemljevid diska doda svojo stran v okno Nastavitve (**Konfiguracija ▸ Nastavitve… ▸ Zemljevid diska**):
 
 - **Slog grafa** — drevesni zemljevid ali sončni izbruh.
 - **Barvno kodiranje** — po vrsti datoteke (kategorija) ali po velikosti (toplotni zemljevid).

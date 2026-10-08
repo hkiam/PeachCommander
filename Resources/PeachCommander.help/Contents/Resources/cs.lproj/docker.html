@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Kontejnery a svazky Dockeru</h1>
 <p>Souborový systém kontejneru Dockeru lze procházet v panelu jako kteroukoli složku a totéž platí pro svazek Dockeru. Zvolte <strong>Připojit k Dockeru…</strong> v nabídce Síť nebo klepněte na štítek <strong>Docker</strong> v liště jednotek a stroj se objeví v aktivním panelu.</p>
-<p>Je to zásuvný modul a <strong>dodává se vypnutý</strong>. Zapněte jej v <strong>Konfigurace ▸ Zásuvné moduly…</strong>. Začíná vypnutý, protože spojení s démonem Dockeru má na vašem Macu stejná práva jako vy sami — viz <em>K čemu má přístup</em> níže.</p>
+<p>Je to zásuvný modul a <strong>dodává se vypnutý</strong>. Zapněte jej v <strong>Konfigurace ▸ Spravovat zásuvné moduly…</strong>. Začíná vypnutý, protože spojení s démonem Dockeru má na vašem Macu stejná práva jako vy sami — viz <em>K čemu má přístup</em> níže.</p>
 <h2 id="co-uvidite">Co uvidíte</h2>
 <p>Nejvyšší úroveň tvoří tři složky:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Položky se objeví jen uvnitř jednotky Dockeru; nad vlastní složkou tam nejsou vůbec.</p>
 <p><strong>Protokol je zároveň soubor.</strong> V kořeni každého kontejneru leží <code>docker-logs.txt</code> — který není souborem v kontejneru: jeho čtení si vyžádá protokol od enginu. F3 na něm jej otevře v prohlížeči, takže platí jeho hledání, skok na řádek i volba kódování — což samostatné okno dát nemůže. Kontejner, který soubor toho jména opravdu nese, ukáže svůj vlastní, a do virtuálního nelze nic zapsat.</p>
 <h2 id="nastaveni">Nastavení</h2>
-<p><strong>Konfigurace ▸ Nastavení ▸ Docker</strong> obsahuje všechno z toho. Tytéž hodnoty leží v malém souboru v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, který upravíte, když stroj připravujete skriptem:</p>
+<p><strong>Konfigurace ▸ Nastavení… ▸ Docker</strong> obsahuje všechno z toho. Tytéž hodnoty leží v malém souboru v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, který upravíte, když stroj připravujete skriptem:</p>
 <ul>
 <li><code>Endpoint</code> — adresa, která se použije místo nalezené.</li>
 <li><code>ExecFallback</code> — <code>0</code> způsobí, že modul používá výhradně archivní API Dockeru: nikdy pak uvnitř kontejneru nic nespustí, za cenu toho, že nedokáže vypsat velmi velký adresář, mazat ani přejmenovávat.</li>

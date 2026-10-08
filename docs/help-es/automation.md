@@ -63,7 +63,7 @@ El otro sentido: un script tuyo, ejecutado por Peach Commander.
 
 Esto es un plugin, y se entrega **desactivado**, porque ejecutar un programa de tu elección puede hacer todo lo que hace el resto de la aplicación y varias cosas que ninguna parte de ella cubre. Dos interruptores, ambos apagados hasta que los pongas:
 
-1. **Configuración ▸ Plugins…** — activa **Scripting**.
+1. **Configuración ▸ Gestionar plugins…** — activa **Scripting**.
 2. **Ajustes ▸ IA** — activa **Permitir ejecutar scripts**. Está en esa página porque es el mismo tipo de permiso que el shell del asistente, y ambos van juntos.
 
 Después pon un script en `scripts/`, dentro de tu carpeta de configuración — **Órdenes ▸ Abrir la carpeta de scripts** te lleva allí y deja un ejemplo la primera vez. Un archivo `.applescript`, `.scpt` o `.jxa` en esa carpeta *es* un script; no hay nada que registrar.

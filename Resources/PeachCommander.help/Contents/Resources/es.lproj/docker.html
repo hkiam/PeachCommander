@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Contenedores y volúmenes de Docker</h1>
 <p>El sistema de archivos de un contenedor Docker se puede explorar en un panel como cualquier carpeta, y un volumen de Docker también. Elija <strong>Conectar con Docker…</strong> en el menú Red, o haga clic en la ficha <strong>Docker</strong> de la barra de unidades, y el motor aparecerá en el panel activo.</p>
-<p>Es un complemento y <strong>se entrega desactivado</strong>. Actívelo en <strong>Configuración ▸ Complementos…</strong>. Empieza desactivado porque una conexión al demonio de Docker tiene en su Mac los mismos permisos que usted; véase <em>A qué puede acceder</em> más abajo.</p>
+<p>Es un complemento y <strong>se entrega desactivado</strong>. Actívelo en <strong>Configuración ▸ Gestionar plugins…</strong>. Empieza desactivado porque una conexión al demonio de Docker tiene en su Mac los mismos permisos que usted; véase <em>A qué puede acceder</em> más abajo.</p>
 <h2 id="lo-que-ve">Lo que ve</h2>
 <p>El nivel superior son tres carpetas:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Las entradas aparecen solo dentro de una unidad de Docker; sobre una carpeta suya no están en absoluto.</p>
 <p><strong>El registro también es un archivo.</strong> La raíz de cada contenedor contiene <code>docker-logs.txt</code>, que no es un archivo del contenedor: leerlo le pide el registro al motor. F3 sobre él lo abre en el visor, así que la búsqueda del visor, su salto a una línea y su elección de codificación se aplican, que es lo que una ventana propia no puede dar. Un contenedor que realmente trae un archivo con ese nombre muestra el suyo, y en el virtual no se puede escribir nada.</p>
 <h2 id="ajustes">Ajustes</h2>
-<p><strong>Configuración ▸ Ajustes ▸ Docker</strong> tiene todo esto. Los mismos valores están en un archivo pequeño en <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, que es lo que hay que editar si prepara una máquina desde un script:</p>
+<p><strong>Configuración ▸ Ajustes… ▸ Docker</strong> tiene todo esto. Los mismos valores están en un archivo pequeño en <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, que es lo que hay que editar si prepara una máquina desde un script:</p>
 <ul>
 <li><code>Endpoint</code> — una dirección que usar en lugar de la encontrada.</li>
 <li><code>ExecFallback</code> — <code>0</code> hace que el complemento use la API de archivo de Docker y nada más: entonces nunca ejecutará nada dentro de un contenedor, a costa de no poder listar un directorio muy grande, ni borrar, ni renombrar.</li>

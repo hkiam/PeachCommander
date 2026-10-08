@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Apăsați **F3** pe un fișier compilat și veți vedea cod sursă în loc de octeți. Fac asta două extensii — una pentru Java (`.class`, `.jar`, `.apk`, `.dex`) și una pentru .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — și se comportă la fel, așa că pagina aceasta le acoperă pe amândouă. Fiecare poate fi dezactivată sau eliminată separat din **Configurație ▸ Extensii…**.
+Apăsați **F3** pe un fișier compilat și veți vedea cod sursă în loc de octeți. Fac asta două extensii — una pentru Java (`.class`, `.jar`, `.apk`, `.dex`) și una pentru .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — și se comportă la fel, așa că pagina aceasta le acoperă pe amândouă. Fiecare poate fi dezactivată sau eliminată separat din **Configurație ▸ Gestionează pluginurile…**.
 
 O arhivă apare ca un arbore al claselor sale; o clasă singură, ca un fișier. **Decompilează în surse** din meniul Comenzi scrie rezultatul și îl pune într-un panou, ca să puteți căuta, compara și copia în el ca în orice alt dosar cu surse.
 

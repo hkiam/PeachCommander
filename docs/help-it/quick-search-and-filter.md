@@ -15,7 +15,7 @@ Quando una cartella contiene centinaia di elementi, raramente hai bisogno di sco
 3. Continua a digitare per affinare la corrispondenza, o passa da una corrispondenza all'altra con ↑ e ↓ finché la ricerca è visibile. Premere di nuovo la stessa lettera scorre anch'esso gli elementi che iniziano con quella lettera.
 4. Il testo digitato si cancella dopo una breve pausa, così puoi iniziare una nuova ricerca in qualsiasi momento.
 
-Per impostazione predefinita, le lettere semplici vanno alla riga di comando e la ricerca rapida si attiva con Ctrl+Opzione+lettera (il comportamento classico). Puoi impostare la ricerca rapida per rispondere invece alla digitazione semplice, o disattivarla, nelle impostazioni di configurazione.
+Per impostazione predefinita, le lettere semplici vanno alla riga di comando e la ricerca rapida si attiva con Ctrl+Opzione+lettera (il comportamento classico). Puoi impostare la ricerca rapida per rispondere invece alla digitazione semplice, o disattivarla, nella pagina **Operazione** di **Configurazione ▸ Impostazioni…**.
 
 ## Filtra l'elenco (filtro rapido)
 

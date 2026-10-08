@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Trykk F3 på en `.md`- eller `.html`-fil, og den vises formatert i stedet for som kildetekst: overskrifter, lister, tabeller, lenker, oppgavelister og kodeblokker farget etter språk. Diagrammer skrevet som ` ```mermaid `-blokker tegnes, og matematikk skrevet mellom dollartegn settes.
 
-Dette er et plugin. Alt på denne siden kommer fra **Markdown and HTML**, som du kan slå av i **Konfigurasjon ▸ Plugins…** — lenger ned står det hva som da endres.
+Dette er et plugin. Alt på denne siden kommer fra **Markdown and HTML**, som du kan slå av i **Konfigurasjon ▸ Administrer programtillegg…** — lenger ned står det hva som da endres.
 
 ## Hvor den formaterte visningen vises
 
@@ -27,7 +27,7 @@ En kodeblokk med språket `mermaid` blir et diagram; `$…$` og `$$…$$` blir s
 
 Et dokument uten diagram og uten formel laster ingen av motorene, så en vanlig README koster ingenting ekstra. Et diagram som ikke kan leses viser feilen der blokken sto, med blokkens egen tekst under, i stedet for å forsvinne.
 
-Begge kan slås av hver for seg i **Konfigurasjon ▸ Innstillinger ▸ Markdown**, der man også ser hvilken versjon som er i bruk og hvor den kommer fra.
+Begge kan slås av hver for seg i **Konfigurasjon ▸ Innstillinger… ▸ Markdown**, der man også ser hvilken versjon som er i bruk og hvor den kommer fra.
 
 ## Din egen versjon
 
@@ -56,7 +56,7 @@ Den formaterte siden er bevisst avstengt, for en Markdown-fil er innhold som kom
 
 ## Slå det av
 
-Slå pluginet av i **Konfigurasjon ▸ Plugins…**, og `.md`- og `.html`-filer åpnes som tekst. Oversikten virker fortsatt, syntaksfargingen virker fortsatt, og ingenting annet endres — den formaterte visningen tilbys bare ikke. Det samme gjelder om du bare slår av den formaterte visningen på pluginets innstillingsside.
+Slå pluginet av i **Konfigurasjon ▸ Administrer programtillegg…**, og `.md`- og `.html`-filer åpnes som tekst. Oversikten virker fortsatt, syntaksfargingen virker fortsatt, og ingenting annet endres — den formaterte visningen tilbys bare ikke. Det samme gjelder om du bare slår av den formaterte visningen på pluginets innstillingsside.
 
 ## Grenser
 

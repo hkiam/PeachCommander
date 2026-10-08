@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Arrastrar una app a la Papelera deja sus archivos de soporte, cachés, preferencias y contenedores dispersos por sus carpetas Library. El complemento Uninstaller elimina una aplicación **y** esos restos: encuentra todo lo que la app dejó atrás, le muestra la lista con un tamaño para cada elemento y lo mueve todo a la Papelera una vez que usted confirma. Al ser un complemento, puede desactivarlo o eliminarlo desde **Configuración ▸ Complementos…**.
+Arrastrar una app a la Papelera deja sus archivos de soporte, cachés, preferencias y contenedores dispersos por sus carpetas Library. El complemento Uninstaller elimina una aplicación **y** esos restos: encuentra todo lo que la app dejó atrás, le muestra la lista con un tamaño para cada elemento y lo mueve todo a la Papelera una vez que usted confirma. Al ser un complemento, puede desactivarlo o eliminarlo desde **Configuración ▸ Gestionar plugins…**.
 
 ## Desinstalar una app bajo el cursor
 

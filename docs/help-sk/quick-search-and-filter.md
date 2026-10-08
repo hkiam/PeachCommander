@@ -15,7 +15,7 @@ Keď priečinok obsahuje stovky položiek, málokedy potrebujete posúvať. Peac
 3. Pokračujte v písaní na spresnenie zhody, alebo prechádzajte medzi zhodami klávesmi ↑ a ↓, kým je hľadanie zobrazené. Opätovné stlačenie toho istého písmena tiež prechádza položky, ktoré ním začínajú.
 4. Napísaný text sa po krátkej pauze vymaže, takže nové hľadanie môžete začať kedykoľvek.
 
-Predvolene obyčajné písmená idú do príkazového riadka a rýchle hľadanie sa spúšťa pomocou Ctrl+Option+písmeno (klasické správanie). Rýchle hľadanie môžete prepnúť tak, aby reagovalo na obyčajné písanie, alebo ho vypnúť, v nastaveniach konfigurácie.
+Predvolene obyčajné písmená idú do príkazového riadka a rýchle hľadanie sa spúšťa pomocou Ctrl+Option+písmeno (klasické správanie). Rýchle hľadanie môžete prepnúť tak, aby reagovalo na obyčajné písanie, alebo ho vypnúť, na stránke **Operácia** v **Konfigurácia ▸ Nastavenia…**.
 
 ## Filtrovanie zoznamu (rýchly filter)
 

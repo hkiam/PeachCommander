@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Il filesystem di un container Docker si sfoglia in un pannello come una cartella qualsiasi, e lo stesso vale per un volume Docker. Scegli **Connetti a Docker…** dal menu Rete, oppure fai clic sulla targhetta **Docker** nella barra dei volumi, e il motore compare nel pannello attivo.
 
-È un plugin ed è **fornito disattivato**. Attivalo in **Configurazione ▸ Plugin…**. Parte spento perché una connessione al demone Docker ha sul tuo Mac gli stessi diritti che hai tu — vedi *A cosa può accedere* più sotto.
+È un plugin ed è **fornito disattivato**. Attivalo in **Configurazione ▸ Gestisci plugin…**. Parte spento perché una connessione al demone Docker ha sul tuo Mac gli stessi diritti che hai tu — vedi *A cosa può accedere* più sotto.
 
 ## Che cosa vedi
 
@@ -83,7 +83,7 @@ Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono a
 
 ## Impostazioni
 
-**Configurazione ▸ Impostazioni ▸ Docker** contiene tutto questo. Gli stessi valori stanno in un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`, che è ciò da modificare se prepari una macchina da uno script:
+**Configurazione ▸ Impostazioni… ▸ Docker** contiene tutto questo. Gli stessi valori stanno in un piccolo file in `~/Library/Application Support/PeachCommander/Docker/docker.ini`, che è ciò da modificare se prepari una macchina da uno script:
 
 - `Endpoint` — un indirizzo da usare al posto di quello trovato.
 - `ExecFallback` — `0` fa usare al plugin soltanto l’API di archivio di Docker: non eseguirà mai nulla dentro un container, al prezzo di non poter elencare una directory molto grande, né eliminare, né rinominare.

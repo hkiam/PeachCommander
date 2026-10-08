@@ -15,7 +15,7 @@ Når en mappe indeholder hundredvis af emner, har du sjældent brug for at rulle
 3. Fortsæt med at skrive for at forfine matchet, eller skift mellem matchene med ↑ og ↓, mens søgningen vises. Trykker du på det samme bogstav igen, cykler du også gennem emner, der starter med det.
 4. Den indtastede tekst ryddes efter en kort pause, så du kan starte en ny søgning når som helst.
 
-Som standard går almindelige bogstaver til kommandolinjen, og hurtigsøgning udløses med Ctrl+Option+bogstav (den klassiske adfærd). Du kan skifte hurtigsøgning til at reagere på almindelig skrivning i stedet, eller slå den fra, i konfigurationsindstillingerne.
+Som standard går almindelige bogstaver til kommandolinjen, og hurtigsøgning udløses med Ctrl+Option+bogstav (den klassiske adfærd). Du kan skifte hurtigsøgning til at reagere på almindelig skrivning i stedet, eller slå den fra, på siden **Handling** i **Konfiguration ▸ Indstillinger…**.
 
 ## Filtrér listen (hurtigfilter)
 

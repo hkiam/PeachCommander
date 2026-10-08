@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Egy WebDAV-kiszolgáló — Nextcloud, ownCloud, egy Synology, egy egyetemi fájltár — ugyanúgy böngészhető egy panelben, mint bármelyik mappa. Válassza a **WebDAV-csatlakozás…** lehetőséget a Hálózat menüből, adjon meg egy URL-t, és a kiszolgáló megjelenik az aktív panelben.
 
-Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények…** alatt.
+Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények kezelése…** alatt.
 
 ## Csatlakozás
 

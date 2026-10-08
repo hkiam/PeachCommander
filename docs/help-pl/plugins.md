@@ -37,7 +37,7 @@ Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:
 
 ## Włączanie lub wyłączanie wtyczek
 
-1. Wybierz Konfiguracja ▸ Wtyczki…, aby otworzyć okno wtyczek.
+1. Wybierz Konfiguracja ▸ Zarządzaj wtyczkami…, aby otworzyć okno wtyczek.
 2. Każda zainstalowana wtyczka pojawia się na liście z nazwą, typem i polem „Włączona”.
 3. Zaznacz lub odznacz pole, aby włączyć lub wyłączyć wtyczkę. Zmiany wchodzą w życie od razu — włączone wtyczki dodają swoje menu, kolumny i funkcje; wyłączone trzymają się z boku.
 
@@ -50,8 +50,8 @@ Pobrana wtyczka przychodzi jako **pakiet wtyczki** — plik z rozszerzeniem `.pc
 
 - **Kliknij go dwukrotnie** w Finderze. Peach Commander otworzy się i zapyta.
 - **Naciśnij na nim Enter** w panelu. Peach Commander to menedżer plików — plik zwykle i tak już tam jest.
-- **Przeciągnij go na okno wtyczek** (Konfiguracja ▸ Wtyczki…).
-- Wybierz **Konfiguracja ▸ Wtyczki… ▸ Zainstaluj…** i wskaż pakiet, `.zip` zawierający wtyczkę albo rozpakowany pakunek wtyczki.
+- **Przeciągnij go na okno wtyczek** (Konfiguracja ▸ Zarządzaj wtyczkami…).
+- Wybierz **Konfiguracja ▸ Zarządzaj wtyczkami… ▸ Zainstaluj…** i wskaż pakiet, `.zip` zawierający wtyczkę albo rozpakowany pakunek wtyczki.
 
 Zanim cokolwiek zostanie wczytane, okno dialogowe podaje nazwę, wersję, identyfikator i typ wtyczki oraz to, jakie typy plików przejmie — wtyczka roszcząca sobie prawo do `.iso` staje się czytnikiem aplikacji dla tych plików. Nic nie zostanie zainstalowane, dopóki nie klikniesz **Zainstaluj**.
 

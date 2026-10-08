@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Vigye a kurzort egy naplófájlra, és válassza a **Megjelenítés naplóként…** lehetőséget, hogy naplókra és ne szövegre készült ablakban nyíljon meg: soronként egy sor, minden sor szintje felismerve és színezve, egy szűrő, és egy követés, amely lépést tart, amíg a fájl még íródik.
 
-Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények…** alatt. Nélküle az F3 úgy mutat egy naplót, mint bármely más szövegfájlt.
+Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények kezelése…** alatt. Nélküle az F3 úgy mutat egy naplót, mint bármely más szövegfájlt.
 
 ![A naplónéző egy szolgáltatásnaplóval, minden szint saját színnel](screenshots/log-viewer.png)
 *(Ábra: minden szint saját színt kap, a nézet pedig tovább követi a fájlt.)*

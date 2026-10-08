@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Trascinare un'app nel Cestino lascia i suoi file di supporto, le cache, le preferenze e i container sparsi nelle vostre cartelle Libreria. Il plugin Uninstaller rimuove un'applicazione **e** quei residui: trova tutto ciò che l'app ha lasciato dietro di sé, vi mostra l'elenco con una dimensione per ciascun elemento e sposta il tutto nel Cestino dopo la vostra conferma. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da **Configurazione ▸ Plugin…**.
+Trascinare un'app nel Cestino lascia i suoi file di supporto, le cache, le preferenze e i container sparsi nelle vostre cartelle Libreria. Il plugin Uninstaller rimuove un'applicazione **e** quei residui: trova tutto ciò che l'app ha lasciato dietro di sé, vi mostra l'elenco con una dimensione per ciascun elemento e sposta il tutto nel Cestino dopo la vostra conferma. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da **Configurazione ▸ Gestisci plugin…**.
 
 ## Disinstallare un'app sotto il cursore
 

@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker containers and volumes</h1>
 <p>A Docker container's filesystem can be browsed in a panel like any folder, and so can a Docker volume. Choose <strong>Docker Connect…</strong> from the Network menu, or click the <strong>Docker</strong> chip in the drive bar, and the engine appears in the active panel.</p>
-<p>It is a plugin, and it <strong>ships switched off</strong>. Turn it on in <strong>Configuration ▸ Plugins…</strong>. It starts off because a connection to a Docker daemon carries the same rights on your Mac as you do — see <em>What it can reach</em> below.</p>
+<p>It is a plugin, and it <strong>ships switched off</strong>. Turn it on in <strong>Configuration ▸ Manage Plugins…</strong>. It starts off because a connection to a Docker daemon carries the same rights on your Mac as you do — see <em>What it can reach</em> below.</p>
 <h2 id="what-you-see">What you see</h2>
 <p>The top level is three folders:</p>
 <ul>
@@ -64,7 +64,7 @@ say:</p>
 <p>Access to a Docker daemon generally means far-reaching access to the machine it runs on. The plugin has exactly the rights you have and asks for nothing more: it stores no credential, never touches Docker's own directories on your disk, and performs no privileged action on your behalf.</p>
 <p>The one thing it creates is a <strong>throwaway container</strong> — and only to reach a volume that no existing container mounts, since a volume is only visible from inside something that mounts it. It is never started, it is labelled as Peach Commander's, and it is removed when you leave the drive.</p>
 <h2 id="settings">Settings</h2>
-<p><strong>Configuration ▸ Settings ▸ Docker</strong> has all of it. The same values live in a small file at
+<p><strong>Configuration ▸ Settings… ▸ Docker</strong> has all of it. The same values live in a small file at
 <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, which is what to edit if you are
 setting a machine up from a script:</p>
 <ul>

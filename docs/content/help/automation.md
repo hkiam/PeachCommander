@@ -64,7 +64,7 @@ The other direction: a script of yours, run by Peach Commander.
 
 This is a plugin, and it ships **switched off**, because running a program of your choosing can do everything the rest of the app can and several things none of it covers. Two switches, both off until you set them:
 
-1. **Configuration ▸ Plugins…** — enable **Scripting**.
+1. **Configuration ▸ Manage Plugins…** — enable **Scripting**.
 2. **Settings ▸ AI** — turn on **Let scripts run**. It is on that page because it is the same kind of permission as the assistant's shell, and both live together.
 
 Then put a script in `scripts/` inside your configuration folder — **Commands ▸ Open Scripts Folder** takes you there and leaves an example behind the first time. A `.applescript`, `.scpt` or `.jxa` file in that folder *is* a script; there is nothing to register.

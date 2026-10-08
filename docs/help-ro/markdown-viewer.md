@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Apăsați F3 pe un fișier `.md` sau `.html` și el apare formatat, nu ca sursă: titluri, liste, tabele, legături, liste de sarcini și blocuri de cod colorate după limbaj. Diagramele scrise ca blocuri ` ```mermaid ` sunt desenate, iar matematica scrisă între semne de dolar este culeasă.
 
-Acesta este un plugin. Tot ce se află pe această pagină vine de la **Markdown and HTML**, pe care îl puteți dezactiva în **Configurație ▸ Plugin-uri…** — mai jos se explică ce se schimbă atunci.
+Acesta este un plugin. Tot ce se află pe această pagină vine de la **Markdown and HTML**, pe care îl puteți dezactiva în **Configurație ▸ Gestionează pluginurile…** — mai jos se explică ce se schimbă atunci.
 
 ## Unde apare vizualizarea formatată
 
@@ -27,7 +27,7 @@ Un bloc de cod cu limbajul `mermaid` devine o diagramă; `$…$` și `$$…$$` d
 
 Un document fără diagramă și fără formulă nu încarcă niciunul dintre motoare, deci un README obișnuit nu costă nimic în plus. O diagramă care nu poate fi citită arată eroarea acolo unde era blocul, cu textul blocului dedesubt, în loc să dispară.
 
-Ambele pot fi dezactivate separat în **Configurație ▸ Configurări ▸ Markdown**, unde se vede și ce versiune este în uz și de unde provine.
+Ambele pot fi dezactivate separat în **Configurație ▸ Configurări… ▸ Markdown**, unde se vede și ce versiune este în uz și de unde provine.
 
 ## Versiunea dumneavoastră
 
@@ -56,7 +56,7 @@ Pagina formatată este izolată în mod deliberat, pentru că un fișier Markdow
 
 ## Dezactivarea
 
-Dezactivați plugin-ul în **Configurație ▸ Plugin-uri…** și fișierele `.md` și `.html` se vor deschide ca text. Schema funcționează în continuare, colorarea sintaxei funcționează în continuare și nimic altceva nu se schimbă — vizualizarea formatată pur și simplu nu mai este oferită. Același lucru este valabil dacă dezactivați doar vizualizarea formatată în pagina de setări a plugin-ului.
+Dezactivați plugin-ul în **Configurație ▸ Gestionează pluginurile…** și fișierele `.md` și `.html` se vor deschide ca text. Schema funcționează în continuare, colorarea sintaxei funcționează în continuare și nimic altceva nu se schimbă — vizualizarea formatată pur și simplu nu mai este oferită. Același lucru este valabil dacă dezactivați doar vizualizarea formatată în pagina de setări a plugin-ului.
 
 ## Limite
 

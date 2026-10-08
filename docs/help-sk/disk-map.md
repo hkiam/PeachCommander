@@ -61,7 +61,7 @@ Na odstránenie viacerých položiek naraz použite **zberač**: pravý klik ▸
 
 ## Nastavenia
 
-Mapa disku pridáva vlastnú stránku do okna Nastavenia (**Konfigurácia ▸ Nastavenia ▸ Mapa disku**):
+Mapa disku pridáva vlastnú stránku do okna Nastavenia (**Konfigurácia ▸ Nastavenia… ▸ Mapa disku**):
 
 - **Štýl grafu** — stromová mapa alebo slnečný lúč.
 - **Farebné kódovanie** — podľa typu súboru (kategória) alebo podľa veľkosti (tepelná mapa).

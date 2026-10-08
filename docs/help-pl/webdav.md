@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Serwer WebDAV — Nextcloud, ownCloud, Synology, uczelniany magazyn plików — można przeglądać w panelu jak każdy folder. Wybierz **Połącz przez WebDAV…** z menu Sieć, podaj URL, a serwer pojawi się w aktywnym panelu.
 
-To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Łączenie
 

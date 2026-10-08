@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-De System Monitor-plug-in plaatst een live-uitlezing van de activiteit van je Mac direct in de titelbalk van het venster: kleine chips voor CPU, geheugen, schijf, netwerk en — waar de hardware ze biedt — GPU, batterij en sensoren. Elke chip wordt eens per seconde bijgewerkt; klik op er een voor een pop-up met een geschiedenisgrafiek en een gedetailleerd overzicht. Het is een plug-in, dus je kunt hem inschakelen, configureren of verwijderen via **Configuratie ▸ Plug-ins…**.
+De System Monitor-plug-in plaatst een live-uitlezing van de activiteit van je Mac direct in de titelbalk van het venster: kleine chips voor CPU, geheugen, schijf, netwerk en — waar de hardware ze biedt — GPU, batterij en sensoren. Elke chip wordt eens per seconde bijgewerkt; klik op er een voor een pop-up met een geschiedenisgrafiek en een gedetailleerd overzicht. Het is een plug-in, dus je kunt hem inschakelen, configureren of verwijderen via **Configuratie ▸ Plug-ins beheren…**.
 
 ## De chips in de titelbalk
 
@@ -24,7 +24,7 @@ Klik op een chip om een pop-up te openen met de grote huidige waarde, een **HIST
 
 ## Configureren
 
-Kies **Opdrachten ▸ System Monitor…** (of open **Configuratie ▸ Instellingen ▸ System Monitor**) om de uitlezing te configureren:
+Kies **Opdrachten ▸ System Monitor…** (of open **Configuratie ▸ Instellingen… ▸ System Monitor**) om de uitlezing te configureren:
 
 - **Systeemmonitor in titelbalk tonen** — de hoofdschakelaar aan/uit voor de chips.
 - **Profiel** — de voorinstellingen *Minimaal*, *Gemiddeld* of *Maximaal* die een zinvolle set modules kiezen.

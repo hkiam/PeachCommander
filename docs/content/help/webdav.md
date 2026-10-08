@@ -9,7 +9,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 A WebDAV server — Nextcloud, ownCloud, a Synology, a university file store — can be browsed in a panel like any folder. Choose **WebDAV Connect…** from the Network menu, give it a URL, and the server appears in the active panel.
 
-It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
+It is a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## Connecting
 

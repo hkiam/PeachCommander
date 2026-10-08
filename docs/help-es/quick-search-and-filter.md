@@ -15,7 +15,7 @@ Cuando una carpeta contiene cientos de elementos, rara vez necesitas desplazarte
 3. Sigue escribiendo para afinar la coincidencia, o pasa de una coincidencia a otra con ↑ y ↓ mientras la búsqueda está visible. Pulsar de nuevo la misma letra también recorre los elementos que empiezan por ella.
 4. El texto escrito se borra tras una breve pausa, así que puedes iniciar una nueva búsqueda en cualquier momento.
 
-Por omisión, las letras normales van a la línea de comandos y la búsqueda rápida se activa con Ctrl+Option+letra (el comportamiento clásico). Puedes cambiar la búsqueda rápida para que responda a la escritura normal, o desactivarla, en los ajustes de Configuración.
+Por omisión, las letras normales van a la línea de comandos y la búsqueda rápida se activa con Ctrl+Option+letra (el comportamiento clásico). Puedes cambiar la búsqueda rápida para que responda a la escritura normal, o desactivarla, en la página **Operación** de **Configuración ▸ Ajustes…**.
 
 ## Filtrar la lista (filtro rápido)
 

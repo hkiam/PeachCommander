@@ -10,7 +10,7 @@ Un bucket de S3 se puede explorar en un panel como cualquier carpeta. Elija **Co
 
 Funciona con Amazon S3 y con todo lo que hable el mismo protocolo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 y DigitalOcean Spaces son accesibles.
 
-Es un complemento, así que puede desactivarlo o quitarlo en **Configuración ▸ Complementos…**.
+Es un complemento, así que puede desactivarlo o quitarlo en **Configuración ▸ Gestionar plugins…**.
 
 ## Conectar
 

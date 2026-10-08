@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-L'extension Task Manager transforme les processus en cours sur votre Mac en un dossier que vous pouvez parcourir. Elle apparaît comme un lecteur **TaskManager** dans la barre de lecteurs ; ouvrez-le et chaque processus est une ligne que vous pouvez trier, examiner comme un fichier, ou terminer — avec les mêmes touches que vous utilisez déjà pour les fichiers. C'est une extension, vous pouvez donc la désactiver ou la retirer dans **Configuration ▸ Extensions…**.
+L'extension Task Manager transforme les processus en cours sur votre Mac en un dossier que vous pouvez parcourir. Elle apparaît comme un lecteur **TaskManager** dans la barre de lecteurs ; ouvrez-le et chaque processus est une ligne que vous pouvez trier, examiner comme un fichier, ou terminer — avec les mêmes touches que vous utilisez déjà pour les fichiers. C'est une extension, vous pouvez donc la désactiver ou la retirer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## L'ouvrir
 

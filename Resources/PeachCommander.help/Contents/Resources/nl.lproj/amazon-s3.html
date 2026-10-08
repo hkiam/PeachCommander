@@ -12,7 +12,7 @@
 <h1>Amazon S3 en S3-compatibele opslag</h1>
 <p>Een S3-bucket is in een paneel te doorzoeken als elke andere map. Kies <strong>Verbinden met Amazon S3…</strong> in het menu Netwerk, vul het endpoint en je sleutels in, en de opslag verschijnt in het actieve paneel — met de <strong>bucketlijst als bovenste niveau</strong> en elke bucket als een gewone map daaronder.</p>
 <p>Het werkt met Amazon S3 en met alles wat hetzelfde protocol spreekt: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 en DigitalOcean Spaces zijn allemaal bereikbaar.</p>
-<p>Het is een plug-in, dus je kunt hem uitschakelen of verwijderen in <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<p>Het is een plug-in, dus je kunt hem uitschakelen of verwijderen in <strong>Configuratie ▸ Plug-ins beheren…</strong>.</p>
 <h2 id="verbinden">Verbinden</h2>
 <p>Het menu <strong>Dienst</strong> vult de twee instellingen in die je niet kunt raden — of HTTPS wordt gebruikt en of het endpoint padgebaseerde adressering nodig heeft — en laat het endpoint zelf aan jou, omdat dat meestal van je account afhangt. Beide instellingen mislukken op een manier die naar iets anders lijkt: virtual-hosted adressering tegen een kaal IP-adres is een naamsopzoekfout, en padgebaseerde adressering tegen Amazon is een «bucket bestaat niet» die als een ontbrekende bucket leest.</p>
 <p>De <strong>secret access key</strong> gaat via het hostprogramma naar de <strong>Sleutelhanger</strong>, nooit naar een configuratiebestand. Laat het veld bij een volgende verbinding leeg en de opgeslagen sleutel wordt gebruikt.</p>

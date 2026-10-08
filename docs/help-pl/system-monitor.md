@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Wtyczka System Monitor umieszcza podgląd aktywności Twojego Maca w czasie rzeczywistym bezpośrednio na pasku tytułu okna: małe wskaźniki dla procesora, pamięci, dysku, sieci oraz — tam, gdzie sprzęt je udostępnia — GPU, baterii i czujników. Każdy wskaźnik aktualizuje się raz na sekundę; kliknij go, aby otworzyć okienko z wykresem historii i szczegółowym rozbiciem. Jest to wtyczka, więc możesz ją włączyć, skonfigurować lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+Wtyczka System Monitor umieszcza podgląd aktywności Twojego Maca w czasie rzeczywistym bezpośrednio na pasku tytułu okna: małe wskaźniki dla procesora, pamięci, dysku, sieci oraz — tam, gdzie sprzęt je udostępnia — GPU, baterii i czujników. Każdy wskaźnik aktualizuje się raz na sekundę; kliknij go, aby otworzyć okienko z wykresem historii i szczegółowym rozbiciem. Jest to wtyczka, więc możesz ją włączyć, skonfigurować lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 ## Wskaźniki na pasku tytułu
 
@@ -24,7 +24,7 @@ Kliknij wskaźnik, aby otworzyć okienko z dużą bieżącą wartością, wykres
 
 ## Skonfiguruj
 
-Wybierz **Polecenia ▸ System Monitor…** (lub otwórz **Konfiguracja ▸ Ustawienia ▸ System Monitor**), aby skonfigurować podgląd:
+Wybierz **Polecenia ▸ System Monitor…** (lub otwórz **Konfiguracja ▸ Ustawienia… ▸ System Monitor**), aby skonfigurować podgląd:
 
 - **Pokaż monitor systemu na pasku tytułu** — główny wyłącznik wskaźników.
 - **Profil** — ustawienia gotowe *Minimalny*, *Średni* lub *Maksymalny*, które wybierają sensowny zestaw modułów.

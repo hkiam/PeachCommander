@@ -10,7 +10,7 @@ Peach Commander kann eine echte Shell im eigenen Fenster ausführen, in einem St
 
 Das ist nicht dasselbe wie **Terminal hier öffnen**, das Apples Terminal im aktuellen Ordner startet und Ihnen zwei Fenster hinterlässt. Das eingebaute bleibt dort, wo Ihre Dateien sind, und weiß von ihnen.
 
-Es ist ein Plugin: Wenn Sie es nicht wollen, schalten Sie es unter **Konfiguration ▸ Plugins…** ab oder entfernen es, und der Dock geht mit.
+Es ist ein Plugin: Wenn Sie es nicht wollen, schalten Sie es unter **Konfiguration ▸ Plugins verwalten…** ab oder entfernen es, und der Dock geht mit.
 
 ![Das eingebaute Terminal, angedockt unter den beiden Dateipanels](screenshots/terminal.png)
 *(Abbildung: die Shell läuft in dem Ordner, den das aktive Panel zeigt.)*
@@ -38,7 +38,7 @@ Solange das Terminal den Fokus hat, gehen die **Funktionstasten dorthin**, nicht
 
 Auf den meisten Tastaturen außerhalb der Vereinigten Staaten werden `@`, `~`, `|`, `\` und die geschweiften Klammern mit der Wahltaste getippt. Diese Tastendrücke erreichen die Shell als die Zeichen, die auf den Tasten stehen.
 
-- Die Alternative ist, die Wahltaste als Meta-Taste zu behandeln, was Alt+B, Alt+F und die Emacs-Tastenbelegungen brauchen: Das Terminal sendet dann Esc vor der Taste statt des Zeichens. Einschalten unter **Konfiguration ▸ Plugins ▸ Terminal** mit **Wahltaste (⌥) als Meta-Taste verwenden**.
+- Die Alternative ist, die Wahltaste als Meta-Taste zu behandeln, was Alt+B, Alt+F und die Emacs-Tastenbelegungen brauchen: Das Terminal sendet dann Esc vor der Taste statt des Zeichens. Einschalten unter **Konfiguration ▸ Einstellungen… ▸ Terminal** mit **Wahltaste (⌥) als Meta-Taste verwenden**.
 - Die Änderung wirkt sofort, auch für bereits geöffnete Terminals, nicht erst für neue.
 
 ## Die Brücke zurück ins Panel

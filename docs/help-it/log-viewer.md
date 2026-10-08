@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Mettete il cursore su un file di log e scegliete **Mostra come log…** per aprirlo in una finestra pensata per i log e non per il testo: una riga per riga, il livello di ciascuna riconosciuto e colorato, un filtro, e un inseguimento che tiene il passo mentre il file è ancora in scrittura.
 
-È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**. Senza di esso, F3 mostra un log come qualsiasi altro file di testo.
+È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Gestisci plugin…**. Senza di esso, F3 mostra un log come qualsiasi altro file di testo.
 
 ![Il visualizzatore di log con un log di servizio, ogni livello con il proprio colore](screenshots/log-viewer.png)
 *(Figura: ogni livello ha il proprio colore e la vista continua a seguire il file.)*

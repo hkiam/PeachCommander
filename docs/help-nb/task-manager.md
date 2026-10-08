@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Task Manager-programtillegget gjør prosessene som kjører på Mac-en din, til en mappe du kan bla i. Det vises som en **TaskManager**-stasjon i stasjonslinjen; åpne den, og hver prosess er en rad du kan sortere, granske som en fil eller avslutte – med de samme tastene du allerede bruker for filer. Det er et programtillegg, så du kan slå det av eller fjerne det i **Konfigurasjon ▸ Programtillegg…**.
+Task Manager-programtillegget gjør prosessene som kjører på Mac-en din, til en mappe du kan bla i. Det vises som en **TaskManager**-stasjon i stasjonslinjen; åpne den, og hver prosess er en rad du kan sortere, granske som en fil eller avslutte – med de samme tastene du allerede bruker for filer. Det er et programtillegg, så du kan slå det av eller fjerne det i **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Åpne det
 

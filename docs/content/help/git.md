@@ -10,7 +10,7 @@ related: [plugins, view-modes-and-sorting]
 The Git plugin surfaces the state of a Git repository right inside the file panel — no separate app, no
 terminal. It adds two columns, a **Git** submenu, a docked panel for staging and committing, and windows for
 history, blame, branches, conflicts and rebasing. It drives the `git` already installed on your Mac. It's a
-plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
+plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## What it adds
 

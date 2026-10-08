@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-Das Task-Manager-Plugin verwandelt die laufenden Prozesse auf Ihrem Mac in einen Ordner, den Sie durchsuchen können. Es erscheint als Laufwerk **TaskManager** in der Laufwerksleiste; öffnen Sie es, und jeder Prozess ist eine Zeile, die Sie sortieren, wie eine Datei untersuchen oder beenden können — mit denselben Tasten, die Sie bereits für Dateien verwenden. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins…** ausschalten oder entfernen.
+Das Task-Manager-Plugin verwandelt die laufenden Prozesse auf Ihrem Mac in einen Ordner, den Sie durchsuchen können. Es erscheint als Laufwerk **TaskManager** in der Laufwerksleiste; öffnen Sie es, und jeder Prozess ist eine Zeile, die Sie sortieren, wie eine Datei untersuchen oder beenden können — mit denselben Tasten, die Sie bereits für Dateien verwenden. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins verwalten…** ausschalten oder entfernen.
 
 ## Öffnen
 

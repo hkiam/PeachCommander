@@ -12,7 +12,7 @@
 <h1>Amazon S3 und S3-kompatible Speicher</h1>
 <p>Ein S3-Bucket lässt sich in einem Panel durchsuchen wie jeder Ordner. Wählen Sie <strong>Mit Amazon S3 verbinden…</strong> im Menü Netz, tragen Sie Endpunkt und Schlüssel ein, und der Speicher erscheint im aktiven Panel — mit der <strong>Bucket-Liste als oberster Ebene</strong>, und jedem Bucket als gewöhnlichem Verzeichnis darunter.</p>
 <p>Es funktioniert mit Amazon S3 und mit allem, was dasselbe Protokoll spricht: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 und DigitalOcean Spaces sind alle erreichbar.</p>
-<p>Es ist ein Plugin, Sie können es also unter <strong>Konfiguration ▸ Plugins…</strong> abschalten oder entfernen.</p>
+<p>Es ist ein Plugin, Sie können es also unter <strong>Konfiguration ▸ Plugins verwalten…</strong> abschalten oder entfernen.</p>
 <h2 id="verbinden">Verbinden</h2>
 <p>Das Menü <strong>Dienst</strong> setzt die zwei Einstellungen, die man nicht erraten kann — ob HTTPS verwendet wird und ob der Endpunkt Pfad-Adressierung braucht — und lässt den Endpunkt selbst offen, weil er meist von Ihrem Konto abhängt. Beide Einstellungen scheitern auf eine Weise, die nach etwas anderem aussieht: Virtual-Hosted-Adressierung gegen eine nackte IP-Adresse ist ein Namensauflösungsfehler, und Pfad-Adressierung gegen Amazon ist ein „Bucket existiert nicht", das wie ein fehlender Bucket klingt.</p>
 <p>Der <strong>Secret Access Key</strong> wandert über den Host in die <strong>Schlüsselbundverwaltung</strong>, niemals in eine Konfigurationsdatei. Lassen Sie das Feld bei einer späteren Verbindung leer, wird der gespeicherte verwendet.</p>

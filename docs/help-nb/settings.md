@@ -26,11 +26,11 @@ Vinduet har disse sidene, i rekkefølge:
 - **Oppsett** – vis eller skjul stasjonslinjen, fanelinjen, banelinjen og statuslinjen, og velg hvilke sider sidepanelet tilbyr.
 - **Visning** – hvordan filer og mapper listes, inkludert datoformatet.
 - **Ikoner** – ikonutseende i fillistene.
-- **Operasjon** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen).
+- **Operasjon** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen) og om kopier verifiseres med en kontrollsum.
 - **Farger** – egendefinerte panelfarger, eller la dem følge det gjeldende temaet.
-- **Bekreftelse** – hvilke handlinger som ber deg bekrefte først, som sletting.
+- **Bekreftelse** – hvilke handlinger som ber deg bekrefte først, som sletting, og om sletting flytter elementer til papirkurven.
 - **Rediger/vis** – om lagring i redigeringsprogrammet beholder en `.bak`-sikkerhetskopi, programmene brukt til å redigere og vise filer, assosiasjoner per type, og hva en forhåndsvisning får koste på nettverkssteder og i arkiver.
-- **Kopier/slett** – bevar filmetadata, bruk rask kloning, kopier bare nyere filer, verifiser etter kopiering, send slettinger til papirkurven, og sett en valgfri hastighetsgrense.
+- **Kopier/slett** – bevar filmetadata, bruk rask kloning, kopier bare nyere filer, og sett en valgfri hastighetsgrense.
 - **Zip/pakker** – standard arkivformat og komprimeringsnivå brukt når du pakker.
 - **Programtillegg** – slå installerte programtillegg på eller av.
 - **Faner** – hvordan mappefaner åpnes og oppfører seg.
@@ -52,7 +52,7 @@ Aktiverte programtillegg kan legge til sine egne sider etter de innebygde – fo
 
 Konfigurasjonen din holdes i klartekstfiler inne i din personlige Application Support-mappe, på `~/Library/Application Support/PeachCommander`. For å åpne den, gå til **Diverse**-siden og klikk **Åpne konfigurasjonsmappe**. Lagrede FTP-passord lagres ikke i disse filene; de holdes trygt i macOS-nøkkelringen.
 
-Innstillinger skrives etter hvert som du endrer dem. Du kan også tvinge en lagring når som helst med **Konfigurasjon > Lagre innstillinger**, og lagre den gjeldende vindusplasseringen og paneloppsettet med **Konfigurasjon > Lagre posisjon**.
+Innstillinger skrives etter hvert som du endrer dem; det er ingenting å lagre manuelt.
 
 ## Ta med innstillinger fra Total Commander
 

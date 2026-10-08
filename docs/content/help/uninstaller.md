@@ -7,7 +7,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Dragging an app to the Trash leaves its support files, caches, preferences, and containers scattered across your Library folders. The Uninstaller plugin removes an application **and** those leftovers: it finds everything the app left behind, shows you the list with a size for each, and moves it all to the Trash once you confirm. It's a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**.
+Dragging an app to the Trash leaves its support files, caches, preferences, and containers scattered across your Library folders. The Uninstaller plugin removes an application **and** those leftovers: it finds everything the app left behind, shows you the list with a size for each, and moves it all to the Trash once you confirm. It's a plugin, so you can turn it off or remove it in **Configuration ▸ Manage Plugins…**.
 
 ## Uninstall an app under the cursor
 

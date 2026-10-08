@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 WebDAV 服务器——Nextcloud、ownCloud、群晖，或者大学的文件存储——可以像任何文件夹一样在面板中浏览。从“网络”菜单选择**连接 WebDAV…**，给出一个 URL，服务器就会出现在活动面板中。
 
-它是一个插件：可以在**配置 ▸ 插件…**中关闭或移除。
+它是一个插件：可以在**配置 ▸ 管理插件…**中关闭或移除。
 
 ## 连接
 

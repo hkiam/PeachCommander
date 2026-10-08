@@ -10,7 +10,7 @@ Peach Commander potrafi uruchomić prawdziwą powłokę we własnym oknie, w pas
 
 To nie to samo co **Otwórz Terminal tutaj**, które uruchamia Terminal firmy Apple w bieżącym folderze i zostawia cię z dwoma oknami. Wbudowany zostaje tam, gdzie są twoje pliki, i wie o nich.
 
-To wtyczka: jeśli jej nie chcesz, wyłącz ją lub usuń w **Konfiguracja ▸ Wtyczki…**, a dok zniknie razem z nią.
+To wtyczka: jeśli jej nie chcesz, wyłącz ją lub usuń w **Konfiguracja ▸ Zarządzaj wtyczkami…**, a dok zniknie razem z nią.
 
 ![Wbudowany terminal zadokowany pod dwoma panelami plików](screenshots/terminal.png)
 *(Rysunek: powłoka działa w katalogu pokazywanym przez aktywny panel.)*
@@ -38,7 +38,7 @@ Dopóki terminal ma fokus, **klawisze funkcyjne trafiają do niego**, nie do pan
 
 Na większości klawiatur poza Stanami Zjednoczonymi `@`, `~`, `|`, `\` i nawiasy klamrowe wpisuje się klawiszem Option. Te naciśnięcia docierają do powłoki jako znaki nadrukowane na klawiszach.
 
-- Alternatywą jest traktowanie klawisza Option jako Meta, czego oczekują Alt+B, Alt+F i skróty Emacsa: terminal wysyła wtedy Esc przed klawiszem zamiast znaku. Włącz to w **Konfiguracja ▸ Wtyczki ▸ Terminal** opcją **Używaj klawisza Option jako Meta**.
+- Alternatywą jest traktowanie klawisza Option jako Meta, czego oczekują Alt+B, Alt+F i skróty Emacsa: terminal wysyła wtedy Esc przed klawiszem zamiast znaku. Włącz to w **Konfiguracja ▸ Ustawienia… ▸ Terminal** opcją **Używaj klawisza Option jako Meta**.
 - Zmiana działa natychmiast, także dla już otwartych terminali, nie tylko dla nowych.
 
 ## Most z powrotem do panelu

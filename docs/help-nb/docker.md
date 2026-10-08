@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Filsystemet til en Docker-container kan bla gjennom i et panel som en hvilken som helst mappe, og det samme gjelder et Docker-volum. Velg **Koble til Docker…** i Nettverk-menyen, eller klikk på **Docker**-brikken i stasjonslinjen, og motoren vises i det aktive panelet.
 
-Dette er et programtillegg, og det **leveres avslått**. Slå det på under **Konfigurasjon ▸ Programtillegg…**. Det starter avslått fordi en tilkobling til Docker-tjenesten har de samme rettighetene på Macen din som du selv har — se *Hva det når* nedenfor.
+Dette er et programtillegg, og det **leveres avslått**. Slå det på under **Konfigurasjon ▸ Administrer programtillegg…**. Det starter avslått fordi en tilkobling til Docker-tjenesten har de samme rettighetene på Macen din som du selv har — se *Hva det når* nedenfor.
 
 ## Hva du ser
 
@@ -83,7 +83,7 @@ Punktene vises bare inne i en Docker-stasjon; over en av dine egne mapper er de 
 
 ## Innstillinger
 
-**Konfigurasjon ▸ Innstillinger ▸ Docker** inneholder alt dette. De samme verdiene ligger i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den du redigerer hvis du setter opp en maskin fra et skript:
+**Konfigurasjon ▸ Innstillinger… ▸ Docker** inneholder alt dette. De samme verdiene ligger i en liten fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den du redigerer hvis du setter opp en maskin fra et skript:
 
 - `Endpoint` — en adresse som skal brukes i stedet for den som ble funnet.
 - `ExecFallback` — `0` gjør at programtillegget bare bruker Dockers arkiv-API: det kjører da aldri noe inne i en container, mot at det ikke kan liste en svært stor mappe, slette eller gi nytt navn.

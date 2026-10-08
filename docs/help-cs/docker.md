@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Souborový systém kontejneru Dockeru lze procházet v panelu jako kteroukoli složku a totéž platí pro svazek Dockeru. Zvolte **Připojit k Dockeru…** v nabídce Síť nebo klepněte na štítek **Docker** v liště jednotek a stroj se objeví v aktivním panelu.
 
-Je to zásuvný modul a **dodává se vypnutý**. Zapněte jej v **Konfigurace ▸ Zásuvné moduly…**. Začíná vypnutý, protože spojení s démonem Dockeru má na vašem Macu stejná práva jako vy sami — viz *K čemu má přístup* níže.
+Je to zásuvný modul a **dodává se vypnutý**. Zapněte jej v **Konfigurace ▸ Spravovat zásuvné moduly…**. Začíná vypnutý, protože spojení s démonem Dockeru má na vašem Macu stejná práva jako vy sami — viz *K čemu má přístup* níže.
 
 ## Co uvidíte
 
@@ -83,7 +83,7 @@ Položky se objeví jen uvnitř jednotky Dockeru; nad vlastní složkou tam nejs
 
 ## Nastavení
 
-**Konfigurace ▸ Nastavení ▸ Docker** obsahuje všechno z toho. Tytéž hodnoty leží v malém souboru v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, který upravíte, když stroj připravujete skriptem:
+**Konfigurace ▸ Nastavení… ▸ Docker** obsahuje všechno z toho. Tytéž hodnoty leží v malém souboru v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, který upravíte, když stroj připravujete skriptem:
 
 - `Endpoint` — adresa, která se použije místo nalezené.
 - `ExecFallback` — `0` způsobí, že modul používá výhradně archivní API Dockeru: nikdy pak uvnitř kontejneru nic nespustí, za cenu toho, že nedokáže vypsat velmi velký adresář, mazat ani přejmenovávat.

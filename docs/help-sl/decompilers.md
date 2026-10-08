@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Pritisnite **F3** na prevedeni datoteki in videli boste izvorno kodo namesto bajtov. To počneta dva vtičnika — eden za Javo (`.class`, `.jar`, `.apk`, `.dex`) in eden za .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — in vedeta se enako, zato ta stran pokriva oba. Vsakega je mogoče posebej izklopiti ali odstraniti v **Konfiguracija ▸ Vtičniki…**.
+Pritisnite **F3** na prevedeni datoteki in videli boste izvorno kodo namesto bajtov. To počneta dva vtičnika — eden za Javo (`.class`, `.jar`, `.apk`, `.dex`) in eden za .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — in vedeta se enako, zato ta stran pokriva oba. Vsakega je mogoče posebej izklopiti ali odstraniti v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 Arhiv se pokaže kot drevo svojih razredov, posamezen razred kot ena datoteka. **Prevedi nazaj v izvorno kodo** v meniju Ukazi izpiše rezultat in ga postavi v ploščo, tako da lahko po njem iščete, primerjate in kopirate kot v vsaki drugi mapi z izvorno kodo.
 

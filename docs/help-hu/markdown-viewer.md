@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Nyomja meg az F3-at egy `.md` vagy `.html` fájlon, és formázva jelenik meg, nem forrásként: címsorok, listák, táblázatok, hivatkozások, tennivaló-listák és nyelv szerint színezett kódblokkok. A ` ```mermaid ` blokként írt diagramok kirajzolódnak, a dollárjelek közé írt matematika pedig szedésre kerül.
 
-Ez egy bővítmény. Minden, ami ezen az oldalon szerepel, a **Markdown and HTML** bővítménytől jön, amelyet kikapcsolhat a **Konfiguráció ▸ Bővítmények…** menüben — lentebb olvasható, mi változik akkor.
+Ez egy bővítmény. Minden, ami ezen az oldalon szerepel, a **Markdown and HTML** bővítménytől jön, amelyet kikapcsolhat a **Konfiguráció ▸ Bővítmények kezelése…** menüben — lentebb olvasható, mi változik akkor.
 
 ## Hol jelenik meg a formázott nézet
 
@@ -27,7 +27,7 @@ Egy `mermaid` nyelvű kódblokk diagrammá válik; a `$…$` és a `$$…$$` sze
 
 Egy diagram és formula nélküli dokumentum egyik eszközt sem tölti be, tehát egy hétköznapi README nem kerül semmi többe. Egy olvashatatlan diagram ott jelzi a hibát, ahol a blokk volt, alatta a blokk saját szövegével, ahelyett hogy eltűnne.
 
-Mindkettő külön kikapcsolható a **Konfiguráció ▸ Beállítások ▸ Markdown** oldalon, ahol az is látszik, melyik verzió van használatban és honnan származik.
+Mindkettő külön kikapcsolható a **Konfiguráció ▸ Beállítások… ▸ Markdown** oldalon, ahol az is látszik, melyik verzió van használatban és honnan származik.
 
 ## A saját verziója
 
@@ -56,7 +56,7 @@ A formázott oldal szándékosan el van szigetelve, mert egy Markdown-fájl más
 
 ## Kikapcsolás
 
-Kapcsolja ki a bővítményt a **Konfiguráció ▸ Bővítmények…** menüben, és a `.md` és `.html` fájlok szövegként nyílnak meg. A vázlat továbbra is működik, a szintaxisszínezés továbbra is működik, és semmi más nem változik — a formázott nézet egyszerűen nem elérhető többé. Ugyanez igaz, ha a bővítmény beállítási lapján csak a formázott nézetet kapcsolja ki.
+Kapcsolja ki a bővítményt a **Konfiguráció ▸ Bővítmények kezelése…** menüben, és a `.md` és `.html` fájlok szövegként nyílnak meg. A vázlat továbbra is működik, a szintaxisszínezés továbbra is működik, és semmi más nem változik — a formázott nézet egyszerűen nem elérhető többé. Ugyanez igaz, ha a bővítmény beállítási lapján csak a formázott nézetet kapcsolja ki.
 
 ## Korlátok
 

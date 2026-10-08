@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Povlek aplikacije v Koš pusti njene podporne datoteke, predpomnilnike, nastavitve in vsebnike raztresene po vaših mapah Library. Vtičnik Uninstaller odstrani aplikacijo **in** te ostanke: poišče vse, kar je aplikacija pustila za seboj, vam pokaže seznam z velikostjo za vsak element in vse premakne v Koš, ko potrdite. Ker gre za vtičnik, ga lahko izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
+Povlek aplikacije v Koš pusti njene podporne datoteke, predpomnilnike, nastavitve in vsebnike raztresene po vaših mapah Library. Vtičnik Uninstaller odstrani aplikacijo **in** te ostanke: poišče vse, kar je aplikacija pustila za seboj, vam pokaže seznam z velikostjo za vsak element in vse premakne v Koš, ko potrdite. Ker gre za vtičnik, ga lahko izklopite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**.
 
 ## Odstranitev aplikacije pod kazalcem
 

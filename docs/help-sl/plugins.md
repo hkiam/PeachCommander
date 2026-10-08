@@ -37,7 +37,7 @@ Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:
 
 ## Vklop ali izklop vtičnikov
 
-1. Izberite Konfiguracija ▸ Vtičniki…, da odprete okno vtičnikov.
+1. Izberite Konfiguracija ▸ Upravljaj vtičnike…, da odprete okno vtičnikov.
 2. Vsak nameščen vtičnik se pojavi na seznamu z imenom, vrsto in potrditvenim poljem »Omogočeno«.
 3. Označite ali odznačite polje, da omogočite ali onemogočite vtičnik. Spremembe začnejo veljati takoj — omogočeni vtičniki dodajo svoje menije, stolpce in funkcije; onemogočeni se držijo ob strani.
 
@@ -50,8 +50,8 @@ Prenesen vtičnik pride kot **paket vtičnika** — datoteka s končnico `.pcplu
 
 - **Dvokliknite ga** v Finderju. Peach Commander se odpre in vpraša.
 - **Pritisnite Enter** nanj v pultu. Peach Commander je upravitelj datotek — datoteka je običajno tako ali tako že tam.
-- **Povlecite ga na okno vtičnikov** (Konfiguracija ▸ Vtičniki…).
-- Izberite **Konfiguracija ▸ Vtičniki… ▸ Namesti…** in izberite paket, `.zip` z vtičnikom ali razpakiran sveženj vtičnika.
+- **Povlecite ga na okno vtičnikov** (Konfiguracija ▸ Upravljaj vtičnike…).
+- Izberite **Konfiguracija ▸ Upravljaj vtičnike… ▸ Namesti…** in izberite paket, `.zip` z vtičnikom ali razpakiran sveženj vtičnika.
 
 Preden se karkoli naloži, pogovorno okno navede ime, različico, določilnik in vrsto vtičnika ter to, katere vrste datotek bo prevzel — vtičnik, ki si lasti `.iso`, postane bralnik programa za te datoteke. Nič se ne namesti, dokler ne kliknete **Namesti**.
 

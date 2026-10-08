@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Stlačte **F3** na preloženom súbore a uvidíte zdrojový kód namiesto bajtov. Robia to dva pluginy — jeden pre Javu (`.class`, `.jar`, `.apk`, `.dex`) a jeden pre .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — a správajú sa rovnako, preto táto stránka pokrýva oba. Každý sa dá samostatne vypnúť alebo odstrániť v **Konfigurácia ▸ Pluginy…**.
+Stlačte **F3** na preloženom súbore a uvidíte zdrojový kód namiesto bajtov. Robia to dva pluginy — jeden pre Javu (`.class`, `.jar`, `.apk`, `.dex`) a jeden pre .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — a správajú sa rovnako, preto táto stránka pokrýva oba. Každý sa dá samostatne vypnúť alebo odstrániť v **Konfigurácia ▸ Spravovať zásuvné moduly…**.
 
 Archív sa ukáže ako strom svojich tried, jednotlivá trieda ako jeden súbor. **Dekompilovať do zdrojov** v ponuke Príkazy výsledok zapíše a umiestni do panela, takže v ňom môžete hľadať, porovnávať a kopírovať ako v každom inom priečinku so zdrojmi.
 

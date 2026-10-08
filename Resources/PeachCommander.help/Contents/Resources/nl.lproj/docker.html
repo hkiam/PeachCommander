@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Docker-containers en -volumes</h1>
 <p>Het bestandssysteem van een Docker-container is in een venster te doorzoeken als elke andere map, en een Docker-volume ook. Kies <strong>Verbinden met Docker…</strong> in het menu Netwerk, of klik op de knop <strong>Docker</strong> in de schijvenbalk, en de engine verschijnt in het actieve venster.</p>
-<p>Het is een plug-in en wordt <strong>uitgeschakeld geleverd</strong>. Zet hem aan bij <strong>Configuratie ▸ Plug-ins…</strong>. Hij begint uitgeschakeld omdat een verbinding met de Docker-daemon op uw Mac dezelfde rechten heeft als u — zie <em>Waar hij bij kan</em> verderop.</p>
+<p>Het is een plug-in en wordt <strong>uitgeschakeld geleverd</strong>. Zet hem aan bij <strong>Configuratie ▸ Plug-ins beheren…</strong>. Hij begint uitgeschakeld omdat een verbinding met de Docker-daemon op uw Mac dezelfde rechten heeft als u — zie <em>Waar hij bij kan</em> verderop.</p>
 <h2 id="wat-u-ziet">Wat u ziet</h2>
 <p>Het bovenste niveau bestaat uit drie mappen:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>De items verschijnen alleen binnen een Docker-schijf; boven een eigen map zijn ze er helemaal niet.</p>
 <p><strong>Het logboek is ook een bestand.</strong> In de hoofdmap van elke container staat <code>docker-logs.txt</code> — geen bestand in de container: het lezen ervan vraagt de engine om het logboek. F3 erop opent het in de weergave, dus de zoekfunctie, het springen naar een regel en de keuze van codering gelden allemaal, wat een eigen venster niet kan geven. Een container die werkelijk een bestand met die naam meebrengt, toont het zijne, en naar het virtuele kan niets worden geschreven.</p>
 <h2 id="instellingen">Instellingen</h2>
-<p><strong>Configuratie ▸ Instellingen ▸ Docker</strong> bevat dit alles. Dezelfde waarden staan in een klein bestand op <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, dat u bewerkt als u een machine vanuit een script inricht:</p>
+<p><strong>Configuratie ▸ Instellingen… ▸ Docker</strong> bevat dit alles. Dezelfde waarden staan in een klein bestand op <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, dat u bewerkt als u een machine vanuit een script inricht:</p>
 <ul>
 <li><code>Endpoint</code> — een adres dat in plaats van het gevonden adres wordt gebruikt.</li>
 <li><code>ExecFallback</code> — <code>0</code> laat de plug-in uitsluitend Dockers archief-API gebruiken: hij voert dan nooit iets uit in een container, ten koste van het opsommen van een zeer grote map, verwijderen en hernoemen.</li>

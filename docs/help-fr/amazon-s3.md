@@ -10,7 +10,7 @@ Un bucket S3 peut être parcouru dans un panneau comme n’importe quel dossier.
 
 Cela fonctionne avec Amazon S3 et avec tout ce qui parle le même protocole : MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 et DigitalOcean Spaces sont tous accessibles.
 
-C’est une extension : vous pouvez la désactiver ou la retirer dans **Configuration ▸ Extensions…**.
+C’est une extension : vous pouvez la désactiver ou la retirer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## Se connecter
 

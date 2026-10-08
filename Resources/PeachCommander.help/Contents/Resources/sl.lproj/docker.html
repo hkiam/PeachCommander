@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Dockerjevi vsebniki in nosilci</h1>
 <p>Datotečni sistem Dockerjevega vsebnika lahko brskate v pultu kakor katero koli mapo, in enako velja za Dockerjev nosilec. Izberite <strong>Poveži se z Dockerjem…</strong> v meniju Omrežje ali kliknite ploščico <strong>Docker</strong> v vrstici pogonov in pogon se prikaže v dejavnem pultu.</p>
-<p>To je vtičnik in <strong>dobavljen je izklopljen</strong>. Vklopite ga v <strong>Konfiguracija ▸ Vtičniki…</strong>. Začne izklopljen, ker ima povezava z Dockerjevim strežnikom na vašem Macu enake pravice kot vi sami — glejte <em>Do česa dostopa</em> spodaj.</p>
+<p>To je vtičnik in <strong>dobavljen je izklopljen</strong>. Vklopite ga v <strong>Konfiguracija ▸ Upravljaj vtičnike…</strong>. Začne izklopljen, ker ima povezava z Dockerjevim strežnikom na vašem Macu enake pravice kot vi sami — glejte <em>Do česa dostopa</em> spodaj.</p>
 <h2 id="kaj-vidite">Kaj vidite</h2>
 <p>Najvišjo raven sestavljajo tri mape:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.</p>
 <p><strong>Dnevnik je tudi datoteka.</strong> V korenu vsakega vsebnika leži <code>docker-logs.txt</code> — ki ni datoteka v vsebniku: njeno branje vpraša pogon za dnevnik. F3 nanjo jo odpre v pregledovalniku, zato veljajo njegovo iskanje, skok na vrstico in izbira kodiranja, česar lastno okno ne more dati. Vsebnik, ki datoteko tega imena res prinaša, pokaže svojo, v navidezno pa ni mogoče ničesar zapisati.</p>
 <h2 id="nastavitve">Nastavitve</h2>
-<p><strong>Konfiguracija ▸ Nastavitve ▸ Docker</strong> vsebuje vse to. Iste vrednosti so v majhni datoteki v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ki jo uredite, če računalnik pripravljate s skriptom:</p>
+<p><strong>Konfiguracija ▸ Nastavitve… ▸ Docker</strong> vsebuje vse to. Iste vrednosti so v majhni datoteki v <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, ki jo uredite, če računalnik pripravljate s skriptom:</p>
 <ul>
 <li><code>Endpoint</code> — naslov, ki naj se uporabi namesto najdenega.</li>
 <li><code>ExecFallback</code> — <code>0</code> doseže, da vtičnik uporablja izključno Dockerjev arhivski API: takrat v vsebniku nikoli ničesar ne zažene, za ceno tega, da ne more izpisati zelo velikega imenika, brisati ali preimenovati.</li>

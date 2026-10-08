@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Setzen Sie den Cursor auf eine Logdatei und wählen Sie **Als Log anzeigen…**, um sie in einem Fenster zu öffnen, das für Logs gebaut ist statt für Text: eine Zeile pro Zeile, die Stufe jeder Zeile erkannt und eingefärbt, ein Filter, und ein Mitlesen, das Schritt hält, während die Datei noch geschrieben wird.
 
-Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins…** abschalten oder entfernen. Ohne es zeigt F3 ein Log so wie jede andere Textdatei.
+Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins verwalten…** abschalten oder entfernen. Ohne es zeigt F3 ein Log so wie jede andere Textdatei.
 
 ![Der Log-Betrachter zeigt ein Dienstprotokoll, jede Stufe in eigener Farbe](screenshots/log-viewer.png)
 *(Abbildung: jede Stufe erhält ihre eigene Farbe, und die Ansicht folgt der Datei weiter.)*

@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Druk op F3 op een `.md`- of `.html`-bestand en het verschijnt opgemaakt in plaats van als broncode: koppen, lijsten, tabellen, koppelingen, takenlijsten en codeblokken gekleurd per taal. Diagrammen die als ` ```mermaid `-blok zijn geschreven worden getekend, en wiskunde tussen dollartekens wordt gezet.
 
-Dit is een plugin. Alles op deze pagina komt van **Markdown and HTML**, dat u kunt uitschakelen in **Configuratie ▸ Plugins…** — verderop staat wat er dan verandert.
+Dit is een plugin. Alles op deze pagina komt van **Markdown and HTML**, dat u kunt uitschakelen in **Configuratie ▸ Plug-ins beheren…** — verderop staat wat er dan verandert.
 
 ## Waar de opgemaakte weergave verschijnt
 
@@ -27,7 +27,7 @@ Een codeblok met de taal `mermaid` wordt een diagram; `$…$` en `$$…$$` worde
 
 Een document zonder diagram en zonder formule laadt geen van beide onderdelen, dus een gewone README kost niets extra. Een diagram dat niet gelezen kan worden toont de fout waar het blok stond, met de tekst van het blok eronder, in plaats van te verdwijnen.
 
-Beide kunnen apart worden uitgeschakeld in **Configuratie ▸ Instellingen ▸ Markdown**, waar ook staat welke versie in gebruik is en waar die vandaan komt.
+Beide kunnen apart worden uitgeschakeld in **Configuratie ▸ Instellingen… ▸ Markdown**, waar ook staat welke versie in gebruik is en waar die vandaan komt.
 
 ## Uw eigen versie
 
@@ -56,7 +56,7 @@ De opgemaakte pagina is opzettelijk afgeschermd, want een Markdown-bestand is in
 
 ## Uitschakelen
 
-Schakel de plugin uit in **Configuratie ▸ Plugins…** en `.md`- en `.html`-bestanden openen als tekst. Het overzicht blijft werken, de syntaxiskleuring blijft werken, en verder verandert er niets — de opgemaakte weergave wordt simpelweg niet meer aangeboden. Hetzelfde geldt als u op de instellingenpagina van de plugin alleen de opgemaakte weergave uitschakelt.
+Schakel de plugin uit in **Configuratie ▸ Plug-ins beheren…** en `.md`- en `.html`-bestanden openen als tekst. Het overzicht blijft werken, de syntaxiskleuring blijft werken, en verder verandert er niets — de opgemaakte weergave wordt simpelweg niet meer aangeboden. Hetzelfde geldt als u op de instellingenpagina van de plugin alleen de opgemaakte weergave uitschakelt.
 
 ## Grenzen
 

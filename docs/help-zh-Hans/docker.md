@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Docker 容器的文件系统可以像任何文件夹一样在面板中浏览，Docker 卷也一样。在网络菜单中选择**连接到 Docker…**，或点击驱动器栏中的 **Docker** 标签，引擎便会出现在活动面板中。
 
-这是一个插件，并且**出厂时是关闭的**。请在**配置 ▸ 插件…**中开启。它默认关闭，是因为与 Docker 守护进程的连接在这台 Mac 上拥有与你相同的权限——见下文的*它能访问什么*。
+这是一个插件，并且**出厂时是关闭的**。请在**配置 ▸ 管理插件…**中开启。它默认关闭，是因为与 Docker 守护进程的连接在这台 Mac 上拥有与你相同的权限——见下文的*它能访问什么*。
 
 ## 你会看到什么
 
@@ -81,7 +81,7 @@ Docker 容器的文件系统可以像任何文件夹一样在面板中浏览，D
 
 ## 设置
 
-**配置 ▸ 设置 ▸ Docker** 里有全部这些。同样的值也在 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 的一个小文件里——用脚本准备机器时改的就是它：
+**配置 ▸ 设置… ▸ Docker** 里有全部这些。同样的值也在 `~/Library/Application Support/PeachCommander/Docker/docker.ini` 的一个小文件里——用脚本准备机器时改的就是它：
 
 - `Endpoint` — 用来代替自动找到的地址。
 - `ExecFallback` — 设为 `0` 时，插件只使用 Docker 的归档 API：它便绝不会在容器内执行任何东西，代价是无法列出非常大的目录，也无法删除和重命名。

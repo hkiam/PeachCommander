@@ -63,7 +63,7 @@ De andere richting: een script van u, uitgevoerd door Peach Commander.
 
 Dit is een plug-in, en hij wordt **uitgeschakeld** geleverd, omdat het uitvoeren van een programma naar keuze alles kan wat de rest van het programma kan en verschillende dingen die niets daarvan dekt. Twee schakelaars, beide uit totdat u ze omzet:
 
-1. **Configuratie ▸ Plug-ins…** — zet **Scripting** aan.
+1. **Configuratie ▸ Plug-ins beheren…** — zet **Scripting** aan.
 2. **Instellingen ▸ AI** — zet **Scripts laten uitvoeren** aan. Het staat op die pagina omdat het dezelfde soort toestemming is als de shell van de assistent, en die twee horen bij elkaar.
 
 Zet daarna een script in `scripts/` in uw configuratiemap — **Opdrachten ▸ Scriptmap openen** brengt u daar en laat de eerste keer een voorbeeld achter. Een bestand `.applescript`, `.scpt` of `.jxa` in die map *is* een script; er valt niets te registreren.

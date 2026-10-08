@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Appuyez sur F3 sur un fichier `.md` ou `.html` et il apparaît mis en forme plutôt qu'en source : titres, listes, tableaux, liens, listes de tâches et blocs de code colorés selon le langage. Les diagrammes écrits comme blocs ` ```mermaid ` sont dessinés, et les mathématiques écrites entre signes dollar sont composées.
 
-C'est un plugin. Tout ce qui est décrit ici vient de **Markdown and HTML**, que vous pouvez désactiver dans **Configuration ▸ Plugins…** — voyez plus bas ce qui change alors.
+C'est un plugin. Tout ce qui est décrit ici vient de **Markdown and HTML**, que vous pouvez désactiver dans **Configuration ▸ Gérer les modules externes…** — voyez plus bas ce qui change alors.
 
 ## Où apparaît la vue mise en forme
 
@@ -27,7 +27,7 @@ Un bloc de code dont le langage est `mermaid` devient un diagramme ; `$…$` et 
 
 Un document sans diagramme ni formule ne charge aucun des deux moteurs : un README ordinaire ne coûte donc rien de plus. Un diagramme illisible affiche l'erreur là où le bloc se trouvait, avec le texte du bloc en dessous, au lieu de disparaître.
 
-Les deux peuvent être désactivés séparément dans **Configuration ▸ Réglages ▸ Markdown**, où l'on voit aussi quelle version est utilisée et d'où elle vient.
+Les deux peuvent être désactivés séparément dans **Configuration ▸ Réglages… ▸ Markdown**, où l'on voit aussi quelle version est utilisée et d'où elle vient.
 
 ## Votre propre version
 
@@ -56,7 +56,7 @@ La page mise en forme est délibérément isolée, car un fichier Markdown est u
 
 ## Le désactiver
 
-Désactivez le plugin dans **Configuration ▸ Plugins…**, et les fichiers `.md` et `.html` s'ouvrent en texte. Le plan continue de fonctionner, la coloration syntaxique aussi, et rien d'autre ne change — la vue mise en forme n'est simplement plus proposée. Il en va de même si vous ne désactivez que la vue mise en forme sur la page de réglages du plugin.
+Désactivez le plugin dans **Configuration ▸ Gérer les modules externes…**, et les fichiers `.md` et `.html` s'ouvrent en texte. Le plan continue de fonctionner, la coloration syntaxique aussi, et rien d'autre ne change — la vue mise en forme n'est simplement plus proposée. Il en va de même si vous ne désactivez que la vue mise en forme sur la page de réglages du plugin.
 
 ## Limites
 

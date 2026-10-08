@@ -37,7 +37,7 @@ Los demás complementos integrados son más pequeños y no necesitan una página
 
 ## Activar o desactivar complementos
 
-1. Elige Configuración ▸ Complementos… para abrir la ventana de complementos.
+1. Elige Configuración ▸ Gestionar plugins… para abrir la ventana de complementos.
 2. Cada complemento instalado aparece en la lista con su nombre, tipo y una casilla «Activado».
 3. Marca o desmarca la casilla para activar o desactivar un complemento. Los cambios surten efecto de inmediato: los complementos activados añaden sus menús, columnas y funciones; los desactivados se mantienen al margen.
 
@@ -50,8 +50,8 @@ Un plugin que descargue llega como un **paquete de plugin**: un archivo terminad
 
 - **Haga doble clic** en el Finder. Peach Commander se abre y le pregunta.
 - **Pulse Intro** sobre él en un panel. Peach Commander es un gestor de archivos: normalmente el archivo ya está ahí.
-- **Arrástrelo a la ventana de plugins** (Configuración ▸ Plugins…).
-- Elija **Configuración ▸ Plugins… ▸ Instalar…** y seleccione el paquete, un `.zip` que contenga un plugin o un bundle de plugin descomprimido.
+- **Arrástrelo a la ventana de plugins** (Configuración ▸ Gestionar plugins…).
+- Elija **Configuración ▸ Gestionar plugins… ▸ Instalar…** y seleccione el paquete, un `.zip` que contenga un plugin o un bundle de plugin descomprimido.
 
 Antes de cargar nada, un diálogo indica el nombre, la versión, el identificador y el tipo del plugin, y qué tipos de archivo va a asumir: un plugin que reclama `.iso`, por ejemplo, pasa a ser el lector de la aplicación para esos archivos. No se instala nada hasta que pulse **Instalar**.
 

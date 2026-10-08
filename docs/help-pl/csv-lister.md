@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Naciśnij **F3** na pliku `.csv` lub `.tsv`, a otworzy się jako prawdziwa tabela — kolumny, nagłówki, sortowanie i filtr — zamiast jako wiersze tekstu z przecinkami.
 
-To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**. Bez niej F3 pokazuje plik jako zwykły tekst, co przy małym pliku wciąż dobrze się czyta.
+To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**. Bez niej F3 pokazuje plik jako zwykły tekst, co przy małym pliku wciąż dobrze się czyta.
 
 ## Separator jest ustalany, a nie zakładany
 

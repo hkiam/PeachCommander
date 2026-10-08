@@ -37,7 +37,7 @@ I restanti plugin integrati sono più piccoli e non necessitano di una pagina pr
 
 ## Attiva o disattiva i plugin
 
-1. Scegli Configurazione ▸ Plugin… per aprire la finestra dei plugin.
+1. Scegli Configurazione ▸ Gestisci plugin… per aprire la finestra dei plugin.
 2. Ogni plugin installato compare nell'elenco con nome, tipo e una casella "Abilitato".
 3. Seleziona o deseleziona la casella per abilitare o disabilitare un plugin. Le modifiche hanno effetto subito — i plugin abilitati aggiungono i loro menu, colonne e funzioni; quelli disabilitati restano da parte.
 
@@ -50,8 +50,8 @@ Un plugin scaricato arriva come **pacchetto di plugin**: un file con estensione 
 
 - **Fai doppio clic** nel Finder. Peach Commander si apre e chiede.
 - **Premi Invio** su di esso in un pannello. Peach Commander è un gestore di file: di solito il file è già lì.
-- **Trascinalo sulla finestra dei plugin** (Configurazione ▸ Plugin…).
-- Scegli **Configurazione ▸ Plugin… ▸ Installa…** e seleziona il pacchetto, un `.zip` che contiene un plugin, oppure un bundle di plugin già estratto.
+- **Trascinalo sulla finestra dei plugin** (Configurazione ▸ Gestisci plugin…).
+- Scegli **Configurazione ▸ Gestisci plugin… ▸ Installa…** e seleziona il pacchetto, un `.zip` che contiene un plugin, oppure un bundle di plugin già estratto.
 
 Prima che venga caricato qualsiasi cosa, una finestra indica nome, versione, identificatore e tipo del plugin, e quali tipi di file prenderà in carico: un plugin che rivendica `.iso`, per esempio, diventa il lettore dell'app per quei file. Non viene installato nulla finché non fai clic su **Installa**.
 

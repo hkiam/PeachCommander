@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 En WebDAV-tjener — Nextcloud, ownCloud, en Synology, et universitets fillager — kan bla gjennom i et panel som enhver annen mappe. Velg **Koble til WebDAV…** i menyen Nettverk, oppgi en URL, så dukker tjeneren opp i det aktive panelet.
 
-Det er et programtillegg: du kan slå det av eller fjerne det under **Konfigurasjon ▸ Programtillegg…**.
+Det er et programtillegg: du kan slå det av eller fjerne det under **Konfigurasjon ▸ Administrer programtillegg…**.
 
 ## Å koble til
 

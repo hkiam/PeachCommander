@@ -10,7 +10,7 @@ De Git-plug-in laat de toestand van een Git-repository rechtstreeks in het besta
 app, geen terminal. Hij voegt twee kolommen toe, een submenu **Git**, een vastgezet paneel om te stagen en te
 committen, en vensters voor geschiedenis, blame, branches, conflicten en rebasen. Hij gebruikt de `git` die al
 op uw Mac staat. Het is een plug-in, dus u kunt hem uitschakelen of verwijderen in **Configuratie ▸
-Plug-ins…**.
+Plug-ins beheren…**.
 
 ## Wat hij toevoegt
 

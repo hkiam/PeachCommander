@@ -61,7 +61,7 @@ För att ta bort flera objekt på en gång, använd **Samlaren**: högerklicka �
 
 ## Inställningar
 
-Disk Map lägger till sin egen sida i inställningsfönstret (**Konfiguration ▸ Inställningar ▸ Disk Map**):
+Disk Map lägger till sin egen sida i inställningsfönstret (**Konfiguration ▸ Inställningar… ▸ Disk Map**):
 
 - **Diagramstil** – treemap eller sunburst.
 - **Färgkodning** – efter filtyp (kategori) eller efter storlek (heatmap).

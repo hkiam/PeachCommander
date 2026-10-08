@@ -10,7 +10,7 @@ Das Git-Plugin bringt den Zustand eines Git-Repositorys direkt in das Datei-Pane
 Terminal. Es fügt zwei Spalten hinzu, ein Untermenü **Git**, ein andockbares Panel für Bereitstellen und
 Committen sowie Fenster für Historie, Blame, Branches, Konflikte und Rebase. Es verwendet das `git`, das
 bereits auf Ihrem Mac installiert ist. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸
-Plugins…** ausschalten oder entfernen.
+Plugins verwalten…** ausschalten oder entfernen.
 
 ## Was es hinzufügt
 

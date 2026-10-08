@@ -12,7 +12,7 @@
 <h1>Amazon S3 och S3-kompatibel lagring</h1>
 <p>En S3-bucket kan bläddras i en panel som vilken mapp som helst. Välj <strong>Anslut till Amazon S3…</strong> i Nät-menyn, fyll i slutpunkten och dina nycklar, och lagringen visas i den aktiva panelen — med <strong>bucketlistan som översta nivå</strong> och varje bucket som en vanlig katalog under.</p>
 <p>Det fungerar med Amazon S3 och med allt som talar samma protokoll: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 och DigitalOcean Spaces går alla att nå.</p>
-<p>Det är ett insticksprogram, så du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<p>Det är ett insticksprogram, så du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Hantera plugin-program…</strong>.</p>
 <h2 id="ansluta">Ansluta</h2>
 <p>Menyn <strong>Tjänst</strong> fyller i de två inställningar man inte kan gissa — om HTTPS ska användas och om slutpunkten kräver sökvägsbaserad adressering — och lämnar slutpunkten själv till dig, eftersom den oftast beror på ditt konto. Båda inställningarna misslyckas på ett sätt som ser ut som något annat: virtuell värdadressering mot en naken IP-adress är ett namnuppslagsfel, och sökvägsbaserad adressering mot Amazon är ett ”ingen sådan bucket” som läses som en saknad bucket.</p>
 <p>Den <strong>hemliga åtkomstnyckeln</strong> hamnar via värdprogrammet i <strong>Nyckelhanteraren</strong>, aldrig i en konfigurationsfil. Lämna fältet tomt vid en senare anslutning och den sparade används.</p>

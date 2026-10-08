@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Pulsa **F3** sobre un archivo compilado y verás código fuente en lugar de bytes. Lo hacen dos plugins —uno para Java (`.class`, `.jar`, `.apk`, `.dex`) y otro para .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`)— y se comportan igual, así que esta página cubre ambos. Cada uno se puede desactivar o eliminar por separado en **Configuración ▸ Plugins…**.
+Pulsa **F3** sobre un archivo compilado y verás código fuente en lugar de bytes. Lo hacen dos plugins —uno para Java (`.class`, `.jar`, `.apk`, `.dex`) y otro para .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`)— y se comportan igual, así que esta página cubre ambos. Cada uno se puede desactivar o eliminar por separado en **Configuración ▸ Gestionar plugins…**.
 
 Un archivo comprimido aparece como un árbol de sus clases; una clase suelta, como un archivo. **Descompilar a fuentes** en el menú Comandos escribe el resultado y lo pone en un panel, para buscar, comparar y copiar en él como en cualquier otra carpeta de fuentes.
 

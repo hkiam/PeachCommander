@@ -63,7 +63,7 @@ Druhý smer: váš skript, spustený Peach Commanderom.
 
 Je to plugin a dodáva sa **vypnutý**, pretože spustenie programu podľa vašej voľby zvládne všetko, čo zvládne zvyšok aplikácie, a niekoľko vecí, ktoré nepokrýva nič z nej. Dva prepínače, oba vypnuté, kým ich nenastavíte:
 
-1. **Konfigurácia ▸ Pluginy…** — zapnite **Scripting**.
+1. **Konfigurácia ▸ Spravovať zásuvné moduly…** — zapnite **Scripting**.
 2. **Nastavenia ▸ AI** — zapnite **Povoliť spúšťanie skriptov**. Je na tejto stránke, pretože ide o rovnaký druh oprávnenia ako shell asistenta a obidve patria k sebe.
 
 Potom umiestnite skript do `scripts/` vo vašom konfiguračnom adresári — **Príkazy ▸ Otvoriť adresár skriptov** vás tam zavedie a prvýkrát tam nechá príklad. Súbor `.applescript`, `.scpt` alebo `.jxa` v tomto adresári *je* skript; nie je čo registrovať.

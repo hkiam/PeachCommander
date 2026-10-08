@@ -15,7 +15,7 @@ Amikor egy mappa több száz elemet tartalmaz, ritkán kell görgetnie. A Peach 
 3. Folytassa a gépelést az egyezés finomításához, vagy lépkedjen a találatok között a ↑ és ↓ billentyűkkel, amíg a keresés látszik. Ugyanazt a betűt újra megnyomva szintén körbejárhatja az azzal kezdődő elemeket.
 4. A beírt szöveg egy rövid szünet után törlődik, így bármikor új keresést kezdhet.
 
-Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a Ctrl+Option+betűvel indul (a klasszikus viselkedés). Átválthatja a gyorskeresést, hogy sima gépelésre reagáljon, vagy kikapcsolhatja, a konfigurációs beállításokban.
+Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a Ctrl+Option+betűvel indul (a klasszikus viselkedés). Átválthatja a gyorskeresést, hogy sima gépelésre reagáljon, vagy kikapcsolhatja, a **Konfiguráció ▸ Beállítások…** **Művelet** oldalán.
 
 ## A lista szűrése (gyorsszűrő)
 

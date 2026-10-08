@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Container e volumi Docker</h1>
 <p>Il filesystem di un container Docker si sfoglia in un pannello come una cartella qualsiasi, e lo stesso vale per un volume Docker. Scegli <strong>Connetti a Docker…</strong> dal menu Rete, oppure fai clic sulla targhetta <strong>Docker</strong> nella barra dei volumi, e il motore compare nel pannello attivo.</p>
-<p>È un plugin ed è <strong>fornito disattivato</strong>. Attivalo in <strong>Configurazione ▸ Plugin…</strong>. Parte spento perché una connessione al demone Docker ha sul tuo Mac gli stessi diritti che hai tu — vedi <em>A cosa può accedere</em> più sotto.</p>
+<p>È un plugin ed è <strong>fornito disattivato</strong>. Attivalo in <strong>Configurazione ▸ Gestisci plugin…</strong>. Parte spento perché una connessione al demone Docker ha sul tuo Mac gli stessi diritti che hai tu — vedi <em>A cosa può accedere</em> più sotto.</p>
 <h2 id="che-cosa-vedi">Che cosa vedi</h2>
 <p>Il livello superiore è composto da tre cartelle:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Le voci compaiono solo dentro un disco Docker; su una cartella tua non ci sono affatto.</p>
 <p><strong>Il log è anche un file.</strong> La radice di ogni container contiene <code>docker-logs.txt</code>, che non è un file del container: leggerlo chiede il log al motore. F3 su di esso lo apre nel visualizzatore, quindi la sua ricerca, il salto a una riga e la scelta della codifica valgono — cosa che una finestra a sé non può dare. Un container che porta davvero un file con quel nome mostra il proprio, e nel file virtuale non si può scrivere nulla.</p>
 <h2 id="impostazioni">Impostazioni</h2>
-<p><strong>Configurazione ▸ Impostazioni ▸ Docker</strong> contiene tutto questo. Gli stessi valori stanno in un piccolo file in <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, che è ciò da modificare se prepari una macchina da uno script:</p>
+<p><strong>Configurazione ▸ Impostazioni… ▸ Docker</strong> contiene tutto questo. Gli stessi valori stanno in un piccolo file in <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, che è ciò da modificare se prepari una macchina da uno script:</p>
 <ul>
 <li><code>Endpoint</code> — un indirizzo da usare al posto di quello trovato.</li>
 <li><code>ExecFallback</code> — <code>0</code> fa usare al plugin soltanto l’API di archivio di Docker: non eseguirà mai nulla dentro un container, al prezzo di non poter elencare una directory molto grande, né eliminare, né rinominare.</li>

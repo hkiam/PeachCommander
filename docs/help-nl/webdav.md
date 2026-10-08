@@ -8,7 +8,7 @@ related: [plugins, ftp-and-sftp, network-shares]
 
 Een WebDAV-server — Nextcloud, ownCloud, een Synology, de opslag van een universiteit — kunt u in een paneel doorbladeren als elke map. Kies **WebDAV verbinden…** in het menu Netwerk, geef een URL op, en de server verschijnt in het actieve paneel.
 
-Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**.
+Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins beheren…**.
 
 ## Verbinding maken
 

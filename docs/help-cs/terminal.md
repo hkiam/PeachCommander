@@ -10,7 +10,7 @@ Peach Commander umí spustit skutečný shell přímo ve svém okně, v pruhu u 
 
 Není to totéž jako **Otevřít terminál zde**, což spustí Apple Terminál v aktuální složce a nechá vás se dvěma okny. Vestavěný zůstává tam, kde jsou vaše soubory, a ví o nich.
 
-Je to plugin: pokud jej nechcete, vypněte jej nebo odstraňte v **Konfigurace ▸ Pluginy…** a dok zmizí s ním.
+Je to plugin: pokud jej nechcete, vypněte jej nebo odstraňte v **Konfigurace ▸ Spravovat zásuvné moduly…** a dok zmizí s ním.
 
 ![Vestavěný terminál ukotvený pod dvěma panely souborů](screenshots/terminal.png)
 *(Obrázek: shell běží v adresáři, který zobrazuje aktivní panel.)*
@@ -38,7 +38,7 @@ Dokud má terminál zaměření, jdou **funkční klávesy tam**, ne do souborov
 
 Na většině klávesnic mimo Spojené státy se `@`, `~`, `|`, `\` a složené závorky píší klávesou Option. Tyto stisky dorazí do shellu jako znaky vytištěné na klávesách.
 
-- Alternativou je brát Option jako klávesu Meta, což chtějí Alt+B, Alt+F a klávesové zkratky Emacsu: terminál pak před klávesou pošle Esc místo znaku. Zapněte to v **Konfigurace ▸ Zásuvné moduly ▸ Terminál** volbou **Používat Option jako klávesu Meta**.
+- Alternativou je brát Option jako klávesu Meta, což chtějí Alt+B, Alt+F a klávesové zkratky Emacsu: terminál pak před klávesou pošle Esc místo znaku. Zapněte to v **Konfigurace ▸ Nastavení… ▸ Terminál** volbou **Používat Option jako klávesu Meta**.
 - Změna platí ihned, i pro už otevřené terminály, nejen pro nové.
 
 ## Most zpět do panelu

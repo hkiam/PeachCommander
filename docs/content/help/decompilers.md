@@ -7,7 +7,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Press **F3** on a compiled file and see source instead of bytes. Two plugins do this — one for Java (`.class`, `.jar`, `.apk`, `.dex`) and one for .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — and they behave the same way, so this page covers both. Each can be turned off or removed on its own in **Configuration ▸ Plugins…**.
+Press **F3** on a compiled file and see source instead of bytes. Two plugins do this — one for Java (`.class`, `.jar`, `.apk`, `.dex`) and one for .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — and they behave the same way, so this page covers both. Each can be turned off or removed on its own in **Configuration ▸ Manage Plugins…**.
 
 An archive shows as a tree of its classes; a single class shows as one file. **Decompile to Sources** in the Commands menu writes the result out and puts it in a panel, so you can search, compare and copy from it like any other folder of source.
 

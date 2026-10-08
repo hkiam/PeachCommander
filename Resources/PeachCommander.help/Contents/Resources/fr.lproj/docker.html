@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Conteneurs et volumes Docker</h1>
 <p>Le système de fichiers d’un conteneur Docker se parcourt dans un panneau comme n’importe quel dossier, et un volume Docker également. Choisissez <strong>Se connecter à Docker…</strong> dans le menu Réseau, ou cliquez sur la pastille <strong>Docker</strong> dans la barre de volumes, et le moteur apparaît dans le panneau actif.</p>
-<p>C’est une extension, et elle est <strong>livrée désactivée</strong>. Activez-la dans <strong>Configuration ▸ Extensions…</strong>. Elle démarre désactivée parce qu’une connexion au démon Docker dispose sur votre Mac des mêmes droits que vous — voir <em>Ce à quoi elle accède</em> plus bas.</p>
+<p>C’est une extension, et elle est <strong>livrée désactivée</strong>. Activez-la dans <strong>Configuration ▸ Gérer les modules externes…</strong>. Elle démarre désactivée parce qu’une connexion au démon Docker dispose sur votre Mac des mêmes droits que vous — voir <em>Ce à quoi elle accède</em> plus bas.</p>
 <h2 id="ce-que-vous-voyez">Ce que vous voyez</h2>
 <p>Le niveau supérieur comporte trois dossiers :</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Ces entrées n’apparaissent qu’à l’intérieur d’un disque Docker ; sur un de vos dossiers, elles ne sont pas là du tout.</p>
 <p><strong>Le journal est aussi un fichier.</strong> La racine de chaque conteneur contient <code>docker-logs.txt</code> — qui n’est pas un fichier du conteneur : le lire demande le journal au moteur. F3 dessus l’ouvre dans la visionneuse, si bien que sa recherche, son saut à une ligne et son choix d’encodage s’appliquent, ce qu’une fenêtre à part ne peut pas offrir. Un conteneur qui embarque réellement un fichier de ce nom montre le sien, et rien ne peut être écrit dans le fichier virtuel.</p>
 <h2 id="reglages">Réglages</h2>
-<p><strong>Configuration ▸ Réglages ▸ Docker</strong> contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, à modifier si vous préparez une machine par script :</p>
+<p><strong>Configuration ▸ Réglages… ▸ Docker</strong> contient tout cela. Les mêmes valeurs vivent dans un petit fichier dans <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, à modifier si vous préparez une machine par script :</p>
 <ul>
 <li><code>Endpoint</code> — une adresse à utiliser à la place de celle qui a été trouvée.</li>
 <li><code>ExecFallback</code> — <code>0</code> limite l’extension à l’API d’archive de Docker : elle n’exécutera alors jamais rien dans un conteneur, au prix de ne pas pouvoir lister un très gros dossier, ni supprimer, ni renommer.</li>

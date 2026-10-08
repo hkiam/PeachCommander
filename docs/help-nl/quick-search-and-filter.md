@@ -17,7 +17,7 @@ Wanneer een map honderden items bevat, hoef je zelden te scrollen. Met Peach Com
 5. Druk op Backspace om de laatste letter terug te nemen, of op Esc om de zoekopdracht te beëindigen. Backspace bewerkt alleen een lopende zoekopdracht; anders gaat het nog steeds naar de bovenliggende map.
 6. De getypte tekst wordt na een korte pauze gewist, zodat je op elk moment een nieuwe zoekopdracht kunt starten.
 
-Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactiveerd met Ctrl+Option+letter (het klassieke gedrag). Je kunt snelzoeken zo instellen dat het in plaats daarvan op gewoon typen reageert, of het uitzetten, in de Configuratie-instellingen.
+Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactiveerd met Ctrl+Option+letter (het klassieke gedrag). Je kunt snelzoeken zo instellen dat het in plaats daarvan op gewoon typen reageert, of het uitzetten, op de pagina **Bewerking** van **Configuratie ▸ Instellingen…**.
 
 ## De lijst filteren (snelfilter)
 

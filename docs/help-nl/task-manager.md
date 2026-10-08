@@ -6,7 +6,7 @@ order: 125
 related: [plugins, viewing-files, deleting-files]
 ---
 
-De Task Manager-plug-in verandert de actieve processen op je Mac in een map die je kunt doorbladeren. Hij verschijnt als een **TaskManager**-schijf in de schijvenbalk; open hem en elk proces is een rij die je kunt sorteren, als een bestand inspecteren of beëindigen — met dezelfde toetsen die je al voor bestanden gebruikt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**.
+De Task Manager-plug-in verandert de actieve processen op je Mac in een map die je kunt doorbladeren. Hij verschijnt als een **TaskManager**-schijf in de schijvenbalk; open hem en elk proces is een rij die je kunt sorteren, als een bestand inspecteren of beëindigen — met dezelfde toetsen die je al voor bestanden gebruikt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins beheren…**.
 
 ## Openen
 

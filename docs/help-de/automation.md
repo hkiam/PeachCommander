@@ -63,7 +63,7 @@ Die andere Richtung: ein Skript von Ihnen, ausgeführt von Peach Commander.
 
 Das ist ein Plugin, und es wird **abgeschaltet** ausgeliefert, weil ein Programm Ihrer Wahl alles kann, was der Rest der Anwendung kann, und einiges, was nichts davon abdeckt. Zwei Schalter, beide aus, bis Sie sie setzen:
 
-1. **Konfiguration ▸ Plugins…** — **Scripting** aktivieren.
+1. **Konfiguration ▸ Plugins verwalten…** — **Scripting** aktivieren.
 2. **Einstellungen ▸ KI** — **Skripte ausführen lassen** einschalten. Es steht auf dieser Seite, weil es dieselbe Art von Berechtigung ist wie die Shell des Assistenten, und beide gehören zusammen.
 
 Legen Sie dann ein Skript in `scripts/` in Ihrem Konfigurationsordner ab — **Befehle ▸ Skriptordner öffnen** bringt Sie dorthin und legt beim ersten Mal ein Beispiel an. Eine Datei `.applescript`, `.scpt` oder `.jxa` in diesem Ordner *ist* ein Skript; es gibt nichts anzumelden.

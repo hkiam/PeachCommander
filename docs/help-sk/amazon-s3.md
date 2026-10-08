@@ -10,7 +10,7 @@ Bucket S3 sa dá v paneli prehliadať ako každá zložka. Vyberte **Pripojiť k
 
 Funguje s Amazon S3 a so všetkým, čo hovorí rovnakým protokolom: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 a DigitalOcean Spaces sú dostupné.
 
-Je to zásuvný modul, takže ho možno vypnúť alebo odobrať v **Konfigurácia ▸ Zásuvné moduly…**.
+Je to zásuvný modul, takže ho možno vypnúť alebo odobrať v **Konfigurácia ▸ Spravovať zásuvné moduly…**.
 
 ## Pripojenie
 

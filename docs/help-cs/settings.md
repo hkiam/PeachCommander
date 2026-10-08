@@ -26,11 +26,11 @@ Okno má tyto stránky, v pořadí:
 - **Rozvržení** — zobrazit nebo skrýt lištu disků, lištu karet, lištu cesty a stavovou lištu a vybrat, které stránky boční panel nabízí.
 - **Zobrazení** — jak se vypisují soubory a složky, včetně formátu data.
 - **Ikony** — vzhled ikon v seznamech souborů.
-- **Operace** — obecné chování, jako co se stane, když píšete v panelu (rychlé hledání versus příkazový řádek).
+- **Operace** — obecné chování, jako co se stane, když píšete v panelu (rychlé hledání versus příkazový řádek) a zda se kopie ověřují kontrolním součtem.
 - **Barvy** — vlastní barvy panelů, nebo je nechte sledovat aktuální motiv.
-- **Potvrzení** — které akce nejprve žádají potvrzení, jako mazání.
+- **Potvrzení** — které akce nejprve žádají potvrzení, jako mazání, a zda mazání přesouvá položky do Koše.
 - **Upravit/zobrazit** — zda se při ukládání v editoru uchová záložní kopie `.bak`, programy použité k úpravě a zobrazení souborů asociace podle typu a kolik smí stát náhled v síťových umístěních a v archivech.
-- **Kopírovat/odstranit** — zachovat metadata souborů, použít rychlé klonování, kopírovat jen novější soubory, ověřit po kopírování, posílat mazání do Koše a nastavit volitelný limit rychlosti.
+- **Kopírovat/odstranit** — zachovat metadata souborů, použít rychlé klonování, kopírovat jen novější soubory a nastavit volitelný limit rychlosti.
 - **Zip/balič** — výchozí formát archivu a úroveň komprese použité při balení.
 - **Zásuvné moduly** — zapnout nebo vypnout nainstalované zásuvné moduly.
 - **Karty** — jak se karty složek otevírají a chovají.
@@ -52,7 +52,7 @@ Povolené zásuvné moduly mohou přidat vlastní stránky za vestavěné — na
 
 Vaše konfigurace je uchována v souborech prostého textu uvnitř vaší osobní složky Application Support, na `~/Library/Application Support/PeachCommander`. Chcete-li ji otevřít, přejděte na stránku **Různé** a klepněte na **Otevřít konfigurační složku**. Uložená hesla FTP nejsou uložena v těchto souborech; jsou bezpečně uchována v klíčence macOS.
 
-Nastavení se zapisují, jak je měníte. Můžete také vynutit uložení kdykoli pomocí **Konfigurace > Uložit nastavení** a uložit aktuální umístění okna a rozvržení panelů pomocí **Konfigurace > Uložit pozici**.
+Nastavení se zapisují, jak je měníte; není nic, co byste museli ukládat ručně.
 
 ## Přenesení nastavení z Total Commanderu
 

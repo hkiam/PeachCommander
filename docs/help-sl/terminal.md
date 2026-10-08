@@ -10,7 +10,7 @@ Peach Commander lahko požene pravo lupino kar v svojem oknu, v pasu ob spodnjem
 
 To ni isto kot **Odpri Terminal tukaj**, ki zažene Applov Terminal v trenutni mapi in vas pusti z dvema oknoma. Vgrajeni ostane tam, kjer so vaše datoteke, in ve zanje.
 
-Je vtičnik: če ga nočete, ga izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**, in dok gre z njim.
+Je vtičnik: če ga nočete, ga izklopite ali odstranite v **Konfiguracija ▸ Upravljaj vtičnike…**, in dok gre z njim.
 
 ![Vgrajeni terminal, zasidran pod obema podoknoma z datotekami](screenshots/terminal.png)
 *(Slika: lupina teče v mapi, ki jo prikazuje aktivno podokno.)*
@@ -38,7 +38,7 @@ Dokler ima terminal pozornost, gredo **funkcijske tipke tja**, ne na ploščo z 
 
 Na večini tipkovnic zunaj Združenih držav se `@`, `~`, `|`, `\` in zaviti oklepaji tipkajo s tipko Option. Ti pritiski dosežejo lupino kot znaki, natisnjeni na tipkah.
 
-- Druga možnost je obravnavati Option kot tipko Meta, kar hočejo Alt+B, Alt+F in bližnjice Emacsa: terminal takrat pred tipko pošlje Esc namesto znaka. Vklopite jo pod **Konfiguracija ▸ Vtičniki ▸ Terminal** z **Uporabi tipko Option kot tipko Meta**.
+- Druga možnost je obravnavati Option kot tipko Meta, kar hočejo Alt+B, Alt+F in bližnjice Emacsa: terminal takrat pred tipko pošlje Esc namesto znaka. Vklopite jo pod **Konfiguracija ▸ Nastavitve… ▸ Terminal** z **Uporabi tipko Option kot tipko Meta**.
 - Sprememba učinkuje takoj, tudi za že odprte terminale, ne šele za nove.
 
 ## Most nazaj na ploščo

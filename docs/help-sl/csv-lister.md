@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Pritisnite **F3** na datoteki `.csv` ali `.tsv` in odprla se bo kot prava razpredelnica — stolpci, glave, razvrščanje in filter — namesto kot besedilne vrstice z vejicami.
 
-To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Vtičniki…**. Brez njega F3 pokaže datoteko kot golo besedilo, kar je pri majhni še vedno povsem berljivo.
+To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Upravljaj vtičnike…**. Brez njega F3 pokaže datoteko kot golo besedilo, kar je pri majhni še vedno povsem berljivo.
 
 ## Ločilo se ugotovi, ne predpostavi
 

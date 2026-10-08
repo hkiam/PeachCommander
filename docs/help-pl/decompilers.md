@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Naciśnij **F3** na skompilowanym pliku i zobacz kod źródłowy zamiast bajtów. Robią to dwie wtyczki — jedna dla Javy (`.class`, `.jar`, `.apk`, `.dex`) i jedna dla .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — a zachowują się tak samo, więc ta strona obejmuje obie. Każdą można osobno wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**.
+Naciśnij **F3** na skompilowanym pliku i zobacz kod źródłowy zamiast bajtów. Robią to dwie wtyczki — jedna dla Javy (`.class`, `.jar`, `.apk`, `.dex`) i jedna dla .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — a zachowują się tak samo, więc ta strona obejmuje obie. Każdą można osobno wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**.
 
 Archiwum pokazuje się jako drzewo swoich klas, pojedyncza klasa jako jeden plik. **Dekompiluj do źródeł** w menu Polecenia zapisuje wynik i umieszcza go w panelu, więc możesz w nim szukać, porównywać i kopiować jak w każdym innym folderze ze źródłami.
 

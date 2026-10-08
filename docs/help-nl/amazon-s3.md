@@ -10,7 +10,7 @@ Een S3-bucket is in een paneel te doorzoeken als elke andere map. Kies **Verbind
 
 Het werkt met Amazon S3 en met alles wat hetzelfde protocol spreekt: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 en DigitalOcean Spaces zijn allemaal bereikbaar.
 
-Het is een plug-in, dus je kunt hem uitschakelen of verwijderen in **Configuratie ▸ Plug-ins…**.
+Het is een plug-in, dus je kunt hem uitschakelen of verwijderen in **Configuratie ▸ Plug-ins beheren…**.
 
 ## Verbinden
 

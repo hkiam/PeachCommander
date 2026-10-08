@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Pulsa **F3** sobre un archivo `.csv` o `.tsv` y se abrirá como una tabla de verdad —columnas, encabezados, ordenación y filtro— en lugar de como líneas de texto con comas.
 
-Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Plugins…**. Sin él, F3 muestra el archivo como texto plano, lo que sigue siendo perfectamente legible en uno pequeño.
+Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Gestionar plugins…**. Sin él, F3 muestra el archivo como texto plano, lo que sigue siendo perfectamente legible en uno pequeño.
 
 ## El delimitador se deduce, no se supone
 

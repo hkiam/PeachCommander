@@ -6,7 +6,7 @@ order: 131
 related: [plugins, viewing-files, searching]
 ---
 
-Druk op **F3** op een gecompileerd bestand en zie broncode in plaats van bytes. Twee plug-ins doen dat — één voor Java (`.class`, `.jar`, `.apk`, `.dex`) en één voor .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — en ze gedragen zich hetzelfde, dus deze pagina behandelt beide. Elk kan afzonderlijk worden uitgeschakeld of verwijderd via **Configuratie ▸ Plug-ins…**.
+Druk op **F3** op een gecompileerd bestand en zie broncode in plaats van bytes. Twee plug-ins doen dat — één voor Java (`.class`, `.jar`, `.apk`, `.dex`) en één voor .NET (`.dll`, `.exe`, `.winmd`, `.netmodule`) — en ze gedragen zich hetzelfde, dus deze pagina behandelt beide. Elk kan afzonderlijk worden uitgeschakeld of verwijderd via **Configuratie ▸ Plug-ins beheren…**.
 
 Een archief verschijnt als een structuur van zijn klassen; een losse klasse als één bestand. **Decompileren naar bronnen** in het menu Opdrachten schrijft het resultaat weg en zet het in een paneel, zodat u erin kunt zoeken, vergelijken en kopiëren als in elke andere map met broncode.
 

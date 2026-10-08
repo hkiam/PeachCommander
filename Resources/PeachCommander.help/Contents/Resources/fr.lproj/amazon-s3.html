@@ -12,7 +12,7 @@
 <h1>Amazon S3 et stockages compatibles S3</h1>
 <p>Un bucket S3 peut être parcouru dans un panneau comme n’importe quel dossier. Choisissez <strong>Se connecter à Amazon S3…</strong> dans le menu Réseau, renseignez le point d’accès et vos clés, et le stockage apparaît dans le panneau actif — avec la <strong>liste des buckets comme niveau supérieur</strong>, chaque bucket étant un répertoire ordinaire en dessous.</p>
 <p>Cela fonctionne avec Amazon S3 et avec tout ce qui parle le même protocole : MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 et DigitalOcean Spaces sont tous accessibles.</p>
-<p>C’est une extension : vous pouvez la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<p>C’est une extension : vous pouvez la désactiver ou la retirer dans <strong>Configuration ▸ Gérer les modules externes…</strong>.</p>
 <h2 id="se-connecter">Se connecter</h2>
 <p>Le menu <strong>Service</strong> renseigne les deux réglages qui ne se devinent pas — utiliser HTTPS et savoir si le point d’accès exige l’adressage par chemin — et laisse le point d’accès lui-même, car il dépend généralement de votre compte. Ces deux réglages échouent d’une manière qui ressemble à autre chose : l’adressage par nom d’hôte virtuel contre une adresse IP nue est une erreur de résolution de nom, et l’adressage par chemin contre Amazon est un « bucket inexistant » qui se lit comme un bucket manquant.</p>
 <p>La <strong>clé d’accès secrète</strong> est confiée au <strong>trousseau</strong> par l’application hôte, jamais à un fichier de configuration. Laissez le champ vide lors d’une connexion ultérieure et la clé enregistrée est utilisée.</p>

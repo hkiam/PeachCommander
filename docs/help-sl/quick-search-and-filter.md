@@ -15,7 +15,7 @@ Ko mapa vsebuje stotine elementov, le redko potrebujete drsenje. Peach Commander
 3. Nadaljujte tipkanje za izboljšanje ujemanja, ali se s ↑ in ↓ premikajte med zadetki, dokler je iskanje prikazano. Ponovni pritisk iste črke prav tako kroži po elementih, ki se z njo začnejo.
 4. Vneseno besedilo se po kratkem premoru počisti, tako da lahko kadar koli začnete novo iskanje.
 
-Privzeto navadne črke gredo v ukazno vrstico, hitro iskanje pa se sproži s Ctrl+Option+črka (klasično obnašanje). Hitro iskanje lahko preklopite, da se odziva na navadno tipkanje, ali ga izklopite, v nastavitvah konfiguracije.
+Privzeto navadne črke gredo v ukazno vrstico, hitro iskanje pa se sproži s Ctrl+Option+črka (klasično obnašanje). Hitro iskanje lahko preklopite, da se odziva na navadno tipkanje, ali ga izklopite, na strani **Operacija** v **Konfiguracija ▸ Nastavitve…**.
 
 ## Filtriranje seznama (hitri filter)
 

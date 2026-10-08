@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Faire glisser une application vers la Corbeille laisse ses fichiers de support, caches, préférences et conteneurs éparpillés dans vos dossiers Bibliothèque. L'extension Uninstaller retire une application **et** ces restes : elle trouve tout ce que l'application a laissé derrière elle, vous en montre la liste avec une taille pour chacun, et place le tout dans la Corbeille une fois que vous confirmez. C'est une extension, vous pouvez donc la désactiver ou la retirer dans **Configuration ▸ Extensions…**.
+Faire glisser une application vers la Corbeille laisse ses fichiers de support, caches, préférences et conteneurs éparpillés dans vos dossiers Bibliothèque. L'extension Uninstaller retire une application **et** ces restes : elle trouve tout ce que l'application a laissé derrière elle, vous en montre la liste avec une taille pour chacun, et place le tout dans la Corbeille une fois que vous confirmez. C'est une extension, vous pouvez donc la désactiver ou la retirer dans **Configuration ▸ Gérer les modules externes…**.
 
 ## Désinstaller une application sous le curseur
 

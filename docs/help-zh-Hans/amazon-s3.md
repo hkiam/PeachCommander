@@ -10,7 +10,7 @@ S3 存储桶可以像任何文件夹一样在面板中浏览。在“网络”�
 
 它适用于 Amazon S3，也适用于所有讲同一协议的服务：MinIO、Ceph/RADOS Gateway、Cloudflare R2、Wasabi、Backblaze B2 和 DigitalOcean Spaces 都可以访问。
 
-它是一个插件，因此可以在 **配置 ▸ 插件…** 中关闭或移除。
+它是一个插件，因此可以在 **配置 ▸ 管理插件…** 中关闭或移除。
 
 ## 连接
 

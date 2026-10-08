@@ -26,11 +26,11 @@ Fereastra are aceste pagini, în ordine:
 - **Aranjament** — afișează sau ascunde bara de unități, bara de file, bara de cale și bara de stare și alege ce pagini oferă panoul lateral.
 - **Afișare** — cum sunt listate fișierele și folderele, inclusiv formatul datei.
 - **Pictograme** — aspectul pictogramelor în listele de fișiere.
-- **Operațiune** — comportament general, cum ar fi ce se întâmplă când tastați într-un panou (căutare rapidă vs. linia de comandă).
+- **Operațiune** — comportament general, cum ar fi ce se întâmplă când tastați într-un panou (căutare rapidă vs. linia de comandă) și dacă copiile sunt verificate cu o sumă de control.
 - **Culori** — culori personalizate ale panourilor, sau lăsați-le să urmeze tema curentă.
-- **Confirmare** — ce acțiuni vă cer mai întâi să confirmați, precum ștergerea.
+- **Confirmare** — ce acțiuni vă cer mai întâi să confirmați, precum ștergerea, și dacă ștergerea mută elementele în Coș.
 - **Editare/Vizualizare** — dacă salvarea în editor păstrează o copie de rezervă `.bak`, programele folosite pentru editarea și vizualizarea fișierelor asocierile pe tip și cât poate costa o previzualizare în locațiile de rețea și în arhive.
-- **Copiere/Ștergere** — păstrează metadatele fișierelor, folosește clonarea rapidă, copiază doar fișierele mai noi, verifică după copiere, trimite ștergerile în Coș și setează o limită de viteză opțională.
+- **Copiere/Ștergere** — păstrează metadatele fișierelor, folosește clonarea rapidă, copiază doar fișierele mai noi și setează o limită de viteză opțională.
 - **Zip/Împachetare** — formatul de arhivă implicit și nivelul de compresie folosite când împachetați.
 - **Pluginuri** — activează sau dezactivează pluginurile instalate.
 - **File** — cum se deschid și se comportă filele de foldere.
@@ -52,7 +52,7 @@ Pluginurile activate pot adăuga propriile pagini după cele încorporate — de
 
 Configurația dvs. este păstrată în fișiere text simplu în interiorul folderului dvs. personal Application Support, la `~/Library/Application Support/PeachCommander`. Pentru a-l deschide, mergeți la pagina **Diverse** și faceți clic pe **Deschide folderul de configurare**. Parolele FTP salvate nu sunt stocate în aceste fișiere; sunt păstrate în siguranță în inelul de chei macOS.
 
-Setările sunt scrise pe măsură ce le modificați. Puteți de asemenea forța o salvare oricând cu **Configurație > Salvează setările** și stoca poziția curentă a ferestrei și aspectul panourilor cu **Configurație > Salvează poziția**.
+Setările sunt scrise pe măsură ce le modificați; nu este nimic de salvat manual.
 
 ## Aducerea setărilor din Total Commander
 

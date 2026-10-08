@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Umístěte kurzor na soubor s logem a zvolte **Zobrazit jako log…**, aby se otevřel v okně postaveném pro logy, ne pro text: jeden řádek na řádek, úroveň každého řádku rozpoznaná a obarvená, filtr a sledování, které stačí, i když se soubor stále zapisuje.
 
-Je to plugin: můžete jej vypnout nebo odstranit v **Konfigurace ▸ Pluginy…**. Bez něj zobrazí F3 log jako každý jiný textový soubor.
+Je to plugin: můžete jej vypnout nebo odstranit v **Konfigurace ▸ Spravovat zásuvné moduly…**. Bez něj zobrazí F3 log jako každý jiný textový soubor.
 
 ![Prohlížeč logů s protokolem služby, každá úroveň ve vlastní barvě](screenshots/log-viewer.png)
 *(Obrázek: každá úroveň má vlastní barvu a zobrazení dál sleduje soubor.)*

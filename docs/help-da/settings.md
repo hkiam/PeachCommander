@@ -26,11 +26,11 @@ Vinduet har disse sider, i rækkefølge:
 - **Layout** — vis eller skjul drevlinjen, fanelinjen, stilinjen og statuslinjen, og vælg hvilke sider sidepanelet tilbyder.
 - **Visning** — hvordan filer og mapper vises, inklusive datoformatet.
 - **Symboler** — ikonudseende i fillisterne.
-- **Handling** — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen).
+- **Handling** — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen), og om kopier verificeres med en kontrolsum.
 - **Farver** — tilpassede panelfarver, eller lad dem følge det aktuelle tema.
-- **Bekræftelse** — hvilke handlinger der beder dig bekræfte først, såsom sletning.
+- **Bekræftelse** — hvilke handlinger der beder dig bekræfte først, såsom sletning, og om sletning flytter emner til papirkurven.
 - **Rediger/vis** — om lagring i editoren beholder en `.bak`-sikkerhedskopi, programmerne brugt til at redigere og vise filer, associationer pr. type, og hvad en eksempelvisning må koste på netværksplaceringer og i arkiver.
-- **Kopier/slet** — bevar filmetadata, brug hurtig kloning, kopier kun nyere filer, verificér efter kopiering, send sletninger til papirkurven og indstil en valgfri hastighedsgrænse.
+- **Kopier/slet** — bevar filmetadata, brug hurtig kloning, kopier kun nyere filer og indstil en valgfri hastighedsgrænse.
 - **Zip/pakker** — standardarkivformatet og komprimeringsniveauet brugt når du pakker.
 - **Plugins** — slå installerede plugins til eller fra.
 - **Faner** — hvordan mappefaner åbner og opfører sig.
@@ -52,7 +52,7 @@ Aktiverede plugins kan tilføje deres egne sider efter de indbyggede — for eks
 
 Din konfiguration holdes i klartekstfiler inde i din personlige Application Support-mappe, på `~/Library/Application Support/PeachCommander`. For at åbne den, gå til **Diverse**-siden og klik på **Åbn konfigurationsmappe**. Gemte FTP-adgangskoder gemmes ikke i disse filer; de holdes sikkert i macOS-nøgleringen.
 
-Indstillinger skrives, efterhånden som du ændrer dem. Du kan også tvinge en gemning når som helst med **Konfiguration > Gem indstillinger** og gemme den aktuelle vinduesplacering og panellayout med **Konfiguration > Gem position**.
+Indstillinger skrives, efterhånden som du ændrer dem; der er intet at gemme manuelt.
 
 ## At tage indstillinger med fra Total Commander
 

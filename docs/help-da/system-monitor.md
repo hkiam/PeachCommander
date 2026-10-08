@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-System Monitor-pluginet placerer en live aflæsning af din Macs aktivitet direkte i vinduets titellinje: små chips for CPU, hukommelse, disk, netværk og — hvor hardwaren stiller dem til rådighed — GPU, batteri og sensorer. Hver chip opdateres én gang i sekundet; klik på en for et pop op-vindue med en historikgraf og en detaljeret opdeling. Det er et plugin, så du kan aktivere, konfigurere eller fjerne det i **Konfiguration ▸ Plugins…**.
+System Monitor-pluginet placerer en live aflæsning af din Macs aktivitet direkte i vinduets titellinje: små chips for CPU, hukommelse, disk, netværk og — hvor hardwaren stiller dem til rådighed — GPU, batteri og sensorer. Hver chip opdateres én gang i sekundet; klik på en for et pop op-vindue med en historikgraf og en detaljeret opdeling. Det er et plugin, så du kan aktivere, konfigurere eller fjerne det i **Konfiguration ▸ Administrer plugins…**.
 
 ## Chippene i titellinjen
 
@@ -24,7 +24,7 @@ Klik på en chip for at åbne et pop op-vindue med den store aktuelle værdi, en
 
 ## Konfigurér det
 
-Vælg **Kommandoer ▸ System Monitor…** (eller åbn **Konfiguration ▸ Indstillinger ▸ System Monitor**) for at konfigurere aflæsningen:
+Vælg **Kommandoer ▸ System Monitor…** (eller åbn **Konfiguration ▸ Indstillinger… ▸ System Monitor**) for at konfigurere aflæsningen:
 
 - **Vis systemovervågning i titellinjen** — hovedafbryderen til/fra for chippene.
 - **Profil** — forudindstillingerne *Minimal*, *Medium* eller *Maksimal*, som vælger et fornuftigt sæt moduler.

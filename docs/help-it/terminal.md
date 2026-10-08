@@ -10,7 +10,7 @@ Peach Commander può eseguire una shell vera dentro la propria finestra, in una 
 
 Non è la stessa cosa di **Apri Terminale qui**, che avvia l’app Terminale di Apple nella cartella corrente e vi lascia con due finestre. Quello integrato resta dove sono i vostri file, e li conosce.
 
-È un plugin: se non lo volete, disattivatelo o rimuovetelo in **Configurazione ▸ Plugin…**, e il dock se ne va con lui.
+È un plugin: se non lo volete, disattivatelo o rimuovetelo in **Configurazione ▸ Gestisci plugin…**, e il dock se ne va con lui.
 
 ![Il terminale integrato, agganciato sotto i due pannelli dei file](screenshots/terminal.png)
 *(Figura: la shell gira nella cartella mostrata dal pannello attivo.)*
@@ -38,7 +38,7 @@ Finché il terminale ha il fuoco, i **tasti funzione vanno lì**, non al pannell
 
 Sulla maggior parte delle tastiere fuori dagli Stati Uniti, `@`, `~`, `|`, `\` e le parentesi graffe si digitano con il tasto Opzione. Quei tasti raggiungono la shell come i caratteri stampati sui tasti.
 
-- L'alternativa è trattare Opzione come tasto Meta, che è ciò che vogliono Alt+B, Alt+F e le scorciatoie di Emacs: il terminale invia allora Esc prima del tasto anziché il carattere. Attivatelo in **Configurazione ▸ Plugin ▸ Terminale** con **Usa Opzione come tasto Meta**.
+- L'alternativa è trattare Opzione come tasto Meta, che è ciò che vogliono Alt+B, Alt+F e le scorciatoie di Emacs: il terminale invia allora Esc prima del tasto anziché il carattere. Attivatelo in **Configurazione ▸ Impostazioni… ▸ Terminale** con **Usa Opzione come tasto Meta**.
 - La modifica ha effetto subito, anche sui terminali già aperti e non solo su quelli nuovi.
 
 ## Il ponte di ritorno al pannello

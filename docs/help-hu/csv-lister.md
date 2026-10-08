@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Nyomja meg az **F3** billentyűt egy `.csv` vagy `.tsv` fájlon, és valódi táblázatként nyílik meg — oszlopok, fejlécek, rendezés és szűrő —, nem pedig vesszőkkel teli szövegsorokként.
 
-Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények…** alatt. Nélküle az F3 sima szövegként mutatja a fájlt, ami egy kicsinél továbbra is jól olvasható.
+Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények kezelése…** alatt. Nélküle az F3 sima szövegként mutatja a fájlt, ami egy kicsinél továbbra is jól olvasható.
 
 ## Az elválasztót kiszámolja, nem feltételezi
 

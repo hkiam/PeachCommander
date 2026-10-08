@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Ustaw kursor na pliku logu i wybierz **Pokaż jako log…**, aby otworzyć go w oknie zbudowanym dla logów, a nie dla tekstu: jeden wiersz na wiersz, poziom każdego rozpoznany i pokolorowany, filtr oraz śledzenie, które nadąża, gdy plik wciąż jest zapisywany.
 
-To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**. Bez niej F3 pokazuje log tak jak każdy inny plik tekstowy.
+To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Zarządzaj wtyczkami…**. Bez niej F3 pokazuje log tak jak każdy inny plik tekstowy.
 
 ![Przeglądarka logów z logiem usługi, każdy poziom we własnym kolorze](screenshots/log-viewer.png)
 *(Rysunek: każdy poziom ma własny kolor, a widok nadal śledzi plik.)*

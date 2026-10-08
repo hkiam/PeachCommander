@@ -63,7 +63,7 @@ A másik irány: egy saját szkript, amelyet a Peach Commander futtat.
 
 Ez egy bővítmény, és **kikapcsolva** érkezik, mert egy Ön által választott program futtatása mindent tud, amit a program többi része, és több olyat is, amit abból semmi. Két kapcsoló, mindkettő kikapcsolva, míg Ön be nem állítja:
 
-1. **Konfiguráció ▸ Bővítmények…** — kapcsolja be a **Scripting** bővítményt.
+1. **Konfiguráció ▸ Bővítmények kezelése…** — kapcsolja be a **Scripting** bővítményt.
 2. **Beállítások ▸ MI** — kapcsolja be a **Szkriptek futtatásának engedélyezése** lehetőséget. Azon a lapon van, mert ugyanolyan típusú engedély, mint az asszisztens shellje, és a kettő együvé tartozik.
 
 Ezután helyezzen egy szkriptet a konfigurációs mappán belüli `scripts/` mappába — a **Parancsok ▸ Szkriptmappa megnyitása** odavezet, és első alkalommal egy példát hagy ott. Egy `.applescript`, `.scpt` vagy `.jxa` fájl abban a mappában *már* szkript; nincs mit regisztrálni.

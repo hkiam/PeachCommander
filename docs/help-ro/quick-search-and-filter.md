@@ -15,7 +15,7 @@ Când un folder conține sute de elemente, rareori trebuie să derulați. Peach 
 3. Continuați să tastați pentru a rafina potrivirea, sau treceți între potriviri cu ↑ și ↓ cât timp căutarea este afișată. Apăsarea din nou a aceleiași litere parcurge de asemenea elementele care încep cu ea.
 4. Textul tastat se șterge după o scurtă pauză, astfel încât puteți începe o căutare nouă oricând.
 
-Implicit, literele simple merg la linia de comandă, iar căutarea rapidă este declanșată cu Ctrl+Option+literă (comportamentul clasic). Puteți comuta căutarea rapidă să răspundă la tastarea simplă în schimb, sau să o dezactivați, în setările de configurare.
+Implicit, literele simple merg la linia de comandă, iar căutarea rapidă este declanșată cu Ctrl+Option+literă (comportamentul clasic). Puteți comuta căutarea rapidă să răspundă la tastarea simplă în schimb, sau să o dezactivați, pe pagina **Operațiune** din **Configurație ▸ Configurări…**.
 
 ## Filtrarea listei (filtru rapid)
 

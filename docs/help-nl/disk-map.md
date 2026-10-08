@@ -61,7 +61,7 @@ Om meerdere items tegelijk te verwijderen, gebruik je de **Verzamelaar**: klik m
 
 ## Instellingen
 
-Disk Map voegt zijn eigen pagina toe aan het venster Instellingen (**Configuratie ▸ Instellingen ▸ Disk Map**):
+Disk Map voegt zijn eigen pagina toe aan het venster Instellingen (**Configuratie ▸ Instellingen… ▸ Disk Map**):
 
 - **Grafiekstijl** — treemap of sunburst.
 - **Kleurcodering** — per bestandstype (categorie) of per grootte (heatmap).

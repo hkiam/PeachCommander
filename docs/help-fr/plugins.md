@@ -37,7 +37,7 @@ Les autres extensions intégrées sont plus petites et n'ont pas besoin de leur 
 
 ## Activer ou désactiver des extensions
 
-1. Choisissez Configuration ▸ Extensions… pour ouvrir la fenêtre des extensions.
+1. Choisissez Configuration ▸ Gérer les modules externes… pour ouvrir la fenêtre des extensions.
 2. Chaque extension installée apparaît dans la liste avec son nom, son type et une case « Activé ».
 3. Cochez ou décochez la case pour activer ou désactiver une extension. Les changements prennent effet immédiatement — les extensions activées ajoutent leurs menus, colonnes et fonctions ; les désactivées restent à l'écart.
 
@@ -50,8 +50,8 @@ Une extension que vous téléchargez arrive sous forme de **paquet d'extension**
 
 - **Double-cliquez dessus** dans le Finder. Peach Commander s'ouvre et vous demande.
 - **Appuyez sur Entrée** dessus dans un panneau. Peach Commander est un gestionnaire de fichiers : c'est là que le fichier se trouve déjà, la plupart du temps.
-- **Faites-le glisser sur la fenêtre des extensions** (Configuration ▸ Extensions…).
-- Choisissez **Configuration ▸ Extensions… ▸ Installer…** et sélectionnez le paquet, un `.zip` contenant une extension, ou un bundle d'extension décompressé.
+- **Faites-le glisser sur la fenêtre des extensions** (Configuration ▸ Gérer les modules externes…).
+- Choisissez **Configuration ▸ Gérer les modules externes… ▸ Installer…** et sélectionnez le paquet, un `.zip` contenant une extension, ou un bundle d'extension décompressé.
 
 Avant que quoi que ce soit ne soit chargé, une boîte de dialogue indique le nom, la version, l'identifiant et le type de l'extension, ainsi que les types de fichiers qu'elle prendra en charge — une extension qui revendique `.iso`, par exemple, devient le lecteur de l'application pour ces fichiers. Rien n'est installé tant que vous n'avez pas cliqué sur **Installer**.
 

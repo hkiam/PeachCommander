@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 En Docker-containers filsystem kan gennemses i et panel som enhver anden mappe, og det samme gælder et Docker-volumen. Vælg **Opret forbindelse til Docker…** i menuen Netværk, eller klik på **Docker**-brikken i drevlinjen, og motoren vises i det aktive panel.
 
-Det er et plugin, og det **leveres slået fra**. Slå det til under **Konfiguration ▸ Plugins…**. Det starter slået fra, fordi en forbindelse til Docker-dæmonen har de samme rettigheder på din Mac som du selv — se *Hvad det kan nå* nedenfor.
+Det er et plugin, og det **leveres slået fra**. Slå det til under **Konfiguration ▸ Administrer plugins…**. Det starter slået fra, fordi en forbindelse til Docker-dæmonen har de samme rettigheder på din Mac som du selv — se *Hvad det kan nå* nedenfor.
 
 ## Hvad du ser
 
@@ -83,7 +83,7 @@ Punkterne vises kun inde i et Docker-drev; over en af dine egne mapper er de der
 
 ## Indstillinger
 
-**Konfiguration ▸ Indstillinger ▸ Docker** indeholder det hele. De samme værdier ligger i en lille fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den, man retter, hvis man sætter en maskine op fra et script:
+**Konfiguration ▸ Indstillinger… ▸ Docker** indeholder det hele. De samme værdier ligger i en lille fil i `~/Library/Application Support/PeachCommander/Docker/docker.ini`, som er den, man retter, hvis man sætter en maskine op fra et script:
 
 - `Endpoint` — en adresse, der skal bruges i stedet for den fundne.
 - `ExecFallback` — `0` får pluginet til kun at bruge Dockers arkiv-API: det kører så aldrig noget inde i en container, til gengæld for ikke at kunne vise en meget stor mappe, slette eller omdøbe.

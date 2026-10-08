@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Tryk **F3** på en `.csv`- eller `.tsv`-fil, så åbner den som en rigtig tabel — kolonner, overskrifter, sortering og et filter — i stedet for som tekstlinjer med kommaer i.
 
-Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**. Uden det viser F3 filen som ren tekst, hvilket for en lille fil stadig er fint læsbart.
+Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Administrer plugins…**. Uden det viser F3 filen som ren tekst, hvilket for en lille fil stadig er fint læsbart.
 
 ## Skilletegnet regnes ud, det antages ikke
 

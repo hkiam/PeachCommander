@@ -10,7 +10,7 @@ Un bucket S3 si può esplorare in un pannello come qualsiasi cartella. Scegli **
 
 Funziona con Amazon S3 e con tutto ciò che parla lo stesso protocollo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 e DigitalOcean Spaces sono tutti raggiungibili.
 
-È un plugin, quindi puoi disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**.
+È un plugin, quindi puoi disattivarlo o rimuoverlo in **Configurazione ▸ Gestisci plugin…**.
 
 ## Connessione
 

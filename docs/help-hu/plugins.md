@@ -37,7 +37,7 @@ A többi beépített bővítmény kisebb, és nincs szüksége saját oldalra:
 
 ## Bővítmények be- vagy kikapcsolása
 
-1. Válassza a Konfiguráció ▸ Bővítmények… lehetőséget a bővítmények ablak megnyitásához.
+1. Válassza a Konfiguráció ▸ Bővítmények kezelése… lehetőséget a bővítmények ablak megnyitásához.
 2. Minden telepített bővítmény megjelenik a listában névvel, típussal és egy „Engedélyezve" jelölőnégyzettel.
 3. Jelölje be vagy törölje a jelölőnégyzetet egy bővítmény engedélyezéséhez vagy letiltásához. A változtatások azonnal életbe lépnek — az engedélyezett bővítmények hozzáadják a menüiket, oszlopaikat és funkcióikat; a letiltottak félreállnak.
 
@@ -50,8 +50,8 @@ A letöltött bővítmény **bővítménycsomagként** érkezik — egy `.pcplug
 
 - **Kattintson rá duplán** a Finderben. A Peach Commander megnyílik és rákérdez.
 - **Nyomjon Entert rajta** egy panelben. A Peach Commander fájlkezelő — a fájl általában amúgy is ott van.
-- **Húzza a bővítményablakra** (Konfiguráció ▸ Bővítmények…).
-- Válassza a **Konfiguráció ▸ Bővítmények… ▸ Telepítés…** parancsot, majd a csomagot, egy bővítményt tartalmazó `.zip`-et vagy egy kicsomagolt bővítménykötegt.
+- **Húzza a bővítményablakra** (Konfiguráció ▸ Bővítmények kezelése…).
+- Válassza a **Konfiguráció ▸ Bővítmények kezelése… ▸ Telepítés…** parancsot, majd a csomagot, egy bővítményt tartalmazó `.zip`-et vagy egy kicsomagolt bővítménykötegt.
 
 Mielőtt bármi betöltődne, egy párbeszédablak megnevezi a bővítmény nevét, verzióját, azonosítóját és típusát, valamint azt, mely fájltípusokat veszi át — egy `.iso`-t igénylő bővítmény például az alkalmazás olvasója lesz azokhoz a fájlokhoz. Semmi sem települ, amíg rá nem kattint a **Telepítés** gombra.
 

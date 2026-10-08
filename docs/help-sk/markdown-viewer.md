@@ -8,7 +8,7 @@ related: [plugins, viewing-files, privacy-and-security]
 
 Stlačte F3 na súbore `.md` alebo `.html` a zobrazí sa formátovaný, nie ako zdrojový text: nadpisy, zoznamy, tabuľky, odkazy, zoznamy úloh a bloky kódu zafarbené podľa jazyka. Diagramy zapísané ako bloky ` ```mermaid ` sa nakreslia a matematika medzi znakmi dolára sa vysadí.
 
-Toto je zásuvný modul. Všetko na tejto stránke pochádza z **Markdown and HTML**, ktorý môžete vypnúť v **Konfigurácia ▸ Zásuvné moduly…** — nižšie je opísané, čo sa potom zmení.
+Toto je zásuvný modul. Všetko na tejto stránke pochádza z **Markdown and HTML**, ktorý môžete vypnúť v **Konfigurácia ▸ Spravovať zásuvné moduly…** — nižšie je opísané, čo sa potom zmení.
 
 ## Kde sa formátovaný pohľad objaví
 
@@ -27,7 +27,7 @@ Blok kódu s jazykom `mermaid` sa stane diagramom; `$…$` a `$$…$$` sa stanú
 
 Dokument bez diagramu a bez formuly nenačíta ani jeden nástroj, obyčajný README teda nestojí nič navyše. Diagram, ktorý nemožno prečítať, zobrazí chybu tam, kde blok bol, s jeho vlastným textom pod ňou, namiesto toho, aby zmizol.
 
-Oboje sa dá vypnúť zvlášť v **Konfigurácia ▸ Nastavenia ▸ Markdown**, kde je tiež vidieť, ktorá verzia sa používa a odkiaľ pochádza.
+Oboje sa dá vypnúť zvlášť v **Konfigurácia ▸ Nastavenia… ▸ Markdown**, kde je tiež vidieť, ktorá verzia sa používa a odkiaľ pochádza.
 
 ## Vaša vlastná verzia
 
@@ -56,7 +56,7 @@ Formátovaná stránka je zámerne odrezaná, pretože súbor Markdown je obsah,
 
 ## Vypnutie
 
-Vypnite modul v **Konfigurácia ▸ Zásuvné moduly…** a súbory `.md` a `.html` sa otvoria ako text. Prehľad ďalej funguje, farbenie syntaxe ďalej funguje a nič iné sa nemení — formátovaný pohľad sa jednoducho už nenabízí. To isté platí, ak na stránke nastavení modulu vypnete len formátovaný pohľad.
+Vypnite modul v **Konfigurácia ▸ Spravovať zásuvné moduly…** a súbory `.md` a `.html` sa otvoria ako text. Prehľad ďalej funguje, farbenie syntaxe ďalej funguje a nič iné sa nemení — formátovaný pohľad sa jednoducho už nenabízí. To isté platí, ak na stránke nastavení modulu vypnete len formátovaný pohľad.
 
 ## Obmedzenia
 

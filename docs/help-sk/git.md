@@ -9,7 +9,7 @@ related: [plugins, view-modes-and-sorting]
 Zásuvný modul Git ukazuje stav repozitára Git priamo v paneli súborov — bez samostatnej aplikácie a bez
 terminálu. Pridáva dva stĺpce, podponuku **Git**, ukotvený panel na prípravu a zápis zmien a okná pre
 históriu, blame, vetvy, konflikty a preskladanie. Používa `git`, ktorý je na vašom Macu už nainštalovaný. Je
-to zásuvný modul, takže ho môžete vypnúť alebo odstrániť v **Konfigurácia ▸ Zásuvné moduly…**.
+to zásuvný modul, takže ho môžete vypnúť alebo odstrániť v **Konfigurácia ▸ Spravovať zásuvné moduly…**.
 
 ## Čo pridáva
 

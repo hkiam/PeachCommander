@@ -26,11 +26,11 @@ Fönstret har dessa sidor, i ordning:
 - **Layout** — visa eller dölj enhetsraden, flikraden, sökvägsraden och statusraden, och välj vilka sidor sidopanelen erbjuder.
 - **Visning** — hur filer och mappar listas, inklusive datumformatet.
 - **Symboler** — symbolernas utseende i fillistorna.
-- **Åtgärd** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).
+- **Åtgärd** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden) och om kopior verifieras med en kontrollsumma.
 - **Färger** — anpassade panelfärger, eller låt dem följa det aktuella temat.
-- **Bekräftelse** — vilka åtgärder som ber dig bekräfta först, till exempel radering.
+- **Bekräftelse** — vilka åtgärder som ber dig bekräfta först, till exempel radering, och om radering flyttar objekt till papperskorgen.
 - **Redigera/visa** — om sparande i redigeraren behåller en `.bak`-säkerhetskopia, programmen som används för att redigera och visa filer, kopplingar per typ, och vad en förhandsvisning får kosta på nätverksplatser och i arkiv.
-- **Kopiera/radera** — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer, verifiera efter kopiering, skicka raderingar till papperskorgen och ange en valfri hastighetsgräns.
+- **Kopiera/radera** — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer och ange en valfri hastighetsgräns.
 - **Zip/packare** — standardarkivformatet och komprimeringsnivån som används när du packar.
 - **Plugin-program** — slå på eller av installerade insticksprogram.
 - **Flikar** — hur mappflikar öppnas och beter sig.
@@ -52,7 +52,7 @@ Aktiverade insticksprogram kan lägga till sina egna sidor efter de inbyggda —
 
 Din konfiguration förvaras i klartextfiler inuti din personliga Application Support-mapp, på `~/Library/Application Support/PeachCommander`. För att öppna den, gå till sidan **Övrigt** och klicka på **Öppna konfigurationsmapp**. Sparade FTP-lösenord lagras inte i dessa filer; de förvaras säkert i macOS nyckelring.
 
-Inställningar skrivs allteftersom du ändrar dem. Du kan även framtvinga en sparning när som helst med **Konfiguration > Spara inställningar**, och lagra det aktuella fönsterläget och panellayouten med **Konfiguration > Spara position**.
+Inställningar skrivs allteftersom du ändrar dem; det finns inget att spara för hand.
 
 ## Ta med inställningar från Total Commander
 

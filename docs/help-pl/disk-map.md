@@ -61,7 +61,7 @@ Aby usunąć kilka elementów naraz, użyj **kolekcjonera**: kliknij prawym przy
 
 ## Ustawienia
 
-Mapa dysku dodaje własną stronę do okna Ustawień (**Konfiguracja ▸ Ustawienia ▸ Mapa dysku**):
+Mapa dysku dodaje własną stronę do okna Ustawień (**Konfiguracja ▸ Ustawienia… ▸ Mapa dysku**):
 
 - **Styl wykresu** — mapa drzewa lub wykres słoneczny.
 - **Kodowanie kolorów** — według typu pliku (kategoria) lub według rozmiaru (mapa cieplna).

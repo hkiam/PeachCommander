@@ -26,11 +26,11 @@ La finestra ha queste pagine, in ordine:
 - **Disposizione** — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato, e scegli quali pagine offre il pannello laterale.
 - **Visualizzazione** — come vengono elencati file e cartelle, incluso il formato della data.
 - **Icone** — l'aspetto delle icone negli elenchi dei file.
-- **Operazione** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).
+- **Operazione** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando) e se le copie vengono verificate con un checksum.
 - **Colori** — colori personalizzati dei pannelli, o lasciali seguire il tema corrente.
-- **Conferma** — quali azioni chiedono prima di confermare, come l'eliminazione.
+- **Conferma** — quali azioni chiedono prima di confermare, come l'eliminazione, e se l'eliminazione sposta gli elementi nel Cestino.
 - **Modifica/Visualizza** — se il salvataggio nell'editor conserva una copia di backup `.bak`, i programmi usati per modificare e visualizzare i file, le associazioni per tipo e quanto può costare un'anteprima nelle posizioni di rete e negli archivi.
-- **Copia/Elimina** — preserva i metadati dei file, usa la clonazione rapida, copia solo i file più recenti, verifica dopo la copia, invia le eliminazioni al Cestino e imposta un limite di velocità opzionale.
+- **Copia/Elimina** — preserva i metadati dei file, usa la clonazione rapida, copia solo i file più recenti e imposta un limite di velocità opzionale.
 - **Zip/Compressore** — il formato di archivio e il livello di compressione predefiniti usati quando comprimi.
 - **Plugin** — attiva o disattiva i plugin installati.
 - **Schede** — come le schede delle cartelle si aprono e si comportano.
@@ -52,7 +52,7 @@ I plugin abilitati possono aggiungere le proprie pagine dopo quelle integrate �
 
 La tua configurazione è conservata in file di testo semplice dentro la tua cartella Application Support personale, in `~/Library/Application Support/PeachCommander`. Per aprirla, vai alla pagina **Varie** e fai clic su **Apri cartella di configurazione**. Le password FTP salvate non sono conservate in questi file; sono conservate in modo sicuro nel portachiavi macOS.
 
-Le impostazioni vengono scritte man mano che le modifichi. Puoi anche forzare un salvataggio in qualsiasi momento con **Configurazione > Salva impostazioni**, e memorizzare la posizione corrente della finestra e il layout dei pannelli con **Configurazione > Salva posizione**.
+Le impostazioni vengono scritte man mano che le modifichi; non c'è nulla da salvare a mano.
 
 ## Portare le impostazioni da Total Commander
 

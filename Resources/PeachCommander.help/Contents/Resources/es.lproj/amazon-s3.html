@@ -12,7 +12,7 @@
 <h1>Amazon S3 y almacenamiento compatible con S3</h1>
 <p>Un bucket de S3 se puede explorar en un panel como cualquier carpeta. Elija <strong>Conectar con Amazon S3…</strong> en el menú Red, indique el punto de acceso y sus claves, y el almacenamiento aparecerá en el panel activo — con la <strong>lista de buckets como nivel superior</strong> y cada bucket como un directorio normal por debajo.</p>
 <p>Funciona con Amazon S3 y con todo lo que hable el mismo protocolo: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 y DigitalOcean Spaces son accesibles.</p>
-<p>Es un complemento, así que puede desactivarlo o quitarlo en <strong>Configuración ▸ Complementos…</strong>.</p>
+<p>Es un complemento, así que puede desactivarlo o quitarlo en <strong>Configuración ▸ Gestionar plugins…</strong>.</p>
 <h2 id="conectar">Conectar</h2>
 <p>El menú <strong>Servicio</strong> rellena los dos ajustes que no se pueden adivinar — si se usa HTTPS y si el punto de acceso necesita direccionamiento por ruta — y deja el punto de acceso a su criterio, porque suele depender de su cuenta. Ambos ajustes fallan de un modo que parece otra cosa: el direccionamiento por nombre de host contra una dirección IP desnuda es un error de resolución de nombres, y el direccionamiento por ruta contra Amazon es un «no existe el bucket» que se lee como un bucket que falta.</p>
 <p>La <strong>clave de acceso secreta</strong> va al <strong>Llavero</strong> a través de la aplicación anfitriona, nunca a un archivo de configuración. Deje el campo vacío en una conexión posterior y se usará la guardada.</p>
