@@ -10,7 +10,7 @@ Grote kopieer-, verplaats-, verwijder- en downloadtaken hoeven je werk niet op t
 
 ## Zo doe je dat
 
-1. Start een kopieer-, verplaats-, verwijder- of downloadtaak en kies om hem op de achtergrond uit te voeren. De taak verschijnt in de Achtergrondoverdrachtbeheerder.
+1. Start een kopieer-, verplaats-, verwijder- of downloadtaak en kies om hem op de achtergrond uit te voeren — of druk op **Achtergrond** in het voortgangsvenster van een taak die al loopt. De taak verschijnt in de Achtergrondoverdrachtbeheerder.
 2. Open de beheerder op elk moment via **Opdrachten ▸ Achtergrondoverdrachtbeheerder…** (of druk op Cmd+Shift+B).
 3. Elke taak toont een titel, een voortgangsbalk en een live regel met voltooide bestanden, overgedragen bytes en huidige snelheid.
 4. Gebruik de knoppen per taak om te **Pauzeren**, te **Hervatten** of te **Annuleren** terwijl een taak loopt.

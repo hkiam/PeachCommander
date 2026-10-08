@@ -29,13 +29,13 @@ Przed potwierdzeniem możesz zmienić sposób działania kopiowania:
 - **Dodaj do kolejki na później** — dodaje kopiowanie do kolejki w tle, jeszcze go nie uruchamiając.
 - **Maska zmiany nazwy** — wpisz wzorzec wieloznaczny w polu docelowym (na przykład `*.bak`), aby zmieniać nazwy elementów podczas kopiowania.
 
-Dwa ustawienia dotyczą każdego kopiowania i znajdują się w **Konfiguracja ▸ Kopiuj/Usuń**: zachowywanie dat, uprawnień i innych atrybutów (domyślnie włączone) oraz ograniczenie prędkości, dzięki któremu duże kopiowanie nie wysyci dysku ani połączenia sieciowego. Zadania w kolejce — zobacz Transfery w tle.
+Dwa ustawienia dotyczą każdego kopiowania i znajdują się w **Konfiguracja ▸ Ustawienia… ▸ Kopiuj/Usuń**: zachowywanie dat, uprawnień i innych atrybutów (domyślnie włączone) oraz ograniczenie prędkości, dzięki któremu duże kopiowanie nie wysyci dysku ani połączenia sieciowego. Zadania w kolejce — zobacz Transfery w tle.
 
 ## Postęp
 
-Okno postępu pokazuje dwa paski — kopiowany plik i całe zadanie — wraz z liczbą plików i bajtów, prędkością transferu i pozostałym czasem. Możesz wstrzymywać i wznawiać w dowolnej chwili. Menu prędkości obok przycisków od razu ogranicza to kopiowanie (1, 5 lub 20 MB/s albo pełna prędkość) bez zmiany limitu w Konfiguracji; **Domyślnie** przywraca ten limit. Aby pracować dalej podczas kopiowania, uruchom je za pomocą **Uruchom w tle**.
+Okno postępu pokazuje dwa paski — kopiowany plik i całe zadanie — wraz z liczbą plików i bajtów, prędkością transferu i pozostałym czasem. Możesz wstrzymywać i wznawiać w dowolnej chwili. Menu prędkości obok przycisków od razu ogranicza to kopiowanie (1, 5 lub 20 MB/s albo pełna prędkość) bez zmiany limitu w Konfiguracji; **Domyślnie** przywraca ten limit. **W tle** przekazuje trwające kopiowanie do menedżera transferów w tle: okno się zamyka, a kopiowanie trwa tam dalej.
 
-![Okno dialogowe postępu transferu z paskiem postępu, licznikami plików i bajtów oraz przyciskami Wstrzymaj i Anuluj](screenshots/progress-dialog.png)
+![Okno dialogowe postępu transferu z paskiem dla bieżącego pliku i drugim dla całego zadania, licznikami plików i bajtów, menu prędkości oraz przyciskami W tle, Wstrzymaj i Anuluj](screenshots/progress-dialog.png)
 *(Rysunek: Okno dialogowe postępu wyświetlane podczas kopiowania lub przenoszenia.)*
 
 ## Obsługa plików, które już istnieją

@@ -29,13 +29,13 @@ Antes de confirmar, puede cambiar el comportamiento de la copia:
 - **Poner en cola para más tarde**: añade la copia a la cola en segundo plano sin iniciarla todavía.
 - **Máscara de renombrado**: escriba un patrón con comodines en el campo de destino (por ejemplo, `*.bak`) para renombrar los elementos a medida que se copian.
 
-Dos ajustes se aplican a todas las copias y se encuentran en **Configuración ▸ Copiar/Eliminar**: conservar las fechas, los permisos y otros atributos (activado de forma predeterminada) y un límite de velocidad que evita que una copia grande sature el disco o la conexión de red. Para las tareas en cola, consulte Transferencias en segundo plano.
+Dos ajustes se aplican a todas las copias y se encuentran en **Configuración ▸ Ajustes… ▸ Copiar/Eliminar**: conservar las fechas, los permisos y otros atributos (activado de forma predeterminada) y un límite de velocidad que evita que una copia grande sature el disco o la conexión de red. Para las tareas en cola, consulte Transferencias en segundo plano.
 
 ## Progreso
 
-Una ventana de progreso muestra dos barras, una para el archivo que se está copiando y otra para toda la tarea, con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; **Predeterminado** vuelve a ese límite. Para seguir trabajando mientras se ejecuta una copia, iníciela con **Ejecutar en segundo plano**.
+Una ventana de progreso muestra dos barras, una para el archivo que se está copiando y otra para toda la tarea, con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; **Predeterminado** vuelve a ese límite. **Segundo plano** entrega la copia en curso al gestor de transferencias en segundo plano: la ventana se cierra y la copia continúa allí.
 
-![El cuadro de diálogo de progreso de la transferencia con una barra de progreso, recuentos de archivos y bytes, y botones de Pausar y Cancelar](screenshots/progress-dialog.png)
+![El cuadro de diálogo de progreso de la transferencia con una barra para el archivo actual y otra para toda la tarea, recuentos de archivos y bytes, un menú de velocidad y botones de Segundo plano, Pausar y Cancelar](screenshots/progress-dialog.png)
 *(Figura: El cuadro de diálogo de progreso mostrado durante una copia o un movimiento.)*
 
 ## Gestionar archivos que ya existen

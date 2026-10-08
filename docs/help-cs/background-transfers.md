@@ -10,7 +10,7 @@ Rozsáhlé kopírování, přesouvání, mazání a stahování nemusí zdržova
 
 ## Postup
 
-1. Zahajte kopírování, přesun, mazání nebo stahování a zvolte spuštění na pozadí. Úloha se objeví ve Správci přenosů na pozadí.
+1. Zahajte kopírování, přesun, mazání nebo stahování a zvolte spuštění na pozadí — nebo u již běžící úlohy stiskněte **Na pozadí** v okně průběhu. Úloha se objeví ve Správci přenosů na pozadí.
 2. Správce kdykoli otevřete z nabídky **Příkazy ▸ Správce přenosů na pozadí…** (nebo stiskem Cmd+Shift+B).
 3. Každá úloha zobrazuje název, ukazatel průběhu a živý řádek s dokončenými soubory, přenesenými bajty a aktuální rychlostí.
 4. Pomocí tlačítek u jednotlivých úloh můžete během běhu úlohu **Pozastavit**, **Obnovit** nebo **Zrušit**.

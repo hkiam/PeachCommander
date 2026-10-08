@@ -1364,11 +1364,23 @@ extension PanelController {
         queue.mergedSink = mergedSink
         let resolver = InteractiveResolver(parentWindow: view.window)
         let progress = ProgressDialog(title: title, control: queue.control)
+        // "Background" (F-085): the transfer manager takes the job over, this loop keeps the queue.
+        // It goes on unmarking and reloading this panel and hands every event on to the job.
+        var adopted: TransferManager.Job?
+        progress.onBackground = { [weak self, unowned progress] in
+            guard adopted == nil else { return }
+            adopted = TransferManager.shared.adopt(kind, title: title, control: queue.control,
+                                                   progress: progress.lastProgress,
+                                                   paused: progress.isPaused, speedLimit: progress.speedLimit)
+            progress.finish()
+            (self?.view.window?.windowController as? MainWindowController)?.showTransferManager()
+        }
         progress.present(over: view.window)
         for await event in queue.run(kind, resolver: resolver) {
+            if let adopted { TransferManager.shared.record(event, for: adopted) }
             switch event {
             case .progress(let p):
-                progress.update(p)
+                if adopted == nil { progress.update(p) }
             case .completed(let done):
                 await getSelectionState().unmarkCompleted(done)
             case .failed(let error):
@@ -1377,7 +1389,7 @@ extension PanelController {
                 break
             }
         }
-        progress.finish()
+        if let adopted { TransferManager.shared.finish(adopted) } else { progress.finish() }
         // Continue-on-error summary (F-089): if any files were skipped due to
         // errors, show a log window instead of silently dropping them.
         let problems = resolver.problems()

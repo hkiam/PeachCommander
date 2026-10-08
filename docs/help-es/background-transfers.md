@@ -10,7 +10,7 @@ Las copias, los movimientos, las eliminaciones y las descargas grandes no tienen
 
 ## Cómo hacerlo
 
-1. Inicie una copia, un movimiento, una eliminación o una descarga y elija ejecutarla en segundo plano. La tarea aparece en el Gestor de transferencias en segundo plano.
+1. Inicie una copia, un movimiento, una eliminación o una descarga y elija ejecutarla en segundo plano — o pulse **Segundo plano** en la ventana de progreso de una que ya esté en curso. La tarea aparece en el Gestor de transferencias en segundo plano.
 2. Abra el gestor en cualquier momento desde **Comandos ▸ Gestor de transferencias en segundo plano…** (o pulse Cmd+Shift+B).
 3. Cada tarea muestra un título, una barra de progreso y una línea en directo con los archivos completados, los bytes transferidos y la velocidad actual.
 4. Use los botones de cada tarea para **Pausar**, **Reanudar** o **Cancelar** mientras una tarea se está ejecutando.

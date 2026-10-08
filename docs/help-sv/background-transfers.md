@@ -10,7 +10,7 @@ Stora kopieringar, flyttar, borttagningar och nedladdningar behöver inte hålla
 
 ## Så gör du
 
-1. Starta en kopiering, flytt, borttagning eller nedladdning och välj att köra den i bakgrunden. Jobbet visas i hanteraren för bakgrundsöverföringar.
+1. Starta en kopiering, flytt, borttagning eller nedladdning och välj att köra den i bakgrunden — eller tryck på **Bakgrund** i förloppsfönstret för ett som redan körs. Jobbet visas i hanteraren för bakgrundsöverföringar.
 2. Öppna hanteraren när som helst från **Kommandon ▸ Hanterare för bakgrundsöverföringar…** (eller tryck på Cmd+Shift+B).
 3. Varje jobb visar en titel, en förloppsstapel och en liverad med klara filer, överförda byte och aktuell hastighet.
 4. Använd knapparna per jobb för att **Pausa**, **Återuppta** eller **Avbryta** medan ett jobb körs.

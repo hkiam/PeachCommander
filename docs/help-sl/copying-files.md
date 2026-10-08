@@ -29,13 +29,13 @@ Preden potrdite, lahko spremenite, kako se kopiranje obnaša:
 - **Uvrsti v čakalno vrsto za pozneje** — kopiranje doda v čakalno vrsto v ozadju, ne da bi ga že zagnalo.
 - **Maska preimenovanja** — v ciljno polje vnesite vzorec z nadomestnimi znaki (na primer `*.bak`), da elemente preimenujete med kopiranjem.
 
-Dve nastavitvi veljata za vsako kopiranje in sta v **Konfiguracija ▸ Kopiranje/brisanje**: ohranjanje datumov, dovoljenj in drugih atributov (privzeto vklopljeno) ter omejitev hitrosti, da veliko kopiranje ne zasede vsega diska ali omrežne povezave. Za opravila v čakalni vrsti glejte Prenosi v ozadju.
+Dve nastavitvi veljata za vsako kopiranje in sta v **Konfiguracija ▸ Nastavitve… ▸ Kopiranje/brisanje**: ohranjanje datumov, dovoljenj in drugih atributov (privzeto vklopljeno) ter omejitev hitrosti, da veliko kopiranje ne zasede vsega diska ali omrežne povezave. Za opravila v čakalni vrsti glejte Prenosi v ozadju.
 
 ## Napredovanje
 
-Okno napredovanja prikazuje dve vrstici — datoteko, ki se kopira, in celotno opravilo — s številom datotek in bajtov, hitrostjo prenosa in preostalim časom. Kadar koli lahko kopiranje zaustavite in nadaljujete. Meni hitrosti ob gumbih takoj omeji to kopiranje (1, 5 ali 20 MB/s ali polna hitrost), ne da bi spremenil omejitev v Konfiguraciji; **Privzeto** se vrne na to omejitev. Če želite med kopiranjem delati naprej, ga zaženite z **Zaženi v ozadju**.
+Okno napredovanja prikazuje dve vrstici — datoteko, ki se kopira, in celotno opravilo — s številom datotek in bajtov, hitrostjo prenosa in preostalim časom. Kadar koli lahko kopiranje zaustavite in nadaljujete. Meni hitrosti ob gumbih takoj omeji to kopiranje (1, 5 ali 20 MB/s ali polna hitrost), ne da bi spremenil omejitev v Konfiguraciji; **Privzeto** se vrne na to omejitev. **V ozadju** preda tekoče kopiranje upravitelju prenosov v ozadju: okno se zapre in kopiranje se nadaljuje tam.
 
-![Pogovorno okno napredovanja prenosa z vrstico napredovanja, števci datotek in bajtov ter gumboma Premor in Prekliči](screenshots/progress-dialog.png)
+![Pogovorno okno napredovanja prenosa z vrstico za trenutno datoteko in vrstico za celotno opravilo, števci datotek in bajtov, menijem hitrosti ter gumbi V ozadju, Premor in Prekliči](screenshots/progress-dialog.png)
 *(Slika: Pogovorno okno napredovanja, prikazano med kopiranjem ali premikom.)*
 
 ## Ravnanje z datotekami, ki že obstajajo

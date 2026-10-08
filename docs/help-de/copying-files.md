@@ -29,13 +29,13 @@ Bevor Sie bestätigen, können Sie das Verhalten des Kopiervorgangs ändern:
 - **Für später einreihen** – fügt den Kopiervorgang der Hintergrundwarteschlange hinzu, ohne ihn schon zu starten.
 - **Umbenennungsmaske** – geben Sie im Zielfeld ein Platzhaltermuster ein (zum Beispiel `*.bak`), um Elemente beim Kopieren umzubenennen.
 
-Zwei Einstellungen gelten für jeden Kopiervorgang und befinden sich unter **Konfiguration ▸ Kopieren/Löschen**: das Erhalten von Datumsangaben, Berechtigungen und anderen Attributen (standardmäßig aktiviert) und eine Geschwindigkeitsbegrenzung, damit ein großer Kopiervorgang Ihre Festplatte oder Netzwerkverbindung nicht auslastet. Zu Aufträgen in der Warteschlange siehe Hintergrundübertragungen.
+Zwei Einstellungen gelten für jeden Kopiervorgang und befinden sich unter **Konfiguration ▸ Einstellungen… ▸ Kopieren/Löschen**: das Erhalten von Datumsangaben, Berechtigungen und anderen Attributen (standardmäßig aktiviert) und eine Geschwindigkeitsbegrenzung, damit ein großer Kopiervorgang Ihre Festplatte oder Netzwerkverbindung nicht auslastet. Zu Aufträgen in der Warteschlange siehe Hintergrundübertragungen.
 
 ## Fortschritt
 
-Ein Fortschrittsfenster zeigt zwei Balken – die gerade kopierte Datei und den Gesamtauftrag – mit Datei- und Byte-Anzahl, der Übertragungsgeschwindigkeit und der Restzeit. Sie können jederzeit anhalten und fortsetzen. Das Geschwindigkeitsmenü neben den Schaltflächen begrenzt diesen Kopiervorgang sofort (1, 5 oder 20 MB/s oder volle Geschwindigkeit), ohne die Begrenzung in der Konfiguration zu ändern; **Standard** kehrt zu dieser Begrenzung zurück. Um weiterzuarbeiten, während ein Kopiervorgang läuft, starten Sie ihn mit **Im Hintergrund ausführen**.
+Ein Fortschrittsfenster zeigt zwei Balken – die gerade kopierte Datei und den Gesamtauftrag – mit Datei- und Byte-Anzahl, der Übertragungsgeschwindigkeit und der Restzeit. Sie können jederzeit anhalten und fortsetzen. Das Geschwindigkeitsmenü neben den Schaltflächen begrenzt diesen Kopiervorgang sofort (1, 5 oder 20 MB/s oder volle Geschwindigkeit), ohne die Begrenzung in der Konfiguration zu ändern; **Standard** kehrt zu dieser Begrenzung zurück. **Hintergrund** übergibt den laufenden Kopiervorgang an den Manager für Hintergrundübertragungen: Das Fenster schließt sich, und der Kopiervorgang läuft dort weiter.
 
-![Der Übertragungsfortschritt-Dialog mit Fortschrittsbalken, Datei- und Byte-Zählern sowie Pause- und Abbrechen-Schaltflächen](screenshots/progress-dialog.png)
+![Der Übertragungsfortschritt-Dialog mit einem Balken für die aktuelle Datei und einem für den Gesamtauftrag, Datei- und Byte-Zählern, einem Geschwindigkeitsmenü sowie den Schaltflächen Hintergrund, Anhalten und Abbrechen](screenshots/progress-dialog.png)
 *(Abbildung: Der Fortschrittsdialog während eines Kopier- oder Verschiebevorgangs.)*
 
 ## Umgang mit bereits vorhandenen Dateien

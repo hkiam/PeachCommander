@@ -10,7 +10,7 @@ Les copies, déplacements, suppressions et téléchargements volumineux n'ont pa
 
 ## Marche à suivre
 
-1. Lancez une copie, un déplacement, une suppression ou un téléchargement et choisissez de l'exécuter en arrière-plan. La tâche apparaît dans le gestionnaire de transferts en arrière-plan.
+1. Lancez une copie, un déplacement, une suppression ou un téléchargement et choisissez de l'exécuter en arrière-plan — ou cliquez sur **Arrière-plan** dans la fenêtre de progression d'une opération déjà en cours. La tâche apparaît dans le gestionnaire de transferts en arrière-plan.
 2. Ouvrez le gestionnaire à tout moment depuis **Commandes ▸ Gestionnaire de transferts en arrière-plan…** (ou appuyez sur Cmd+Shift+B).
 3. Chaque tâche affiche un titre, une barre de progression et une ligne en direct indiquant les fichiers terminés, les octets transférés et la vitesse actuelle.
 4. Utilisez les boutons de chaque tâche pour **Mettre en pause**, **Reprendre** ou **Annuler** pendant qu'une tâche est en cours.

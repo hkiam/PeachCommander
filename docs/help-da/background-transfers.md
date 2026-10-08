@@ -10,7 +10,7 @@ Store kopieringer, flytninger, sletninger og overførsler behøver ikke at holde
 
 ## Sådan gør du
 
-1. Start en kopiering, flytning, sletning eller overførsel, og vælg at køre den i baggrunden. Jobbet vises i baggrundsoverførsels-håndteringen.
+1. Start en kopiering, flytning, sletning eller overførsel, og vælg at køre den i baggrunden — eller tryk på **Baggrund** i fremdriftsvinduet for en, der allerede kører. Jobbet vises i baggrundsoverførsels-håndteringen.
 2. Åbn håndteringen når som helst fra **Kommandoer ▸ Baggrundsoverførsels-håndtering…** (eller tryk på Cmd+Shift+B).
 3. Hvert job viser en titel, en fremdriftsbjælke og en løbende linje med udførte filer, overførte bytes og aktuel hastighed.
 4. Brug knapperne pr. job til at **Sætte på pause**, **Genoptage** eller **Annullere**, mens et job kører.

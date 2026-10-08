@@ -10,7 +10,7 @@ Store kopieringer, flyttinger, slettinger og nedlastinger trenger ikke å holde 
 
 ## Slik gjør du det
 
-1. Start en kopiering, flytting, sletting eller nedlasting og velg å kjøre den i bakgrunnen. Jobben vises i Bakgrunnsoverføringsbehandleren.
+1. Start en kopiering, flytting, sletting eller nedlasting og velg å kjøre den i bakgrunnen — eller trykk på **Bakgrunn** i fremdriftsvinduet til en som allerede kjører. Jobben vises i Bakgrunnsoverføringsbehandleren.
 2. Åpne behandleren når som helst fra **Kommandoer ▸ Bakgrunnsoverføringsbehandler…** (eller trykk Cmd+Shift+B).
 3. Hver jobb viser en tittel, en fremdriftslinje og en direkte linje med filer ferdige, bytes overført og gjeldende hastighet.
 4. Bruk knappene per jobb for å **Sette på pause**, **Gjenoppta** eller **Avbryte** mens en jobb kjører.

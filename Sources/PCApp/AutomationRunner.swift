@@ -1682,6 +1682,31 @@ extension MainWindowController {
                                                    title: "Download \((a[0] as NSString).lastPathComponent)", startHeld: true)
                     showTransferManager()
                 }
+            case "fgcopy":                                 // fgcopy <src>|<dstdir>|<KB/s> (F-085): a foreground copy
+                // Through the panel's own `runTransfer`, with its progress window — throttled and not
+                // cloned, so it is still running when the next lines of the script reach it.
+                let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
+                if a.count == 3, let panel = activePanel {
+                    var o = CopyOptions()
+                    o.useCloneWhenPossible = false
+                    o.maxBytesPerSecond = (Int64(a[2]) ?? 0) * 1024
+                    let kind = OperationKind.copy(items: [a[0]], toDirectory: a[1], options: o)
+                    Task { await panel.runTransfer(kind, title: "Copy \((a[0] as NSString).lastPathComponent)") }
+                }
+            case "progressbackground":                     // progressbackground (F-085): press Background
+                let dialog = NSApp.windows.lazy.compactMap { $0.windowController as? ProgressDialog }.first
+                NSLog("[automation] progressbackground: \(dialog == nil ? "no progress window" : "pressed")")
+                dialog?.automationPressBackground()
+            case "tmdump":                                 // tmdump <out> (F-085): the transfer manager's jobs
+                // One line per job — status, title, bytes, limit — plus whether a progress window is
+                // still open, which is what tells "handed over" apart from "shown twice".
+                var out = TransferManager.shared.jobs.map { job in
+                    "\(job.status.rawValue)|\(job.title)|\(job.progress.bytesDone)/\(job.progress.bytesTotal)"
+                        + "|limit=\(job.speedLimit.map(String.init) ?? "default")"
+                }.joined(separator: "\n")
+                let open = NSApp.windows.contains { $0.isVisible && $0.windowController is ProgressDialog }
+                out += "\nprogressWindowOpen=\(open)\n"
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "packplugin":                             // packplugin <archivePath>|<srcDir>|<f1>,<f2> (F-137)
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count == 3 {
@@ -1919,6 +1944,7 @@ extension MainWindowController {
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "progressdemo":                           // progressdemo (I04): show a sample transfer progress dialog
                 let dlg = ProgressDialog(title: "Copying 128 items…", control: OperationControl())
+                dlg.onBackground = {}   // shown as in a real copy; the demo has no queue to hand over
                 automationProgressDialogs.append(dlg)
                 dlg.present(over: window)
                 dlg.update(OpProgress(filesTotal: 128, filesDone: 47,

@@ -10,7 +10,7 @@ Veľké kopírovania, presúvania, mazania a sťahovania nemusia zdržiavať va�
 
 ## Ako na to
 
-1. Začnite kopírovanie, presun, mazanie alebo sťahovanie a vyberte spustenie na pozadí. Úloha sa objaví v Správcovi prenosov na pozadí.
+1. Začnite kopírovanie, presun, mazanie alebo sťahovanie a vyberte spustenie na pozadí — alebo pri už bežiacej úlohe stlačte **Na pozadí** v okne priebehu. Úloha sa objaví v Správcovi prenosov na pozadí.
 2. Otvorte správcu kedykoľvek z **Príkazy ▸ Správca prenosov na pozadí…** (alebo stlačte Cmd+Shift+B).
 3. Každá úloha zobrazuje názov, ukazovateľ priebehu a živý riadok s hotovými súbormi, prenesenými bajtmi a aktuálnou rýchlosťou.
 4. Použite tlačidlá na úlohu **Pozastaviť**, **Obnoviť** alebo **Zrušiť**, kým úloha beží.

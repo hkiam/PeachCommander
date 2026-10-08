@@ -29,13 +29,13 @@ Pred potvrdením môžete zmeniť, ako sa kopírovanie správa:
 - **Zaradiť do fronty na neskôr** — pridá kopírovanie do frontu na pozadí bez toho, aby ho hneď spustilo.
 - **Maska premenovania** — do cieľového poľa napíšte vzor so zástupnými znakmi (napríklad `*.bak`), aby ste položky pri kopírovaní premenovali.
 
-Dve nastavenia platia pre každé kopírovanie a nájdete ich v **Konfigurácia ▸ Kopírovať/odstrániť**: zachovanie dátumov, oprávnení a ďalších atribútov (predvolene zapnuté) a obmedzenie rýchlosti, aby veľké kopírovanie nezaťažilo váš disk alebo sieťové pripojenie. K úlohám vo fronte pozri Prenosy na pozadí.
+Dve nastavenia platia pre každé kopírovanie a nájdete ich v **Konfigurácia ▸ Nastavenia… ▸ Kopírovať/odstrániť**: zachovanie dátumov, oprávnení a ďalších atribútov (predvolene zapnuté) a obmedzenie rýchlosti, aby veľké kopírovanie nezaťažilo váš disk alebo sieťové pripojenie. K úlohám vo fronte pozri Prenosy na pozadí.
 
 ## Priebeh
 
-Okno priebehu zobrazuje dve lišty — kopírovaný súbor a celú úlohu — s počtom súborov a bajtov, prenosovou rýchlosťou a zostávajúcim časom. Kedykoľvek môžete kopírovanie pozastaviť a pokračovať v ňom. Ponuka rýchlosti vedľa tlačidiel toto kopírovanie hneď obmedzí (1, 5 alebo 20 MB/s, alebo plná rýchlosť) bez zmeny limitu v Konfigurácii; **Predvolené** sa vráti k tomuto limitu. Ak chcete počas kopírovania pracovať ďalej, spustite ho pomocou **Spustiť na pozadí**.
+Okno priebehu zobrazuje dve lišty — kopírovaný súbor a celú úlohu — s počtom súborov a bajtov, prenosovou rýchlosťou a zostávajúcim časom. Kedykoľvek môžete kopírovanie pozastaviť a pokračovať v ňom. Ponuka rýchlosti vedľa tlačidiel toto kopírovanie hneď obmedzí (1, 5 alebo 20 MB/s, alebo plná rýchlosť) bez zmeny limitu v Konfigurácii; **Predvolené** sa vráti k tomuto limitu. **Na pozadí** odovzdá bežiace kopírovanie správcovi prenosov na pozadí: okno sa zatvorí a kopírovanie pokračuje tam.
 
-![Dialóg priebehu prenosu s lištou priebehu, počtom súborov a bajtov a tlačidlami Pozastaviť a Zrušiť](screenshots/progress-dialog.png)
+![Dialóg priebehu prenosu s lištou pre aktuálny súbor a ďalšou pre celú úlohu, počtom súborov a bajtov, ponukou rýchlosti a tlačidlami Na pozadí, Pozastaviť a Zrušiť](screenshots/progress-dialog.png)
 *(Obrázok: Dialóg priebehu zobrazený počas kopírovania alebo presunu.)*
 
 ## Riešenie súborov, ktoré už existujú

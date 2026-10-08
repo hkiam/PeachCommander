@@ -10,7 +10,7 @@ Große Kopier-, Verschiebe-, Lösch- und Download-Vorgänge müssen Ihre Arbeit 
 
 ## Vorgehensweise
 
-1. Starten Sie einen Kopier-, Verschiebe-, Lösch- oder Download-Vorgang und wählen Sie, ihn im Hintergrund auszuführen. Der Auftrag erscheint im Manager für Hintergrundübertragungen.
+1. Starten Sie einen Kopier-, Verschiebe-, Lösch- oder Download-Vorgang und wählen Sie, ihn im Hintergrund auszuführen — oder drücken Sie im Fortschrittsfenster eines bereits laufenden Vorgangs auf **Hintergrund**. Der Auftrag erscheint im Manager für Hintergrundübertragungen.
 2. Öffnen Sie den Manager jederzeit über **Befehle ▸ Manager für Hintergrundübertragungen…** (oder drücken Sie Cmd+Shift+B).
 3. Jeder Auftrag zeigt einen Titel, einen Fortschrittsbalken und eine Live-Zeile mit erledigten Dateien, übertragenen Bytes und der aktuellen Geschwindigkeit.
 4. Verwenden Sie die Schaltflächen pro Auftrag für **Pause**, **Fortsetzen** oder **Abbrechen**, während ein Auftrag läuft.

@@ -16,7 +16,14 @@ final class ProgressDialog: NSWindowController {
     private let logger = PCFoundationLogger.logger
 
     private let control: OperationControl
-    private var isPaused = false
+    /// What the transfer manager needs to take the transfer over as it stands (F-085).
+    private(set) var isPaused = false
+    private(set) var lastProgress = OpProgress()
+    private(set) var speedLimit: Int64?
+    /// "Background" (SPEC-004 §4, F-085): hand the running transfer to the transfer manager. The
+    /// owner of the transfer decides what that means — it is the one holding the queue — and closes
+    /// this window; the button only says it was asked.
+    var onBackground: (() -> Void)?
 
     private let currentItemLabel = NSTextField(labelWithString: "")
     /// The current file (SPEC-004 §4). Hidden until a file with bytes to copy arrives — a delete has
@@ -30,6 +37,7 @@ final class ProgressDialog: NSWindowController {
     /// without having had to start it in the background. Shown with the file bar — only an operation
     /// that copies bytes has anything to throttle.
     private let speedPopup = TransferManagerWindowController.makeSpeedPopup(selecting: nil)
+    private let backgroundButton = NSButton()
     private let pauseButton = NSButton()
     private let cancelButton = NSButton()
 
@@ -38,7 +46,7 @@ final class ProgressDialog: NSWindowController {
         self.control = control
 
         let window = NSWindow(
-            contentRect: NSMakeRect(0, 0, 420, 190),
+            contentRect: NSMakeRect(0, 0, 520, 190),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -56,6 +64,7 @@ final class ProgressDialog: NSWindowController {
     /// interactive overwrite/error alert can still be presented above it.
     func present(over parent: NSWindow?) {
         guard let window else { return }
+        backgroundButton.isHidden = onBackground == nil
         window.center()
         window.makeKeyAndOrderFront(nil)
         if let parent {
@@ -65,6 +74,7 @@ final class ProgressDialog: NSWindowController {
 
     /// Updates the labels and progress bar from a live `OpProgress` snapshot.
     func update(_ progress: OpProgress) {
+        lastProgress = progress
         currentItemLabel.stringValue = progress.currentItem
 
         if let fileFraction = progress.currentFileFraction {
@@ -180,6 +190,13 @@ final class ProgressDialog: NSWindowController {
         pauseButton.action = #selector(togglePause)
         pauseButton.target = self
 
+        backgroundButton.title = String(localized: "Background",
+                                        comment: "Button in the copy progress window: continue the running copy in the background transfer manager")
+        backgroundButton.bezelStyle = .rounded
+        backgroundButton.action = #selector(backgroundAction)
+        backgroundButton.target = self
+        backgroundButton.toolTip = String(localized: "Run in background")
+
         cancelButton.title = String(localized: "Cancel")
         cancelButton.bezelStyle = .rounded
         cancelButton.keyEquivalent = "\u{1B}"
@@ -190,6 +207,7 @@ final class ProgressDialog: NSWindowController {
         speedPopup.target = self
         speedPopup.action = #selector(speedChanged)
         buttons.addView(speedPopup, in: .leading)
+        buttons.addView(backgroundButton, in: .trailing)
         buttons.addView(pauseButton, in: .trailing)
         buttons.addView(cancelButton, in: .trailing)
         content.addSubview(buttons)
@@ -231,8 +249,17 @@ final class ProgressDialog: NSWindowController {
         }
     }
 
+    /// The `progressbackground` automation verb: the button, as clicked.
+    func automationPressBackground() { backgroundAction() }
+
+    @objc private func backgroundAction() {
+        backgroundButton.isEnabled = false
+        onBackground?()
+    }
+
     @objc private func speedChanged() {
         let choice = TransferManagerWindowController.speedChoices[max(0, speedPopup.indexOfSelectedItem)]
+        speedLimit = choice.bytesPerSecond
         let control = self.control
         Task { await control.setSpeedLimit(choice.bytesPerSecond) }
     }

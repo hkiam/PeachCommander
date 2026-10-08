@@ -29,13 +29,13 @@ A megerősítés előtt módosíthatja a másolás viselkedését:
 - **Sorba állítás későbbre** – a másolást a háttérsorba teszi anélkül, hogy már elindítaná.
 - **Átnevezési maszk** – írjon egy helyettesítő karakteres mintát a célmezőbe (például `*.bak`), hogy az elemeket másolás közben átnevezze.
 
-Két beállítás minden másolásra érvényes, és a **Konfiguráció ▸ Másolás/törlés** alatt található: a dátumok, jogosultságok és egyéb attribútumok megőrzése (alapértelmezés szerint be van kapcsolva), valamint egy sebességkorlát, amely megakadályozza, hogy egy nagy másolás túlterhelje a lemezt vagy a hálózati kapcsolatot. A sorban lévő feladatokról lásd a **Háttérben futó átvitelek** témát.
+Két beállítás minden másolásra érvényes, és a **Konfiguráció ▸ Beállítások… ▸ Másolás/törlés** alatt található: a dátumok, jogosultságok és egyéb attribútumok megőrzése (alapértelmezés szerint be van kapcsolva), valamint egy sebességkorlát, amely megakadályozza, hogy egy nagy másolás túlterhelje a lemezt vagy a hálózati kapcsolatot. A sorban lévő feladatokról lásd a **Háttérben futó átvitelek** témát.
 
 ## Folyamat
 
-Egy folyamatablak két sávot mutat – a másolás alatt álló fájlt és a teljes feladatot – a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az **Alapértelmezett** visszaáll erre a korlátra. Ha dolgozni szeretne, amíg egy másolás fut, indítsa a **Futtatás a háttérben** lehetőséggel.
+Egy folyamatablak két sávot mutat – a másolás alatt álló fájlt és a teljes feladatot – a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az **Alapértelmezett** visszaáll erre a korlátra. A **Háttérbe** a futó másolást átadja a háttérben futó átvitelek kezelőjének: az ablak bezárul, és a másolás ott folytatódik.
 
-![Az átviteli folyamat párbeszédpanele folyamatjelző sávval, fájl- és bájtszámlálóval, valamint Szüneteltetés és Megszakítás gombokkal](screenshots/progress-dialog.png)
+![Az átviteli folyamat párbeszédpanele egy sávval az aktuális fájlhoz és eggyel a teljes feladathoz, fájl- és bájtszámlálóval, sebességmenüvel, valamint Háttérbe, Szüneteltetés és Megszakítás gombokkal](screenshots/progress-dialog.png)
 *(Ábra: A folyamatot jelző párbeszédpanel másolás vagy áthelyezés közben.)*
 
 ## Már létező fájlok kezelése

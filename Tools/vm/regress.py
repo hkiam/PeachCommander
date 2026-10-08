@@ -2241,6 +2241,15 @@ SCENARIOS = [
     ("bg-copy-verify", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                         "modaldump /Users/admin/verify.txt",
                         "bgcopyverify /Users/admin/pc-demo/hosts.txt|/Users/admin", "wait 4000"], 11),
+    # "Background" in the copy progress window (SPEC-004 §4, F-085) hands the running copy to the
+    # transfer manager. The copy is throttled so it is still running when the button is pressed. The
+    # first dump is the handover — a running job and no window, not both — and the second, written
+    # last because the guest waits for it, is the job finishing under the manager.
+    ("progress-background", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                             "fgcopy /Users/admin/pc-demo/Downloads/installer.dmg|/Users/admin|256",
+                             "wait 2000", "progressbackground", "wait 800",
+                             "tmdump /Users/admin/progress-bg-handover.txt",
+                             "wait 9000", "tmdump /Users/admin/progress-bg.txt"], 20),
     # A Windows-style file in the *code* view (F-110). Its line ranges were built by comparing each
     # Character against "\n", and a CRLF is one Character equal to neither — so the whole file rendered
     # as a single line and every line-addressed feature (go to line, marks, per-line notes) pointed at
@@ -3928,6 +3937,12 @@ REPORTS = {
     # The alert must be there, must be the verification one, and must say the file matched. "!did not
     # match" guards the other direction: an alert that fires but reports a mismatch for a good copy would
     # be just as wrong and would still contain the word "verified".
+    # Handed over: the job runs in the manager and the progress window is gone. Then it finishes there,
+    # every byte accounted for.
+    "progress-background-handover": ("/Users/admin/progress-bg-handover.txt",
+                                     ["running|Copy installer.dmg", "progressWindowOpen=false", "!ERROR"]),
+    "progress-background": ("/Users/admin/progress-bg.txt",
+                            ["done|Copy installer.dmg|2097152/2097152", "progressWindowOpen=false", "!ERROR"]),
     "bg-copy-verify": ("/Users/admin/verify.txt",
                        ["modal=true", "Verify After Copy", "verified", "!did not match", "!ERROR"]),
     # crlf.json is 300004 lines with Windows endings, and .json above 4 MB opens in the app's own ranged

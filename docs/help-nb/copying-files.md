@@ -29,13 +29,13 @@ Før du bekrefter, kan du endre hvordan kopieringen oppfører seg:
 - **Legg i kø til senere** — legger kopieringen i bakgrunnskøen uten å starte den ennå.
 - **Omdøpingsmaske** — skriv et jokertegnmønster i målfeltet (for eksempel `*.bak`) for å gi elementene nytt navn mens de kopieres.
 
-To innstillinger gjelder for all kopiering og ligger under **Konfigurasjon ▸ Kopier/slett**: bevaring av datoer, tillatelser og andre attributter (på som standard) og en hastighetsgrense som hindrer en stor kopiering i å mette disken eller nettverksforbindelsen din. For jobber i køen, se Bakgrunnsoverføringer.
+To innstillinger gjelder for all kopiering og ligger under **Konfigurasjon ▸ Innstillinger… ▸ Kopier/slett**: bevaring av datoer, tillatelser og andre attributter (på som standard) og en hastighetsgrense som hindrer en stor kopiering i å mette disken eller nettverksforbindelsen din. For jobber i køen, se Bakgrunnsoverføringer.
 
 ## Fremdrift
 
-Et fremdriftsvindu viser to linjer — filen som kopieres og hele jobben — med antall filer og byte, overføringshastigheten og gjenstående tid. Du kan sette på pause og fortsette når som helst. Hastighetsmenyen ved siden av knappene begrenser denne kopieringen med en gang (1, 5 eller 20 MB/s, eller full hastighet) uten å endre grensen i Konfigurasjon; **Standard** går tilbake til den grensen. Vil du fortsette å arbeide mens en kopiering pågår, starter du den med **Kjør i bakgrunnen**.
+Et fremdriftsvindu viser to linjer — filen som kopieres og hele jobben — med antall filer og byte, overføringshastigheten og gjenstående tid. Du kan sette på pause og fortsette når som helst. Hastighetsmenyen ved siden av knappene begrenser denne kopieringen med en gang (1, 5 eller 20 MB/s, eller full hastighet) uten å endre grensen i Konfigurasjon; **Standard** går tilbake til den grensen. **Bakgrunn** overlater den pågående kopieringen til bakgrunnsoverføringsbehandleren: vinduet lukkes, og kopieringen fortsetter der.
 
-![Fremdriftsdialogen for overføring med en fremdriftslinje, fil- og byteantall, og Pause- og Avbryt-knapper](screenshots/progress-dialog.png)
+![Fremdriftsdialogen for overføring med en linje for gjeldende fil og en for hele jobben, fil- og byteantall, en hastighetsmeny, og Bakgrunn-, Pause- og Avbryt-knapper](screenshots/progress-dialog.png)
 *(Figur: Fremdriftsdialogen som vises under en kopiering eller flytting.)*
 
 ## Håndtering av filer som allerede finnes

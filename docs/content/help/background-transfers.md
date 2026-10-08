@@ -11,7 +11,7 @@ Large copies, moves, deletes, and downloads don't have to hold up your work. Pea
 
 ## How to
 
-1. Start a copy, move, delete, or download and choose to run it in the background. The job appears in the Background Transfer Manager.
+1. Start a copy, move, delete, or download and choose to run it in the background — or press **Background** in the progress window of one already running. The job appears in the Background Transfer Manager.
 2. Open the manager any time from **Commands ▸ Background Transfer Manager…** (or press Cmd+Shift+B).
 3. Each job shows a title, a progress bar, and a live line with files done, bytes transferred, and current speed.
 4. Use the per-job buttons to **Pause**, **Resume**, or **Cancel** while a job is running.

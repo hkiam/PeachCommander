@@ -29,13 +29,13 @@ Avant de confirmer, vous pouvez modifier le comportement de la copie :
 - **Mettre en file d’attente** — ajoute la copie à la file d'attente en arrière-plan sans la démarrer tout de suite.
 - **Masque de renommage** — saisissez un motif à caractères génériques dans le champ cible (par exemple `*.bak`) pour renommer les éléments au moment de la copie.
 
-Deux réglages s'appliquent à chaque copie et se trouvent dans **Configuration ▸ Copier/Supprimer** : la préservation des dates, des autorisations et des autres attributs (activée par défaut) et une limite de vitesse qui évite qu'une copie volumineuse sature votre disque ou votre connexion réseau. Pour les tâches en file d'attente, voir Transferts en arrière-plan.
+Deux réglages s'appliquent à chaque copie et se trouvent dans **Configuration ▸ Réglages… ▸ Copier/Supprimer** : la préservation des dates, des autorisations et des autres attributs (activée par défaut) et une limite de vitesse qui évite qu'une copie volumineuse sature votre disque ou votre connexion réseau. Pour les tâches en file d'attente, voir Transferts en arrière-plan.
 
 ## Progression
 
-Une fenêtre de progression affiche deux barres — le fichier en cours de copie et l'ensemble de la tâche — avec le nombre de fichiers et d'octets, la vitesse de transfert et le temps restant. Vous pouvez mettre en pause et reprendre à tout moment. Le menu de vitesse à côté des boutons limite immédiatement cette copie (1, 5 ou 20 MB/s, ou vitesse maximale) sans modifier la limite définie dans Configuration ; **Par défaut** revient à cette limite. Pour continuer à travailler pendant une copie, lancez-la avec **Exécuter en arrière-plan**.
+Une fenêtre de progression affiche deux barres — le fichier en cours de copie et l'ensemble de la tâche — avec le nombre de fichiers et d'octets, la vitesse de transfert et le temps restant. Vous pouvez mettre en pause et reprendre à tout moment. Le menu de vitesse à côté des boutons limite immédiatement cette copie (1, 5 ou 20 MB/s, ou vitesse maximale) sans modifier la limite définie dans Configuration ; **Par défaut** revient à cette limite. **Arrière-plan** confie la copie en cours au gestionnaire de transferts en arrière-plan : la fenêtre se ferme et la copie s'y poursuit.
 
-![La boîte de dialogue de progression du transfert avec une barre de progression, le décompte des fichiers et des octets, et des boutons Pause et Annuler](screenshots/progress-dialog.png)
+![La boîte de dialogue de progression du transfert avec une barre pour le fichier en cours et une pour l'ensemble de la tâche, le décompte des fichiers et des octets, un menu de vitesse, et des boutons Arrière-plan, Pause et Annuler](screenshots/progress-dialog.png)
 *(Figure : la boîte de dialogue de progression affichée pendant une copie ou un déplacement.)*
 
 ## Gérer les fichiers qui existent déjà

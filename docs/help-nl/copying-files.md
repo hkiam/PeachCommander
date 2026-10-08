@@ -29,13 +29,13 @@ Voordat je bevestigt, kun je wijzigen hoe het kopiëren zich gedraagt:
 - **In wachtrij voor later** — voegt de kopieerbewerking toe aan de achtergrondwachtrij zonder haar al te starten.
 - **Hernoemmasker** — typ een jokertekenpatroon in het doelveld (bijvoorbeeld `*.bak`) om items te hernoemen terwijl ze worden gekopieerd.
 
-Twee instellingen gelden voor elke kopieerbewerking en staan in **Configuratie ▸ Kopiëren/verwijderen**: het behouden van datums, machtigingen en andere attributen (standaard aan) en een snelheidslimiet die voorkomt dat een grote kopieerbewerking je schijf of netwerkverbinding verzadigt. Voor taken in de wachtrij, zie Overdrachten op de achtergrond.
+Twee instellingen gelden voor elke kopieerbewerking en staan in **Configuratie ▸ Instellingen… ▸ Kopiëren/verwijderen**: het behouden van datums, machtigingen en andere attributen (standaard aan) en een snelheidslimiet die voorkomt dat een grote kopieerbewerking je schijf of netwerkverbinding verzadigt. Voor taken in de wachtrij, zie Overdrachten op de achtergrond.
 
 ## Voortgang
 
-Een voortgangsvenster toont twee balken — het bestand dat wordt gekopieerd en de hele taak — met aantallen bestanden en bytes, de overdrachtssnelheid en de resterende tijd. Je kunt op elk moment pauzeren en hervatten. Het snelheidsmenu naast de knoppen begrenst deze kopieerbewerking meteen (1, 5 of 20 MB/s, of volle snelheid) zonder de limiet in Configuratie te wijzigen; **Standaard** gaat terug naar die limiet. Wil je doorwerken terwijl een kopieerbewerking loopt, start die dan met **Op achtergrond uitvoeren**.
+Een voortgangsvenster toont twee balken — het bestand dat wordt gekopieerd en de hele taak — met aantallen bestanden en bytes, de overdrachtssnelheid en de resterende tijd. Je kunt op elk moment pauzeren en hervatten. Het snelheidsmenu naast de knoppen begrenst deze kopieerbewerking meteen (1, 5 of 20 MB/s, of volle snelheid) zonder de limiet in Configuratie te wijzigen; **Standaard** gaat terug naar die limiet. **Achtergrond** geeft de lopende kopieerbewerking door aan de achtergrondoverdrachtsbeheerder: het venster sluit en de kopieerbewerking gaat daar verder.
 
-![Het voortgangsvenster voor overdrachten met een voortgangsbalk, bestands- en byte-aantallen, en de knoppen Pauzeer en Annuleer](screenshots/progress-dialog.png)
+![Het voortgangsvenster voor overdrachten met een balk voor het huidige bestand en een voor de hele taak, bestands- en byte-aantallen, een snelheidsmenu, en de knoppen Achtergrond, Pauzeer en Annuleer](screenshots/progress-dialog.png)
 *(Afbeelding: Het voortgangsvenster dat tijdens een kopieer- of verplaatsbewerking wordt getoond.)*
 
 ## Bestanden die al bestaan afhandelen

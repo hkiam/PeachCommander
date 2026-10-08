@@ -29,13 +29,13 @@ Prima di confermare, potete modificare il comportamento della copia:
 - **Metti in coda per dopo** — aggiunge la copia alla coda in background senza avviarla subito.
 - **Maschera di rinomina** — digitate un pattern con caratteri jolly nel campo di destinazione (ad esempio `*.bak`) per rinominare gli elementi durante la copia.
 
-Due impostazioni valgono per ogni copia e si trovano in **Configurazione ▸ Copia/Elimina**: la conservazione di date, permessi e altri attributi (attiva per impostazione predefinita) e un limite di velocità che impedisce a una copia di grandi dimensioni di saturare il disco o la connessione di rete. Per le operazioni in coda, vedi Trasferimenti in background.
+Due impostazioni valgono per ogni copia e si trovano in **Configurazione ▸ Impostazioni… ▸ Copia/Elimina**: la conservazione di date, permessi e altri attributi (attiva per impostazione predefinita) e un limite di velocità che impedisce a una copia di grandi dimensioni di saturare il disco o la connessione di rete. Per le operazioni in coda, vedi Trasferimenti in background.
 
 ## Avanzamento
 
-Una finestra di avanzamento mostra due barre — il file in copia e l'intera operazione — con il numero di file e di byte, la velocità di trasferimento e il tempo rimanente. Potete mettere in pausa e riprendere in qualsiasi momento. Il menu della velocità accanto ai pulsanti limita subito questa copia (1, 5 o 20 MB/s, oppure velocità massima) senza modificare il limite in Configurazione; **Predefinito** torna a quel limite. Per continuare a lavorare mentre una copia è in corso, avviatela con **Esegui in background**.
+Una finestra di avanzamento mostra due barre — il file in copia e l'intera operazione — con il numero di file e di byte, la velocità di trasferimento e il tempo rimanente. Potete mettere in pausa e riprendere in qualsiasi momento. Il menu della velocità accanto ai pulsanti limita subito questa copia (1, 5 o 20 MB/s, oppure velocità massima) senza modificare il limite in Configurazione; **Predefinito** torna a quel limite. **In background** affida la copia in corso al gestore dei trasferimenti in background: la finestra si chiude e la copia prosegue lì.
 
-![La finestra di avanzamento del trasferimento con una barra di avanzamento, conteggi di file e byte, e i pulsanti Pausa e Annulla](screenshots/progress-dialog.png)
+![La finestra di avanzamento del trasferimento con una barra per il file corrente e una per l'intera operazione, conteggi di file e byte, un menu della velocità e i pulsanti In background, Pausa e Annulla](screenshots/progress-dialog.png)
 *(Figura: la finestra di avanzamento mostrata durante una copia o uno spostamento.)*
 
 ## Gestione dei file già esistenti

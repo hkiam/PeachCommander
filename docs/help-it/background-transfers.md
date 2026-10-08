@@ -10,7 +10,7 @@ Le copie, gli spostamenti, le eliminazioni e i download di grandi dimensioni non
 
 ## Come fare
 
-1. Avviate una copia, uno spostamento, un'eliminazione o un download e scegliete di eseguirlo in background. L'operazione appare nel Gestore trasferimenti in background.
+1. Avviate una copia, uno spostamento, un'eliminazione o un download e scegliete di eseguirlo in background — oppure premete **In background** nella finestra di avanzamento di un'operazione già in corso. L'operazione appare nel Gestore trasferimenti in background.
 2. Aprite il gestore in qualsiasi momento da **Comandi ▸ Gestore trasferimenti in background…** (oppure premete Cmd+Shift+B).
 3. Ogni operazione mostra un titolo, una barra di avanzamento e una riga in tempo reale con i file completati, i byte trasferiti e la velocità corrente.
 4. Usate i pulsanti per singola operazione per **Metti in pausa**, **Riprendi** o **Annulla** mentre un'operazione è in corso.

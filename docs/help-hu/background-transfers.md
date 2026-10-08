@@ -10,7 +10,7 @@ A nagy másolásoknak, áthelyezéseknek, törléseknek és letöltéseknek nem 
 
 ## Hogyan
 
-1. Indítson el egy másolást, áthelyezést, törlést vagy letöltést, és válassza, hogy a háttérben fusson. A feladat megjelenik a háttérben futó átvitelek kezelőjében.
+1. Indítson el egy másolást, áthelyezést, törlést vagy letöltést, és válassza, hogy a háttérben fusson — vagy egy már futó feladat folyamatablakában nyomja meg a **Háttérbe** gombot. A feladat megjelenik a háttérben futó átvitelek kezelőjében.
 2. A kezelőt bármikor megnyithatja a **Parancsok ▸ Háttérben futó átvitelek kezelője…** menüpontból (vagy nyomja meg a Cmd+Shift+B billentyűt).
 3. Minden feladat egy címet, egy folyamatjelző sávot és egy élő sort mutat a kész fájlokkal, az átvitt bájtokkal és az aktuális sebességgel.
 4. A feladatonkénti gombokkal **Szüneteltesse**, **Folytassa** vagy **Szakítsa meg** a feladatot, miközben fut.

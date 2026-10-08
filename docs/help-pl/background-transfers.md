@@ -10,7 +10,7 @@ Duże kopiowania, przenoszenia, usuwania i pobierania nie muszą wstrzymywać Tw
 
 ## Jak to zrobić
 
-1. Rozpocznij kopiowanie, przenoszenie, usuwanie lub pobieranie i wybierz uruchomienie w tle. Zadanie pojawia się w Menedżerze transferów w tle.
+1. Rozpocznij kopiowanie, przenoszenie, usuwanie lub pobieranie i wybierz uruchomienie w tle — albo naciśnij **W tle** w oknie postępu już trwającego zadania. Zadanie pojawia się w Menedżerze transferów w tle.
 2. Otwórz menedżera w dowolnej chwili z menu **Polecenia ▸ Menedżer transferów w tle…** (lub naciśnij Cmd+Shift+B).
 3. Każde zadanie pokazuje tytuł, pasek postępu oraz wiersz na żywo z liczbą wykonanych plików, przesłanych bajtów i bieżącą prędkością.
 4. Użyj przycisków przy zadaniu, aby **Wstrzymać**, **Wznowić** lub **Anulować** w trakcie działania zadania.

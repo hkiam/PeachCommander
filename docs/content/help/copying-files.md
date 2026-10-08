@@ -30,13 +30,13 @@ Before you confirm, you can change how the copy behaves:
 - **Queue for later** — adds the copy to the background queue without starting it yet.
 - **Rename mask** — type a wildcard pattern in the target field (for example `*.bak`) to rename items as they are copied.
 
-Two settings apply to every copy and live in **Configuration ▸ Copy/Delete**: preserving dates, permissions, and other attributes (on by default), and a speed limit that keeps a large copy from saturating your disk or network connection. For jobs in the queue, see Background transfers.
+Two settings apply to every copy and live in **Configuration ▸ Settings… ▸ Copy/Delete**: preserving dates, permissions, and other attributes (on by default), and a speed limit that keeps a large copy from saturating your disk or network connection. For jobs in the queue, see Background transfers.
 
 ## Progress
 
-A progress window shows two bars — the file being copied and the whole job — with file and byte counts, the transfer speed, and the time left. You can pause and resume at any time. The speed menu next to the buttons limits this copy straight away (1, 5 or 20 MB/s, or full speed) without changing the limit in Configuration; **Default** goes back to that limit. To keep working while a copy runs, start it with **Run in background**.
+A progress window shows two bars — the file being copied and the whole job — with file and byte counts, the transfer speed, and the time left. You can pause and resume at any time. The speed menu next to the buttons limits this copy straight away (1, 5 or 20 MB/s, or full speed) without changing the limit in Configuration; **Default** goes back to that limit. **Background** hands the running copy to the background transfer manager: the window closes and the copy goes on there.
 
-![The transfer progress dialog with a progress bar, file and byte counts, and Pause and Cancel buttons](screenshots/progress-dialog.png)
+![The transfer progress dialog with a bar for the current file and one for the whole job, file and byte counts, a speed menu, and Background, Pause and Cancel buttons](screenshots/progress-dialog.png)
 *(Figure: The progress dialog shown during a copy or move.)*
 
 ## Handling files that already exist

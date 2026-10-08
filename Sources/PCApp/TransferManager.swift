@@ -136,6 +136,24 @@ final class TransferManager {
         startJob(jobs[index])
     }
 
+    /// Take over a transfer that is already running in a progress window (SPEC-004 §4, F-085).
+    ///
+    /// The queue stays where it is: its event loop belongs to whoever started it, which goes on
+    /// unmarking and reloading the panel, and feeds this job through `record` and `finish`.
+    /// What changes hands is the control, so the job's Pause, Cancel and speed menu act on the very
+    /// transfer the window was showing. Its resolver stays interactive too — a copy sent to the
+    /// background still asks before it overwrites, as it would have in the window.
+    func adopt(_ kind: OperationKind, title: String, control: OperationControl, progress: OpProgress,
+               paused: Bool, speedLimit: Int64?) -> Job {
+        let job = Job(title: title, kind: kind, control: control, onComplete: nil)
+        job.progress = progress
+        job.status = paused ? .paused : .running
+        job.speedLimit = speedLimit
+        jobs.append(job)
+        onChange?()
+        return job
+    }
+
     private func run(_ job: Job, queue: TransferQueue) async {
         // Background transfers can't pop interactive conflict dialogs, so resolve
         // target-exists by overwriting; a per-file ERROR is skipped (continue on
@@ -143,37 +161,9 @@ final class TransferManager {
         // (F-089).
         let resolver = BackgroundSkipResolver()
         for await event in queue.run(job.kind, resolver: resolver) {
-            switch event {
-            case .progress(let p):
-                if job.status == .running || job.status == .paused { job.progress = p }
-                onChange?()
-                // A fraction, because that is what a consumer of the event stream can use; the
-                // window shows the byte and file counts from the same OpProgress.
-                let fraction = p.bytesTotal > 0
-                    ? Double(p.bytesDone) / Double(p.bytesTotal)
-                    : (p.filesTotal > 0 ? Double(p.filesDone) / Double(p.filesTotal) : 0)
-                onOperationEvent?(.operationProgress(id: job.id.uuidString, fraction: fraction))
-            case .completed(let done):
-                job.status = .done
-                onChange?()
-                job.onComplete?(done)
-            case .failed(let error):
-                job.status = .failed
-                job.errorText = "\(error)"
-                onChange?()
-            case .cancelled:
-                job.status = .cancelled
-                onChange?()
-            case .log:
-                break
-            }
+            record(event, for: job)
         }
-        if !job.status.isFinished { job.status = .done }
-        onChange?()
-        job.onFinish?(job.status == .done)
-        onOperationEvent?(.operationFinished(id: job.id.uuidString, ok: job.status == .done))
-        // Whatever the outcome, the slot is free: let the next held job have it.
-        startNextQueuedJob()
+        finish(job)
         // Continue-on-error summary for the background job (F-089).
         let problems = resolver.problems()
         if !problems.isEmpty {
@@ -183,6 +173,44 @@ final class TransferManager {
                                                  entries: problems.map { ($0.path, $0.message) })
             }
         }
+    }
+
+    /// One event of a job's queue — its own, or an adopted job's, fed by the loop that owns it.
+    func record(_ event: OpEvent, for job: Job) {
+        switch event {
+        case .progress(let p):
+            if job.status == .running || job.status == .paused { job.progress = p }
+            onChange?()
+            // A fraction, because that is what a consumer of the event stream can use; the
+            // window shows the byte and file counts from the same OpProgress.
+            let fraction = p.bytesTotal > 0
+                ? Double(p.bytesDone) / Double(p.bytesTotal)
+                : (p.filesTotal > 0 ? Double(p.filesDone) / Double(p.filesTotal) : 0)
+            onOperationEvent?(.operationProgress(id: job.id.uuidString, fraction: fraction))
+        case .completed(let done):
+            job.status = .done
+            onChange?()
+            job.onComplete?(done)
+        case .failed(let error):
+            job.status = .failed
+            job.errorText = "\(error)"
+            onChange?()
+        case .cancelled:
+            job.status = .cancelled
+            onChange?()
+        case .log:
+            break
+        }
+    }
+
+    /// A job's queue has ended — its own, or an adopted job's.
+    func finish(_ job: Job) {
+        if !job.status.isFinished { job.status = .done }
+        onChange?()
+        job.onFinish?(job.status == .done)
+        onOperationEvent?(.operationFinished(id: job.id.uuidString, ok: job.status == .done))
+        // Whatever the outcome, the slot is free: let the next held job have it.
+        startNextQueuedJob()
     }
 
     func pause(_ job: Job) {
