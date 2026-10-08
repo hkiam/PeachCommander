@@ -11,22 +11,22 @@ La finestra Impostazioni è dove adatti Peach Commander al tuo modo di lavorare:
 ## Apri Impostazioni
 
 1. Scegli **Peach Commander > Impostazioni…**, o premi Cmd+, (virgola).
-2. Puoi anche aprire la stessa finestra da **Configurazione > Opzioni…**.
+2. Puoi anche aprire la stessa finestra da **Configurazione > Impostazioni…**.
 3. Scegli una pagina dall'elenco a sinistra; le opzioni di quella pagina compaiono a destra.
 4. Regola i controlli. Le modifiche hanno effetto subito a meno che una nota sulla pagina non dica diversamente.
 5. Per andare direttamente a un'opzione, digita nel campo di ricerca in cima alla finestra. Le impostazioni corrispondenti di *tutte* le pagine sono elencate con la pagina in cui si trovano, e sceglierne una apre quella pagina con l'impostazione evidenziata. ↑/↓ scorrono i risultati, Invio apre quello evidenziato ed Esc lascia la ricerca e riporta la pagina da cui venivi.
 
-![La finestra Impostazioni che mostra la pagina Layout con caselle per le barre dell'interfaccia](screenshots/settings-layout.png)
-*(Figura: la pagina Layout controlla quali barre sono mostrate attorno ai pannelli.)*
+![La finestra Impostazioni che mostra la pagina Disposizione con caselle per le barre dell'interfaccia](screenshots/settings-layout.png)
+*(Figura: la pagina Disposizione controlla quali barre sono mostrate attorno ai pannelli.)*
 
 ## Le pagine
 
 La finestra ha queste pagine, in ordine:
 
-- **Layout** — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato, e scegli quali pagine offre il pannello laterale.
+- **Disposizione** — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato, e scegli quali pagine offre il pannello laterale.
 - **Visualizzazione** — come vengono elencati file e cartelle, incluso il formato della data.
 - **Icone** — l'aspetto delle icone negli elenchi dei file.
-- **Funzionamento** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).
+- **Operazione** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).
 - **Colori** — colori personalizzati dei pannelli, o lasciali seguire il tema corrente.
 - **Conferma** — quali azioni chiedono prima di confermare, come l'eliminazione.
 - **Modifica/Visualizza** — se il salvataggio nell'editor conserva una copia di backup `.bak`, i programmi usati per modificare e visualizzare i file, le associazioni per tipo e quanto può costare un'anteprima nelle posizioni di rete e negli archivi.
@@ -37,7 +37,7 @@ La finestra ha queste pagine, in ordine:
 - **FTP** — valori predefiniti di rete come l'intervallo keep-alive.
 - **Tastiera** — rivedi e cambia le scorciatoie da tastiera.
 - **Lingua** — scegli Predefinita di sistema, English o Deutsch.
-- **AI** — configura l'assistente IA: modello preferito, endpoint e chiave cloud, autonomia e il server MCP opzionale (vedi [Assistente IA](ai-assistant.md)).
+- **IA** — configura l'assistente IA: modello preferito, endpoint e chiave cloud, autonomia e il server MCP opzionale (vedi [Assistente IA](ai-assistant.md)).
 - **Varie** — apri la tua cartella di configurazione nel Finder.
 
 I plugin abilitati possono aggiungere le proprie pagine dopo quelle integrate — per esempio **Disk Map** e **System Monitor** — così le loro opzioni risiedono nella stessa finestra (vedi [Plugin](plugins.md)).
@@ -45,8 +45,8 @@ I plugin abilitati possono aggiungere le proprie pagine dopo quelle integrate �
 ![La finestra Impostazioni che mostra le opzioni della pagina Visualizzazione per come vengono elencati i file](screenshots/settings-display.png)
 *(Figura: la pagina Visualizzazione controlla come vengono elencati file e cartelle.)*
 
-![La finestra Impostazioni che mostra la pagina Funzionamento](screenshots/settings-operation.png)
-*(Figura: la pagina Funzionamento governa la ricerca rapida e il comportamento del mouse.)*
+![La finestra Impostazioni che mostra la pagina Operazione](screenshots/settings-operation.png)
+*(Figura: la pagina Operazione governa la ricerca rapida e il comportamento del mouse.)*
 
 ## Dove sono conservate le tue impostazioni
 

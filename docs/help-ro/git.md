@@ -9,14 +9,14 @@ related: [plugins, view-modes-and-sorting]
 Pluginul Git arată starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată și fără
 terminal. Adaugă două coloane, un submeniu **Git**, un panou andocat pentru pregătire și comitere și ferestre
 pentru istoric, blame, ramuri, conflicte și rebazare. Folosește `git`-ul deja instalat pe Mac-ul
-dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din **Configurare ▸ Pluginuri…**.
+dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din **Configurație ▸ Pluginuri…**.
 
 ## Ce adaugă
 
 - **Două coloane în lista de fișiere** — *Stare Git* și *Ramură*. Fiecare fișier arată o pictogramă și un
   cuvânt scurt de stare (Modificat, Adăugat, Șters, Neurmărit, Redenumit, Copiat, Conflict, Ignorat, Tip
   schimbat), cu *(pregătit)* când modificarea este deja în index; coloana *Ramură* arată ramura pe care se
-  află depozitul acelui fișier. Activați coloanele din **Configurare ▸ Coloane…** (vedeți
+  află depozitul acelui fișier. Activați coloanele din **Configurație ▸ Coloane…** (vedeți
   [Moduri de vizualizare și sortare](view-modes-and-sorting.md)).
 - **Un meniu Git** — sub **Comenzi ▸ Git** și în meniul contextual al unui fișier.
 
@@ -68,7 +68,7 @@ Copia de lucru, istoricul și meniul **Comenzi ▸ Git** oferă mai mult decât 
 - **Bisect: marchează ca rău** și **Bisect: marchează ca bun** din meniul istoricului pornesc un bisect; bannerul oferă apoi **Bun**, **Rău**, **Sari** și **Încheie bisect** până când git numește primul commit rău.
 - Punerea în stash a fișierelor selectate sau a tuturor modificărilor cere un mesaj și întreabă dacă să includă fișierele neurmărite sau să păstreze indexul. Fișierele din Git LFS pot fi blocate și deblocate, iar tipul lor de fișier urmărit.
 - În lista de ramuri, o ramură poate fi redenumită (**Redenumește…**), legată de un upstream (**Setează ramura upstream…**) sau ștearsă pe serverul ei (**Șterge pe depozitul la distanță…**).
-- **Setări ▸ Git** stabilește programul git, numele și e-mailul tău global, cum lucrează **Pull**, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.
+- **Configurări ▸ Git** stabilește programul git, numele și e-mailul tău global, cum lucrează **Pull**, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.
 
 ## Fișiere, îmbinare, Git flow și pull request-uri
 
@@ -77,7 +77,7 @@ Copia de lucru, istoricul și meniul **Comenzi ▸ Git** oferă mai mult decât 
 - Simbolul de ramură din antetul panoului este meniul **Git flow**: **Începe funcționalitate…**, **Începe versiune…** și **Începe remediere…** creează ramura din develop sau main, iar **Încheie …** o îmbină înapoi — o versiune sau o remediere în main cu o etichetă, apoi în develop. Încheierea din nou după un conflict continuă de unde s-a oprit.
 - **Pull request-uri…** din meniul Git listează pull request-urile deschise (merge request-uri la GitLab) și problemele proiectului spre care indică depozitele la distanță, cu verificările fiecăruia; preia un pull request într-o ramură proprie și deschide unul nou pentru ramura curentă.
 - E nevoie de un token de acces personal, introdus în acea fereastră și păstrat în portchei; tokenul este trimis doar la API-ul serviciului. Cu un token, un simbol lângă ramură în antetul panoului arată dacă CI a trecut pentru commit-ul curent.
-- **Setări ▸ Git** numește ramurile și prefixele Git flow și, la **Găzduire**, serverele GitLab sau GitHub Enterprise proprii.
+- **Configurări ▸ Git** numește ramurile și prefixele Git flow și, la **Găzduire**, serverele GitLab sau GitHub Enterprise proprii.
 
 ## Istoric, blame și web
 
@@ -123,7 +123,7 @@ trebuie încheiată într-un terminal.
 - **Editează mesajul…** din meniul istoricului deschide mesajul unui commit pentru editare; cu mai multe commit-uri selectate se numește **Editează mesajele…**, iar **Caută și înlocuiește în mesaje…** — și **Editează mesajele de commit…** din meniul Git — caută în mesajele ramurii curente, ale commit-urilor neîmpinse încă sau ale tuturor ramurilor și etichetelor.
 - Lista arată commit-urile al căror mesaj se schimbă. Mesajul celui selectat apare așa cum este, cu potrivirile marcate, și așa cum va fi, unde se poate și scrie; **Lasă așa** scoate din nou un commit.
 - **Caută secrete…** caută tokenuri, chei și parole în mesajele listate și le completează în căutare; **Maschează** pune `***REDACTED***` ca înlocuire.
-- **Aplică…** întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când **Semnează commit-urile** este activat în **Setări ▸ Git**.
+- **Aplică…** întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când **Semnează commit-urile** este activat în **Configurări ▸ Git**.
 - Commit-urile vechi sunt păstrate: **Desfă** readuce ramurile atâta timp cât niciuna nu s-a mutat între timp. O ramură deja împinsă este înlocuită pe remote-ul ei cu **Împinge forțat…**, cu lease.
 - Pentru un secret, **Elimină commit-urile vechi…** șterge copia de rezervă și intrările din reflog la care nu mai ajunge nimic, face curățenie (prune) și spune apoi dacă mai există un commit vechi. Commit-urile împinse pot fi încă accesibile pe server și în alte clone, așa că un secret împins trebuie și revocat.
 
@@ -139,7 +139,7 @@ trebuie încheiată într-un terminal.
 
 ## Observații
 
-- Pluginul folosește Git-ul sistemului, de la `/usr/bin/git`, sau programul ales în **Setări ▸ Git**. Dacă Git lipsește, comenzile raportează că Git nu este disponibil. (Instrumentele Xcode Command Line Tools îl includ.)
+- Pluginul folosește Git-ul sistemului, de la `/usr/bin/git`, sau programul ales în **Configurări ▸ Git**. Dacă Git lipsește, comenzile raportează că Git nu este disponibil. (Instrumentele Xcode Command Line Tools îl includ.)
 - Starea depozitului este citită o dată per dosar și păstrată în cache, astfel încât derularea într-un depozit
   mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care schimbă arborele și urmărește și o
   comitere făcută în afara aplicației.

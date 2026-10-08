@@ -48,5 +48,5 @@ Fereastra este împărțită într-un panou stâng și un panou drept, fiecare a
 ## Note
 
 - Bara tastelor funcționale se reetichetează în timp real când țineți apăsat un modificator. Ținând apăsat Shift, de exemplu, schimbă F6 într-o acțiune de redenumire pe loc, astfel încât butoanele afișează întotdeauna ce vor face tastele în acel moment.
-- Aproape fiecare bară poate fi afișată sau ascunsă. Uitați-vă în meniurile Vizualizare și Configurare pentru a activa și dezactiva bara de butoane, bara de discuri, linia de comandă sau bara tastelor funcționale ori pentru a stivui cele două panouri sus și jos în loc de alăturat.
+- Aproape fiecare bară poate fi afișată sau ascunsă. Uitați-vă în meniurile Vizualizare și Configurație pentru a activa și dezactiva bara de butoane, bara de discuri, linia de comandă sau bara tastelor funcționale ori pentru a stivui cele două panouri sus și jos în loc de alăturat.
 - Pe multe tastaturi Mac, tastele F acționează în mod implicit ca elemente de control media și de luminozitate. Țineți apăsată tasta Fn împreună cu F3-F8 sau activați „Folosiți tastele F1, F2 etc. ca taste funcționale standard” în Setări de sistem pentru a le folosi direct.

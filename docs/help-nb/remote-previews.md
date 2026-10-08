@@ -28,7 +28,7 @@ En avvist forhåndsvisning er ikke et tomt panel: sidepanelet viser filens symbo
 
 ## Endre grensene
 
-1. Åpne Innstillinger ▸ Rediger/Vis.
+1. Åpne Innstillinger ▸ Rediger/vis.
 2. Slå av «Forhåndsvis filer på nettverkssteder automatisk» for å stoppe nettverksforhåndsvisninger helt, eller sett «Nettverksfiler opptil (MB)» til ønsket størrelse.
 3. Slå på «Last ned filer fra skyen for å forhåndsvise dem» hvis du heller vil ha forhåndsvisningen enn den sparte trafikken.
 4. Sett «Pakk ut fra arkiver opptil (MB)» for hvor stor en fil i et arkiv får være.

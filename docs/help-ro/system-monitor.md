@@ -6,7 +6,7 @@ order: 124
 related: [plugins, settings]
 ---
 
-Pluginul System Monitor afișează o citire în timp real a activității Mac-ului dvs. direct în bara de titlu a ferestrei: jetoane mici pentru procesor, memorie, disc, rețea și — acolo unde hardware-ul le expune — GPU, baterie și senzori. Fiecare jeton se actualizează o dată pe secundă; faceți clic pe unul pentru un pop-up cu un grafic de istoric și o defalcare detaliată. Fiind un plugin, îl puteți activa, configura sau elimina din **Configurare ▸ Pluginuri…**.
+Pluginul System Monitor afișează o citire în timp real a activității Mac-ului dvs. direct în bara de titlu a ferestrei: jetoane mici pentru procesor, memorie, disc, rețea și — acolo unde hardware-ul le expune — GPU, baterie și senzori. Fiecare jeton se actualizează o dată pe secundă; faceți clic pe unul pentru un pop-up cu un grafic de istoric și o defalcare detaliată. Fiind un plugin, îl puteți activa, configura sau elimina din **Configurație ▸ Pluginuri…**.
 
 ## Jetoanele din bara de titlu
 
@@ -24,7 +24,7 @@ Faceți clic pe un jeton pentru a deschide un pop-up cu valoarea curentă mare, 
 
 ## Configurarea
 
-Alegeți **Comenzi ▸ System Monitor…** (sau deschideți **Configurare ▸ Setări ▸ System Monitor**) pentru a configura citirea:
+Alegeți **Comenzi ▸ System Monitor…** (sau deschideți **Configurație ▸ Configurări ▸ System Monitor**) pentru a configura citirea:
 
 - **Arată monitorul de sistem în bara de titlu** — comutatorul principal de pornire/oprire pentru jetoane.
 - **Profil** — presetările *Minimal*, *Mediu* sau *Maximal* care aleg un set rezonabil de module.

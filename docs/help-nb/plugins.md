@@ -50,8 +50,8 @@ Et programtillegg du laster ned, kommer som en **programtilleggspakke** — en f
 
 - **Dobbeltklikk på den** i Finder. Peach Commander åpner seg og spør.
 - **Trykk Enter på den** i et panel. Peach Commander er en filbehandler — filen ligger som regel allerede der.
-- **Dra den til programtilleggsvinduet** (Innstillinger ▸ Programtillegg…).
-- Velg **Innstillinger ▸ Programtillegg… ▸ Installer…** og velg pakken, en `.zip` med et programtillegg i, eller en utpakket programtilleggsbunt.
+- **Dra den til programtilleggsvinduet** (Konfigurasjon ▸ Programtillegg…).
+- Velg **Konfigurasjon ▸ Programtillegg… ▸ Installer…** og velg pakken, en `.zip` med et programtillegg i, eller en utpakket programtilleggsbunt.
 
 Før noe som helst lastes inn, viser en dialog navnet, versjonen, identifikatoren og typen til programtillegget, og hvilke filtyper det overtar — et programtillegg som krever `.iso`, blir appens leser for de filene. Ingenting installeres før du klikker **Installer**.
 

@@ -9,14 +9,14 @@ related: [plugins, view-modes-and-sorting]
 A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelen mutatja meg — külön alkalmazás és terminál
 nélkül. Két oszlopot, egy **Git** almenüt, egy dokkolt panelt az előkészítéshez és a véglegesítéshez, valamint
 előzmény-, blame-, ág-, ütközés- és újraalapozó ablakokat ad hozzá. A Macen már meglévő `git`-et használja.
-Bővítmény, így kikapcsolható vagy eltávolítható a **Beállítások ▸ Bővítmények…** alatt.
+Bővítmény, így kikapcsolható vagy eltávolítható a **Konfiguráció ▸ Bővítmények…** alatt.
 
 ## Mit ad hozzá
 
 - **Két oszlop a fájllistában** — *Git-állapot* és *Ág*. Minden fájl egy ikont és egy rövid állapotszót mutat
   (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Mellőzve, Típus változott),
   *(előkészítve)* jelöléssel, ha a változás már az indexben van; az *Ág* oszlop azt az ágat mutatja, amelyen a
-  fájl tárolója áll. Az oszlopokat a **Beállítások ▸ Oszlopok…** alatt kapcsolhatja be (lásd
+  fájl tárolója áll. Az oszlopokat a **Konfiguráció ▸ Oszlopok…** alatt kapcsolhatja be (lásd
   [Nézetmódok és rendezés](view-modes-and-sorting.md)).
 - **Egy Git menü** — a **Parancsok ▸ Git** alatt és a fájl helyi menüjében.
 

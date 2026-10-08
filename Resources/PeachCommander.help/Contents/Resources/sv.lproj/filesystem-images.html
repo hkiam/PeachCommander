@@ -13,7 +13,7 @@
 <p>En filsystemsavbild är en fil som innehåller ett helt filsystem — rootfs från en routeruppdatering, ett SD-kort kopierat byte för byte, avbilden av en enhet du undersöker. Insticksmodulen <strong>Linux Filesystem Images</strong> öppnar en sådan som Peach Commander öppnar ett arkiv: ställ markören på den, tryck på Retur, och panelen står inne i filsystemet. Därifrån fungerar visaren, sökningen och kopieringen precis som i en mapp.</p>
 <p>Det skrivs aldrig till en avbild. Insticksmodulen kan bara läsa.</p>
 <h2 id="sla-pa-den-forst">Slå på den först</h2>
-<p>Insticksmodulen levereras avstängd. Öppna <strong>Inställningar ▸ Insticksmoduler</strong>, leta upp <strong>Linux Filesystem Images</strong> och slå på den.</p>
+<p>Insticksmodulen levereras avstängd. Öppna <strong>Inställningar ▸ Plugin-program</strong>, leta upp <strong>Linux Filesystem Images</strong> och slå på den.</p>
 <p>Den är avstängd som standard på grund av hur den hittar avbilder. Fast programvara har sällan ett städat namn — filen du söker heter minst lika ofta <code>firmware.bin</code>, <code>rootfs.img</code> eller bara <code>dump</code> som <code>.squashfs</code> — så när filändelsen inte säger något tittar insticksmodulen på de första byten för att avgöra saken. Det är precis rätt om du undersöker enhetsavbilder, och bortkastat arbete annars. Att slå på den är ditt sätt att säga vilket av de två som gäller dig.</p>
 <p>En fil som visar sig inte vara en avbild lämnas orörd efter den enda blicken och öppnas som den alltid skulle ha gjort.</p>
 <h2 id="vad-den-kan-oppna">Vad den kan öppna</h2>

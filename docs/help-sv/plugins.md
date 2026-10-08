@@ -50,8 +50,8 @@ Ett tillägg du hämtar kommer som ett **tilläggspaket** — en fil som slutar 
 
 - **Dubbelklicka på det** i Finder. Peach Commander öppnas och frågar.
 - **Tryck på Retur** på det i en panel. Peach Commander är en filhanterare — filen ligger oftast redan där.
-- **Dra det till tilläggsfönstret** (Inställningar ▸ Tillägg…).
-- Välj **Inställningar ▸ Tillägg… ▸ Installera…** och välj paketet, en `.zip` med ett tillägg i, eller ett uppackat tilläggsbunt.
+- **Dra det till tilläggsfönstret** (Konfiguration ▸ Tillägg…).
+- Välj **Konfiguration ▸ Tillägg… ▸ Installera…** och välj paketet, en `.zip` med ett tillägg i, eller ett uppackat tilläggsbunt.
 
 Innan något laddas visar en dialogruta tilläggets namn, version, identifierare och typ, samt vilka filtyper det tar över — ett tillägg som gör anspråk på `.iso` blir appens läsare för de filerna. Ingenting installeras förrän du klickar på **Installera**.
 

@@ -13,7 +13,7 @@ Když potřebujete soubor změnit, a ne jen si jej prohlédnout, Peach Commander
 1. V kterémkoli panelu přesuňte kurzor na soubor, který chcete změnit.
 2. Stiskněte F4, nebo zvolte Soubor ▸ Upravit. Soubor se otevře v okně editoru.
 3. Proveďte změny. Pokud je soubor rozpoznaným programovacím nebo datovým formátem, klíčová slova, řetězce a komentáře se automaticky obarví.
-4. Stiskem Cmd+S (nebo klepnutím na Uložit) zapíšete své změny. Uložení soubor přepíše; pokud chcete předchozí obsah zachovat vedle něj, zapněte zálohy v Nastavení ▸ Úpravy/Zobrazení.
+4. Stiskem Cmd+S (nebo klepnutím na Uložit) zapíšete své změny. Uložení soubor přepíše; pokud chcete předchozí obsah zachovat vedle něj, zapněte zálohy v Nastavení ▸ Upravit/zobrazit.
 
 Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stiskněte Shift+F4.
 
@@ -163,4 +163,4 @@ Formátovače mohou dodávat i zásuvné moduly — viz [Plugins](plugins.md).
 - Zvýraznění syntaxe pokrývá JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Ostatní typy souborů se stále otevírají a upravují normálně se základním obarvením, ale podrobné zvýraznění je dostupné jen pro podporované jazyky.
 - Přehled pokrývá podporované programovací jazyky a navíc JSON, YAML a XML — včetně formátů založených na XML, jako jsou `.plist`, `.svg`, `.csproj` a `.storyboard`. Příkazy pro strukturní navigaci, cestu a kontrolu platí pro JSON, YAML a XML.
 - Přehled symbolů a Přejít na řádek platí pro textový editor. Hexadecimální editor je určen pro binární kontrolu a úpravy na úrovni bytů, ne pro text.
-- Ani jeden editor neuchovává zálohu, dokud si o ni neřeknete. V Nastavení ▸ Úpravy/Zobrazení zapněte „Při ukládání zachovat záložní kopii (.bak) předchozího obsahu“ a první uložení zapíše originál vedle souboru jako `name.bak`, takže náhodnou změnu lze snadno vrátit.
+- Ani jeden editor neuchovává zálohu, dokud si o ni neřeknete. V Nastavení ▸ Upravit/zobrazit zapněte „Při ukládání zachovat záložní kopii (.bak) předchozího obsahu“ a první uložení zapíše originál vedle souboru jako `name.bak`, takže náhodnou změnu lze snadno vrátit.

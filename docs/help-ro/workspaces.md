@@ -48,7 +48,7 @@ de ce a mutat; o copiere îl lasă cum era.
 - Faceți clic dreapta pe o pastilă pentru a o redenumi, a-i da o culoare sau a o șterge — sau faceți clic pe **✕** de la capătul ei din dreapta, care șterge spațiul de lucru după o întrebare. Culoarea este ceea ce vă permite să deosebiți spațiile de lucru dintr-o privire când fereastra este îngustă și numele nu mai încap.
 - Nouă este limita, astfel încât fiecare pastilă să rămână recognoscibilă.
 - **Vizualizare ▸ Afișează bara spațiilor de lucru** ascunde banda fără a dezactiva funcția, pentru cine trece de la un spațiu la altul cu tastatura.
-- Spațiile de lucru pot fi dezactivate complet în **Setări ▸ File**. Spațiile dumneavoastră de lucru sunt păstrate și revin neschimbate când reactivați funcția.
+- Spațiile de lucru pot fi dezactivate complet în **Configurări ▸ File**. Spațiile dumneavoastră de lucru sunt păstrate și revin neschimbate când reactivați funcția.
 
 ## Limitarea unui spațiu de lucru la un dosar
 
@@ -73,7 +73,7 @@ Return repetă rândul selectat, după aceeași regulă ca istoricul: doar o cop
 cu o apăsare, iar o linie de shell este completată în linia de comandă în loc să fie rulată. Jurnalul
 este separat intenționat de istoricul global — acela răspunde la „unde merg de obicei” și ordonează după
 frecvență; acesta răspunde la „ce s-a întâmplat aici” și păstrează ordinea. Se șterge odată cu spațiul
-său de lucru, se păstrează altfel nelimitat și poate fi dezactivat în **Setări ▸ File**.
+său de lucru, se păstrează altfel nelimitat și poate fi dezactivat în **Configurări ▸ File**.
 
 ## Transmiterea unui spațiu de lucru
 

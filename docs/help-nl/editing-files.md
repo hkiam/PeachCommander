@@ -13,7 +13,7 @@ Wanneer je een bestand wilt wijzigen in plaats van er alleen naar te kijken, ope
 1. Verplaats in een van beide panelen de cursor naar het bestand dat je wilt wijzigen.
 2. Druk op F4, of kies Bestand ▸ Bewerken. Het bestand opent in het editorvenster.
 3. Breng je wijzigingen aan. Als het bestand een herkend programmeer- of gegevensformaat is, worden sleutelwoorden, tekenreeksen en opmerkingen automatisch gekleurd.
-4. Druk op Cmd+S (of klik op Bewaar) om je wijzigingen weg te schrijven. Bewaren vervangt het bestand; wil je de vorige inhoud ernaast houden, zet dan back-ups aan in Instellingen ▸ Bewerken/Bekijken.
+4. Druk op Cmd+S (of klik op Bewaar) om je wijzigingen weg te schrijven. Bewaren vervangt het bestand; wil je de vorige inhoud ernaast houden, zet dan back-ups aan in Instellingen ▸ Bewerken/weergeven.
 
 Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shift+F4.
 
@@ -163,4 +163,4 @@ De hexadecimale editor heeft hetzelfde paneel **Reeksen** als de weergave: elke 
 - Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring is alleen beschikbaar voor de ondersteunde talen.
 - Het overzicht dekt de ondersteunde programmeertalen plus JSON, YAML en XML — inclusief de op XML gebaseerde formaten zoals `.plist`, `.svg`, `.csproj` en `.storyboard`. De opdrachten voor structuurnavigatie, pad en validatie gelden voor JSON, YAML en XML.
 - Het symbooloverzicht en de functie Ga naar regel gelden voor de teksteditor. De hex-editor is bedoeld voor binaire inspectie en bewerkingen op byteniveau, niet voor tekst.
-- Geen van beide editors bewaart een back-up tenzij je erom vraagt. Zet ‘Bij opslaan een back-upkopie (.bak) van de vorige inhoud bewaren’ aan in Instellingen ▸ Bewerken/Bekijken, dan schrijft de eerste keer bewaren het origineel naast het bestand als `name.bak`, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is.
+- Geen van beide editors bewaart een back-up tenzij je erom vraagt. Zet ‘Bij opslaan een back-upkopie (.bak) van de vorige inhoud bewaren’ aan in Instellingen ▸ Bewerken/weergeven, dan schrijft de eerste keer bewaren het origineel naast het bestand als `name.bak`, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is.

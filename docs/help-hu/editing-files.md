@@ -13,7 +13,7 @@ Amikor egy fájlt meg kell változtatnia, nem csak megnéznie, a Peach Commander
 1. Bármelyik panelben vigye a kurzort a megváltoztatni kívánt fájlra.
 2. Nyomja meg az F4-et, vagy válassza a Fájl ▸ Szerkesztés lehetőséget. A fájl a szerkesztőablakban nyílik meg.
 3. Végezze el a változtatásokat. Ha a fájl felismert programozási vagy adatformátum, a kulcsszavak, karakterláncok és megjegyzések automatikusan színeződnek.
-4. Nyomja meg a Cmd+S-t (vagy kattintson a Mentés-re) a változtatások írásához. A mentés felülírja a fájlt; ha az előző tartalmat meg szeretné tartani mellette, kapcsolja be a biztonsági mentéseket a Beállítások ▸ Szerkesztés/Megtekintés alatt.
+4. Nyomja meg a Cmd+S-t (vagy kattintson a Mentés-re) a változtatások írásához. A mentés felülírja a fájlt; ha az előző tartalmat meg szeretné tartani mellette, kapcsolja be a biztonsági mentéseket a Beállítások ▸ Szerkesztés/megtekintés alatt.
 
 Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+F4-et.
 
@@ -163,4 +163,4 @@ A hexadecimális szerkesztőben ugyanaz a **Szövegek** panel van, mint a megjel
 - A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés csak a támogatott nyelvekhez elérhető.
 - A vázlat a támogatott programozási nyelveket, valamint a JSON, YAML és XML formátumot fedi le — az XML-alapú formátumokkal együtt, mint a `.plist`, `.svg`, `.csproj` és `.storyboard`. A szerkezeti navigáció, az útvonal és az ellenőrzés parancsai JSON-, YAML- és XML-fájlokra érvényesek.
 - A szimbólumvázlat és az Ugrás sorra a szövegszerkesztőre vonatkozik. A hex szerkesztő a bináris vizsgálatra és bájtszintű szerkesztésre való, nem a szövegre.
-- Egyik szerkesztő sem tart biztonsági mentést, amíg nem kéri. Kapcsolja be a „Mentéskor tartsa meg az előző tartalom biztonsági másolatát (.bak)” beállítást a Beállítások ▸ Szerkesztés/Megtekintés alatt, és az első mentés az eredetit `name.bak` néven a fájl mellé írja, így egy véletlen változtatás könnyen visszavonható.
+- Egyik szerkesztő sem tart biztonsági mentést, amíg nem kéri. Kapcsolja be a „Mentéskor tartsa meg az előző tartalom biztonsági másolatát (.bak)” beállítást a Beállítások ▸ Szerkesztés/megtekintés alatt, és az első mentés az eredetit `name.bak` néven a fájl mellé írja, így egy véletlen változtatás könnyen visszavonható.

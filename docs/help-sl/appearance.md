@@ -12,7 +12,7 @@ Peach Commander se lahko ujema z videzom preostanka vašega Maca ali prevzame sv
 
 Tema z enim korakom zamenja celotno paleto pladnjev.
 
-1. Odprite okno nastavitev z izbiro Konfiguracija > Možnosti…, ali pritisnite Cmd+,.
+1. Odprite okno nastavitev z izbiro Konfiguracija > Nastavitve…, ali pritisnite Cmd+,.
 2. Izberite stran **Barve**.
 3. V meniju **Tema** izberite:
    - **Sistem (privzeto)** — brez teme. Pladnji sledijo nastavitvi Videz spodaj, natanko kot doslej. To je privzeta izbira.
@@ -65,7 +65,7 @@ ListText       = #C0C0D0
 Imena `light`, `dark`, `norton` in `system` pripadajo vgrajenim temam; datoteka s takim imenom se preskoči, da ne more zakriti priložene teme. Če izbrišete datoteko izbrane teme, se Peach Commander vrne na **Sistem (privzeto)**.
 ## Nastavite svetel, temen ali sistemski videz
 
-1. Odprite okno nastavitev z izbiro Konfiguracija > Možnosti…, ali pritisnite Cmd+,.
+1. Odprite okno nastavitev z izbiro Konfiguracija > Nastavitve…, ali pritisnite Cmd+,.
 2. Izberite stran **Barve**.
 3. V meniju **Videz** izberite eno od:
    - **Sistem (sledi macOS)** — se samodejno ujema s trenutno svetlo/temno nastavitvijo vašega Maca.
@@ -88,7 +88,7 @@ Pustite potrditveno polje izklopljeno, da ohranite vgrajeno barvo tega elementa.
 
 ## Obarvajte datoteke po vrsti
 
-1. Odprite Konfiguracija > Možnosti… in izberite stran **Prikaz**.
+1. Odprite Konfiguracija > Nastavitve… in izberite stran **Prikaz**.
 2. Kliknite **Barve vrst datotek…**.
 3. Dodajte pravilo z masko imena, kot je `*.zip` ali `*.txt`, nato izberite barvo za ujemajoče datoteke.
 4. Uporabite **Dodaj pravilo** za več mask; kliknite **Končano** za shranjevanje ali **Prekliči** za opustitev.

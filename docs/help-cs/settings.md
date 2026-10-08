@@ -11,7 +11,7 @@ Okno Nastavení je místo, kde přizpůsobíte Peach Commander způsobu, jakým 
 ## Otevření Nastavení
 
 1. Zvolte **Peach Commander > Nastavení…**, nebo stiskněte Cmd+, (čárka).
-2. Totéž okno můžete otevřít i z **Konfigurace > Možnosti…**.
+2. Totéž okno můžete otevřít i z **Konfigurace > Nastavení…**.
 3. Vyberte stránku ze seznamu vlevo; možnosti té stránky se objeví vpravo.
 4. Upravte ovládací prvky. Změny se projeví ihned, pokud poznámka na stránce neříká jinak.
 5. Chcete-li přejít přímo k volbě, zadejte text do hledacího pole v horní části okna. Odpovídající nastavení ze *všech* stránek se vypíší se stránkou, na které leží, a výběrem se tato stránka otevře se zvýrazněným nastavením. ↑/↓ se pohybují mezi výsledky, Return otevře zvýrazněný a Esc hledání opustí a vrátí stránku, ze které jste přišli.
@@ -26,12 +26,12 @@ Okno má tyto stránky, v pořadí:
 - **Rozvržení** — zobrazit nebo skrýt lištu disků, lištu karet, lištu cesty a stavovou lištu a vybrat, které stránky boční panel nabízí.
 - **Zobrazení** — jak se vypisují soubory a složky, včetně formátu data.
 - **Ikony** — vzhled ikon v seznamech souborů.
-- **Ovládání** — obecné chování, jako co se stane, když píšete v panelu (rychlé hledání versus příkazový řádek).
+- **Operace** — obecné chování, jako co se stane, když píšete v panelu (rychlé hledání versus příkazový řádek).
 - **Barvy** — vlastní barvy panelů, nebo je nechte sledovat aktuální motiv.
 - **Potvrzení** — které akce nejprve žádají potvrzení, jako mazání.
-- **Úpravy/Zobrazení** — zda se při ukládání v editoru uchová záložní kopie `.bak`, programy použité k úpravě a zobrazení souborů asociace podle typu a kolik smí stát náhled v síťových umístěních a v archivech.
-- **Kopírování/Mazání** — zachovat metadata souborů, použít rychlé klonování, kopírovat jen novější soubory, ověřit po kopírování, posílat mazání do Koše a nastavit volitelný limit rychlosti.
-- **Zip/Balič** — výchozí formát archivu a úroveň komprese použité při balení.
+- **Upravit/zobrazit** — zda se při ukládání v editoru uchová záložní kopie `.bak`, programy použité k úpravě a zobrazení souborů asociace podle typu a kolik smí stát náhled v síťových umístěních a v archivech.
+- **Kopírovat/odstranit** — zachovat metadata souborů, použít rychlé klonování, kopírovat jen novější soubory, ověřit po kopírování, posílat mazání do Koše a nastavit volitelný limit rychlosti.
+- **Zip/balič** — výchozí formát archivu a úroveň komprese použité při balení.
 - **Zásuvné moduly** — zapnout nebo vypnout nainstalované zásuvné moduly.
 - **Karty** — jak se karty složek otevírají a chovají.
 - **FTP** — síťové výchozí hodnoty jako interval keep-alive.
@@ -45,8 +45,8 @@ Povolené zásuvné moduly mohou přidat vlastní stránky za vestavěné — na
 ![Okno Nastavení zobrazující možnosti stránky Zobrazení pro výpis souborů](screenshots/settings-display.png)
 *(Obrázek: stránka Zobrazení ovládá, jak se vypisují soubory a složky.)*
 
-![Okno Nastavení zobrazující stránku Ovládání](screenshots/settings-operation.png)
-*(Obrázek: stránka Ovládání řídí rychlé hledání a chování myši.)*
+![Okno Nastavení zobrazující stránku Operace](screenshots/settings-operation.png)
+*(Obrázek: stránka Operace řídí rychlé hledání a chování myši.)*
 
 ## Kde jsou uložena vaše nastavení
 

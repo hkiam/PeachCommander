@@ -61,7 +61,7 @@ Pentru a elimina mai multe elemente deodată, folosiți **colectorul**: clic dre
 
 ## Setări
 
-Hartă disc adaugă propria pagină la fereastra Setări (**Configurare ▸ Setări ▸ Hartă disc**):
+Hartă disc adaugă propria pagină la fereastra Configurări (**Configurație ▸ Configurări ▸ Hartă disc**):
 
 - **Stil de grafic** — hartă arborescentă sau explozie solară.
 - **Codificare pe culori** — după tipul fișierului (categorie) sau după dimensiune (hartă termică).

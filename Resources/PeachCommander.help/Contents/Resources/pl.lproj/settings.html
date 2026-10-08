@@ -14,7 +14,7 @@
 <h2 id="otworz-ustawienia">Otwórz Ustawienia</h2>
 <ol>
 <li>Wybierz <strong>Peach Commander &gt; Ustawienia…</strong> lub naciśnij Cmd+, (przecinek).</li>
-<li>To samo okno możesz otworzyć również z <strong>Konfiguracja &gt; Opcje…</strong>.</li>
+<li>To samo okno możesz otworzyć również z <strong>Konfiguracja &gt; Ustawienia…</strong>.</li>
 <li>Wybierz stronę z listy po lewej; opcje tej strony pojawiają się po prawej.</li>
 <li>Dostosuj elementy sterujące. Zmiany wchodzą w życie od razu, chyba że uwaga na stronie mówi inaczej.</li>
 <li>Aby przejść wprost do opcji, wpisz tekst w pole wyszukiwania u góry okna. Pasujące ustawienia ze <em>wszystkich</em> kart są wypisane wraz z kartą, na której się znajdują, a wybranie jednego otwiera tę kartę z podświetlonym ustawieniem. ↑/↓ przechodzą przez wyniki, Return otwiera podświetlony, a Esc opuszcza wyszukiwanie i przywraca kartę, z której przyszedłeś.</li>
@@ -25,14 +25,14 @@
 <p>Okno ma następujące strony, w kolejności:</p>
 <ul>
 <li><strong>Układ</strong> — pokaż lub ukryj pasek dysków, pasek kart, pasek ścieżki i pasek stanu oraz wybierz, które strony oferuje panel boczny.</li>
-<li><strong>Widok</strong> — jak wymieniane są pliki i foldery, w tym format daty.</li>
+<li><strong>Wyświetlanie</strong> — jak wymieniane są pliki i foldery, w tym format daty.</li>
 <li><strong>Ikony</strong> — wygląd ikon na listach plików.</li>
-<li><strong>Obsługa</strong> — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).</li>
+<li><strong>Operacja</strong> — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).</li>
 <li><strong>Kolory</strong> — niestandardowe kolory paneli, lub pozostaw je podążające za bieżącym motywem.</li>
 <li><strong>Potwierdzenie</strong> — które akcje najpierw proszą o potwierdzenie, jak usuwanie.</li>
-<li><strong>Edycja/Podgląd</strong> — czy zapis w edytorze zachowuje kopię zapasową <code>.bak</code>, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.</li>
-<li><strong>Kopiowanie/Usuwanie</strong> — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.</li>
-<li><strong>Zip/Pakowacz</strong> — domyślny format archiwum i poziom kompresji używane przy pakowaniu.</li>
+<li><strong>Edytuj/Wyświetl</strong> — czy zapis w edytorze zachowuje kopię zapasową <code>.bak</code>, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.</li>
+<li><strong>Kopiuj/Usuń</strong> — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.</li>
+<li><strong>Zip/Pakowanie</strong> — domyślny format archiwum i poziom kompresji używane przy pakowaniu.</li>
 <li><strong>Wtyczki</strong> — włącz lub wyłącz zainstalowane wtyczki.</li>
 <li><strong>Karty</strong> — jak otwierają się i zachowują karty folderów.</li>
 <li><strong>FTP</strong> — wartości domyślne sieci, jak interwał keep-alive.</li>
@@ -42,10 +42,10 @@
 <li><strong>Różne</strong> — otwórz folder konfiguracji w Finderze.</li>
 </ul>
 <p>Włączone wtyczki mogą dodawać własne strony po wbudowanych — na przykład <strong>Mapa dysku</strong> i <strong>System Monitor</strong> — więc ich opcje żyją w tym samym oknie (zobacz <a href="plugins.html">Wtyczki</a>).</p>
-<p><img alt="Okno Ustawienia pokazujące opcje strony Widok dla wyświetlania plików" src="images/settings-display.png" />
-<em>(Rysunek: strona Widok kontroluje, jak wymieniane są pliki i foldery.)</em></p>
-<p><img alt="Okno Ustawienia pokazujące stronę Obsługa" src="images/settings-operation.png" />
-<em>(Rysunek: strona Obsługa rządzi szybkim wyszukiwaniem i zachowaniem myszy.)</em></p>
+<p><img alt="Okno Ustawienia pokazujące opcje strony Wyświetlanie dla wyświetlania plików" src="images/settings-display.png" />
+<em>(Rysunek: strona Wyświetlanie kontroluje, jak wymieniane są pliki i foldery.)</em></p>
+<p><img alt="Okno Ustawienia pokazujące stronę Operacja" src="images/settings-operation.png" />
+<em>(Rysunek: strona Operacja rządzi szybkim wyszukiwaniem i zachowaniem myszy.)</em></p>
 <h2 id="gdzie-przechowywane-sa-twoje-ustawienia">Gdzie przechowywane są Twoje ustawienia</h2>
 <p>Twoja konfiguracja jest przechowywana w plikach zwykłego tekstu wewnątrz Twojego osobistego folderu Application Support, w <code>~/Library/Application Support/PeachCommander</code>. Aby go otworzyć, przejdź do strony <strong>Różne</strong> i kliknij <strong>Otwórz folder konfiguracji</strong>. Zapisane hasła FTP nie są przechowywane w tych plikach; są bezpiecznie przechowywane w pęku kluczy macOS.</p>
 <p>Ustawienia są zapisywane w miarę ich zmiany. Możesz również wymusić zapis w dowolnej chwili za pomocą <strong>Konfiguracja &gt; Zapisz ustawienia</strong> oraz zapisać bieżące położenie okna i układ paneli za pomocą <strong>Konfiguracja &gt; Zapisz położenie</strong>.</p>

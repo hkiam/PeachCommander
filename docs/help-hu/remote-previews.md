@@ -28,7 +28,7 @@ Az elutasított előnézet nem üres panel: az oldalsáv megmutatja a fájl ikon
 
 ## A korlátok módosítása
 
-1. Nyissa meg: Beállítások ▸ Szerkesztés/Megtekintés.
+1. Nyissa meg: Beállítások ▸ Szerkesztés/megtekintés.
 2. Kapcsolja ki a(z) „Hálózati helyeken lévő fájlok automatikus előnézete” lehetőséget a hálózati előnézetek teljes leállításához, vagy állítsa a(z) „Hálózati fájlok legfeljebb (MB)” értéket a kívánt méretre.
 3. Kapcsolja be a(z) „Fájlok letöltése a felhőből az előnézethez” lehetőséget, ha inkább az előnézetet szeretné, mint a megspórolt forgalmat.
 4. Állítsa be a(z) „Kicsomagolás archívumokból legfeljebb (MB)” értéket ahhoz, hogy egy archívumban lévő fájl mekkora lehet.

@@ -6,9 +6,9 @@ order: 122
 related: [plugins, settings, privacy-and-security, macros]
 ---
 
-Asistentul IA este un plugin opțional, care poate fi eliminat și care vă ajută să lucrați cu fișierele în limbaj obișnuit. Poate rezuma sau explica un document, propune un nume de fișier mai bun, traduce sau corecta un text, transforma date într-un tabel și chiar ordona un dosar — și poate efectua în locul dumneavoastră operații cu fișiere după ce vă arată mai întâi un plan. Vine ca două pluginuri: **AI On-Device** rulează pe Apple Intelligence și oferă acțiunile care arată o propunere și o aplică, în timp ce **AI Assistant** este discuția și are nevoie de un model în cloud. Activați unul, sau pe amândouă. **Sosesc dezactivate.** Activați-le din **Configurare ▸ Pluginuri…** și reporniți, ori lăsați-le oprite și nu apare nimic — niciun meniu IA ▸, nicio discuție, nicio coloană. Este voit cât timp funcția e în beta: poate redenumi, muta și șterge fișiere și poate rula pentru dumneavoastră comenzi de shell, fiecare în spatele unui plan pe care îl aprobați, iar asta e multă putere pentru a i-o da implicit unei noutăți. Fără o cheie API totul se petrece pe Mac-ul dumneavoastră, deci e vorba de putere, nu de date care părăsesc mașina. Pluginul **AI Column** arată ce au aflat acele acțiuni — un rezumat, un tip, un subiect, o dată — drept coloane în panou; el nu pornește niciun model. Sosește oprit împreună cu ele și rămâne opțional, și nu arată nimic până nu îl activați și nu adăugați una dintre coloanele sale. Din aceeași pagină puteți elimina complet oricare dintre ele.
+Asistentul IA este un plugin opțional, care poate fi eliminat și care vă ajută să lucrați cu fișierele în limbaj obișnuit. Poate rezuma sau explica un document, propune un nume de fișier mai bun, traduce sau corecta un text, transforma date într-un tabel și chiar ordona un dosar — și poate efectua în locul dumneavoastră operații cu fișiere după ce vă arată mai întâi un plan. Vine ca două pluginuri: **AI On-Device** rulează pe Apple Intelligence și oferă acțiunile care arată o propunere și o aplică, în timp ce **AI Assistant** este discuția și are nevoie de un model în cloud. Activați unul, sau pe amândouă. **Sosesc dezactivate.** Activați-le din **Configurație ▸ Pluginuri…** și reporniți, ori lăsați-le oprite și nu apare nimic — niciun meniu IA ▸, nicio discuție, nicio coloană. Este voit cât timp funcția e în beta: poate redenumi, muta și șterge fișiere și poate rula pentru dumneavoastră comenzi de shell, fiecare în spatele unui plan pe care îl aprobați, iar asta e multă putere pentru a i-o da implicit unei noutăți. Fără o cheie API totul se petrece pe Mac-ul dumneavoastră, deci e vorba de putere, nu de date care părăsesc mașina. Pluginul **AI Column** arată ce au aflat acele acțiuni — un rezumat, un tip, un subiect, o dată — drept coloane în panou; el nu pornește niciun model. Sosește oprit împreună cu ele și rămâne opțional, și nu arată nimic până nu îl activați și nu adăugați una dintre coloanele sale. Din aceeași pagină puteți elimina complet oricare dintre ele.
 
-**Pe dispozitiv sau în cloud.** Modelul local este privat și gratuit, și e mic: primește câteva mii de cuvinte odată. A citi un fișier lung *în întregime* funcționează de aceea altfel — asistentul îl citește pe bucăți și îmbină rezultatele, ceea ce durează cu atât mai mult cu cât fișierul e mai lung. Pentru muncă grea peste multe fișiere, ori pentru conversații lungi, un model din cloud e mai rapid și ține mai mult deodată. Acțiunile din meniul contextual rulează întotdeauna pe Mac-ul dumneavoastră; discuția e jumătatea care vrea un punct terminal, iar **Setări ▸ IA** e locul unde îi dați unul.
+**Pe dispozitiv sau în cloud.** Modelul local este privat și gratuit, și e mic: primește câteva mii de cuvinte odată. A citi un fișier lung *în întregime* funcționează de aceea altfel — asistentul îl citește pe bucăți și îmbină rezultatele, ceea ce durează cu atât mai mult cu cât fișierul e mai lung. Pentru muncă grea peste multe fișiere, ori pentru conversații lungi, un model din cloud e mai rapid și ține mai mult deodată. Acțiunile din meniul contextual rulează întotdeauna pe Mac-ul dumneavoastră; discuția e jumătatea care vrea un punct terminal, iar **Configurări ▸ IA** e locul unde îi dați unul.
 
 ## Deschiderea asistentului
 
@@ -55,7 +55,7 @@ Două limite de știut. macOS ține unele locuri în afara indexului său — ș
 
 ## Modificările se confirmă mai întâi
 
-Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — asistentul arată un **plan și așteaptă confirmarea dumneavoastră** înainte de a acționa. Puteți schimba asta în Setări ridicând autonomia asistentului, ori coborând-o la doar-citire, ca să nu modifice niciodată nimic. O copiere sau o mutare e raportată ca făcută când e făcută: asistentul așteaptă încheierea transferului, iar dumneavoastră îl puteți urmări în Managerul de transferuri ca pe orice altă operație.
+Pentru orice modifică fișiere — mutare, redenumire, scriere, ștergere — asistentul arată un **plan și așteaptă confirmarea dumneavoastră** înainte de a acționa. Puteți schimba asta în Configurări ridicând autonomia asistentului, ori coborând-o la doar-citire, ca să nu modifice niciodată nimic. O copiere sau o mutare e raportată ca făcută când e făcută: asistentul așteaptă încheierea transferului, iar dumneavoastră îl puteți urmări în Managerul de transferuri ca pe orice altă operație.
 
 **Puteți fi de acord cu o parte dintr-un plan.** Când un plan cuprinde mai multe fișiere — redenumirea unui dosar întreg, golirea Descărcărilor — fiecare apare ca o linie bifată deasupra butoanelor. Debifați-le pe cele pe care vreți să le lăsați în pace și apăsați **Confirmă și execută**: restul merge mai departe, iar ce ați debifat nu e atins. A debifa tot e totuna cu a anula, și asistentul o spune, în loc să raporteze că nu a făcut nimic. Un plan care e o singură acțiune nu are listă, fiindcă Confirmă și Anulează îi spun deja da și nu.
 
@@ -78,7 +78,7 @@ Aceleași trei sunt și substituenți la redenumire. `[=ai_column.ai_topic]-[Y]-
 
 ## Setări
 
-Deschideți **Configurare ▸ Setări ▸ IA** pentru a configura asistentul pe o singură pagină:
+Deschideți **Configurație ▸ Configurări ▸ IA** pentru a configura asistentul pe o singură pagină:
 
 - **Modelul discuției** — pe ce rulează discuția **AI Assistant**. De când acțiunile locale au devenit propriul plugin există două răspunsuri, nu trei: *Punctul terminal din cloud de mai jos, dacă ați indicat unul*, sau *Nimic — lăsați treaba pluginului AI On-Device*. Pagina e grupată la fel: întâi setările discuției, sub ele ce au voie ambele jumătăți.
 - **Punct terminal în cloud, model și cheie API** — pentru a folosi un model compatibil OpenAI în locul celui local. Cheia se păstrează în brelocul macOS, niciodată în fișierele dumneavoastră de configurare.
@@ -86,8 +86,8 @@ Deschideți **Configurare ▸ Setări ▸ IA** pentru a configura asistentul pe 
 - **Prompt de sistem propriu** — instrucțiuni opționale care modelează felul în care asistentul răspunde.
 - **Server MCP** — un server opțional, strict local, care permite unui agent extern să conducă aplicația; oprit implicit și protejabil cu un token.
 
-![Pagina IA din Setări cu autonomia și opțiunile serverului MCP](screenshots/settings-ai.png)
-*(Figura: toate opțiunile asistentului stau pe o singură pagină IA din Setări.)*
+![Pagina IA din Configurări cu autonomia și opțiunile serverului MCP](screenshots/settings-ai.png)
+*(Figura: toate opțiunile asistentului stau pe o singură pagină IA din Configurări.)*
 
 ## Confidențialitate
 

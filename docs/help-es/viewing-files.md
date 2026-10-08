@@ -125,7 +125,7 @@ La página de ajustes tiene un botón **Comprobar motores**, y merece la pena pu
 
 Android también está cubierto: F3 sobre un archivo `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), que convierte el bytecode de Dalvik de vuelta a Java. Bastó con una descripción de motor: el mismo mecanismo, otro formato.
 
-El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Módulos: casi nadie abre un archivo .class, y sin un motor no sirve de nada.
+El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Plugins: casi nadie abre un archivo .class, y sin un motor no sirve de nada.
 
 Para añadir un motor propio, cree `decompilers.ini` en la carpeta de motores:
 

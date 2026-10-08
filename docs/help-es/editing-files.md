@@ -13,7 +13,7 @@ Cuando necesita modificar un archivo en lugar de solo verlo, Peach Commander lo 
 1. En cualquiera de los dos paneles, mueva el cursor hasta el archivo que desea modificar.
 2. Pulse F4, o elija Archivo ▸ Editar. El archivo se abre en la ventana del editor.
 3. Realice sus cambios. Si el archivo es un formato de programación o de datos reconocido, las palabras clave, las cadenas y los comentarios se colorean automáticamente.
-4. Pulse Cmd+S (o haga clic en Guardar) para escribir sus cambios. Guardar reemplaza el archivo; si quiere conservar el contenido anterior junto a él, active las copias de seguridad en Configuración ▸ Editar/Ver.
+4. Pulse Cmd+S (o haga clic en Guardar) para escribir sus cambios. Guardar reemplaza el archivo; si quiere conservar el contenido anterior junto a él, active las copias de seguridad en Ajustes ▸ Editar/Ver.
 
 Para empezar un archivo de texto completamente nuevo en la ubicación actual, pulse Shift+F4.
 
@@ -163,4 +163,4 @@ El editor hexadecimal tiene el mismo panel **Cadenas** que el visor: cada secuen
 - El resaltado de sintaxis abarca JSON, C, C#, Java, JavaScript, TypeScript, Python y Rust. Otros tipos de archivo también se abren y editan con normalidad con un coloreado básico, pero el resaltado detallado solo está disponible para los lenguajes compatibles.
 - El esquema abarca los lenguajes de programación compatibles además de JSON, YAML y XML — incluidos los formatos basados en XML como `.plist`, `.svg`, `.csproj` y `.storyboard`. Los comandos de navegación estructural, ruta y validación se aplican a JSON, YAML y XML.
 - El esquema de símbolos y la función Ir a la línea se aplican al editor de texto. El editor hexadecimal está pensado para la inspección binaria y las ediciones a nivel de byte, no para texto.
-- Ninguno de los dos editores conserva una copia de seguridad a menos que la pida. Active «Conservar una copia de seguridad (.bak) del contenido anterior al guardar» en Configuración ▸ Editar/Ver y el primer guardado escribirá el original junto al archivo como `name.bak`, de modo que un cambio accidental es fácil de deshacer.
+- Ninguno de los dos editores conserva una copia de seguridad a menos que la pida. Active «Conservar una copia de seguridad (.bak) del contenido anterior al guardar» en Ajustes ▸ Editar/Ver y el primer guardado escribirá el original junto al archivo como `name.bak`, de modo que un cambio accidental es fácil de deshacer.

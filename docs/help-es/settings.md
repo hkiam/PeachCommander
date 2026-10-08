@@ -11,7 +11,7 @@ La ventana de Ajustes es donde adaptas Peach Commander a tu forma de trabajar: q
 ## Abrir Ajustes
 
 1. Elige **Peach Commander > Ajustes…**, o pulsa Cmd+, (coma).
-2. También puedes abrir la misma ventana desde **Configuración > Opciones…**.
+2. También puedes abrir la misma ventana desde **Configuración > Ajustes…**.
 3. Elige una página de la lista de la izquierda; las opciones de esa página aparecen a la derecha.
 4. Ajusta los controles. Los cambios surten efecto de inmediato salvo que una nota en la página indique lo contrario.
 5. Para ir directamente a una opción, escribe en el campo de búsqueda de la parte superior de la ventana. Los ajustes coincidentes de *todas* las páginas se listan junto con la página en la que están, y al elegir uno se abre esa página con el ajuste resaltado. ↑/↓ recorren los resultados, Retorno abre el resaltado y Esc sale de la búsqueda y devuelve la página de la que venías.
@@ -32,12 +32,12 @@ La ventana tiene estas páginas, en orden:
 - **Editar/Ver** — si al guardar en el editor se conserva una copia de seguridad `.bak`, los programas usados para editar y ver archivos, las asociaciones por tipo y cuánto puede costar una vista previa en ubicaciones de red y dentro de archivos comprimidos.
 - **Copiar/Eliminar** — conservar los metadatos de los archivos, usar clonado rápido, copiar solo archivos más nuevos, verificar tras copiar, enviar las eliminaciones a la Papelera y fijar un límite de velocidad opcional.
 - **Zip/Compresor** — el formato de archivo comprimido y el nivel de compresión por omisión al comprimir.
-- **Complementos** — activa o desactiva los complementos instalados.
+- **Plugins** — activa o desactiva los complementos instalados.
 - **Pestañas** — cómo se abren y se comportan las pestañas de carpeta.
 - **FTP** — valores de red por omisión como el intervalo de keep-alive.
 - **Teclado** — revisa y cambia los atajos de teclado.
 - **Idioma** — elige Predeterminado del sistema, English o Deutsch.
-- **AI** — configura el asistente de IA: modelo preferido, punto de acceso y clave en la nube, autonomía y el servidor MCP opcional (consulta [AI Assistant](ai-assistant.md)).
+- **IA** — configura el asistente de IA: modelo preferido, punto de acceso y clave en la nube, autonomía y el servidor MCP opcional (consulta [AI Assistant](ai-assistant.md)).
 - **Varios** — abre tu carpeta de configuración en el Finder.
 
 Los complementos activados pueden añadir sus propias páginas tras las integradas —por ejemplo **Disk Map** y **System Monitor**— de modo que sus opciones estén en la misma ventana (consulta [Complementos](plugins.md)).

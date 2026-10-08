@@ -48,7 +48,7 @@ Mazanie a premenovanie sú v zozname, ale nikdy sa neopakujú: Enter namiesto to
 
 ## Udržanie pod kontrolou
 
-Nastavenia ▸ Ostatné rozhodujú, či sa história vedie, koľko položiek si drží a po koľkých dňoch ich zabudne. Pripnuté položky sú z oboch vyňaté a 0 dní znamená uchovať všetko; zoznam leží v `history.ini` vo vašom konfiguračnom priečinku a prežije restart.
+Nastavenia ▸ Rôzne rozhodujú, či sa história vedie, koľko položiek si drží a po koľkých dňoch ich zabudne. Pripnuté položky sú z oboch vyňaté a 0 dní znamená uchovať všetko; zoznam leží v `history.ini` vo vašom konfiguračnom priečinku a prežije restart.
 
 ## Poznámky
 

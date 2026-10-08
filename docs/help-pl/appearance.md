@@ -12,7 +12,7 @@ Peach Commander może dopasować się do wyglądu reszty Twojego Maca lub przybr
 
 Motyw zastępuje całą paletę paneli w jednym kroku.
 
-1. Otwórz okno ustawień, wybierając Konfiguracja > Opcje…, lub naciśnij Cmd+,.
+1. Otwórz okno ustawień, wybierając Konfiguracja > Ustawienia…, lub naciśnij Cmd+,.
 2. Wybierz stronę **Kolory**.
 3. Wybierz z menu **Motyw**:
    - **System (domyślnie)** — bez motywu. Panele stosują się do ustawienia Wygląd poniżej, dokładnie tak jak dotychczas. To ustawienie domyślne.
@@ -65,7 +65,7 @@ Jeśli coś w pliku jest błędne, Peach Commander pomija ten jeden wiersz i zac
 Nazwy `light`, `dark`, `norton` i `system` należą do motywów wbudowanych; plik o takiej nazwie jest pomijany, aby nie mógł przesłonić motywu dostarczonego z programem. Po usunięciu pliku wybranego motywu Peach Commander wraca do **System (domyślnie)**.
 ## Ustaw wygląd jasny, ciemny lub systemowy
 
-1. Otwórz okno ustawień, wybierając Konfiguracja > Opcje…, lub naciśnij Cmd+,.
+1. Otwórz okno ustawień, wybierając Konfiguracja > Ustawienia…, lub naciśnij Cmd+,.
 2. Wybierz stronę **Kolory**.
 3. Z menu **Wygląd** wybierz jedną z opcji:
    - **System (podążaj za macOS)** — automatycznie dopasowuje się do bieżącego jasnego/ciemnego ustawienia Twojego Maca.
@@ -88,7 +88,7 @@ Pozostaw pole niezaznaczone, aby zachować wbudowany kolor tego elementu. Klikni
 
 ## Koloruj pliki według typu
 
-1. Otwórz Konfiguracja > Opcje… i wybierz stronę **Widok**.
+1. Otwórz Konfiguracja > Ustawienia… i wybierz stronę **Wyświetlanie**.
 2. Kliknij **Kolory typów plików…**.
 3. Dodaj regułę z maską nazwy, taką jak `*.zip` lub `*.txt`, a następnie wybierz kolor dla pasujących plików.
 4. Użyj **Dodaj regułę** dla większej liczby masek; kliknij **Gotowe**, aby zapisać, lub **Anuluj**, aby odrzucić.
@@ -97,7 +97,7 @@ Pasujące pliki pojawią się wtedy w wybranym kolorze w obu panelach.
 
 ## Dostosuj rozmiar czcionki i format daty
 
-Na stronie **Widok** możesz również:
+Na stronie **Wyświetlanie** możesz również:
 
 - Wybrać **rozmiar czcionki** listy paneli w punktach.
 - Wprowadzić wzorzec **formatu daty**, aby kontrolować sposób wyświetlania dat modyfikacji; pozostaw puste, aby użyć formatu regionalnego Twojego Maca. Pod polem pojawia się podgląd na żywo w miarę pisania.

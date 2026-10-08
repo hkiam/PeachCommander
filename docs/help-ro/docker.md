@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Sistemul de fișiere al unui container Docker poate fi parcurs într-un panou ca orice dosar, iar un volum Docker la fel. Alegeți **Conectare la Docker…** din meniul Rețea sau apăsați pastila **Docker** din bara de unități, iar motorul apare în panoul activ.
 
-Este un plugin și **este livrat dezactivat**. Activați-l din **Configurare ▸ Pluginuri…**. Pornește dezactivat pentru că o conexiune la demonul Docker are pe Mac-ul dumneavoastră aceleași drepturi ca dumneavoastră — vedeți *La ce are acces* mai jos.
+Este un plugin și **este livrat dezactivat**. Activați-l din **Configurație ▸ Pluginuri…**. Pornește dezactivat pentru că o conexiune la demonul Docker are pe Mac-ul dumneavoastră aceleași drepturi ca dumneavoastră — vedeți *La ce are acces* mai jos.
 
 ## Ce vedeți
 
@@ -83,7 +83,7 @@ Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavo
 
 ## Setări
 
-**Configurare ▸ Setări ▸ Docker** conține tot. Aceleași valori se află într-un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`, pe care îl editați dacă pregătiți o mașină dintr-un script:
+**Configurație ▸ Configurări ▸ Docker** conține tot. Aceleași valori se află într-un fișier mic în `~/Library/Application Support/PeachCommander/Docker/docker.ini`, pe care îl editați dacă pregătiți o mașină dintr-un script:
 
 - `Endpoint` — o adresă de folosit în locul celei găsite.
 - `ExecFallback` — `0` face pluginul să folosească exclusiv API-ul de arhivă al Docker: atunci nu va rula niciodată nimic într-un container, cu prețul de a nu putea lista un director foarte mare, de a nu putea șterge și de a nu putea redenumi.

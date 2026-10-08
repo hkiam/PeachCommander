@@ -28,7 +28,7 @@ Zavrnjen predogled ni prazna plošča: stranska plošča prikaže ikono datoteke
 
 ## Spreminjanje omejitev
 
-1. Odprite Nastavitve ▸ Uredi/Poglej.
+1. Odprite Nastavitve ▸ Uredi/prikaži.
 2. Izklopite »Samodejno prikazuj predogled datotek na omrežnih mestih«, če želite omrežne predoglede povsem ustaviti, ali nastavite »Omrežne datoteke do (MB)« na želeno velikost.
 3. Vklopite »Za predogled prenesi datoteke iz oblaka«, če vam je predogled ljubši od prihranjenega prenosa.
 4. Nastavite »Razpakiraj iz arhivov do (MB)« za to, kako velika sme biti datoteka v arhivu.

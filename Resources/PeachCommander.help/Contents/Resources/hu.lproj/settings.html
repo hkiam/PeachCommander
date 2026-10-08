@@ -14,7 +14,7 @@
 <h2 id="a-beallitasok-megnyitasa">A Beállítások megnyitása</h2>
 <ol>
 <li>Válassza a <strong>Peach Commander &gt; Beállítások…</strong> lehetőséget, vagy nyomja meg a Cmd+, (vessző) billentyűt.</li>
-<li>Ugyanezt az ablakot a <strong>Konfiguráció &gt; Lehetőségek…</strong> alól is megnyithatja.</li>
+<li>Ugyanezt az ablakot a <strong>Konfiguráció &gt; Beállítások…</strong> alól is megnyithatja.</li>
 <li>Válasszon egy oldalt a bal oldali listából; az adott oldal lehetőségei a jobb oldalon jelennek meg.</li>
 <li>Állítsa be a vezérlőket. A változtatások azonnal életbe lépnek, hacsak egy megjegyzés az oldalon mást nem mond.</li>
 <li>Ha közvetlenül egy beállításhoz szeretne jutni, írjon az ablak felső részén lévő keresőmezőbe. Az <em>összes</em> lap találatai megjelennek azzal a lappal együtt, amelyen vannak, és a kiválasztás megnyitja azt a lapot a kijelölt beállítással. ↑/↓ lépteti az eredményeket, a Return megnyitja a kijelöltet, az Esc pedig kilép a keresésből és visszaadja azt a lapot, ahonnan jött.</li>
@@ -27,12 +27,12 @@
 <li><strong>Elrendezés</strong> — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése, valamint annak megválasztása, milyen oldalakat kínál az oldalsó panel.</li>
 <li><strong>Megjelenítés</strong> — hogyan listázódnak a fájlok és mappák, beleértve a dátumformátumot.</li>
 <li><strong>Ikonok</strong> — az ikonok megjelenése a fájllistákban.</li>
-<li><strong>Működés</strong> — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).</li>
+<li><strong>Művelet</strong> — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).</li>
 <li><strong>Színek</strong> — egyéni panelszínek, vagy hagyja őket az aktuális témát követni.</li>
 <li><strong>Megerősítés</strong> — mely műveletek kérnek először megerősítést, mint a törlés.</li>
-<li><strong>Szerkesztés/Megtekintés</strong> — hogy a szerkesztőben való mentés megtart-e <code>.bak</code> biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.</li>
-<li><strong>Másolás/Törlés</strong> — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.</li>
-<li><strong>Zip/Tömörítő</strong> — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.</li>
+<li><strong>Szerkesztés/megtekintés</strong> — hogy a szerkesztőben való mentés megtart-e <code>.bak</code> biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.</li>
+<li><strong>Másolás/törlés</strong> — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.</li>
+<li><strong>Zip/csomagoló</strong> — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.</li>
 <li><strong>Bővítmények</strong> — a telepített bővítmények be- vagy kikapcsolása.</li>
 <li><strong>Lapok</strong> — hogyan nyílnak meg és viselkednek a mappalapok.</li>
 <li><strong>FTP</strong> — hálózati alapértékek, mint a keep-alive időköz.</li>
@@ -44,8 +44,8 @@
 <p>Az engedélyezett bővítmények saját oldalakat adhatnak a beépítettek után — például <strong>Lemeztérkép</strong> és <strong>System Monitor</strong> — így a lehetőségeik ugyanabban az ablakban élnek (lásd <a href="plugins.html">Bővítmények</a>).</p>
 <p><img alt="A Beállítások ablak a Megjelenítés oldal lehetőségeit mutatja a fájlok listázásához" src="images/settings-display.png" />
 <em>(Ábra: a Megjelenítés oldal vezérli, hogyan listázódnak a fájlok és mappák.)</em></p>
-<p><img alt="A Beállítások ablak a Működés oldalt mutatja" src="images/settings-operation.png" />
-<em>(Ábra: a Működés oldal irányítja a gyorskeresést és az egér viselkedését.)</em></p>
+<p><img alt="A Beállítások ablak a Művelet oldalt mutatja" src="images/settings-operation.png" />
+<em>(Ábra: a Művelet oldal irányítja a gyorskeresést és az egér viselkedését.)</em></p>
 <h2 id="hol-tarolodnak-a-beallitasai">Hol tárolódnak a beállításai</h2>
 <p>A konfigurációja egyszerű szövegfájlokban tárolódik a személyes Application Support mappáján belül, a <code>~/Library/Application Support/PeachCommander</code> alatt. A megnyitásához menjen az <strong>Egyéb</strong> oldalra és kattintson a <strong>Konfigurációs mappa megnyitása</strong> gombra. A mentett FTP-jelszavak nem ezekben a fájlokban tárolódnak; biztonságosan a macOS kulcskarikában vannak.</p>
 <p>A beállítások írásra kerülnek, ahogy megváltoztatja őket. Bármikor kikényszeríthet egy mentést is a <strong>Konfiguráció &gt; Beállítások mentése</strong> lehetőséggel, és tárolhatja az aktuális ablakhelyzetet és panelelrendezést a <strong>Konfiguráció &gt; Pozíció mentése</strong> lehetőséggel.</p>

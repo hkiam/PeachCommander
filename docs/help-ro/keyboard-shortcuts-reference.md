@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander este construit pentru tastatură: aproape tot ce faceți cu mausul are o tastă. Această pagină grupează comenzile rapide implicite după sarcină, astfel încât să găsiți cea de care aveți nevoie dintr-o privire. Tastele afișate aici sunt din schema implicită **TC Classic** (cea pe care o așteaptă utilizatorii de lungă durată ai Total Commander). Dacă preferați taste în stil Mac, comutați la schema **macOS Native** din meniul Configurare, unde aceleași acțiuni trec la combinații cu tasta Command (de exemplu Cmd+C pentru copiere, Cmd+F pentru căutare). Puteți de asemenea suprascrie orice tastă individuală.
+Peach Commander este construit pentru tastatură: aproape tot ce faceți cu mausul are o tastă. Această pagină grupează comenzile rapide implicite după sarcină, astfel încât să găsiți cea de care aveți nevoie dintr-o privire. Tastele afișate aici sunt din schema implicită **TC Classic** (cea pe care o așteaptă utilizatorii de lungă durată ai Total Commander). Dacă preferați taste în stil Mac, comutați la schema **macOS Native** din meniul Configurație, unde aceleași acțiuni trec la combinații cu tasta Command (de exemplu Cmd+C pentru copiere, Cmd+F pentru căutare). Puteți de asemenea suprascrie orice tastă individuală.
 
 ## Taste funcționale
 
@@ -107,6 +107,6 @@ Multe acțiuni de bază se află pe tastele funcționale. Dacă apăsarea F5 vă
 
 ## Note
 
-- Câteva taste TC Classic intră în conflict cu comenzile rapide de sistem macOS. Ctrl+Stânga, Ctrl+Dreapta, Ctrl+Sus și Ctrl+Jos sunt folosite de Mission Control și Spaces; dacă nu funcționează în Peach Commander, ajustați-le în Setări de sistem sau remapați-le în meniul Configurare.
-- Schema macOS Native mută acțiunile comune pe tasta Command păstrând acțiunile tastelor funcționale la fel. Comutați schema, sau schimbați orice tastă individuală, din meniul Configurare.
+- Câteva taste TC Classic intră în conflict cu comenzile rapide de sistem macOS. Ctrl+Stânga, Ctrl+Dreapta, Ctrl+Sus și Ctrl+Jos sunt folosite de Mission Control și Spaces; dacă nu funcționează în Peach Commander, ajustați-le în Setări de sistem sau remapați-le în meniul Configurație.
+- Schema macOS Native mută acțiunile comune pe tasta Command păstrând acțiunile tastelor funcționale la fel. Comutați schema, sau schimbați orice tastă individuală, din meniul Configurație.
 - Apăsați Esc pentru a anula un dialog, a șterge linia de comandă sau a închide panoul de Vizualizare rapidă.

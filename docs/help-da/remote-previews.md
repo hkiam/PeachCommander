@@ -28,7 +28,7 @@ En afvist eksempelvisning er ikke et tomt panel: sidepanelet viser filens symbol
 
 ## Ændr grænserne
 
-1. Åbn Indstillinger ▸ Rediger/Vis.
+1. Åbn Indstillinger ▸ Rediger/vis.
 2. Slå “Vis automatisk eksempler på filer på netværksplaceringer” fra for helt at stoppe eksempelvisninger over netværket, eller sæt “Netværksfiler op til (MB)” til den ønskede størrelse.
 3. Slå “Hent filer fra skyen for at vise dem” til, hvis du hellere vil have eksempelvisningen end den sparede trafik.
 4. Sæt “Pak ud fra arkiver op til (MB)” for, hvor stor en fil i et arkiv må være.

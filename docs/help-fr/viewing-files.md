@@ -90,7 +90,7 @@ Le panneau latéral n'affiche d'abord que **Infos**. **Activités** (transferts 
 - Activez-les dans **Réglages > Disposition**, sous *Pages du panneau latéral* ; par un clic droit sur la barre d'onglets ; ou depuis **Affichage > Panneau latéral : Infos / Activités / Journal**.
 - S'il ne reste qu'une page, le panneau se passe entièrement de sa barre d'onglets : un panneau réduit à Infos, c'est l'aperçu et les détails, sans rien au-dessus.
 - Chaque page peut être désactivée, Infos comprise — utile quand vous y gardez plutôt le terminal ou la vue d'un plugin. Un panneau où il ne reste rien le dit, au lieu de s'ouvrir vide.
-- Les pages fournies par un plugin ne sont pas concernées : elles apparaissent et disparaissent avec le plugin, et c'est la page **Plugins** qui sert à les désactiver.
+- Les pages fournies par un plugin ne sont pas concernées : elles apparaissent et disparaissent avec le plugin, et c'est la page **Modules externes** qui sert à les désactiver.
 - **Affichage > Réinitialiser la disposition** remet les pages sur Infos seule, en même temps que le reste du mobilier de la fenêtre.
 
 Les entrées du menu Affichage comptent plus qu'il n'y paraît. Une fois toutes les pages désactivées, il n'y a plus de barre d'onglets à cliquer droit : elles sont le chemin du retour.
@@ -125,7 +125,7 @@ La page de réglages a un bouton **Vérifier les moteurs**, et il vaut la peine 
 
 Android est également couvert : F3 sur un fichier `.dex` utilise **jadx** (Apache 2.0, `brew install jadx`), qui reconvertit le bytecode Dalvik en Java. Il a suffi d’une description de moteur — même mécanisme, autre format.
 
-Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.
+Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules externes — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.
 
 Pour ajouter votre propre moteur, créez `decompilers.ini` dans le dossier des moteurs :
 

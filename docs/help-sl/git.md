@@ -9,14 +9,14 @@ related: [plugins, view-modes-and-sorting]
 Vtičnik Git prikaže stanje skladišča Git naravnost v pladnju datotek — brez ločene aplikacije in brez
 terminala. Doda dva stolpca, podmeni **Git**, zasidran pladenj za pripravo in objavo sprememb ter okna za
 zgodovino, blame, veje, spore in prestavljanje. Uporablja `git`, ki je na vašem Macu že nameščen. Je vtičnik,
-zato ga lahko izklopite ali odstranite v **Nastavitve ▸ Vtičniki…**.
+zato ga lahko izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**.
 
 ## Kaj doda
 
 - **Dva stolpca seznama datotek** — *Stanje Git* in *Veja*. Vsaka datoteka prikaže ikono in kratko besedo
   stanja (Spremenjeno, Dodano, Izbrisano, Nesledeno, Preimenovano, Kopirano, Spor, Prezrto, Spremenjen tip), z
   *(pripravljeno)*, ko je sprememba že v kazalu; stolpec *Veja* prikaže vejo, na kateri stoji skladišče te
-  datoteke. Stolpca vklopite v **Nastavitve ▸ Stolpci…** (glejte
+  datoteke. Stolpca vklopite v **Konfiguracija ▸ Stolpci…** (glejte
   [Načini prikaza in razvrščanje](view-modes-and-sorting.md)).
 - **Meni Git** — pod **Ukazi ▸ Git** in v kontekstnem meniju datoteke.
 

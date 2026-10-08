@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Egy Docker-konténer fájlrendszere ugyanúgy böngészhető egy panelben, mint bármelyik mappa, és ez a Docker-kötetekre is igaz. Válassza a **Kapcsolódás a Dockerhez…** parancsot a Hálózat menüből, vagy kattintson a **Docker** gombra a meghajtósávon, és a motor megjelenik az aktív panelben.
 
-Ez egy bővítmény, és **kikapcsolva kerül szállításra**. Kapcsolja be a **Beállítások ▸ Bővítmények…** ablakban. Azért indul kikapcsolva, mert a Docker-démonhoz való kapcsolat ugyanazokkal a jogokkal rendelkezik az Ön Macjén, mint Ön maga — lásd *Mihez fér hozzá* alább.
+Ez egy bővítmény, és **kikapcsolva kerül szállításra**. Kapcsolja be a **Konfiguráció ▸ Bővítmények…** ablakban. Azért indul kikapcsolva, mert a Docker-démonhoz való kapcsolat ugyanazokkal a jogokkal rendelkezik az Ön Macjén, mint Ön maga — lásd *Mihez fér hozzá* alább.
 
 ## Amit lát
 
@@ -83,7 +83,7 @@ A bejegyzések csak Docker-meghajtón belül jelennek meg; saját mappa fölött
 
 ## Beállítások
 
-A **Beállítások ▸ Beállítások ▸ Docker** mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:
+A **Konfiguráció ▸ Beállítások ▸ Docker** mindezt tartalmazza. Ugyanezek az értékek egy kis fájlban vannak a `~/Library/Application Support/PeachCommander/Docker/docker.ini` helyen, amelyet akkor szerkeszt, ha egy gépet parancsfájlból állít be:
 
 - `Endpoint` — a megtalált helyett használandó cím.
 - `ExecFallback` — a `0` hatására a bővítmény kizárólag a Docker archívum-API-ját használja: ekkor soha nem futtat semmit egy konténerben, annak árán, hogy nem tud kilistázni nagyon nagy könyvtárat, törölni vagy átnevezni.

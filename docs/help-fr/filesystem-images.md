@@ -12,7 +12,7 @@ Rien n'est jamais écrit dans une image. Le plugin ne sait que lire.
 
 ## Activez-le d'abord
 
-Le plugin est livré désactivé. Ouvrez **Réglages ▸ Plugins**, trouvez **Linux Filesystem Images** et activez-le.
+Le plugin est livré désactivé. Ouvrez **Réglages ▸ Modules externes**, trouvez **Linux Filesystem Images** et activez-le.
 
 Il est désactivé par défaut à cause de sa manière de trouver les images. Un micrologiciel est rarement nommé proprement — le fichier recherché s'appelle `firmware.bin`, `rootfs.img` ou simplement `dump` au moins aussi souvent que `.squashfs` — donc lorsque l'extension ne dit rien, le plugin examine les premiers octets pour décider. C'est exactement ce qu'il faut si vous examinez des images d'appareils, et du travail inutile sinon. L'activer, c'est dire lequel des deux vous êtes.
 

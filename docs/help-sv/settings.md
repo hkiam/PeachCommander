@@ -11,7 +11,7 @@ Inställningsfönstret är där du skräddarsyr Peach Commander efter hur du arb
 ## Öppna Inställningar
 
 1. Välj **Peach Commander > Inställningar…**, eller tryck på Cmd+, (kommatecken).
-2. Du kan även öppna samma fönster från **Konfiguration > Alternativ…**.
+2. Du kan även öppna samma fönster från **Konfiguration > Inställningar…**.
 3. Välj en sida från listan till vänster; alternativen för den sidan visas till höger.
 4. Justera reglagen. Ändringar träder i kraft direkt om inte en anmärkning på sidan säger annat.
 5. Vill du direkt till en inställning skriver du i sökfältet högst upp i fönstret. Matchande inställningar från *alla* sidor listas med den sida de hör till, och väljer du en öppnas den sidan med inställningen markerad. ↑/↓ flyttar genom resultaten, Retur öppnar det markerade och Esc lämnar sökningen och sätter tillbaka sidan du kom från.
@@ -26,13 +26,13 @@ Fönstret har dessa sidor, i ordning:
 - **Layout** — visa eller dölj enhetsraden, flikraden, sökvägsraden och statusraden, och välj vilka sidor sidopanelen erbjuder.
 - **Visning** — hur filer och mappar listas, inklusive datumformatet.
 - **Symboler** — symbolernas utseende i fillistorna.
-- **Åtgärder** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).
+- **Åtgärd** — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).
 - **Färger** — anpassade panelfärger, eller låt dem följa det aktuella temat.
 - **Bekräftelse** — vilka åtgärder som ber dig bekräfta först, till exempel radering.
-- **Redigera/Visa** — om sparande i redigeraren behåller en `.bak`-säkerhetskopia, programmen som används för att redigera och visa filer, kopplingar per typ, och vad en förhandsvisning får kosta på nätverksplatser och i arkiv.
-- **Kopiera/Radera** — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer, verifiera efter kopiering, skicka raderingar till papperskorgen och ange en valfri hastighetsgräns.
-- **Zip/Packare** — standardarkivformatet och komprimeringsnivån som används när du packar.
-- **Insticksprogram** — slå på eller av installerade insticksprogram.
+- **Redigera/visa** — om sparande i redigeraren behåller en `.bak`-säkerhetskopia, programmen som används för att redigera och visa filer, kopplingar per typ, och vad en förhandsvisning får kosta på nätverksplatser och i arkiv.
+- **Kopiera/radera** — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer, verifiera efter kopiering, skicka raderingar till papperskorgen och ange en valfri hastighetsgräns.
+- **Zip/packare** — standardarkivformatet och komprimeringsnivån som används när du packar.
+- **Plugin-program** — slå på eller av installerade insticksprogram.
 - **Flikar** — hur mappflikar öppnas och beter sig.
 - **FTP** — nätverksstandardvärden som keep-alive-intervallet.
 - **Tangentbord** — granska och ändra kortkommandon.
@@ -45,8 +45,8 @@ Aktiverade insticksprogram kan lägga till sina egna sidor efter de inbyggda —
 ![Inställningsfönstret med sidan Visning och alternativ för hur filer listas](screenshots/settings-display.png)
 *(Bild: Sidan Visning styr hur filer och mappar listas.)*
 
-![Inställningsfönstret med sidan Åtgärder](screenshots/settings-operation.png)
-*(Bild: Sidan Åtgärder styr snabbsökning och musbeteende.)*
+![Inställningsfönstret med sidan Åtgärd](screenshots/settings-operation.png)
+*(Bild: Sidan Åtgärd styr snabbsökning och musbeteende.)*
 
 ## Var dina inställningar lagras
 

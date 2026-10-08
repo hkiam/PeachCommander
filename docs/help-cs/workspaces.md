@@ -48,7 +48,7 @@ odkladiště o přesunuté vyprázdní; kopírování ho nechá, jak bylo.
 - Klikněte na štítek pravým tlačítkem a přejmenujte jej, dejte mu barvu nebo jej smažte — nebo klikněte na **✕** u jeho pravého okraje, které pracovní plochu po dotazu smaže. Barva je to, podle čeho pracovní plochy poznáte na první pohled, když je okno úzké a názvy se už nevejdou.
 - Devět je mez, aby každý štítek zůstal rozpoznatelný.
 - **Zobrazit ▸ Zobrazit lištu pracovních ploch** skryje pruh, aniž by funkci vypnul — pro ty, kdo mezi pracovními plochami přepínají klávesnicí.
-- Pracovní plochy lze zcela vypnout v **Nastavení ▸ Karty**. Vaše pracovní plochy zůstanou zachovány a vrátí se beze změny, až funkci znovu zapnete.
+- Pracovní plochy lze zcela vypnout v **Nastavení ▸ Panely**. Vaše pracovní plochy zůstanou zachovány a vrátí se beze změny, až funkci znovu zapnete.
 
 ## Omezení pracovní plochy na složku
 
@@ -71,7 +71,7 @@ Return zopakuje vybraný řádek podle stejného pravidla jako historie: jedním
 kopírování nebo přesun a řádek shellu se vloží do příkazového řádku místo spuštění. Deník je záměrně
 oddělen od globální historie — ta odpovídá na „kam obvykle chodím“ a řadí podle četnosti; tento
 odpovídá na „co se tu stalo“ a zachovává pořadí. Maže se se svou pracovní plochou, jinak se uchovává
-bez omezení, a lze jej vypnout v **Nastavení ▸ Karty**.
+bez omezení, a lze jej vypnout v **Nastavení ▸ Panely**.
 
 ## Předání pracovní plochy
 

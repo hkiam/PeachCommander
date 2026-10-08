@@ -12,12 +12,12 @@
 <h1>Macrocomenzi</h1>
 <p>O macrocomandă este o secvență cu nume de acțiuni asupra fișierelor — creează un dosar, mută selecția în el, etichetează ce rămâne — pe care o puteți rula din nou cu un clic. Nu este un limbaj de scriptare: nu are condiții și nu are bucle, iar acest lucru este intenționat. O macrocomandă este o listă pe care o puteți citi, iar a o citi este exact ce trebuie să puteți face înainte de a o aproba.</p>
 <p>Tot ce face o macrocomandă trece prin aceeași mașinărie pe care o folosește asistentul, așa că o macrocomandă nu poate face nimic ce nu ați permis, fiecare pas al ei apare în jurnalul de acțiuni, iar un pas care poate fi anulat rămâne anulabil.</p>
-<h2 id="o-singura-fereastra-configurare-macrocomenzi">O singură fereastră: Configurare ▸ Macrocomenzi…</h2>
+<h2 id="o-singura-fereastra-configuratie-macrocomenzi">O singură fereastră: Configurație ▸ Macrocomenzi…</h2>
 <p>Tot ce ține de macrocomenzi stă în spatele acelei singure intrări: lista lor, cele două moduri de a crea una și drumul către fișier. În meniu nu mai e nimic altceva de ales.</p>
 <h2 id="cel-mai-rapid-drum-inregistreaza-una">Cel mai rapid drum: înregistrează una</h2>
 <p>Nu trebuie să scrieți o macrocomandă de la zero — și nici să vă dați seama după aceea unde a început.</p>
 <ol>
-<li><strong>Configurare ▸ Macrocomenzi… ▸ Înregistrează macrocomandă…</strong>. Fereastra se dă la o parte și apare un panou mic ce spune că o înregistrare este în curs și numără pașii pe măsură ce se întâmplă.</li>
+<li><strong>Configurație ▸ Macrocomenzi… ▸ Înregistrează macrocomandă…</strong>. Fereastra se dă la o parte și apare un panou mic ce spune că o înregistrare este în curs și numără pașii pe măsură ce se întâmplă.</li>
 <li>Faceți treaba o dată — copiere, mutare, redenumire, ștergere, creare de dosare și fișiere. Lucrați normal; înregistrarea nu stă în cale.</li>
 <li><strong>Oprește și salvează…</strong>.</li>
 <li>Pașii se întorc deja bifați. Debifați tot ce doar a pregătit terenul, dați un nume macrocomenzii și lăsați activat <strong>Adaugă și un buton pentru ea</strong>.</li>
@@ -33,12 +33,12 @@
 <em>Ce s-a întâmplat deja, oferit ca pașii unei macrocomenzi noi.</em></p>
 <p>Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare. Aici rândurile pornesc nebifate: „tot ce am făcut în ultima jumătate de oră” este rareori macrocomanda la care ne gândim.</p>
 <blockquote>
-<p><strong>Acest drum are nevoie de istoric.</strong> Ce faceți manual este citit din istoricul global; dacă l-ați dezactivat (Setări ▸ Diverse ▸ <strong>Înregistrează un istoric global</strong>), în această listă nu este nimic de la dumneavoastră — și o spune. <strong>Înregistrează macrocomandă…</strong> nu depinde de el.</p>
+<p><strong>Acest drum are nevoie de istoric.</strong> Ce faceți manual este citit din istoricul global; dacă l-ați dezactivat (Configurări ▸ Diverse ▸ <strong>Înregistrează un istoric global</strong>), în această listă nu este nimic de la dumneavoastră — și o spune. <strong>Înregistrează macrocomandă…</strong> nu depinde de el.</p>
 <p><strong>Ce nu se oferă.</strong> Împachetarea unei arhive, și tot ce aplicația reține doar după nume, nu poate deveni un pas — nu există o formă pentru asta. Astfel de rânduri apar estompate împreună cu motivul, în loc să lipsească, pentru ca o listă de cinci care oferă trei să nu pară că a scăpat două. Iar dacă nu cereți altfel, căile sunt cele care chiar au rulat: o macrocomandă înregistrată repetă <em>acea</em> copiere, nu „o copiere de felul acela”. Deschideți-o în editor și puneți <code>%S</code> sau <code>%T</code> acolo unde vreți să urmeze panourile.</p>
 </blockquote>
 <p><strong>Urmează panourile</strong> este felul în care cereți altfel. Fișierele venite toate dintr-un singur dosar devin selecția; un dosar care este unul dintre cele două panouri devine acel panou, iar un dosar dinăuntru își păstrează coada — dintr-un „mută aceste patru facturi în Documente/2026-08” înregistrat se face „mută ce este selectat în <em>2026-08</em> de partea cealaltă”, iar mâine funcționează în alte două dosare. Ce nu se află sub niciunul dintre panouri rămâne calea care este, fiindcă nu are în ce să fie pliat. Opțiunea apare doar când ar schimba ceva.</p>
 <h2 id="exemplele-livrate">Exemplele livrate</h2>
-<p>Prima dată când deschideți <strong>Configurare ▸ Editare macrocomenzi…</strong>, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:</p>
+<p>Prima dată când deschideți <strong>Configurație ▸ Editare macrocomenzi…</strong>, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:</p>
 <table>
 <thead>
 <tr>
@@ -83,7 +83,7 @@
 </table>
 <p>Fiecare dintre ele devine o comandă, așa că puteți pune oricare pe un buton sau pe o tastă fără să scrieți nimic.</p>
 <h2 id="gestionarea-lor">Gestionarea lor</h2>
-<p><strong>Configurare ▸ Macrocomenzi…</strong> este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere poarta de permisiuni — astfel „aceasta șterge” se vede înainte să o puneți pe o tastă. De acolo puteți executa, redenumi, duplica, reordona, șterge, exporta și importa. Trecând cu mausul peste un rând i se văd pașii.</p>
+<p><strong>Configurație ▸ Macrocomenzi…</strong> este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere poarta de permisiuni — astfel „aceasta șterge” se vede înainte să o puneți pe o tastă. De acolo puteți executa, redenumi, duplica, reordona, șterge, exporta și importa. Trecând cu mausul peste un rând i se văd pașii.</p>
 <p><strong>Execută</strong> este modul de a o încerca pe cea tocmai înregistrată, fără să închideți întâi fereastra ca să căutați comanda. Trece prin același plan și aceeași confirmare ca orice altă execuție — această fereastră nu are privilegii proprii.</p>
 <p><strong>Exportă…</strong> scrie macrocomanda selectată într-un fișier al ei, iar <strong>Importă…</strong> adaugă macrocomenzi din fișiere pe care vi le-a trimis cineva — exact pentru asta există câte un fișier per macrocomandă. Un import nu înlocuiește niciodată: o macrocomandă al cărei id este deja ocupat primește unul liber (un <code>backup</code> care sosește lângă al dumneavoastră devine <code>backup-2</code>), iar vi se spune cu ce id-uri au ajuns cele noi, fiindcă butonul pe care îl faceți trebuie să o numească pe cea potrivită.</p>
 <p><img alt="Fereastra „Gestionare macrocomenzi”, cu numele comenzii, numărul de pași și permisiunea fiecăreia" src="images/macro-manager.png" />
@@ -106,7 +106,7 @@
 </code></pre></div>
 
 <p>Salvarea reîncarcă imediat macrocomenzile — și spune dacă ceva nu este în regulă: un nume de instrument scris greșit, un argument obligatoriu lipsă, două macrocomenzi cu același id. O macrocomandă cu o greșeală nu este rulată și nu ajunge pe niciun buton; aflați care este și ce nu merge la ea, cât timp editorul este încă deschis.</p>
-<p>Ce instrumente există și ce primesc vedeți în <strong>Configurare ▸ Navigator de comenzi…</strong>, sau cereți asistentului <code>list_macros</code>.</p>
+<p>Ce instrumente există și ce primesc vedeți în <strong>Configurație ▸ Navigator de comenzi…</strong>, sau cereți asistentului <code>list_macros</code>.</p>
 <h3 id="substituenti">Substituenți</h3>
 <p>Literele simple sunt aceleași folosite de bara de butoane și de meniul Start: cine a făcut deja un buton nu are nimic nou de învățat aici.</p>
 <table>
@@ -165,8 +165,8 @@
 <h2 id="rularea-unei-macrocomenzi">Rularea unei macrocomenzi</h2>
 <p>Fiecare macrocomandă devine o comandă numită <code>mc_&lt;id&gt;</code> și apare astfel de la sine în:</p>
 <ul>
-<li><strong>Configurare ▸ Explorator de comenzi…</strong></li>
-<li><strong>Configurare ▸ Editează scurtăturile… — puneți-o pe o tastă</strong></li>
+<li><strong>Configurație ▸ Explorator de comenzi…</strong></li>
+<li><strong>Configurație ▸ Editează scurtăturile… — puneți-o pe o tastă</strong></li>
 <li>Selectorul de comenzi din editorul barei de butoane</li>
 <li>Fișierul dumneavoastră de meniu <code>.mnu</code> și <code>usercmd.ini</code>, dacă le folosiți</li>
 <li>Asistentul, care o poate rula după nume</li>

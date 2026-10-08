@@ -48,7 +48,7 @@ O copiere sau o mutare apare la **Operațiuni**, iar Enter o rulează din nou �
 
 ## Ținerea sub control
 
-Setări ▸ Diverse decide dacă se ține un istoric, câte intrări păstrează și după câte zile le uită. Intrările fixate sunt scutite, iar 0 zile păstrează totul; lista se află în `history.ini` din dosarul tău de configurare și supraviețuiește repornirilor.
+Configurări ▸ Diverse decide dacă se ține un istoric, câte intrări păstrează și după câte zile le uită. Intrările fixate sunt scutite, iar 0 zile păstrează totul; lista se află în `history.ini` din dosarul tău de configurare și supraviețuiește repornirilor.
 
 ## Note
 

@@ -27,7 +27,7 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 - Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.
 - Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.
 - Stlačte Ctrl+G pre prechod na riadok, v hex režime na bajtovú pozíciu. Počítať sa dá aj medzi číselnými sústavami: `0x1000 + 15 + 1` vedie na 4112 — šestnástkovo s `0x`, `$` alebo koncovým `h`, dvojkovo s `0b`, osmičkovo s `0o`, a `+ - * /` so zátvorkami.
-- Ak otvoríte nájdený súbor z Nájsť súbory, kde bolo vyplnené **Nájsť text**, prehliadač začne týmto hľadaním: text už je v hľadacom poli a prvý výskyt je vidieť, takže prídete priamo k zhode, nie na začiatok súboru. Keď ho tam zmeníte alebo vymažete, zostane vaša verzia. V Nastaveniach pod Úpravy/Zobrazenie sa to dá vypnúť, ak má každý súbor otvárať na začiatku.
+- Ak otvoríte nájdený súbor z Nájsť súbory, kde bolo vyplnené **Nájsť text**, prehliadač začne týmto hľadaním: text už je v hľadacom poli a prvý výskyt je vidieť, takže prídete priamo k zhode, nie na začiatok súboru. Keď ho tam zmeníte alebo vymažete, zostane vaša verzia. V Nastaveniach pod Upraviť/zobraziť sa to dá vypnúť, ak má každý súbor otvárať na začiatku.
 
 ## Čítanie reťazcov v binárnom súbore
 
@@ -90,7 +90,7 @@ Bočný panel sa najprv ukazuje len so stránkou **Informácie**. **Aktivity** (
 - Zapnite ich v **Nastavenia > Rozloženie** v časti *Stránky bočného panela*, pravým klikom na panel kariet alebo z **Zobraziť > Bočný panel: Informácie / Aktivity / Záznam**.
 - Ak zostane jediná stránka, panel panel kariet úplne vynechá: panel len s Informáciami je náhľad a údaje, bez čohokoľvek nad nimi.
 - Vypnúť sa dá každá stránka, aj Informácie — hodí sa, keď tu namiesto toho držíte terminál alebo zobrazenie pluginu. Panel, v ktorom nič nezostalo, to povie, namiesto aby sa otvoril prázdny.
-- Stránky, ktoré pridáva plugin, to neovplyvní: tie prichádzajú a odchádzajú s pluginom a na ich vypnutie je tu stránka **Pluginy**.
+- Stránky, ktoré pridáva plugin, to neovplyvní: tie prichádzajú a odchádzajú s pluginom a na ich vypnutie je tu stránka **Zásuvné moduly**.
 - **Zobraziť > Obnoviť rozloženie** vráti stránky na samotné Informácie, spolu so zvyškom vybavenia okna.
 
 Položky v ponuke Zobraziť znamenajú viac, než vyzerajú. Keď je každá stránka vypnutá, nie je už žiadny panel kariet, na ktorý by sa dalo kliknúť pravým tlačidlom — ony sú cesta späť.

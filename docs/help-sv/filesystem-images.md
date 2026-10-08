@@ -12,7 +12,7 @@ Det skrivs aldrig till en avbild. Insticksmodulen kan bara läsa.
 
 ## Slå på den först
 
-Insticksmodulen levereras avstängd. Öppna **Inställningar ▸ Insticksmoduler**, leta upp **Linux Filesystem Images** och slå på den.
+Insticksmodulen levereras avstängd. Öppna **Inställningar ▸ Plugin-program**, leta upp **Linux Filesystem Images** och slå på den.
 
 Den är avstängd som standard på grund av hur den hittar avbilder. Fast programvara har sällan ett städat namn — filen du söker heter minst lika ofta `firmware.bin`, `rootfs.img` eller bara `dump` som `.squashfs` — så när filändelsen inte säger något tittar insticksmodulen på de första byten för att avgöra saken. Det är precis rätt om du undersöker enhetsavbilder, och bortkastat arbete annars. Att slå på den är ditt sätt att säga vilket av de två som gäller dig.
 

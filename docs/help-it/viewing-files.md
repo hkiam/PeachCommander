@@ -125,7 +125,7 @@ La pagina delle impostazioni ha un pulsante **Controlla motori**, e vale la pena
 
 Anche Android è coperto: F3 su un file `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.
 
-Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.
+Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Plugin: quasi nessuno apre un file .class, e senza motore non serve.
 
 Per aggiungere un motore vostro, create `decompilers.ini` nella cartella dei motori:
 

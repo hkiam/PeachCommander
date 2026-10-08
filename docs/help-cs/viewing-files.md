@@ -27,7 +27,7 @@ Peach Commander má vestavěný prohlížeč, který umožňuje nahlédnout dovn
 - Pokud text vypadá zkomoleně, klepněte na Kódování na panelu nástrojů (nebo stiskněte E) pro procházení kódování textu, dokud se nečte správně; automatické nastavení to obvykle trefí.
 - Stiskem W přepnete zalamování slov u dlouhých řádků.
 - Stiskněte Ctrl+G pro přechod na řádek, v hex režimu na bajtovou pozici. Počítat lze i mezi číselnými soustavami: `0x1000 + 15 + 1` vede na 4112 — šestnáctkově s `0x`, `$` nebo koncovým `h`, dvojkově s `0b`, osmičkově s `0o`, a `+ - * /` se závorkami.
-- Otevřete-li nalezený soubor z Najít soubory, kde bylo vyplněno **Najít text**, začne prohlížeč tímto hledáním: text už je v hledacím poli a první výskyt je vidět, takže přejdete přímo ke shodě, ne na začátek souboru. Když jej tam změníte nebo vymažete, zůstane vaše verze. V Nastavení pod Úpravy/Zobrazení to lze vypnout, pokud má každý soubor otevírat na začátku.
+- Otevřete-li nalezený soubor z Najít soubory, kde bylo vyplněno **Najít text**, začne prohlížeč tímto hledáním: text už je v hledacím poli a první výskyt je vidět, takže přejdete přímo ke shodě, ne na začátek souboru. Když jej tam změníte nebo vymažete, zůstane vaše verze. V Nastavení pod Upravit/zobrazit to lze vypnout, pokud má každý soubor otevírat na začátku.
 
 ## Čtení řetězců v binárním souboru
 
@@ -90,7 +90,7 @@ Boční panel se nejprve ukazuje jen se stránkou **Informace**. **Aktivity** (p
 - Zapněte je v **Nastavení > Rozvržení** v části *Stránky bočního panelu*, pravým klikem na lištu záložek nebo z **Zobrazit > Boční panel: Informace / Aktivity / Protokol**.
 - Zůstane-li jediná stránka, panel lištu záložek úplně vynechá: panel jen s Informacemi je náhled a údaje, bez čehokoli nad nimi.
 - Vypnout lze každou stránku, i Informace — hodí se, když tu místo toho držíte terminál nebo zobrazení pluginu. Panel, v němž nic nezbylo, to řekne, místo aby se otevřel prázdný.
-- Stránky, které přidává plugin, to neovlivní: ty přicházejí a odcházejí s pluginem a k jejich vypnutí je tu stránka **Pluginy**.
+- Stránky, které přidává plugin, to neovlivní: ty přicházejí a odcházejí s pluginem a k jejich vypnutí je tu stránka **Zásuvné moduly**.
 - **Zobrazit > Obnovit rozvržení** vrátí stránky na samotné Informace, spolu se zbytkem vybavení okna.
 
 Položky v nabídce Zobrazit znamenají víc, než vypadají. Když je každá stránka vypnutá, není už žádná lišta záložek, na kterou by šlo kliknout pravým tlačítkem — ony jsou cesta zpět.

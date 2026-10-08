@@ -10,7 +10,7 @@ O macrocomandă este o secvență cu nume de acțiuni asupra fișierelor — cre
 
 Tot ce face o macrocomandă trece prin aceeași mașinărie pe care o folosește asistentul, așa că o macrocomandă nu poate face nimic ce nu ați permis, fiecare pas al ei apare în jurnalul de acțiuni, iar un pas care poate fi anulat rămâne anulabil.
 
-## O singură fereastră: Configurare ▸ Macrocomenzi…
+## O singură fereastră: Configurație ▸ Macrocomenzi…
 
 Tot ce ține de macrocomenzi stă în spatele acelei singure intrări: lista lor, cele două moduri de a crea una și drumul către fișier. În meniu nu mai e nimic altceva de ales.
 
@@ -18,7 +18,7 @@ Tot ce ține de macrocomenzi stă în spatele acelei singure intrări: lista lor
 
 Nu trebuie să scrieți o macrocomandă de la zero — și nici să vă dați seama după aceea unde a început.
 
-1. **Configurare ▸ Macrocomenzi… ▸ Înregistrează macrocomandă…**. Fereastra se dă la o parte și apare un panou mic ce spune că o înregistrare este în curs și numără pașii pe măsură ce se întâmplă.
+1. **Configurație ▸ Macrocomenzi… ▸ Înregistrează macrocomandă…**. Fereastra se dă la o parte și apare un panou mic ce spune că o înregistrare este în curs și numără pașii pe măsură ce se întâmplă.
 2. Faceți treaba o dată — copiere, mutare, redenumire, ștergere, creare de dosare și fișiere. Lucrați normal; înregistrarea nu stă în cale.
 3. **Oprește și salvează…**.
 4. Pașii se întorc deja bifați. Debifați tot ce doar a pregătit terenul, dați un nume macrocomenzii și lăsați activat **Adaugă și un buton pentru ea**.
@@ -41,7 +41,7 @@ Dacă preferați să o aveți pe o tastă sau pe un buton, comanda se numește `
 
 Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și o redenumire) și ce a făcut asistentul sau altă macrocomandă. Fiecare rând spune care dintre cele două — după o sesiune cu amândouă, aceleași două fișiere pot apărea în fiecare. Aici rândurile pornesc nebifate: „tot ce am făcut în ultima jumătate de oră” este rareori macrocomanda la care ne gândim.
 
-> **Acest drum are nevoie de istoric.** Ce faceți manual este citit din istoricul global; dacă l-ați dezactivat (Setări ▸ Diverse ▸ **Înregistrează un istoric global**), în această listă nu este nimic de la dumneavoastră — și o spune. **Înregistrează macrocomandă…** nu depinde de el.
+> **Acest drum are nevoie de istoric.** Ce faceți manual este citit din istoricul global; dacă l-ați dezactivat (Configurări ▸ Diverse ▸ **Înregistrează un istoric global**), în această listă nu este nimic de la dumneavoastră — și o spune. **Înregistrează macrocomandă…** nu depinde de el.
 
 > **Ce nu se oferă.** Împachetarea unei arhive, și tot ce aplicația reține doar după nume, nu poate deveni un pas — nu există o formă pentru asta. Astfel de rânduri apar estompate împreună cu motivul, în loc să lipsească, pentru ca o listă de cinci care oferă trei să nu pară că a scăpat două. Iar dacă nu cereți altfel, căile sunt cele care chiar au rulat: o macrocomandă înregistrată repetă *acea* copiere, nu „o copiere de felul acela”. Deschideți-o în editor și puneți `%S` sau `%T` acolo unde vreți să urmeze panourile.
 
@@ -49,7 +49,7 @@ Lista le conține pe amândouă: ce ați făcut în panouri (F5, F6, F7, F8 și 
 
 ## Exemplele livrate
 
-Prima dată când deschideți **Configurare ▸ Editare macrocomenzi…**, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:
+Prima dată când deschideți **Configurație ▸ Editare macrocomenzi…**, fișierul este creat cu opt exemple lucrate. Sunt macrocomenzi obișnuite — modificați-le sau ștergeți-le pe cele nedorite — și fiecare poartă un comentariu care spune ce face și ce se poate schimba în ea:
 
 | Macrocomandă | Ce face |
 | --- | --- |
@@ -66,7 +66,7 @@ Fiecare dintre ele devine o comandă, așa că puteți pune oricare pe un buton 
 
 ## Gestionarea lor
 
-**Configurare ▸ Macrocomenzi…** este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere poarta de permisiuni — astfel „aceasta șterge” se vede înainte să o puneți pe o tastă. De acolo puteți executa, redenumi, duplica, reordona, șterge, exporta și importa. Trecând cu mausul peste un rând i se văd pașii.
+**Configurație ▸ Macrocomenzi…** este lista: cum se numește fiecare macrocomandă, cum se numește comanda ei, câți pași are și ce va cere poarta de permisiuni — astfel „aceasta șterge” se vede înainte să o puneți pe o tastă. De acolo puteți executa, redenumi, duplica, reordona, șterge, exporta și importa. Trecând cu mausul peste un rând i se văd pașii.
 
 **Execută** este modul de a o încerca pe cea tocmai înregistrată, fără să închideți întâi fereastra ca să căutați comanda. Trece prin același plan și aceeași confirmare ca orice altă execuție — această fereastră nu are privilegii proprii.
 
@@ -100,7 +100,7 @@ Ordinea nu este decor: ordinea din fișier este aceea în care le listează Navi
 
 Salvarea reîncarcă imediat macrocomenzile — și spune dacă ceva nu este în regulă: un nume de instrument scris greșit, un argument obligatoriu lipsă, două macrocomenzi cu același id. O macrocomandă cu o greșeală nu este rulată și nu ajunge pe niciun buton; aflați care este și ce nu merge la ea, cât timp editorul este încă deschis.
 
-Ce instrumente există și ce primesc vedeți în **Configurare ▸ Navigator de comenzi…**, sau cereți asistentului `list_macros`.
+Ce instrumente există și ce primesc vedeți în **Configurație ▸ Navigator de comenzi…**, sau cereți asistentului `list_macros`.
 
 ### Substituenți
 
@@ -144,8 +144,8 @@ Un pas al cărui `%S` sau `%{1}` iese **gol oprește macrocomanda**, în loc să
 
 Fiecare macrocomandă devine o comandă numită `mc_<id>` și apare astfel de la sine în:
 
-- **Configurare ▸ Explorator de comenzi…**
-- **Configurare ▸ Editează scurtăturile… — puneți-o pe o tastă**
+- **Configurație ▸ Explorator de comenzi…**
+- **Configurație ▸ Editează scurtăturile… — puneți-o pe o tastă**
 - Selectorul de comenzi din editorul barei de butoane
 - Fișierul dumneavoastră de meniu `.mnu` și `usercmd.ini`, dacă le folosiți
 - Asistentul, care o poate rula după nume

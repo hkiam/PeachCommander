@@ -10,7 +10,7 @@ S3 버킷은 여느 폴더와 마찬가지로 패널에서 탐색할 수 있습�
 
 Amazon S3는 물론 같은 프로토콜을 쓰는 모든 것과 동작합니다. MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2, DigitalOcean Spaces에 모두 접근할 수 있습니다.
 
-플러그인이므로 **환경설정 ▸ 플러그인…** 에서 끄거나 제거할 수 있습니다.
+플러그인이므로 **구성 ▸ 플러그인…** 에서 끄거나 제거할 수 있습니다.
 
 ## 연결하기
 

@@ -13,7 +13,7 @@ Ko morate datoteko spremeniti in ne samo pogledati, jo Peach Commander odpre v v
 1. V katerem koli podoknu premaknite kazalko na datoteko, ki jo želite spremeniti.
 2. Pritisnite F4 ali izberite Datoteka ▸ Uredi. Datoteka se odpre v oknu urejevalnika.
 3. Naredite spremembe. Če je datoteka prepoznana programska ali podatkovna oblika, se ključne besede, nizi in komentarji samodejno obarvajo.
-4. Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Shranjevanje datoteko zamenja; če želite prejšnjo vsebino obdržati ob njej, vklopite varnostne kopije v Nastavitvah ▸ Uredi/Poglej.
+4. Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Shranjevanje datoteko zamenja; če želite prejšnjo vsebino obdržati ob njej, vklopite varnostne kopije v Nastavitvah ▸ Uredi/prikaži.
 
 Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F4.
 
@@ -163,4 +163,4 @@ Oblikovalnike lahko prispevajo tudi vstavki — glejte [Plugins](plugins.md).
 - Barvanje skladnje zajema JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno normalno odprejo in urejajo z osnovnim barvanjem, podrobno barvanje pa je na voljo le za podprte jezike.
 - Pregled zajema podprte programske jezike ter JSON, YAML in XML — vključno z oblikami, ki temeljijo na XML, kot so `.plist`, `.svg`, `.csproj` in `.storyboard`. Ukazi za strukturno krmarjenje, pot in preverjanje veljajo za JSON, YAML in XML.
 - Oris simbolov in Pojdi na vrstico veljata za urejevalnik besedila. Šestnajstiški urejevalnik je namenjen dvojiškemu pregledu in urejanju na ravni bajtov, ne besedilu.
-- Nobeden od urejevalnikov ne ohrani varnostne kopije, dokler zanjo ne zaprosite. V Nastavitvah ▸ Uredi/Poglej vklopite »Pri shranjevanju ohrani varnostno kopijo (.bak) prejšnje vsebine« in prvo shranjevanje zapiše izvirnik ob datoteko kot `name.bak`, tako da je nenamerno spremembo enostavno razveljaviti.
+- Nobeden od urejevalnikov ne ohrani varnostne kopije, dokler zanjo ne zaprosite. V Nastavitvah ▸ Uredi/prikaži vklopite »Pri shranjevanju ohrani varnostno kopijo (.bak) prejšnje vsebine« in prvo shranjevanje zapiše izvirnik ob datoteko kot `name.bak`, tako da je nenamerno spremembo enostavno razveljaviti.

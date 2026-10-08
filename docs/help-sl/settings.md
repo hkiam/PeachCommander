@@ -11,7 +11,7 @@ Okno Nastavitve je mesto, kjer prilagodite Peach Commander načinu, kako delate:
 ## Odpiranje Nastavitev
 
 1. Izberite **Peach Commander > Nastavitve…**, ali pritisnite Cmd+, (vejica).
-2. Isto okno lahko odprete tudi iz **Konfiguracija > Možnosti…**.
+2. Isto okno lahko odprete tudi iz **Konfiguracija > Nastavitve…**.
 3. Izberite stran s seznama na levi; možnosti te strani se pojavijo na desni.
 4. Prilagodite gumbe. Spremembe začnejo veljati takoj, razen če opomba na strani pravi drugače.
 5. Če želite neposredno do možnosti, vnesite besedilo v iskalno polje na vrhu okna. Ustrezne nastavitve z *vseh* strani so navedene skupaj s stranjo, na kateri so, izbira pa odpre to stran z označeno nastavitvijo. ↑/↓ se premikata po rezultatih, Return odpre označenega, Esc pa zapusti iskanje in vrne stran, s katere ste prišli.
@@ -26,12 +26,12 @@ Okno ima te strani, po vrsti:
 - **Postavitev** — prikaži ali skrij vrstico diskov, vrstico zavihkov, vrstico poti in vrstico stanja ter izberi, katere strani ponuja stranski pladenj.
 - **Prikaz** — kako so našteti datoteke in mape, vključno z obliko datuma.
 - **Ikone** — videz ikon v seznamih datotek.
-- **Delovanje** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).
+- **Operacija** — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).
 - **Barve** — poljubne barve podoken, ali jih pustite slediti trenutni temi.
 - **Potrditev** — katera dejanja najprej prosijo za potrditev, kot je brisanje.
-- **Uredi/Poglej** — ali shranjevanje v urejevalniku ohrani varnostno kopijo `.bak`, programi, uporabljeni za urejanje in pregledovanje datotek, povezave po vrsti in koliko sme stati predogled na omrežnih mestih in v arhivih.
-- **Kopiranje/Brisanje** — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke, preveri po kopiranju, pošlji brisanja v Koš in nastavi izbirno omejitev hitrosti.
-- **Zip/Pakirnik** — privzeta oblika arhiva in raven stiskanja, uporabljena pri pakiranju.
+- **Uredi/prikaži** — ali shranjevanje v urejevalniku ohrani varnostno kopijo `.bak`, programi, uporabljeni za urejanje in pregledovanje datotek, povezave po vrsti in koliko sme stati predogled na omrežnih mestih in v arhivih.
+- **Kopiranje/brisanje** — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke, preveri po kopiranju, pošlji brisanja v Koš in nastavi izbirno omejitev hitrosti.
+- **Zip/pakirnik** — privzeta oblika arhiva in raven stiskanja, uporabljena pri pakiranju.
 - **Vtičniki** — vklopi ali izklopi nameščene vtičnike.
 - **Zavihki** — kako se zavihki map odpirajo in obnašajo.
 - **FTP** — omrežne privzete vrednosti, kot je interval keep-alive.
@@ -45,8 +45,8 @@ Omogočeni vtičniki lahko dodajo svoje strani za vgrajenimi — na primer **Zem
 ![Okno Nastavitve, ki prikazuje možnosti strani Prikaz za naštevanje datotek](screenshots/settings-display.png)
 *(Slika: stran Prikaz nadzira, kako so našteti datoteke in mape.)*
 
-![Okno Nastavitve, ki prikazuje stran Delovanje](screenshots/settings-operation.png)
-*(Slika: stran Delovanje ureja hitro iskanje in obnašanje miške.)*
+![Okno Nastavitve, ki prikazuje stran Operacija](screenshots/settings-operation.png)
+*(Slika: stran Operacija ureja hitro iskanje in obnašanje miške.)*
 
 ## Kje so shranjene vaše nastavitve
 

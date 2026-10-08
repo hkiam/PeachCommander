@@ -12,7 +12,7 @@ Peach Commander kan matche utseendet til resten av din Mac eller ta en stil helt
 
 Et tema bytter ut hele panelpaletten i ett steg.
 
-1. Åpne innstillingsvinduet ved å velge Konfigurasjon > Alternativer…, eller trykk Cmd+,.
+1. Åpne innstillingsvinduet ved å velge Konfigurasjon > Innstillinger…, eller trykk Cmd+,.
 2. Velg **Farger**-siden.
 3. Velg i menyen **Tema**:
    - **System (standard)** — ingen tema. Panelene følger innstillingen Utseende nedenfor, akkurat som før. Dette er standardvalget.
@@ -65,7 +65,7 @@ Er noe galt i filen, hopper Peach Commander over akkurat den linjen og beholder 
 Navnene `light`, `dark`, `norton` og `system` tilhører de innebygde temaene; en fil med et slikt navn hoppes over, så den ikke kan skygge for et medfølgende tema. Sletter du filen for det valgte temaet, faller Peach Commander tilbake til **System (standard)**.
 ## Angi lyst, mørkt eller systemutseende
 
-1. Åpne innstillingsvinduet ved å velge Konfigurasjon > Alternativer…, eller trykk Cmd+,.
+1. Åpne innstillingsvinduet ved å velge Konfigurasjon > Innstillinger…, eller trykk Cmd+,.
 2. Velg **Farger**-siden.
 3. Fra **Utseende**-menyen, velg ett av:
    - **System (følg macOS)** – matcher automatisk din Macs gjeldende lyse/mørke innstilling.
@@ -88,7 +88,7 @@ La en avkrysningsrute være av for å beholde den innebygde fargen for det eleme
 
 ## Fargelegg filer etter type
 
-1. Åpne Konfigurasjon > Alternativer… og velg **Visning**-siden.
+1. Åpne Konfigurasjon > Innstillinger… og velg **Visning**-siden.
 2. Klikk **Filtypefarger…**.
 3. Legg til en regel med en navnemaske som `*.zip` eller `*.txt`, og velg deretter en farge for filer som matcher den.
 4. Bruk **Legg til regel** for flere masker; klikk **Ferdig** for å lagre eller **Avbryt** for å forkaste.

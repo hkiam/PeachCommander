@@ -12,7 +12,7 @@ Peach Commander peut s'accorder à l'apparence du reste de votre Mac ou adopter 
 
 Un thème remplace toute la palette des panneaux en une seule fois.
 
-1. Ouvrez la fenêtre des réglages en choisissant Configuration > Options…, ou appuyez sur Cmd+,.
+1. Ouvrez la fenêtre des réglages en choisissant Configuration > Réglages…, ou appuyez sur Cmd+,.
 2. Sélectionnez la page **Couleurs**.
 3. Dans le menu **Thème**, choisissez :
    - **Système (par défaut)** — aucun thème. Les panneaux suivent le réglage Apparence ci-dessous, exactement comme auparavant. C’est le réglage par défaut.
@@ -65,7 +65,7 @@ Si quelque chose est incorrect dans le fichier, Peach Commander ignore cette seu
 Les noms `light`, `dark`, `norton` et `system` appartiennent aux thèmes intégrés ; un fichier portant l’un de ces noms est ignoré afin de ne pas masquer un thème livré avec l’application. Si vous supprimez le fichier du thème sélectionné, Peach Commander revient à **Système (par défaut)**.
 ## Définir l'apparence claire, sombre ou système
 
-1. Ouvrez la fenêtre des réglages en choisissant Configuration > Options…, ou appuyez sur Cmd+,.
+1. Ouvrez la fenêtre des réglages en choisissant Configuration > Réglages…, ou appuyez sur Cmd+,.
 2. Sélectionnez la page **Couleurs**.
 3. Dans le menu **Apparence**, choisissez l'une des options :
    - **Système (suivre macOS)** — s'accorde automatiquement au réglage clair/sombre actuel de votre Mac.
@@ -88,7 +88,7 @@ Laissez une case décochée pour conserver la couleur intégrée de cet élémen
 
 ## Colorer les fichiers par type
 
-1. Ouvrez Configuration > Options… et sélectionnez la page **Affichage**.
+1. Ouvrez Configuration > Réglages… et sélectionnez la page **Affichage**.
 2. Cliquez sur **Couleurs par type de fichier…**.
 3. Ajoutez une règle avec un masque de nom tel que `*.zip` ou `*.txt`, puis choisissez une couleur pour les fichiers correspondants.
 4. Utilisez **Ajouter une règle** pour d'autres masques ; cliquez sur **Terminé** pour enregistrer ou **Annuler** pour abandonner.

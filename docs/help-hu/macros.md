@@ -10,7 +10,7 @@ A makró fájlműveletek elnevezett sorozata — mappát létrehozni, a kijelöl
 
 Mindaz, amit egy makró tesz, ugyanazon a gépezeten megy át, mint az asszisztens. A makró tehát semmi olyat nem tehet, amit nem engedélyezett, minden lépése megjelenik a műveletnaplóban, és ami visszavonható volt, az továbbra is az.
 
-## Egyetlen ablak: Beállítások ▸ Makrók…
+## Egyetlen ablak: Konfiguráció ▸ Makrók…
 
 A makrókkal kapcsolatos minden e mögött az egyetlen menüpont mögött van: a lista, a makrókészítés két módja és a fájlhoz vezető út. A menüben nincs más, ami közül választani kellene.
 
@@ -18,7 +18,7 @@ A makrókkal kapcsolatos minden e mögött az egyetlen menüpont mögött van: a
 
 Nem kell nulláról megírnia egy makrót — és utólag sem kell kitalálnia, hol kezdődött.
 
-1. **Beállítások ▸ Makrók… ▸ Makró rögzítése…**. Az ablak félreáll, és megjelenik egy kis panel, amely jelzi, hogy rögzítés folyik, és menet közben számolja a lépéseket.
+1. **Konfiguráció ▸ Makrók… ▸ Makró rögzítése…**. Az ablak félreáll, és megjelenik egy kis panel, amely jelzi, hogy rögzítés folyik, és menet közben számolja a lépéseket.
 2. Végezze el a munkát egyszer: másolás, áthelyezés, átnevezés, törlés, mappák és fájlok létrehozása. Dolgozzon a szokásos módon; a rögzítés nincs útban.
 3. **Leállítás és mentés…**.
 4. A lépések már bejelölve térnek vissza. Vegye ki a jelölést mindenből, ami csak előkészített, adjon nevet a makrónak, és hagyja bekapcsolva a **Gomb hozzáadása is hozzá** lehetőséget.
@@ -66,7 +66,7 @@ Mindegyikből parancs lesz, így bármelyiket gombra vagy billentyűre teheti an
 
 ## Kezelésük
 
-A **Beállítások ▸ Makrók…** a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mire fog rákérdezni a jogosultsági kapu — így a „ez töröl” látszik, mielőtt billentyűre tenné. Innen futtathat, átnevezhet, duplikálhat, átrendezhet, törölhet, exportálhat és importálhat. Egy sor fölé húzva megjelennek a lépései.
+A **Konfiguráció ▸ Makrók…** a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mire fog rákérdezni a jogosultsági kapu — így a „ez töröl” látszik, mielőtt billentyűre tenné. Innen futtathat, átnevezhet, duplikálhat, átrendezhet, törölhet, exportálhat és importálhat. Egy sor fölé húzva megjelennek a lépései.
 
 A **Futtatás** az a mód, ahogy kipróbálhatja az imént rögzítettet anélkül, hogy előbb bezárná az ablakot és megkeresné a parancsot. Ugyanazon a terven és ugyanazon a megerősítésen megy át, mint bármely más futtatás — ennek az ablaknak nincsenek saját jogosultságai.
 
@@ -100,7 +100,7 @@ A **Fájl szerkesztése…** a kijelölt makró saját fájlját nyitja meg — 
 
 A mentés azonnal újratölti a makrókat — és szól, ha valami nem stimmel: elgépelt eszköznév, hiányzó kötelező argumentum, két azonos azonosítójú makró. A hibás makró nem fut le, és nem kerül gombra sem; megtudja, melyikről van szó és mi a baj vele, amíg a szerkesztő még nyitva van.
 
-Hogy milyen eszközök vannak és mit fogadnak el, a **Beállítások ▸ Parancsböngésző…** mutatja meg, vagy kérdezze meg az asszisztenst a `list_macros` felől.
+Hogy milyen eszközök vannak és mit fogadnak el, a **Konfiguráció ▸ Parancsböngésző…** mutatja meg, vagy kérdezze meg az asszisztenst a `list_macros` felől.
 
 ### Helyettesítők
 
@@ -144,8 +144,8 @@ Az a lépés, amelynek `%S` vagy `%{1}` értéke **üresen jön ki, megállítja
 
 Minden makró `mc_<id>` nevű paranccsá válik, és ezáltal magától megjelenik itt:
 
-- **Beállítás ▸ Parancsböngésző…**
-- **Beállítás ▸ Gyorsbillentyűk szerkesztése… — tegye egy billentyűre**
+- **Konfiguráció ▸ Parancsböngésző…**
+- **Konfiguráció ▸ Gyorsbillentyűk szerkesztése… — tegye egy billentyűre**
 - A gombsáv szerkesztőjének parancsválasztójában
 - A `.mnu` menüfájljában és a `usercmd.ini` fájlban, ha használja őket
 - Az asszisztensben, amely név alapján futtatni tudja

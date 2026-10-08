@@ -91,7 +91,7 @@
 <p>A másik irány: egy saját szkript, amelyet a Peach Commander futtat.</p>
 <p>Ez egy bővítmény, és <strong>kikapcsolva</strong> érkezik, mert egy Ön által választott program futtatása mindent tud, amit a program többi része, és több olyat is, amit abból semmi. Két kapcsoló, mindkettő kikapcsolva, míg Ön be nem állítja:</p>
 <ol>
-<li><strong>Beállítás ▸ Bővítmények…</strong> — kapcsolja be a <strong>Scripting</strong> bővítményt.</li>
+<li><strong>Konfiguráció ▸ Bővítmények…</strong> — kapcsolja be a <strong>Scripting</strong> bővítményt.</li>
 <li><strong>Beállítások ▸ MI</strong> — kapcsolja be a <strong>Szkriptek futtatásának engedélyezése</strong> lehetőséget. Azon a lapon van, mert ugyanolyan típusú engedély, mint az asszisztens shellje, és a kettő együvé tartozik.</li>
 </ol>
 <p>Ezután helyezzen egy szkriptet a konfigurációs mappán belüli <code>scripts/</code> mappába — a <strong>Parancsok ▸ Szkriptmappa megnyitása</strong> odavezet, és első alkalommal egy példát hagy ott. Egy <code>.applescript</code>, <code>.scpt</code> vagy <code>.jxa</code> fájl abban a mappában <em>már</em> szkript; nincs mit regisztrálni.</p>
@@ -133,7 +133,7 @@
 
 <p>Minden ezen túli magán a programon keresztül megy, a fenti igékkel — a két fél tehát összeáll.</p>
 <h3 id="szkript-gombra-vagy-billentyure-helyezese">Szkript gombra vagy billentyűre helyezése</h3>
-<p>Minden szkript <code>plugin.script.run.&lt;név&gt;</code> nevű paranccsá válik, ahol a <code>&lt;név&gt;</code> a fájl kiterjesztés nélküli neve (a szóközök és pontok kötőjelre változnak). Ez az azonosító mindenhol működik, ahol egy <code>cm_*</code> azonosító működik: a gombsávon, a <code>usercmd.ini</code> fájlban, egy <code>.mnu</code> fájlban és a <strong>Beállítás ▸ Gyorsbillentyűk szerkesztése…</strong> részben.</p>
+<p>Minden szkript <code>plugin.script.run.&lt;név&gt;</code> nevű paranccsá válik, ahol a <code>&lt;név&gt;</code> a fájl kiterjesztés nélküli neve (a szóközök és pontok kötőjelre változnak). Ez az azonosító mindenhol működik, ahol egy <code>cm_*</code> azonosító működik: a gombsávon, a <code>usercmd.ini</code> fájlban, egy <code>.mnu</code> fájlban és a <strong>Konfiguráció ▸ Gyorsbillentyűk szerkesztése…</strong> részben.</p>
 <h3 id="hogyan-fut-egy-szkript-es-az-idokorlat">Hogyan fut egy szkript, és az időkorlát</h3>
 <p>Alapértelmezés szerint a szkript külön folyamatként fut, ami azt jelenti, hogy időkorlátot lehet adni neki, és megállítható, ha túllépi — harminc másodperc, ha nem mond mást. A szkript választhatja azt is, hogy a programon <em>belül</em> fusson, így strukturált értéket adhat vissza és a futások között lefordítva marad, de akkor nincs időkorlát: egy ciklusba került szkript megfogja a programot. A választást a szkriptjei mellett, a <code>scripts.json</code> fájlban adja meg:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>

@@ -13,7 +13,7 @@
 <p>Une image de système de fichiers est un fichier contenant un système de fichiers entier — le rootfs d'une mise à jour de routeur, une carte SD copiée octet par octet, l'image d'un appareil que vous examinez. Le plugin <strong>Linux Filesystem Images</strong> en ouvre une comme Peach Commander ouvre une archive : placez le curseur dessus, appuyez sur Entrée, et le panneau se trouve à l'intérieur du système de fichiers. De là, la visionneuse, la recherche et la copie fonctionnent exactement comme dans un dossier.</p>
 <p>Rien n'est jamais écrit dans une image. Le plugin ne sait que lire.</p>
 <h2 id="activez-le-dabord">Activez-le d'abord</h2>
-<p>Le plugin est livré désactivé. Ouvrez <strong>Réglages ▸ Plugins</strong>, trouvez <strong>Linux Filesystem Images</strong> et activez-le.</p>
+<p>Le plugin est livré désactivé. Ouvrez <strong>Réglages ▸ Modules externes</strong>, trouvez <strong>Linux Filesystem Images</strong> et activez-le.</p>
 <p>Il est désactivé par défaut à cause de sa manière de trouver les images. Un micrologiciel est rarement nommé proprement — le fichier recherché s'appelle <code>firmware.bin</code>, <code>rootfs.img</code> ou simplement <code>dump</code> au moins aussi souvent que <code>.squashfs</code> — donc lorsque l'extension ne dit rien, le plugin examine les premiers octets pour décider. C'est exactement ce qu'il faut si vous examinez des images d'appareils, et du travail inutile sinon. L'activer, c'est dire lequel des deux vous êtes.</p>
 <p>Un fichier qui s'avère ne pas être une image est laissé tel quel après ce seul coup d'œil et s'ouvre comme il l'aurait toujours fait.</p>
 <h2 id="ce-quil-sait-ouvrir">Ce qu'il sait ouvrir</h2>

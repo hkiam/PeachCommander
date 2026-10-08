@@ -28,7 +28,7 @@ Odmietnutý náhľad nie je prázdny panel: bočný panel ukáže ikonu súboru,
 
 ## Zmena limitov
 
-1. Otvorte Nastavenia ▸ Upraviť/Zobraziť.
+1. Otvorte Nastavenia ▸ Upraviť/zobraziť.
 2. Vypnite „Automaticky zobrazovať náhľady súborov v sieťových umiestneniach“, ak chcete sieťové náhľady úplne zastaviť, alebo nastavte „Sieťové súbory do (MB)“ na požadovanú veľkosť.
 3. Zapnite „Sťahovať súbory z cloudu kvôli náhľadu“, ak dávate prednosť náhľadu pred ušetreným prenosom.
 4. Nastavte „Rozbaľovať z archívov do (MB)“ pre to, aký veľký smie byť súbor v archíve.

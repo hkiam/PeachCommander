@@ -11,7 +11,7 @@
 <main class="pc-help">
 <h1>Containere și volume Docker</h1>
 <p>Sistemul de fișiere al unui container Docker poate fi parcurs într-un panou ca orice dosar, iar un volum Docker la fel. Alegeți <strong>Conectare la Docker…</strong> din meniul Rețea sau apăsați pastila <strong>Docker</strong> din bara de unități, iar motorul apare în panoul activ.</p>
-<p>Este un plugin și <strong>este livrat dezactivat</strong>. Activați-l din <strong>Configurare ▸ Pluginuri…</strong>. Pornește dezactivat pentru că o conexiune la demonul Docker are pe Mac-ul dumneavoastră aceleași drepturi ca dumneavoastră — vedeți <em>La ce are acces</em> mai jos.</p>
+<p>Este un plugin și <strong>este livrat dezactivat</strong>. Activați-l din <strong>Configurație ▸ Pluginuri…</strong>. Pornește dezactivat pentru că o conexiune la demonul Docker are pe Mac-ul dumneavoastră aceleași drepturi ca dumneavoastră — vedeți <em>La ce are acces</em> mai jos.</p>
 <h2 id="ce-vedeti">Ce vedeți</h2>
 <p>Nivelul superior este format din trei dosare:</p>
 <ul>
@@ -63,7 +63,7 @@
 <p>Intrările apar numai într-o unitate Docker; deasupra unui dosar de-al dumneavoastră nu sunt deloc.</p>
 <p><strong>Jurnalul este și un fișier.</strong> În rădăcina fiecărui container se află <code>docker-logs.txt</code> — care nu este un fișier din container: citirea lui cere jurnalul de la motor. F3 pe el îl deschide în vizualizator, deci căutarea acestuia, saltul la o linie și alegerea codificării se aplică toate, lucru pe care o fereastră separată nu îl poate oferi. Un container care chiar aduce un fișier cu acest nume îl arată pe al său, iar în cel virtual nu se poate scrie nimic.</p>
 <h2 id="setari">Setări</h2>
-<p><strong>Configurare ▸ Setări ▸ Docker</strong> conține tot. Aceleași valori se află într-un fișier mic în <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, pe care îl editați dacă pregătiți o mașină dintr-un script:</p>
+<p><strong>Configurație ▸ Configurări ▸ Docker</strong> conține tot. Aceleași valori se află într-un fișier mic în <code>~/Library/Application Support/PeachCommander/Docker/docker.ini</code>, pe care îl editați dacă pregătiți o mașină dintr-un script:</p>
 <ul>
 <li><code>Endpoint</code> — o adresă de folosit în locul celei găsite.</li>
 <li><code>ExecFallback</code> — <code>0</code> face pluginul să folosească exclusiv API-ul de arhivă al Docker: atunci nu va rula niciodată nimic într-un container, cu prețul de a nu putea lista un director foarte mare, de a nu putea șterge și de a nu putea redenumi.</li>

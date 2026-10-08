@@ -50,8 +50,8 @@ Prenesen vtičnik pride kot **paket vtičnika** — datoteka s končnico `.pcplu
 
 - **Dvokliknite ga** v Finderju. Peach Commander se odpre in vpraša.
 - **Pritisnite Enter** nanj v pultu. Peach Commander je upravitelj datotek — datoteka je običajno tako ali tako že tam.
-- **Povlecite ga na okno vtičnikov** (Nastavitve ▸ Vtičniki…).
-- Izberite **Nastavitve ▸ Vtičniki… ▸ Namesti…** in izberite paket, `.zip` z vtičnikom ali razpakiran sveženj vtičnika.
+- **Povlecite ga na okno vtičnikov** (Konfiguracija ▸ Vtičniki…).
+- Izberite **Konfiguracija ▸ Vtičniki… ▸ Namesti…** in izberite paket, `.zip` z vtičnikom ali razpakiran sveženj vtičnika.
 
 Preden se karkoli naloži, pogovorno okno navede ime, različico, določilnik in vrsto vtičnika ter to, katere vrste datotek bo prevzel — vtičnik, ki si lasti `.iso`, postane bralnik programa za te datoteke. Nič se ne namesti, dokler ne kliknete **Namesti**.
 

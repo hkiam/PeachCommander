@@ -11,7 +11,7 @@ Innstillinger-vinduet er der du skreddersyr Peach Commander til måten du arbeid
 ## Åpne Innstillinger
 
 1. Velg **Peach Commander > Innstillinger…**, eller trykk Cmd+, (komma).
-2. Du kan også åpne det samme vinduet fra **Konfigurasjon > Alternativer…**.
+2. Du kan også åpne det samme vinduet fra **Konfigurasjon > Innstillinger…**.
 3. Velg en side fra listen til venstre; valgene for den siden vises til høyre.
 4. Juster kontrollene. Endringer trer i kraft med en gang med mindre en merknad på siden sier noe annet.
 5. Vil du rett til en innstilling, skriv i søkefeltet øverst i vinduet. Treff fra *alle* sider listes opp med siden hver av dem hører til, og velger du en, åpnes den siden med innstillingen uthevet. ↑/↓ flytter gjennom resultatene, Return åpner det uthevede, og Esc forlater søket og setter tilbake siden du kom fra.
@@ -26,12 +26,12 @@ Vinduet har disse sidene, i rekkefølge:
 - **Oppsett** – vis eller skjul stasjonslinjen, fanelinjen, banelinjen og statuslinjen, og velg hvilke sider sidepanelet tilbyr.
 - **Visning** – hvordan filer og mapper listes, inkludert datoformatet.
 - **Ikoner** – ikonutseende i fillistene.
-- **Betjening** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen).
+- **Operasjon** – generell atferd, som hva som skjer når du skriver i et panel (hurtigsøk kontra kommandolinjen).
 - **Farger** – egendefinerte panelfarger, eller la dem følge det gjeldende temaet.
 - **Bekreftelse** – hvilke handlinger som ber deg bekrefte først, som sletting.
-- **Rediger/Vis** – om lagring i redigeringsprogrammet beholder en `.bak`-sikkerhetskopi, programmene brukt til å redigere og vise filer, assosiasjoner per type, og hva en forhåndsvisning får koste på nettverkssteder og i arkiver.
-- **Kopier/Slett** – bevar filmetadata, bruk rask kloning, kopier bare nyere filer, verifiser etter kopiering, send slettinger til papirkurven, og sett en valgfri hastighetsgrense.
-- **Zip/Pakker** – standard arkivformat og komprimeringsnivå brukt når du pakker.
+- **Rediger/vis** – om lagring i redigeringsprogrammet beholder en `.bak`-sikkerhetskopi, programmene brukt til å redigere og vise filer, assosiasjoner per type, og hva en forhåndsvisning får koste på nettverkssteder og i arkiver.
+- **Kopier/slett** – bevar filmetadata, bruk rask kloning, kopier bare nyere filer, verifiser etter kopiering, send slettinger til papirkurven, og sett en valgfri hastighetsgrense.
+- **Zip/pakker** – standard arkivformat og komprimeringsnivå brukt når du pakker.
 - **Programtillegg** – slå installerte programtillegg på eller av.
 - **Faner** – hvordan mappefaner åpnes og oppfører seg.
 - **FTP** – nettverksstandarder som keep-alive-intervallet.
@@ -45,8 +45,8 @@ Aktiverte programtillegg kan legge til sine egne sider etter de innebygde – fo
 ![Innstillinger-vinduet som viser Visning-sidens valg for hvordan filer listes](screenshots/settings-display.png)
 *(Figur: Visning-siden styrer hvordan filer og mapper listes.)*
 
-![Innstillinger-vinduet som viser Betjening-siden](screenshots/settings-operation.png)
-*(Figur: Betjening-siden styrer hurtigsøk- og museatferd.)*
+![Innstillinger-vinduet som viser Operasjon-siden](screenshots/settings-operation.png)
+*(Figur: Operasjon-siden styrer hurtigsøk- og museatferd.)*
 
 ## Hvor innstillingene dine lagres
 

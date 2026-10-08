@@ -11,7 +11,7 @@ Indstillinger-vinduet er, hvor du skræddersyr Peach Commander til den måde, du
 ## Åbn Indstillinger
 
 1. Vælg **Peach Commander > Indstillinger…**, eller tryk på Cmd+, (komma).
-2. Du kan også åbne det samme vindue fra **Konfiguration > Muligheder…**.
+2. Du kan også åbne det samme vindue fra **Konfiguration > Indstillinger…**.
 3. Vælg en side fra listen til venstre; mulighederne for den side vises til højre.
 4. Justér kontrollerne. Ændringer træder i kraft med det samme, medmindre en note på siden siger andet.
 5. Vil du direkte til en indstilling, skriv i søgefeltet øverst i vinduet. Matchende indstillinger fra *alle* sider vises sammen med den side, de hører til, og vælger du en, åbnes den side med indstillingen fremhævet. ↑/↓ bevæger sig gennem resultaterne, Return åbner det fremhævede, og Esc forlader søgningen og sætter den side tilbage, du kom fra.
@@ -25,13 +25,13 @@ Vinduet har disse sider, i rækkefølge:
 
 - **Layout** — vis eller skjul drevlinjen, fanelinjen, stilinjen og statuslinjen, og vælg hvilke sider sidepanelet tilbyder.
 - **Visning** — hvordan filer og mapper vises, inklusive datoformatet.
-- **Ikoner** — ikonudseende i fillisterne.
-- **Betjening** — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen).
+- **Symboler** — ikonudseende i fillisterne.
+- **Handling** — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen).
 - **Farver** — tilpassede panelfarver, eller lad dem følge det aktuelle tema.
 - **Bekræftelse** — hvilke handlinger der beder dig bekræfte først, såsom sletning.
-- **Rediger/Vis** — om lagring i editoren beholder en `.bak`-sikkerhedskopi, programmerne brugt til at redigere og vise filer, associationer pr. type, og hvad en eksempelvisning må koste på netværksplaceringer og i arkiver.
-- **Kopier/Slet** — bevar filmetadata, brug hurtig kloning, kopier kun nyere filer, verificér efter kopiering, send sletninger til papirkurven og indstil en valgfri hastighedsgrænse.
-- **Zip/Pakker** — standardarkivformatet og komprimeringsniveauet brugt når du pakker.
+- **Rediger/vis** — om lagring i editoren beholder en `.bak`-sikkerhedskopi, programmerne brugt til at redigere og vise filer, associationer pr. type, og hvad en eksempelvisning må koste på netværksplaceringer og i arkiver.
+- **Kopier/slet** — bevar filmetadata, brug hurtig kloning, kopier kun nyere filer, verificér efter kopiering, send sletninger til papirkurven og indstil en valgfri hastighedsgrænse.
+- **Zip/pakker** — standardarkivformatet og komprimeringsniveauet brugt når du pakker.
 - **Plugins** — slå installerede plugins til eller fra.
 - **Faner** — hvordan mappefaner åbner og opfører sig.
 - **FTP** — netværksstandarder såsom keep-alive-intervallet.
@@ -45,8 +45,8 @@ Aktiverede plugins kan tilføje deres egne sider efter de indbyggede — for eks
 ![Indstillinger-vinduet der viser Visning-sidens muligheder for hvordan filer vises](screenshots/settings-display.png)
 *(Figur: Visning-siden styrer, hvordan filer og mapper vises.)*
 
-![Indstillinger-vinduet der viser Betjening-siden](screenshots/settings-operation.png)
-*(Figur: Betjening-siden styrer hurtigsøgning og museadfærd.)*
+![Indstillinger-vinduet der viser Handling-siden](screenshots/settings-operation.png)
+*(Figur: Handling-siden styrer hurtigsøgning og museadfærd.)*
 
 ## Hvor dine indstillinger gemmes
 

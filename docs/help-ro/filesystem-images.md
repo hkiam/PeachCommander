@@ -12,7 +12,7 @@ O imagine de sistem de fișiere este un fișier care conține un sistem de fiși
 
 ## Activați-l mai întâi
 
-Modulul este livrat dezactivat. Deschideți **Preferințe ▸ Module**, găsiți **Linux Filesystem Images** și activați-l.
+Modulul este livrat dezactivat. Deschideți **Configurări ▸ Pluginuri**, găsiți **Linux Filesystem Images** și activați-l.
 
 Este dezactivat implicit din cauza felului în care găsește imaginile. Firmware-ul are rareori un nume îngrijit — fișierul căutat se numește `firmware.bin`, `rootfs.img` sau pur și simplu `dump` cel puțin la fel de des ca `.squashfs` — așa că atunci când extensia nu spune nimic, modulul se uită la primii octeți. Este exact ce trebuie dacă examinați imagini de dispozitive și muncă inutilă în caz contrar. Activarea este felul în care spuneți care dintre cele două este cazul dumneavoastră.
 

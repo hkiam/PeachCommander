@@ -10,7 +10,7 @@ Peach Commander는 키보드로 구동되도록 만들어졌습니다. 미리 �
 
 ## 키보드 구성 전환
 
-1. **설정** 메뉴를 엽니다.
+1. **구성** 메뉴를 엽니다.
 2. **Keyboard Scheme**을 선택한 다음 하나를 고릅니다.
    - **TC Classic**(기본값)은 전통적인 키를 유지하며, 패널 새로 고침에 Ctrl+R 같은 Ctrl 기반 조합을 사용합니다.
    - **macOS Native**는 의미가 통하는 곳에서 같은 동작을 익숙한 Mac 키에 매핑합니다(예: 파일 복사에 Cmd+C, 검색에 Cmd+F).
@@ -18,7 +18,7 @@ Peach Commander는 키보드로 구동되도록 만들어졌습니다. 미리 �
 
 ## 단축키 사용자 지정
 
-1. **설정 > Keyboard Shortcuts…**를 선택합니다.
+1. **구성 > Keyboard Shortcuts…**를 선택합니다.
 2. 검색 필드를 사용하여 명령을 찾은 다음, 그 행을 선택합니다.
 3. **Record…**를 클릭하고 원하는 키 조합을 누릅니다. 즉시 할당됩니다.
 4. 그 조합이 이미 다른 명령에 사용되고 있었다면, 어느 명령에서 가져왔는지 알림이 표시됩니다.
@@ -29,7 +29,7 @@ Peach Commander는 키보드로 구동되도록 만들어졌습니다. 미리 �
 
 ## 모든 명령 살펴보기
 
-1. **설정 > Command Browser…**를 선택합니다.
+1. **구성 > Command Browser…**를 선택합니다.
 2. 검색 필드에 입력하여 이름, 범주, 설명으로 필터링합니다.
 3. 명령을 두 번 클릭하거나, 선택하고 **Run**을 클릭하여 활성 패널에서 실행합니다.
 
@@ -40,10 +40,10 @@ Peach Commander는 키보드로 구동되도록 만들어졌습니다. 미리 �
 
 | 작업 | 메뉴 경로 |
 |---|---|
-| 고전 구성 선택 | 설정 > Keyboard Scheme > TC Classic |
-| Mac 구성 선택 | 설정 > Keyboard Scheme > macOS Native |
-| 단축키 편집 | 설정 > Keyboard Shortcuts… |
-| 모든 명령 살펴보기 | 설정 > Command Browser… |
+| 고전 구성 선택 | 구성 > Keyboard Scheme > TC Classic |
+| Mac 구성 선택 | 구성 > Keyboard Scheme > macOS Native |
+| 단축키 편집 | 구성 > Keyboard Shortcuts… |
+| 모든 명령 살펴보기 | 구성 > Command Browser… |
 | 활성 패널 새로 고침 | F2 (Ctrl+R도 가능) |
 
 ## 참고

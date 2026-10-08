@@ -28,7 +28,7 @@ Odmítnutý náhled není prázdný panel: postranní panel ukáže ikonu soubor
 
 ## Změna limitů
 
-1. Otevřete Nastavení ▸ Úpravy/Zobrazení.
+1. Otevřete Nastavení ▸ Upravit/zobrazit.
 2. Vypněte „Automaticky zobrazovat náhledy souborů v síťových umístěních“, chcete-li síťové náhledy zcela zastavit, nebo nastavte „Síťové soubory do (MB)“ na požadovanou velikost.
 3. Zapněte „Stahovat soubory z cloudu kvůli náhledu“, pokud dáváte přednost náhledu před ušetřeným přenosem.
 4. Nastavte „Rozbalovat z archivů do (MB)“ pro to, jak velký smí být soubor v archivu.

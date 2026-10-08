@@ -28,7 +28,7 @@ Een geweigerde voorvertoning is geen leeg paneel: het zijpaneel toont het symboo
 
 ## De grenzen wijzigen
 
-1. Open Instellingen ▸ Bewerken/Bekijken.
+1. Open Instellingen ▸ Bewerken/weergeven.
 2. Zet “Bestanden op netwerklocaties automatisch voorvertonen” uit om netwerkvoorvertoningen helemaal te stoppen, of zet “Netwerkbestanden tot (MB)” op de gewenste grootte.
 3. Zet “Bestanden uit de cloud downloaden voor een voorvertoning” aan als u de voorvertoning liever hebt dan het bespaarde verkeer.
 4. Stel “Uit archieven uitpakken tot (MB)” in voor hoe groot een bestand in een archief mag zijn.

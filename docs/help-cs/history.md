@@ -48,7 +48,7 @@ Mazání a přejmenování jsou v seznamu, ale nikdy se neopakují: Enter místo
 
 ## Udržení pod kontrolou
 
-Nastavení ▸ Ostatní rozhoduje, zda se historie vede, kolik položek si drží a po kolika dnech je zapomene. Připnuté položky jsou z obojího vyňaté a 0 dní znamená uchovat vše; seznam leží v `history.ini` ve vaší konfigurační složce a přežije restart.
+Nastavení ▸ Různé rozhoduje, zda se historie vede, kolik položek si drží a po kolika dnech je zapomene. Připnuté položky jsou z obojího vyňaté a 0 dní znamená uchovat vše; seznam leží v `history.ini` ve vaší konfigurační složce a přežije restart.
 
 ## Poznámky
 

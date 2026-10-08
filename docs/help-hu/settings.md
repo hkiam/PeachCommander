@@ -11,7 +11,7 @@ A Beállítások ablak az a hely, ahol a Peach Commandert a munkamódjához igaz
 ## A Beállítások megnyitása
 
 1. Válassza a **Peach Commander > Beállítások…** lehetőséget, vagy nyomja meg a Cmd+, (vessző) billentyűt.
-2. Ugyanezt az ablakot a **Konfiguráció > Lehetőségek…** alól is megnyithatja.
+2. Ugyanezt az ablakot a **Konfiguráció > Beállítások…** alól is megnyithatja.
 3. Válasszon egy oldalt a bal oldali listából; az adott oldal lehetőségei a jobb oldalon jelennek meg.
 4. Állítsa be a vezérlőket. A változtatások azonnal életbe lépnek, hacsak egy megjegyzés az oldalon mást nem mond.
 5. Ha közvetlenül egy beállításhoz szeretne jutni, írjon az ablak felső részén lévő keresőmezőbe. Az *összes* lap találatai megjelennek azzal a lappal együtt, amelyen vannak, és a kiválasztás megnyitja azt a lapot a kijelölt beállítással. ↑/↓ lépteti az eredményeket, a Return megnyitja a kijelöltet, az Esc pedig kilép a keresésből és visszaadja azt a lapot, ahonnan jött.
@@ -26,12 +26,12 @@ Az ablaknak ezek az oldalai vannak, sorrendben:
 - **Elrendezés** — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése, valamint annak megválasztása, milyen oldalakat kínál az oldalsó panel.
 - **Megjelenítés** — hogyan listázódnak a fájlok és mappák, beleértve a dátumformátumot.
 - **Ikonok** — az ikonok megjelenése a fájllistákban.
-- **Működés** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).
+- **Művelet** — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).
 - **Színek** — egyéni panelszínek, vagy hagyja őket az aktuális témát követni.
 - **Megerősítés** — mely műveletek kérnek először megerősítést, mint a törlés.
-- **Szerkesztés/Megtekintés** — hogy a szerkesztőben való mentés megtart-e `.bak` biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.
-- **Másolás/Törlés** — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.
-- **Zip/Tömörítő** — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.
+- **Szerkesztés/megtekintés** — hogy a szerkesztőben való mentés megtart-e `.bak` biztonsági másolatot, a fájlok szerkesztéséhez és megtekintéséhez használt programok a típusonkénti társítások, és hogy mennyibe kerülhet egy előnézet hálózati helyeken és archívumokban.
+- **Másolás/törlés** — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.
+- **Zip/csomagoló** — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.
 - **Bővítmények** — a telepített bővítmények be- vagy kikapcsolása.
 - **Lapok** — hogyan nyílnak meg és viselkednek a mappalapok.
 - **FTP** — hálózati alapértékek, mint a keep-alive időköz.
@@ -45,8 +45,8 @@ Az engedélyezett bővítmények saját oldalakat adhatnak a beépítettek után
 ![A Beállítások ablak a Megjelenítés oldal lehetőségeit mutatja a fájlok listázásához](screenshots/settings-display.png)
 *(Ábra: a Megjelenítés oldal vezérli, hogyan listázódnak a fájlok és mappák.)*
 
-![A Beállítások ablak a Működés oldalt mutatja](screenshots/settings-operation.png)
-*(Ábra: a Működés oldal irányítja a gyorskeresést és az egér viselkedését.)*
+![A Beállítások ablak a Művelet oldalt mutatja](screenshots/settings-operation.png)
+*(Ábra: a Művelet oldal irányítja a gyorskeresést és az egér viselkedését.)*
 
 ## Hol tárolódnak a beállításai
 

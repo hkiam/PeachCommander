@@ -50,8 +50,8 @@ A letöltött bővítmény **bővítménycsomagként** érkezik — egy `.pcplug
 
 - **Kattintson rá duplán** a Finderben. A Peach Commander megnyílik és rákérdez.
 - **Nyomjon Entert rajta** egy panelben. A Peach Commander fájlkezelő — a fájl általában amúgy is ott van.
-- **Húzza a bővítményablakra** (Beállítások ▸ Bővítmények…).
-- Válassza a **Beállítások ▸ Bővítmények… ▸ Telepítés…** parancsot, majd a csomagot, egy bővítményt tartalmazó `.zip`-et vagy egy kicsomagolt bővítménykötegt.
+- **Húzza a bővítményablakra** (Konfiguráció ▸ Bővítmények…).
+- Válassza a **Konfiguráció ▸ Bővítmények… ▸ Telepítés…** parancsot, majd a csomagot, egy bővítményt tartalmazó `.zip`-et vagy egy kicsomagolt bővítménykötegt.
 
 Mielőtt bármi betöltődne, egy párbeszédablak megnevezi a bővítmény nevét, verzióját, azonosítóját és típusát, valamint azt, mely fájltípusokat veszi át — egy `.iso`-t igénylő bővítmény például az alkalmazás olvasója lesz azokhoz a fájlokhoz. Semmi sem települ, amíg rá nem kattint a **Telepítés** gombra.
 

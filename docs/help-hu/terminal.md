@@ -38,7 +38,7 @@ Amíg a terminálé a fókusz, a **funkcióbillentyűk oda kerülnek**, nem a f�
 
 Az Egyesült Államokon kívüli billentyűzetek többségén a `@`, a `~`, a `|`, a `\` és a kapcsos zárójelek az Option billentyűvel írhatók. Ezek a leütések a billentyűkre nyomtatott karakterekként érkeznek a parancsértelmezőhöz.
 
-- A másik lehetőség az Option Meta billentyűként kezelése, amit az Alt+B, az Alt+F és az Emacs-billentyűparancsok kívánnak: a terminál ilyenkor a karakter helyett Esc-et küld a billentyű elé. A **Beállítások ▸ Bővítmények ▸ Terminál** alatt kapcsolható be **Az Option billentyű Meta billentyűként** jelölőnégyzettel.
+- A másik lehetőség az Option Meta billentyűként kezelése, amit az Alt+B, az Alt+F és az Emacs-billentyűparancsok kívánnak: a terminál ilyenkor a karakter helyett Esc-et küld a billentyű elé. A **Konfiguráció ▸ Bővítmények ▸ Terminál** alatt kapcsolható be **Az Option billentyű Meta billentyűként** jelölőnégyzettel.
 - A változás azonnal érvényes, a már megnyitott terminálokra is, nem csak az újakra.
 
 ## A híd vissza a panelhez

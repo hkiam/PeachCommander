@@ -12,7 +12,7 @@ A Peach Commander illeszkedhet a Mac többi részének megjelenéséhez, vagy sa
 
 Egy téma egyetlen lépésben lecseréli a panelek teljes színpalettáját.
 
-1. Nyissa meg a beállítások ablakát a Beállítások > Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.
+1. Nyissa meg a beállítások ablakát a Konfiguráció > Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.
 2. Válassza a **Színek** oldalt.
 3. Válasszon a **Téma** menüből:
    - **Rendszer (alapértelmezett)** — nincs téma. A panelek az alábbi Megjelenés beállítást követik, pontosan úgy, mint eddig. Ez az alapértelmezés.
@@ -65,7 +65,7 @@ Ha valami hibás a fájlban, a Peach Commander kihagyja azt az egy sort, és meg
 A `light`, `dark`, `norton` és `system` nevek a beépített témákhoz tartoznak; az ilyen nevű fájl kimarad, hogy ne takarhasson el egy mellékelt témát. Ha törli a kiválasztott téma fájlját, a Peach Commander visszatér a **Rendszer (alapértelmezett)** beállításra.
 ## Világos, sötét vagy rendszer szerinti megjelenés beállítása
 
-1. Nyissa meg a beállítások ablakát a Beállítások > Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.
+1. Nyissa meg a beállítások ablakát a Konfiguráció > Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.
 2. Válassza a **Színek** oldalt.
 3. A **Megjelenés** menüből válasszon egyet az alábbiak közül:
    - **Rendszer (macOS követése)** – automatikusan igazodik a Mac aktuális világos/sötét beállításához.
@@ -88,7 +88,7 @@ Hagyja kikapcsolva a jelölőnégyzetet, hogy megtartsa az adott elem beépítet
 
 ## Fájlok színezése típus szerint
 
-1. Nyissa meg a Beállítások > Beállítások… menüpontot, és válassza a **Megjelenítés** oldalt.
+1. Nyissa meg a Konfiguráció > Beállítások… menüpontot, és válassza a **Megjelenítés** oldalt.
 2. Kattintson a **Fájltípus-színek…** gombra.
 3. Adjon hozzá egy szabályt egy névmaszkkal, például `*.zip` vagy `*.txt`, majd válasszon színt a hozzá illő fájlokhoz.
 4. Használja a **Szabály hozzáadása** gombot további maszkokhoz; kattintson a **Kész** gombra a mentéshez, vagy a **Mégse** gombra az elvetéshez.

@@ -27,7 +27,7 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
 - Trykk Ctrl+G for å gå til en linje, eller til en byteforskyvning i heksmodus. Regning på tvers av tallsystemer er tillatt: `0x1000 + 15 + 1` fører til 4112 — heksadesimalt med `0x`, `$` eller en `h` til slutt, binært med `0b`, oktalt med `0o`, og `+ - * /` med parenteser.
-- Åpner du et treff fra Finn filer der **Finn tekst** var fylt ut, starter fremviseren med det søket: teksten står allerede i søkefeltet og det første treffet er synlig, så du havner ved treffet i stedet for øverst i filen. Endrer eller tømmer du det der, er det din versjon som blir stående. Det kan slås av i Innstillinger under Rediger/Vis hvis du heller vil at hver fil åpnes fra begynnelsen.
+- Åpner du et treff fra Finn filer der **Finn tekst** var fylt ut, starter fremviseren med det søket: teksten står allerede i søkefeltet og det første treffet er synlig, så du havner ved treffet i stedet for øverst i filen. Endrer eller tømmer du det der, er det din versjon som blir stående. Det kan slås av i Innstillinger under Rediger/vis hvis du heller vil at hver fil åpnes fra begynnelsen.
 
 ## Les strengene i en binærfil
 
@@ -87,7 +87,7 @@ Når markøren flyttes, oppdateres navn og opplysninger straks; forhåndsvisning
 
 Sidepanelet viser til å begynne med bare **Info**. **Aktiviteter** (overføringer som fortsatt går) og **Logg** (fullførte overføringer) er slått av, for det meste arbeidet spør aldri etter dem, og ellers ligger en stripe med tre faner over forhåndsvisningen hele dagen.
 
-- Slå dem på i **Innstillinger > Layout** under *Sidepanelets sider*, ved høyreklikk på fanestripen, eller fra **Vis > Sidepanel: Info / Aktiviteter / Logg**.
+- Slå dem på i **Innstillinger > Oppsett** under *Sidepanelets sider*, ved høyreklikk på fanestripen, eller fra **Vis > Sidepanel: Info / Aktiviteter / Logg**.
 - Er det bare én side igjen, dropper panelet fanestripen helt: et panel med bare Info er forhåndsvisning og detaljer, uten noe over.
 - Hver side kan slås av, også Info — nyttig når du i stedet har terminalen eller en programtilleggsvisning her. Et panel der det ikke er noe igjen, sier det i stedet for å åpne blankt.
 - Sider et programtillegg bidrar med, påvirkes ikke: de kommer og går med programtillegget, og til å slå dem av er siden **Programtillegg**.

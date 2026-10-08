@@ -63,8 +63,8 @@ Celălalt sens: un script al dumneavoastră, rulat de Peach Commander.
 
 Acesta este un plugin și este livrat **dezactivat**, deoarece rularea unui program la alegerea dumneavoastră poate face tot ce face restul aplicației și câteva lucruri pe care nimic din ea nu acoperă. Două comutatoare, ambele oprite până le puneți:
 
-1. **Configurare ▸ Pluginuri…** — activați **Scripting**.
-2. **Preferințe ▸ IA** — activați **Permite rularea scripturilor**. Se află pe acea pagină pentru că este același tip de permisiune ca shell-ul asistentului, iar cele două merg împreună.
+1. **Configurație ▸ Pluginuri…** — activați **Scripting**.
+2. **Configurări ▸ IA** — activați **Permite rularea scripturilor**. Se află pe acea pagină pentru că este același tip de permisiune ca shell-ul asistentului, iar cele două merg împreună.
 
 Apoi puneți un script în `scripts/` din dosarul dumneavoastră de configurare — **Comenzi ▸ Deschide dosarul de scripturi** vă duce acolo și lasă un exemplu prima dată. Un fișier `.applescript`, `.scpt` sau `.jxa` din acel dosar *este* un script; nu e nimic de înregistrat.
 
@@ -89,7 +89,7 @@ Tot ce depășește asta trece prin aplicația însăși, cu verbele de mai sus 
 
 ### Punerea unui script pe un buton sau pe o tastă
 
-Fiecare script devine o comandă numită `plugin.script.run.<nume>`, unde `<nume>` este numele fișierului fără extensie (spațiile și punctele devin cratime). Acel id funcționează oriunde funcționează un id `cm_*`: în bara de butoane, în `usercmd.ini`, într-un fișier `.mnu` și în **Configurare ▸ Editează scurtăturile…**.
+Fiecare script devine o comandă numită `plugin.script.run.<nume>`, unde `<nume>` este numele fișierului fără extensie (spațiile și punctele devin cratime). Acel id funcționează oriunde funcționează un id `cm_*`: în bara de butoane, în `usercmd.ini`, într-un fișier `.mnu` și în **Configurație ▸ Editează scurtăturile…**.
 
 ### Cum rulează un script și limita de timp
 

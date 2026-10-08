@@ -8,7 +8,7 @@ related: [plugins, viewing-files, searching]
 
 Puneți cursorul pe un fișier de jurnal și alegeți **Arată ca jurnal…** pentru a-l deschide într-o fereastră construită pentru jurnale, nu pentru text: un rând pe linie, nivelul fiecărei linii recunoscut și colorat, un filtru și o urmărire care ține pasul cât timp fișierul încă se scrie.
 
-Este o extensie: o puteți dezactiva sau elimina din **Configurare ▸ Extensii…**. Fără ea, F3 arată un jurnal ca pe orice alt fișier text.
+Este o extensie: o puteți dezactiva sau elimina din **Configurație ▸ Extensii…**. Fără ea, F3 arată un jurnal ca pe orice alt fișier text.
 
 ![Vizualizatorul de jurnale cu un jurnal de serviciu, fiecare nivel cu propria culoare](screenshots/log-viewer.png)
 *(Figura: fiecare nivel primește propria culoare, iar vizualizarea continuă să urmărească fișierul.)*

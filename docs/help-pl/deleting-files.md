@@ -35,7 +35,7 @@ Jeśli niektórych elementów nie da się usunąć — na przykład dlatego, że
 
 ## Uwagi
 
-- **Potwierdzenie.** Domyślnie Peach Commander prosi o potwierdzenie przed usunięciem. Możesz to wyłączyć w **Konfiguracja > Potwierdzenia**, usuwając zaznaczenie **Potwierdź przed usunięciem**. Mimo to traktuj trwałe usuwanie ostrożnie, ponieważ nie można go cofnąć.
-- **Domyślne zachowanie F8.** Zwykle F8 przenosi elementy do Kosza. Jeśli wolisz, aby F8 domyślnie usuwał trwale, zmień opcję usuwania w ustawieniach **Konfiguracja > Operacje**. Shift+F8 zawsze usuwa trwale, niezależnie od tego ustawienia.
+- **Potwierdzenie.** Domyślnie Peach Commander prosi o potwierdzenie przed usunięciem. Możesz to wyłączyć w **Konfiguracja > Potwierdzenie**, usuwając zaznaczenie **Potwierdź przed usunięciem**. Mimo to traktuj trwałe usuwanie ostrożnie, ponieważ nie można go cofnąć.
+- **Domyślne zachowanie F8.** Zwykle F8 przenosi elementy do Kosza. Jeśli wolisz, aby F8 domyślnie usuwał trwale, zmień opcję usuwania w ustawieniach **Konfiguracja > Operacja**. Shift+F8 zawsze usuwa trwale, niezależnie od tego ustawienia.
 - **Usuwanie wewnątrz archiwów.** Gdy przeglądasz zawartość obsługiwanego archiwum, usuwanie usuwa wybrane wpisy z archiwum. Lokalizacji tylko do odczytu, takich jak niektóre foldery sieciowe lub wtyczek, nie można w ten sposób zmieniać.
 - **Foldery.** Usunięcie folderu usuwa całą jego zawartość. Upewnij się, że zaznaczyłeś właściwe elementy, zanim potwierdzisz, zwłaszcza przy trwałym usuwaniu.

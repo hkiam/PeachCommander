@@ -91,8 +91,8 @@
 <p>Druga smer: vaš skript, ki ga zaganja Peach Commander.</p>
 <p>To je vstavek in je dobavljen <strong>izklopljen</strong>, ker zagon programa po vaši izbiri zmore vse, kar zmore preostanek aplikacije, in več stvari, ki jih nič od tega ne pokriva. Dva stikala, obe izklopljeni, dokler jih ne nastavite:</p>
 <ol>
-<li><strong>Nastavitve ▸ Vstavki…</strong> — vklopite <strong>Scripting</strong>.</li>
-<li><strong>Možnosti ▸ UI</strong> — vklopite <strong>Dovoli izvajanje skriptov</strong>. Na tej strani je zato, ker gre za enako vrsto dovoljenja kot pri lupini pomočnika, in oboje sodi skupaj.</li>
+<li><strong>Konfiguracija ▸ Vstavki…</strong> — vklopite <strong>Scripting</strong>.</li>
+<li><strong>Nastavitve ▸ UI</strong> — vklopite <strong>Dovoli izvajanje skriptov</strong>. Na tej strani je zato, ker gre za enako vrsto dovoljenja kot pri lupini pomočnika, in oboje sodi skupaj.</li>
 </ol>
 <p>Nato postavite skript v <code>scripts/</code> znotraj svoje nastavitvene mape — <strong>Ukazi ▸ Odpri mapo skriptov</strong> vas pripelje tja in prvič tam pusti primer. Datoteka <code>.applescript</code>, <code>.scpt</code> ali <code>.jxa</code> v tej mapi <em>je</em> skript; ni ničesar za prijaviti.</p>
 <h3 id="kaj-skript-dobi">Kaj skript dobi</h3>
@@ -133,7 +133,7 @@
 
 <p>Vse čez to gre skozi aplikacijo samo, z glagoli zgoraj — polovici se torej dopolnjujeta.</p>
 <h3 id="postavitev-skripta-na-gumb-ali-tipko">Postavitev skripta na gumb ali tipko</h3>
-<p>Vsak skript postane ukaz z imenom <code>plugin.script.run.&lt;ime&gt;</code>, kjer je <code>&lt;ime&gt;</code> ime datoteke brez končnice (presledki in pike se spremenijo v vezaje). Ta id deluje vsepovsod, kjer deluje id <code>cm_*</code>: v vrstici z gumbi, v <code>usercmd.ini</code>, v datoteki <code>.mnu</code> in v <strong>Nastavitve ▸ Uredi bližnjice…</strong>.</p>
+<p>Vsak skript postane ukaz z imenom <code>plugin.script.run.&lt;ime&gt;</code>, kjer je <code>&lt;ime&gt;</code> ime datoteke brez končnice (presledki in pike se spremenijo v vezaje). Ta id deluje vsepovsod, kjer deluje id <code>cm_*</code>: v vrstici z gumbi, v <code>usercmd.ini</code>, v datoteki <code>.mnu</code> in v <strong>Konfiguracija ▸ Uredi bližnjice…</strong>.</p>
 <h3 id="kako-se-skript-zaganja-in-casovna-omejitev">Kako se skript zaganja in časovna omejitev</h3>
 <p>Privzeto se skript zaganja kot ločen proces, kar pomeni, da mu je mogoče dati časovno omejitev in ga ustaviti, če jo preseže — trideset sekund, če ne rečete drugače. Skript se lahko odloči, da teče <em>znotraj</em> aplikacije, kar mu omogoči vrnitev strukturirane vrednosti in ga med zagoni ohrani prevedenega, a takrat ni časovne omejitve: skript, ki se zacikla, zadrži aplikacijo. Izbiro navedite v <code>scripts.json</code> ob svojih skriptih:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>

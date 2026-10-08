@@ -13,13 +13,13 @@
 <p>Pluginul Git arată starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată și fără
 terminal. Adaugă două coloane, un submeniu <strong>Git</strong>, un panou andocat pentru pregătire și comitere și ferestre
 pentru istoric, blame, ramuri, conflicte și rebazare. Folosește <code>git</code>-ul deja instalat pe Mac-ul
-dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+dumneavoastră. Este un plugin, deci îl puteți dezactiva sau elimina din <strong>Configurație ▸ Pluginuri…</strong>.</p>
 <h2 id="ce-adauga">Ce adaugă</h2>
 <ul>
 <li><strong>Două coloane în lista de fișiere</strong> — <em>Stare Git</em> și <em>Ramură</em>. Fiecare fișier arată o pictogramă și un
   cuvânt scurt de stare (Modificat, Adăugat, Șters, Neurmărit, Redenumit, Copiat, Conflict, Ignorat, Tip
   schimbat), cu <em>(pregătit)</em> când modificarea este deja în index; coloana <em>Ramură</em> arată ramura pe care se
-  află depozitul acelui fișier. Activați coloanele din <strong>Configurare ▸ Coloane…</strong> (vedeți
+  află depozitul acelui fișier. Activați coloanele din <strong>Configurație ▸ Coloane…</strong> (vedeți
   <a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a>).</li>
 <li><strong>Un meniu Git</strong> — sub <strong>Comenzi ▸ Git</strong> și în meniul contextual al unui fișier.</li>
 </ul>
@@ -64,7 +64,7 @@ anulate.</p>
 <li><strong>Bisect: marchează ca rău</strong> și <strong>Bisect: marchează ca bun</strong> din meniul istoricului pornesc un bisect; bannerul oferă apoi <strong>Bun</strong>, <strong>Rău</strong>, <strong>Sari</strong> și <strong>Încheie bisect</strong> până când git numește primul commit rău.</li>
 <li>Punerea în stash a fișierelor selectate sau a tuturor modificărilor cere un mesaj și întreabă dacă să includă fișierele neurmărite sau să păstreze indexul. Fișierele din Git LFS pot fi blocate și deblocate, iar tipul lor de fișier urmărit.</li>
 <li>În lista de ramuri, o ramură poate fi redenumită (<strong>Redenumește…</strong>), legată de un upstream (<strong>Setează ramura upstream…</strong>) sau ștearsă pe serverul ei (<strong>Șterge pe depozitul la distanță…</strong>).</li>
-<li><strong>Setări ▸ Git</strong> stabilește programul git, numele și e-mailul tău global, cum lucrează <strong>Pull</strong>, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.</li>
+<li><strong>Configurări ▸ Git</strong> stabilește programul git, numele și e-mailul tău global, cum lucrează <strong>Pull</strong>, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.</li>
 </ul>
 <h2 id="fisiere-imbinare-git-flow-si-pull-request-uri">Fișiere, îmbinare, Git flow și pull request-uri</h2>
 <ul>
@@ -73,7 +73,7 @@ anulate.</p>
 <li>Simbolul de ramură din antetul panoului este meniul <strong>Git flow</strong>: <strong>Începe funcționalitate…</strong>, <strong>Începe versiune…</strong> și <strong>Începe remediere…</strong> creează ramura din develop sau main, iar <strong>Încheie …</strong> o îmbină înapoi — o versiune sau o remediere în main cu o etichetă, apoi în develop. Încheierea din nou după un conflict continuă de unde s-a oprit.</li>
 <li><strong>Pull request-uri…</strong> din meniul Git listează pull request-urile deschise (merge request-uri la GitLab) și problemele proiectului spre care indică depozitele la distanță, cu verificările fiecăruia; preia un pull request într-o ramură proprie și deschide unul nou pentru ramura curentă.</li>
 <li>E nevoie de un token de acces personal, introdus în acea fereastră și păstrat în portchei; tokenul este trimis doar la API-ul serviciului. Cu un token, un simbol lângă ramură în antetul panoului arată dacă CI a trecut pentru commit-ul curent.</li>
-<li><strong>Setări ▸ Git</strong> numește ramurile și prefixele Git flow și, la <strong>Găzduire</strong>, serverele GitLab sau GitHub Enterprise proprii.</li>
+<li><strong>Configurări ▸ Git</strong> numește ramurile și prefixele Git flow și, la <strong>Găzduire</strong>, serverele GitLab sau GitHub Enterprise proprii.</li>
 </ul>
 <h2 id="istoric-blame-si-web">Istoric, blame și web</h2>
 <ul>
@@ -112,7 +112,7 @@ trebuie încheiată într-un terminal.</p>
 <li><strong>Editează mesajul…</strong> din meniul istoricului deschide mesajul unui commit pentru editare; cu mai multe commit-uri selectate se numește <strong>Editează mesajele…</strong>, iar <strong>Caută și înlocuiește în mesaje…</strong> — și <strong>Editează mesajele de commit…</strong> din meniul Git — caută în mesajele ramurii curente, ale commit-urilor neîmpinse încă sau ale tuturor ramurilor și etichetelor.</li>
 <li>Lista arată commit-urile al căror mesaj se schimbă. Mesajul celui selectat apare așa cum este, cu potrivirile marcate, și așa cum va fi, unde se poate și scrie; <strong>Lasă așa</strong> scoate din nou un commit.</li>
 <li><strong>Caută secrete…</strong> caută tokenuri, chei și parole în mesajele listate și le completează în căutare; <strong>Maschează</strong> pune <code>***REDACTED***</code> ca înlocuire.</li>
-<li><strong>Aplică…</strong> întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când <strong>Semnează commit-urile</strong> este activat în <strong>Setări ▸ Git</strong>.</li>
+<li><strong>Aplică…</strong> întreabă mai întâi: listează fiecare modificare, câte commit-uri primesc hash-uri noi și ce ramuri și etichete se mută, și avertizează despre commit-urile deja împinse. Commit-urile sunt scrise direct, deci nimic nu este extras (checkout) și nimic nu poate intra în conflict; fișierele, autorii și datele rămân cum erau. O semnătură este eliminată sau refăcută când <strong>Semnează commit-urile</strong> este activat în <strong>Configurări ▸ Git</strong>.</li>
 <li>Commit-urile vechi sunt păstrate: <strong>Desfă</strong> readuce ramurile atâta timp cât niciuna nu s-a mutat între timp. O ramură deja împinsă este înlocuită pe remote-ul ei cu <strong>Împinge forțat…</strong>, cu lease.</li>
 <li>Pentru un secret, <strong>Elimină commit-urile vechi…</strong> șterge copia de rezervă și intrările din reflog la care nu mai ajunge nimic, face curățenie (prune) și spune apoi dacă mai există un commit vechi. Commit-urile împinse pot fi încă accesibile pe server și în alte clone, așa că un secret împins trebuie și revocat.</li>
 </ul>
@@ -128,7 +128,7 @@ trebuie încheiată într-un terminal.</p>
 </ul>
 <h2 id="observatii">Observații</h2>
 <ul>
-<li>Pluginul folosește Git-ul sistemului, de la <code>/usr/bin/git</code>, sau programul ales în <strong>Setări ▸ Git</strong>. Dacă Git lipsește, comenzile raportează că Git nu este disponibil. (Instrumentele Xcode Command Line Tools îl includ.)</li>
+<li>Pluginul folosește Git-ul sistemului, de la <code>/usr/bin/git</code>, sau programul ales în <strong>Configurări ▸ Git</strong>. Dacă Git lipsește, comenzile raportează că Git nu este disponibil. (Instrumentele Xcode Command Line Tools îl includ.)</li>
 <li>Starea depozitului este citită o dată per dosar și păstrată în cache, astfel încât derularea într-un depozit
   mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care schimbă arborele și urmărește și o
   comitere făcută în afara aplicației.</li>

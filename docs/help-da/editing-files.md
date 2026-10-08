@@ -13,7 +13,7 @@ Når du har brug for at ændre en fil frem for blot at se på den, åbner Peach 
 1. Flyt markøren i et af panelerne til den fil, du vil ændre.
 2. Tryk på F4, eller vælg Fil ▸ Redigér. Filen åbner i editorvinduet.
 3. Foretag dine ændringer. Hvis filen er et genkendt programmerings- eller dataformat, farves nøgleord, strenge og kommentarer automatisk.
-4. Tryk på Cmd+S (eller klik på Gem) for at skrive dine ændringer. Lagring erstatter filen; hvis du vil have det tidligere indhold gemt ved siden af den, slå backup til i Indstillinger ▸ Rediger/Vis.
+4. Tryk på Cmd+S (eller klik på Gem) for at skrive dine ændringer. Lagring erstatter filen; hvis du vil have det tidligere indhold gemt ved siden af den, slå backup til i Indstillinger ▸ Rediger/vis.
 
 For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på Shift+F4.
 
@@ -163,4 +163,4 @@ Hexeditoren har det samme **Strenge**-panel som fremviseren: hver læsbar teksts
 - Syntaksfremhævning dækker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åbner og redigeres stadig normalt med grundlæggende farvning, men detaljeret fremhævning er kun tilgængelig for de understøttede sprog.
 - Overblikket dækker de understøttede programmeringssprog samt JSON, YAML og XML — inklusive de XML-baserede formater som `.plist`, `.svg`, `.csproj` og `.storyboard`. Kommandoerne til strukturnavigation, sti og validering gælder for JSON, YAML og XML.
 - Symboloverblikket og funktionerne Gå til linje gælder for teksteditoren. Hex-editoren er beregnet til binær inspektion og redigering på byteniveau, ikke til tekst.
-- Ingen af editorerne beholder en backup, medmindre du beder om det. Slå ”Behold en sikkerhedskopi (.bak) af det tidligere indhold ved gemning” til i Indstillinger ▸ Rediger/Vis, så skriver den første lagring originalen ved siden af filen som `name.bak`, og en utilsigtet ændring er let at fortryde.
+- Ingen af editorerne beholder en backup, medmindre du beder om det. Slå ”Behold en sikkerhedskopi (.bak) af det tidligere indhold ved gemning” til i Indstillinger ▸ Rediger/vis, så skriver den første lagring originalen ved siden af filen som `name.bak`, og en utilsigtet ændring er let at fortryde.

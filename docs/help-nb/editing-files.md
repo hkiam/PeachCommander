@@ -13,7 +13,7 @@ Når du trenger å endre en fil i stedet for bare å se på den, åpner Peach Co
 1. I begge paneler flytter du markøren til filen du vil endre.
 2. Trykk F4, eller velg Fil ▸ Rediger. Filen åpnes i redigeringsvinduet.
 3. Gjør endringene dine. Hvis filen er et gjenkjent programmerings- eller dataformat, farges nøkkelord, strenger og kommentarer automatisk.
-4. Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Lagring erstatter filen; vil du beholde det forrige innholdet ved siden av den, slå på sikkerhetskopier i Innstillinger ▸ Rediger/Vis.
+4. Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Lagring erstatter filen; vil du beholde det forrige innholdet ved siden av den, slå på sikkerhetskopier i Innstillinger ▸ Rediger/vis.
 
 For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.
 
@@ -163,4 +163,4 @@ Hekseditoren har det samme **Strenger**-panelet som fremviseren: hver lesbare te
 - Syntaksutheving dekker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åpnes og redigeres fortsatt normalt med grunnleggende farging, men detaljert utheving er bare tilgjengelig for de støttede språkene.
 - Oversikten dekker de støttede programmeringsspråkene i tillegg til JSON, YAML og XML — inkludert de XML-baserte formatene som `.plist`, `.svg`, `.csproj` og `.storyboard`. Kommandoene for strukturnavigasjon, bane og validering gjelder JSON, YAML og XML.
 - Symboloversikten og Gå til linje-funksjonene gjelder tekstredigeringsprogrammet. Det heksadesimale redigeringsprogrammet er ment for binærinspeksjon og redigering på byte-nivå, ikke for tekst.
-- Ingen av redigeringsprogrammene beholder en sikkerhetskopi med mindre du ber om det. Slå på «Behold en sikkerhetskopi (.bak) av det forrige innholdet ved lagring» i Innstillinger ▸ Rediger/Vis, og den første lagringen skriver originalen ved siden av filen som `name.bak`, slik at en utilsiktet endring er lett å angre.
+- Ingen av redigeringsprogrammene beholder en sikkerhetskopi med mindre du ber om det. Slå på «Behold en sikkerhetskopi (.bak) av det forrige innholdet ved lagring» i Innstillinger ▸ Rediger/vis, og den første lagringen skriver originalen ved siden av filen som `name.bak`, slik at en utilsiktet endring er lett å angre.

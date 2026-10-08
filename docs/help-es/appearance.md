@@ -12,7 +12,7 @@ Peach Commander puede adaptarse al aspecto del resto de su Mac o adoptar un esti
 
 Un tema sustituye toda la paleta de los paneles de una sola vez.
 
-1. Abra la ventana de ajustes eligiendo Configuración > Opciones…, o pulse Cmd+,.
+1. Abra la ventana de ajustes eligiendo Configuración > Ajustes…, o pulse Cmd+,.
 2. Seleccione la página **Colores**.
 3. Elija en el menú **Tema**:
    - **Sistema (por omisión)** — sin tema. Los paneles siguen el ajuste Aspecto de más abajo, exactamente como siempre. Es el valor por omisión.
@@ -65,7 +65,7 @@ Si algo del archivo está mal, Peach Commander omite esa línea y conserva el re
 Los nombres `light`, `dark`, `norton` y `system` pertenecen a los temas integrados; un archivo que use uno de ellos se omite para que no pueda ocultar un tema incluido. Si borra el archivo del tema seleccionado, Peach Commander vuelve a **Sistema (por omisión)**.
 ## Definir el aspecto claro, oscuro o del sistema
 
-1. Abra la ventana de ajustes eligiendo Configuración > Opciones…, o pulse Cmd+,.
+1. Abra la ventana de ajustes eligiendo Configuración > Ajustes…, o pulse Cmd+,.
 2. Seleccione la página **Colores**.
 3. En el menú **Aspecto**, elija una de estas opciones:
    - **Sistema (seguir a macOS)**: se adapta automáticamente al ajuste claro/oscuro actual de su Mac.
@@ -88,7 +88,7 @@ Deje una casilla desactivada para conservar el color integrado de ese elemento. 
 
 ## Colorear los archivos por tipo
 
-1. Abra Configuración > Opciones… y seleccione la página **Visualización**.
+1. Abra Configuración > Ajustes… y seleccione la página **Visualización**.
 2. Haga clic en **Colores por tipo de archivo…**.
 3. Añada una regla con una máscara de nombre como `*.zip` o `*.txt` y, a continuación, elija un color para los archivos que coincidan con ella.
 4. Use **Añadir regla** para más máscaras; haga clic en **Aceptar** para guardar o **Cancelar** para descartar.

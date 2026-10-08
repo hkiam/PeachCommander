@@ -66,7 +66,7 @@ Die Namen `light`, `dark`, `norton` und `system` gehören den eingebauten Themen
 
 ## Helles, dunkles oder Systemerscheinungsbild einstellen
 
-1. Öffnen Sie das Einstellungsfenster über Konfiguration > Optionen… oder drücken Sie Cmd+,.
+1. Öffnen Sie das Einstellungsfenster über Konfiguration > Einstellungen… oder drücken Sie Cmd+,.
 2. Wählen Sie die Seite **Farben**.
 3. Wählen Sie im Menü **Erscheinungsbild** eine der folgenden Optionen:
    - **System (macOS folgen)** – passt sich automatisch der aktuellen hellen/dunklen Einstellung Ihres Mac an.
@@ -89,7 +89,7 @@ Lassen Sie ein Kontrollkästchen deaktiviert, um die eingebaute Farbe für diese
 
 ## Dateien nach Typ einfärben
 
-1. Öffnen Sie Konfiguration > Optionen… und wählen Sie die Seite **Anzeige**.
+1. Öffnen Sie Konfiguration > Einstellungen… und wählen Sie die Seite **Anzeige**.
 2. Klicken Sie auf **Dateityp-Farben…**.
 3. Fügen Sie eine Regel mit einer Namensmaske wie `*.zip` oder `*.txt` hinzu und wählen Sie dann eine Farbe für die dazu passenden Dateien.
 4. Verwenden Sie **Regel hinzufügen** für weitere Masken; klicken Sie auf **Fertig** zum Speichern oder auf **Abbrechen** zum Verwerfen.

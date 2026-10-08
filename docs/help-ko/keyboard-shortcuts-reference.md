@@ -6,7 +6,7 @@ order: 142
 related: [keyboard-shortcuts]
 ---
 
-Peach Commander는 키보드를 위해 만들어졌습니다. 마우스로 하는 거의 모든 작업에 그에 대한 키가 있습니다. 이 페이지는 기본 단축키를 작업별로 그룹화하여 필요한 것을 한눈에 찾을 수 있게 합니다. 여기에 표시된 키는 기본 **TC Classic** 구성(오랜 Total Commander 사용자가 기대하는 것)입니다. Mac 스타일 키를 선호하면 설정 메뉴에서 **macOS Native** 구성으로 전환하십시오. 그러면 같은 동작이 Command 키 조합으로 옮겨집니다(예: 복사에 Cmd+C, 검색에 Cmd+F). 개별 키를 재정의할 수도 있습니다.
+Peach Commander는 키보드를 위해 만들어졌습니다. 마우스로 하는 거의 모든 작업에 그에 대한 키가 있습니다. 이 페이지는 기본 단축키를 작업별로 그룹화하여 필요한 것을 한눈에 찾을 수 있게 합니다. 여기에 표시된 키는 기본 **TC Classic** 구성(오랜 Total Commander 사용자가 기대하는 것)입니다. Mac 스타일 키를 선호하면 구성 메뉴에서 **macOS Native** 구성으로 전환하십시오. 그러면 같은 동작이 Command 키 조합으로 옮겨집니다(예: 복사에 Cmd+C, 검색에 Cmd+F). 개별 키를 재정의할 수도 있습니다.
 
 ## 기능 키
 
@@ -107,6 +107,6 @@ Peach Commander는 키보드를 위해 만들어졌습니다. 마우스로 하�
 
 ## 참고
 
-- 몇 가지 TC Classic 키는 macOS 시스템 단축키와 충돌합니다. Ctrl+Left, Ctrl+Right, Ctrl+Up, Ctrl+Down은 미션 컨트롤과 스페이스가 사용합니다. Peach Commander에서 동작하지 않으면 시스템 설정에서 조정하거나 설정 메뉴에서 다시 매핑하십시오.
-- macOS Native 구성은 기능 키 동작은 그대로 유지하면서 공통 동작을 Command 키로 옮깁니다. 설정 메뉴에서 구성을 전환하거나 개별 키를 변경하십시오.
+- 몇 가지 TC Classic 키는 macOS 시스템 단축키와 충돌합니다. Ctrl+Left, Ctrl+Right, Ctrl+Up, Ctrl+Down은 미션 컨트롤과 스페이스가 사용합니다. Peach Commander에서 동작하지 않으면 시스템 설정에서 조정하거나 구성 메뉴에서 다시 매핑하십시오.
+- macOS Native 구성은 기능 키 동작은 그대로 유지하면서 공통 동작을 Command 키로 옮깁니다. 구성 메뉴에서 구성을 전환하거나 개별 키를 변경하십시오.
 - Esc를 누르면 대화상자를 취소하거나, 명령줄을 지우거나, Quick View 패널을 닫습니다.

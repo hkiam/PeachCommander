@@ -11,7 +11,7 @@ Okno Ustawienia to miejsce, w którym dopasowujesz Peach Commander do sposobu, w
 ## Otwórz Ustawienia
 
 1. Wybierz **Peach Commander > Ustawienia…** lub naciśnij Cmd+, (przecinek).
-2. To samo okno możesz otworzyć również z **Konfiguracja > Opcje…**.
+2. To samo okno możesz otworzyć również z **Konfiguracja > Ustawienia…**.
 3. Wybierz stronę z listy po lewej; opcje tej strony pojawiają się po prawej.
 4. Dostosuj elementy sterujące. Zmiany wchodzą w życie od razu, chyba że uwaga na stronie mówi inaczej.
 5. Aby przejść wprost do opcji, wpisz tekst w pole wyszukiwania u góry okna. Pasujące ustawienia ze *wszystkich* kart są wypisane wraz z kartą, na której się znajdują, a wybranie jednego otwiera tę kartę z podświetlonym ustawieniem. ↑/↓ przechodzą przez wyniki, Return otwiera podświetlony, a Esc opuszcza wyszukiwanie i przywraca kartę, z której przyszedłeś.
@@ -24,14 +24,14 @@ Okno Ustawienia to miejsce, w którym dopasowujesz Peach Commander do sposobu, w
 Okno ma następujące strony, w kolejności:
 
 - **Układ** — pokaż lub ukryj pasek dysków, pasek kart, pasek ścieżki i pasek stanu oraz wybierz, które strony oferuje panel boczny.
-- **Widok** — jak wymieniane są pliki i foldery, w tym format daty.
+- **Wyświetlanie** — jak wymieniane są pliki i foldery, w tym format daty.
 - **Ikony** — wygląd ikon na listach plików.
-- **Obsługa** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).
+- **Operacja** — ogólne zachowanie, jak to, co dzieje się, gdy piszesz w panelu (szybkie wyszukiwanie kontra wiersz poleceń).
 - **Kolory** — niestandardowe kolory paneli, lub pozostaw je podążające za bieżącym motywem.
 - **Potwierdzenie** — które akcje najpierw proszą o potwierdzenie, jak usuwanie.
-- **Edycja/Podgląd** — czy zapis w edytorze zachowuje kopię zapasową `.bak`, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.
-- **Kopiowanie/Usuwanie** — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.
-- **Zip/Pakowacz** — domyślny format archiwum i poziom kompresji używane przy pakowaniu.
+- **Edytuj/Wyświetl** — czy zapis w edytorze zachowuje kopię zapasową `.bak`, programy używane do edycji i wyświetlania plików skojarzenia według typu oraz to, ile może kosztować podgląd w lokalizacjach sieciowych i w archiwach.
+- **Kopiuj/Usuń** — zachowaj metadane plików, użyj szybkiego klonowania, kopiuj tylko nowsze pliki, weryfikuj po kopiowaniu, wysyłaj usunięcia do Kosza i ustaw opcjonalny limit prędkości.
+- **Zip/Pakowanie** — domyślny format archiwum i poziom kompresji używane przy pakowaniu.
 - **Wtyczki** — włącz lub wyłącz zainstalowane wtyczki.
 - **Karty** — jak otwierają się i zachowują karty folderów.
 - **FTP** — wartości domyślne sieci, jak interwał keep-alive.
@@ -42,11 +42,11 @@ Okno ma następujące strony, w kolejności:
 
 Włączone wtyczki mogą dodawać własne strony po wbudowanych — na przykład **Mapa dysku** i **System Monitor** — więc ich opcje żyją w tym samym oknie (zobacz [Wtyczki](plugins.md)).
 
-![Okno Ustawienia pokazujące opcje strony Widok dla wyświetlania plików](screenshots/settings-display.png)
-*(Rysunek: strona Widok kontroluje, jak wymieniane są pliki i foldery.)*
+![Okno Ustawienia pokazujące opcje strony Wyświetlanie dla wyświetlania plików](screenshots/settings-display.png)
+*(Rysunek: strona Wyświetlanie kontroluje, jak wymieniane są pliki i foldery.)*
 
-![Okno Ustawienia pokazujące stronę Obsługa](screenshots/settings-operation.png)
-*(Rysunek: strona Obsługa rządzi szybkim wyszukiwaniem i zachowaniem myszy.)*
+![Okno Ustawienia pokazujące stronę Operacja](screenshots/settings-operation.png)
+*(Rysunek: strona Operacja rządzi szybkim wyszukiwaniem i zachowaniem myszy.)*
 
 ## Gdzie przechowywane są Twoje ustawienia
 

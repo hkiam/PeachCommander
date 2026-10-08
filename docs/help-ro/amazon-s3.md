@@ -10,7 +10,7 @@ Un bucket S3 poate fi parcurs într-un panou ca orice dosar. Alegeți **Conectar
 
 Funcționează cu Amazon S3 și cu tot ce vorbește același protocol: MinIO, Ceph/RADOS Gateway, Cloudflare R2, Wasabi, Backblaze B2 și DigitalOcean Spaces sunt accesibile.
 
-Este un plugin, deci îl puteți dezactiva sau elimina din **Configurare ▸ Pluginuri…**.
+Este un plugin, deci îl puteți dezactiva sau elimina din **Configurație ▸ Pluginuri…**.
 
 ## Conectare
 

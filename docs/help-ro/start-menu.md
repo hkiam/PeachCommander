@@ -27,4 +27,4 @@ Meniul **Start** este propriul dvs. meniu personal, care stă în bara de meniu 
 
 ## Note
 
-- Puteți de asemenea înlocui întreaga bară de meniu cu a dvs. Alegeți **Configurare > Editează fișierul de meniu…** pentru a deschide un fișier de meniu inițiat din meniul încorporat curent, complet localizat; editați-l liber, iar modificările dvs. se aplică data viitoare când aplicația este activată. Ștergeți fișierul pentru a restaura bara de meniu standard.
+- Puteți de asemenea înlocui întreaga bară de meniu cu a dvs. Alegeți **Configurație > Editează fișierul de meniu…** pentru a deschide un fișier de meniu inițiat din meniul încorporat curent, complet localizat; editați-l liber, iar modificările dvs. se aplică data viitoare când aplicația este activată. Ștergeți fișierul pentru a restaura bara de meniu standard.

@@ -46,7 +46,7 @@ Je kunt bestanden of mappen rechtstreeks op een knop slepen:
 
 ## De knoppenbalk verbergen
 
-Kies **Weergave > Knoppenbalk** om de balk te verbergen, en nogmaals om hem terug te halen. Dezelfde schakelaar staat op de pagina **Lay-out** in de instellingen, en de keuze wordt onthouden.
+Kies **Weergave > Knoppenbalk** om de balk te verbergen, en nogmaals om hem terug te halen. Dezelfde schakelaar staat op de pagina **Indeling** in de instellingen, en de keuze wordt onthouden.
 
 ## Verticale knoppenbalk
 

@@ -11,7 +11,7 @@ Im Einstellungsfenster passen Sie Peach Commander an Ihre Arbeitsweise an: welch
 ## Einstellungen öffnen
 
 1. Wählen Sie **Peach Commander > Einstellungen…** oder drücken Sie Cmd+, (Komma).
-2. Sie können dasselbe Fenster auch über **Konfiguration > Optionen…** öffnen.
+2. Sie können dasselbe Fenster auch über **Konfiguration > Einstellungen…** öffnen.
 3. Wählen Sie eine Seite aus der Liste auf der linken Seite; die Optionen dieser Seite erscheinen rechts.
 4. Passen Sie die Steuerelemente an. Änderungen werden sofort wirksam, sofern ein Hinweis auf der Seite nichts anderes angibt.
 5. Um direkt zu einer Option zu kommen, tippen Sie in das Suchfeld oben im Fenster. Passende Einstellungen aus *allen* Seiten werden mit der Seite aufgeführt, auf der sie jeweils liegen, und die Auswahl öffnet diese Seite mit hervorgehobener Einstellung. ↑/↓ bewegen sich durch die Ergebnisse, Return öffnet das hervorgehobene, und Esc verlässt die Suche und stellt die Seite wieder her, von der Sie kamen.
@@ -26,7 +26,7 @@ Das Fenster enthält diese Seiten, in dieser Reihenfolge:
 - **Layout** — Laufwerksleiste, Tab-Leiste, Pfadleiste und Statusleiste ein- oder ausblenden und festlegen, welche Seiten das Seitenfenster anbietet.
 - **Anzeige** — wie Dateien und Ordner aufgelistet werden, einschließlich des Datumsformats.
 - **Symbole** — Erscheinungsbild der Symbole in den Dateilisten.
-- **Bedienung** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).
+- **Vorgang** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).
 - **Farben** — benutzerdefinierte Panel-Farben, oder dem aktuellen Thema folgen lassen.
 - **Bestätigung** — welche Aktionen zuerst eine Bestätigung verlangen, etwa das Löschen.
 - **Bearbeiten/Ansehen** — ob beim Sichern im Editor eine `.bak`-Sicherungskopie aufbewahrt wird, die Programme zum Bearbeiten und Ansehen von Dateien die Zuordnungen pro Dateityp sowie das, was eine Vorschau an Netzwerkorten und in Archiven kosten darf.
@@ -45,8 +45,8 @@ Aktivierte Plugins können nach den integrierten Seiten eigene Seiten hinzufüge
 ![Das Einstellungsfenster mit den Optionen der Seite Anzeige dazu, wie Dateien aufgelistet werden](screenshots/settings-display.png)
 *(Abbildung: Auf der Seite Anzeige legen Sie fest, wie Dateien und Ordner aufgelistet werden.)*
 
-![Das Einstellungsfenster mit der Seite Bedienung](screenshots/settings-operation.png)
-*(Abbildung: Die Seite Bedienung steuert das Verhalten von Schnellsuche und Maus.)*
+![Das Einstellungsfenster mit der Seite Vorgang](screenshots/settings-operation.png)
+*(Abbildung: Die Seite Vorgang steuert das Verhalten von Schnellsuche und Maus.)*
 
 ## Wo Ihre Einstellungen gespeichert werden
 

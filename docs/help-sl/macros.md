@@ -144,8 +144,8 @@ Korak, katerega `%S` ali `%{1}` pride **prazen, ustavi makro**, namesto da bi te
 
 Vsak makro postane ukaz z imenom `mc_<id>` in se zato sam pojavi v:
 
-- **Nastavitve ▸ Brskalnik ukazov…**
-- **Nastavitve ▸ Uredi bližnjice… — dodelite ga tipki**
+- **Konfiguracija ▸ Brskalnik ukazov…**
+- **Konfiguracija ▸ Uredi bližnjice… — dodelite ga tipki**
 - Izbirniku ukazov v urejevalniku vrstice z gumbi
 - Vaši datoteki menija `.mnu` in `usercmd.ini`, če ju uporabljate
 - Pomočniku, ki ga lahko zažene po imenu

@@ -12,7 +12,7 @@ Peach Commander può adattarsi all'aspetto del resto del vostro Mac oppure assum
 
 Un tema sostituisce l’intera tavolozza dei pannelli in un solo passaggio.
 
-1. Aprite la finestra delle impostazioni scegliendo Configurazione > Opzioni…, oppure premete Cmd+,.
+1. Aprite la finestra delle impostazioni scegliendo Configurazione > Impostazioni…, oppure premete Cmd+,.
 2. Selezionate la pagina **Colori**.
 3. Scegliete dal menu **Tema**:
    - **Sistema (predefinito)** — nessun tema. I pannelli seguono l’impostazione Aspetto qui sotto, esattamente come hanno sempre fatto. È l’impostazione predefinita.
@@ -65,7 +65,7 @@ Se qualcosa nel file è errato, Peach Commander salta quella singola riga e cons
 I nomi `light`, `dark`, `norton` e `system` appartengono ai temi integrati; un file che ne usa uno viene ignorato, così non può nascondere un tema fornito con l’applicazione. Se eliminate il file del tema selezionato, Peach Commander torna a **Sistema (predefinito)**.
 ## Impostare l'aspetto chiaro, scuro o di sistema
 
-1. Aprite la finestra delle impostazioni scegliendo Configurazione > Opzioni…, oppure premete Cmd+,.
+1. Aprite la finestra delle impostazioni scegliendo Configurazione > Impostazioni…, oppure premete Cmd+,.
 2. Selezionate la pagina **Colori**.
 3. Dal menu **Aspetto**, scegliete una tra:
    - **Sistema (segui macOS)** — si adatta automaticamente all'attuale impostazione chiara/scura del Mac.
@@ -88,7 +88,7 @@ Lasciate una casella disattivata per mantenere il colore predefinito di quell'el
 
 ## Colorare i file per tipo
 
-1. Aprite Configurazione > Opzioni… e selezionate la pagina **Visualizzazione**.
+1. Aprite Configurazione > Impostazioni… e selezionate la pagina **Visualizzazione**.
 2. Fate clic su **Colori per tipo di file…**.
 3. Aggiungete una regola con una maschera di nome come `*.zip` o `*.txt`, poi scegliete un colore per i file corrispondenti.
 4. Usate **Aggiungi regola** per altre maschere; fate clic su **Fine** per salvare o su **Annulla** per scartare.

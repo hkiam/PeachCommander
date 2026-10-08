@@ -11,7 +11,7 @@ Okno Nastavenia je miesto, kde prispôsobíte Peach Commander spôsobu, akým pr
 ## Otvorenie Nastavení
 
 1. Vyberte **Peach Commander > Nastavenia…**, alebo stlačte Cmd+, (čiarka).
-2. To isté okno môžete otvoriť aj z **Konfigurácia > Možnosti…**.
+2. To isté okno môžete otvoriť aj z **Konfigurácia > Nastavenia…**.
 3. Vyberte stránku zo zoznamu vľavo; možnosti tej stránky sa objavia vpravo.
 4. Upravte ovládacie prvky. Zmeny sa prejavia ihneď, pokiaľ poznámka na stránke nehovorí inak.
 5. Ak chcete prejsť priamo k voľbe, zadajte text do hľadacieho poľa v hornej časti okna. Zhodujúce sa nastavenia zo *všetkých* stránok sa vypíšu so stránkou, na ktorej ležia, a výberom sa táto stránka otvorí so zvýrazneným nastavením. ↑/↓ sa pohybujú medzi výsledkami, Return otvorí zvýraznený a Esc hľadanie opustí a vráti stránku, z ktorej ste prišli.
@@ -26,12 +26,12 @@ Okno má tieto stránky, v poradí:
 - **Rozloženie** — zobraziť alebo skryť lištu diskov, lištu kariet, lištu cesty a stavovú lištu a vybrať, ktoré stránky bočný panel nabízí.
 - **Zobrazenie** — ako sa vypisujú súbory a priečinky, vrátane formátu dátumu.
 - **Ikony** — vzhľad ikon v zoznamoch súborov.
-- **Ovládanie** — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku).
+- **Operácia** — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku).
 - **Farby** — vlastné farby panelov, alebo ich nechajte sledovať aktuálnu tému.
 - **Potvrdenie** — ktoré akcie najprv žiadajú potvrdenie, ako mazanie.
-- **Upraviť/Zobraziť** — či sa pri ukladaní v editore uchová záložná kópia `.bak`, programy použité na úpravu a zobrazenie súborov asociácie podľa typu a koľko smie stáť náhľad v sieťových umiestneniach a v archívoch.
-- **Kopírovanie/Mazanie** — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory, overiť po kopírovaní, posielať mazania do Koša a nastaviť voliteľné obmedzenie rýchlosti.
-- **Zip/Balič** — predvolený formát archívu a úroveň kompresie použité pri balení.
+- **Upraviť/zobraziť** — či sa pri ukladaní v editore uchová záložná kópia `.bak`, programy použité na úpravu a zobrazenie súborov asociácie podľa typu a koľko smie stáť náhľad v sieťových umiestneniach a v archívoch.
+- **Kopírovať/odstrániť** — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory, overiť po kopírovaní, posielať mazania do Koša a nastaviť voliteľné obmedzenie rýchlosti.
+- **Zip/baličkovač** — predvolený formát archívu a úroveň kompresie použité pri balení.
 - **Zásuvné moduly** — zapnúť alebo vypnúť nainštalované zásuvné moduly.
 - **Karty** — ako sa karty priečinkov otvárajú a správajú.
 - **FTP** — sieťové predvolené hodnoty ako interval keep-alive.
@@ -45,8 +45,8 @@ Povolené zásuvné moduly môžu pridať vlastné stránky za vstavané — nap
 ![Okno Nastavenia zobrazujúce možnosti stránky Zobrazenie pre výpis súborov](screenshots/settings-display.png)
 *(Obrázok: stránka Zobrazenie ovláda, ako sa vypisujú súbory a priečinky.)*
 
-![Okno Nastavenia zobrazujúce stránku Ovládanie](screenshots/settings-operation.png)
-*(Obrázok: stránka Ovládanie riadi rýchle hľadanie a správanie myši.)*
+![Okno Nastavenia zobrazujúce stránku Operácia](screenshots/settings-operation.png)
+*(Obrázok: stránka Operácia riadi rýchle hľadanie a správanie myši.)*
 
 ## Kde sú uložené vaše nastavenia
 

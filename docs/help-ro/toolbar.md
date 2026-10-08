@@ -10,7 +10,7 @@ Bara de butoane este banda de butoane cu pictograme de-a lungul părții de sus 
 
 ## Personalizarea barei de butoane
 
-1. Alegeți **Configurare > Personalizează bara de instrumente…**, sau faceți clic dreapta pe bară și alegeți **Editează bara de butoane…**.
+1. Alegeți **Configurație > Personalizează bara de instrumente…**, sau faceți clic dreapta pe bară și alegeți **Editează bara de butoane…**.
 2. Lista din stânga arată butoanele curente. Folosiți **+** pentru a adăuga un buton, **—** pentru a adăuga un separator, **−** pentru a elimina butonul selectat, și **↑ / ↓** pentru a reordona.
 3. Selectați un buton și completați formularul din dreapta:
    - **Comandă** — tastați o comandă încorporată, sau faceți clic pe **Alege…** pentru a selecta una dintr-o listă. Puteți de asemenea introduce calea unui program sau a unei aplicații, un folder de deschis, sau o altă bară de butoane de folosit ca sub-bară.
@@ -46,7 +46,7 @@ Puteți trage fișiere sau foldere direct pe un buton:
 
 ## Ascunderea barei de butoane
 
-Alegeți **Vizualizare > Bara de butoane** pentru a ascunde bara și din nou pentru a o readuce. Același comutator se află pe pagina **Dispunere** din setări, iar alegerea este reținută.
+Alegeți **Vizualizare > Bara de butoane** pentru a ascunde bara și din nou pentru a o readuce. Același comutator se află pe pagina **Aranjament** din setări, iar alegerea este reținută.
 
 ## Bară de butoane verticală
 

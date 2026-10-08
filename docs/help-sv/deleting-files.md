@@ -36,6 +36,6 @@ Om vissa objekt inte kan tas bort – till exempel för att de är låsta eller 
 ## Anteckningar
 
 - **Bekräftelse.** Som standard ber Peach Commander dig att bekräfta innan borttagning. Du kan stänga av detta i **Konfiguration > Bekräftelse** genom att avmarkera **Bekräfta före borttagning**. Även då bör du behandla permanenta borttagningar med försiktighet, eftersom de inte kan ångras.
-- **Standardbeteende för F8.** Normalt flyttar F8 objekt till papperskorgen. Om du föredrar att F8 tar bort permanent som standard, ändra borttagningsalternativet i inställningarna **Konfiguration > Operation**. Shift+F8 tar alltid bort permanent oavsett denna inställning.
+- **Standardbeteende för F8.** Normalt flyttar F8 objekt till papperskorgen. Om du föredrar att F8 tar bort permanent som standard, ändra borttagningsalternativet i inställningarna **Konfiguration > Åtgärd**. Shift+F8 tar alltid bort permanent oavsett denna inställning.
 - **Ta bort inuti arkiv.** När du bläddrar inuti ett arkiv som stöds tar borttagning bort de markerade posterna från arkivet. Skrivskyddade platser, som vissa nätverks- eller insticksmappar, kan inte ändras på detta sätt.
 - **Mappar.** Att ta bort en mapp tar bort allt inuti den. Se till att du har markerat rätt objekt innan du bekräftar, särskilt vid en permanent borttagning.

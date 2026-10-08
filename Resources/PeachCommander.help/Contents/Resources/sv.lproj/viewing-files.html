@@ -29,7 +29,7 @@
 <li>Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.</li>
 <li>Tryck på W för att växla radbrytning för långa rader.</li>
 <li>Tryck Ctrl+G för att gå till en rad, eller till en byteposition i hexläge. Räkning över talsystem är tillåten: <code>0x1000 + 15 + 1</code> leder till 4112 — hexadecimalt med <code>0x</code>, <code>$</code> eller ett avslutande <code>h</code>, binärt med <code>0b</code>, oktalt med <code>0o</code>, och <code>+ - * /</code> med parenteser.</li>
-<li>Öppnar du en träff från Hitta filer där <strong>Sök text</strong> var ifyllt startar visaren med den sökningen: texten står redan i sökfältet och den första förekomsten syns, så du landar vid träffen i stället för högst upp i filen. Ändrar eller rensar du den där är det din version som står kvar. Det kan stängas av i Inställningar ▸ Redigera/Visa om du hellre vill att varje fil öppnas från början.</li>
+<li>Öppnar du en träff från Hitta filer där <strong>Sök text</strong> var ifyllt startar visaren med den sökningen: texten står redan i sökfältet och den första förekomsten syns, så du landar vid träffen i stället för högst upp i filen. Ändrar eller rensar du den där är det din version som står kvar. Det kan stängas av i Inställningar ▸ Redigera/visa om du hellre vill att varje fil öppnas från början.</li>
 </ul>
 <h2 id="lasa-strangarna-i-en-binarfil">Läsa strängarna i en binärfil</h2>
 <p>I den hexadecimala representationen erbjuder verktygsfältet <strong>Strängar</strong>: en panel med varje läsbar textsträng i filen, med den offset den står på och hur den avkodats. Klicka på en rad så hoppar hexvyn till de byten och markerar dem, så att nästa steg — Kopiera markering som … eller bara läsa det som står omkring — gäller den sträng du klickade på.</p>
@@ -105,7 +105,7 @@
 <li>Slå på dem i <strong>Inställningar &gt; Layout</strong> under <em>Sidopanelens sidor</em>, med högerklick på flikraden, eller från <strong>Visa &gt; Sidopanel: Info / Aktiviteter / Logg</strong>.</li>
 <li>Om bara en sida återstår slopar panelen flikraden helt: en panel med bara Info är förhandsvisning och detaljer, utan något ovanför.</li>
 <li>Varje sida kan stängas av, även Info — bra när du i stället har terminalen eller ett insticksprograms vy här. En panel där inget återstår säger det i stället för att öppnas tom.</li>
-<li>Sidor som ett insticksprogram bidrar med påverkas inte: de kommer och går med insticksprogrammet, och för att stänga av dem finns sidan <strong>Insticksprogram</strong>.</li>
+<li>Sidor som ett insticksprogram bidrar med påverkas inte: de kommer och går med insticksprogrammet, och för att stänga av dem finns sidan <strong>Plugin-program</strong>.</li>
 <li><strong>Visa &gt; Återställ layout</strong> sätter sidorna tillbaka till Info enbart, tillsammans med fönstrets övriga inredning.</li>
 </ul>
 <p>Posterna i Visa-menyn betyder mer än de ser ut att göra. Är varje sida avstängd finns ingen flikrad kvar att högerklicka på — de är vägen tillbaka.</p>
@@ -127,7 +127,7 @@
 <p>En andra insticksmodul gör samma sak för .NET: F3 på en hanterad <code>.dll</code>, <code>.exe</code> eller <code>.winmd</code> visar dess typer som C#, <strong>Dekompilera assembly till källkod</strong> (⌘⇧N) lägger dem i en ruta, och sökningen kan se in i en assembly på samma sätt. Den kör <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) för källkod, eller <strong>monodis</strong> ur Mono för IL — .NET:s motsvarighet till <code>javap</code>. En native <code>.dll</code> har samma filändelse och ingen källkod att visa, så modulen kontrollerar det före öppning och lämnar den till den inbyggda visaren.</p>
 <p>Inställningssidan har en knapp <strong>Kontrollera motorer</strong>, och den är värd att trycka på: ”installerad” betyder på andra ställen bara att filen finns, och en Java-motor på en Mac utan JDK finns och kan inte köra. Kontrollen frågar varje motor efter dess version och säger vilka som faktiskt fungerar.</p>
 <p>Android täcks också: F3 på en <code>.dex</code>-fil använder <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.</p>
-<p>Modulen är <strong>av tills du slår på den</strong>, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.</p>
+<p>Modulen är <strong>av tills du slår på den</strong>, under Inställningar ▸ Plugin-program — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.</p>
 <p>Lägg till en egen motor genom att skapa <code>decompilers.ini</code> i motormappen:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
 <span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>

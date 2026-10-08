@@ -48,7 +48,7 @@ Usunięcia i zmiany nazw są na liście, ale nigdy nie są powtarzane: Enter pok
 
 ## Trzymanie tego w ryzach
 
-Ustawienia ▸ Inne decydują, czy historia jest prowadzona, ile wpisów przechowuje i po ilu dniach je zapomina. Przypięte wpisy są z tego wyłączone, a 0 dni zachowuje wszystko; lista leży w `history.ini` w twoim folderze konfiguracyjnym i przetrwa ponowne uruchomienie.
+Ustawienia ▸ Różne decydują, czy historia jest prowadzona, ile wpisów przechowuje i po ilu dniach je zapomina. Przypięte wpisy są z tego wyłączone, a 0 dni zachowuje wszystko; lista leży w `history.ini` w twoim folderze konfiguracyjnym i przetrwa ponowne uruchomienie.
 
 ## Uwagi
 

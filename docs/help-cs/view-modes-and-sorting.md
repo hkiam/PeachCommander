@@ -50,7 +50,7 @@ Složky se vždy řadí společně nahoře, před soubory, a položka `..`, kter
 
 ## Tipy
 
-- Přirozené (číselné) řazení je ve výchozím nastavení zapnuté, takže `file2` je před `file10` místo za ním. Můžete jej vypnout v Konfigurace > Možnosti v nastavení zobrazení.
+- Přirozené (číselné) řazení je ve výchozím nastavení zapnuté, takže `file2` je před `file10` místo za ním. Můžete jej vypnout v Konfigurace > Nastavení na stránce Zobrazení.
 - Sloupec můžete v zobrazení Podrobnosti rozšířit nebo zúžit přetažením dělicí čáry mezi záhlavími sloupců.
 - Používáte-li klávesovou navigaci macOS (Nastavení systému ▸ Klávesnice), patří řada Ctrl+F1 až Ctrl+F8 systému — řádek nabídek, Dock, panel nástrojů — a k Peach Commanderu se nikdy nedostane. Přepněte v nastavení schéma kláves na **macOS**: režimy zobrazení jsou pak na Cmd+1, Cmd+2 a Cmd+3 a řazení na Alt+Cmd+1 až Alt+Cmd+4.
 - Režim zobrazení, pořadí řazení a volba sloupců se pamatují pro každý panel, takže můžete mít jednu stranu jako podrobný seznam a druhou jako fotogalerii.

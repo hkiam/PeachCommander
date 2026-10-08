@@ -48,7 +48,7 @@ Sletninger og omdøbninger står på listen, men gentages aldrig: Retur viser i 
 
 ## Hold den i kort snor
 
-Indstillinger ▸ Andet afgør, om der føres en historik, hvor mange poster den beholder, og efter hvor mange dage den glemmer dem. Fastgjorte poster er undtaget, og 0 dage beholder alt; listen ligger i `history.ini` i din konfigurationsmappe og overlever genstarter.
+Indstillinger ▸ Diverse afgør, om der føres en historik, hvor mange poster den beholder, og efter hvor mange dage den glemmer dem. Fastgjorte poster er undtaget, og 0 dage beholder alt; listen ligger i `history.ini` i din konfigurationsmappe og overlever genstarter.
 
 ## Bemærkninger
 

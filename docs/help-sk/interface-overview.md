@@ -48,5 +48,5 @@ Okno je rozdelené na ľavý a pravý panel, každý zobrazuje obsah jedného pr
 ## Poznámky
 
 - Lišta funkčných klávesov sa počas držania modifikačného klávesu naživo premenúva. Napríklad podržanie klávesu Shift zmení F6 na akciu premenovania na mieste, takže tlačidlá vždy zobrazujú, čo klávesy práve teraz urobia.
-- Takmer každú lištu možno zobraziť alebo skryť. V ponukách Zobraziť a Nastavenia nájdete možnosti na zapnutie a vypnutie lišty tlačidiel, lišty jednotiek, príkazového riadka alebo lišty funkčných klávesov, prípadne na usporiadanie oboch panelov nad seba namiesto vedľa seba.
+- Takmer každú lištu možno zobraziť alebo skryť. V ponukách Zobraziť a Konfigurácia nájdete možnosti na zapnutie a vypnutie lišty tlačidiel, lišty jednotiek, príkazového riadka alebo lišty funkčných klávesov, prípadne na usporiadanie oboch panelov nad seba namiesto vedľa seba.
 - Na mnohých klávesniciach Macu fungujú klávesy F predvolene ako ovládanie médií a jasu. Podržte kláves Fn spolu s F3–F8 alebo v Nastaveniach systému zapnite „Používať klávesy F1, F2 atď. ako štandardné funkčné klávesy“, aby ste ich mohli používať priamo.

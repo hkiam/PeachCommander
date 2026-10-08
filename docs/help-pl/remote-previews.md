@@ -28,7 +28,7 @@ Odrzucony podgląd to nie pusty panel: panel boczny pokazuje ikonę pliku, jego 
 
 ## Zmiana limitów
 
-1. Otwórz Ustawienia ▸ Edycja/Podgląd.
+1. Otwórz Ustawienia ▸ Edytuj/Wyświetl.
 2. Wyłącz „Automatycznie podglądaj pliki w lokalizacjach sieciowych”, aby całkowicie zatrzymać podglądy sieciowe, albo ustaw „Pliki sieciowe do (MB)” na żądany rozmiar.
 3. Włącz „Pobieraj pliki z chmury, aby je podejrzeć”, jeśli wolisz podgląd niż zaoszczędzony transfer.
 4. Ustaw „Rozpakowuj z archiwów do (MB)”, aby określić, jak duży może być plik w archiwum.

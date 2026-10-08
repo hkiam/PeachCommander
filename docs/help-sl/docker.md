@@ -8,7 +8,7 @@ related: [plugins, amazon-s3, webdav, copying-files, privacy-and-security]
 
 Datotečni sistem Dockerjevega vsebnika lahko brskate v pultu kakor katero koli mapo, in enako velja za Dockerjev nosilec. Izberite **Poveži se z Dockerjem…** v meniju Omrežje ali kliknite ploščico **Docker** v vrstici pogonov in pogon se prikaže v dejavnem pultu.
 
-To je vtičnik in **dobavljen je izklopljen**. Vklopite ga v **Nastavitve ▸ Vtičniki…**. Začne izklopljen, ker ima povezava z Dockerjevim strežnikom na vašem Macu enake pravice kot vi sami — glejte *Do česa dostopa* spodaj.
+To je vtičnik in **dobavljen je izklopljen**. Vklopite ga v **Konfiguracija ▸ Vtičniki…**. Začne izklopljen, ker ima povezava z Dockerjevim strežnikom na vašem Macu enake pravice kot vi sami — glejte *Do česa dostopa* spodaj.
 
 ## Kaj vidite
 
@@ -83,7 +83,7 @@ Vnosi se pokažejo le znotraj Dockerjevega pogona; nad lastno mapo jih sploh ni.
 
 ## Nastavitve
 
-**Nastavitve ▸ Nastavitve ▸ Docker** vsebuje vse to. Iste vrednosti so v majhni datoteki v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ki jo uredite, če računalnik pripravljate s skriptom:
+**Konfiguracija ▸ Nastavitve ▸ Docker** vsebuje vse to. Iste vrednosti so v majhni datoteki v `~/Library/Application Support/PeachCommander/Docker/docker.ini`, ki jo uredite, če računalnik pripravljate s skriptom:
 
 - `Endpoint` — naslov, ki naj se uporabi namesto najdenega.
 - `ExecFallback` — `0` doseže, da vtičnik uporablja izključno Dockerjev arhivski API: takrat v vsebniku nikoli ničesar ne zažene, za ceno tega, da ne more izpisati zelo velikega imenika, brisati ali preimenovati.

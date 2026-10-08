@@ -6,7 +6,7 @@ order: 126
 related: [plugins, deleting-files]
 ---
 
-Tragerea unei aplicații în Coș lasă fișierele ei de suport, cache-urile, preferințele și containerele împrăștiate prin folderele Library. Pluginul Uninstaller elimină o aplicație **și** acele resturi: găsește tot ce a lăsat aplicația în urmă, vă arată lista cu o dimensiune pentru fiecare și mută totul în Coș după ce confirmați. Fiind un plugin, îl puteți dezactiva sau elimina din **Configurare ▸ Pluginuri…**.
+Tragerea unei aplicații în Coș lasă fișierele ei de suport, cache-urile, preferințele și containerele împrăștiate prin folderele Library. Pluginul Uninstaller elimină o aplicație **și** acele resturi: găsește tot ce a lăsat aplicația în urmă, vă arată lista cu o dimensiune pentru fiecare și mută totul în Coș după ce confirmați. Fiind un plugin, îl puteți dezactiva sau elimina din **Configurație ▸ Pluginuri…**.
 
 ## Dezinstalarea unei aplicații de sub cursor
 

@@ -63,7 +63,7 @@ A másik irány: egy saját szkript, amelyet a Peach Commander futtat.
 
 Ez egy bővítmény, és **kikapcsolva** érkezik, mert egy Ön által választott program futtatása mindent tud, amit a program többi része, és több olyat is, amit abból semmi. Két kapcsoló, mindkettő kikapcsolva, míg Ön be nem állítja:
 
-1. **Beállítás ▸ Bővítmények…** — kapcsolja be a **Scripting** bővítményt.
+1. **Konfiguráció ▸ Bővítmények…** — kapcsolja be a **Scripting** bővítményt.
 2. **Beállítások ▸ MI** — kapcsolja be a **Szkriptek futtatásának engedélyezése** lehetőséget. Azon a lapon van, mert ugyanolyan típusú engedély, mint az asszisztens shellje, és a kettő együvé tartozik.
 
 Ezután helyezzen egy szkriptet a konfigurációs mappán belüli `scripts/` mappába — a **Parancsok ▸ Szkriptmappa megnyitása** odavezet, és első alkalommal egy példát hagy ott. Egy `.applescript`, `.scpt` vagy `.jxa` fájl abban a mappában *már* szkript; nincs mit regisztrálni.
@@ -89,7 +89,7 @@ Minden ezen túli magán a programon keresztül megy, a fenti igékkel — a ké
 
 ### Szkript gombra vagy billentyűre helyezése
 
-Minden szkript `plugin.script.run.<név>` nevű paranccsá válik, ahol a `<név>` a fájl kiterjesztés nélküli neve (a szóközök és pontok kötőjelre változnak). Ez az azonosító mindenhol működik, ahol egy `cm_*` azonosító működik: a gombsávon, a `usercmd.ini` fájlban, egy `.mnu` fájlban és a **Beállítás ▸ Gyorsbillentyűk szerkesztése…** részben.
+Minden szkript `plugin.script.run.<név>` nevű paranccsá válik, ahol a `<név>` a fájl kiterjesztés nélküli neve (a szóközök és pontok kötőjelre változnak). Ez az azonosító mindenhol működik, ahol egy `cm_*` azonosító működik: a gombsávon, a `usercmd.ini` fájlban, egy `.mnu` fájlban és a **Konfiguráció ▸ Gyorsbillentyűk szerkesztése…** részben.
 
 ### Hogyan fut egy szkript, és az időkorlát
 

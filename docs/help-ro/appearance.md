@@ -12,7 +12,7 @@ Peach Commander se poate potrivi cu aspectul restului Mac-ului dvs. sau poate ad
 
 O temă înlocuiește întreaga paletă a panourilor într-un singur pas.
 
-1. Deschideți fereastra de setări alegând Configurare > Opțiuni…, sau apăsați Cmd+,.
+1. Deschideți fereastra de setări alegând Configurație > Configurări…, sau apăsați Cmd+,.
 2. Selectați pagina **Culori**.
 3. Alegeți din meniul **Temă**:
    - **Sistem (implicit)** — fără temă. Panourile urmează setarea Aspect de mai jos, exact ca până acum. Aceasta este valoarea implicită.
@@ -65,7 +65,7 @@ Dacă ceva este greșit în fișier, Peach Commander sare peste acea linie și p
 Numele `light`, `dark`, `norton` și `system` aparțin temelor încorporate; un fișier cu un astfel de nume este ignorat, ca să nu poată ascunde o temă livrată. Dacă ștergeți fișierul temei selectate, Peach Commander revine la **Sistem (implicit)**.
 ## Setați aspectul luminos, întunecat sau de sistem
 
-1. Deschideți fereastra de setări alegând Configurare > Opțiuni…, sau apăsați Cmd+,.
+1. Deschideți fereastra de setări alegând Configurație > Configurări…, sau apăsați Cmd+,.
 2. Selectați pagina **Culori**.
 3. Din meniul **Aspect**, alegeți una dintre:
    - **Sistem (urmează macOS)** — se potrivește automat cu setarea luminoasă/întunecată curentă a Mac-ului dvs.
@@ -88,7 +88,7 @@ Lăsați o casetă dezactivată pentru a păstra culoarea încorporată pentru a
 
 ## Colorați fișierele după tip
 
-1. Deschideți Configurare > Opțiuni… și selectați pagina **Afișare**.
+1. Deschideți Configurație > Configurări… și selectați pagina **Afișare**.
 2. Faceți clic pe **Culori după tip de fișier…**.
 3. Adăugați o regulă cu o mască de nume precum `*.zip` sau `*.txt`, apoi alegeți o culoare pentru fișierele care se potrivesc.
 4. Folosiți **Adaugă regulă** pentru mai multe măști; faceți clic pe **Gata** pentru a salva sau **Anulează** pentru a renunța.

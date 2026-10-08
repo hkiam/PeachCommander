@@ -12,7 +12,7 @@ Peach Commander sa môže zhodovať so vzhľadom zvyšku vášho Macu alebo prev
 
 Motív nahradí celú paletu panelov jedným krokom.
 
-1. Otvorte okno nastavení voľbou Konfigurácia > Možnosti…, alebo stlačte Cmd+,.
+1. Otvorte okno nastavení voľbou Konfigurácia > Nastavenia…, alebo stlačte Cmd+,.
 2. Vyberte stránku **Farby**.
 3. V ponuke **Motív** vyberte:
    - **Systém (predvolené)** — žiadny motív. Panely sa riadia nastavením Vzhľad nižšie, presne ako doteraz. Toto je predvolená voľba.
@@ -65,7 +65,7 @@ Ak je v súbore niečo zle, Peach Commander preskočí práve ten riadok a zvyš
 Názvy `light`, `dark`, `norton` a `system` patria vstavaným motívom; súbor s takým názvom sa preskočí, aby nemohol zatieniť dodávaný motív. Ak zmažete súbor zvoleného motívu, Peach Commander sa vráti na **Systém (predvolené)**.
 ## Nastavte svetlý, tmavý alebo systémový vzhľad
 
-1. Otvorte okno nastavení voľbou Konfigurácia > Možnosti…, alebo stlačte Cmd+,.
+1. Otvorte okno nastavení voľbou Konfigurácia > Nastavenia…, alebo stlačte Cmd+,.
 2. Vyberte stránku **Farby**.
 3. V ponuke **Vzhľad** vyberte jednu z možností:
    - **Systém (sledovať macOS)** — automaticky sa zhoduje s aktuálnym svetlým/tmavým nastavením vášho Macu.
@@ -88,7 +88,7 @@ Nechajte zaškrtávacie pole vypnuté, aby ste zachovali vstavanú farbu pre dan
 
 ## Zafarbite súbory podľa typu
 
-1. Otvorte Konfigurácia > Možnosti… a vyberte stránku **Zobrazenie**.
+1. Otvorte Konfigurácia > Nastavenia… a vyberte stránku **Zobrazenie**.
 2. Kliknite na **Farby typov súborov…**.
 3. Pridajte pravidlo s maskou názvu, ako `*.zip` alebo `*.txt`, potom vyberte farbu pre zhodujúce sa súbory.
 4. Použite **Pridať pravidlo** pre viac masiek; kliknite na **Hotovo** na uloženie alebo **Zrušiť** na zahodenie.

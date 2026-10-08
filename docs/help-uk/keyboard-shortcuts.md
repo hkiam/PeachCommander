@@ -40,10 +40,10 @@ Peach Commander створено для керування з клавіатур
 
 | Дія | Шлях у меню |
 |---|---|
-| Вибрати класичну схему | Configuration > Keyboard Scheme > TC Classic |
-| Вибрати схему Mac | Configuration > Keyboard Scheme > macOS Native |
-| Редагувати комбінації | Configuration > Keyboard Shortcuts… |
-| Оглянути всі команди | Configuration > Command Browser… |
+| Вибрати класичну схему | Конфігурація > Keyboard Scheme > TC Classic |
+| Вибрати схему Mac | Конфігурація > Keyboard Scheme > macOS Native |
+| Редагувати комбінації | Конфігурація > Keyboard Shortcuts… |
+| Оглянути всі команди | Конфігурація > Command Browser… |
 | Оновити активну панель | F2 (також Ctrl+R) |
 
 ## Примітки

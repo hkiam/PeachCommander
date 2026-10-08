@@ -48,7 +48,7 @@ Verwijderingen en naamswijzigingen staan er wel, maar worden nooit herhaald: Ret
 
 ## Het in de hand houden
 
-Instellingen ▸ Overig bepaalt of er een geschiedenis wordt bijgehouden, hoeveel regels die bewaart en na hoeveel dagen ze worden vergeten. Vastgezette regels zijn uitgezonderd en 0 dagen bewaart alles; de lijst staat in `history.ini` in je configuratiemap en overleeft herstarts.
+Instellingen ▸ Diversen bepaalt of er een geschiedenis wordt bijgehouden, hoeveel regels die bewaart en na hoeveel dagen ze worden vergeten. Vastgezette regels zijn uitgezonderd en 0 dagen bewaart alles; de lijst staat in `history.ini` in je configuratiemap en overleeft herstarts.
 
 ## Opmerkingen
 

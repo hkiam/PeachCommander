@@ -87,7 +87,7 @@ La mutarea cursorului, numele și detaliile se actualizează imediat; previzuali
 
 Panoul lateral apare la început doar cu pagina **Informații**. **Activități** (transferuri încă în curs) și **Jurnal** (transferuri încheiate) sunt dezactivate, pentru că cea mai mare parte a lucrului nu le cere niciodată, iar altfel o bandă de trei file stă toată ziua deasupra previzualizării.
 
-- Activați-le în **Setări > Aspect**, la *Paginile panoului lateral*, prin clic dreapta pe banda de file, sau din **Vizualizare > Panou lateral: Informații / Activități / Jurnal**.
+- Activați-le în **Configurări > Aranjament**, la *Paginile panoului lateral*, prin clic dreapta pe banda de file, sau din **Vizualizare > Panou lateral: Informații / Activități / Jurnal**.
 - Dacă rămâne o singură pagină, panoul renunță de tot la banda de file: un panou cu doar Informații este previzualizarea și detaliile, fără nimic deasupra.
 - Orice pagină poate fi dezactivată, inclusiv Informații — util când țineți aici mai degrabă terminalul sau vizualizarea unui plugin. Un panou în care nu a rămas nimic o spune, în loc să se deschidă gol.
 - Paginile oferite de un plugin nu sunt afectate: acelea apar și dispar împreună cu pluginul, iar pentru dezactivarea lor există pagina **Pluginuri**.
@@ -117,7 +117,7 @@ Activați **Compară** pentru a deschide un al doilea panou cu propriul meniu de
 
 F3 pe un `.jar`, `.apk` sau `.dex` întreg îl decompilează dintr-o dată și arată un arbore de pachete lângă sursă. Câmpul de căutare de deasupra arborelui caută în fiecare clasă — exact întrebarea la care o singură clasă nu poate răspunde: unde apare de fapt un șir, un apel sau o constantă, când încă nu știți în ce clasă. Potrivirile restrâng arborele, iar prima se deschide la linia sa. Enter deschide în continuare JAR-ul ca arhivă — cele două acțiuni rămân separate.
 
-Există o a doua cale, mai directă: puneți cursorul pe un fișier `.class` sau pe o arhivă întreagă și alegeți **Decompilează în surse** (meniul Comenzi, meniul contextual sau ⌘⇧J). Clasele sunt decompilate, iar rezultatul se deschide în celălalt panou ca fișiere `.java` obișnuite. De acolo se aplică tot managerul de fișiere — F3 le afișează cu evidențierea Java proprie a lui Peach Commander, Alt+F7 caută prin ele, F5 le copiază în altă parte și le puteți compara sau eticheta ca orice altceva. Pentru cea mai mare parte a muncii asta bate o fereastră separată; de aceea arborele pluginului poate fi dezactivat în Setări ▸ Decompilator.
+Există o a doua cale, mai directă: puneți cursorul pe un fișier `.class` sau pe o arhivă întreagă și alegeți **Decompilează în surse** (meniul Comenzi, meniul contextual sau ⌘⇧J). Clasele sunt decompilate, iar rezultatul se deschide în celălalt panou ca fișiere `.java` obișnuite. De acolo se aplică tot managerul de fișiere — F3 le afișează cu evidențierea Java proprie a lui Peach Commander, Alt+F7 caută prin ele, F5 le copiază în altă parte și le puteți compara sau eticheta ca orice altceva. Pentru cea mai mare parte a muncii asta bate o fereastră separată; de aceea arborele pluginului poate fi dezactivat în Configurări ▸ Decompilator.
 
 Un al doilea plugin face același lucru pentru .NET: F3 pe un `.dll`, `.exe` sau `.winmd` gestionat arată tipurile ca C#, **Decompilează assembly-ul în surse** (⌘⇧N) le pune într-un panou, iar căutarea poate privi în interiorul unui assembly la fel. Conduce **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) pentru sursă, sau **monodis** din Mono pentru IL — echivalentul .NET al lui `javap`. Un `.dll` nativ are aceeași extensie și nicio sursă de arătat, deci pluginul verifică înainte de a deschide și îl lasă vizualizatorului încorporat.
 
@@ -125,7 +125,7 @@ Pagina de setări are un buton **Verifică motoarele**, și merită apăsat: „
 
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
-Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.
+Modulul este **oprit până îl porniți**, în Configurări ▸ Pluginuri — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.
 
 Pentru a adăuga un motor propriu, creați `decompilers.ini` în dosarul motoarelor:
 

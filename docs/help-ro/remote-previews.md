@@ -28,7 +28,7 @@ O previzualizare refuzată nu este un panou gol: bara laterală arată pictogram
 
 ## Modificarea limitelor
 
-1. Deschideți Setări ▸ Editare/Vizualizare.
+1. Deschideți Configurări ▸ Editare/Vizualizare.
 2. Dezactivați „Previzualizează automat fișierele din locațiile de rețea” pentru a opri complet previzualizările în rețea sau setați „Fișiere din rețea până la (MB)” la dimensiunea dorită.
 3. Activați „Descarcă fișierele din cloud pentru previzualizare” dacă preferați previzualizarea în locul traficului economisit.
 4. Setați „Dezarhivează din arhive până la (MB)” pentru cât de mare poate fi un fișier dintr-o arhivă.

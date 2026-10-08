@@ -36,6 +36,6 @@ Se alcuni elementi non possono essere rimossi — ad esempio perché sono blocca
 ## Note
 
 - **Conferma.** Per impostazione predefinita Peach Commander vi chiede di confermare prima di eliminare. Potete disattivarlo in **Configurazione > Conferma** deselezionando **Conferma prima di eliminare**. Anche così, trattate le eliminazioni definitive con cautela, poiché non possono essere annullate.
-- **Comportamento predefinito di F8.** Normalmente F8 sposta gli elementi nel Cestino. Se preferite che F8 elimini definitivamente per impostazione predefinita, modificate l'opzione di eliminazione nelle impostazioni **Configurazione > Operazioni**. Shift+F8 elimina sempre definitivamente indipendentemente da questa impostazione.
+- **Comportamento predefinito di F8.** Normalmente F8 sposta gli elementi nel Cestino. Se preferite che F8 elimini definitivamente per impostazione predefinita, modificate l'opzione di eliminazione nelle impostazioni **Configurazione > Operazione**. Shift+F8 elimina sempre definitivamente indipendentemente da questa impostazione.
 - **Eliminazione all'interno degli archivi.** Quando state navigando all'interno di un archivio supportato, l'eliminazione rimuove gli elementi selezionati dall'archivio. Le posizioni di sola lettura, come alcune cartelle di rete o di plugin, non possono essere modificate in questo modo.
 - **Cartelle.** Eliminare una cartella rimuove tutto ciò che contiene. Assicuratevi di aver selezionato gli elementi giusti prima di confermare, soprattutto per un'eliminazione definitiva.

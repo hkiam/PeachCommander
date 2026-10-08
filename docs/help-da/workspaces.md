@@ -48,7 +48,7 @@ flytning tømmer samlemappen for det flyttede; en kopiering lader den være.
 - Højreklik på en chip for at omdøbe den, give den en farve eller slette den — eller klik på **✕** i dens højre ende, som sletter arbejdsområdet efter et spørgsmål. Farven er det, du kender arbejdsområderne fra hinanden på med et blik, når vinduet er smalt, og navnene ikke længere er plads til.
 - Ni er grænsen, så hver chip forbliver genkendelig.
 - **Vis ▸ Vis arbejdsområdelinje** skjuler linjen uden at slå funktionen fra — for dem, der skifter mellem arbejdsområder med tastaturet.
-- Arbejdsområder kan slås helt fra under **Indstillinger ▸ Faneblade**. Dine arbejdsområder bevares og kommer uændret tilbage, når du slår funktionen til igen.
+- Arbejdsområder kan slås helt fra under **Indstillinger ▸ Faner**. Dine arbejdsområder bevares og kommer uændret tilbage, når du slår funktionen til igen.
 
 ## At begrænse et arbejdsområde til en mappe
 
@@ -72,7 +72,7 @@ gentages med ét tastetryk, og en shell-linje sættes ind i kommandolinjen i ste
 Journalen er bevidst adskilt fra den globale historik — den svarer på "hvor plejer jeg at være" og
 rangerer efter hyppighed; denne svarer på "hvad skete der her" og bevarer rækkefølgen. Den slettes
 sammen med sit arbejdsområde, bevares ellers uden tidsgrænse, og kan slås fra under **Indstillinger ▸
-Faneblade**.
+Faner**.
 
 ## At give et arbejdsområde videre
 

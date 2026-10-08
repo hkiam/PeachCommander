@@ -28,7 +28,7 @@ En avvisad förhandsvisning är inte en tom panel: sidopanelen visar filens symb
 
 ## Ändra gränserna
 
-1. Öppna Inställningar ▸ Redigera/Visa.
+1. Öppna Inställningar ▸ Redigera/visa.
 2. Stäng av ”Förhandsvisa filer på nätverksplatser automatiskt” för att helt stoppa förhandsvisningar över nätverket, eller sätt ”Nätverksfiler upp till (MB)” till önskad storlek.
 3. Slå på ”Hämta filer från molnet för att förhandsvisa dem” om du hellre vill ha förhandsvisningen än den sparade trafiken.
 4. Ställ in ”Packa upp ur arkiv upp till (MB)” för hur stor en fil i ett arkiv får vara.

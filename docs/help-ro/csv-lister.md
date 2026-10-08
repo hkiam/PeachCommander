@@ -8,7 +8,7 @@ related: [plugins, viewing-files, log-viewer]
 
 Apăsați **F3** pe un fișier `.csv` sau `.tsv` și se deschide ca un tabel adevărat — coloane, antete, sortare și filtru — în loc de linii de text cu virgule în ele.
 
-Este o extensie: o puteți dezactiva sau elimina din **Configurare ▸ Extensii…**. Fără ea, F3 arată fișierul ca text simplu, ceea ce pentru unul mic rămâne perfect lizibil.
+Este o extensie: o puteți dezactiva sau elimina din **Configurație ▸ Extensii…**. Fără ea, F3 arată fișierul ca text simplu, ceea ce pentru unul mic rămâne perfect lizibil.
 
 ## Delimitatorul este dedus, nu presupus
 

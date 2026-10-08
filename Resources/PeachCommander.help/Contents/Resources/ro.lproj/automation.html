@@ -91,8 +91,8 @@
 <p>Celălalt sens: un script al dumneavoastră, rulat de Peach Commander.</p>
 <p>Acesta este un plugin și este livrat <strong>dezactivat</strong>, deoarece rularea unui program la alegerea dumneavoastră poate face tot ce face restul aplicației și câteva lucruri pe care nimic din ea nu acoperă. Două comutatoare, ambele oprite până le puneți:</p>
 <ol>
-<li><strong>Configurare ▸ Pluginuri…</strong> — activați <strong>Scripting</strong>.</li>
-<li><strong>Preferințe ▸ IA</strong> — activați <strong>Permite rularea scripturilor</strong>. Se află pe acea pagină pentru că este același tip de permisiune ca shell-ul asistentului, iar cele două merg împreună.</li>
+<li><strong>Configurație ▸ Pluginuri…</strong> — activați <strong>Scripting</strong>.</li>
+<li><strong>Configurări ▸ IA</strong> — activați <strong>Permite rularea scripturilor</strong>. Se află pe acea pagină pentru că este același tip de permisiune ca shell-ul asistentului, iar cele două merg împreună.</li>
 </ol>
 <p>Apoi puneți un script în <code>scripts/</code> din dosarul dumneavoastră de configurare — <strong>Comenzi ▸ Deschide dosarul de scripturi</strong> vă duce acolo și lasă un exemplu prima dată. Un fișier <code>.applescript</code>, <code>.scpt</code> sau <code>.jxa</code> din acel dosar <em>este</em> un script; nu e nimic de înregistrat.</p>
 <h3 id="ce-primeste-un-script">Ce primește un script</h3>
@@ -133,7 +133,7 @@
 
 <p>Tot ce depășește asta trece prin aplicația însăși, cu verbele de mai sus — cele două jumătăți se completează deci.</p>
 <h3 id="punerea-unui-script-pe-un-buton-sau-pe-o-tasta">Punerea unui script pe un buton sau pe o tastă</h3>
-<p>Fiecare script devine o comandă numită <code>plugin.script.run.&lt;nume&gt;</code>, unde <code>&lt;nume&gt;</code> este numele fișierului fără extensie (spațiile și punctele devin cratime). Acel id funcționează oriunde funcționează un id <code>cm_*</code>: în bara de butoane, în <code>usercmd.ini</code>, într-un fișier <code>.mnu</code> și în <strong>Configurare ▸ Editează scurtăturile…</strong>.</p>
+<p>Fiecare script devine o comandă numită <code>plugin.script.run.&lt;nume&gt;</code>, unde <code>&lt;nume&gt;</code> este numele fișierului fără extensie (spațiile și punctele devin cratime). Acel id funcționează oriunde funcționează un id <code>cm_*</code>: în bara de butoane, în <code>usercmd.ini</code>, într-un fișier <code>.mnu</code> și în <strong>Configurație ▸ Editează scurtăturile…</strong>.</p>
 <h3 id="cum-ruleaza-un-script-si-limita-de-timp">Cum rulează un script și limita de timp</h3>
 <p>Implicit, un script rulează ca proces separat, ceea ce înseamnă că i se poate da o limită de timp și poate fi oprit dacă o depășește — treizeci de secunde dacă nu spuneți altfel. Un script poate opta să ruleze <em>în interiorul</em> aplicației, ceea ce îi permite să întoarcă o valoare structurată și îl păstrează compilat între rulări, dar atunci nu există limită de timp: un script care intră în buclă blochează aplicația. Puneți alegerea în <code>scripts.json</code>, lângă scripturile dumneavoastră:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
@@ -151,7 +151,7 @@
 <li>Scriptarea acționează întotdeauna asupra panoului <strong>activ</strong>; folosiți mai întâi <code>go to … in left</code> / <code>in right</code> dacă aveți nevoie de o anumită parte.</li>
 <li>Peach Commander este o aplicație cu o singură fereastră, astfel încât scripturile țintesc cele două panouri ale acelei ferestre.</li>
 </ul>
-<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meniul Start și comenzile personalizate</a></li><li><a href="settings.html">Setări</a></li><li><a href="macros.html">Macrocomenzi</a></li></ul></section>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meniul Start și comenzile personalizate</a></li><li><a href="settings.html">Configurări</a></li><li><a href="macros.html">Macrocomenzi</a></li></ul></section>
 </main>
 </body>
 </html>

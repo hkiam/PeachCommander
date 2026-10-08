@@ -12,12 +12,12 @@
 <h1>Makrók</h1>
 <p>A makró fájlműveletek elnevezett sorozata — mappát létrehozni, a kijelölést belé mozgatni, a maradékot címkézni —, amelyet egy kattintással újra lefuttathat. Nem szkriptnyelv: nincsenek benne feltételek és ciklusok, és ez szándékos. A makró egy lista, amelyet el lehet olvasni, és olvasni tudni kell, mielőtt jóváhagyja.</p>
 <p>Mindaz, amit egy makró tesz, ugyanazon a gépezeten megy át, mint az asszisztens. A makró tehát semmi olyat nem tehet, amit nem engedélyezett, minden lépése megjelenik a műveletnaplóban, és ami visszavonható volt, az továbbra is az.</p>
-<h2 id="egyetlen-ablak-beallitasok-makrok">Egyetlen ablak: Beállítások ▸ Makrók…</h2>
+<h2 id="egyetlen-ablak-konfiguracio-makrok">Egyetlen ablak: Konfiguráció ▸ Makrók…</h2>
 <p>A makrókkal kapcsolatos minden e mögött az egyetlen menüpont mögött van: a lista, a makrókészítés két módja és a fájlhoz vezető út. A menüben nincs más, ami közül választani kellene.</p>
 <h2 id="a-leggyorsabb-ut-rogzitsen-egyet">A leggyorsabb út: rögzítsen egyet</h2>
 <p>Nem kell nulláról megírnia egy makrót — és utólag sem kell kitalálnia, hol kezdődött.</p>
 <ol>
-<li><strong>Beállítások ▸ Makrók… ▸ Makró rögzítése…</strong>. Az ablak félreáll, és megjelenik egy kis panel, amely jelzi, hogy rögzítés folyik, és menet közben számolja a lépéseket.</li>
+<li><strong>Konfiguráció ▸ Makrók… ▸ Makró rögzítése…</strong>. Az ablak félreáll, és megjelenik egy kis panel, amely jelzi, hogy rögzítés folyik, és menet közben számolja a lépéseket.</li>
 <li>Végezze el a munkát egyszer: másolás, áthelyezés, átnevezés, törlés, mappák és fájlok létrehozása. Dolgozzon a szokásos módon; a rögzítés nincs útban.</li>
 <li><strong>Leállítás és mentés…</strong>.</li>
 <li>A lépések már bejelölve térnek vissza. Vegye ki a jelölést mindenből, ami csak előkészített, adjon nevet a makrónak, és hagyja bekapcsolva a <strong>Gomb hozzáadása is hozzá</strong> lehetőséget.</li>
@@ -83,7 +83,7 @@
 </table>
 <p>Mindegyikből parancs lesz, így bármelyiket gombra vagy billentyűre teheti anélkül, hogy bármit írna.</p>
 <h2 id="kezelesuk">Kezelésük</h2>
-<p>A <strong>Beállítások ▸ Makrók…</strong> a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mire fog rákérdezni a jogosultsági kapu — így a „ez töröl” látszik, mielőtt billentyűre tenné. Innen futtathat, átnevezhet, duplikálhat, átrendezhet, törölhet, exportálhat és importálhat. Egy sor fölé húzva megjelennek a lépései.</p>
+<p>A <strong>Konfiguráció ▸ Makrók…</strong> a lista: hogyan hívják az egyes makrókat, hogyan hívják a parancsukat, hány lépésből állnak, és mire fog rákérdezni a jogosultsági kapu — így a „ez töröl” látszik, mielőtt billentyűre tenné. Innen futtathat, átnevezhet, duplikálhat, átrendezhet, törölhet, exportálhat és importálhat. Egy sor fölé húzva megjelennek a lépései.</p>
 <p>A <strong>Futtatás</strong> az a mód, ahogy kipróbálhatja az imént rögzítettet anélkül, hogy előbb bezárná az ablakot és megkeresné a parancsot. Ugyanazon a terven és ugyanazon a megerősítésen megy át, mint bármely más futtatás — ennek az ablaknak nincsenek saját jogosultságai.</p>
 <p>Az <strong>Exportálás…</strong> a kijelölt makrót saját fájlba írja, az <strong>Importálás…</strong> pedig makrókat ad hozzá olyan fájlokból, amelyeket valaki küldött — pontosan ezért van makrónként egy fájl. Az import soha nem ír felül: a már foglalt azonosítójú makró szabadot kap (az érkező <code>backup</code> az ön saját <code>backup</code>-ja mellett <code>backup-2</code> lesz), és megtudja, milyen azonosítókkal kerültek be az újak, hiszen a gombnak, amit készít, a megfelelőt kell megneveznie.</p>
 <p><img alt="A „Makrók kezelése” ablak minden makró parancsnevével, lépésszámával és jogosultságával" src="images/macro-manager.png" />
@@ -106,7 +106,7 @@
 </code></pre></div>
 
 <p>A mentés azonnal újratölti a makrókat — és szól, ha valami nem stimmel: elgépelt eszköznév, hiányzó kötelező argumentum, két azonos azonosítójú makró. A hibás makró nem fut le, és nem kerül gombra sem; megtudja, melyikről van szó és mi a baj vele, amíg a szerkesztő még nyitva van.</p>
-<p>Hogy milyen eszközök vannak és mit fogadnak el, a <strong>Beállítások ▸ Parancsböngésző…</strong> mutatja meg, vagy kérdezze meg az asszisztenst a <code>list_macros</code> felől.</p>
+<p>Hogy milyen eszközök vannak és mit fogadnak el, a <strong>Konfiguráció ▸ Parancsböngésző…</strong> mutatja meg, vagy kérdezze meg az asszisztenst a <code>list_macros</code> felől.</p>
 <h3 id="helyettesitok">Helyettesítők</h3>
 <p>Az egyes betűk ugyanazok, amelyeket a gombsáv és a Start menü használ: aki már készített gombot, annak itt nincs mit újat tanulnia.</p>
 <table>
@@ -165,8 +165,8 @@
 <h2 id="makro-futtatasa">Makró futtatása</h2>
 <p>Minden makró <code>mc_&lt;id&gt;</code> nevű paranccsá válik, és ezáltal magától megjelenik itt:</p>
 <ul>
-<li><strong>Beállítás ▸ Parancsböngésző…</strong></li>
-<li><strong>Beállítás ▸ Gyorsbillentyűk szerkesztése… — tegye egy billentyűre</strong></li>
+<li><strong>Konfiguráció ▸ Parancsböngésző…</strong></li>
+<li><strong>Konfiguráció ▸ Gyorsbillentyűk szerkesztése… — tegye egy billentyűre</strong></li>
 <li>A gombsáv szerkesztőjének parancsválasztójában</li>
 <li>A <code>.mnu</code> menüfájljában és a <code>usercmd.ini</code> fájlban, ha használja őket</li>
 <li>Az asszisztensben, amely név alapján futtatni tudja</li>

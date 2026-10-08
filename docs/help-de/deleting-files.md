@@ -36,6 +36,6 @@ Wenn sich einige Elemente nicht entfernen lassen — etwa weil sie gesperrt sind
 ## Hinweise
 
 - **Bestätigung.** Standardmäßig bittet Peach Commander Sie vor dem Löschen um eine Bestätigung. Sie können dies unter **Konfiguration ▸ Bestätigung** ausschalten, indem Sie **Vor dem Löschen bestätigen** deaktivieren. Gehen Sie dennoch mit dauerhaften Löschvorgängen vorsichtig um, da sie nicht rückgängig gemacht werden können.
-- **Standardverhalten von F8.** Normalerweise verschiebt F8 Elemente in den Papierkorb. Wenn Sie möchten, dass F8 standardmäßig dauerhaft löscht, ändern Sie die Löschoption in den Einstellungen unter **Konfiguration ▸ Bedienung**. Shift+F8 löscht unabhängig von dieser Einstellung immer dauerhaft.
+- **Standardverhalten von F8.** Normalerweise verschiebt F8 Elemente in den Papierkorb. Wenn Sie möchten, dass F8 standardmäßig dauerhaft löscht, ändern Sie die Löschoption in den Einstellungen unter **Konfiguration ▸ Vorgang**. Shift+F8 löscht unabhängig von dieser Einstellung immer dauerhaft.
 - **Löschen innerhalb von Archiven.** Wenn Sie in einem unterstützten Archiv navigieren, entfernt das Löschen die ausgewählten Einträge aus dem Archiv. Schreibgeschützte Orte, etwa manche Netzwerk- oder Plugin-Ordner, können auf diese Weise nicht verändert werden.
 - **Ordner.** Beim Löschen eines Ordners wird alles darin enthaltene entfernt. Vergewissern Sie sich vor dem Bestätigen, dass Sie die richtigen Elemente ausgewählt haben, besonders bei einem dauerhaften Löschvorgang.

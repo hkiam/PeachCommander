@@ -48,7 +48,7 @@ Slettinger og navnebytter står i listen, men gjentas aldri: Retur viser i stede
 
 ## Holde den i tømme
 
-Innstillinger ▸ Annet avgjør om det føres en historikk, hvor mange oppføringer den beholder, og etter hvor mange dager den glemmer dem. Festede oppføringer er unntatt, og 0 dager beholder alt; listen ligger i `history.ini` i konfigurasjonsmappen din og overlever omstarter.
+Innstillinger ▸ Diverse avgjør om det føres en historikk, hvor mange oppføringer den beholder, og etter hvor mange dager den glemmer dem. Festede oppføringer er unntatt, og 0 dager beholder alt; listen ligger i `history.ini` i konfigurasjonsmappen din og overlever omstarter.
 
 ## Merknader
 

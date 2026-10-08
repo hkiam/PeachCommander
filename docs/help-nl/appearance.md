@@ -12,7 +12,7 @@ Peach Commander kan het uiterlijk van de rest van je Mac volgen of een eigen sti
 
 Een thema vervangt het complete kleurenpalet van de panelen in één keer.
 
-1. Open het instellingenvenster via Configuratie > Opties…, of druk op Cmd+,.
+1. Open het instellingenvenster via Configuratie > Instellingen…, of druk op Cmd+,.
 2. Selecteer de pagina **Kleuren**.
 3. Kies in het menu **Thema**:
    - **Systeem (standaard)** — geen thema. De panelen volgen de instelling Weergave hieronder, precies zoals altijd. Dit is de standaardinstelling.
@@ -65,7 +65,7 @@ Klopt er iets niet in het bestand, dan slaat Peach Commander die ene regel over 
 De namen `light`, `dark`, `norton` en `system` horen bij de ingebouwde thema’s; een bestand met zo’n naam wordt overgeslagen, zodat het geen meegeleverd thema kan verbergen. Verwijdert u het bestand van het gekozen thema, dan valt Peach Commander terug op **Systeem (standaard)**.
 ## Licht, donker of systeemweergave instellen
 
-1. Open het instellingenvenster via Configuratie > Opties…, of druk op Cmd+,.
+1. Open het instellingenvenster via Configuratie > Instellingen…, of druk op Cmd+,.
 2. Selecteer de pagina **Kleuren**.
 3. Kies in het menu **Weergave** een van:
    - **Systeem (volg macOS)** — komt automatisch overeen met de huidige licht/donker-instelling van je Mac.
@@ -88,7 +88,7 @@ Laat een aankruisvak uit om de ingebouwde kleur voor dat element te behouden. Kl
 
 ## Bestanden op type inkleuren
 
-1. Open Configuratie > Opties… en selecteer de pagina **Weergave**.
+1. Open Configuratie > Instellingen… en selecteer de pagina **Weergave**.
 2. Klik op **Bestandstypekleuren…**.
 3. Voeg een regel toe met een naammasker zoals `*.zip` of `*.txt` en kies een kleur voor bestanden die eraan voldoen.
 4. Gebruik **Regel toevoegen** voor meer maskers; klik op **Gereed** om te bewaren of **Annuleer** om te verwerpen.

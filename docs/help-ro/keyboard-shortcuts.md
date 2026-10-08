@@ -10,7 +10,7 @@ Peach Commander este construit pentru a fi condus de la tastatură. Vine cu dou�
 
 ## Comutarea schemelor de tastatură
 
-1. Deschideți meniul **Configurare**.
+1. Deschideți meniul **Configurație**.
 2. Alegeți **Schemă de tastatură**, apoi alegeți una:
    - **TC Classic** (implicită) păstrează tastele tradiționale, cu combinații bazate pe Ctrl precum Ctrl+R pentru a reîmprospăta un panou.
    - **macOS Native** mapează aceleași acțiuni pe taste Mac familiare unde are sens, de exemplu Cmd+C pentru a copia fișiere și Cmd+F pentru a căuta.
@@ -18,7 +18,7 @@ Peach Commander este construit pentru a fi condus de la tastatură. Vine cu dou�
 
 ## Personalizarea comenzilor rapide
 
-1. Alegeți **Configurare > Comenzi rapide de tastatură…**.
+1. Alegeți **Configurație > Comenzi rapide de tastatură…**.
 2. Găsiți o comandă folosind câmpul de căutare, apoi selectați rândul ei.
 3. Faceți clic pe **Înregistrează…** și apăsați combinația de taste dorită. Este asignată imediat.
 4. Dacă acea combinație era deja folosită de o altă comandă, un anunț vă spune de la ce comandă a fost luată.
@@ -29,7 +29,7 @@ Peach Commander este construit pentru a fi condus de la tastatură. Vine cu dou�
 
 ## Parcurgerea tuturor comenzilor
 
-1. Alegeți **Configurare > Navigator de comenzi…**.
+1. Alegeți **Configurație > Navigator de comenzi…**.
 2. Tastați în câmpul de căutare pentru a filtra după nume, categorie sau descriere.
 3. Faceți dublu clic pe o comandă, sau selectați-o și faceți clic pe **Rulează**, pentru a o executa pe panoul activ.
 
@@ -40,10 +40,10 @@ Peach Commander este construit pentru a fi condus de la tastatură. Vine cu dou�
 
 | Acțiune | Cale de meniu |
 |---|---|
-| Alege schema clasică | Configurare > Schemă de tastatură > TC Classic |
-| Alege schema Mac | Configurare > Schemă de tastatură > macOS Native |
-| Editează comenzile rapide | Configurare > Comenzi rapide de tastatură… |
-| Parcurge toate comenzile | Configurare > Navigator de comenzi… |
+| Alege schema clasică | Configurație > Schemă de tastatură > TC Classic |
+| Alege schema Mac | Configurație > Schemă de tastatură > macOS Native |
+| Editează comenzile rapide | Configurație > Comenzi rapide de tastatură… |
+| Parcurge toate comenzile | Configurație > Navigator de comenzi… |
 | Reîmprospătează panoul activ | F2 (de asemenea Ctrl+R) |
 
 ## Note
