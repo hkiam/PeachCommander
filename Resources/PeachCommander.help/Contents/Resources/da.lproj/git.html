@@ -65,6 +65,15 @@ der hvor commit alligevel sker; alle tre viser forløb og kan afbrydes.</p>
 <li>I grenlisten kan en gren omdøbes (<strong>Omdøb…</strong>), få en upstream (<strong>Indstil upstream…</strong>) eller slettes på sin server (<strong>Slet på remoten…</strong>).</li>
 <li><strong>Indstillinger ▸ Git</strong> fastlægger git-programmet, dit globale navn og din e-mail, hvordan <strong>Pull</strong> arbejder, fetch i baggrunden, hvad historikken viser, og hvordan dens datoer ser ud, signering, sign-off og hooks for commits samt mellemrum og kontekstlinjer for diffs. Forfattere bærer farvede initialer i historikken.</li>
 </ul>
+<h2 id="filer-fletning-git-flow-og-pull-requests">Filer, fletning, Git flow og pull requests</h2>
+<ul>
+<li><strong>Filer</strong> ved siden af Commit og Ændringer viser hele træet ved det valgte commit; en fil åbner med linjenumre, og dens menu sammenligner den med arbejdskopien, gemmer den et andet sted eller lægger den tilbage i arbejdskopien (<strong>Gendan denne version…</strong>).</li>
+<li><strong>Flettevindue…</strong> — på en fil med konflikt i panelet, i banneret, i <strong>Løs konflikt…</strong> og i Git-menuen — viser den aktuelle konflikt som vores, basis og deres side om side og hele filen nedenunder, redigerbar. <strong>Tag vores</strong>, <strong>Tag deres</strong>, begge i vilkårlig rækkefølge eller <strong>Tag basis</strong> afgør en konflikt, og <strong>Gem og stage</strong> markerer filen som løst, når der ikke er flere markører.</li>
+<li>Grensymbolet i panelets toplinje er menuen <strong>Git flow</strong>: <strong>Start feature…</strong>, <strong>Start release…</strong> og <strong>Start hotfix…</strong> opretter grenen fra develop eller main, og <strong>Afslut …</strong> fletter den tilbage — en release eller et hotfix ind i main med et tag og derefter ind i develop. At afslutte igen efter en konflikt fortsætter, hvor det stoppede.</li>
+<li><strong>Pull requests…</strong> i Git-menuen viser de åbne pull requests (merge requests hos GitLab) og issues i det projekt, remotes peger på, med hver enkelts checks; den tjekker en pull request ud i sin egen gren og åbner en ny for den aktuelle gren.</li>
+<li>Det kræver et personligt adgangstoken, der indtastes i vinduet og gemmes i nøgleringen; tokenet sendes kun til tjenestens API. Med et token viser et symbol ved grenen i panelets toplinje, om CI er bestået for det aktuelle commit.</li>
+<li><strong>Indstillinger ▸ Git</strong> navngiver Git flow-grene og -præfikser og, under <strong>Hosting</strong>, selvhostede GitLab- eller GitHub Enterprise-servere.</li>
+</ul>
 <h2 id="historik-blame-og-nettet">Historik, blame og nettet</h2>
 <ul>
 <li><strong>Historik…</strong> viser commits med en banegraf, de refs, der peger på hver enkelt (<code>● main</code>, <code>↗ origin/main</code>,

@@ -66,6 +66,15 @@ anulate.</p>
 <li>În lista de ramuri, o ramură poate fi redenumită (<strong>Redenumește…</strong>), legată de un upstream (<strong>Setează ramura upstream…</strong>) sau ștearsă pe serverul ei (<strong>Șterge pe depozitul la distanță…</strong>).</li>
 <li><strong>Setări ▸ Git</strong> stabilește programul git, numele și e-mailul tău global, cum lucrează <strong>Pull</strong>, preluarea în fundal, ce arată istoricul și cum arată datele lui, semnarea, sign-off-ul și hook-urile pentru commit-uri, precum și spațiile și rândurile de context pentru diferențe. Autorii poartă inițiale colorate în istoric.</li>
 </ul>
+<h2 id="fisiere-imbinare-git-flow-si-pull-request-uri">Fișiere, îmbinare, Git flow și pull request-uri</h2>
+<ul>
+<li><strong>Fișiere</strong>, lângă Commit și Modificări, arată întregul arbore la commit-ul selectat; un fișier se deschide cu numere de rând, iar meniul lui îl compară cu copia de lucru, îl salvează în altă parte sau îl pune înapoi în copia de lucru (<strong>Restaurează această versiune…</strong>).</li>
+<li><strong>Editor de îmbinare…</strong> — la un fișier cu conflict în panou, în banner, în <strong>Rezolvă conflictul…</strong> și în meniul Git — arată conflictul curent ca a noastră, bază și a lor, una lângă alta, și dedesubt întregul fișier, editabil. <strong>Ia ale noastre</strong>, <strong>Ia ale lor</strong>, ambele în orice ordine sau <strong>Ia baza</strong> decid un conflict, iar <strong>Salvează și pregătește</strong> marchează fișierul ca rezolvat când nu mai rămân marcaje.</li>
+<li>Simbolul de ramură din antetul panoului este meniul <strong>Git flow</strong>: <strong>Începe funcționalitate…</strong>, <strong>Începe versiune…</strong> și <strong>Începe remediere…</strong> creează ramura din develop sau main, iar <strong>Încheie …</strong> o îmbină înapoi — o versiune sau o remediere în main cu o etichetă, apoi în develop. Încheierea din nou după un conflict continuă de unde s-a oprit.</li>
+<li><strong>Pull request-uri…</strong> din meniul Git listează pull request-urile deschise (merge request-uri la GitLab) și problemele proiectului spre care indică depozitele la distanță, cu verificările fiecăruia; preia un pull request într-o ramură proprie și deschide unul nou pentru ramura curentă.</li>
+<li>E nevoie de un token de acces personal, introdus în acea fereastră și păstrat în portchei; tokenul este trimis doar la API-ul serviciului. Cu un token, un simbol lângă ramură în antetul panoului arată dacă CI a trecut pentru commit-ul curent.</li>
+<li><strong>Setări ▸ Git</strong> numește ramurile și prefixele Git flow și, la <strong>Găzduire</strong>, serverele GitLab sau GitHub Enterprise proprii.</li>
+</ul>
 <h2 id="istoric-blame-si-web">Istoric, blame și web</h2>
 <ul>
 <li><strong>Istoric…</strong> listează comiterile cu un grafic pe benzi, referințele care indică spre fiecare (<code>● main</code>,

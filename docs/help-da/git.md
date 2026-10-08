@@ -69,6 +69,15 @@ Arbejdskopien, historikken og menuen **Kommandoer ▸ Git** tilbyder mere end at
 - I grenlisten kan en gren omdøbes (**Omdøb…**), få en upstream (**Indstil upstream…**) eller slettes på sin server (**Slet på remoten…**).
 - **Indstillinger ▸ Git** fastlægger git-programmet, dit globale navn og din e-mail, hvordan **Pull** arbejder, fetch i baggrunden, hvad historikken viser, og hvordan dens datoer ser ud, signering, sign-off og hooks for commits samt mellemrum og kontekstlinjer for diffs. Forfattere bærer farvede initialer i historikken.
 
+## Filer, fletning, Git flow og pull requests
+
+- **Filer** ved siden af Commit og Ændringer viser hele træet ved det valgte commit; en fil åbner med linjenumre, og dens menu sammenligner den med arbejdskopien, gemmer den et andet sted eller lægger den tilbage i arbejdskopien (**Gendan denne version…**).
+- **Flettevindue…** — på en fil med konflikt i panelet, i banneret, i **Løs konflikt…** og i Git-menuen — viser den aktuelle konflikt som vores, basis og deres side om side og hele filen nedenunder, redigerbar. **Tag vores**, **Tag deres**, begge i vilkårlig rækkefølge eller **Tag basis** afgør en konflikt, og **Gem og stage** markerer filen som løst, når der ikke er flere markører.
+- Grensymbolet i panelets toplinje er menuen **Git flow**: **Start feature…**, **Start release…** og **Start hotfix…** opretter grenen fra develop eller main, og **Afslut …** fletter den tilbage — en release eller et hotfix ind i main med et tag og derefter ind i develop. At afslutte igen efter en konflikt fortsætter, hvor det stoppede.
+- **Pull requests…** i Git-menuen viser de åbne pull requests (merge requests hos GitLab) og issues i det projekt, remotes peger på, med hver enkelts checks; den tjekker en pull request ud i sin egen gren og åbner en ny for den aktuelle gren.
+- Det kræver et personligt adgangstoken, der indtastes i vinduet og gemmes i nøgleringen; tokenet sendes kun til tjenestens API. Med et token viser et symbol ved grenen i panelets toplinje, om CI er bestået for det aktuelle commit.
+- **Indstillinger ▸ Git** navngiver Git flow-grene og -præfikser og, under **Hosting**, selvhostede GitLab- eller GitHub Enterprise-servere.
+
 ## Historik, blame og nettet
 
 - **Historik…** viser commits med en banegraf, de refs, der peger på hver enkelt (`● main`, `↗ origin/main`,

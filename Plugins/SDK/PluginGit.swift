@@ -68,6 +68,9 @@ public enum PluginGit {
         public let behind: Int
         /// Repository-relative path → status.
         public let files: [String: FileStatus]
+        /// The commit HEAD is on (`# branch.oid`), nil on an unborn branch — so nothing has to ask
+        /// `rev-parse HEAD` beside the status.
+        public var oid: String?
 
         public init(branch: String, detached: Bool = false, upstream: String? = nil,
                     ahead: Int = 0, behind: Int = 0, files: [String: FileStatus] = [:]) {
@@ -112,6 +115,7 @@ public enum PluginGit {
         var upstream: String?
         var ahead = 0, behind = 0
         var files: [String: FileStatus] = [:]
+        var oid: String?
 
         let records = output.split(separator: "\0", omittingEmptySubsequences: true).map(String.init)
         var index = 0
@@ -128,6 +132,8 @@ public enum PluginGit {
                     if parts[1] == "(detached)" { detached = true } else { branch = parts[1] }
                 case "branch.upstream":
                     upstream = parts[1]
+                case "branch.oid":
+                    if parts[1] != "(initial)" { oid = parts[1] }
                 case "branch.ab":
                     for token in parts[1].split(separator: " ") {
                         if token.hasPrefix("+") { ahead = Int(token.dropFirst()) ?? 0 }
@@ -166,8 +172,10 @@ public enum PluginGit {
                 break
             }
         }
-        return RepoStatus(branch: branch, detached: detached, upstream: upstream,
-                          ahead: ahead, behind: behind, files: files)
+        var status = RepoStatus(branch: branch, detached: detached, upstream: upstream,
+                                ahead: ahead, behind: behind, files: files)
+        status.oid = oid
+        return status
     }
 
     /// One letter of a porcelain v2 XY pair.
@@ -1211,6 +1219,12 @@ public enum PluginGit {
         public var diffIgnoreWhitespace = false
         public var diffContextLines = 3
         public var cloneRecursive = true
+        /// git-flow's branch names and tag prefix (phase 9).
+        public var flow = Flow()
+        /// Hosts the pull-request tab cannot tell by name — a GitLab or GitHub Enterprise at a company
+        /// address — and which they are (phase 9). github.com, gitlab.com and any host with "gitlab" in
+        /// its name need no entry.
+        public var hostKinds: [String: HostKind] = [:]
 
         public init() {}
 
@@ -1243,6 +1257,15 @@ public enum PluginGit {
                 case "DiffIgnoreWhitespace": settings.diffIgnoreWhitespace = value == "1"
                 case "DiffContextLines": settings.diffContextLines = number(0...50, settings.diffContextLines)
                 case "CloneRecursive": settings.cloneRecursive = value != "0"
+                case "FlowMain": if !value.isEmpty { settings.flow.mainBranch = value }
+                case "FlowDevelop": if !value.isEmpty { settings.flow.developBranch = value }
+                case "FlowFeature": settings.flow.featurePrefix = value
+                case "FlowRelease": settings.flow.releasePrefix = value
+                case "FlowHotfix": settings.flow.hotfixPrefix = value
+                case "FlowTagPrefix": settings.flow.tagPrefix = value
+                case _ where key.hasPrefix("Host."):
+                    let host = String(key.dropFirst("Host.".count)).lowercased()
+                    if !host.isEmpty, let kind = HostKind(rawValue: value) { settings.hostKinds[host] = kind }
                 default: break
                 }
             }
@@ -1275,8 +1298,16 @@ public enum PluginGit {
             DiffIgnoreWhitespace=\(flag(diffIgnoreWhitespace))
             DiffContextLines=\(diffContextLines)
             CloneRecursive=\(flag(cloneRecursive))
+            ; git-flow: branch names and the prefix of a release's tag.
+            FlowMain=\(flow.mainBranch)
+            FlowDevelop=\(flow.developBranch)
+            FlowFeature=\(flow.featurePrefix)
+            FlowRelease=\(flow.releasePrefix)
+            FlowHotfix=\(flow.hotfixPrefix)
+            FlowTagPrefix=\(flow.tagPrefix)
+            ; Hosts by kind (github or gitlab), for the pull requests window: Host.git.example.com=gitlab
 
-            """
+            """ + hostKinds.keys.sorted().map { "Host.\($0)=\(hostKinds[$0]!.rawValue)\n" }.joined()
         }
 
         /// The refs the panel's history walks, by the settings: branches and HEAD always, remote branches
@@ -2586,5 +2617,256 @@ public enum PluginGit {
                                     cachedAt: Date, now: Date, ttl: TimeInterval = 3) -> Bool {
         if cachedIndexMTime != currentIndexMTime { return false }
         return now.timeIntervalSince(cachedAt) < ttl
+    }
+}
+
+// MARK: - Phase 9: the tree at any commit, git-flow, the merge editor
+
+extension PluginGit {
+
+    // MARK: The Files tab — the tree at a commit
+
+    /// Every file in a commit's tree, NUL-separated so a name outside ASCII arrives as it is.
+    public static func treeFilesArguments(_ commit: String) -> [String] {
+        ["--no-optional-locks", "ls-tree", "-r", "-z", "--full-tree", "--name-only", commit]
+    }
+
+    /// `ls-tree`'s names as files without a status — the Files tab reuses the changes tree.
+    public static func parseTreeFiles(_ output: String) -> [ChangedFile] {
+        output.split(separator: "\0").map { ChangedFile(status: "", path: String($0)) }
+    }
+
+    /// A file's text at a commit, numbered like a diff's context so the same view shows it. Binary
+    /// (a NUL in the first 8000 bytes, git's own test) gives no lines; past `limit` lines it is cut.
+    public static func fileContentLines(_ data: Data, limit: Int = 5000)
+        -> (lines: [DiffLine], truncated: Bool, binary: Bool) {
+        if data.prefix(8000).contains(0) { return ([], false, true) }
+        var text = String(decoding: data, as: UTF8.self).replacingOccurrences(of: "\r\n", with: "\n")
+        if text.hasSuffix("\n") { text.removeLast() }
+        if text.isEmpty { return ([], false, false) }
+        let all = text.components(separatedBy: "\n")
+        let lines = all.prefix(limit).enumerated().map { DiffLine(kind: .context, text: $1, newLine: $0 + 1) }
+        return (lines, all.count > limit, false)
+    }
+
+    /// A file's content at a commit as a checkout would write it — through its smudge and line-ending
+    /// filters, so an LFS file is the file and not its pointer. For saving a version somewhere else.
+    public static func checkoutContentArguments(commit: String, path: String) -> [String] {
+        ["--no-optional-locks", "cat-file", "--filters", "\(commit):\(path)"]
+    }
+
+    /// Put a file back in the working tree as it was at `commit` — the index is left alone, so the
+    /// change shows as an ordinary modification to stage or discard.
+    public static func restoreFileArguments(commit: String, path: String) -> [String] {
+        ["restore", "--source=\(commit)", "--worktree", "--", path]
+    }
+
+    // MARK: git-flow
+
+    /// The branch kinds of git-flow. A convention, not a feature of git: the names and the merges are
+    /// all it is.
+    public enum FlowKind: String, Sendable, CaseIterable { case feature, release, hotfix }
+
+    public struct Flow: Sendable, Equatable {
+        public var mainBranch = "main"
+        public var developBranch = "develop"
+        public var featurePrefix = "feature/"
+        public var releasePrefix = "release/"
+        public var hotfixPrefix = "hotfix/"
+        /// Put before a release's or a hotfix's name in its tag: "v" makes 1.2 the tag v1.2.
+        public var tagPrefix = ""
+        public init() {}
+
+        public func prefix(_ kind: FlowKind) -> String {
+            switch kind {
+            case .feature: return featurePrefix
+            case .release: return releasePrefix
+            case .hotfix: return hotfixPrefix
+            }
+        }
+
+        /// Where a kind starts from: features and releases from develop, hotfixes from main.
+        public func base(_ kind: FlowKind) -> String { kind == .hotfix ? mainBranch : developBranch }
+
+        /// The kind and name of a flow branch, or nil for any other branch.
+        public func kind(ofBranch branch: String) -> (kind: FlowKind, name: String)? {
+            for kind in FlowKind.allCases {
+                let prefix = prefix(kind)
+                if !prefix.isEmpty, branch.hasPrefix(prefix), branch.count > prefix.count {
+                    return (kind, String(branch.dropFirst(prefix.count)))
+                }
+            }
+            return nil
+        }
+
+        public func tag(for name: String) -> String { tagPrefix + name }
+    }
+
+    /// Start a flow branch — after creating develop from main when the repository has no develop yet.
+    /// `remoteDevelop`: develop as a remote branch (`origin/develop`) when there is no local one — a fresh
+    /// clone of a git-flow repository — which the local develop then tracks instead of being made anew
+    /// from main and going its own way.
+    public static func flowStartArguments(_ kind: FlowKind, name: String, flow: Flow,
+                                          hasDevelop: Bool, remoteDevelop: String? = nil) -> [[String]] {
+        var calls: [[String]] = []
+        if !hasDevelop, kind != .hotfix {
+            if let remoteDevelop {
+                calls.append(["branch", "--track", flow.developBranch, remoteDevelop])
+            } else {
+                calls.append(["branch", flow.developBranch, flow.mainBranch])
+            }
+        }
+        calls.append(["switch", "-c", flow.prefix(kind) + name, flow.base(kind)])
+        return calls
+    }
+
+    /// What finishing a flow branch has already done — so finishing again after a merge conflict picks
+    /// up where it stopped instead of merging or tagging twice.
+    public struct FlowFinishState: Sendable, Equatable {
+        public var mergedIntoMain = false
+        public var tagged = false
+        public var mergedIntoDevelop = false
+        public init(mergedIntoMain: Bool = false, tagged: Bool = false, mergedIntoDevelop: Bool = false) {
+            self.mergedIntoMain = mergedIntoMain; self.tagged = tagged; self.mergedIntoDevelop = mergedIntoDevelop
+        }
+    }
+
+    /// Finish a flow branch: a feature merges into develop; a release or a hotfix merges into main, is
+    /// tagged there and merges into develop. Merges are `--no-ff`, so the branch stays visible in the
+    /// graph. The branch is deleted last, with `-d`, which refuses if anything was left unmerged.
+    public static func flowFinishArguments(_ kind: FlowKind, name: String, flow: Flow,
+                                           state: FlowFinishState) -> [[String]] {
+        let branch = flow.prefix(kind) + name
+        func merge(into target: String) -> [[String]] {
+            [["switch", target], ["merge", "--no-ff", "--no-edit", branch]]
+        }
+        var calls: [[String]] = []
+        if kind != .feature {
+            if !state.mergedIntoMain { calls += merge(into: flow.mainBranch) }
+            if !state.tagged {
+                let message = (kind == .release ? "Release " : "Hotfix ") + name
+                calls.append(["tag", "-a", flow.tag(for: name), "-m", message, flow.mainBranch])
+            }
+        }
+        if !state.mergedIntoDevelop { calls += merge(into: flow.developBranch) }
+        calls.append(["branch", "-d", branch])
+        return calls
+    }
+
+    /// Asked before finishing: is `branch` already in `target`?
+    public static func isAncestorArguments(_ branch: String, of target: String) -> [String] {
+        ["merge-base", "--is-ancestor", branch, target]
+    }
+
+    /// The remote branches named `name` (`origin/develop`, `upstream/develop`), one per line.
+    public static func remoteBranchesArguments(named name: String) -> [String] {
+        ["--no-optional-locks", "for-each-ref", "--format=%(refname:lstrip=2)", "refs/remotes/*/\(name)"]
+    }
+
+    /// The one to follow among them: origin's when there is one.
+    public static func preferredRemoteBranch(_ lines: String) -> String? {
+        let names = lines.split(separator: "\n").map(String.init)
+        return names.first { $0.hasPrefix("origin/") } ?? names.first
+    }
+
+    /// The local branches by name, one per line.
+    public static let localBranchNamesArguments = ["--no-optional-locks", "for-each-ref", "--format=%(refname:short)", "refs/heads"]
+
+    public static func tagExistsArguments(_ tag: String) -> [String] {
+        ["rev-parse", "-q", "--verify", "refs/tags/" + tag]
+    }
+
+    /// A name git accepts as part of a branch name — checked before the dialog closes, so a typo does
+    /// not end in git's "is not a valid branch name".
+    public static func isValidFlowName(_ name: String) -> Bool {
+        guard !name.isEmpty, !name.hasPrefix("-"), !name.hasPrefix("/"), !name.hasSuffix("/"),
+              !name.hasSuffix("."), !name.hasSuffix(".lock"), !name.contains(".."), !name.contains("//"),
+              !name.contains("@{") else { return false }
+        let forbidden = CharacterSet(charactersIn: " ~^:?*[\\").union(.controlCharacters)
+        return name.unicodeScalars.allSatisfy { !forbidden.contains($0) }
+    }
+
+    // MARK: The merge editor
+
+    /// The three versions git keeps in the index for a conflicted file: base (stage 1), ours (2) and
+    /// theirs (3). A side missing (added on one side only) is simply not there.
+    public static func mergeStageSpec(_ stage: Int, path: String) -> String { ":\(stage):\(path)" }
+
+    /// Merge the three again, in memory: with `diff3` the base stands between the markers. Exit status
+    /// is the number of conflicts, so a non-zero one is the expected outcome, not a failure.
+    public static func mergeFileArguments(ours: String, base: String, theirs: String,
+                                          labels: (ours: String, base: String, theirs: String),
+                                          diff3: Bool = true) -> [String] {
+        ["merge-file", "-p"] + (diff3 ? ["--diff3"] : [])
+            + ["-L", labels.ours, "-L", labels.base, "-L", labels.theirs, ours, base, theirs]
+    }
+
+    /// The text the merge editor starts from: git's diff3 re-merge — every hunk with its base — when the
+    /// working file is still exactly what the merge left (compared with a re-merge in git's own style,
+    /// labels aside). Not hunk by hunk: git's merge joins conflicts a line or two apart into one, the
+    /// diff3 style keeps them apart, so the two cannot be matched up — measured. Once the reader has
+    /// resolved or edited anything, nil, and the editor works on the file as it is, without a base:
+    /// what they did stays.
+    public static func adoptBase(working: String, merged: String, diff3: String) -> String? {
+        guard let file = parseConflicts(working), let again = parseConflicts(merged),
+              var withBase = parseConflicts(diff3), !file.hunks.isEmpty,
+              file.segments == again.segments,
+              zip(file.hunks, again.hunks).allSatisfy({ $0.ours == $1.ours && $0.theirs == $1.theirs }),
+              file.hunks.count == again.hunks.count,
+              withBase.hunks.allSatisfy({ $0.base != nil }) else { return nil }
+        withBase.usesCRLF = file.usesCRLF
+        withBase.endsWithNewline = file.endsWithNewline
+        return render(withBase, choices: [])
+    }
+
+    /// What the reader can take for one hunk in the merge editor.
+    public enum MergePick: String, Sendable, CaseIterable { case ours, theirs, oursThenTheirs, theirsThenOurs, base }
+
+    public static func lines(of hunk: ConflictHunk, _ pick: MergePick) -> [String]? {
+        switch pick {
+        case .ours: return hunk.ours
+        case .theirs: return hunk.theirs
+        case .oursThenTheirs: return hunk.ours + hunk.theirs
+        case .theirsThenOurs: return hunk.theirs + hunk.ours
+        case .base: return hunk.base
+        }
+    }
+
+    /// The text with one hunk replaced by `lines` and every other hunk left as markers.
+    public static func resolving(_ file: ConflictFile, hunk index: Int, with lines: [String]) -> String {
+        var copy = file
+        guard copy.hunks.indices.contains(index) else { return render(file, choices: []) }
+        // Rendered through `render` with the hunk turned into plain text, so CRLF and the final newline
+        // are handled in the one place that already knows how.
+        copy.segments = copy.segments.map { segment in
+            if case .conflict(let i) = segment, i == index { return .text(lines) }
+            return segment
+        }
+        return render(copy, choices: [])
+    }
+
+    /// For the side-by-side panes: which of a side's lines differ from the base (all of them when there
+    /// is no base). By content, not by position — enough to make a changed line stand out.
+    public static func changedLines(_ side: [String], base: [String]?) -> Set<Int> {
+        guard let base else { return Set(side.indices) }
+        var remaining: [String: Int] = [:]
+        for line in base { remaining[line, default: 0] += 1 }
+        var changed = Set<Int>()
+        for (index, line) in side.enumerated() {
+            if let count = remaining[line], count > 0 { remaining[line] = count - 1 } else { changed.insert(index) }
+        }
+        return changed
+    }
+
+    /// The 0-based line of the `index`-th `<<<<<<<` marker in `text`, for scrolling the result to it.
+    public static func markerLine(of index: Int, in text: String, markerLength: Int = 7) -> Int? {
+        let run = String(repeating: "<", count: markerLength)
+        var seen = 0
+        for (line, content) in text.replacingOccurrences(of: "\r\n", with: "\n").components(separatedBy: "\n").enumerated()
+        where content == run || content.hasPrefix(run + " ") {
+            if seen == index { return line }
+            seen += 1
+        }
+        return nil
     }
 }

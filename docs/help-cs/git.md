@@ -69,6 +69,15 @@ Pracovní kopie, historie a nabídka **Příkazy ▸ Git** nabízejí víc než 
 - V seznamu větví lze větev přejmenovat (**Přejmenovat…**), dát jí upstream (**Nastavit upstream…**) nebo ji smazat na jejím serveru (**Smazat na vzdáleném repozitáři…**).
 - **Nastavení ▸ Git** určuje program git, tvé globální jméno a e-mail, jak pracuje **Pull**, fetch na pozadí, co ukazuje historie a jak vypadají její data, podepisování, sign-off a hooky commitů a mezery a řádky kontextu v diffech. Autoři mají v historii barevné iniciály.
 
+## Soubory, slučování, Git flow a pull requesty
+
+- **Soubory** vedle Commit a Změny ukazují celý strom ve vybraném commitu; soubor se otevře s čísly řádků a jeho nabídka ho porovná s pracovní kopií, uloží jinam nebo vrátí do pracovní kopie (**Obnovit tuto verzi…**).
+- **Editor sloučení…** — u souboru s konfliktem v panelu, v pruhu, ve **Vyřešit konflikt…** a v nabídce Git — ukazuje aktuální konflikt jako naše, základ a jejich vedle sebe a pod nimi celý soubor k úpravám. **Vzít naše**, **Vzít jejich**, obojí v libovolném pořadí nebo **Vzít základ** rozhodne konflikt a **Uložit a přidat** označí soubor jako vyřešený, jakmile nezbývají žádné značky.
+- Symbol větve v záhlaví panelu je nabídka **Git flow**: **Začít funkci…**, **Začít vydání…** a **Začít hotfix…** vytvoří větev z develop nebo main a **Dokončit …** ji sloučí zpět — vydání nebo hotfix do main s tagem, pak do develop. Opětovné dokončení po konfliktu pokračuje tam, kde se zastavilo.
+- **Pull requesty…** v nabídce Git vypíší otevřené pull requesty (merge requesty u GitLabu) a issues projektu, na který ukazují vzdálené repozitáře, s kontrolami každého; přepnou pull request do vlastní větve a otevřou nový pro aktuální větev.
+- Potřebují osobní přístupový token, zadaný v tom okně a uložený v klíčence; token se posílá jen do API služby. S tokenem ukazuje symbol vedle větve v záhlaví panelu, zda CI pro aktuální commit prošlo.
+- **Nastavení ▸ Git** pojmenuje větve a předpony Git flow a v části **Hosting** vlastní servery GitLab nebo GitHub Enterprise.
+
 ## Historie, blame a web
 
 - **Historie…** vypisuje zápisy s pruhovým grafem, odkazy, které na ně míří (`● main`, `↗ origin/main`,

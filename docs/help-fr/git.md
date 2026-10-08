@@ -71,6 +71,15 @@ La copie de travail, l’historique et le menu **Commandes ▸ Git** offrent dav
 - Dans la liste des branches, une branche peut être renommée (**Renommer…**), reliée à une branche amont (**Définir la branche amont…**) ou supprimée sur son serveur (**Supprimer sur le dépôt distant…**).
 - **Réglages ▸ Git** définit le programme git, vos nom et adresse e-mail globaux, le fonctionnement de **Pull**, le fetch en arrière-plan, ce que montre l’historique et l’aspect de ses dates, la signature, le sign-off et les hooks des commits, ainsi que les espaces et les lignes de contexte des diffs. Les auteurs portent des initiales colorées dans l’historique.
 
+## Fichiers, fusion, Git flow et pull requests
+
+- **Fichiers**, à côté de Commit et Modifications, montre toute l’arborescence au commit sélectionné ; un fichier s’ouvre avec ses numéros de ligne, et son menu le compare avec la copie de travail, l’enregistre ailleurs ou le remet dans la copie de travail (**Restaurer cette version…**).
+- **Éditeur de fusion…** — sur un fichier en conflit dans le panneau, dans le bandeau, dans **Résoudre le conflit…** et dans le menu Git — montre le conflit courant en trois colonnes, nôtre, base et leur, et tout le fichier en dessous, modifiable. **Prendre les nôtres**, **Prendre les leurs**, les deux dans l’un ou l’autre ordre ou **Prendre la base** tranchent un conflit, et **Enregistrer et indexer** marque le fichier résolu dès qu’il ne reste plus de marqueurs.
+- Le symbole de branche dans l’en-tête du panneau est le menu **Git flow** : **Démarrer une fonctionnalité…**, **Démarrer une version…** et **Démarrer un correctif…** créent la branche à partir de develop ou de main, et **Terminer …** la fusionne en retour — une version ou un correctif dans main avec une étiquette, puis dans develop. Terminer à nouveau après un conflit reprend là où cela s’était arrêté.
+- **Pull requests…** dans le menu Git liste les pull requests ouvertes (merge requests chez GitLab) et les tickets du projet vers lequel pointent les dépôts distants, avec les vérifications de chacune ; elle extrait une pull request dans une branche à elle et en ouvre une nouvelle pour la branche courante.
+- Il faut pour cela un jeton d’accès personnel, saisi dans cette fenêtre et conservé dans le trousseau ; le jeton n’est envoyé qu’à l’API du service. Avec un jeton, un symbole à côté de la branche dans l’en-tête du panneau indique si la CI a réussi pour le commit courant.
+- **Réglages ▸ Git** nomme les branches et préfixes de Git flow et, sous **Hébergement**, les serveurs GitLab ou GitHub Enterprise auto-hébergés.
+
 ## Historique, blâme et le web
 
 - **Historique…** liste les validations avec un graphe en couloirs, les références qui pointent sur chacune

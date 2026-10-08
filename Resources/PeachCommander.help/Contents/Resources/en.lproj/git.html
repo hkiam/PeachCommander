@@ -65,6 +65,15 @@ there too, next to the commit that usually precedes them; all three show progres
 <li>In the branch list a branch can be renamed (<strong>Rename…</strong>), given an upstream (<strong>Set upstream…</strong>) or deleted on its server (<strong>Delete on the remote…</strong>).</li>
 <li><strong>Settings ▸ Git</strong> sets the git program, your global name and e-mail, how <strong>Pull</strong> works, background fetch, what the history shows and how its dates look, signing, sign-off and hooks for commits, and whitespace and context lines for diffs. Authors in the history carry coloured initials.</li>
 </ul>
+<h2 id="files-merging-git-flow-and-pull-requests">Files, merging, git-flow and pull requests</h2>
+<ul>
+<li><strong>Files</strong> beside Commit and Changes shows the whole tree at the selected commit; a file opens with line numbers, and its menu compares it with the working tree, saves it elsewhere or puts it back into the working tree (<strong>Restore this version…</strong>).</li>
+<li><strong>Merge editor…</strong> — on a conflicted file in the panel, in the banner, in <strong>Resolve Conflict…</strong> and in the Git menu — shows the current conflict as ours, base and theirs side by side and the whole file below it, editable. <strong>Take ours</strong>, <strong>Take theirs</strong>, both in either order or <strong>Take the base</strong> decide a conflict, and <strong>Save and stage</strong> marks the file resolved once no markers are left.</li>
+<li>The branch symbol in the panel's header is the <strong>Git flow</strong> menu: <strong>Start feature…</strong>, <strong>Start release…</strong> and <strong>Start hotfix…</strong> create the branch from develop or main, and <strong>Finish …</strong> merges it back — a release or a hotfix into main with a tag, then into develop. Finishing again after a conflict carries on where it stopped.</li>
+<li><strong>Pull Requests…</strong> in the Git menu lists the open pull requests (merge requests at GitLab) and issues of the project the remotes point at, with the checks of each; it checks a pull request out into a branch of its own and opens a new one for the current branch.</li>
+<li>It needs a personal access token, entered in that window and kept in the Keychain; the token is sent only to the service's API. With a token, a symbol beside the branch in the panel's header shows whether CI passed for the current commit.</li>
+<li><strong>Settings ▸ Git</strong> names the git-flow branches and prefixes and, under <strong>Hosting</strong>, self-hosted GitLab or GitHub Enterprise servers.</li>
+</ul>
 <h2 id="history-blame-and-the-web">History, blame and the web</h2>
 <ul>
 <li><strong>History…</strong> lists the commits with a lane graph, the refs pointing at each one (<code>● main</code>,

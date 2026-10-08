@@ -66,6 +66,15 @@ annullare.</p>
 <li>Nell’elenco dei rami un ramo si può rinominare (<strong>Rinomina…</strong>), collegare a un upstream (<strong>Imposta upstream…</strong>) o eliminare sul suo server (<strong>Elimina sul remoto…</strong>).</li>
 <li><strong>Impostazioni ▸ Git</strong> stabilisce il programma git, il tuo nome e la tua e-mail globali, come lavora <strong>Pull</strong>, il fetch in background, cosa mostra la cronologia e come appaiono le sue date, firma, sign-off e hook dei commit, e spazi e righe di contesto dei diff. Gli autori portano iniziali colorate nella cronologia.</li>
 </ul>
+<h2 id="file-merge-git-flow-e-pull-request">File, merge, Git flow e pull request</h2>
+<ul>
+<li><strong>File</strong>, accanto a Commit e Modifiche, mostra l’intero albero al commit selezionato; un file si apre con i numeri di riga, e il suo menu lo confronta con la copia di lavoro, lo salva altrove o lo rimette nella copia di lavoro (<strong>Ripristina questa versione…</strong>).</li>
+<li><strong>Editor di merge…</strong> — su un file in conflitto nel pannello, nel banner, in <strong>Risolvi conflitto…</strong> e nel menu Git — mostra il conflitto corrente come nostra, base e loro affiancate e sotto l’intero file, modificabile. <strong>Prendi il nostro</strong>, <strong>Prendi il loro</strong>, entrambi in un ordine o nell’altro o <strong>Prendi la base</strong> decidono un conflitto, e <strong>Salva e prepara</strong> segna il file come risolto quando non restano marcatori.</li>
+<li>Il simbolo del ramo nell’intestazione del pannello è il menu <strong>Git flow</strong>: <strong>Inizia funzionalità…</strong>, <strong>Inizia release…</strong> e <strong>Inizia hotfix…</strong> creano il ramo da develop o main, e <strong>Concludi …</strong> lo riunisce — una release o un hotfix in main con un tag, poi in develop. Concludere di nuovo dopo un conflitto riprende da dove si era fermato.</li>
+<li><strong>Pull request…</strong> nel menu Git elenca le pull request aperte (merge request su GitLab) e le issue del progetto a cui puntano i remoti, con i controlli di ciascuna; estrae una pull request in un ramo proprio e ne apre una nuova per il ramo corrente.</li>
+<li>Serve un token di accesso personale, inserito in quella finestra e conservato nel portachiavi; il token viene inviato solo all’API del servizio. Con un token, un simbolo accanto al ramo nell’intestazione del pannello mostra se la CI è passata per il commit corrente.</li>
+<li><strong>Impostazioni ▸ Git</strong> dà i nomi ai rami e ai prefissi di Git flow e, in <strong>Hosting</strong>, ai server GitLab o GitHub Enterprise self-hosted.</li>
+</ul>
 <h2 id="cronologia-blame-e-il-web">Cronologia, blame e il web</h2>
 <ul>
 <li><strong>Cronologia…</strong> elenca i commit con un grafo a corsie, i riferimenti che puntano a ciascuno (<code>● main</code>,

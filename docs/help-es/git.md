@@ -71,6 +71,15 @@ La copia de trabajo, el historial y el menú **Comandos ▸ Git** ofrecen más q
 - En la lista de ramas, una rama puede renombrarse (**Renombrar…**), recibir una rama remota de seguimiento (**Establecer rama remota de seguimiento…**) o eliminarse en su servidor (**Eliminar en el remoto…**).
 - **Ajustes ▸ Git** fija el programa git, tu nombre y correo globales, cómo trabaja **Pull**, el fetch en segundo plano, qué muestra el historial y cómo se ven sus fechas, la firma, el sign-off y los hooks de los commits, y los espacios y las líneas de contexto de los diffs. Los autores llevan iniciales de color en el historial.
 
+## Archivos, fusión, Git flow y pull requests
+
+- **Archivos**, junto a Commit y Cambios, muestra todo el árbol en el commit seleccionado; un archivo se abre con números de línea, y su menú lo compara con la copia de trabajo, lo guarda en otro sitio o lo devuelve a la copia de trabajo (**Restaurar esta versión…**).
+- **Editor de fusión…** — en un archivo con conflicto en el panel, en el aviso, en **Resolver conflicto…** y en el menú Git — muestra el conflicto actual como nuestra, base y suya lado a lado y todo el archivo debajo, editable. **Tomar el nuestro**, **Tomar el suyo**, ambos en cualquier orden o **Tomar la base** deciden un conflicto, y **Guardar y preparar** marca el archivo como resuelto cuando no quedan marcadores.
+- El símbolo de rama en la cabecera del panel es el menú **Git flow**: **Empezar funcionalidad…**, **Empezar versión…** y **Empezar corrección…** crean la rama desde develop o main, y **Terminar …** la fusiona de vuelta: una versión o corrección en main con una etiqueta y luego en develop. Terminar de nuevo tras un conflicto sigue donde se detuvo.
+- **Pull requests…** en el menú Git lista las pull requests abiertas (merge requests en GitLab) y las incidencias del proyecto al que apuntan los remotos, con las comprobaciones de cada una; extrae una pull request en una rama propia y abre una nueva para la rama actual.
+- Necesita un token de acceso personal, introducido en esa ventana y guardado en el llavero; el token solo se envía a la API del servicio. Con un token, un símbolo junto a la rama en la cabecera del panel muestra si la CI pasó para el commit actual.
+- **Ajustes ▸ Git** nombra las ramas y prefijos de Git flow y, en **Alojamiento**, los servidores GitLab o GitHub Enterprise autoalojados.
+
 ## Historial, autoría y la web
 
 - **Historial…** enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una

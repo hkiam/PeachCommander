@@ -70,6 +70,15 @@ The working copy, the history and the **Commands ▸ Git** menu offer more than 
 - In the branch list a branch can be renamed (**Rename…**), given an upstream (**Set upstream…**) or deleted on its server (**Delete on the remote…**).
 - **Settings ▸ Git** sets the git program, your global name and e-mail, how **Pull** works, background fetch, what the history shows and how its dates look, signing, sign-off and hooks for commits, and whitespace and context lines for diffs. Authors in the history carry coloured initials.
 
+## Files, merging, git-flow and pull requests
+
+- **Files** beside Commit and Changes shows the whole tree at the selected commit; a file opens with line numbers, and its menu compares it with the working tree, saves it elsewhere or puts it back into the working tree (**Restore this version…**).
+- **Merge editor…** — on a conflicted file in the panel, in the banner, in **Resolve Conflict…** and in the Git menu — shows the current conflict as ours, base and theirs side by side and the whole file below it, editable. **Take ours**, **Take theirs**, both in either order or **Take the base** decide a conflict, and **Save and stage** marks the file resolved once no markers are left.
+- The branch symbol in the panel's header is the **Git flow** menu: **Start feature…**, **Start release…** and **Start hotfix…** create the branch from develop or main, and **Finish …** merges it back — a release or a hotfix into main with a tag, then into develop. Finishing again after a conflict carries on where it stopped.
+- **Pull Requests…** in the Git menu lists the open pull requests (merge requests at GitLab) and issues of the project the remotes point at, with the checks of each; it checks a pull request out into a branch of its own and opens a new one for the current branch.
+- It needs a personal access token, entered in that window and kept in the Keychain; the token is sent only to the service's API. With a token, a symbol beside the branch in the panel's header shows whether CI passed for the current commit.
+- **Settings ▸ Git** names the git-flow branches and prefixes and, under **Hosting**, self-hosted GitLab or GitHub Enterprise servers.
+
 ## History, blame and the web
 
 - **History…** lists the commits with a lane graph, the refs pointing at each one (`● main`,

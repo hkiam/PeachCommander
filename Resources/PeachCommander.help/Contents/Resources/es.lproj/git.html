@@ -67,6 +67,15 @@ progreso y pueden cancelarse.</p>
 <li>En la lista de ramas, una rama puede renombrarse (<strong>Renombrar…</strong>), recibir una rama remota de seguimiento (<strong>Establecer rama remota de seguimiento…</strong>) o eliminarse en su servidor (<strong>Eliminar en el remoto…</strong>).</li>
 <li><strong>Ajustes ▸ Git</strong> fija el programa git, tu nombre y correo globales, cómo trabaja <strong>Pull</strong>, el fetch en segundo plano, qué muestra el historial y cómo se ven sus fechas, la firma, el sign-off y los hooks de los commits, y los espacios y las líneas de contexto de los diffs. Los autores llevan iniciales de color en el historial.</li>
 </ul>
+<h2 id="archivos-fusion-git-flow-y-pull-requests">Archivos, fusión, Git flow y pull requests</h2>
+<ul>
+<li><strong>Archivos</strong>, junto a Commit y Cambios, muestra todo el árbol en el commit seleccionado; un archivo se abre con números de línea, y su menú lo compara con la copia de trabajo, lo guarda en otro sitio o lo devuelve a la copia de trabajo (<strong>Restaurar esta versión…</strong>).</li>
+<li><strong>Editor de fusión…</strong> — en un archivo con conflicto en el panel, en el aviso, en <strong>Resolver conflicto…</strong> y en el menú Git — muestra el conflicto actual como nuestra, base y suya lado a lado y todo el archivo debajo, editable. <strong>Tomar el nuestro</strong>, <strong>Tomar el suyo</strong>, ambos en cualquier orden o <strong>Tomar la base</strong> deciden un conflicto, y <strong>Guardar y preparar</strong> marca el archivo como resuelto cuando no quedan marcadores.</li>
+<li>El símbolo de rama en la cabecera del panel es el menú <strong>Git flow</strong>: <strong>Empezar funcionalidad…</strong>, <strong>Empezar versión…</strong> y <strong>Empezar corrección…</strong> crean la rama desde develop o main, y <strong>Terminar …</strong> la fusiona de vuelta: una versión o corrección en main con una etiqueta y luego en develop. Terminar de nuevo tras un conflicto sigue donde se detuvo.</li>
+<li><strong>Pull requests…</strong> en el menú Git lista las pull requests abiertas (merge requests en GitLab) y las incidencias del proyecto al que apuntan los remotos, con las comprobaciones de cada una; extrae una pull request en una rama propia y abre una nueva para la rama actual.</li>
+<li>Necesita un token de acceso personal, introducido en esa ventana y guardado en el llavero; el token solo se envía a la API del servicio. Con un token, un símbolo junto a la rama en la cabecera del panel muestra si la CI pasó para el commit actual.</li>
+<li><strong>Ajustes ▸ Git</strong> nombra las ramas y prefijos de Git flow y, en <strong>Alojamiento</strong>, los servidores GitLab o GitHub Enterprise autoalojados.</li>
+</ul>
 <h2 id="historial-autoria-y-la-web">Historial, autoría y la web</h2>
 <ul>
 <li><strong>Historial…</strong> enumera las confirmaciones con un grafo de carriles, las referencias que apuntan a cada una

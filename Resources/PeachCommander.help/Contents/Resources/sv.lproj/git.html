@@ -66,6 +66,15 @@ incheckningen ändå sker; alla tre visar förlopp och kan avbrytas.</p>
 <li>I grenlistan kan en gren byta namn (<strong>Byt namn…</strong>), få en uppströmsgren (<strong>Ange uppströmsgren…</strong>) eller tas bort på sin server (<strong>Ta bort på fjärren…</strong>).</li>
 <li><strong>Inställningar ▸ Git</strong> bestämmer git-programmet, ditt globala namn och din e-post, hur <strong>Pull</strong> arbetar, fetch i bakgrunden, vad historiken visar och hur dess datum ser ut, signering, sign-off och hooks för commits samt blanksteg och kontextrader för diffar. Författare har färgade initialer i historiken.</li>
 </ul>
+<h2 id="filer-sammanfogning-git-flow-och-pull-requests">Filer, sammanfogning, Git flow och pull requests</h2>
+<ul>
+<li><strong>Filer</strong> bredvid Commit och Ändringar visar hela trädet vid vald commit; en fil öppnas med radnummer, och dess meny jämför den med arbetskopian, sparar den någon annanstans eller lägger tillbaka den i arbetskopian (<strong>Återställ den här versionen…</strong>).</li>
+<li><strong>Sammanfogningsredigerare…</strong> — på en fil med konflikt i panelen, i banderollen, i <strong>Lös konflikt…</strong> och i Git-menyn — visar aktuell konflikt som vår, bas och deras sida vid sida och hela filen under, redigerbar. <strong>Ta våra</strong>, <strong>Ta deras</strong>, båda i valfri ordning eller <strong>Ta basen</strong> avgör en konflikt, och <strong>Spara och köa</strong> markerar filen som löst när inga markörer är kvar.</li>
+<li>Grensymbolen i panelens rubrik är menyn <strong>Git flow</strong>: <strong>Starta funktion…</strong>, <strong>Starta release…</strong> och <strong>Starta snabbfix…</strong> skapar grenen från develop eller main, och <strong>Avsluta …</strong> sammanfogar den tillbaka — en release eller snabbfix i main med en tagg, sedan i develop. Att avsluta igen efter en konflikt fortsätter där det stannade.</li>
+<li><strong>Pull requests…</strong> i Git-menyn listar öppna pull requests (merge requests hos GitLab) och ärenden i projektet som fjärrarna pekar på, med kontrollerna för var och en; den checkar ut en pull request i en egen gren och öppnar en ny för aktuell gren.</li>
+<li>Det krävs en personlig åtkomsttoken, som anges i fönstret och förvaras i nyckelringen; token skickas bara till tjänstens API. Med en token visar en symbol bredvid grenen i panelens rubrik om CI gick igenom för aktuell commit.</li>
+<li><strong>Inställningar ▸ Git</strong> namnger Git flow-grenar och -prefix och, under <strong>Värdtjänst</strong>, egna GitLab- eller GitHub Enterprise-servrar.</li>
+</ul>
 <h2 id="historik-blame-och-webben">Historik, blame och webben</h2>
 <ul>
 <li><strong>Historik…</strong> listar incheckningarna med en filgraf, referenserna som pekar på var och en (<code>● main</code>,

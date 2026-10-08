@@ -427,24 +427,38 @@ whitespace and context lines; clone with submodules.
 (errors still ask for attention), dates read "2 hours ago", authors get coloured initials, Cmd+Return
 commits, and the busy indicator says what it is doing.
 
-### Phase 9 — The four left out, planned
+### Phase 9 — The four left out · **built**
 
-* **Pull requests, issues and CI status at the host.** GitHub and GitLab (cloud and self-hosted) through
-  their REST APIs with a personal access token kept in the Keychain (the host's `crypt` service), never
-  in a file. A *Pull requests* tab beside Commit and Changes: open PRs for the current branch, their
-  checks, a "Create pull request" sheet (title, body from the commit messages, base branch). Read-only
-  first (list, status), then create, then review comments. Rate limits shown, not hit. Size L; needs
-  the host's Keychain service for a token per host.
-* **A three-way merge editor.** The conflict resolver takes ours/theirs/both per hunk today. The editor
-  adds the base and an editable result pane, built on the host's compare window rather than beside it
-  (the plan's rule against a second diff implementation holds). Size L; needs a three-pane mode in
-  `DiffWindowController`.
-* **Git-flow.** A convention, not a feature of git: start/finish feature, release and hotfix branches
-  with configurable prefixes, as a submenu of the history's context menu and settings for the prefixes.
-  Size S once branches and merges are in place — they now are.
-* **The tree at any commit.** A *Files* tab beside Commit and Changes: `ls-tree` of the commit as an
-  outline, a file opened read-only from `git show <commit>:<path>` in the viewer, "restore this version"
-  into the working tree. Size M.
+Each as planned, with the deviations measured or argued here:
+
+* **The tree at any commit.** A *Files* tab beside Commit and Changes (the Changes view in a second
+  mode): `ls-tree -r -z` of the commit, folders opened one level at a time — a whole tree can be
+  thousands of files — and the selected file's text at the commit with line numbers. Its menu compares
+  it with the working tree, saves it elsewhere, or restores it into the working tree with
+  `restore --source --worktree` (the index is left alone, so the change is an ordinary one).
+* **Git-flow.** A pull-down in the panel's header rather than in the history's context menu — starting
+  a feature is not about a commit. Branch names and prefixes and the tag prefix in Settings ▸ Git. The
+  first feature or release of a repository creates develop from main after asking. Finishing asks git
+  what is already done (`merge-base --is-ancestor`, the tag) so that finishing again after a merge
+  conflict carries on instead of merging or tagging twice; the conflict itself stops the sequence the
+  way any merge does, and the panel's banner takes over.
+* **A three-way merge editor**, as a plugin window (GitMergeView), not a mode of the host's compare
+  window: that window has no editable pane and no idea of a conflict, and teaching it both would have
+  put git into the host. The diff it shows is git's own merge: the index's three stages re-merged with
+  `merge-file --diff3`, used only while the working file is still exactly what the merge left
+  (compared with a second `merge-file` in git's own style — git's merge joins conflicts a line apart
+  into one hunk and diff3 keeps them apart, so hunk-by-hunk matching cannot work; measured). The
+  result's markers are the state: a button and a hand edit are the same kind of change. Staging is
+  refused while markers remain. The decision-only resolver of 5a stays, and hands over to it.
+* **Pull requests, issues and CI.** A window of its own rather than a tab beside Commit and Changes —
+  pull requests belong to the repository, not to the selected commit — plus a CI symbol in the panel's
+  header for the current commit, which opens the window. GitHub (and Enterprise via `/api/v3`) and
+  GitLab (`/api/v4`), told apart by host name or Settings ▸ Git ▸ Hosting. The personal access token is
+  asked for in the window and kept in the Keychain through the host's `crypt` service; the client sends
+  it only to the project's API host (tested). Listing, checks, check-out through `pull/N/head` /
+  `merge-requests/N/head` (a fork's pull request included), and a new pull request for the current
+  branch — pushed first when it has no upstream, prefilled from its commits. Review comments are not
+  done; the web link is one click away.
 
 ### Deliberately out of scope
 
@@ -457,9 +471,9 @@ across arbitrary history (5d does the commits ahead of the upstream), and a grap
 branch-diagram editor. Each of these is a product in itself, and none of them is what a file manager
 is for.
 
-Phase 9 plans the merge editor and the host APIs anyway, on the user's request after phase 8 — each
-as its own step with its own review, and only the parts listed there. Until one is built, the
-reasoning above is why it is not there yet.
+Phase 9 built the merge editor and the host APIs anyway, on the user's request after phase 8 — in
+the scope listed there, without OAuth (a personal access token instead) and without review comments.
+The reasoning above is why they stay that size.
 
 ---
 

@@ -33,9 +33,13 @@ pc_swiftc -emit-library -O -module-name Git -target "$TARGET" -framework AppKit 
   "$ROOT/Plugins/Git/GitRemotesView.swift" \
   "$ROOT/Plugins/Git/GitSettings.swift" \
   "$ROOT/Plugins/Git/GitCommitBox.swift" \
+  "$ROOT/Plugins/Git/GitFlow.swift" \
+  "$ROOT/Plugins/Git/GitMergeView.swift" \
+  "$ROOT/Plugins/Git/GitPullRequests.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
   "$ROOT/Plugins/SDK/PluginTheme.swift" \
-  "$ROOT/Plugins/SDK/PluginGit.swift"
+  "$ROOT/Plugins/SDK/PluginGit.swift" \
+  "$ROOT/Plugins/SDK/PluginGitHosting.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).
 if [ -d "$ROOT/Plugins/Git/Resources" ]; then

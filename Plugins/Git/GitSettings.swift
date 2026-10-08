@@ -84,6 +84,13 @@ final class GitSettingsView: NSView {
     private let contextLines = NSTextField()
     private let cloneRecursive = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let gitVersion = NSTextField(labelWithString: "")
+    private let flowMain = NSTextField()
+    private let flowDevelop = NSTextField()
+    private let flowFeature = NSTextField()
+    private let flowRelease = NSTextField()
+    private let flowHotfix = NSTextField()
+    private let flowTagPrefix = NSTextField()
+    private let hostKinds = NSTextField()
 
     private static let fetchChoices = [0, 5, 15, 30, 60]
     private static let pageChoices = [100, 300, 1000, 3000]
@@ -125,7 +132,8 @@ final class GitSettingsView: NSView {
             popUp.target = self
             popUp.action = #selector(changed)
         }
-        for field in [gitProgram, subjectLength, contextLines] {
+        for field in [gitProgram, subjectLength, contextLines, flowMain, flowDevelop, flowFeature, flowRelease,
+                      flowHotfix, flowTagPrefix, hostKinds] {
             field.target = self
             field.action = #selector(changed)
             field.delegate = self
@@ -164,15 +172,28 @@ final class GitSettingsView: NSView {
             heading(L("Changes")),
             ignoreWhitespace,
             row(L("Lines of context around a change:"), contextLines, fieldWidth: 60),
+            heading(L("Git flow")),
+            row(L("Main branch:"), flowMain, fieldWidth: 140),
+            row(L("Development branch:"), flowDevelop, fieldWidth: 140),
+            row(L("Prefixes — feature, release, hotfix:"), NSStackView(views: [flowFeature, flowRelease, flowHotfix])),
+            row(L("Put before a release's tag:"), flowTagPrefix, fieldWidth: 60),
+            note(L("The Git flow menu in the panel's header starts and finishes these branches.")),
+            heading(L("Hosting")),
+            row(L("Self-hosted servers:"), hostKinds),
+            note(L("github.com and gitlab.com are known, and so is any server whose name starts with gitlab. Name others with their kind, e.g. git.example.com=gitlab, ghe.example.com=github. Tokens are entered in the Pull Requests window and kept in the Keychain.")),
         ])
         rows.orientation = .vertical
         rows.alignment = .leading
         rows.spacing = 8
         rows.translatesAutoresizingMaskIntoConstraints = false
         addSubview(rows)
-        for field in [gitProgram, userName, userEmail] {
+        for field in [gitProgram, userName, userEmail, hostKinds] {
             field.widthAnchor.constraint(greaterThanOrEqualToConstant: 300).isActive = true
         }
+        for field in [flowFeature, flowRelease, flowHotfix] {
+            field.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        }
+        hostKinds.placeholderString = "git.example.com=gitlab"
         NSLayoutConstraint.activate([
             rows.topAnchor.constraint(equalTo: topAnchor, constant: 18),
             rows.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
@@ -232,6 +253,13 @@ final class GitSettingsView: NSView {
         ignoreWhitespace.state = settings.diffIgnoreWhitespace ? .on : .off
         contextLines.stringValue = String(settings.diffContextLines)
         cloneRecursive.state = settings.cloneRecursive ? .on : .off
+        flowMain.stringValue = settings.flow.mainBranch
+        flowDevelop.stringValue = settings.flow.developBranch
+        flowFeature.stringValue = settings.flow.featurePrefix
+        flowRelease.stringValue = settings.flow.releasePrefix
+        flowHotfix.stringValue = settings.flow.hotfixPrefix
+        flowTagPrefix.stringValue = settings.flow.tagPrefix
+        hostKinds.stringValue = PluginGit.hostKindsText(settings.hostKinds)
         showGitVersion()
     }
 
@@ -266,6 +294,17 @@ final class GitSettingsView: NSView {
         settings.diffIgnoreWhitespace = ignoreWhitespace.state == .on
         settings.diffContextLines = Int(contextLines.stringValue).map { min(max($0, 0), 50) } ?? settings.diffContextLines
         settings.cloneRecursive = cloneRecursive.state == .on
+        func name(_ field: NSTextField, _ fallback: String) -> String {
+            let value = field.stringValue.trimmingCharacters(in: .whitespaces)
+            return value.isEmpty ? fallback : value
+        }
+        settings.flow.mainBranch = name(flowMain, settings.flow.mainBranch)
+        settings.flow.developBranch = name(flowDevelop, settings.flow.developBranch)
+        settings.flow.featurePrefix = flowFeature.stringValue.trimmingCharacters(in: .whitespaces)
+        settings.flow.releasePrefix = flowRelease.stringValue.trimmingCharacters(in: .whitespaces)
+        settings.flow.hotfixPrefix = flowHotfix.stringValue.trimmingCharacters(in: .whitespaces)
+        settings.flow.tagPrefix = flowTagPrefix.stringValue.trimmingCharacters(in: .whitespaces)
+        settings.hostKinds = PluginGit.parseHostKinds(hostKinds.stringValue)
         // Return and the end of editing both land here, and so does every focus change: only a real
         // change is written — each save reloads every open panel.
         if settings != GitSettingsStore.current { GitSettingsStore.save(settings) }

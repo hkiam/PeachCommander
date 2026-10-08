@@ -69,6 +69,15 @@ Delovna kopija, zgodovina in meni **Ukazi ▸ Git** ponujajo več kot objavo:
 - V seznamu vej lahko vejo preimenuješ (**Preimenuj…**), ji daš upstream (**Nastavi upstream…**) ali jo izbrišeš na njenem strežniku (**Izbriši na oddaljenem…**).
 - **Nastavitve ▸ Git** določajo program git, tvoje globalno ime in e-pošto, kako dela **Pull**, fetch v ozadju, kaj kaže zgodovina in kako so videti njeni datumi, podpisovanje, sign-off in hooke za commite ter presledke in vrstice konteksta za diffe. Avtorji imajo v zgodovini barvne začetnice.
 
+## Datoteke, združevanje, Git flow in pull requesti
+
+- **Datoteke** poleg Commit in Spremembe prikažejo celo drevo pri izbranem commitu; datoteka se odpre s številkami vrstic, njen meni pa jo primerja z delovno kopijo, shrani drugam ali vrne v delovno kopijo (**Obnovi to različico…**).
+- **Urejevalnik združevanja…** — pri datoteki s sporom na plošči, v pasici, v **Reši spor…** in v meniju Git — prikaže trenutni spor kot naša, osnova in njihova drug ob drugem in pod njimi celo datoteko, ki jo lahko urejaš. **Vzemi naše**, **Vzemi njihove**, oboje v poljubnem vrstnem redu ali **Vzemi osnovo** odloči spor, **Shrani in dodaj** pa datoteko označi kot razrešeno, ko ni več oznak.
+- Simbol veje v glavi plošče je meni **Git flow**: **Začni funkcijo…**, **Začni izdajo…** in **Začni hitri popravek…** ustvarijo vejo iz develop ali main, **Zaključi …** pa jo združi nazaj — izdajo ali hitri popravek v main z oznako, nato v develop. Ponovno zaključevanje po sporu nadaljuje, kjer se je ustavilo.
+- **Pull requesti…** v meniju Git našteje odprte pull requeste (merge requeste pri GitLabu) in zadeve projekta, na katerega kažejo oddaljena skladišča, s preverjanji vsakega; pull request prevzame v lastno vejo in odpre novega za trenutno vejo.
+- Potreben je osebni dostopni žeton, vnesen v tem oknu in shranjen v obesku za ključe; žeton se pošlje samo API-ju storitve. Z žetonom simbol ob veji v glavi plošče pokaže, ali je CI za trenutni commit uspel.
+- **Nastavitve ▸ Git** poimenujejo veje in predpone Git flow ter pod **Gostovanje** lastne strežnike GitLab ali GitHub Enterprise.
+
 ## Zgodovina, blame in splet
 
 - **Zgodovina…** našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (`● main`,

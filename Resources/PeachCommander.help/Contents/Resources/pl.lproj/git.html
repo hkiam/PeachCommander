@@ -65,6 +65,15 @@ naciśnij <strong>Zatwierdź</strong> — z <strong>Popraw</strong> zmiana zosta
 <li>Na liście gałęzi gałąź można przemianować (<strong>Zmień nazwę…</strong>), nadać jej gałąź nadrzędną (<strong>Ustaw gałąź nadrzędną…</strong>) lub usunąć na jej serwerze (<strong>Usuń w zdalnym…</strong>).</li>
 <li><strong>Ustawienia ▸ Git</strong> określają program git, twoją globalną nazwę i e-mail, sposób działania <strong>Pull</strong>, fetch w tle, co pokazuje historia i jak wyglądają jej daty, podpisywanie, sign-off i hooki commitów oraz białe znaki i wiersze kontekstu w diffach. Autorzy mają w historii kolorowe inicjały.</li>
 </ul>
+<h2 id="pliki-scalanie-git-flow-i-pull-requesty">Pliki, scalanie, Git flow i pull requesty</h2>
+<ul>
+<li><strong>Pliki</strong> obok Commit i Zmiany pokazują całe drzewo w wybranym commicie; plik otwiera się z numerami wierszy, a jego menu porównuje go z kopią roboczą, zapisuje gdzie indziej albo przywraca do kopii roboczej (<strong>Przywróć tę wersję…</strong>).</li>
+<li><strong>Edytor scalania…</strong> — przy pliku z konfliktem w panelu, na pasku, w <strong>Rozwiąż konflikt…</strong> i w menu Git — pokazuje bieżący konflikt jako naszą, bazę i ich obok siebie, a pod nimi cały plik do edycji. <strong>Weź nasze</strong>, <strong>Weź ich</strong>, obie w dowolnej kolejności albo <strong>Weź bazę</strong> rozstrzygają konflikt, a <strong>Zapisz i dodaj</strong> oznacza plik jako rozwiązany, gdy nie zostały żadne znaczniki.</li>
+<li>Symbol gałęzi w nagłówku panelu to menu <strong>Git flow</strong>: <strong>Rozpocznij funkcję…</strong>, <strong>Rozpocznij wydanie…</strong> i <strong>Rozpocznij poprawkę…</strong> tworzą gałąź z develop lub main, a <strong>Zakończ …</strong> scala ją z powrotem — wydanie lub poprawkę do main z tagiem, potem do develop. Ponowne zakończenie po konflikcie kontynuuje tam, gdzie się zatrzymało.</li>
+<li><strong>Pull requesty…</strong> w menu Git wyświetlają otwarte pull requesty (merge requesty w GitLabie) i zgłoszenia projektu, na który wskazują zdalne repozytoria, z kontrolami każdego; przełączają pull request do własnej gałęzi i otwierają nowy dla bieżącej gałęzi.</li>
+<li>Potrzebny jest osobisty token dostępu, wprowadzony w tym oknie i przechowywany w pęku kluczy; token trafia tylko do API usługi. Z tokenem symbol obok gałęzi w nagłówku panelu pokazuje, czy CI przeszło dla bieżącego commita.</li>
+<li><strong>Ustawienia ▸ Git</strong> nadają nazwy gałęziom i prefiksom Git flow, a w sekcji <strong>Hosting</strong> własnym serwerom GitLab lub GitHub Enterprise.</li>
+</ul>
 <h2 id="historia-blame-i-siec">Historia, blame i sieć</h2>
 <ul>
 <li><strong>Historia…</strong> wypisuje zatwierdzenia z grafem torów, referencje wskazujące na każde z nich (<code>● main</code>,

@@ -65,6 +65,15 @@ sporočilo in pritisnite <strong>Objavi</strong> — z <strong>Popravi</strong> 
 <li>V seznamu vej lahko vejo preimenuješ (<strong>Preimenuj…</strong>), ji daš upstream (<strong>Nastavi upstream…</strong>) ali jo izbrišeš na njenem strežniku (<strong>Izbriši na oddaljenem…</strong>).</li>
 <li><strong>Nastavitve ▸ Git</strong> določajo program git, tvoje globalno ime in e-pošto, kako dela <strong>Pull</strong>, fetch v ozadju, kaj kaže zgodovina in kako so videti njeni datumi, podpisovanje, sign-off in hooke za commite ter presledke in vrstice konteksta za diffe. Avtorji imajo v zgodovini barvne začetnice.</li>
 </ul>
+<h2 id="datoteke-zdruzevanje-git-flow-in-pull-requesti">Datoteke, združevanje, Git flow in pull requesti</h2>
+<ul>
+<li><strong>Datoteke</strong> poleg Commit in Spremembe prikažejo celo drevo pri izbranem commitu; datoteka se odpre s številkami vrstic, njen meni pa jo primerja z delovno kopijo, shrani drugam ali vrne v delovno kopijo (<strong>Obnovi to različico…</strong>).</li>
+<li><strong>Urejevalnik združevanja…</strong> — pri datoteki s sporom na plošči, v pasici, v <strong>Reši spor…</strong> in v meniju Git — prikaže trenutni spor kot naša, osnova in njihova drug ob drugem in pod njimi celo datoteko, ki jo lahko urejaš. <strong>Vzemi naše</strong>, <strong>Vzemi njihove</strong>, oboje v poljubnem vrstnem redu ali <strong>Vzemi osnovo</strong> odloči spor, <strong>Shrani in dodaj</strong> pa datoteko označi kot razrešeno, ko ni več oznak.</li>
+<li>Simbol veje v glavi plošče je meni <strong>Git flow</strong>: <strong>Začni funkcijo…</strong>, <strong>Začni izdajo…</strong> in <strong>Začni hitri popravek…</strong> ustvarijo vejo iz develop ali main, <strong>Zaključi …</strong> pa jo združi nazaj — izdajo ali hitri popravek v main z oznako, nato v develop. Ponovno zaključevanje po sporu nadaljuje, kjer se je ustavilo.</li>
+<li><strong>Pull requesti…</strong> v meniju Git našteje odprte pull requeste (merge requeste pri GitLabu) in zadeve projekta, na katerega kažejo oddaljena skladišča, s preverjanji vsakega; pull request prevzame v lastno vejo in odpre novega za trenutno vejo.</li>
+<li>Potreben je osebni dostopni žeton, vnesen v tem oknu in shranjen v obesku za ključe; žeton se pošlje samo API-ju storitve. Z žetonom simbol ob veji v glavi plošče pokaže, ali je CI za trenutni commit uspel.</li>
+<li><strong>Nastavitve ▸ Git</strong> poimenujejo veje in predpone Git flow ter pod <strong>Gostovanje</strong> lastne strežnike GitLab ali GitHub Enterprise.</li>
+</ul>
 <h2 id="zgodovina-blame-in-splet">Zgodovina, blame in splet</h2>
 <ul>
 <li><strong>Zgodovina…</strong> našteje objave z grafom pasov, sklice, ki kažejo na vsako od njih (<code>● main</code>,

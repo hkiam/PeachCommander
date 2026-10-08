@@ -66,6 +66,15 @@ véglegesítés amúgy is történik; mindhárom mutatja a haladást, és megsza
 <li>Az ágak listájában egy ág átnevezhető (<strong>Átnevezés…</strong>), upstreamet kaphat (<strong>Upstream beállítása…</strong>) vagy törölhető a szerverén (<strong>Törlés a távoli tárolón…</strong>).</li>
 <li>A <strong>Beállítások ▸ Git</strong> megadja a git programot, a globális neved és e-mailed, a <strong>Pull</strong> működését, a háttérben futó fetchet, hogy mit mutatnak az előzmények és hogyan néznek ki a dátumai, a commitok aláírását, sign-offját és hookjait, valamint a diffek szóközeit és környezeti sorait. A szerzők színes monogramot kapnak az előzményekben.</li>
 </ul>
+<h2 id="fajlok-egyesites-git-flow-es-pull-requestek">Fájlok, egyesítés, Git flow és pull requestek</h2>
+<ul>
+<li>A Commit és a Változások melletti <strong>Fájlok</strong> a kijelölt commit teljes fáját mutatja; egy fájl sorszámokkal nyílik meg, a menüje pedig összeveti a munkapéldánnyal, máshová menti, vagy visszateszi a munkapéldányba (<strong>Ennek a verziónak a visszaállítása…</strong>).</li>
+<li>Az <strong>Egyesítő szerkesztő…</strong> — ütköző fájlon a panelen, a sávban, az <strong>Ütközés feloldása…</strong> ablakban és a Git menüben — egymás mellett mutatja az aktuális ütközést miénk, alap és övék változatban, alatta pedig a teljes, szerkeszthető fájlt. <strong>A miénk</strong>, <strong>Az övék</strong>, mindkettő bármilyen sorrendben vagy az <strong>Alap átvétele</strong> dönt egy ütközésről, a <strong>Mentés és indexelés</strong> pedig megoldottnak jelöli a fájlt, ha már nincs jelölő.</li>
+<li>A panel fejlécében az ág szimbóluma a <strong>Git flow</strong> menü: a <strong>Funkció indítása…</strong>, a <strong>Kiadás indítása…</strong> és a <strong>Gyorsjavítás indítása…</strong> a develop vagy a main ágból hozza létre az ágat, a <strong>… befejezése</strong> pedig visszaolvasztja — kiadást vagy gyorsjavítást címkével a mainbe, aztán a developbe. Ütközés után újra befejezve ott folytatja, ahol megállt.</li>
+<li>A Git menü <strong>Pull requestek…</strong> pontja listázza annak a projektnek a nyitott pull requestjeit (a GitLabon merge requestjeit) és issue-it, amelyre a távoli tárolók mutatnak, mindegyik ellenőrzéseivel; egy pull requestet saját ágba vesz ki, és újat nyit az aktuális ághoz.</li>
+<li>Ehhez személyes hozzáférési token kell, amelyet abban az ablakban adsz meg, és a kulcskarikában tárolódik; a token csak a szolgáltatás API-jához megy. Tokennel a panel fejlécében az ág melletti szimbólum mutatja, hogy az aktuális commitra lefutott-e sikeresen a CI.</li>
+<li>A <strong>Beállítások ▸ Git</strong> adja meg a Git flow ágait és előtagjait, a <strong>Tárhely</strong> alatt pedig a saját GitLab- vagy GitHub Enterprise-szervereket.</li>
+</ul>
 <h2 id="elozmenyek-blame-es-a-web">Előzmények, blame és a web</h2>
 <ul>
 <li>Az <strong>Előzmények…</strong> sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (<code>● main</code>,

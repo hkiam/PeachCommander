@@ -70,6 +70,15 @@ Arbetskopian, historiken och menyn **Kommandon ▸ Git** erbjuder mer än att ch
 - I grenlistan kan en gren byta namn (**Byt namn…**), få en uppströmsgren (**Ange uppströmsgren…**) eller tas bort på sin server (**Ta bort på fjärren…**).
 - **Inställningar ▸ Git** bestämmer git-programmet, ditt globala namn och din e-post, hur **Pull** arbetar, fetch i bakgrunden, vad historiken visar och hur dess datum ser ut, signering, sign-off och hooks för commits samt blanksteg och kontextrader för diffar. Författare har färgade initialer i historiken.
 
+## Filer, sammanfogning, Git flow och pull requests
+
+- **Filer** bredvid Commit och Ändringar visar hela trädet vid vald commit; en fil öppnas med radnummer, och dess meny jämför den med arbetskopian, sparar den någon annanstans eller lägger tillbaka den i arbetskopian (**Återställ den här versionen…**).
+- **Sammanfogningsredigerare…** — på en fil med konflikt i panelen, i banderollen, i **Lös konflikt…** och i Git-menyn — visar aktuell konflikt som vår, bas och deras sida vid sida och hela filen under, redigerbar. **Ta våra**, **Ta deras**, båda i valfri ordning eller **Ta basen** avgör en konflikt, och **Spara och köa** markerar filen som löst när inga markörer är kvar.
+- Grensymbolen i panelens rubrik är menyn **Git flow**: **Starta funktion…**, **Starta release…** och **Starta snabbfix…** skapar grenen från develop eller main, och **Avsluta …** sammanfogar den tillbaka — en release eller snabbfix i main med en tagg, sedan i develop. Att avsluta igen efter en konflikt fortsätter där det stannade.
+- **Pull requests…** i Git-menyn listar öppna pull requests (merge requests hos GitLab) och ärenden i projektet som fjärrarna pekar på, med kontrollerna för var och en; den checkar ut en pull request i en egen gren och öppnar en ny för aktuell gren.
+- Det krävs en personlig åtkomsttoken, som anges i fönstret och förvaras i nyckelringen; token skickas bara till tjänstens API. Med en token visar en symbol bredvid grenen i panelens rubrik om CI gick igenom för aktuell commit.
+- **Inställningar ▸ Git** namnger Git flow-grenar och -prefix och, under **Värdtjänst**, egna GitLab- eller GitHub Enterprise-servrar.
+
 ## Historik, blame och webben
 
 - **Historik…** listar incheckningarna med en filgraf, referenserna som pekar på var och en (`● main`,

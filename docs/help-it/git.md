@@ -70,6 +70,15 @@ La copia di lavoro, la cronologia e il menu **Comandi ▸ Git** offrono più del
 - Nell’elenco dei rami un ramo si può rinominare (**Rinomina…**), collegare a un upstream (**Imposta upstream…**) o eliminare sul suo server (**Elimina sul remoto…**).
 - **Impostazioni ▸ Git** stabilisce il programma git, il tuo nome e la tua e-mail globali, come lavora **Pull**, il fetch in background, cosa mostra la cronologia e come appaiono le sue date, firma, sign-off e hook dei commit, e spazi e righe di contesto dei diff. Gli autori portano iniziali colorate nella cronologia.
 
+## File, merge, Git flow e pull request
+
+- **File**, accanto a Commit e Modifiche, mostra l’intero albero al commit selezionato; un file si apre con i numeri di riga, e il suo menu lo confronta con la copia di lavoro, lo salva altrove o lo rimette nella copia di lavoro (**Ripristina questa versione…**).
+- **Editor di merge…** — su un file in conflitto nel pannello, nel banner, in **Risolvi conflitto…** e nel menu Git — mostra il conflitto corrente come nostra, base e loro affiancate e sotto l’intero file, modificabile. **Prendi il nostro**, **Prendi il loro**, entrambi in un ordine o nell’altro o **Prendi la base** decidono un conflitto, e **Salva e prepara** segna il file come risolto quando non restano marcatori.
+- Il simbolo del ramo nell’intestazione del pannello è il menu **Git flow**: **Inizia funzionalità…**, **Inizia release…** e **Inizia hotfix…** creano il ramo da develop o main, e **Concludi …** lo riunisce — una release o un hotfix in main con un tag, poi in develop. Concludere di nuovo dopo un conflitto riprende da dove si era fermato.
+- **Pull request…** nel menu Git elenca le pull request aperte (merge request su GitLab) e le issue del progetto a cui puntano i remoti, con i controlli di ciascuna; estrae una pull request in un ramo proprio e ne apre una nuova per il ramo corrente.
+- Serve un token di accesso personale, inserito in quella finestra e conservato nel portachiavi; il token viene inviato solo all’API del servizio. Con un token, un simbolo accanto al ramo nell’intestazione del pannello mostra se la CI è passata per il commit corrente.
+- **Impostazioni ▸ Git** dà i nomi ai rami e ai prefissi di Git flow e, in **Hosting**, ai server GitLab o GitHub Enterprise self-hosted.
+
 ## Cronologia, blame e il web
 
 - **Cronologia…** elenca i commit con un grafo a corsie, i riferimenti che puntano a ciascuno (`● main`,

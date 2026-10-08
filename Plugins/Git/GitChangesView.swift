@@ -8,11 +8,18 @@
 //
 // Tree and diff sit side by side when the panel is wide (the bottom dock) and one above the other when
 // it is narrow (the sidebar).
+//
+// Phase 9 reuses it for the Files tab: the whole tree at the commit instead of the files it touched, and
+// the selected file's text at that commit instead of its diff — with "compare with the working tree",
+// "save this version" and "restore this version" in its menu.
 
 import AppKit
 
 @MainActor
 final class GitChangesView: NSView {
+    /// What the tree lists: the files a commit changed, or every file the commit has (the Files tab).
+    enum Mode { case changes, files }
+    let mode: Mode
     private let services: PcHostServices
     private var theme: PluginTheme
     private let busy: NSProgressIndicator
@@ -34,7 +41,8 @@ final class GitChangesView: NSView {
     private var loadingFiles: String?
     private var loadingDiff: String?
 
-    init(services: PcHostServices, busy: NSProgressIndicator) {
+    init(services: PcHostServices, busy: NSProgressIndicator, mode: Mode = .changes) {
+        self.mode = mode
         self.services = services
         self.theme = PluginTheme(services)
         self.busy = busy
@@ -62,8 +70,17 @@ final class GitChangesView: NSView {
         outline.target = self
         outline.doubleAction = #selector(compareSelected)
         outline.onEnter = { [weak self] in self?.compareSelected() }
-        outline.menu = gitMenu([
+        outline.menu = mode == .changes ? gitMenu([
             (L("Show changes of this file"), #selector(compareSelected)),
+            (nil, nil),
+            (L("Show in the left panel"), #selector(revealLeft)),
+            (L("Show in the right panel"), #selector(revealRight)),
+            (nil, nil),
+            (L("Copy file path"), #selector(copyFilePath)),
+        ], target: self) : gitMenu([
+            (L("Compare with the working tree"), #selector(compareSelected)),
+            (L("Save this version as…"), #selector(saveVersion)),
+            (L("Restore this version…"), #selector(restoreVersion)),
             (nil, nil),
             (L("Show in the left panel"), #selector(revealLeft)),
             (L("Show in the right panel"), #selector(revealRight)),
@@ -129,8 +146,13 @@ final class GitChangesView: NSView {
         guard commit.hash != self.commit?.hash || root != self.root || range != nil else { return }
         self.commit = commit
         self.range = nil
-        load(key: commit.hash, root: root, names: PluginGit.nameStatusArguments(commit.hash),
-             empty: L("This commit changes no files."))
+        if mode == .files {
+            load(key: commit.hash, root: root, names: PluginGit.treeFilesArguments(commit.hash),
+                 empty: L("This commit has no files."))
+        } else {
+            load(key: commit.hash, root: root, names: PluginGit.nameStatusArguments(commit.hash),
+                 empty: L("This commit changes no files."))
+        }
     }
 
     /// Two commits compared — or, with `to` nil, a commit and the working tree (phase 8). Read again each
@@ -149,12 +171,17 @@ final class GitChangesView: NSView {
         outline.reloadData()
         diff.show(lines: [], truncated: false, placeholder: "")
         busy.startAnimation(nil)
+        let wholeTree = mode == .files
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let result = PluginGitRepo.run(["-C", root] + names)
-            let files = PluginGit.parseNameStatus(result.out)
+            let files = wholeTree ? PluginGit.parseTreeFiles(result.out) : PluginGit.parseNameStatus(result.out)
+            // The tree is built here, not on the main thread: a whole commit's tree can be 100,000 files.
+            let nodes = PluginGit.fileTree(files)
             // Which of them LFS stores — a pointer file's diff is three lines of hash, which reads as
             // nonsense unless the tree says what it is. The paths go on standard input, however many.
-            let paths = files.map(\.path)
+            // Not for the whole tree: there the file's text is shown through `show`, and asking about
+            // every file of a large repository on each selection would stall the tab.
+            let paths = wholeTree ? [] : files.map(\.path)
             let lfs = paths.isEmpty ? [] : PluginGit.lfsPaths(PluginGitRepo.run(
                 ["-C", root] + PluginGit.lfsCheckArguments, input: PluginGit.lfsCheckInput(paths)).out)
             DispatchQueue.main.async {
@@ -163,9 +190,11 @@ final class GitChangesView: NSView {
                 self?.busy.stopAnimation(nil)
                 guard let self, self.loadingFiles == key else { return }
                 self.lfs = lfs
-                self.tree = PluginGit.fileTree(files).map(TreeItem.init)
+                self.tree = nodes.map(TreeItem.init)
                 self.outline.reloadData()
-                self.outline.expandItem(nil, expandChildren: true)
+                // A commit's changes are a handful of files and all of them open; its whole tree can be
+                // thousands, and opens one level at a time like a file panel.
+                if self.mode == .changes { self.outline.expandItem(nil, expandChildren: true) }
                 self.outline.sizeLastColumnToFit()
                 // The first file is shown straight away, the way the reference products open a commit.
                 if let row = (0..<self.outline.numberOfRows).first(where: {
@@ -198,6 +227,20 @@ final class GitChangesView: NSView {
         guard let root, let source = loadingFiles else { return }
         let key = source + "\u{0}" + file.path
         loadingDiff = key
+        if mode == .files, let commit {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let data = PluginGitRepo.runData(["-C", root, "--no-optional-locks", "show", "\(commit.hash):\(file.path)"])
+                let content = PluginGit.fileContentLines(data ?? Data())
+                DispatchQueue.main.async {
+                    guard let self, self.loadingDiff == key else { return }
+                    let placeholder = data == nil ? L("That version could not be read.")
+                        : content.binary ? L("A binary file — save this version to open it.")
+                        : content.lines.isEmpty ? L("An empty file.") : ""
+                    self.diff.show(lines: content.lines, truncated: content.truncated, placeholder: placeholder)
+                }
+            }
+            return
+        }
         // Both paths of a rename: limited to the new one, git sees an added file and diffs nothing.
         let paths = [file.oldPath, file.path].compactMap { $0 }
         let options = GitSettingsStore.current.diffOptions
@@ -225,6 +268,12 @@ final class GitChangesView: NSView {
 
     @objc private func compareSelected() {
         guard let root, let file = selectedFile else { return }
+        if mode == .files, let commit {
+            // This version against the file on disk now (or an empty side when it is gone).
+            GitCommitActions.compareFile(file.path, oldPath: nil, from: commit.hash, to: nil, root: root,
+                                         services: services, busy: busy)
+            return
+        }
         if let range {
             GitCommitActions.compareFile(file.path, oldPath: file.oldPath, from: range.from, to: range.to, root: root,
                                          services: services, busy: busy)
@@ -258,6 +307,57 @@ final class GitChangesView: NSView {
         return FileManager.default.fileExists(atPath: path) ? path : nil
     }
 
+    /// The selected file as it was at the commit, written wherever the reader says.
+    @objc private func saveVersion() {
+        guard let root, let commit, let file = selectedFile else { return }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = (file.path as NSString).lastPathComponent
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let box = ServicesBox(services)
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Through the checkout filters: an LFS file is saved as the file, not its pointer.
+            let data = PluginGitRepo.runData(["-C", root] + PluginGit.checkoutContentArguments(commit: commit.hash, path: file.path))
+            let written = (try? data?.write(to: url)) != nil
+            DispatchQueue.main.async {
+                if !written { GitCommitActions.report(box.services, L("Git"), L("That version could not be read.")) }
+            }
+        }
+    }
+
+    /// Put the selected file back as it was at the commit — in the working tree only, so the change is
+    /// an ordinary modification to look at, stage or discard. Asked first, and said plainly when the
+    /// file has changes of its own that this replaces.
+    @objc private func restoreVersion() {
+        guard let root, let commit, let file = selectedFile else { return }
+        let modified = PluginGitRepo.status(root: root)?.files[file.path].map { $0.summary != .untracked } ?? false
+        let alert = NSAlert()
+        alert.alertStyle = modified ? .warning : .informational
+        alert.messageText = String(format: L("Restore %@ as it was in %@?"), (file.path as NSString).lastPathComponent,
+                                   commit.shortHash)
+        alert.informativeText = modified
+            ? L("The file has changes that are not committed; they are replaced. The index is left as it is.")
+            : L("The file in the working tree is replaced; the change can be staged or discarded like any other.")
+        alert.addButton(withTitle: L("Restore"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let box = ServicesBox(services)
+        busy.startAnimation(nil)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = PluginGitRepo.run(["-C", root] + PluginGit.restoreFileArguments(commit: commit.hash, path: file.path),
+                                           combined: true)
+            DispatchQueue.main.async {
+                self?.busy.stopAnimation(nil)
+                PluginGitRepo.invalidate()
+                box.services.reloadActivePanel?(box.services.host)
+                self?.onRestored?()
+                if !result.ok { GitCommitActions.report(box.services, L("Git"), result.out) }
+            }
+        }
+    }
+
+    /// A file was restored — the working copy's count changed, and the panel reloads.
+    var onRestored: (() -> Void)?
+
     @objc private func copyFilePath() {
         guard let root, let item = outline.item(atRow: outline.selectedRow) as? TreeItem else { return }
         gitCopyToClipboard((root as NSString).appendingPathComponent(item.node.path))
@@ -278,6 +378,9 @@ extension GitChangesView: NSMenuItemValidation {
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         if menuItem.action == #selector(revealLeft) || menuItem.action == #selector(revealRight) {
             return selectedFullPath != nil
+        }
+        if [#selector(saveVersion), #selector(restoreVersion), #selector(compareSelected)].contains(menuItem.action) {
+            return selectedFile != nil
         }
         return outline.selectedRow >= 0
     }
@@ -305,7 +408,7 @@ extension GitChangesView: NSOutlineViewDataSource, NSOutlineViewDelegate {
                                         accessibilityDescription: nil)
         cell.imageView?.contentTintColor = node.isFolder ? .systemBlue : theme.secondaryText
         let text = NSMutableAttributedString()
-        if let file = node.file {
+        if let file = node.file, !file.status.isEmpty {
             text.append(NSAttributedString(string: file.status + "  ", attributes: [
                 .font: NSFont.monospacedSystemFont(ofSize: 10, weight: .bold),
                 .foregroundColor: Self.statusColor(file.status),

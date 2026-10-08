@@ -71,6 +71,15 @@ Arbeitskopie, Historie und das Menü **Befehle ▸ Git** bieten mehr als das Com
 - In der Branch-Liste lässt sich ein Branch umbenennen (**Umbenennen…**), mit einem Upstream verbinden (**Upstream setzen…**) oder auf seinem Server löschen (**Auf dem Remote löschen…**).
 - **Einstellungen ▸ Git** legt das git-Programm fest, deinen globalen Namen und deine E-Mail, wie **Pull** arbeitet, den Fetch im Hintergrund, was die Historie zeigt und wie ihre Daten aussehen, Signieren, Sign-off und Hooks für Commits sowie Leerzeichen und Kontextzeilen für Diffs. Autoren tragen in der Historie farbige Initialen.
 
+## Dateien, Mergen, Git Flow und Pull Requests
+
+- **Dateien** neben Commit und Änderungen zeigt den ganzen Baum beim gewählten Commit; eine Datei öffnet mit Zeilennummern, und ihr Menü vergleicht sie mit der Arbeitskopie, speichert sie woanders oder legt sie zurück in die Arbeitskopie (**Diese Version wiederherstellen…**).
+- **Merge-Editor…** — an einer Datei mit Konflikt im Panel, im Banner, in **Konflikt lösen…** und im Git-Menü — zeigt den aktuellen Konflikt als unsere, Basis und ihre nebeneinander und darunter die ganze Datei, bearbeitbar. **Unsere übernehmen**, **Ihre übernehmen**, beide in beliebiger Reihenfolge oder **Basis übernehmen** entscheiden einen Konflikt, und **Speichern und stagen** markiert die Datei als gelöst, sobald keine Marker mehr übrig sind.
+- Das Branch-Symbol in der Kopfzeile des Panels ist das Menü **Git Flow**: **Feature beginnen…**, **Release beginnen…** und **Hotfix beginnen…** legen den Branch aus develop oder main an, und **… abschließen** mergt ihn zurück — ein Release oder Hotfix mit Tag in main, dann in develop. Erneutes Abschließen nach einem Konflikt macht dort weiter, wo es angehalten hat.
+- **Pull Requests…** im Git-Menü listet die offenen Pull Requests (Merge Requests bei GitLab) und Issues des Projekts, auf das die Remotes zeigen, mit den Checks jedes einzelnen; es checkt einen Pull Request in einen eigenen Branch aus und eröffnet einen neuen für den aktuellen Branch.
+- Dafür braucht es einen persönlichen Zugriffstoken, der in diesem Fenster eingegeben und im Schlüsselbund aufbewahrt wird; der Token geht nur an die API des Dienstes. Mit Token zeigt ein Symbol neben dem Branch in der Kopfzeile des Panels, ob die CI für den aktuellen Commit bestanden hat.
+- **Einstellungen ▸ Git** benennt die Branches und Präfixe von Git Flow und unter **Hosting** selbst gehostete GitLab- oder GitHub-Enterprise-Server.
+
 ## Historie, Blame und das Web
 
 - **Historie…** listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (`● main`,

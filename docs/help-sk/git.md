@@ -69,6 +69,15 @@ Pracovná kópia, história a ponuka **Príkazy ▸ Git** ponúkajú viac než z
 - V zozname vetiev sa dá vetva premenovať (**Premenovať…**), dať jej upstream (**Nastaviť upstream…**) alebo ju odstrániť na jej serveri (**Odstrániť na vzdialenom repozitári…**).
 - **Nastavenia ▸ Git** určujú program git, tvoje globálne meno a e-mail, ako pracuje **Pull**, fetch na pozadí, čo ukazuje história a ako vyzerajú jej dátumy, podpisovanie, sign-off a hooky commitov a medzery a riadky kontextu v diffoch. Autori majú v histórii farebné iniciály.
 
+## Súbory, zlučovanie, Git flow a pull requesty
+
+- **Súbory** vedľa Commit a Zmeny ukazujú celý strom vo vybranom commite; súbor sa otvorí s číslami riadkov a jeho ponuka ho porovná s pracovnou kópiou, uloží inam alebo vráti do pracovnej kópie (**Obnoviť túto verziu…**).
+- **Editor zlúčenia…** — pri súbore s konfliktom v paneli, v pruhu, vo **Vyriešiť konflikt…** a v ponuke Git — ukazuje aktuálny konflikt ako naša, základ a ich vedľa seba a pod nimi celý súbor na úpravy. **Vziať naše**, **Vziať ich**, oboje v ľubovoľnom poradí alebo **Vziať základ** rozhodne konflikt a **Uložiť a pridať** označí súbor ako vyriešený, keď už nezostávajú žiadne značky.
+- Symbol vetvy v záhlaví panela je ponuka **Git flow**: **Začať funkciu…**, **Začať vydanie…** a **Začať hotfix…** vytvoria vetvu z develop alebo main a **Dokončiť …** ju zlúči späť — vydanie alebo hotfix do main s tagom, potom do develop. Opätovné dokončenie po konflikte pokračuje tam, kde sa zastavilo.
+- **Pull requesty…** v ponuke Git vypíšu otvorené pull requesty (merge requesty pri GitLabe) a issues projektu, na ktorý ukazujú vzdialené repozitáre, s kontrolami každého; prepnú pull request do vlastnej vetvy a otvoria nový pre aktuálnu vetvu.
+- Potrebujú osobný prístupový token, zadaný v tom okne a uložený v kľúčenke; token sa posiela len do API služby. S tokenom ukazuje symbol vedľa vetvy v záhlaví panela, či CI pre aktuálny commit prešlo.
+- **Nastavenia ▸ Git** pomenujú vetvy a predpony Git flow a v časti **Hosting** vlastné servery GitLab alebo GitHub Enterprise.
+
 ## História, blame a web
 
 - **História…** vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (`● main`, `↗ origin/main`,

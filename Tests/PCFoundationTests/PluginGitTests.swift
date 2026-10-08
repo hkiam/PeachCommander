@@ -2033,6 +2033,407 @@ final class PluginGitTests: XCTestCase {
 /// git is isolated from this machine: no global or system configuration, no terminal prompt, a fixed
 /// committer — and no locale, the way an app started from Finder runs it, which is the case the plugin
 /// has to work in (the search's case folding failed exactly there).
+// MARK: - Phase 9: the tree at any commit, git-flow, the merge editor, pull requests and CI
+
+extension PluginGitTests {
+
+    func testTheTreeAtACommitAndRestoringAFileAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        let file = repo.dir.appendingPathComponent("Grüße.txt")
+        try FileManager.default.createDirectory(at: repo.dir.appendingPathComponent("src"), withIntermediateDirectories: true)
+        try "one\ntwo\n".write(to: file, atomically: true, encoding: .utf8)
+        try "x".write(to: repo.dir.appendingPathComponent("src/a.swift"), atomically: true, encoding: .utf8)
+        try Data([0x89, 0x50, 0x00, 0x01]).write(to: repo.dir.appendingPathComponent("logo.png"))
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "first"])
+        let first = try repo.git(["rev-parse", "HEAD"], combined: false).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        try "changed\n".write(to: file, atomically: true, encoding: .utf8)
+        try repo.git(["commit", "-q", "-am", "second"])
+
+        let files = PluginGit.parseTreeFiles(try repo.git(PluginGit.treeFilesArguments(first), combined: false).out)
+        XCTAssertEqual(files.map(\.path).sorted(), ["Grüße.txt", "logo.png", "src/a.swift"], "names unquoted")
+        XCTAssertEqual(files.first?.status, "")
+
+        let text = PluginGit.fileContentLines(Data("one\ntwo\n".utf8))
+        XCTAssertEqual(text.lines.map(\.text), ["one", "two"])
+        XCTAssertEqual(text.lines.map(\.newLine), [1, 2])
+        XCTAssertFalse(text.binary)
+        XCTAssertTrue(PluginGit.fileContentLines(Data([0x89, 0x50, 0x00, 0x01])).binary)
+        let long = PluginGit.fileContentLines(Data((1...20).map(String.init).joined(separator: "\n").utf8), limit: 5)
+        XCTAssertEqual(long.lines.count, 5)
+        XCTAssertTrue(long.truncated)
+
+        XCTAssertTrue(try repo.git(PluginGit.restoreFileArguments(commit: first, path: "Grüße.txt")).ok)
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8), "one\ntwo\n")
+        let status = try repo.git(["status", "--porcelain"], combined: false).out
+        XCTAssertTrue(status.hasPrefix(" M"), "back in the working tree only, not staged: \(status)")
+    }
+
+    func testFlowNames() {
+        var flow = PluginGit.Flow()
+        flow.tagPrefix = "v"
+        XCTAssertEqual(flow.kind(ofBranch: "feature/login")?.kind, .feature)
+        XCTAssertEqual(flow.kind(ofBranch: "release/1.2")?.name, "1.2")
+        XCTAssertNil(flow.kind(ofBranch: "feature/"))
+        XCTAssertNil(flow.kind(ofBranch: "main"))
+        XCTAssertEqual(flow.tag(for: "1.2"), "v1.2")
+        XCTAssertEqual(flow.base(.hotfix), "main")
+        XCTAssertEqual(flow.base(.release), "develop")
+        XCTAssertTrue(PluginGit.isValidFlowName("login-form"))
+        XCTAssertTrue(PluginGit.isValidFlowName("1.2.0"))
+        for bad in ["", "a b", "a..b", "-x", "x/", "x.lock", "a:b", "a~1", "a^", "a?", "a*", "a[", "a@{1}"] {
+            XCTAssertFalse(PluginGit.isValidFlowName(bad), bad)
+        }
+        XCTAssertEqual(PluginGit.flowStartArguments(.feature, name: "x", flow: flow, hasDevelop: false),
+                       [["branch", "develop", "main"], ["switch", "-c", "feature/x", "develop"]])
+        XCTAssertEqual(PluginGit.flowStartArguments(.hotfix, name: "1.0.1", flow: flow, hasDevelop: false),
+                       [["switch", "-c", "hotfix/1.0.1", "main"]], "a hotfix needs no develop")
+        // Finishing again after a conflict skips what is already done.
+        let resumed = PluginGit.flowFinishArguments(.release, name: "1.2", flow: flow,
+                                                    state: .init(mergedIntoMain: true, tagged: true))
+        XCTAssertEqual(resumed, [["switch", "develop"], ["merge", "--no-ff", "--no-edit", "release/1.2"],
+                                 ["branch", "-d", "release/1.2"]])
+    }
+
+    /// A feature and a release through the whole cycle, in a real repository: develop is created, the
+    /// release lands in main and develop with its tag, and the branches are gone afterwards.
+    func testFlowCycleAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        try repo.git(["commit", "-q", "--allow-empty", "-m", "base"])
+        let flow = PluginGit.Flow()
+        func run(_ calls: [[String]]) throws {
+            for call in calls { let result = try repo.git(call); XCTAssertTrue(result.ok, "\(call): \(result.out)") }
+        }
+        func commit(_ name: String) throws {
+            try name.write(to: repo.dir.appendingPathComponent(name), atomically: true, encoding: .utf8)
+            try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", name])
+        }
+        func state(_ kind: PluginGit.FlowKind, _ name: String) throws -> PluginGit.FlowFinishState {
+            let branch = flow.prefix(kind) + name
+            return .init(mergedIntoMain: try repo.git(PluginGit.isAncestorArguments(branch, of: flow.mainBranch)).ok,
+                         tagged: try repo.git(PluginGit.tagExistsArguments(flow.tag(for: name))).ok,
+                         mergedIntoDevelop: try repo.git(PluginGit.isAncestorArguments(branch, of: flow.developBranch)).ok)
+        }
+        try run(PluginGit.flowStartArguments(.feature, name: "login", flow: flow, hasDevelop: false))
+        try commit("login.txt")
+        try run(PluginGit.flowFinishArguments(.feature, name: "login", flow: flow, state: try state(.feature, "login")))
+        XCTAssertFalse(try repo.git(["rev-parse", "-q", "--verify", "refs/heads/feature/login"]).ok, "deleted")
+        XCTAssertTrue(try repo.git(["cat-file", "-e", "develop:login.txt"]).ok)
+
+        try run(PluginGit.flowStartArguments(.release, name: "1.0", flow: flow, hasDevelop: true))
+        try commit("version.txt")
+        let before = try state(.release, "1.0")
+        XCTAssertEqual(before, .init())
+        try run(PluginGit.flowFinishArguments(.release, name: "1.0", flow: flow, state: before))
+        XCTAssertTrue(try repo.git(["cat-file", "-e", "main:version.txt"]).ok)
+        XCTAssertTrue(try repo.git(["cat-file", "-e", "main:login.txt"]).ok)
+        XCTAssertTrue(try repo.git(["cat-file", "-e", "develop:version.txt"]).ok)
+        XCTAssertTrue(try repo.git(PluginGit.tagExistsArguments("1.0")).ok)
+        XCTAssertEqual(try repo.git(["rev-parse", "--abbrev-ref", "HEAD"], combined: false).out
+            .trimmingCharacters(in: .whitespacesAndNewlines), "develop")
+    }
+
+    /// A real conflict: the three stages re-merged with the base, adopted into the working file, one
+    /// hunk taken from each side, and the result free of markers.
+    func testMergeEditorAgainstRealGit() throws {
+        let repo = try TempRepo()
+        try repo.git(["init", "-q", "-b", "main"])
+        let file = repo.dir.appendingPathComponent("f.txt")
+        try "a\nbase1\nm\nbase2\nz\n".write(to: file, atomically: true, encoding: .utf8)
+        try repo.git(["add", "-A"]); try repo.git(["commit", "-q", "-m", "base"])
+        try repo.git(["switch", "-q", "-c", "other"])
+        try "a\ntheirs1\nm\ntheirs2\nz\n".write(to: file, atomically: true, encoding: .utf8)
+        try repo.git(["commit", "-q", "-am", "theirs"])
+        try repo.git(["switch", "-q", "main"])
+        try "a\nours1\nm\nours2\nz\n".write(to: file, atomically: true, encoding: .utf8)
+        try repo.git(["commit", "-q", "-am", "ours"])
+        XCTAssertFalse(try repo.git(["merge", "other"]).ok)
+
+        let working = try String(contentsOf: file, encoding: .utf8)
+        XCTAssertNil(PluginGit.parseConflicts(working)?.hunks.first?.base, "git's default style has no base")
+        var paths: [String] = []
+        for stage in 1...3 {
+            let out = try repo.git(["show", PluginGit.mergeStageSpec(stage, path: "f.txt")], combined: false).out
+            let url = repo.dir.appendingPathComponent(".stage\(stage)")
+            try out.write(to: url, atomically: true, encoding: .utf8)
+            paths.append(url.path)
+        }
+        let labels = ("HEAD", "base", "other")
+        let diff3 = try repo.git(PluginGit.mergeFileArguments(ours: paths[1], base: paths[0], theirs: paths[2],
+                                                              labels: labels), combined: false).out
+        let merged = try repo.git(PluginGit.mergeFileArguments(ours: paths[1], base: paths[0], theirs: paths[2],
+                                                               labels: labels, diff3: false), combined: false).out
+        XCTAssertEqual(PluginGit.parseConflicts(working)?.hunks.count, 1, "git joined the two conflicts")
+        let adopted = try XCTUnwrap(PluginGit.adoptBase(working: working, merged: merged, diff3: diff3))
+        let parsed = try XCTUnwrap(PluginGit.parseConflicts(adopted))
+        XCTAssertEqual(parsed.hunks.count, 2)
+        XCTAssertEqual(parsed.hunks[0].base, ["base1"])
+        XCTAssertEqual(parsed.hunks[1].ours, ["ours2"])
+
+        let first = PluginGit.resolving(parsed, hunk: 0, with: try XCTUnwrap(PluginGit.lines(of: parsed.hunks[0], .theirs)))
+        let rest = try XCTUnwrap(PluginGit.parseConflicts(first))
+        XCTAssertEqual(rest.hunks.count, 1, "the other hunk stays as markers")
+        XCTAssertEqual(PluginGit.markerLine(of: 0, in: first), 3)
+        let done = PluginGit.resolving(rest, hunk: 0, with: try XCTUnwrap(PluginGit.lines(of: rest.hunks[0], .oursThenTheirs)))
+        XCTAssertEqual(done, "a\ntheirs1\nm\nours2\ntheirs2\nz\n")
+
+        // An edit inside the markers: no base is adopted rather than the wrong one.
+        XCTAssertNil(PluginGit.adoptBase(working: working.replacingOccurrences(of: "ours1", with: "edited"),
+                                         merged: merged, diff3: diff3))
+        XCTAssertEqual(PluginGit.changedLines(["x", "keep"], base: ["keep"]), [0])
+        XCTAssertEqual(PluginGit.changedLines(["x"], base: nil), [0])
+        XCTAssertNil(PluginGit.lines(of: PluginGit.ConflictHunk(ours: [], base: nil, theirs: [], oursLabel: "", theirsLabel: "",
+                                                                 baseLabel: nil, startLine: 1), .base))
+    }
+
+    func testSettingsKeepFlowAndHostKinds() {
+        var settings = PluginGit.Settings()
+        settings.flow.developBranch = "dev"
+        settings.flow.tagPrefix = "v"
+        settings.hostKinds = ["git.example.com": .gitlab, "ghe.corp": .github]
+        let text = settings.serialized()
+        XCTAssertEqual(PluginGit.Settings.parse(text), settings)
+        XCTAssertTrue(text.contains("Host.ghe.corp=github\n"))
+        XCTAssertEqual(PluginGit.Settings.parse("FlowDevelop=\n").flow.developBranch, "develop", "an empty name keeps the default")
+    }
+
+    // MARK: Hosting
+
+    func testHostingProjectFromRemotes() throws {
+        let gh = try XCTUnwrap(PluginGit.hostingProject(remoteName: "origin", url: "git@github.com:hkiam/PeachCommander.git"))
+        XCTAssertEqual(gh.kind, .github)
+        XCTAssertEqual(gh.path, "hkiam/PeachCommander")
+        XCTAssertEqual(gh.apiBase, "https://api.github.com")
+        XCTAssertEqual(gh.webBase, "https://github.com/hkiam/PeachCommander")
+        let gl = try XCTUnwrap(PluginGit.hostingProject(remoteName: "up", url: "https://gitlab.com/group/sub/project.git"))
+        XCTAssertEqual(gl.kind, .gitlab)
+        XCTAssertEqual(gl.path, "group/sub/project")
+        XCTAssertEqual(gl.apiBase, "https://gitlab.com/api/v4")
+        XCTAssertEqual(PluginGit.hostingProject(remoteName: "o", url: "ssh://git@gitlab.corp.de:2222/a/b.git")?.apiBase,
+                       "https://gitlab.corp.de/api/v4")
+        XCTAssertNil(PluginGit.hostingProject(remoteName: "o", url: "git@git.corp.de:a/b.git"), "unknown without a setting")
+        let ghe = try XCTUnwrap(PluginGit.hostingProject(remoteName: "o", url: "git@git.corp.de:a/b.git", kinds: ["git.corp.de": .github]))
+        XCTAssertEqual(ghe.apiBase, "https://git.corp.de/api/v3")
+        XCTAssertNil(PluginGit.hostingProject(remoteName: "o", url: "/Users/me/repo.git"))
+
+        let remotes = [PluginGit.Remote(name: "fork", fetchURL: "git@github.com:me/x.git", pushURL: ""),
+                       PluginGit.Remote(name: "origin", fetchURL: "git@github.com:them/x.git", pushURL: "")]
+        XCTAssertEqual(PluginGit.hostingProject(remotes: remotes)?.path, "them/x", "origin first")
+        XCTAssertEqual(PluginGit.tokenStore(host: "GitHub.com"), "git-token:github.com")
+        XCTAssertEqual(PluginGit.parseHostKinds("Git.Corp.de=GitLab, ghe.corp = github; bad, x=bitbucket, a b=github"),
+                       ["git.corp.de": .gitlab, "ghe.corp": .github])
+        XCTAssertEqual(PluginGit.hostKindsText(["b": .github, "a": .gitlab]), "a=gitlab, b=github")
+    }
+
+    func testHostingRequests() throws {
+        let gh = try XCTUnwrap(PluginGit.hostingProject(remoteName: "origin", url: "git@github.com:o/r.git"))
+        let gl = try XCTUnwrap(PluginGit.hostingProject(remoteName: "origin", url: "git@gitlab.com:g/s/p.git"))
+        XCTAssertEqual(PluginGit.pullRequestsRequest(gh).url, "https://api.github.com/repos/o/r/pulls?state=open&per_page=50")
+        XCTAssertEqual(PluginGit.pullRequestsRequest(gl).url,
+                       "https://gitlab.com/api/v4/projects/g%2Fs%2Fp/merge_requests?state=opened&per_page=50")
+        XCTAssertEqual(PluginGit.ciRequests(gh, sha: "abc").map(\.url),
+                       ["https://api.github.com/repos/o/r/commits/abc/check-runs?per_page=100",
+                        "https://api.github.com/repos/o/r/commits/abc/status"])
+        XCTAssertEqual(PluginGit.ciRequests(gl, sha: "abc").map(\.url),
+                       ["https://gitlab.com/api/v4/projects/g%2Fs%2Fp/pipelines?sha=abc&per_page=1"])
+        let create = PluginGit.createPullRequestRequest(gl, title: "T", body: "B", head: "f", base: "main", draft: true)
+        XCTAssertEqual(create.method, "POST")
+        let payload = try XCTUnwrap(JSONSerialization.jsonObject(with: try XCTUnwrap(create.body)) as? [String: Any])
+        XCTAssertEqual(payload["title"] as? String, "Draft: T")
+        XCTAssertEqual(payload["source_branch"] as? String, "f")
+        XCTAssertEqual(PluginGit.apiHeaders(.gitlab, token: "t")["PRIVATE-TOKEN"], "t")
+        XCTAssertEqual(PluginGit.apiHeaders(.github, token: "t")["Authorization"], "Bearer t")
+        XCTAssertEqual(PluginGit.fetchPullRequestArguments(gh, number: 7).arguments, ["fetch", "origin", "+pull/7/head:pr/7"])
+        XCTAssertEqual(PluginGit.fetchPullRequestArguments(gl, number: 7).branch, "mr/7")
+    }
+
+    func testHostingAnswers() throws {
+        let githubPulls = """
+        [{"number": 12, "title": "Add login", "user": {"login": "ada"}, "draft": true,
+          "head": {"ref": "feature/login", "sha": "abc"}, "base": {"ref": "main"},
+          "html_url": "https://github.com/o/r/pull/12", "updated_at": "2026-10-01T12:00:00Z", "body": "Text"}]
+        """
+        let pull = try XCTUnwrap(PluginGit.parsePullRequests(Data(githubPulls.utf8), kind: .github)?.first)
+        XCTAssertEqual(pull.number, 12); XCTAssertEqual(pull.author, "ada"); XCTAssertTrue(pull.isDraft)
+        XCTAssertEqual(pull.sourceBranch, "feature/login"); XCTAssertEqual(pull.headSHA, "abc"); XCTAssertNotNil(pull.updated)
+        let gitlabMRs = """
+        [{"iid": 3, "title": "Draft: Fix", "author": {"username": "bob"}, "source_branch": "fix", "target_branch": "main",
+          "web_url": "https://gitlab.com/g/p/-/merge_requests/3", "draft": true, "sha": "def",
+          "updated_at": "2026-10-01T12:00:00.123Z", "description": "D"}]
+        """
+        let mr = try XCTUnwrap(PluginGit.parsePullRequests(Data(gitlabMRs.utf8), kind: .gitlab)?.first)
+        XCTAssertEqual(mr.number, 3); XCTAssertEqual(mr.body, "D"); XCTAssertNotNil(mr.updated, "fractional seconds")
+        XCTAssertNil(PluginGit.parsePullRequests(Data("{\"message\":\"Bad credentials\"}".utf8), kind: .github))
+
+        let issues = """
+        [{"number": 1, "title": "Bug", "user": {"login": "a"}, "labels": [{"name": "bug"}], "html_url": "u"},
+         {"number": 2, "title": "PR", "user": {"login": "a"}, "pull_request": {}, "html_url": "u"}]
+        """
+        XCTAssertEqual(PluginGit.parseIssues(Data(issues.utf8), kind: .github)?.map(\.number), [1], "pull requests are not issues")
+        XCTAssertEqual(PluginGit.parseIssues(Data(issues.utf8), kind: .github)?.first?.labels, ["bug"])
+
+        let runs = """
+        {"check_runs": [{"name": "build", "status": "completed", "conclusion": "success", "html_url": "b"},
+                        {"name": "test", "status": "in_progress", "conclusion": null}]}
+        """
+        let statuses = #"{"statuses": [{"context": "ci/legacy", "state": "success", "target_url": "l"}]}"#
+        let ci = PluginGit.parseGitHubCI(checkRuns: Data(runs.utf8), status: Data(statuses.utf8))
+        XCTAssertEqual(ci.state, .pending)
+        XCTAssertEqual(ci.checks.map(\.name), ["build", "test", "ci/legacy"])
+        let failed = PluginGit.parseGitHubCI(checkRuns: Data(#"{"check_runs":[{"name":"x","status":"completed","conclusion":"failure"}]}"#.utf8),
+                                            status: nil)
+        XCTAssertEqual(failed.state, .failure)
+        XCTAssertEqual(PluginGit.parseGitHubCI(checkRuns: nil, status: nil), .none)
+        XCTAssertEqual(PluginGit.parseGitLabCI(Data(#"[{"id": 9, "status": "running", "web_url": "w"}]"#.utf8)).state, .pending)
+        XCTAssertEqual(PluginGit.parseGitLabCI(Data("[]".utf8)), .none)
+
+        XCTAssertEqual(PluginGit.apiErrorMessage(Data(#"{"message":"Validation Failed","errors":[{"message":"A pull request already exists"}]}"#.utf8), status: 422),
+                       "Validation Failed: A pull request already exists")
+        XCTAssertEqual(PluginGit.apiErrorMessage(Data("<html>".utf8), status: 502), "HTTP 502")
+        XCTAssertEqual(PluginGit.rateLimitRemaining(["X-RateLimit-Remaining": "42"]), 42)
+        XCTAssertEqual(PluginGit.rateLimitRemaining(["RateLimit-Remaining": "7"]), 7)
+        XCTAssertEqual(PluginGit.parseCreated(Data(#"{"iid": 5, "web_url": "w"}"#.utf8), kind: .gitlab)?.number, 5)
+        XCTAssertEqual(PluginGit.parseDefaultBranch(Data(#"{"default_branch": "trunk"}"#.utf8)), "trunk")
+
+        let one = PluginGit.pullRequestDraft(subjects: ["Add login"], firstMessage: "Add login\n\nWith a form.\n")
+        XCTAssertEqual(one.title, "Add login"); XCTAssertEqual(one.body, "With a form.")
+        let several = PluginGit.pullRequestDraft(subjects: ["third", "second", "first"], firstMessage: nil)
+        XCTAssertEqual(several.title, "first"); XCTAssertEqual(several.body, "- first\n- second\n- third")
+    }
+
+    /// The client sends the service's headers and refuses to send the token anywhere but the API host.
+    func testHostingClientSendsTheTokenOnlyToItsHost() throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [HostingStub.self]
+        let session = URLSession(configuration: configuration)
+        let project = try XCTUnwrap(PluginGit.hostingProject(remoteName: "origin", url: "git@github.com:o/r.git"))
+        let client = PluginGitHostingClient(project: project, token: "secret", session: session)
+
+        let answered = expectation(description: "answered")
+        client.send(PluginGit.pullRequestsRequest(project)) { response, error in
+            XCTAssertNil(error)
+            XCTAssertEqual(response?.status, 200)
+            XCTAssertEqual(response?.headers["X-RateLimit-Remaining"], "99")
+            answered.fulfill()
+        }
+        wait(for: [answered], timeout: 5)
+        XCTAssertEqual(HostingStub.lastRequest?.value(forHTTPHeaderField: "Authorization"), "Bearer secret")
+        XCTAssertEqual(HostingStub.lastRequest?.url?.host, "api.github.com")
+
+        let refused = expectation(description: "refused")
+        HostingStub.lastRequest = nil
+        client.send(PluginGit.APIRequest(method: "GET", url: "https://evil.example.com/x", body: nil)) { response, error in
+            XCTAssertNil(response)
+            XCTAssertNotNil(error)
+            refused.fulfill()
+        }
+        wait(for: [refused], timeout: 5)
+        XCTAssertNil(HostingStub.lastRequest, "never sent")
+    }
+}
+
+extension PluginGitTests {
+    /// The review's findings on phase 9, each pinned.
+    func testPhase9ReviewFindings() throws {
+        // The commit HEAD is on comes with the status; an unborn branch has none.
+        let status = PluginGit.parseStatus("# branch.oid 1a2b3c\0# branch.head main\0")
+        XCTAssertEqual(status.oid, "1a2b3c")
+        XCTAssertNil(PluginGit.parseStatus("# branch.oid (initial)\0# branch.head main\0").oid)
+
+        // An HTTPS port is the API's port too; an SSH port is not.
+        let onPort = try XCTUnwrap(PluginGit.hostingProject(remoteName: "o", url: "https://gitlab.corp:8443/g/app.git",
+                                                            kinds: ["gitlab.corp": .gitlab]))
+        XCTAssertEqual(onPort.apiBase, "https://gitlab.corp:8443/api/v4")
+        XCTAssertEqual(PluginGit.hostingProject(remoteName: "o", url: "ssh://git@gitlab.corp:2222/g/app.git",
+                                                kinds: ["gitlab.corp": .gitlab])?.apiBase, "https://gitlab.corp/api/v4")
+
+        // A branch that tracks main has not been pushed as itself; one with commits ahead has to push them.
+        XCTAssertEqual(PluginGit.pushBeforePullRequest(branch: "fix-x", upstream: "origin/main", ahead: 0, remote: "origin"),
+                       ["push", "--set-upstream", "origin", "HEAD"])
+        XCTAssertEqual(PluginGit.pushBeforePullRequest(branch: "fix-x", upstream: "origin/fix-x", ahead: 3, remote: "origin"),
+                       ["push", "origin", "HEAD"])
+        XCTAssertNil(PluginGit.pushBeforePullRequest(branch: "fix-x", upstream: "origin/fix-x", ahead: 0, remote: "origin"))
+        XCTAssertEqual(PluginGit.pushBeforePullRequest(branch: "fix-x", upstream: nil, ahead: 0, remote: "origin"),
+                       ["push", "--set-upstream", "origin", "HEAD"])
+
+        // A checked-out pull request is updated through FETCH_HEAD.
+        let gh = try XCTUnwrap(PluginGit.hostingProject(remoteName: "origin", url: "git@github.com:o/r.git"))
+        XCTAssertEqual(PluginGit.updatePullRequestArguments(gh, number: 7),
+                       [["fetch", "origin", "pull/7/head"], ["merge", "--ff-only", "FETCH_HEAD"]])
+
+        // develop only on the remote: followed, not made anew from main.
+        XCTAssertEqual(PluginGit.flowStartArguments(.feature, name: "x", flow: PluginGit.Flow(), hasDevelop: false,
+                                                    remoteDevelop: "origin/develop"),
+                       [["branch", "--track", "develop", "origin/develop"], ["switch", "-c", "feature/x", "develop"]])
+        XCTAssertEqual(PluginGit.preferredRemoteBranch("fork/develop\norigin/develop\n"), "origin/develop")
+        XCTAssertNil(PluginGit.preferredRemoteBranch(""))
+    }
+
+    func testFlowFollowsARemoteDevelopAndSavedVersionsGoThroughFiltersAgainstRealGit() throws {
+        let remote = try TempRepo(), repo = try TempRepo()
+        try remote.git(["init", "-q", "-b", "main"])
+        try remote.git(["commit", "-q", "--allow-empty", "-m", "base"])
+        try remote.git(["switch", "-q", "-c", "develop"])
+        try "d".write(to: remote.dir.appendingPathComponent("dev.txt"), atomically: true, encoding: .utf8)
+        try remote.git(["add", "-A"]); try remote.git(["commit", "-q", "-m", "dev"])
+        try remote.git(["switch", "-q", "main"])
+        try repo.git(["clone", "-q", remote.dir.path, "."])
+        let found = PluginGit.preferredRemoteBranch(try repo.git(PluginGit.remoteBranchesArguments(named: "develop"), combined: false).out)
+        XCTAssertEqual(found, "origin/develop")
+        for call in PluginGit.flowStartArguments(.feature, name: "x", flow: PluginGit.Flow(), hasDevelop: false, remoteDevelop: found) {
+            XCTAssertTrue(try repo.git(call).ok, "\(call)")
+        }
+        XCTAssertTrue(try repo.git(["cat-file", "-e", "HEAD:dev.txt"]).ok, "the feature starts from the remote's develop")
+        XCTAssertEqual(try repo.git(["rev-parse", "--abbrev-ref", "develop@{upstream}"], combined: false).out
+            .trimmingCharacters(in: .whitespacesAndNewlines), "origin/develop")
+
+        // cat-file --filters applies the checkout's line endings, as a restore would.
+        try repo.git(["config", "core.autocrlf", "true"])
+        let saved = try repo.git(PluginGit.checkoutContentArguments(commit: "HEAD", path: "dev.txt"), combined: false)
+        XCTAssertTrue(saved.ok)
+        XCTAssertEqual(saved.out, "d")
+    }
+
+    /// Host and port both decide where the token may go.
+    func testHostingClientRefusesAnotherPort() throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [HostingStub.self]
+        let project = try XCTUnwrap(PluginGit.hostingProject(remoteName: "o", url: "https://gitlab.corp:8443/g/app.git",
+                                                             kinds: ["gitlab.corp": .gitlab]))
+        let client = PluginGitHostingClient(project: project, token: "t", session: URLSession(configuration: configuration))
+        HostingStub.lastRequest = nil
+        let refused = expectation(description: "refused")
+        client.send(PluginGit.APIRequest(method: "GET", url: "https://gitlab.corp/api/v4/projects", body: nil)) { response, error in
+            XCTAssertNil(response); XCTAssertNotNil(error); refused.fulfill()
+        }
+        wait(for: [refused], timeout: 5)
+        XCTAssertNil(HostingStub.lastRequest)
+        let sent = expectation(description: "sent")
+        client.send(PluginGit.pullRequestsRequest(project)) { response, _ in
+            XCTAssertEqual(response?.status, 200); sent.fulfill()
+        }
+        wait(for: [sent], timeout: 5)
+        XCTAssertEqual(HostingStub.lastRequest?.url?.port, 8443)
+    }
+}
+
+/// Answers every request with an empty list and remembers it.
+private final class HostingStub: URLProtocol {
+    nonisolated(unsafe) static var lastRequest: URLRequest?
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func startLoading() {
+        Self.lastRequest = request
+        let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
+                                       headerFields: ["X-RateLimit-Remaining": "99", "Content-Type": "application/json"])!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data("[]".utf8))
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    override func stopLoading() {}
+}
+
 private final class TempRepo {
     let dir: URL
     private let executable: String

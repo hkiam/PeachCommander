@@ -70,6 +70,15 @@ De werkkopie, de geschiedenis en het menu **Commando’s ▸ Git** bieden meer d
 - In de branchlijst kan een branch worden hernoemd (**Hernoemen…**), een upstream krijgen (**Upstream instellen…**) of op zijn server worden verwijderd (**Op de remote verwijderen…**).
 - **Instellingen ▸ Git** bepaalt het git-programma, je globale naam en e-mail, hoe **Pull** werkt, fetchen op de achtergrond, wat de geschiedenis toont en hoe de datums eruitzien, ondertekenen, sign-off en hooks voor commits, en witruimte en contextregels voor diffs. Auteurs dragen gekleurde initialen in de geschiedenis.
 
+## Bestanden, samenvoegen, Git flow en pull requests
+
+- **Bestanden** naast Commit en Wijzigingen toont de hele boom bij de gekozen commit; een bestand opent met regelnummers, en het menu ervan vergelijkt het met de werkkopie, slaat het elders op of zet het terug in de werkkopie (**Deze versie herstellen…**).
+- **Merge-editor…** — bij een bestand met een conflict in het paneel, in de banner, in **Conflict oplossen…** en in het Git-menu — toont het huidige conflict als ons, basis en hun naast elkaar en daaronder het hele bestand, bewerkbaar. **Onze nemen**, **Hun nemen**, beide in een van beide volgordes of **Basis nemen** beslissen een conflict, en **Opslaan en stagen** markeert het bestand als opgelost zodra er geen markeringen meer zijn.
+- Het branchsymbool in de kop van het paneel is het menu **Git flow**: **Feature beginnen…**, **Release beginnen…** en **Hotfix beginnen…** maken de branch vanaf develop of main, en **… afronden** voegt hem terug — een release of hotfix in main met een tag, daarna in develop. Opnieuw afronden na een conflict gaat verder waar het stopte.
+- **Pull requests…** in het Git-menu toont de open pull requests (merge requests bij GitLab) en issues van het project waar de remotes naar wijzen, met de checks van elk; het checkt een pull request uit in een eigen branch en opent een nieuwe voor de huidige branch.
+- Daarvoor is een persoonlijk toegangstoken nodig, ingevoerd in dat venster en bewaard in de sleutelhanger; het token gaat alleen naar de API van de dienst. Met een token laat een symbool naast de branch in de kop van het paneel zien of de CI voor de huidige commit is geslaagd.
+- **Instellingen ▸ Git** benoemt de branches en voorvoegsels van Git flow en, onder **Hosting**, zelf gehoste GitLab- of GitHub Enterprise-servers.
+
 ## Geschiedenis, blame en het web
 
 - **Geschiedenis…** toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (`● main`,

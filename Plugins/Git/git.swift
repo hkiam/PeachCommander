@@ -93,6 +93,10 @@ public func PcNotifyThemeChanged() {
             (window.contentView as? GitBranchesView)?.applyTheme()
             (window.contentView as? GitConflictView)?.applyTheme()
             (window.contentView as? GitRebaseView)?.applyTheme()
+            (window.contentView as? GitReflogView)?.applyTheme()
+            (window.contentView as? GitRemotesView)?.applyTheme()
+            (window.contentView as? GitMergeView)?.applyTheme()
+            (window.contentView as? GitPullRequestsView)?.applyTheme()
         }
         panelView?.applyTheme()
     }
@@ -264,6 +268,17 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         MainActor.assumeIsolated { showBranchesWindow(root: root, svc) }
     case "plugin.git.reflog":
         MainActor.assumeIsolated { showReflogWindow(root: root, svc) }
+    case "plugin.git.pullrequests":
+        MainActor.assumeIsolated { showPullRequestsWindow(root: root, svc) }
+    case "plugin.git.merge":
+        guard !relative.isEmpty, let repo = PluginGitRepo.status(root: root),
+              repo.files[relative]?.summary == .conflict else {
+            svc.presentInfo?(svc.host, L("Git"), L("That file has no conflict."))
+            return
+        }
+        MainActor.assumeIsolated {
+            showMergeWindow(root: root, relative: relative, svc) { panelView?.refreshAfterSync() }
+        }
     case "plugin.git.am":
         MainActor.assumeIsolated { applyPatches(root: root, svc) }
     case "plugin.git.remotes":
@@ -805,7 +820,7 @@ private func showCommitOfBlamedLine(_ svc: PcHostServices) {
 
 /// A window around a plugin view, registered with the host so it gets the standard Edit menu.
 @MainActor
-private func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: PcHostServices) {
+func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: PcHostServices) {
     let window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
                           styleMask: [.titled, .closable, .resizable, .miniaturizable],
                           backing: .buffered, defer: false)
@@ -835,6 +850,7 @@ func showRebaseWindow(root: String, base: String? = nil, _ svc: PcHostServices) 
 @MainActor
 private func showConflictWindow(root: String, relative: String, _ svc: PcHostServices) {
     let view = GitConflictView(services: svc, root: root, relative: relative)
+    view.onMergeEditor = { showMergeWindow(root: root, relative: relative, svc) { panelView?.refreshAfterSync() } }
     showToolWindow(title: String(format: L("Resolve Conflict — %@"), relative), view: view,
                    size: NSSize(width: 780, height: 440), svc)
 }
@@ -954,6 +970,14 @@ private func applyPatches(root: String, _ svc: PcHostServices) {
 func showRemotesWindow(root: String, _ svc: PcHostServices) {
     showToolWindow(title: String(format: L("Repository Settings — %@"), (root as NSString).lastPathComponent),
                    view: GitRemotesView(services: svc, root: root), size: NSSize(width: 860, height: 640), svc)
+}
+
+@MainActor
+func showMergeWindow(root: String, relative: String, _ svc: PcHostServices, onSaved: @escaping () -> Void) {
+    let view = GitMergeView(services: svc, root: root, relative: relative)
+    view.onSaved = onSaved
+    showToolWindow(title: String(format: L("Merge — %@"), relative), view: view,
+                   size: NSSize(width: 1100, height: 720), svc)
 }
 
 @MainActor

@@ -65,6 +65,15 @@
 <li>브랜치 목록에서 브랜치의 이름을 바꾸거나(<strong>이름 변경…</strong>), 업스트림을 지정하거나(<strong>업스트림 설정…</strong>), 서버에서 삭제할 수 있습니다(<strong>원격에서 삭제…</strong>).</li>
 <li><strong>설정 ▸ Git</strong>에서는 git 프로그램, 전역 이름과 이메일, <strong>Pull</strong> 방식, 백그라운드 페치, 기록에 표시할 내용과 날짜 모양, 커밋 서명, sign-off, 훅, 그리고 diff의 공백과 컨텍스트 줄 수를 정합니다. 기록의 작성자에는 색깔 있는 이니셜이 붙습니다.</li>
 </ul>
+<h2 id="git-flow">파일, 병합, Git flow, 풀 리퀘스트</h2>
+<ul>
+<li>커밋 및 변경 사항 옆의 <strong>파일</strong>은 선택한 커밋의 전체 트리를 보여 줍니다. 파일은 줄 번호와 함께 열리며, 메뉴에서 작업 사본과 비교하거나 다른 곳에 저장하거나 작업 사본으로 되돌릴 수 있습니다(<strong>이 버전 복원…</strong>).</li>
+<li><strong>병합 편집기…</strong>는 패널의 충돌 파일, 배너, <strong>충돌 해결…</strong>, Git 메뉴에서 열 수 있으며 현재 충돌을 우리 쪽, 기준, 상대 쪽으로 나란히 보여 주고 그 아래에 편집 가능한 전체 파일을 보여 줍니다. <strong>우리 것 사용</strong>, <strong>그들 것 사용</strong>, 순서를 골라 둘 다 사용, <strong>기준 사용</strong>으로 충돌을 결정하고, 표시자가 남지 않으면 <strong>저장 및 스테이징</strong>으로 파일을 해결됨으로 표시합니다.</li>
+<li>패널 헤더의 브랜치 기호는 <strong>Git flow</strong> 메뉴입니다. <strong>기능 시작…</strong>, <strong>릴리스 시작…</strong>, <strong>핫픽스 시작…</strong>은 develop 또는 main에서 브랜치를 만들고, <strong>… 마치기</strong>는 브랜치를 다시 병합합니다. 릴리스나 핫픽스는 태그와 함께 main에 병합된 뒤 develop에 병합됩니다. 충돌 후 다시 마치면 멈춘 곳부터 계속합니다.</li>
+<li>Git 메뉴의 <strong>풀 리퀘스트…</strong>는 원격이 가리키는 프로젝트의 열린 풀 리퀘스트(GitLab에서는 머지 리퀘스트)와 이슈를 각각의 검사와 함께 나열합니다. 풀 리퀘스트를 별도 브랜치로 체크아웃하고 현재 브랜치에 대한 새 풀 리퀘스트를 엽니다.</li>
+<li>이를 위해 그 창에서 입력하고 키체인에 보관하는 개인 액세스 토큰이 필요하며, 토큰은 서비스의 API로만 전송됩니다. 토큰이 있으면 패널 헤더의 브랜치 옆 기호가 현재 커밋의 CI 통과 여부를 보여 줍니다.</li>
+<li><strong>설정 ▸ Git</strong>에서 Git flow의 브랜치와 접두어를, <strong>호스팅</strong>에서 자체 호스팅 GitLab 또는 GitHub Enterprise 서버를 지정합니다.</li>
+</ul>
 <h2 id="_4">히스토리, 블레임, 그리고 웹</h2>
 <ul>
 <li><strong>히스토리…</strong>는 커밋을 레인 그래프와 함께, 각 커밋을 가리키는 레퍼런스(<code>● main</code>, <code>↗ origin/main</code>,

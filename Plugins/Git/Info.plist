@@ -132,6 +132,22 @@
 				<key>category</key>
 				<string>Commands</string>
 				<key>id</key>
+				<string>plugin.git.pullrequests</string>
+				<key>title</key>
+				<string>Pull Requests…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.merge</string>
+				<key>title</key>
+				<string>Merge Editor…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
 				<string>plugin.git.am</string>
 				<key>title</key>
 				<string>Apply Patches…</string>
@@ -356,6 +372,18 @@
 			<dict>
 				<key>command</key>
 				<string>plugin.git.conflict</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.merge</string>
 				<key>group</key>
 				<string>9_plugins</string>
 				<key>submenu</key>
@@ -592,6 +620,18 @@
 			</dict>
 			<dict>
 				<key>command</key>
+				<string>plugin.git.pullrequests</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>108</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
 				<string>plugin.git.am</string>
 				<key>group</key>
 				<string>5_git</string>
@@ -643,6 +683,18 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>110</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.merge</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>111</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>

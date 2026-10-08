@@ -11,6 +11,9 @@
 // defects (the plan's §5, "deliberately out of scope"). What is here is the decision, which is the part
 // neither of those two can express.
 //
+// Phase 9 added the merge editor beside it (GitMergeView) — base, both sides and an editable result —
+// and this window's "Merge editor…" button hands the file over. This one stays for the quick case.
+//
 // The parsing and the writing-back live in Plugins/SDK/PluginGit.swift and are unit-tested, including the
 // cases that must be *refused* — this text is about to be written over the reader's file.
 
@@ -37,6 +40,9 @@ final class GitConflictView: NSView {
     private let resetButton = NSButton()
     private let compareButton = NSButton()
     private let editButton = NSButton()
+    private let mergeButton = NSButton()
+    /// Opens the three-way merge editor on this file (phase 9); this window closes.
+    var onMergeEditor: (() -> Void)?
     private let writeButton = NSButton()
     private let stageButton = NSButton()
     private let busy = NSProgressIndicator()
@@ -113,6 +119,7 @@ final class GitConflictView: NSView {
             (resetButton, L("Undecide"), #selector(undecide)),
             (compareButton, L("Compare ours ↔ theirs"), #selector(compareOursAndTheirs)),
             (editButton, L("Open in editor"), #selector(openInEditor)),
+            (mergeButton, L("Merge editor…"), #selector(openMergeEditor)),
             (writeButton, L("Write file"), #selector(write)),
             (stageButton, L("Write and stage"), #selector(writeAndStage)),
         ] as [(NSButton, String, Selector)] {
@@ -142,6 +149,7 @@ final class GitConflictView: NSView {
         footer.alignment = .centerY
         footer.addView(compareButton, in: .leading)
         footer.addView(editButton, in: .leading)
+        footer.addView(mergeButton, in: .leading)
         footer.addView(busy, in: .leading)
         footer.addView(writeButton, in: .trailing)
         footer.addView(stageButton, in: .trailing)
@@ -356,6 +364,12 @@ final class GitConflictView: NSView {
 
     /// Hand the file to the host: a conflict that needs the two sides interleaved by hand needs an editor,
     /// and the application has one.
+    @objc private func openMergeEditor() {
+        let open = onMergeEditor
+        window?.close()
+        open?()
+    }
+
     @objc private func openInEditor() {
         absolute.withCString { services.openPath?(services.host, $0) }
     }

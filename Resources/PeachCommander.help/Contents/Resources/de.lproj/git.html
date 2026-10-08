@@ -67,6 +67,15 @@ lassen sich abbrechen.</p>
 <li>In der Branch-Liste lässt sich ein Branch umbenennen (<strong>Umbenennen…</strong>), mit einem Upstream verbinden (<strong>Upstream setzen…</strong>) oder auf seinem Server löschen (<strong>Auf dem Remote löschen…</strong>).</li>
 <li><strong>Einstellungen ▸ Git</strong> legt das git-Programm fest, deinen globalen Namen und deine E-Mail, wie <strong>Pull</strong> arbeitet, den Fetch im Hintergrund, was die Historie zeigt und wie ihre Daten aussehen, Signieren, Sign-off und Hooks für Commits sowie Leerzeichen und Kontextzeilen für Diffs. Autoren tragen in der Historie farbige Initialen.</li>
 </ul>
+<h2 id="dateien-mergen-git-flow-und-pull-requests">Dateien, Mergen, Git Flow und Pull Requests</h2>
+<ul>
+<li><strong>Dateien</strong> neben Commit und Änderungen zeigt den ganzen Baum beim gewählten Commit; eine Datei öffnet mit Zeilennummern, und ihr Menü vergleicht sie mit der Arbeitskopie, speichert sie woanders oder legt sie zurück in die Arbeitskopie (<strong>Diese Version wiederherstellen…</strong>).</li>
+<li><strong>Merge-Editor…</strong> — an einer Datei mit Konflikt im Panel, im Banner, in <strong>Konflikt lösen…</strong> und im Git-Menü — zeigt den aktuellen Konflikt als unsere, Basis und ihre nebeneinander und darunter die ganze Datei, bearbeitbar. <strong>Unsere übernehmen</strong>, <strong>Ihre übernehmen</strong>, beide in beliebiger Reihenfolge oder <strong>Basis übernehmen</strong> entscheiden einen Konflikt, und <strong>Speichern und stagen</strong> markiert die Datei als gelöst, sobald keine Marker mehr übrig sind.</li>
+<li>Das Branch-Symbol in der Kopfzeile des Panels ist das Menü <strong>Git Flow</strong>: <strong>Feature beginnen…</strong>, <strong>Release beginnen…</strong> und <strong>Hotfix beginnen…</strong> legen den Branch aus develop oder main an, und <strong>… abschließen</strong> mergt ihn zurück — ein Release oder Hotfix mit Tag in main, dann in develop. Erneutes Abschließen nach einem Konflikt macht dort weiter, wo es angehalten hat.</li>
+<li><strong>Pull Requests…</strong> im Git-Menü listet die offenen Pull Requests (Merge Requests bei GitLab) und Issues des Projekts, auf das die Remotes zeigen, mit den Checks jedes einzelnen; es checkt einen Pull Request in einen eigenen Branch aus und eröffnet einen neuen für den aktuellen Branch.</li>
+<li>Dafür braucht es einen persönlichen Zugriffstoken, der in diesem Fenster eingegeben und im Schlüsselbund aufbewahrt wird; der Token geht nur an die API des Dienstes. Mit Token zeigt ein Symbol neben dem Branch in der Kopfzeile des Panels, ob die CI für den aktuellen Commit bestanden hat.</li>
+<li><strong>Einstellungen ▸ Git</strong> benennt die Branches und Präfixe von Git Flow und unter <strong>Hosting</strong> selbst gehostete GitLab- oder GitHub-Enterprise-Server.</li>
+</ul>
 <h2 id="historie-blame-und-das-web">Historie, Blame und das Web</h2>
 <ul>
 <li><strong>Historie…</strong> listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (<code>● main</code>,

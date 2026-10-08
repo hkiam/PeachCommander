@@ -45,6 +45,22 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   for commits, with progress and Cancel.
 - **Create Repository Here…** and **Clone Repository…** (with progress and Cancel) in the Git menu, and
   a list of recent repositories beside the panel's title.
+- **Pull requests, issues and CI from GitHub and GitLab.** **Pull Requests…** in the Git menu lists
+  the open pull requests (merge requests at GitLab) and issues of the project the remotes point at,
+  with each one's checks; checks a pull request out into a branch of its own, a fork's included; and
+  opens a new one for the current branch, pushed first if needed and prefilled from its commits. A
+  symbol beside the branch in the panel's header shows the current commit's CI. A personal access
+  token is entered once and kept in the Keychain, and is sent only to the service's API. Self-hosted
+  GitLab and GitHub Enterprise servers are named under Settings ▸ Git ▸ Hosting.
+- **A three-way merge editor.** A conflicted file opens with ours, the base and theirs side by side and
+  the whole file below, editable; a conflict is decided by a button or by typing, Undo takes either
+  back, and Save and stage marks the file resolved once no markers are left. From the panel's list, its
+  banner, Resolve Conflict… and the Git menu.
+- **git-flow** in the panel's header: start a feature, release or hotfix, and finish it — a release or
+  hotfix merged into main with a tag and back into develop. Finishing again after a conflict carries
+  on where it stopped. Names and prefixes in Settings ▸ Git.
+- **The tree at any commit.** A Files tab beside Commit and Changes shows every file the commit has,
+  with its text; a file can be compared with the working tree, saved elsewhere or restored.
 - **Settings ▸ Git.** The git program and your global name and e-mail; how Pull works (fast-forward
   only, merge or rebase), whether the first push sets the upstream, pruning, a fetch in the background;
   how much history loads, whether it shows remote branches, tags and stashes, and relative or absolute

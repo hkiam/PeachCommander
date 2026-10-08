@@ -65,6 +65,15 @@ kde sa aj tak zapisuje; všetky tri ukazujú postup a dajú sa prerušiť.</p>
 <li>V zozname vetiev sa dá vetva premenovať (<strong>Premenovať…</strong>), dať jej upstream (<strong>Nastaviť upstream…</strong>) alebo ju odstrániť na jej serveri (<strong>Odstrániť na vzdialenom repozitári…</strong>).</li>
 <li><strong>Nastavenia ▸ Git</strong> určujú program git, tvoje globálne meno a e-mail, ako pracuje <strong>Pull</strong>, fetch na pozadí, čo ukazuje história a ako vyzerajú jej dátumy, podpisovanie, sign-off a hooky commitov a medzery a riadky kontextu v diffoch. Autori majú v histórii farebné iniciály.</li>
 </ul>
+<h2 id="subory-zlucovanie-git-flow-a-pull-requesty">Súbory, zlučovanie, Git flow a pull requesty</h2>
+<ul>
+<li><strong>Súbory</strong> vedľa Commit a Zmeny ukazujú celý strom vo vybranom commite; súbor sa otvorí s číslami riadkov a jeho ponuka ho porovná s pracovnou kópiou, uloží inam alebo vráti do pracovnej kópie (<strong>Obnoviť túto verziu…</strong>).</li>
+<li><strong>Editor zlúčenia…</strong> — pri súbore s konfliktom v paneli, v pruhu, vo <strong>Vyriešiť konflikt…</strong> a v ponuke Git — ukazuje aktuálny konflikt ako naša, základ a ich vedľa seba a pod nimi celý súbor na úpravy. <strong>Vziať naše</strong>, <strong>Vziať ich</strong>, oboje v ľubovoľnom poradí alebo <strong>Vziať základ</strong> rozhodne konflikt a <strong>Uložiť a pridať</strong> označí súbor ako vyriešený, keď už nezostávajú žiadne značky.</li>
+<li>Symbol vetvy v záhlaví panela je ponuka <strong>Git flow</strong>: <strong>Začať funkciu…</strong>, <strong>Začať vydanie…</strong> a <strong>Začať hotfix…</strong> vytvoria vetvu z develop alebo main a <strong>Dokončiť …</strong> ju zlúči späť — vydanie alebo hotfix do main s tagom, potom do develop. Opätovné dokončenie po konflikte pokračuje tam, kde sa zastavilo.</li>
+<li><strong>Pull requesty…</strong> v ponuke Git vypíšu otvorené pull requesty (merge requesty pri GitLabe) a issues projektu, na ktorý ukazujú vzdialené repozitáre, s kontrolami každého; prepnú pull request do vlastnej vetvy a otvoria nový pre aktuálnu vetvu.</li>
+<li>Potrebujú osobný prístupový token, zadaný v tom okne a uložený v kľúčenke; token sa posiela len do API služby. S tokenom ukazuje symbol vedľa vetvy v záhlaví panela, či CI pre aktuálny commit prešlo.</li>
+<li><strong>Nastavenia ▸ Git</strong> pomenujú vetvy a predpony Git flow a v časti <strong>Hosting</strong> vlastné servery GitLab alebo GitHub Enterprise.</li>
+</ul>
 <h2 id="historia-blame-a-web">História, blame a web</h2>
 <ul>
 <li><strong>História…</strong> vypisuje zápisy s pruhovým grafom, odkazy, ktoré na ne mieria (<code>● main</code>, <code>↗ origin/main</code>,

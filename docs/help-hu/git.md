@@ -70,6 +70,15 @@ A munkapéldány, az előzmények és a **Parancsok ▸ Git** menü többet kín
 - Az ágak listájában egy ág átnevezhető (**Átnevezés…**), upstreamet kaphat (**Upstream beállítása…**) vagy törölhető a szerverén (**Törlés a távoli tárolón…**).
 - A **Beállítások ▸ Git** megadja a git programot, a globális neved és e-mailed, a **Pull** működését, a háttérben futó fetchet, hogy mit mutatnak az előzmények és hogyan néznek ki a dátumai, a commitok aláírását, sign-offját és hookjait, valamint a diffek szóközeit és környezeti sorait. A szerzők színes monogramot kapnak az előzményekben.
 
+## Fájlok, egyesítés, Git flow és pull requestek
+
+- A Commit és a Változások melletti **Fájlok** a kijelölt commit teljes fáját mutatja; egy fájl sorszámokkal nyílik meg, a menüje pedig összeveti a munkapéldánnyal, máshová menti, vagy visszateszi a munkapéldányba (**Ennek a verziónak a visszaállítása…**).
+- Az **Egyesítő szerkesztő…** — ütköző fájlon a panelen, a sávban, az **Ütközés feloldása…** ablakban és a Git menüben — egymás mellett mutatja az aktuális ütközést miénk, alap és övék változatban, alatta pedig a teljes, szerkeszthető fájlt. **A miénk**, **Az övék**, mindkettő bármilyen sorrendben vagy az **Alap átvétele** dönt egy ütközésről, a **Mentés és indexelés** pedig megoldottnak jelöli a fájlt, ha már nincs jelölő.
+- A panel fejlécében az ág szimbóluma a **Git flow** menü: a **Funkció indítása…**, a **Kiadás indítása…** és a **Gyorsjavítás indítása…** a develop vagy a main ágból hozza létre az ágat, a **… befejezése** pedig visszaolvasztja — kiadást vagy gyorsjavítást címkével a mainbe, aztán a developbe. Ütközés után újra befejezve ott folytatja, ahol megállt.
+- A Git menü **Pull requestek…** pontja listázza annak a projektnek a nyitott pull requestjeit (a GitLabon merge requestjeit) és issue-it, amelyre a távoli tárolók mutatnak, mindegyik ellenőrzéseivel; egy pull requestet saját ágba vesz ki, és újat nyit az aktuális ághoz.
+- Ehhez személyes hozzáférési token kell, amelyet abban az ablakban adsz meg, és a kulcskarikában tárolódik; a token csak a szolgáltatás API-jához megy. Tokennel a panel fejlécében az ág melletti szimbólum mutatja, hogy az aktuális commitra lefutott-e sikeresen a CI.
+- A **Beállítások ▸ Git** adja meg a Git flow ágait és előtagjait, a **Tárhely** alatt pedig a saját GitLab- vagy GitHub Enterprise-szervereket.
+
 ## Előzmények, blame és a web
 
 - Az **Előzmények…** sávos gráffal sorolja fel a véglegesítéseket, a rájuk mutató hivatkozásokkal (`● main`,

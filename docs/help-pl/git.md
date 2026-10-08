@@ -69,6 +69,15 @@ Kopia robocza, historia i menu **Polecenia ▸ Git** oferują więcej niż zatwi
 - Na liście gałęzi gałąź można przemianować (**Zmień nazwę…**), nadać jej gałąź nadrzędną (**Ustaw gałąź nadrzędną…**) lub usunąć na jej serwerze (**Usuń w zdalnym…**).
 - **Ustawienia ▸ Git** określają program git, twoją globalną nazwę i e-mail, sposób działania **Pull**, fetch w tle, co pokazuje historia i jak wyglądają jej daty, podpisywanie, sign-off i hooki commitów oraz białe znaki i wiersze kontekstu w diffach. Autorzy mają w historii kolorowe inicjały.
 
+## Pliki, scalanie, Git flow i pull requesty
+
+- **Pliki** obok Commit i Zmiany pokazują całe drzewo w wybranym commicie; plik otwiera się z numerami wierszy, a jego menu porównuje go z kopią roboczą, zapisuje gdzie indziej albo przywraca do kopii roboczej (**Przywróć tę wersję…**).
+- **Edytor scalania…** — przy pliku z konfliktem w panelu, na pasku, w **Rozwiąż konflikt…** i w menu Git — pokazuje bieżący konflikt jako naszą, bazę i ich obok siebie, a pod nimi cały plik do edycji. **Weź nasze**, **Weź ich**, obie w dowolnej kolejności albo **Weź bazę** rozstrzygają konflikt, a **Zapisz i dodaj** oznacza plik jako rozwiązany, gdy nie zostały żadne znaczniki.
+- Symbol gałęzi w nagłówku panelu to menu **Git flow**: **Rozpocznij funkcję…**, **Rozpocznij wydanie…** i **Rozpocznij poprawkę…** tworzą gałąź z develop lub main, a **Zakończ …** scala ją z powrotem — wydanie lub poprawkę do main z tagiem, potem do develop. Ponowne zakończenie po konflikcie kontynuuje tam, gdzie się zatrzymało.
+- **Pull requesty…** w menu Git wyświetlają otwarte pull requesty (merge requesty w GitLabie) i zgłoszenia projektu, na który wskazują zdalne repozytoria, z kontrolami każdego; przełączają pull request do własnej gałęzi i otwierają nowy dla bieżącej gałęzi.
+- Potrzebny jest osobisty token dostępu, wprowadzony w tym oknie i przechowywany w pęku kluczy; token trafia tylko do API usługi. Z tokenem symbol obok gałęzi w nagłówku panelu pokazuje, czy CI przeszło dla bieżącego commita.
+- **Ustawienia ▸ Git** nadają nazwy gałęziom i prefiksom Git flow, a w sekcji **Hosting** własnym serwerom GitLab lub GitHub Enterprise.
+
 ## Historia, blame i sieć
 
 - **Historia…** wypisuje zatwierdzenia z grafem torów, referencje wskazujące na każde z nich (`● main`,

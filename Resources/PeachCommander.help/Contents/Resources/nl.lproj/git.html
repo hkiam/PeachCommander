@@ -66,6 +66,15 @@ ernaast, waar de commit toch al plaatsvindt; alle drie tonen voortgang en kunnen
 <li>In de branchlijst kan een branch worden hernoemd (<strong>Hernoemen…</strong>), een upstream krijgen (<strong>Upstream instellen…</strong>) of op zijn server worden verwijderd (<strong>Op de remote verwijderen…</strong>).</li>
 <li><strong>Instellingen ▸ Git</strong> bepaalt het git-programma, je globale naam en e-mail, hoe <strong>Pull</strong> werkt, fetchen op de achtergrond, wat de geschiedenis toont en hoe de datums eruitzien, ondertekenen, sign-off en hooks voor commits, en witruimte en contextregels voor diffs. Auteurs dragen gekleurde initialen in de geschiedenis.</li>
 </ul>
+<h2 id="bestanden-samenvoegen-git-flow-en-pull-requests">Bestanden, samenvoegen, Git flow en pull requests</h2>
+<ul>
+<li><strong>Bestanden</strong> naast Commit en Wijzigingen toont de hele boom bij de gekozen commit; een bestand opent met regelnummers, en het menu ervan vergelijkt het met de werkkopie, slaat het elders op of zet het terug in de werkkopie (<strong>Deze versie herstellen…</strong>).</li>
+<li><strong>Merge-editor…</strong> — bij een bestand met een conflict in het paneel, in de banner, in <strong>Conflict oplossen…</strong> en in het Git-menu — toont het huidige conflict als ons, basis en hun naast elkaar en daaronder het hele bestand, bewerkbaar. <strong>Onze nemen</strong>, <strong>Hun nemen</strong>, beide in een van beide volgordes of <strong>Basis nemen</strong> beslissen een conflict, en <strong>Opslaan en stagen</strong> markeert het bestand als opgelost zodra er geen markeringen meer zijn.</li>
+<li>Het branchsymbool in de kop van het paneel is het menu <strong>Git flow</strong>: <strong>Feature beginnen…</strong>, <strong>Release beginnen…</strong> en <strong>Hotfix beginnen…</strong> maken de branch vanaf develop of main, en <strong>… afronden</strong> voegt hem terug — een release of hotfix in main met een tag, daarna in develop. Opnieuw afronden na een conflict gaat verder waar het stopte.</li>
+<li><strong>Pull requests…</strong> in het Git-menu toont de open pull requests (merge requests bij GitLab) en issues van het project waar de remotes naar wijzen, met de checks van elk; het checkt een pull request uit in een eigen branch en opent een nieuwe voor de huidige branch.</li>
+<li>Daarvoor is een persoonlijk toegangstoken nodig, ingevoerd in dat venster en bewaard in de sleutelhanger; het token gaat alleen naar de API van de dienst. Met een token laat een symbool naast de branch in de kop van het paneel zien of de CI voor de huidige commit is geslaagd.</li>
+<li><strong>Instellingen ▸ Git</strong> benoemt de branches en voorvoegsels van Git flow en, onder <strong>Hosting</strong>, zelf gehoste GitLab- of GitHub Enterprise-servers.</li>
+</ul>
 <h2 id="geschiedenis-blame-en-het-web">Geschiedenis, blame en het web</h2>
 <ul>
 <li><strong>Geschiedenis…</strong> toont de commits met een banengrafiek, de refs die naar elk daarvan wijzen (<code>● main</code>,
