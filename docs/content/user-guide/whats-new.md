@@ -11,13 +11,49 @@ related: [version-notes, known-limitations, installation]
 
 # What's new
 
-Peach Commander is at **0.9.4**, released 7 October 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
+Peach Commander is at **0.9.5**, released 8 October 2026. Every release is written up in full in the [changelog](https://github.com/hkiam/PeachCommander/blob/main/CHANGELOG.md) — this page is the shorter read: what each one was about, newest first, and what it added.
 
 <div class="pc-release pc-release--latest" markdown="1">
 
+## 0.9.5 <span class="pc-release__date">8 October 2026</span>
+
+<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">19 new</span><span class="pc-chip">7 fixed</span></p>
+
+A Git client in the Git panel — history, staging by line, a three-way merge editor, pull requests and
+CI — and a copy window whose bar moves, with a bar for a slow file, a speed menu and a Background
+button.
+
+**What it added**
+
+- Background in the copy window (#5).
+- Two bars in the copy window, and its own speed menu (#5).
+- Change commit messages afterwards — one, several, or by find and replace.
+- The Git panel is a Git client.
+- Act on any commit from the Git panel's history.
+- Stage, unstage and discard single lines.
+- Stashes in the history.
+- Show a file in the left or right panel.
+- Reflog…
+- Create Repository Here…
+- Pull requests, issues and CI from GitHub and GitLab.
+- A three-way merge editor.
+- git-flow.
+- The tree at any commit.
+- Settings ▸ Git.
+- Nothing that stops a day's work ends in git's error text.
+- A commit box for real messages.
+- More in the history.
+- Branches, stashes, worktrees and LFS.
+
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.9.5">0.9.5 in full — the other 7 notes &rarr;</a></p>
+
+</div>
+
+<div class="pc-release" markdown="1">
+
 ## 0.9.4 <span class="pc-release__date">7 October 2026</span>
 
-<p class="pc-release__chips"><span class="pc-chip pc-chip--now">Latest release</span><span class="pc-chip">2 fixed</span></p>
+<p class="pc-release__chips"><span class="pc-chip">2 fixed</span></p>
 
 Copies that start at once from a slow share, and files pasted from a Windows App session that arrive
 with their content instead of zeros.
@@ -40,7 +76,7 @@ with their content instead of zeros.
 Markdown and HTML as PDFs, from the renderer that already draws them — and the five ways an SFTP
 site could be left unable to log in at all.
 
-**What it added**
+**Highlights**
 
 - Markdown and HTML documents export as PDFs.
 
@@ -184,13 +220,7 @@ is.
 Underneath both, reading a file out of an archive no longer needs it to fit in memory. A 400 MB file
 opened from a ZIP cost 588 MB before and costs 151 MB now.
 
-**Highlights**
-
-- A file inside an archive can be previewed and opened.
-- A budget for everything the cursor reads by itself.
-- The measurement behind that now actually runs on a mounted share.
-
-<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.2">0.8.2 in full — the other 6 notes &rarr;</a></p>
+<p class="pc-release__more"><a href="https://github.com/hkiam/PeachCommander/releases/tag/v0.8.2">0.8.2 in full — all 9 notes &rarr;</a></p>
 
 </div>
 

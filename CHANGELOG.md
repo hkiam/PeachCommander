@@ -15,6 +15,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+## [0.9.5] — 2026-10-08
+
+A Git client in the Git panel — history, staging by line, a three-way merge editor, pull requests and
+CI — and a copy window whose bar moves, with a bar for a slow file, a speed menu and a Background
+button.
+
 ### Added
 
 - **Background in the copy window (#5).** The button sends a copy that is already running to the
@@ -3309,6 +3315,7 @@ this is the release to take.
 First public beta: dual-panel browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.9.5]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.5
 [0.9.4]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.4
 [0.9.3]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.3
 [0.9.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.9.2
