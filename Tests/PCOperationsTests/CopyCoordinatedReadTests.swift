@@ -233,7 +233,13 @@ final class CopyCoordinatedReadTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: dst.appendingPathComponent("remote.bin")), big)
         lock.lock(); defer { lock.unlock() }
         let waiting = reports.filter(\.isWaitingForSource)
-        XCTAssertTrue(waiting.contains { $0.bytesReceived > 0 && $0.bytesReceived < $0.bytesToReceive },
+        // Moved during the wait — not necessarily to a figure in between. Writeback can make APFS
+        // allocate the whole placeholder at once, and then the first measurement already reads all of
+        // it as delivered (the meter's own comment: "fills early, never backwards"). Measured under
+        // disk write load: `0, 4194304, 4194304, 4194304` after half a second, two runs of two. CI's
+        // parallel test bundles are that load, which is why asking for a partial figure failed there
+        // and nowhere else.
+        XCTAssertTrue(waiting.contains { $0.bytesReceived > 0 },
                       "the bar did not move while the content arrived")
         let fractions = reports.filter { !$0.isIndeterminate }.map(\.fraction)
         XCTAssertEqual(fractions, fractions.sorted(), "the bar ran backwards")
