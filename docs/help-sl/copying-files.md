@@ -33,7 +33,7 @@ Dve nastavitvi veljata za vsako kopiranje in sta v **Konfiguracija ▸ Nastavitv
 
 ## Napredovanje
 
-Okno napredovanja prikazuje dve vrstici — datoteko, ki se kopira, in celotno opravilo — s številom datotek in bajtov, hitrostjo prenosa in preostalim časom. Kadar koli lahko kopiranje zaustavite in nadaljujete. Meni hitrosti ob gumbih takoj omeji to kopiranje (1, 5 ali 20 MB/s ali polna hitrost), ne da bi spremenil omejitev v Konfiguraciji; **Privzeto** se vrne na to omejitev. **V ozadju** preda tekoče kopiranje upravitelju prenosov v ozadju: okno se zapre in kopiranje se nadaljuje tam.
+Okno napredovanja prikazuje celotno opravilo s številom datotek in bajtov, hitrostjo prenosa in preostalim časom; če kopiranje datoteke traja dlje kot trenutek, se nad njim prikaže druga vrstica s to datoteko. Kadar koli lahko kopiranje zaustavite in nadaljujete. Meni hitrosti ob gumbih takoj omeji to kopiranje (1, 5 ali 20 MB/s ali polna hitrost), ne da bi spremenil omejitev v Konfiguraciji; **Privzeto** se vrne na to omejitev. **V ozadju** preda tekoče kopiranje upravitelju prenosov v ozadju: okno se zapre in kopiranje se nadaljuje tam.
 
 ![Pogovorno okno napredovanja prenosa z vrstico za trenutno datoteko in vrstico za celotno opravilo, števci datotek in bajtov, menijem hitrosti ter gumbi V ozadju, Premor in Prekliči](screenshots/progress-dialog.png)
 *(Slika: Pogovorno okno napredovanja, prikazano med kopiranjem ali premikom.)*

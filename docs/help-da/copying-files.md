@@ -33,7 +33,7 @@ To indstillinger gælder for alle kopieringer og findes under **Konfiguration �
 
 ## Fremdrift
 
-Et fremdriftsvindue viser to bjælker — filen, der kopieres, og hele jobbet — med antal filer og bytes, overførselshastigheden og den resterende tid. Du kan når som helst sætte på pause og genoptage. Hastighedsmenuen ved siden af knapperne begrænser denne kopiering med det samme (1, 5 eller 20 MB/s eller fuld hastighed) uden at ændre grænsen i Konfiguration; **Standard** går tilbage til den grænse. **Baggrund** overdrager den igangværende kopiering til baggrundsoverførsels-håndteringen: vinduet lukkes, og kopieringen fortsætter der.
+Et fremdriftsvindue viser hele jobbet med antal filer og bytes, overførselshastigheden og den resterende tid; når en fil tager mere end et øjeblik, vises den fil i en ekstra bjælke ovenover. Du kan når som helst sætte på pause og genoptage. Hastighedsmenuen ved siden af knapperne begrænser denne kopiering med det samme (1, 5 eller 20 MB/s eller fuld hastighed) uden at ændre grænsen i Konfiguration; **Standard** går tilbage til den grænse. **Baggrund** overdrager den igangværende kopiering til baggrundsoverførsels-håndteringen: vinduet lukkes, og kopieringen fortsætter der.
 
 ![Overførselsfremdriftsdialogen med en bjælke for den aktuelle fil og en for hele jobbet, fil- og byte-tællere, en hastighedsmenu samt knapperne Baggrund, Pause og Annullér](screenshots/progress-dialog.png)
 *(Figur: Fremdriftsdialogen, der vises under en kopiering eller flytning.)*

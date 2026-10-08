@@ -33,7 +33,7 @@ Två inställningar gäller för all kopiering och finns under **Konfiguration �
 
 ## Förlopp
 
-Ett förloppsfönster visar två staplar – filen som kopieras och hela jobbet – med antal filer och byte, överföringshastigheten och återstående tid. Du kan pausa och återuppta när som helst. Hastighetsmenyn bredvid knapparna begränsar den här kopieringen direkt (1, 5 eller 20 MB/s, eller full hastighet) utan att ändra gränsen i Konfiguration; **Standard** går tillbaka till den gränsen. **Bakgrund** lämnar över den pågående kopieringen till hanteraren för bakgrundsöverföringar: fönstret stängs och kopieringen fortsätter där.
+Ett förloppsfönster visar hela jobbet med antal filer och byte, överföringshastigheten och återstående tid; när en fil tar mer än ett ögonblick visas den filen i en andra stapel ovanför. Du kan pausa och återuppta när som helst. Hastighetsmenyn bredvid knapparna begränsar den här kopieringen direkt (1, 5 eller 20 MB/s, eller full hastighet) utan att ändra gränsen i Konfiguration; **Standard** går tillbaka till den gränsen. **Bakgrund** lämnar över den pågående kopieringen till hanteraren för bakgrundsöverföringar: fönstret stängs och kopieringen fortsätter där.
 
 ![Förloppsdialogen för överföring med en stapel för den aktuella filen och en för hela jobbet, fil- och byteantal, en hastighetsmeny samt knapparna Bakgrund, Pausa och Avbryt](screenshots/progress-dialog.png)
 *(Figur: Förloppsdialogen som visas under en kopiering eller flytt.)*

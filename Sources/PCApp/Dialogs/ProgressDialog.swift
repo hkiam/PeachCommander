@@ -26,24 +26,31 @@ final class ProgressDialog: NSWindowController {
     var onBackground: (() -> Void)?
 
     private let currentItemLabel = NSTextField(labelWithString: "")
-    /// The current file (SPEC-004 §4). Hidden until a file with bytes to copy arrives — a delete has
-    /// none — and then left in place, so the window does not change height from one file to the next.
+    /// The current file (SPEC-004 §4), shown when `FileProgressBarRule` says it is worth it. Its row is
+    /// reserved from the start for an operation that copies bytes, so the window never changes height
+    /// under the pointer — a bar appearing later would push the buttons down just as someone aims at
+    /// Cancel. An operation that moves no bytes (a delete) has no row at all.
     private let fileProgressIndicator = NSProgressIndicator()
+    private var fileBarRule = FileProgressBarRule()
+    private let measuresFiles: Bool
     private let totalProgressIndicator = NSProgressIndicator()
     private let filesLabel = NSTextField(labelWithString: "")
     private let bytesLabel = NSTextField(labelWithString: "")
     private let speedLabel = NSTextField(labelWithString: "")
     /// The same choices as a job in the transfer manager: throttle the copy that is in the way now,
-    /// without having had to start it in the background. Shown with the file bar — only an operation
-    /// that copies bytes has anything to throttle.
+    /// without having had to start it in the background. Only where bytes are copied — a delete has
+    /// nothing to throttle.
     private let speedPopup = TransferManagerWindowController.makeSpeedPopup(selecting: nil)
     private let backgroundButton = NSButton()
     private let pauseButton = NSButton()
     private let cancelButton = NSButton()
 
     /// Builds the window (not yet shown; call `present(over:)`).
-    init(title: String, control: OperationControl) {
+    /// - Parameter measuresFiles: the operation copies file data (a copy or a move), so it gets the
+    ///   file bar's row and the speed menu.
+    init(title: String, control: OperationControl, measuresFiles: Bool = false) {
         self.control = control
+        self.measuresFiles = measuresFiles
 
         let window = NSWindow(
             contentRect: NSMakeRect(0, 0, 520, 190),
@@ -77,13 +84,13 @@ final class ProgressDialog: NSWindowController {
         lastProgress = progress
         currentItemLabel.stringValue = progress.currentItem
 
-        if let fileFraction = progress.currentFileFraction {
+        if measuresFiles, fileBarRule.update(progress), let fileFraction = progress.currentFileFraction {
             fileProgressIndicator.isHidden = false
-            speedPopup.isHidden = false
             if progress.isWaitingForSource {
                 fileProgressIndicator.isIndeterminate = true
                 fileProgressIndicator.startAnimation(nil)
             } else {
+                fileProgressIndicator.stopAnimation(nil)
                 fileProgressIndicator.isIndeterminate = false
                 fileProgressIndicator.doubleValue = fileFraction
             }
@@ -93,6 +100,10 @@ final class ProgressDialog: NSWindowController {
         // backwards; the bar waits for the count to finish. While a source is still being delivered no
         // byte moves, and a fraction would stand still and then jump.
         if progress.bytesTotal > 0, !progress.isIndeterminate {
+            // The animation an indeterminate phase started has to be stopped, not just switched off:
+            // left running, the bar stays drawn at its start however far the copy gets — which is
+            // every copy, since the first report always arrives while the totals are being counted.
+            totalProgressIndicator.stopAnimation(nil)
             totalProgressIndicator.isIndeterminate = false
             totalProgressIndicator.minValue = 0
             totalProgressIndicator.maxValue = 1
@@ -158,14 +169,22 @@ final class ProgressDialog: NSWindowController {
             bar.maxValue = 1
             bar.doubleValue = 0
         }
+        // Plain constraints, not a stack: a hidden view keeps its frame here, which is what reserves the
+        // file bar's row (see `fileProgressIndicator`). Fixed heights, so neither bar can be squeezed.
         fileProgressIndicator.isHidden = true
-        // A stack, so the hidden file bar takes no room; it detaches hidden views by default.
-        let bars = NSStackView(views: [fileProgressIndicator, totalProgressIndicator])
-        bars.translatesAutoresizingMaskIntoConstraints = false
-        bars.orientation = .vertical
-        bars.alignment = .width
-        bars.spacing = 8
-        content.addSubview(bars)
+        let bars = measuresFiles ? [fileProgressIndicator, totalProgressIndicator] : [totalProgressIndicator]
+        var above = currentItemLabel.bottomAnchor
+        for bar in bars {
+            bar.translatesAutoresizingMaskIntoConstraints = false
+            content.addSubview(bar)
+            NSLayoutConstraint.activate([
+                bar.topAnchor.constraint(equalTo: above, constant: bar === bars[0] ? 12 : 8),
+                bar.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
+                bar.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
+                bar.heightAnchor.constraint(equalToConstant: 20),
+            ])
+            above = bar.bottomAnchor
+        }
 
         filesLabel.translatesAutoresizingMaskIntoConstraints = false
         filesLabel.font = Fonts.monospacedDigit13
@@ -203,7 +222,7 @@ final class ProgressDialog: NSWindowController {
         cancelButton.action = #selector(cancelAction)
         cancelButton.target = self
 
-        speedPopup.isHidden = true
+        speedPopup.isHidden = !measuresFiles
         speedPopup.target = self
         speedPopup.action = #selector(speedChanged)
         buttons.addView(speedPopup, in: .leading)
@@ -211,17 +230,16 @@ final class ProgressDialog: NSWindowController {
         buttons.addView(pauseButton, in: .trailing)
         buttons.addView(cancelButton, in: .trailing)
         content.addSubview(buttons)
+        // Space on a focused Background would send the copy away unnoticed; on Cancel it does what
+        // Escape already does.
+        window.initialFirstResponder = cancelButton
 
         NSLayoutConstraint.activate([
             currentItemLabel.topAnchor.constraint(equalTo: content.topAnchor, constant: 20),
             currentItemLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
             currentItemLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
 
-            bars.topAnchor.constraint(equalTo: currentItemLabel.bottomAnchor, constant: 12),
-            bars.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
-            bars.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
-
-            filesLabel.topAnchor.constraint(equalTo: bars.bottomAnchor, constant: 10),
+            filesLabel.topAnchor.constraint(equalTo: totalProgressIndicator.bottomAnchor, constant: 10),
             filesLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
 
             bytesLabel.topAnchor.constraint(equalTo: filesLabel.bottomAnchor, constant: 6),

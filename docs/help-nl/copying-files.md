@@ -33,7 +33,7 @@ Twee instellingen gelden voor elke kopieerbewerking en staan in **Configuratie �
 
 ## Voortgang
 
-Een voortgangsvenster toont twee balken — het bestand dat wordt gekopieerd en de hele taak — met aantallen bestanden en bytes, de overdrachtssnelheid en de resterende tijd. Je kunt op elk moment pauzeren en hervatten. Het snelheidsmenu naast de knoppen begrenst deze kopieerbewerking meteen (1, 5 of 20 MB/s, of volle snelheid) zonder de limiet in Configuratie te wijzigen; **Standaard** gaat terug naar die limiet. **Achtergrond** geeft de lopende kopieerbewerking door aan de achtergrondoverdrachtsbeheerder: het venster sluit en de kopieerbewerking gaat daar verder.
+Een voortgangsvenster toont de hele taak met aantallen bestanden en bytes, de overdrachtssnelheid en de resterende tijd; als een bestand meer dan een moment duurt, toont een tweede balk erboven dat bestand. Je kunt op elk moment pauzeren en hervatten. Het snelheidsmenu naast de knoppen begrenst deze kopieerbewerking meteen (1, 5 of 20 MB/s, of volle snelheid) zonder de limiet in Configuratie te wijzigen; **Standaard** gaat terug naar die limiet. **Achtergrond** geeft de lopende kopieerbewerking door aan de achtergrondoverdrachtsbeheerder: het venster sluit en de kopieerbewerking gaat daar verder.
 
 ![Het voortgangsvenster voor overdrachten met een balk voor het huidige bestand en een voor de hele taak, bestands- en byte-aantallen, een snelheidsmenu, en de knoppen Achtergrond, Pauzeer en Annuleer](screenshots/progress-dialog.png)
 *(Afbeelding: Het voortgangsvenster dat tijdens een kopieer- of verplaatsbewerking wordt getoond.)*

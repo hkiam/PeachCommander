@@ -33,7 +33,7 @@ Dos ajustes se aplican a todas las copias y se encuentran en **Configuración �
 
 ## Progreso
 
-Una ventana de progreso muestra dos barras, una para el archivo que se está copiando y otra para toda la tarea, con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; **Predeterminado** vuelve a ese límite. **Segundo plano** entrega la copia en curso al gestor de transferencias en segundo plano: la ventana se cierra y la copia continúa allí.
+Una ventana de progreso muestra toda la tarea con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante; cuando un archivo tarda más de un momento, una segunda barra encima muestra ese archivo. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; **Predeterminado** vuelve a ese límite. **Segundo plano** entrega la copia en curso al gestor de transferencias en segundo plano: la ventana se cierra y la copia continúa allí.
 
 ![El cuadro de diálogo de progreso de la transferencia con una barra para el archivo actual y otra para toda la tarea, recuentos de archivos y bytes, un menú de velocidad y botones de Segundo plano, Pausar y Cancelar](screenshots/progress-dialog.png)
 *(Figura: El cuadro de diálogo de progreso mostrado durante una copia o un movimiento.)*

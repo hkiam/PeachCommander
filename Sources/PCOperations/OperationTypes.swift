@@ -76,6 +76,45 @@ public struct OpProgress: Sendable, Equatable {
     }
 }
 
+/// Whether the progress window's second bar — the current file — is worth showing (SPEC-004 §4).
+///
+/// Not always, which is what showing it always got wrong. For a single file it repeats the total bar
+/// exactly. Over many small files it flickers between empty and full thirty times a second and says
+/// nothing, and on a slow share those small files are where the time goes. What the bar is for is a
+/// file that takes long enough to wonder whether it is moving, so that is the rule: more than one file
+/// in the job, and a file still unfinished half a second after its first report. Time rather than size,
+/// because a megabyte over SMB can take longer than a gigabyte on the internal disk. Once shown it
+/// stays, so a run of small files after a large one does not make it blink.
+public struct FileProgressBarRule: Sendable {
+    public static let delay: TimeInterval = 0.5
+
+    public private(set) var isShown = false
+    private var file = ""
+    private var lastDone: Int64 = 0
+    private var since: Date?
+
+    public init() {}
+
+    /// Feed one report; returns whether the bar is to be shown.
+    public mutating func update(_ p: OpProgress, now: Date = Date()) -> Bool {
+        if isShown { return true }
+        // While a source is still being delivered the file figures are the previous file's.
+        guard !p.isWaitingForSource, p.filesTotal > 1, p.currentFileBytesTotal > 0,
+              p.currentFileBytesDone < p.currentFileBytesTotal else {
+            since = nil
+            return false
+        }
+        // A new file: another name, or the same name starting again from fewer bytes.
+        if since == nil || p.currentItem != file || p.currentFileBytesDone < lastDone {
+            file = p.currentItem
+            since = now
+        }
+        lastDone = p.currentFileBytesDone
+        if let since, now.timeIntervalSince(since) >= Self.delay { isShown = true }
+        return isShown
+    }
+}
+
 /// An event emitted by the engine / transfer queue (SPEC-004 §1).
 public enum OpEvent: Sendable {
     case progress(OpProgress)

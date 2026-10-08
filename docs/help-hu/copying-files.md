@@ -33,7 +33,7 @@ Két beállítás minden másolásra érvényes, és a **Konfiguráció ▸ Beá
 
 ## Folyamat
 
-Egy folyamatablak két sávot mutat – a másolás alatt álló fájlt és a teljes feladatot – a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az **Alapértelmezett** visszaáll erre a korlátra. A **Háttérbe** a futó másolást átadja a háttérben futó átvitelek kezelőjének: az ablak bezárul, és a másolás ott folytatódik.
+Egy folyamatablak a teljes feladatot mutatja a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel; ha egy fájl másolása egy pillanatnál tovább tart, fölötte egy második sáv mutatja azt a fájlt. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az **Alapértelmezett** visszaáll erre a korlátra. A **Háttérbe** a futó másolást átadja a háttérben futó átvitelek kezelőjének: az ablak bezárul, és a másolás ott folytatódik.
 
 ![Az átviteli folyamat párbeszédpanele egy sávval az aktuális fájlhoz és eggyel a teljes feladathoz, fájl- és bájtszámlálóval, sebességmenüvel, valamint Háttérbe, Szüneteltetés és Megszakítás gombokkal](screenshots/progress-dialog.png)
 *(Ábra: A folyamatot jelző párbeszédpanel másolás vagy áthelyezés közben.)*

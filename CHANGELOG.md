@@ -23,7 +23,11 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   changes where it is shown, not what it does.
 - **Two bars in the copy window, and its own speed menu (#5).** The progress window of a copy or move
   now shows the file being copied above the whole job, as the help page had always described — over a
-  few large files the total barely moves, and the file bar shows the copy is getting somewhere. The
+  few large files the total barely moves, and the file bar shows the copy is getting somewhere. It
+  appears only where it says something: not for a single file, where it would repeat the total, and
+  not over small files, where it would flicker — only once a file is still running after half a
+  second, which on a slow share can be a small one. Its row is kept from the start, so the buttons
+  never move under the pointer. The
   speed menu from the background transfer manager is there too, so a copy that is in the way can be
   slowed down without having been started in the background. The help page now also says where the
   speed limit and the metadata option really are: in Configuration ▸ Settings… ▸ Copy/Delete, not in the dialog.
@@ -106,6 +110,11 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   and their type tracked.
 
 ### Fixed
+
+- **The copy window's bar stood still.** The first report of every copy arrives while the totals are
+  still being counted, which set the bar to indeterminate and started its animation; switching back
+  never stopped it, so the bar stayed drawn near the start however far the copy got — 4 of 6 MB showed
+  as a sliver. The byte counts below it were always right.
 
 - **A mail dragged out of Outlook could not be dropped on a panel.** Outlook — like Mail for an
   attachment and Photos for a picture — offers a file that is written only once the drop target names

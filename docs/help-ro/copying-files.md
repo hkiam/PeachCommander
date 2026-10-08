@@ -33,7 +33,7 @@ Două setări se aplică fiecărei copieri și se găsesc în **Configurație �
 
 ## Progres
 
-O fereastră de progres afișează două bare — fișierul care se copiază și întreaga sarcină — cu numărul de fișiere și de octeți, viteza de transfer și timpul rămas. Puteți întrerupe și relua oricând. Meniul de viteză de lângă butoane limitează imediat această copiere (1, 5 sau 20 MB/s ori viteză maximă) fără a modifica limita din Configurație; **Implicit** revine la acea limită. **În fundal** predă copierea în curs managerului de transferuri în fundal: fereastra se închide, iar copierea continuă acolo.
+O fereastră de progres afișează întreaga sarcină cu numărul de fișiere și de octeți, viteza de transfer și timpul rămas; când un fișier durează mai mult de o clipă, o a doua bară deasupra afișează acel fișier. Puteți întrerupe și relua oricând. Meniul de viteză de lângă butoane limitează imediat această copiere (1, 5 sau 20 MB/s ori viteză maximă) fără a modifica limita din Configurație; **Implicit** revine la acea limită. **În fundal** predă copierea în curs managerului de transferuri în fundal: fereastra se închide, iar copierea continuă acolo.
 
 ![Dialogul de progres al transferului cu o bară pentru fișierul curent și una pentru întreaga sarcină, contoare de fișiere și octeți, un meniu de viteză și butoanele În fundal, Pauză și Anulare](screenshots/progress-dialog.png)
 *(Figura: Dialogul de progres afișat în timpul unei copieri sau mutări.)*

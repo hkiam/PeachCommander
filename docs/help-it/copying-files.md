@@ -33,7 +33,7 @@ Due impostazioni valgono per ogni copia e si trovano in **Configurazione ▸ Imp
 
 ## Avanzamento
 
-Una finestra di avanzamento mostra due barre — il file in copia e l'intera operazione — con il numero di file e di byte, la velocità di trasferimento e il tempo rimanente. Potete mettere in pausa e riprendere in qualsiasi momento. Il menu della velocità accanto ai pulsanti limita subito questa copia (1, 5 o 20 MB/s, oppure velocità massima) senza modificare il limite in Configurazione; **Predefinito** torna a quel limite. **In background** affida la copia in corso al gestore dei trasferimenti in background: la finestra si chiude e la copia prosegue lì.
+Una finestra di avanzamento mostra l'intera operazione con il numero di file e di byte, la velocità di trasferimento e il tempo rimanente; quando un file richiede più di un momento, una seconda barra sopra mostra quel file. Potete mettere in pausa e riprendere in qualsiasi momento. Il menu della velocità accanto ai pulsanti limita subito questa copia (1, 5 o 20 MB/s, oppure velocità massima) senza modificare il limite in Configurazione; **Predefinito** torna a quel limite. **In background** affida la copia in corso al gestore dei trasferimenti in background: la finestra si chiude e la copia prosegue lì.
 
 ![La finestra di avanzamento del trasferimento con una barra per il file corrente e una per l'intera operazione, conteggi di file e byte, un menu della velocità e i pulsanti In background, Pausa e Annulla](screenshots/progress-dialog.png)
 *(Figura: la finestra di avanzamento mostrata durante una copia o uno spostamento.)*

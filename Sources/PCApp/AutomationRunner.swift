@@ -1943,14 +1943,20 @@ extension MainWindowController {
                 } ?? "ERROR: no diff window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "progressdemo":                           // progressdemo (I04): show a sample transfer progress dialog
-                let dlg = ProgressDialog(title: "Copying 128 items…", control: OperationControl())
+                let dlg = ProgressDialog(title: "Copying 128 items…", control: OperationControl(), measuresFiles: true)
                 dlg.onBackground = {}   // shown as in a real copy; the demo has no queue to hand over
                 automationProgressDialogs.append(dlg)
                 dlg.present(over: window)
-                dlg.update(OpProgress(filesTotal: 128, filesDone: 47,
-                                      bytesTotal: 2_400_000_000, bytesDone: 900_000_000,
-                                      currentItem: "vacation.mov", bytesPerSecond: 82_000_000,
-                                      currentFileBytesTotal: 1_200_000_000, currentFileBytesDone: 420_000_000))
+                // Two reports of the same file, past the file bar's delay, as a slow file gives them.
+                func demo(_ fileDone: Int64) -> OpProgress {
+                    OpProgress(filesTotal: 128, filesDone: 47, bytesTotal: 2_400_000_000,
+                               bytesDone: 480_000_000 + fileDone, currentItem: "vacation.mov",
+                               bytesPerSecond: 82_000_000,
+                               currentFileBytesTotal: 1_200_000_000, currentFileBytesDone: fileDone)
+                }
+                dlg.update(demo(370_000_000))
+                try? await Task.sleep(nanoseconds: UInt64(FileProgressBarRule.delay * 1_000_000_000) + 100_000_000)
+                dlg.update(demo(420_000_000))
             case "help":       NSApplication.shared.showHelp(nil)   // open the Help Book in Help Viewer
             case "automate":   await automateCoreTool(arg)          // drive the Automation Core: automate <tool>|<json>
             case "bardrop":                                // bardrop <path> — as if dropped on free bar space

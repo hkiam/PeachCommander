@@ -33,7 +33,7 @@ Dwa ustawienia dotyczą każdego kopiowania i znajdują się w **Konfiguracja �
 
 ## Postęp
 
-Okno postępu pokazuje dwa paski — kopiowany plik i całe zadanie — wraz z liczbą plików i bajtów, prędkością transferu i pozostałym czasem. Możesz wstrzymywać i wznawiać w dowolnej chwili. Menu prędkości obok przycisków od razu ogranicza to kopiowanie (1, 5 lub 20 MB/s albo pełna prędkość) bez zmiany limitu w Konfiguracji; **Domyślnie** przywraca ten limit. **W tle** przekazuje trwające kopiowanie do menedżera transferów w tle: okno się zamyka, a kopiowanie trwa tam dalej.
+Okno postępu pokazuje całe zadanie wraz z liczbą plików i bajtów, prędkością transferu i pozostałym czasem; gdy kopiowanie pliku trwa dłużej niż chwilę, nad nim pojawia się drugi pasek dla tego pliku. Możesz wstrzymywać i wznawiać w dowolnej chwili. Menu prędkości obok przycisków od razu ogranicza to kopiowanie (1, 5 lub 20 MB/s albo pełna prędkość) bez zmiany limitu w Konfiguracji; **Domyślnie** przywraca ten limit. **W tle** przekazuje trwające kopiowanie do menedżera transferów w tle: okno się zamyka, a kopiowanie trwa tam dalej.
 
 ![Okno dialogowe postępu transferu z paskiem dla bieżącego pliku i drugim dla całego zadania, licznikami plików i bajtów, menu prędkości oraz przyciskami W tle, Wstrzymaj i Anuluj](screenshots/progress-dialog.png)
 *(Rysunek: Okno dialogowe postępu wyświetlane podczas kopiowania lub przenoszenia.)*

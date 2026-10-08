@@ -1363,7 +1363,12 @@ extension PanelController {
         queue.trashSink = trashSink
         queue.mergedSink = mergedSink
         let resolver = InteractiveResolver(parentWindow: view.window)
-        let progress = ProgressDialog(title: title, control: queue.control)
+        let measuresFiles: Bool
+        switch kind {
+        case .copy, .move: measuresFiles = true
+        case .trash, .delete, .custom: measuresFiles = false
+        }
+        let progress = ProgressDialog(title: title, control: queue.control, measuresFiles: measuresFiles)
         // "Background" (F-085): the transfer manager takes the job over, this loop keeps the queue.
         // It goes on unmarking and reloading this panel and hands every event on to the job.
         var adopted: TransferManager.Job?

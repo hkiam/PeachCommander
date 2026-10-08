@@ -33,7 +33,7 @@ Dve nastavenia platia pre každé kopírovanie a nájdete ich v **Konfigurácia 
 
 ## Priebeh
 
-Okno priebehu zobrazuje dve lišty — kopírovaný súbor a celú úlohu — s počtom súborov a bajtov, prenosovou rýchlosťou a zostávajúcim časom. Kedykoľvek môžete kopírovanie pozastaviť a pokračovať v ňom. Ponuka rýchlosti vedľa tlačidiel toto kopírovanie hneď obmedzí (1, 5 alebo 20 MB/s, alebo plná rýchlosť) bez zmeny limitu v Konfigurácii; **Predvolené** sa vráti k tomuto limitu. **Na pozadí** odovzdá bežiace kopírovanie správcovi prenosov na pozadí: okno sa zatvorí a kopírovanie pokračuje tam.
+Okno priebehu zobrazuje lištu celej úlohy s počtom súborov a bajtov, prenosovou rýchlosťou a zostávajúcim časom; keď kopírovanie súboru trvá dlhšie ako chvíľu, nad ňou sa objaví druhá lišta pre tento súbor. Kedykoľvek môžete kopírovanie pozastaviť a pokračovať v ňom. Ponuka rýchlosti vedľa tlačidiel toto kopírovanie hneď obmedzí (1, 5 alebo 20 MB/s, alebo plná rýchlosť) bez zmeny limitu v Konfigurácii; **Predvolené** sa vráti k tomuto limitu. **Na pozadí** odovzdá bežiace kopírovanie správcovi prenosov na pozadí: okno sa zatvorí a kopírovanie pokračuje tam.
 
 ![Dialóg priebehu prenosu s lištou pre aktuálny súbor a ďalšou pre celú úlohu, počtom súborov a bajtov, ponukou rýchlosti a tlačidlami Na pozadí, Pozastaviť a Zrušiť](screenshots/progress-dialog.png)
 *(Obrázok: Dialóg priebehu zobrazený počas kopírovania alebo presunu.)*

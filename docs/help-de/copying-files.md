@@ -33,7 +33,7 @@ Zwei Einstellungen gelten für jeden Kopiervorgang und befinden sich unter **Kon
 
 ## Fortschritt
 
-Ein Fortschrittsfenster zeigt zwei Balken – die gerade kopierte Datei und den Gesamtauftrag – mit Datei- und Byte-Anzahl, der Übertragungsgeschwindigkeit und der Restzeit. Sie können jederzeit anhalten und fortsetzen. Das Geschwindigkeitsmenü neben den Schaltflächen begrenzt diesen Kopiervorgang sofort (1, 5 oder 20 MB/s oder volle Geschwindigkeit), ohne die Begrenzung in der Konfiguration zu ändern; **Standard** kehrt zu dieser Begrenzung zurück. **Hintergrund** übergibt den laufenden Kopiervorgang an den Manager für Hintergrundübertragungen: Das Fenster schließt sich, und der Kopiervorgang läuft dort weiter.
+Ein Fortschrittsfenster zeigt den Gesamtauftrag mit Datei- und Byte-Anzahl, der Übertragungsgeschwindigkeit und der Restzeit; dauert eine Datei länger als einen Moment, zeigt ein zweiter Balken darüber diese Datei. Sie können jederzeit anhalten und fortsetzen. Das Geschwindigkeitsmenü neben den Schaltflächen begrenzt diesen Kopiervorgang sofort (1, 5 oder 20 MB/s oder volle Geschwindigkeit), ohne die Begrenzung in der Konfiguration zu ändern; **Standard** kehrt zu dieser Begrenzung zurück. **Hintergrund** übergibt den laufenden Kopiervorgang an den Manager für Hintergrundübertragungen: Das Fenster schließt sich, und der Kopiervorgang läuft dort weiter.
 
 ![Der Übertragungsfortschritt-Dialog mit einem Balken für die aktuelle Datei und einem für den Gesamtauftrag, Datei- und Byte-Zählern, einem Geschwindigkeitsmenü sowie den Schaltflächen Hintergrund, Anhalten und Abbrechen](screenshots/progress-dialog.png)
 *(Abbildung: Der Fortschrittsdialog während eines Kopier- oder Verschiebevorgangs.)*

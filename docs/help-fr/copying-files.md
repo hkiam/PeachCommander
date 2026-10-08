@@ -33,7 +33,7 @@ Deux réglages s'appliquent à chaque copie et se trouvent dans **Configuration 
 
 ## Progression
 
-Une fenêtre de progression affiche deux barres — le fichier en cours de copie et l'ensemble de la tâche — avec le nombre de fichiers et d'octets, la vitesse de transfert et le temps restant. Vous pouvez mettre en pause et reprendre à tout moment. Le menu de vitesse à côté des boutons limite immédiatement cette copie (1, 5 ou 20 MB/s, ou vitesse maximale) sans modifier la limite définie dans Configuration ; **Par défaut** revient à cette limite. **Arrière-plan** confie la copie en cours au gestionnaire de transferts en arrière-plan : la fenêtre se ferme et la copie s'y poursuit.
+Une fenêtre de progression affiche l'ensemble de la tâche avec le nombre de fichiers et d'octets, la vitesse de transfert et le temps restant ; lorsqu'un fichier prend plus d'un instant, une seconde barre au-dessus affiche ce fichier. Vous pouvez mettre en pause et reprendre à tout moment. Le menu de vitesse à côté des boutons limite immédiatement cette copie (1, 5 ou 20 MB/s, ou vitesse maximale) sans modifier la limite définie dans Configuration ; **Par défaut** revient à cette limite. **Arrière-plan** confie la copie en cours au gestionnaire de transferts en arrière-plan : la fenêtre se ferme et la copie s'y poursuit.
 
 ![La boîte de dialogue de progression du transfert avec une barre pour le fichier en cours et une pour l'ensemble de la tâche, le décompte des fichiers et des octets, un menu de vitesse, et des boutons Arrière-plan, Pause et Annuler](screenshots/progress-dialog.png)
 *(Figure : la boîte de dialogue de progression affichée pendant une copie ou un déplacement.)*
