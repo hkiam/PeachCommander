@@ -607,6 +607,29 @@ SCENARIOS = [
                    "contribcmd plugin.git.panel.show", "wait 3000",
                    "windowlayout peach-app|depth=14|/Users/admin/git-panel-layout.txt",
                    "wait 4000"], 16),
+    # Phase 9: the Files tab on the demo repository's merge — the whole tree at that commit, its first
+    # file's text — and git-flow's menu in the header, read as it would open.
+    ("git-files", ["active left", "left /Users/admin/pc-demo/Projects/peach-app/src", "wait 1200",
+                   "focus main.swift", "wait 500",
+                   "contribcmd plugin.git.panel.show", "wait 7000"], 16),
+    # Phase 9: the three-way merge editor on a real conflict, made in the guest by the probe — two
+    # conflicts a line apart, which git's merge joins into one hunk and the editor splits again with the
+    # base from the index's stages. The panel opens the editor on its own (PC_GIT_PANEL_MERGE) and takes
+    # "theirs" for the first conflict; the report says what is left and what the panes show, and the
+    # layout dump is of the editor's window.
+    ("git-merge", ["probe /Users/admin/git-merge-seed.txt|rm -rf ~/pc-merge && mkdir ~/pc-merge && cd ~/pc-merge && "
+                   "export GIT_AUTHOR_NAME=Demo GIT_AUTHOR_EMAIL=demo@example.com GIT_COMMITTER_NAME=Demo "
+                   "GIT_COMMITTER_EMAIL=demo@example.com && git init -q && git symbolic-ref HEAD refs/heads/main && "
+                   "printf 'a\\nbase1\\nm\\nbase2\\nz\\n' > f.txt && git add f.txt && git commit -qm base && "
+                   "git checkout -qb other && printf 'a\\ntheirs1\\nm\\ntheirs2\\nz\\n' > f.txt && "
+                   "git commit -qam theirs && git checkout -q main && "
+                   "printf 'a\\nours1\\nm\\nours2\\nz\\n' > f.txt && git commit -qam ours && "
+                   "(git merge other >/dev/null 2>&1; git status --short)",
+                   "wait 1500", "active left", "left /Users/admin/pc-merge", "wait 1200",
+                   "focus f.txt", "wait 500",
+                   "contribcmd plugin.git.panel.show", "wait 3500",
+                   "windowlayout Merge —|depth=10|/Users/admin/git-merge-layout.txt",
+                   "wait 4000"], 18),
     # The panel's search, typed before the first load by the probe. Upper case on purpose: the search
     # is case-insensitive, and a message match must not depend on how the reader typed it.
     ("git-search", ["active left", "left /Users/admin/pc-demo/Projects/peach-app/src", "wait 1200",
@@ -3943,6 +3966,22 @@ REPORTS = {
                    "Merge into the current branch…;Rebase the current branch onto this…;"
                    "Interactive rebase from here…;Reset the current branch to here…",
                    "!index on", "!untracked files on"]),
+    # The Files tab lists the tree, not the changes: README.md is a file the merge did not touch, and
+    # its text is on screen numbered as context. git-flow's menu offers the three starts.
+    "git-files": ("/Users/admin/git-files.txt",
+                  ["root=peach-app", "selection=Merge branch 'feature/utils'", "tab=files",
+                   "selectedFile=README.md", "diff context 1 ", "!diffLines=0",
+                   "flowMenu=Start feature…|Start release…|Start hotfix…"]),
+    # The merge editor: git's one joined hunk split into two with their base, the first taken from
+    # theirs, the second left — and nothing staged while it is left.
+    "git-merge": ("/Users/admin/git-merge.txt",
+                  ["operation=merge", "mergeUnreadable=", "mergeBase=true", "mergeConflicts=1",
+                   "mergeOurs=ours2|", "mergeBaseText=base2|", "mergeTheirs=theirs2|",
+                   "mergeStageEnabled=false", "bannerFits=true"]),
+    "git-merge-layout": ("/Users/admin/git-merge-layout.txt",
+                         # The dump starts below the content view, so the window's title says
+                         # whose it is; the split is the editor's.
+                         ["window=Merge — f.txt", "NSSplitView=", "!ERROR: no visible window"]),
     # One match, from the whole history, listed without the working copy and without lanes, and selected
     # so its changes are on screen. `!row1=` is the negation: a filter that matched more than the one
     # message would still pass the positive lines.
@@ -4810,6 +4849,9 @@ SCENARIO_ENV = {
                   "PC_GIT_PANEL_DUMP": "/Users/admin/git-panel.txt"},
     "git-search": {"PC_GIT_PANEL_SEARCH": "HELPERS", "PC_GIT_PANEL_TAB": "changes",
                    "PC_GIT_PANEL_DUMP": "/Users/admin/git-search.txt"},
+    "git-files": {"PC_GIT_PANEL_ROW": "1", "PC_GIT_PANEL_TAB": "files",
+                  "PC_GIT_PANEL_DUMP": "/Users/admin/git-files.txt"},
+    "git-merge": {"PC_GIT_PANEL_MERGE": "theirs", "PC_GIT_PANEL_DUMP": "/Users/admin/git-merge.txt"},
 }
 
 
