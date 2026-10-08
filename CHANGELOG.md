@@ -103,6 +103,9 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   icon views, the workspace chips and the button bar's buttons now take such a drop: the mail arrives
   as an `.eml` in the folder it was dropped on, through the same copy as every other drop, conflict
   dialog included. On a workspace chip it goes into that workspace's active folder, never its basket.
+- **Bisect never said which commit it found with git 2.55.** That version writes `first 'bad' commit`
+  where earlier ones wrote `first bad commit`, and the Git panel knew only the older wording — so a
+  bisect ran to its end and kept asking. Both are read now.
 - **The Rebase window's heading was garbled in Chinese, Korean and Russian.** Their translations of
   "%lld commit(s) ahead of %@" put the two values in the other order without saying so, which hands
   the count to the text placeholder. Positions now say which is which, and the plugin translation check

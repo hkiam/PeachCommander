@@ -2118,17 +2118,29 @@ public enum PluginGit {
         case waiting
     }
 
+    ///
+    /// The found line is `<hash> is the first bad commit` up to git 2.54 and `<hash> is the first 'bad'
+    /// commit` from 2.55, which quotes the term. Matched on the shape around the term rather than on
+    /// either spelling: the parser that knew only the first never saw the end of a bisect on a
+    /// current git, and CI — Homebrew's git — said so for three commits running.
     public static func parseBisect(_ output: String) -> BisectProgress {
         for line in output.split(separator: "\n").map(String.init) {
-            if line.hasSuffix(" is the first bad commit") {
-                return .found(String(line.dropLast(" is the first bad commit".count)))
-            }
+            if let found = firstBadCommit(in: line) { return .found(found) }
             if line.hasPrefix("Bisecting: ") {
                 let numbers = line.split(whereSeparator: { !$0.isNumber }).compactMap { Int($0) }
                 return .remaining(revisions: numbers.first ?? 0, steps: numbers.count > 1 ? numbers[1] : 0)
             }
         }
         return .waiting
+    }
+
+    /// The hash from `<hash> is the first bad commit`, with or without quotes around `bad`.
+    private static func firstBadCommit(in line: String) -> String? {
+        guard let marker = line.range(of: " is the first "), line.hasSuffix(" commit") else { return nil }
+        let term = line[marker.upperBound..<line.index(line.endIndex, offsetBy: -" commit".count)]
+        guard term == "bad" || term == "'bad'" else { return nil }
+        let hash = line[..<marker.lowerBound]
+        return !hash.isEmpty && hash.allSatisfy(\.isHexDigit) ? String(hash) : nil
     }
 
     // MARK: - Patches (phase 8)

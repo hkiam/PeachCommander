@@ -444,6 +444,20 @@ final class PluginGitTests: XCTestCase {
         XCTAssertFalse(bisecting())
     }
 
+    /// Both wordings, because the machine running the test has only one of them: Apple's git 2.54 says
+    /// `first bad commit`, Homebrew's 2.55 on CI says `first 'bad' commit`, and the real-git test above
+    /// failed only there.
+    func testParseBisectReadsTheFoundLineOfEveryGit() {
+        let hash = "3f2a9c1e0b7d4e5f6a8b9c0d1e2f3a4b5c6d7e8f"
+        XCTAssertEqual(PluginGit.parseBisect("\(hash) is the first bad commit\ncommit \(hash)\n"), .found(hash))
+        XCTAssertEqual(PluginGit.parseBisect("\(hash) is the first 'bad' commit\ncommit \(hash)\n"), .found(hash))
+        XCTAssertEqual(PluginGit.parseBisect("Bisecting: 3 revisions left to test after this (roughly 2 steps)\n"),
+                       .remaining(revisions: 3, steps: 2))
+        // A commit *message* quoted in the output is not the verdict.
+        XCTAssertEqual(PluginGit.parseBisect("    fix: this is the first bad commit\n"), .waiting)
+        XCTAssertEqual(PluginGit.parseBisect("status: waiting for 'good' commit(s), 'bad' commit known\n"), .waiting)
+    }
+
     func testPatchesOutAndInAgainstRealGit() throws {
         XCTAssertEqual(PluginGit.patchFileName(number: 1, subject: "Fix(git): the panel's buttons!"), "0001-fix-git-the-panel-s-buttons.patch")
         let source = try TempRepo(), target = try TempRepo()
