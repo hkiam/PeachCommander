@@ -36,7 +36,7 @@ Vinduet har disse sidene, i rekkefølge:
 - **Faner** – hvordan mappefaner åpnes og oppfører seg.
 - **FTP** – nettverksstandarder som keep-alive-intervallet.
 - **Tastatur** – se gjennom og endre tastatursnarveier.
-- **Språk** – velg Systemstandard, Engelsk eller Deutsch.
+- **Språk** – velg Systemstandard eller et hvilket som helst språk Peach Commander er oversatt til, hvert oppført med sitt eget navn.
 - **AI** – sett opp AI-assistenten: foretrukket modell, skyendepunkt og -nøkkel, autonomi, og den valgfrie MCP-serveren (se [AI Assistant](ai-assistant.md)).
 - **Diverse** – åpne konfigurasjonsmappen din i Finder.
 
@@ -66,6 +66,6 @@ Hvis du flytter fra Total Commander på Windows, kan du importere de lagrede FTP
 
 ## Merknader
 
-- **Språk**-siden tilbyr Systemstandard, Engelsk og Deutsch. Å endre språket trer i kraft først etter at du starter Peach Commander på nytt.
+- **Språk**-siden tilbyr Systemstandard og alle språk Peach Commander er oversatt til, hvert oppført med sitt eget navn. Å endre språket trer i kraft først etter at du starter Peach Commander på nytt.
 - Farger satt på **Farger**-siden overstyrer temaet; bruk **Tilbakestill til standard** der for å gå tilbake til temaets farger.
 - Peach Commander lagrer innstillingene sine bare i sin egen konfigurasjonsmappe, så endringene dine påvirker aldri andre apper og er enkle å sikkerhetskopiere ved å kopiere den mappen.

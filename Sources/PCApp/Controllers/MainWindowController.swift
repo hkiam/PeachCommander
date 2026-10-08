@@ -4981,7 +4981,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         )
     }
 
-    /// The user's chosen UI language ("system" | "en" | "de"), tracked in
+    /// The user's chosen UI language ("system" or a localization code such as "fr"), tracked in
     /// UserDefaults alongside the AppleLanguages override so the popup can show
     /// "System default" distinctly from an explicit match of the OS language.
     static func currentUILanguage() -> String {
@@ -4989,7 +4989,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     /// Apply a UI language choice (F-272): "system" clears the override so the app
-    /// follows the OS; "en"/"de" pin AppleLanguages. Takes effect on next launch.
+    /// follows the OS; a language code pins AppleLanguages. Takes effect on next launch.
     private func setUILanguage(_ lang: String) {
         let defaults = UserDefaults.standard
         defaults.set(lang, forKey: "PCUILanguage")

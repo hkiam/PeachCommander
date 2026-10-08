@@ -36,7 +36,7 @@ Okno ima te strani, po vrsti:
 - **Zavihki** — kako se zavihki map odpirajo in obnašajo.
 - **FTP** — omrežne privzete vrednosti, kot je interval keep-alive.
 - **Tipkovnica** — preglej in spremeni tipkovne bližnjice.
-- **Jezik** — izberi Sistemsko privzeto, English ali Deutsch.
+- **Jezik** — izberi Sistemsko privzeto ali katerikoli jezik, v katerega je preveden Peach Commander, vsak naveden s svojim lastnim imenom.
 - **UI** — nastavi pomočnika UI: prednostni model, končno točko in ključ oblaka, avtonomijo in izbirni strežnik MCP (glejte [Pomočnik UI](ai-assistant.md)).
 - **Razno** — odpri svojo mapo konfiguracije v Finderju.
 
@@ -66,6 +66,6 @@ Nastavitve se zapisujejo, ko jih spreminjate; ročno ni treba shraniti ničesar.
 
 ## Opombe
 
-- Stran **Jezik** ponuja Sistemsko privzeto, English in Deutsch. Sprememba jezika začne veljati šele po ponovnem zagonu Peach Commander.
+- Stran **Jezik** ponuja Sistemsko privzeto in vse jezike, v katere je preveden Peach Commander, vsak naveden s svojim lastnim imenom. Sprememba jezika začne veljati šele po ponovnem zagonu Peach Commander.
 - Barve, nastavljene na strani **Barve**, preglasijo temo; tam uporabite **Ponastavi na privzeto**, da se vrnete na barve teme.
 - Peach Commander hrani svoje nastavitve le v lastni mapi konfiguracije, tako da vaše spremembe nikoli ne vplivajo na druge aplikacije in jih je enostavno varnostno kopirati s kopiranjem te mape.

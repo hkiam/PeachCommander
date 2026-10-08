@@ -36,7 +36,7 @@ Okno má tieto stránky, v poradí:
 - **Karty** — ako sa karty priečinkov otvárajú a správajú.
 - **FTP** — sieťové predvolené hodnoty ako interval keep-alive.
 - **Klávesnica** — prezrieť a zmeniť klávesové skratky.
-- **Jazyk** — vybrať Systémový predvolený, English alebo Deutsch.
+- **Jazyk** — vybrať Predvolený systému alebo ktorýkoľvek jazyk, do ktorého je Peach Commander preložený, každý uvedený vlastným názvom.
 - **AI** — nakonfigurovať asistenta AI: preferovaný model, cloudový koncový bod a kľúč, autonómiu a voliteľný server MCP (pozri [Asistent AI](ai-assistant.md)).
 - **Rôzne** — otvoriť svoj konfiguračný priečinok vo Finderi.
 
@@ -66,6 +66,6 @@ Ak prechádzate z Total Commanderu vo Windowse, môžete importovať svoje ulož
 
 ## Poznámky
 
-- Stránka **Jazyk** ponúka Systémový predvolený, English a Deutsch. Zmena jazyka sa prejaví až po reštartovaní Peach Commanderu.
+- Stránka **Jazyk** ponúka Predvolený systému a každý jazyk, do ktorého je Peach Commander preložený, každý uvedený vlastným názvom. Zmena jazyka sa prejaví až po reštartovaní Peach Commanderu.
 - Farby nastavené na stránke **Farby** prepíšu tému; tam použite **Obnoviť predvolené** na návrat k farbám témy.
 - Peach Commander ukladá svoje nastavenia len do vlastného konfiguračného priečinka, takže vaše zmeny nikdy neovplyvnia iné aplikácie a ľahko sa zálohujú skopírovaním toho priečinka.

@@ -36,7 +36,7 @@ Fereastra are aceste pagini, în ordine:
 - **File** — cum se deschid și se comportă filele de foldere.
 - **FTP** — valori implicite de rețea precum intervalul keep-alive.
 - **Tastatură** — examinează și schimbă comenzile rapide de tastatură.
-- **Limbă** — alege Implicit sistem, English sau Deutsch.
+- **Limbă** — alege Implicit de sistem sau oricare dintre limbile în care este tradus Peach Commander, fiecare afișată cu propriul nume.
 - **IA** — configurează asistentul IA: model preferat, punct final și cheie cloud, autonomie și serverul MCP opțional (vedeți [Asistent IA](ai-assistant.md)).
 - **Diverse** — deschide folderul de configurare în Finder.
 
@@ -66,6 +66,6 @@ Dacă treceți de la Total Commander pe Windows, puteți importa site-urile FTP 
 
 ## Note
 
-- Pagina **Limbă** oferă Implicit sistem, English și Deutsch. Schimbarea limbii intră în vigoare doar după ce reporniți Peach Commander.
+- Pagina **Limbă** oferă Implicit de sistem și toate limbile în care este tradus Peach Commander, fiecare afișată cu propriul nume. Schimbarea limbii intră în vigoare doar după ce reporniți Peach Commander.
 - Culorile setate pe pagina **Culori** suprascriu tema; folosiți **Resetează la valorile implicite** acolo pentru a reveni la culorile temei.
 - Peach Commander își stochează setările doar în propriul folder de configurare, astfel încât modificările dvs. nu afectează niciodată alte aplicații și sunt ușor de salvat prin copierea acelui folder.

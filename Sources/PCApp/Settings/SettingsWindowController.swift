@@ -418,10 +418,11 @@ public final class SettingsWindowController: NSWindowController {
 
     // Language page controls
     private let languagePopup = NSPopUpButton()
-    /// Language raw values in popup order ("system" = follow the OS).
-    private let languages: [(raw: String, label: String)] = [
-        ("system", String(localized: "System default")), ("en", "English"), ("de", "Deutsch"),
-    ]
+    /// Language raw values in popup order ("system" = follow the OS), then every language the app is
+    /// translated into, each in its own name.
+    private let languages: [(raw: String, label: String)] =
+        [("system", String(localized: "System default"))]
+        + UILanguageChoices.choices(localizations: Bundle.main.localizations).map { ($0.code, $0.label) }
 
     // Zip/Packer page controls
     private let packFormatPopup = NSPopUpButton()
@@ -1873,7 +1874,10 @@ extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
         let title = SettingsPage(rawValue: row)?.title
             ?? (pluginPanes.indices.contains(row - builtinPageCount) ? pluginPanes[row - builtinPageCount].title : "-")
         let mounted = pageViews.first { $0.value.window != nil }?.key.title ?? "-"
+        // The Language page's choices: built from the bundle's localizations, so a dump is the only
+        // place a missing translation would show up as a missing line rather than as nothing at all.
         return "row=\(row)\npage=\(title)\nmounted=\(mounted)\nresults=\(isShowingResults)\n"
+            + "languages=\(languagePopup.itemTitles.joined(separator: "|"))\n"
     }
 
     /// Type into the search field the way a person does — through the field editor, so the change

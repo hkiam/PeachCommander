@@ -111,6 +111,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Fixed
 
+- **The Language page offered English and Deutsch only.** The app ships nineteen translations, but
+  the list in Settings was written by hand with two of them, so French on an English Mac — or any
+  language other than the system's — could not be chosen. The page now lists every language the app
+  is translated into, each in its own name (Français, 简体中文, Українська), and a translation added
+  later appears there by itself.
+
 - **The copy window's bar stood still.** The first report of every copy arrives while the totals are
   still being counted, which set the bar to indeterminate and started its animation; switching back
   never stopped it, so the bar stayed drawn near the start however far the copy got — 4 of 6 MB showed

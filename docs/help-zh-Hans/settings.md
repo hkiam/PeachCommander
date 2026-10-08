@@ -36,7 +36,7 @@ related: [appearance, keyboard-shortcuts]
 - **标签页** —— 文件夹标签页如何打开和表现。
 - **FTP** —— 网络默认值，例如 keep-alive 间隔。
 - **键盘** —— 查看并更改键盘快捷键。
-- **语言** —— 选择系统默认、English 或 Deutsch。
+- **语言** —— 选择系统默认或 Peach Commander 已翻译成的任一语言，每种语言均以其自身的名称列出。
 - **AI** —— 配置 AI 助手：首选模型、云端点和密钥、自主级别，以及可选的 MCP 服务器（参阅 [AI Assistant](ai-assistant.md)）。
 - **杂项** —— 在 Finder 中打开你的配置文件夹。
 
@@ -66,6 +66,6 @@ related: [appearance, keyboard-shortcuts]
 
 ## 备注
 
-- **语言** 页提供系统默认、English 和 Deutsch。更改语言仅在你重新启动 Peach Commander 后生效。
+- **语言** 页提供系统默认以及 Peach Commander 已翻译成的所有语言，每种语言均以其自身的名称列出。更改语言仅在你重新启动 Peach Commander 后生效。
 - 在 **颜色** 页设置的颜色会覆盖主题；使用那里的 **恢复默认值** 以回到主题的颜色。
 - Peach Commander 仅将其设置存放在自己的配置文件夹中，因此你的更改绝不会影响其他应用，并且通过拷贝该文件夹即可轻松备份。

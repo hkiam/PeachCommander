@@ -36,7 +36,7 @@ Fönstret har dessa sidor, i ordning:
 - **Flikar** — hur mappflikar öppnas och beter sig.
 - **FTP** — nätverksstandardvärden som keep-alive-intervallet.
 - **Tangentbord** — granska och ändra kortkommandon.
-- **Språk** — välj Systemstandard, English eller Deutsch.
+- **Språk** — välj Systemstandard eller något av de språk Peach Commander är översatt till, vart och ett listat med sitt eget namn.
 - **AI** — konfigurera AI-assistenten: önskad modell, molnslutpunkt och nyckel, autonomi och den valfria MCP-servern (se [AI Assistant](ai-assistant.md)).
 - **Övrigt** — öppna din konfigurationsmapp i Finder.
 
@@ -66,6 +66,6 @@ Om du byter från Total Commander på Windows kan du importera dina sparade FTP-
 
 ## Anmärkningar
 
-- Sidan **Språk** erbjuder Systemstandard, English och Deutsch. En språkändring träder i kraft först efter att du startat om Peach Commander.
+- Sidan **Språk** erbjuder Systemstandard och alla språk Peach Commander är översatt till, vart och ett listat med sitt eget namn. En språkändring träder i kraft först efter att du startat om Peach Commander.
 - Färger som ställs in på sidan **Färger** åsidosätter temat; använd **Återställ standardvärden** där för att återgå till temats färger.
 - Peach Commander lagrar sina inställningar endast i sin egen konfigurationsmapp, så dina ändringar påverkar aldrig andra appar och är enkla att säkerhetskopiera genom att kopiera den mappen.

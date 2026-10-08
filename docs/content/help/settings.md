@@ -37,7 +37,7 @@ The window has these pages, in order:
 - **Tabs** — how folder tabs open and behave.
 - **FTP** — network defaults such as the keep-alive interval.
 - **Keyboard** — review and change keyboard shortcuts.
-- **Language** — choose System default, English, or Deutsch.
+- **Language** — choose System default or any language Peach Commander is translated into, each listed in its own name.
 - **AI** — configure the AI assistant: preferred model, cloud endpoint and key, autonomy, and the optional MCP server (see [AI Assistant](ai-assistant.md)).
 - **Misc** — open your configuration folder in the Finder.
 
@@ -67,6 +67,6 @@ If you are moving from Total Commander on Windows, you can import your saved FTP
 
 ## Notes
 
-- The **Language** page offers System default, English, and Deutsch. Changing the language takes effect only after you restart Peach Commander.
+- The **Language** page offers System default and every language Peach Commander is translated into, each listed in its own name. Changing the language takes effect only after you restart Peach Commander.
 - Colors set on the **Colors** page override the theme; use **Reset to defaults** there to return to the theme's colors.
 - Peach Commander stores its settings only in its own configuration folder, so your changes never affect other apps and are easy to back up by copying that folder.

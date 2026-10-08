@@ -36,7 +36,7 @@ Het venster heeft deze pagina's, op volgorde:
 - **Tabbladen** — hoe maptabbladen openen en zich gedragen.
 - **FTP** — netwerkstandaarden zoals het keep-alive-interval.
 - **Toetsenbord** — bekijk en wijzig sneltoetsen.
-- **Taal** — kies Systeemstandaard, English of Deutsch.
+- **Taal** — kies Systeemstandaard of een van de talen waarin Peach Commander is vertaald, elk vermeld onder de eigen naam.
 - **AI** — configureer de AI-assistent: voorkeursmodel, cloud-eindpunt en sleutel, autonomie en de optionele MCP-server (zie [AI Assistant](ai-assistant.md)).
 - **Diversen** — open je configuratiemap in de Finder.
 
@@ -66,6 +66,6 @@ Als je overstapt van Total Commander op Windows, kun je je opgeslagen FTP-sites 
 
 ## Opmerkingen
 
-- De pagina **Taal** biedt Systeemstandaard, English en Deutsch. Een taalwijziging werkt pas nadat je Peach Commander opnieuw start.
+- De pagina **Taal** biedt Systeemstandaard en elke taal waarin Peach Commander is vertaald, elk vermeld onder de eigen naam. Een taalwijziging werkt pas nadat je Peach Commander opnieuw start.
 - Kleuren die je op de pagina **Kleuren** instelt, overschrijven het thema; gebruik daar **Herstel standaardwaarden** om terug te keren naar de themakleuren.
 - Peach Commander bewaart zijn instellingen alleen in zijn eigen configuratiemap, zodat je wijzigingen nooit andere apps beïnvloeden en eenvoudig te back-uppen zijn door die map te kopiëren.

@@ -36,7 +36,7 @@ La fenêtre comporte ces pages, dans l'ordre :
 - **Onglets** — comment les onglets de dossiers s'ouvrent et se comportent.
 - **FTP** — valeurs réseau par défaut telles que l'intervalle keep-alive.
 - **Clavier** — consulter et changer les raccourcis clavier.
-- **Langue** — choisir Réglage système, English ou Deutsch.
+- **Langue** — choisir Valeur par défaut du système ou n'importe quelle langue dans laquelle Peach Commander est traduit, chacune affichée sous son propre nom.
 - **IA** — configurer l'assistant IA : modèle préféré, point de terminaison et clé cloud, autonomie et serveur MCP facultatif (voir [Assistant IA](ai-assistant.md)).
 - **Divers** — ouvrir votre dossier de configuration dans le Finder.
 
@@ -66,6 +66,6 @@ Si vous migrez depuis Total Commander sous Windows, vous pouvez importer vos sit
 
 ## Remarques
 
-- La page **Langue** propose Réglage système, English et Deutsch. Changer de langue ne prend effet qu'après avoir redémarré Peach Commander.
+- La page **Langue** propose Valeur par défaut du système et toutes les langues dans lesquelles Peach Commander est traduit, chacune affichée sous son propre nom. Changer de langue ne prend effet qu'après avoir redémarré Peach Commander.
 - Les couleurs définies sur la page **Couleurs** remplacent le thème ; utilisez **Réinitialiser aux valeurs par défaut** là-bas pour revenir aux couleurs du thème.
 - Peach Commander stocke ses réglages uniquement dans son propre dossier de configuration, de sorte que vos changements n'affectent jamais d'autres applications et sont faciles à sauvegarder en copiant ce dossier.

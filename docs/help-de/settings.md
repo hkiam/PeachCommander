@@ -36,7 +36,7 @@ Das Fenster enthält diese Seiten, in dieser Reihenfolge:
 - **Tabs** — wie sich Ordner-Tabs öffnen und verhalten.
 - **FTP** — Netzwerk-Standardwerte wie das Keep-Alive-Intervall.
 - **Tastatur** — Tastenkürzel überprüfen und ändern.
-- **Sprache** — Systemstandard, English oder Deutsch wählen.
+- **Sprache** — Systemstandard oder eine der Sprachen wählen, in die Peach Commander übersetzt ist, jede unter ihrem eigenen Namen aufgeführt.
 - **KI** — den KI-Assistenten konfigurieren: bevorzugtes Modell, Cloud-Endpunkt und Schlüssel, Autonomie sowie der optionale MCP-Server (siehe [KI-Assistent](ai-assistant.md)).
 - **Sonstiges** — Ihren Konfigurationsordner im Finder öffnen.
 
@@ -66,6 +66,6 @@ Wenn Sie von Total Commander unter Windows umsteigen, können Sie Ihre gespeiche
 
 ## Hinweise
 
-- Die Seite **Sprache** bietet Systemstandard, English und Deutsch. Eine Sprachänderung wird erst nach einem Neustart von Peach Commander wirksam.
+- Die Seite **Sprache** bietet Systemstandard und jede Sprache, in die Peach Commander übersetzt ist, jede unter ihrem eigenen Namen aufgeführt. Eine Sprachänderung wird erst nach einem Neustart von Peach Commander wirksam.
 - Auf der Seite **Farben** festgelegte Farben überschreiben das Thema; verwenden Sie dort **Auf Standard zurücksetzen**, um zu den Farben des Themas zurückzukehren.
 - Peach Commander speichert seine Einstellungen nur in seinem eigenen Konfigurationsordner, sodass Ihre Änderungen niemals andere Apps betreffen und sich leicht sichern lassen, indem Sie diesen Ordner kopieren.

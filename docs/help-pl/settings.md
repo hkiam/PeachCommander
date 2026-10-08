@@ -36,7 +36,7 @@ Okno ma następujące strony, w kolejności:
 - **Karty** — jak otwierają się i zachowują karty folderów.
 - **FTP** — wartości domyślne sieci, jak interwał keep-alive.
 - **Klawiatura** — przejrzyj i zmień skróty klawiaturowe.
-- **Język** — wybierz Domyślny systemowy, English lub Deutsch.
+- **Język** — wybierz Domyślny systemowy lub dowolny język, na który przetłumaczono Peach Commandera, każdy podany pod własną nazwą.
 - **AI** — skonfiguruj asystenta AI: preferowany model, punkt końcowy i klucz chmury, autonomię oraz opcjonalny serwer MCP (zobacz [Asystent AI](ai-assistant.md)).
 - **Różne** — otwórz folder konfiguracji w Finderze.
 
@@ -66,6 +66,6 @@ Jeśli przechodzisz z Total Commandera na Windows, możesz zaimportować zapisan
 
 ## Uwagi
 
-- Strona **Język** oferuje Domyślny systemowy, English i Deutsch. Zmiana języka wchodzi w życie dopiero po ponownym uruchomieniu Peach Commandera.
+- Strona **Język** oferuje Domyślny systemowy i każdy język, na który przetłumaczono Peach Commandera, każdy podany pod własną nazwą. Zmiana języka wchodzi w życie dopiero po ponownym uruchomieniu Peach Commandera.
 - Kolory ustawione na stronie **Kolory** zastępują motyw; użyj tam **Przywróć domyślne**, aby wrócić do kolorów motywu.
 - Peach Commander przechowuje swoje ustawienia tylko we własnym folderze konfiguracji, więc Twoje zmiany nigdy nie wpływają na inne aplikacje i można je łatwo utworzyć w kopii zapasowej, kopiując ten folder.

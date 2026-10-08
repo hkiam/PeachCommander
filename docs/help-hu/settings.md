@@ -36,7 +36,7 @@ Az ablaknak ezek az oldalai vannak, sorrendben:
 - **Lapok** — hogyan nyílnak meg és viselkednek a mappalapok.
 - **FTP** — hálózati alapértékek, mint a keep-alive időköz.
 - **Billentyűzet** — a billentyűparancsok áttekintése és módosítása.
-- **Nyelv** — válasszon Rendszer alapértelmezett, English vagy Deutsch közül.
+- **Nyelv** — válasszon a Rendszer alapértelmezett és a Peach Commander bármely fordítási nyelve közül; mindegyik a saját nevén szerepel.
 - **MI** — az MI-asszisztens beállítása: preferált modell, felhő végpont és kulcs, autonómia, és az opcionális MCP-kiszolgáló (lásd [Asszisztens MI](ai-assistant.md)).
 - **Egyéb** — a konfigurációs mappa megnyitása a Finderben.
 
@@ -66,6 +66,6 @@ Ha a Windows-os Total Commanderről vált, importálhatja a mentett FTP-oldalait
 
 ## Megjegyzések
 
-- A **Nyelv** oldal Rendszer alapértelmezett, English és Deutsch közül kínál. A nyelv megváltoztatása csak a Peach Commander újraindítása után lép életbe.
+- A **Nyelv** oldal a Rendszer alapértelmezett mellett a Peach Commander összes fordítási nyelvét kínálja; mindegyik a saját nevén szerepel. A nyelv megváltoztatása csak a Peach Commander újraindítása után lép életbe.
 - A **Színek** oldalon beállított színek felülírják a témát; ott használja az **Alapértelmezések visszaállítása**-t a téma színeihez való visszatéréshez.
 - A Peach Commander a beállításait csak a saját konfigurációs mappájában tárolja, így a változtatásai soha nem érintenek más appokat, és könnyen biztonsági mentés készíthető róluk a mappa másolásával.

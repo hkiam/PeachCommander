@@ -36,7 +36,7 @@ La finestra ha queste pagine, in ordine:
 - **Schede** — come le schede delle cartelle si aprono e si comportano.
 - **FTP** — valori predefiniti di rete come l'intervallo keep-alive.
 - **Tastiera** — rivedi e cambia le scorciatoie da tastiera.
-- **Lingua** — scegli Predefinita di sistema, English o Deutsch.
+- **Lingua** — scegli Predefinito di sistema o una qualsiasi lingua in cui Peach Commander è tradotto, ciascuna indicata con il proprio nome.
 - **IA** — configura l'assistente IA: modello preferito, endpoint e chiave cloud, autonomia e il server MCP opzionale (vedi [Assistente IA](ai-assistant.md)).
 - **Varie** — apri la tua cartella di configurazione nel Finder.
 
@@ -66,6 +66,6 @@ Se stai passando da Total Commander su Windows, puoi importare i tuoi siti FTP s
 
 ## Note
 
-- La pagina **Lingua** offre Predefinita di sistema, English e Deutsch. Cambiare la lingua ha effetto solo dopo aver riavviato Peach Commander.
+- La pagina **Lingua** offre Predefinito di sistema e tutte le lingue in cui Peach Commander è tradotto, ciascuna indicata con il proprio nome. Cambiare la lingua ha effetto solo dopo aver riavviato Peach Commander.
 - I colori impostati nella pagina **Colori** sovrascrivono il tema; usa **Ripristina predefiniti** lì per tornare ai colori del tema.
 - Peach Commander conserva le sue impostazioni solo nella propria cartella di configurazione, così le tue modifiche non interessano mai altre app e sono facili da salvare copiando quella cartella.

@@ -36,7 +36,7 @@ La ventana tiene estas páginas, en orden:
 - **Pestañas** — cómo se abren y se comportan las pestañas de carpeta.
 - **FTP** — valores de red por omisión como el intervalo de keep-alive.
 - **Teclado** — revisa y cambia los atajos de teclado.
-- **Idioma** — elige Predeterminado del sistema, English o Deutsch.
+- **Idioma** — elige Valor por omisión del sistema o cualquier idioma al que esté traducido Peach Commander, cada uno con su propio nombre.
 - **IA** — configura el asistente de IA: modelo preferido, punto de acceso y clave en la nube, autonomía y el servidor MCP opcional (consulta [AI Assistant](ai-assistant.md)).
 - **Varios** — abre tu carpeta de configuración en el Finder.
 
@@ -66,6 +66,6 @@ Si vienes de Total Commander en Windows, puedes importar tus sitios FTP guardado
 
 ## Notas
 
-- La página **Idioma** ofrece Predeterminado del sistema, English y Deutsch. Un cambio de idioma surte efecto solo tras reiniciar Peach Commander.
+- La página **Idioma** ofrece Valor por omisión del sistema y todos los idiomas a los que está traducido Peach Commander, cada uno con su propio nombre. Un cambio de idioma surte efecto solo tras reiniciar Peach Commander.
 - Los colores fijados en la página **Colores** anulan el tema; usa **Restablecer valores por omisión** ahí para volver a los colores del tema.
 - Peach Commander guarda sus ajustes solo en su propia carpeta de configuración, así que tus cambios nunca afectan a otras apps y es fácil hacer una copia de seguridad copiando esa carpeta.
