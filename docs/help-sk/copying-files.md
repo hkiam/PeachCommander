@@ -25,15 +25,15 @@ Peach Commander je postavený okolo dvoch panelov vedľa seba: jeden obsahuje s�
 Pred potvrdením môžete zmeniť, ako sa kopírovanie správa:
 
 - **Iba novšie súbory** — preskočí každú položku, ktorej kópia už existuje a je rovnako stará alebo novšia, takže sa aktualizujú len zmenené súbory.
-- **Zachovať metadáta** — zachová dátumy, oprávnenia a ďalšie atribúty súborov na kópiách. Toto je predvolene zapnuté.
-- **Obmedzenie rýchlosti** — obmedzí prenosovú rýchlosť, aby veľké kopírovanie nezaťažilo váš disk alebo sieťové pripojenie.
+- **Spustiť na pozadí** — odovzdá kopírovanie správcovi prenosov na pozadí namiesto zobrazenia okna priebehu.
+- **Zaradiť do fronty na neskôr** — pridá kopírovanie do frontu na pozadí bez toho, aby ho hneď spustilo.
 - **Maska premenovania** — do cieľového poľa napíšte vzor so zástupnými znakmi (napríklad `*.bak`), aby ste položky pri kopírovaní premenovali.
 
-Úlohu môžete tiež namiesto sledovania odoslať do frontu na pozadí — pozri Prenosy na pozadí.
+Dve nastavenia platia pre každé kopírovanie a nájdete ich v **Konfigurácia ▸ Kopírovať/odstrániť**: zachovanie dátumov, oprávnení a ďalších atribútov (predvolene zapnuté) a obmedzenie rýchlosti, aby veľké kopírovanie nezaťažilo váš disk alebo sieťové pripojenie. K úlohám vo fronte pozri Prenosy na pozadí.
 
 ## Priebeh
 
-Okno priebehu zobrazuje aktuálny súbor a celkovú úlohu so samostatnými lištami, plus prenosovú rýchlosť. Kedykoľvek môžete pozastaviť a obnoviť, alebo odoslať prebiehajúce kopírovanie do správcu prenosov na pozadí a pracovať ďalej, kým sa dokončí.
+Okno priebehu zobrazuje dve lišty — kopírovaný súbor a celú úlohu — s počtom súborov a bajtov, prenosovou rýchlosťou a zostávajúcim časom. Kedykoľvek môžete kopírovanie pozastaviť a pokračovať v ňom. Ponuka rýchlosti vedľa tlačidiel toto kopírovanie hneď obmedzí (1, 5 alebo 20 MB/s, alebo plná rýchlosť) bez zmeny limitu v Konfigurácii; **Predvolené** sa vráti k tomuto limitu. Ak chcete počas kopírovania pracovať ďalej, spustite ho pomocou **Spustiť na pozadí**.
 
 ![Dialóg priebehu prenosu s lištou priebehu, počtom súborov a bajtov a tlačidlami Pozastaviť a Zrušiť](screenshots/progress-dialog.png)
 *(Obrázok: Dialóg priebehu zobrazený počas kopírovania alebo presunu.)*

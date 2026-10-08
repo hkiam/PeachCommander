@@ -27,13 +27,13 @@
 <p>Înainte de a confirma, puteți schimba modul în care se comportă copierea:</p>
 <ul>
 <li><strong>Doar fișierele mai noi</strong> — omite orice element a cărui copie există deja și este de aceeași vârstă sau mai nouă, astfel încât se actualizează doar fișierele modificate.</li>
-<li><strong>Păstrarea metadatelor</strong> — păstrează pe copii datele, permisiunile și alte atribute ale fișierelor. Aceasta este activată în mod implicit.</li>
-<li><strong>Limită de viteză</strong> — plafonează rata de transfer, astfel încât o copiere mare să nu satureze discul sau conexiunea de rețea.</li>
+<li><strong>Execută în fundal</strong> — predă copierea managerului de transferuri în fundal în loc să afișeze fereastra de progres.</li>
+<li><strong>Pune în coadă pentru mai târziu</strong> — adaugă copierea în coada din fundal fără să o pornească încă.</li>
 <li><strong>Mască de redenumire</strong> — tastați un tipar cu metacaractere în câmpul țintă (de exemplu <code>*.bak</code>) pentru a redenumi elementele pe măsură ce sunt copiate.</li>
 </ul>
-<p>De asemenea, puteți trimite sarcina în coada din fundal în loc să o urmăriți — consultați Transferurile în fundal.</p>
+<p>Două setări se aplică fiecărei copieri și se găsesc în <strong>Configurație ▸ Copiere/Ștergere</strong>: păstrarea datelor, permisiunilor și altor atribute (activată în mod implicit) și o limită de viteză care împiedică o copiere mare să satureze discul sau conexiunea de rețea. Pentru sarcinile din coadă, consultați Transferuri în fundal.</p>
 <h2 id="progres">Progres</h2>
-<p>O fereastră de progres afișează fișierul curent și sarcina generală cu bare separate, plus viteza de transfer. Puteți întrerupe și relua oricând sau puteți trimite copierea în curs către managerul de transferuri în fundal pentru a continua să lucrați până se finalizează.</p>
+<p>O fereastră de progres afișează două bare — fișierul care se copiază și întreaga sarcină — cu numărul de fișiere și de octeți, viteza de transfer și timpul rămas. Puteți întrerupe și relua oricând. Meniul de viteză de lângă butoane limitează imediat această copiere (1, 5 sau 20 MB/s ori viteză maximă) fără a modifica limita din Configurație; <strong>Implicit</strong> revine la acea limită. Pentru a continua să lucrați în timp ce rulează o copiere, porniți-o cu <strong>Execută în fundal</strong>.</p>
 <p><img alt="Dialogul de progres al transferului cu o bară de progres, contoare de fișiere și octeți și butoanele Pauză și Anulare" src="images/progress-dialog.png" />
 <em>(Figura: Dialogul de progres afișat în timpul unei copieri sau mutări.)</em></p>
 <h2 id="gestionarea-fisierelor-care-exista-deja">Gestionarea fișierelor care există deja</h2>

@@ -394,6 +394,8 @@ public final class CopyEngine {
         // Append is exempt: it adds to a file that keeps its identity, so there is nothing to swap.
         let replacing = !appendMode && FSLowLevel.exists(dst)
         let writeTo = replacing ? Self.temporaryName(for: dst) : dst
+        state.currentFileBytesTotal = size
+        state.currentFileBytesDone = 0
 
         func finish() throws {
             guard replacing else { return }
@@ -410,6 +412,7 @@ public final class CopyEngine {
             if rc == 0 {
                 try finish()
                 state.bytesDone += size
+                state.currentFileBytesDone = size
                 report()
                 return
             }
@@ -449,6 +452,7 @@ public final class CopyEngine {
                     off += w
                 }
                 state.bytesDone += Int64(n)
+                state.currentFileBytesDone += Int64(n)
                 report()
                 await throttleIfNeeded()
             }

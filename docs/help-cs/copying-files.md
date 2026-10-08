@@ -25,15 +25,15 @@ Peach Commander je postaven kolem dvou panelů vedle sebe: jeden obsahuje soubor
 Než potvrdíte, můžete změnit chování kopírování:
 
 - **Pouze novější soubory** — přeskočí každou položku, jejíž kopie již existuje a je stejně stará nebo novější, takže se aktualizují jen změněné soubory.
-- **Zachovat metadata** — u kopií zachová data, oprávnění a další atributy souborů. Toto je ve výchozím nastavení zapnuto.
-- **Omezení rychlosti** — omezí přenosovou rychlost, aby rozsáhlé kopírování nezahltilo váš disk nebo síťové připojení.
+- **Spustit na pozadí** — předá kopírování správci přenosů na pozadí místo zobrazení okna průběhu.
+- **Zařadit do fronty na později** — přidá kopírování do fronty na pozadí, aniž by je hned spustilo.
 - **Maska přejmenování** — do cílového pole zadejte zástupný vzor (například `*.bak`) k přejmenování položek při kopírování.
 
-Úlohu můžete také namísto sledování odeslat do fronty na pozadí — viz Přenosy na pozadí.
+Dvě nastavení platí pro každé kopírování a najdete je v **Konfigurace ▸ Kopírovat/odstranit**: zachování dat, oprávnění a dalších atributů (ve výchozím nastavení zapnuto) a omezení rychlosti, aby rozsáhlé kopírování nezahltilo váš disk nebo síťové připojení. K úlohám ve frontě viz Přenosy na pozadí.
 
 ## Průběh
 
-Okno průběhu zobrazuje aktuální soubor a celkovou úlohu se samostatnými ukazateli, plus přenosovou rychlost. Kdykoli můžete pozastavit a obnovit nebo probíhající kopírování odeslat do správce přenosů na pozadí, abyste mohli během jeho dokončování dále pracovat.
+Okno průběhu zobrazuje dva ukazatele — kopírovaný soubor a celou úlohu — s počty souborů a bajtů, přenosovou rychlostí a zbývajícím časem. Kdykoli můžete kopírování pozastavit a pokračovat v něm. Nabídka rychlosti vedle tlačítek toto kopírování okamžitě omezí (1, 5 nebo 20 MB/s, nebo plná rychlost), aniž by se změnil limit v Konfiguraci; **Výchozí** se vrátí k tomuto limitu. Chcete-li během kopírování dále pracovat, spusťte je pomocí **Spustit na pozadí**.
 
 ![Dialog průběhu přenosu s ukazatelem průběhu, počty souborů a bajtů a tlačítky Pozastavit a Zrušit](screenshots/progress-dialog.png)
 *(Obrázek: Dialog průběhu zobrazený během kopírování nebo přesunu.)*

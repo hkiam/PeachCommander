@@ -30,6 +30,17 @@ public struct OpProgress: Sendable, Equatable {
     /// the content arrives and never runs backwards when the copy begins.
     public var bytesToReceive: Int64
     public var bytesReceived: Int64
+    /// The file being copied right now, in bytes — the second bar (SPEC-004 §4). Over a few large files
+    /// the total barely moves for minutes, and this is what shows the copy is getting anywhere. Zero
+    /// when the operation moves no file data (a delete, a trash) or no file has started yet.
+    public var currentFileBytesTotal: Int64
+    public var currentFileBytesDone: Int64
+
+    /// How far the current file is, from 0 to 1, or nil when there is no file to measure.
+    public var currentFileFraction: Double? {
+        guard currentFileBytesTotal > 0 else { return nil }
+        return min(1, Double(currentFileBytesDone) / Double(currentFileBytesTotal))
+    }
 
     /// Neither the totals nor the bytes done say how far the work is, so a fraction would mislead. A
     /// wait whose delivery can be measured is not one of those.
@@ -48,7 +59,8 @@ public struct OpProgress: Sendable, Equatable {
                 bytesTotal: Int64 = 0, bytesDone: Int64 = 0,
                 currentItem: String = "", bytesPerSecond: Double = 0,
                 isCounting: Bool = false, isWaitingForSource: Bool = false,
-                bytesToReceive: Int64 = 0, bytesReceived: Int64 = 0) {
+                bytesToReceive: Int64 = 0, bytesReceived: Int64 = 0,
+                currentFileBytesTotal: Int64 = 0, currentFileBytesDone: Int64 = 0) {
         self.filesTotal = filesTotal
         self.filesDone = filesDone
         self.bytesTotal = bytesTotal
@@ -59,6 +71,8 @@ public struct OpProgress: Sendable, Equatable {
         self.isWaitingForSource = isWaitingForSource
         self.bytesToReceive = bytesToReceive
         self.bytesReceived = bytesReceived
+        self.currentFileBytesTotal = currentFileBytesTotal
+        self.currentFileBytesDone = currentFileBytesDone
     }
 }
 

@@ -25,15 +25,15 @@ Peach Commander je zgrajen okoli dveh podoken drug ob drugem: eno vsebuje datote
 Preden potrdite, lahko spremenite, kako se kopiranje obnaša:
 
 - **Samo novejše datoteke** — preskoči vsak element, katerega kopija že obstaja in je enako stara ali novejša, tako da se posodobijo samo spremenjene datoteke.
-- **Ohrani metapodatke** — na kopijah ohrani datume, dovoljenja in druge atribute datotek. Privzeto je vklopljeno.
-- **Omejitev hitrosti** — omeji hitrost prenosa, da veliko kopiranje ne zasede vsega diska ali omrežne povezave.
+- **Zaženi v ozadju** — kopiranje preda upravitelju prenosov v ozadju, namesto da bi prikazalo okno napredovanja.
+- **Uvrsti v čakalno vrsto za pozneje** — kopiranje doda v čakalno vrsto v ozadju, ne da bi ga že zagnalo.
 - **Maska preimenovanja** — v ciljno polje vnesite vzorec z nadomestnimi znaki (na primer `*.bak`), da elemente preimenujete med kopiranjem.
 
-Opravilo lahko namesto opazovanja pošljete tudi v čakalno vrsto v ozadju — glejte Prenosi v ozadju.
+Dve nastavitvi veljata za vsako kopiranje in sta v **Konfiguracija ▸ Kopiranje/brisanje**: ohranjanje datumov, dovoljenj in drugih atributov (privzeto vklopljeno) ter omejitev hitrosti, da veliko kopiranje ne zasede vsega diska ali omrežne povezave. Za opravila v čakalni vrsti glejte Prenosi v ozadju.
 
 ## Napredovanje
 
-Okno napredovanja z ločenimi vrsticami prikazuje trenutno datoteko in celotno opravilo ter hitrost prenosa. Kadar koli lahko naredite premor in nadaljujete ali pa potekajoče kopiranje pošljete v upravitelja prenosov v ozadju, da lahko med dokončanjem še naprej delate.
+Okno napredovanja prikazuje dve vrstici — datoteko, ki se kopira, in celotno opravilo — s številom datotek in bajtov, hitrostjo prenosa in preostalim časom. Kadar koli lahko kopiranje zaustavite in nadaljujete. Meni hitrosti ob gumbih takoj omeji to kopiranje (1, 5 ali 20 MB/s ali polna hitrost), ne da bi spremenil omejitev v Konfiguraciji; **Privzeto** se vrne na to omejitev. Če želite med kopiranjem delati naprej, ga zaženite z **Zaženi v ozadju**.
 
 ![Pogovorno okno napredovanja prenosa z vrstico napredovanja, števci datotek in bajtov ter gumboma Premor in Prekliči](screenshots/progress-dialog.png)
 *(Slika: Pogovorno okno napredovanja, prikazano med kopiranjem ali premikom.)*

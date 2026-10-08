@@ -25,15 +25,15 @@ Peach Commander è costruito attorno a due pannelli affiancati: uno contiene i f
 Prima di confermare, potete modificare il comportamento della copia:
 
 - **Solo file più recenti** — salta ogni elemento la cui copia esiste già ed è della stessa età o più recente, così vengono aggiornati solo i file modificati.
-- **Conserva i metadati** — mantiene date, permessi e altri attributi dei file sulle copie. È attiva per impostazione predefinita.
-- **Limite di velocità** — limita la velocità di trasferimento affinché una copia di grandi dimensioni non saturi il disco o la connessione di rete.
+- **Esegui in background** — affida la copia al gestore dei trasferimenti in background invece di mostrare la finestra di avanzamento.
+- **Metti in coda per dopo** — aggiunge la copia alla coda in background senza avviarla subito.
 - **Maschera di rinomina** — digitate un pattern con caratteri jolly nel campo di destinazione (ad esempio `*.bak`) per rinominare gli elementi durante la copia.
 
-Potete anche inviare l'operazione alla coda in background invece di seguirla — vedi Trasferimenti in background.
+Due impostazioni valgono per ogni copia e si trovano in **Configurazione ▸ Copia/Elimina**: la conservazione di date, permessi e altri attributi (attiva per impostazione predefinita) e un limite di velocità che impedisce a una copia di grandi dimensioni di saturare il disco o la connessione di rete. Per le operazioni in coda, vedi Trasferimenti in background.
 
 ## Avanzamento
 
-Una finestra di avanzamento mostra il file corrente e l'operazione complessiva con barre separate, oltre alla velocità di trasferimento. Potete mettere in pausa e riprendere in qualsiasi momento, oppure inviare la copia in corso al gestore dei trasferimenti in background per continuare a lavorare mentre viene completata.
+Una finestra di avanzamento mostra due barre — il file in copia e l'intera operazione — con il numero di file e di byte, la velocità di trasferimento e il tempo rimanente. Potete mettere in pausa e riprendere in qualsiasi momento. Il menu della velocità accanto ai pulsanti limita subito questa copia (1, 5 o 20 MB/s, oppure velocità massima) senza modificare il limite in Configurazione; **Predefinito** torna a quel limite. Per continuare a lavorare mentre una copia è in corso, avviatela con **Esegui in background**.
 
 ![La finestra di avanzamento del trasferimento con una barra di avanzamento, conteggi di file e byte, e i pulsanti Pausa e Annulla](screenshots/progress-dialog.png)
 *(Figura: la finestra di avanzamento mostrata durante una copia o uno spostamento.)*

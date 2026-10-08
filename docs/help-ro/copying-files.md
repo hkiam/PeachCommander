@@ -25,15 +25,15 @@ Peach Commander este construit în jurul a două panouri alăturate: unul conți
 Înainte de a confirma, puteți schimba modul în care se comportă copierea:
 
 - **Doar fișierele mai noi** — omite orice element a cărui copie există deja și este de aceeași vârstă sau mai nouă, astfel încât se actualizează doar fișierele modificate.
-- **Păstrarea metadatelor** — păstrează pe copii datele, permisiunile și alte atribute ale fișierelor. Aceasta este activată în mod implicit.
-- **Limită de viteză** — plafonează rata de transfer, astfel încât o copiere mare să nu satureze discul sau conexiunea de rețea.
+- **Execută în fundal** — predă copierea managerului de transferuri în fundal în loc să afișeze fereastra de progres.
+- **Pune în coadă pentru mai târziu** — adaugă copierea în coada din fundal fără să o pornească încă.
 - **Mască de redenumire** — tastați un tipar cu metacaractere în câmpul țintă (de exemplu `*.bak`) pentru a redenumi elementele pe măsură ce sunt copiate.
 
-De asemenea, puteți trimite sarcina în coada din fundal în loc să o urmăriți — consultați Transferurile în fundal.
+Două setări se aplică fiecărei copieri și se găsesc în **Configurație ▸ Copiere/Ștergere**: păstrarea datelor, permisiunilor și altor atribute (activată în mod implicit) și o limită de viteză care împiedică o copiere mare să satureze discul sau conexiunea de rețea. Pentru sarcinile din coadă, consultați Transferuri în fundal.
 
 ## Progres
 
-O fereastră de progres afișează fișierul curent și sarcina generală cu bare separate, plus viteza de transfer. Puteți întrerupe și relua oricând sau puteți trimite copierea în curs către managerul de transferuri în fundal pentru a continua să lucrați până se finalizează.
+O fereastră de progres afișează două bare — fișierul care se copiază și întreaga sarcină — cu numărul de fișiere și de octeți, viteza de transfer și timpul rămas. Puteți întrerupe și relua oricând. Meniul de viteză de lângă butoane limitează imediat această copiere (1, 5 sau 20 MB/s ori viteză maximă) fără a modifica limita din Configurație; **Implicit** revine la acea limită. Pentru a continua să lucrați în timp ce rulează o copiere, porniți-o cu **Execută în fundal**.
 
 ![Dialogul de progres al transferului cu o bară de progres, contoare de fișiere și octeți și butoanele Pauză și Anulare](screenshots/progress-dialog.png)
 *(Figura: Dialogul de progres afișat în timpul unei copieri sau mutări.)*

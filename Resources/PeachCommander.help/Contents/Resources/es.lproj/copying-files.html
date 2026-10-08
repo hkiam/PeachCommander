@@ -27,13 +27,13 @@
 <p>Antes de confirmar, puede cambiar el comportamiento de la copia:</p>
 <ul>
 <li><strong>Solo archivos más recientes</strong>: omite cualquier elemento cuya copia ya exista y tenga la misma antigüedad o sea más reciente, de modo que solo se actualicen los archivos modificados.</li>
-<li><strong>Conservar metadatos</strong>: mantiene las fechas, los permisos y otros atributos de archivo en las copias. Esta opción está activada de forma predeterminada.</li>
-<li><strong>Límite de velocidad</strong>: limita la tasa de transferencia para que una copia grande no sature el disco o la conexión de red.</li>
+<li><strong>Ejecutar en segundo plano</strong>: entrega la copia al gestor de transferencias en segundo plano en lugar de mostrar la ventana de progreso.</li>
+<li><strong>Poner en cola para más tarde</strong>: añade la copia a la cola en segundo plano sin iniciarla todavía.</li>
 <li><strong>Máscara de renombrado</strong>: escriba un patrón con comodines en el campo de destino (por ejemplo, <code>*.bak</code>) para renombrar los elementos a medida que se copian.</li>
 </ul>
-<p>También puede enviar la tarea a la cola en segundo plano en lugar de supervisarla; consulte Transferencias en segundo plano.</p>
+<p>Dos ajustes se aplican a todas las copias y se encuentran en <strong>Configuración ▸ Copiar/Eliminar</strong>: conservar las fechas, los permisos y otros atributos (activado de forma predeterminada) y un límite de velocidad que evita que una copia grande sature el disco o la conexión de red. Para las tareas en cola, consulte Transferencias en segundo plano.</p>
 <h2 id="progreso">Progreso</h2>
-<p>Una ventana de progreso muestra el archivo actual y la tarea global con barras independientes, además de la velocidad de transferencia. Puede pausar y reanudar en cualquier momento, o enviar la copia en curso al gestor de transferencias en segundo plano para seguir trabajando mientras finaliza.</p>
+<p>Una ventana de progreso muestra dos barras, una para el archivo que se está copiando y otra para toda la tarea, con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; <strong>Predeterminado</strong> vuelve a ese límite. Para seguir trabajando mientras se ejecuta una copia, iníciela con <strong>Ejecutar en segundo plano</strong>.</p>
 <p><img alt="El cuadro de diálogo de progreso de la transferencia con una barra de progreso, recuentos de archivos y bytes, y botones de Pausar y Cancelar" src="images/progress-dialog.png" />
 <em>(Figura: El cuadro de diálogo de progreso mostrado durante una copia o un movimiento.)</em></p>
 <h2 id="gestionar-archivos-que-ya-existen">Gestionar archivos que ya existen</h2>

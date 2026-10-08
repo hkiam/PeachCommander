@@ -25,15 +25,15 @@ Peach Commander est conçu autour de deux panneaux côte à côte : l'un contien
 Avant de confirmer, vous pouvez modifier le comportement de la copie :
 
 - **Fichiers plus récents uniquement** — ignore tout élément dont la copie existe déjà et est du même âge ou plus récente, de sorte que seuls les fichiers modifiés sont mis à jour.
-- **Préserver les métadonnées** — conserve les dates, les autorisations et les autres attributs de fichier sur les copies. Activé par défaut.
-- **Limite de vitesse** — plafonne le débit de transfert afin qu'une copie volumineuse ne sature pas votre disque ou votre connexion réseau.
+- **Exécuter en arrière-plan** — confie la copie au gestionnaire de transferts en arrière-plan au lieu d'afficher la fenêtre de progression.
+- **Mettre en file d’attente** — ajoute la copie à la file d'attente en arrière-plan sans la démarrer tout de suite.
 - **Masque de renommage** — saisissez un motif à caractères génériques dans le champ cible (par exemple `*.bak`) pour renommer les éléments au moment de la copie.
 
-Vous pouvez aussi envoyer la tâche dans la file d'attente en arrière-plan au lieu de la surveiller — voir Transferts en arrière-plan.
+Deux réglages s'appliquent à chaque copie et se trouvent dans **Configuration ▸ Copier/Supprimer** : la préservation des dates, des autorisations et des autres attributs (activée par défaut) et une limite de vitesse qui évite qu'une copie volumineuse sature votre disque ou votre connexion réseau. Pour les tâches en file d'attente, voir Transferts en arrière-plan.
 
 ## Progression
 
-Une fenêtre de progression affiche le fichier en cours et l'ensemble de la tâche avec des barres distinctes, ainsi que la vitesse de transfert. Vous pouvez mettre en pause et reprendre à tout moment, ou envoyer la copie en cours vers le gestionnaire de transferts en arrière-plan pour continuer à travailler pendant qu'elle se termine.
+Une fenêtre de progression affiche deux barres — le fichier en cours de copie et l'ensemble de la tâche — avec le nombre de fichiers et d'octets, la vitesse de transfert et le temps restant. Vous pouvez mettre en pause et reprendre à tout moment. Le menu de vitesse à côté des boutons limite immédiatement cette copie (1, 5 ou 20 MB/s, ou vitesse maximale) sans modifier la limite définie dans Configuration ; **Par défaut** revient à cette limite. Pour continuer à travailler pendant une copie, lancez-la avec **Exécuter en arrière-plan**.
 
 ![La boîte de dialogue de progression du transfert avec une barre de progression, le décompte des fichiers et des octets, et des boutons Pause et Annuler](screenshots/progress-dialog.png)
 *(Figure : la boîte de dialogue de progression affichée pendant une copie ou un déplacement.)*

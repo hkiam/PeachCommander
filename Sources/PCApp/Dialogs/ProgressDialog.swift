@@ -19,10 +19,17 @@ final class ProgressDialog: NSWindowController {
     private var isPaused = false
 
     private let currentItemLabel = NSTextField(labelWithString: "")
+    /// The current file (SPEC-004 §4). Hidden until a file with bytes to copy arrives — a delete has
+    /// none — and then left in place, so the window does not change height from one file to the next.
+    private let fileProgressIndicator = NSProgressIndicator()
     private let totalProgressIndicator = NSProgressIndicator()
     private let filesLabel = NSTextField(labelWithString: "")
     private let bytesLabel = NSTextField(labelWithString: "")
     private let speedLabel = NSTextField(labelWithString: "")
+    /// The same choices as a job in the transfer manager: throttle the copy that is in the way now,
+    /// without having had to start it in the background. Shown with the file bar — only an operation
+    /// that copies bytes has anything to throttle.
+    private let speedPopup = TransferManagerWindowController.makeSpeedPopup(selecting: nil)
     private let pauseButton = NSButton()
     private let cancelButton = NSButton()
 
@@ -59,6 +66,18 @@ final class ProgressDialog: NSWindowController {
     /// Updates the labels and progress bar from a live `OpProgress` snapshot.
     func update(_ progress: OpProgress) {
         currentItemLabel.stringValue = progress.currentItem
+
+        if let fileFraction = progress.currentFileFraction {
+            fileProgressIndicator.isHidden = false
+            speedPopup.isHidden = false
+            if progress.isWaitingForSource {
+                fileProgressIndicator.isIndeterminate = true
+                fileProgressIndicator.startAnimation(nil)
+            } else {
+                fileProgressIndicator.isIndeterminate = false
+                fileProgressIndicator.doubleValue = fileFraction
+            }
+        }
 
         // While the totals are still being counted they only grow, and a fraction of them would run
         // backwards; the bar waits for the count to finish. While a source is still being delivered no
@@ -103,6 +122,7 @@ final class ProgressDialog: NSWindowController {
     /// Closes the window.
     func finish() {
         totalProgressIndicator.stopAnimation(nil)
+        fileProgressIndicator.stopAnimation(nil)
         if let window, let parent = window.parent {
             parent.removeChildWindow(window)
         }
@@ -121,13 +141,21 @@ final class ProgressDialog: NSWindowController {
         currentItemLabel.maximumNumberOfLines = 1
         content.addSubview(currentItemLabel)
 
-        totalProgressIndicator.translatesAutoresizingMaskIntoConstraints = false
-        totalProgressIndicator.style = .bar
-        totalProgressIndicator.isIndeterminate = false
-        totalProgressIndicator.minValue = 0
-        totalProgressIndicator.maxValue = 1
-        totalProgressIndicator.doubleValue = 0
-        content.addSubview(totalProgressIndicator)
+        for bar in [fileProgressIndicator, totalProgressIndicator] {
+            bar.style = .bar
+            bar.isIndeterminate = false
+            bar.minValue = 0
+            bar.maxValue = 1
+            bar.doubleValue = 0
+        }
+        fileProgressIndicator.isHidden = true
+        // A stack, so the hidden file bar takes no room; it detaches hidden views by default.
+        let bars = NSStackView(views: [fileProgressIndicator, totalProgressIndicator])
+        bars.translatesAutoresizingMaskIntoConstraints = false
+        bars.orientation = .vertical
+        bars.alignment = .width
+        bars.spacing = 8
+        content.addSubview(bars)
 
         filesLabel.translatesAutoresizingMaskIntoConstraints = false
         filesLabel.font = Fonts.monospacedDigit13
@@ -158,6 +186,10 @@ final class ProgressDialog: NSWindowController {
         cancelButton.action = #selector(cancelAction)
         cancelButton.target = self
 
+        speedPopup.isHidden = true
+        speedPopup.target = self
+        speedPopup.action = #selector(speedChanged)
+        buttons.addView(speedPopup, in: .leading)
         buttons.addView(pauseButton, in: .trailing)
         buttons.addView(cancelButton, in: .trailing)
         content.addSubview(buttons)
@@ -167,11 +199,11 @@ final class ProgressDialog: NSWindowController {
             currentItemLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
             currentItemLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
 
-            totalProgressIndicator.topAnchor.constraint(equalTo: currentItemLabel.bottomAnchor, constant: 12),
-            totalProgressIndicator.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
-            totalProgressIndicator.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
+            bars.topAnchor.constraint(equalTo: currentItemLabel.bottomAnchor, constant: 12),
+            bars.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
+            bars.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
 
-            filesLabel.topAnchor.constraint(equalTo: totalProgressIndicator.bottomAnchor, constant: 10),
+            filesLabel.topAnchor.constraint(equalTo: bars.bottomAnchor, constant: 10),
             filesLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
 
             bytesLabel.topAnchor.constraint(equalTo: filesLabel.bottomAnchor, constant: 6),
@@ -182,6 +214,7 @@ final class ProgressDialog: NSWindowController {
             speedLabel.leadingAnchor.constraint(greaterThanOrEqualTo: bytesLabel.trailingAnchor, constant: 10),
 
             buttons.topAnchor.constraint(equalTo: bytesLabel.bottomAnchor, constant: 16),
+            buttons.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
             buttons.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             buttons.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
         ])
@@ -196,6 +229,12 @@ final class ProgressDialog: NSWindowController {
         } else {
             Task { await control.resume() }
         }
+    }
+
+    @objc private func speedChanged() {
+        let choice = TransferManagerWindowController.speedChoices[max(0, speedPopup.indexOfSelectedItem)]
+        let control = self.control
+        Task { await control.setSpeedLimit(choice.bytesPerSecond) }
     }
 
     @objc private func cancelAction() {

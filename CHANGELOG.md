@@ -17,6 +17,12 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Added
 
+- **Two bars in the copy window, and its own speed menu (#5).** The progress window of a copy or move
+  now shows the file being copied above the whole job, as the help page had always described — over a
+  few large files the total barely moves, and the file bar shows the copy is getting somewhere. The
+  speed menu from the background transfer manager is there too, so a copy that is in the way can be
+  slowed down without having been started in the background. The help page now also says where the
+  speed limit and the metadata option really are: in Configuration ▸ Copy/Delete, not in the dialog.
 - **Change commit messages afterwards — one, several, or by find and replace.** **Edit message…** and
   **Edit messages…** in the Git panel's history, and **Find and replace in messages…** (also **Edit
   Commit Messages…** in the Git menu) for the current branch, the commits not pushed yet or all branches

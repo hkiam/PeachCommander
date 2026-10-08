@@ -25,15 +25,15 @@ A Peach Commander két, egymás mellett elhelyezett panelre épül: az egyik tar
 A megerősítés előtt módosíthatja a másolás viselkedését:
 
 - **Csak újabb fájlok** – kihagy minden olyan elemet, amelynek a másolata már létezik és ugyanolyan korú vagy újabb, így csak a megváltozott fájlok frissülnek.
-- **Metaadatok megőrzése** – megtartja a dátumokat, jogosultságokat és egyéb fájlattribútumokat a másolatokon. Ez alapértelmezés szerint be van kapcsolva.
-- **Sebességkorlát** – korlátozza az átviteli sebességet, hogy egy nagy másolás ne terhelje túl a lemezt vagy a hálózati kapcsolatot.
+- **Futtatás a háttérben** – a másolást a háttérben futó átvitelek kezelőjének adja át a folyamatablak megjelenítése helyett.
+- **Sorba állítás későbbre** – a másolást a háttérsorba teszi anélkül, hogy már elindítaná.
 - **Átnevezési maszk** – írjon egy helyettesítő karakteres mintát a célmezőbe (például `*.bak`), hogy az elemeket másolás közben átnevezze.
 
-A feladatot a háttérsorba is elküldheti, ahelyett hogy figyelné – lásd a **Háttérben futó átvitelek** témát.
+Két beállítás minden másolásra érvényes, és a **Konfiguráció ▸ Másolás/törlés** alatt található: a dátumok, jogosultságok és egyéb attribútumok megőrzése (alapértelmezés szerint be van kapcsolva), valamint egy sebességkorlát, amely megakadályozza, hogy egy nagy másolás túlterhelje a lemezt vagy a hálózati kapcsolatot. A sorban lévő feladatokról lásd a **Háttérben futó átvitelek** témát.
 
 ## Folyamat
 
-Egy folyamatablak külön sávokon mutatja az aktuális fájlt és a teljes feladatot, valamint az átviteli sebességet. Bármikor szüneteltetheti és folytathatja, vagy a futó másolást elküldheti a háttérben futó átvitelek kezelőjének, hogy tovább dolgozhasson, amíg a művelet befejeződik.
+Egy folyamatablak két sávot mutat – a másolás alatt álló fájlt és a teljes feladatot – a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az **Alapértelmezett** visszaáll erre a korlátra. Ha dolgozni szeretne, amíg egy másolás fut, indítsa a **Futtatás a háttérben** lehetőséggel.
 
 ![Az átviteli folyamat párbeszédpanele folyamatjelző sávval, fájl- és bájtszámlálóval, valamint Szüneteltetés és Megszakítás gombokkal](screenshots/progress-dialog.png)
 *(Ábra: A folyamatot jelző párbeszédpanel másolás vagy áthelyezés közben.)*

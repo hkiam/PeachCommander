@@ -210,8 +210,8 @@ final class TransferManagerWindowController: NSWindowController {
 
     /// Throughput choices for one running job. A popup rather than a field: this is a nudge — "get
     /// out of the way of something else" — not a number anybody wants to type while watching a
-    /// progress bar.
-    private static let speedChoices: [(title: String, bytesPerSecond: Int64?)] = [
+    /// progress bar. The foreground progress dialog offers the same choices.
+    static let speedChoices: [(title: String, bytesPerSecond: Int64?)] = [
         (String(localized: "Full speed"), 0),
         ("1 MB/s", 1024 * 1024),
         ("5 MB/s", 5 * 1024 * 1024),
@@ -219,18 +219,23 @@ final class TransferManagerWindowController: NSWindowController {
         (String(localized: "Default"), nil),
     ]
 
-    private func speedControl(_ job: TransferManager.Job) -> NSView {
+    /// A popup of `speedChoices` with `limit` selected; an unknown limit shows as Default.
+    static func makeSpeedPopup(selecting limit: Int64?) -> NSPopUpButton {
         let popup = NSPopUpButton()
         popup.controlSize = .small
         popup.font = Fonts.system13
-        for choice in Self.speedChoices { popup.addItem(withTitle: choice.title) }
-        let index = Self.speedChoices.firstIndex { $0.bytesPerSecond == job.speedLimit }
-            ?? Self.speedChoices.count - 1
+        for choice in speedChoices { popup.addItem(withTitle: choice.title) }
+        let index = speedChoices.firstIndex { $0.bytesPerSecond == limit } ?? speedChoices.count - 1
         popup.selectItem(at: index)
+        popup.toolTip = String(localized: "Limit this transfer's speed. Takes effect immediately and leaves the other transfers alone.")
+        return popup
+    }
+
+    private func speedControl(_ job: TransferManager.Job) -> NSView {
+        let popup = Self.makeSpeedPopup(selecting: job.speedLimit)
         popup.target = self
         popup.action = #selector(speedChanged(_:))
         popup.identifier = NSUserInterfaceItemIdentifier(job.id.uuidString)
-        popup.toolTip = String(localized: "Limit this transfer's speed. Takes effect immediately and leaves the other transfers alone.")
         return popup
     }
 

@@ -25,15 +25,15 @@ Peach Commander är uppbyggt kring två paneler sida vid sida: den ena innehåll
 Innan du bekräftar kan du ändra hur kopieringen beter sig:
 
 - **Endast nyare filer** – hoppar över objekt vars kopia redan finns och är lika gammal eller nyare, så att endast ändrade filer uppdateras.
-- **Bevara metadata** – behåller datum, behörigheter och andra filattribut på kopiorna. Detta är påslaget som standard.
-- **Hastighetsgräns** – begränsar överföringshastigheten så att en stor kopiering inte mättar din disk eller nätverksanslutning.
+- **Kör i bakgrunden** – lämnar över kopieringen till hanteraren för bakgrundsöverföringar istället för att visa förloppsfönstret.
+- **Köa för senare** – lägger kopieringen i bakgrundskön utan att starta den ännu.
 - **Namnbytesmask** – skriv ett jokermönster i målfältet (till exempel `*.bak`) för att byta namn på objekten allteftersom de kopieras.
 
-Du kan också skicka jobbet till bakgrundskön istället för att titta på det – se Bakgrundsöverföringar.
+Två inställningar gäller för all kopiering och finns under **Konfiguration ▸ Kopiera/radera**: bevarande av datum, behörigheter och andra attribut (påslaget som standard) och en hastighetsgräns som hindrar en stor kopiering från att mätta din disk eller nätverksanslutning. För jobb i kön, se Bakgrundsöverföringar.
 
 ## Förlopp
 
-Ett förloppsfönster visar den aktuella filen och det övergripande jobbet med separata staplar, plus överföringshastigheten. Du kan pausa och återuppta när som helst, eller skicka den pågående kopieringen till hanteraren för bakgrundsöverföringar för att fortsätta arbeta medan den slutförs.
+Ett förloppsfönster visar två staplar – filen som kopieras och hela jobbet – med antal filer och byte, överföringshastigheten och återstående tid. Du kan pausa och återuppta när som helst. Hastighetsmenyn bredvid knapparna begränsar den här kopieringen direkt (1, 5 eller 20 MB/s, eller full hastighet) utan att ändra gränsen i Konfiguration; **Standard** går tillbaka till den gränsen. Om du vill fortsätta arbeta medan en kopiering pågår startar du den med **Kör i bakgrunden**.
 
 ![Förloppsdialogen för överföring med en förloppsstapel, fil- och byteantal samt knapparna Pausa och Avbryt](screenshots/progress-dialog.png)
 *(Figur: Förloppsdialogen som visas under en kopiering eller flytt.)*

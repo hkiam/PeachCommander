@@ -27,13 +27,13 @@
 <p>Než potvrdíte, můžete změnit chování kopírování:</p>
 <ul>
 <li><strong>Pouze novější soubory</strong> — přeskočí každou položku, jejíž kopie již existuje a je stejně stará nebo novější, takže se aktualizují jen změněné soubory.</li>
-<li><strong>Zachovat metadata</strong> — u kopií zachová data, oprávnění a další atributy souborů. Toto je ve výchozím nastavení zapnuto.</li>
-<li><strong>Omezení rychlosti</strong> — omezí přenosovou rychlost, aby rozsáhlé kopírování nezahltilo váš disk nebo síťové připojení.</li>
+<li><strong>Spustit na pozadí</strong> — předá kopírování správci přenosů na pozadí místo zobrazení okna průběhu.</li>
+<li><strong>Zařadit do fronty na později</strong> — přidá kopírování do fronty na pozadí, aniž by je hned spustilo.</li>
 <li><strong>Maska přejmenování</strong> — do cílového pole zadejte zástupný vzor (například <code>*.bak</code>) k přejmenování položek při kopírování.</li>
 </ul>
-<p>Úlohu můžete také namísto sledování odeslat do fronty na pozadí — viz Přenosy na pozadí.</p>
+<p>Dvě nastavení platí pro každé kopírování a najdete je v <strong>Konfigurace ▸ Kopírovat/odstranit</strong>: zachování dat, oprávnění a dalších atributů (ve výchozím nastavení zapnuto) a omezení rychlosti, aby rozsáhlé kopírování nezahltilo váš disk nebo síťové připojení. K úlohám ve frontě viz Přenosy na pozadí.</p>
 <h2 id="prubeh">Průběh</h2>
-<p>Okno průběhu zobrazuje aktuální soubor a celkovou úlohu se samostatnými ukazateli, plus přenosovou rychlost. Kdykoli můžete pozastavit a obnovit nebo probíhající kopírování odeslat do správce přenosů na pozadí, abyste mohli během jeho dokončování dále pracovat.</p>
+<p>Okno průběhu zobrazuje dva ukazatele — kopírovaný soubor a celou úlohu — s počty souborů a bajtů, přenosovou rychlostí a zbývajícím časem. Kdykoli můžete kopírování pozastavit a pokračovat v něm. Nabídka rychlosti vedle tlačítek toto kopírování okamžitě omezí (1, 5 nebo 20 MB/s, nebo plná rychlost), aniž by se změnil limit v Konfiguraci; <strong>Výchozí</strong> se vrátí k tomuto limitu. Chcete-li během kopírování dále pracovat, spusťte je pomocí <strong>Spustit na pozadí</strong>.</p>
 <p><img alt="Dialog průběhu přenosu s ukazatelem průběhu, počty souborů a bajtů a tlačítky Pozastavit a Zrušit" src="images/progress-dialog.png" />
 <em>(Obrázek: Dialog průběhu zobrazený během kopírování nebo přesunu.)</em></p>
 <h2 id="reseni-souboru-ktere-jiz-existuji">Řešení souborů, které již existují</h2>

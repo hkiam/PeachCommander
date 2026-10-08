@@ -25,15 +25,15 @@ Peach Commander jest zbudowany wokół dwóch paneli obok siebie: jeden zawiera 
 Przed potwierdzeniem możesz zmienić sposób działania kopiowania:
 
 - **Tylko nowsze pliki** — pomija każdy element, którego kopia już istnieje i jest w tym samym wieku lub nowsza, więc aktualizowane są tylko zmienione pliki.
-- **Zachowaj metadane** — zachowuje na kopiach daty, uprawnienia i inne atrybuty plików. Ta opcja jest domyślnie włączona.
-- **Ograniczenie prędkości** — ogranicza szybkość transferu, aby duże kopiowanie nie wysyciło dysku ani połączenia sieciowego.
+- **Uruchom w tle** — przekazuje kopiowanie do menedżera transferów w tle zamiast wyświetlać okno postępu.
+- **Dodaj do kolejki na później** — dodaje kopiowanie do kolejki w tle, jeszcze go nie uruchamiając.
 - **Maska zmiany nazwy** — wpisz wzorzec wieloznaczny w polu docelowym (na przykład `*.bak`), aby zmieniać nazwy elementów podczas kopiowania.
 
-Możesz też wysłać zadanie do kolejki w tle zamiast je obserwować — zobacz Transfery w tle.
+Dwa ustawienia dotyczą każdego kopiowania i znajdują się w **Konfiguracja ▸ Kopiuj/Usuń**: zachowywanie dat, uprawnień i innych atrybutów (domyślnie włączone) oraz ograniczenie prędkości, dzięki któremu duże kopiowanie nie wysyci dysku ani połączenia sieciowego. Zadania w kolejce — zobacz Transfery w tle.
 
 ## Postęp
 
-Okno postępu pokazuje bieżący plik oraz całe zadanie z osobnymi paskami, a także prędkość transferu. Możesz wstrzymywać i wznawiać w dowolnej chwili lub wysłać trwające kopiowanie do menedżera transferów w tle, aby pracować dalej, gdy się kończy.
+Okno postępu pokazuje dwa paski — kopiowany plik i całe zadanie — wraz z liczbą plików i bajtów, prędkością transferu i pozostałym czasem. Możesz wstrzymywać i wznawiać w dowolnej chwili. Menu prędkości obok przycisków od razu ogranicza to kopiowanie (1, 5 lub 20 MB/s albo pełna prędkość) bez zmiany limitu w Konfiguracji; **Domyślnie** przywraca ten limit. Aby pracować dalej podczas kopiowania, uruchom je za pomocą **Uruchom w tle**.
 
 ![Okno dialogowe postępu transferu z paskiem postępu, licznikami plików i bajtów oraz przyciskami Wstrzymaj i Anuluj](screenshots/progress-dialog.png)
 *(Rysunek: Okno dialogowe postępu wyświetlane podczas kopiowania lub przenoszenia.)*

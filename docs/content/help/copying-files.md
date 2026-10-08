@@ -26,15 +26,15 @@ Peach Commander is built around two side-by-side panels: one holds the files you
 Before you confirm, you can change how the copy behaves:
 
 - **Only newer files** — skips any item whose copy already exists and is the same age or newer, so only changed files are updated.
-- **Preserve metadata** — keeps dates, permissions, and other file attributes on the copies. This is on by default.
-- **Speed limit** — caps the transfer rate so a large copy does not saturate your disk or network connection.
+- **Run in background** — hands the copy to the background transfer manager instead of showing the progress window.
+- **Queue for later** — adds the copy to the background queue without starting it yet.
 - **Rename mask** — type a wildcard pattern in the target field (for example `*.bak`) to rename items as they are copied.
 
-You can also send the job to the background queue instead of watching it — see Background transfers.
+Two settings apply to every copy and live in **Configuration ▸ Copy/Delete**: preserving dates, permissions, and other attributes (on by default), and a speed limit that keeps a large copy from saturating your disk or network connection. For jobs in the queue, see Background transfers.
 
 ## Progress
 
-A progress window shows the current file and the overall job with separate bars, plus the transfer speed. You can pause and resume at any time, or send the running copy to the background transfer manager to keep working while it finishes.
+A progress window shows two bars — the file being copied and the whole job — with file and byte counts, the transfer speed, and the time left. You can pause and resume at any time. The speed menu next to the buttons limits this copy straight away (1, 5 or 20 MB/s, or full speed) without changing the limit in Configuration; **Default** goes back to that limit. To keep working while a copy runs, start it with **Run in background**.
 
 ![The transfer progress dialog with a progress bar, file and byte counts, and Pause and Cancel buttons](screenshots/progress-dialog.png)
 *(Figure: The progress dialog shown during a copy or move.)*

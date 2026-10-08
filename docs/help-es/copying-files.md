@@ -25,15 +25,15 @@ Peach Commander se organiza en torno a dos paneles contiguos: uno contiene los a
 Antes de confirmar, puede cambiar el comportamiento de la copia:
 
 - **Solo archivos más recientes**: omite cualquier elemento cuya copia ya exista y tenga la misma antigüedad o sea más reciente, de modo que solo se actualicen los archivos modificados.
-- **Conservar metadatos**: mantiene las fechas, los permisos y otros atributos de archivo en las copias. Esta opción está activada de forma predeterminada.
-- **Límite de velocidad**: limita la tasa de transferencia para que una copia grande no sature el disco o la conexión de red.
+- **Ejecutar en segundo plano**: entrega la copia al gestor de transferencias en segundo plano en lugar de mostrar la ventana de progreso.
+- **Poner en cola para más tarde**: añade la copia a la cola en segundo plano sin iniciarla todavía.
 - **Máscara de renombrado**: escriba un patrón con comodines en el campo de destino (por ejemplo, `*.bak`) para renombrar los elementos a medida que se copian.
 
-También puede enviar la tarea a la cola en segundo plano en lugar de supervisarla; consulte Transferencias en segundo plano.
+Dos ajustes se aplican a todas las copias y se encuentran en **Configuración ▸ Copiar/Eliminar**: conservar las fechas, los permisos y otros atributos (activado de forma predeterminada) y un límite de velocidad que evita que una copia grande sature el disco o la conexión de red. Para las tareas en cola, consulte Transferencias en segundo plano.
 
 ## Progreso
 
-Una ventana de progreso muestra el archivo actual y la tarea global con barras independientes, además de la velocidad de transferencia. Puede pausar y reanudar en cualquier momento, o enviar la copia en curso al gestor de transferencias en segundo plano para seguir trabajando mientras finaliza.
+Una ventana de progreso muestra dos barras, una para el archivo que se está copiando y otra para toda la tarea, con el número de archivos y bytes, la velocidad de transferencia y el tiempo restante. Puede pausar y reanudar en cualquier momento. El menú de velocidad junto a los botones limita esta copia de inmediato (1, 5 o 20 MB/s, o velocidad máxima) sin cambiar el límite de Configuración; **Predeterminado** vuelve a ese límite. Para seguir trabajando mientras se ejecuta una copia, iníciela con **Ejecutar en segundo plano**.
 
 ![El cuadro de diálogo de progreso de la transferencia con una barra de progreso, recuentos de archivos y bytes, y botones de Pausar y Cancelar](screenshots/progress-dialog.png)
 *(Figura: El cuadro de diálogo de progreso mostrado durante una copia o un movimiento.)*

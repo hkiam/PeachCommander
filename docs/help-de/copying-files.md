@@ -25,15 +25,15 @@ Peach Commander ist um zwei nebeneinanderliegende Panels herum aufgebaut: eines 
 Bevor Sie bestätigen, können Sie das Verhalten des Kopiervorgangs ändern:
 
 - **Nur neuere Dateien** – überspringt jedes Element, dessen Kopie bereits existiert und gleich alt oder neuer ist, sodass nur geänderte Dateien aktualisiert werden.
-- **Metadaten erhalten** – behält Daten, Berechtigungen und andere Dateiattribute bei den Kopien bei. Standardmäßig aktiviert.
-- **Geschwindigkeitsbegrenzung** – deckelt die Übertragungsrate, damit ein großer Kopiervorgang Ihre Festplatte oder Netzwerkverbindung nicht auslastet.
+- **Im Hintergrund ausführen** – übergibt den Kopiervorgang an den Manager für Hintergrundübertragungen, statt das Fortschrittsfenster anzuzeigen.
+- **Für später einreihen** – fügt den Kopiervorgang der Hintergrundwarteschlange hinzu, ohne ihn schon zu starten.
 - **Umbenennungsmaske** – geben Sie im Zielfeld ein Platzhaltermuster ein (zum Beispiel `*.bak`), um Elemente beim Kopieren umzubenennen.
 
-Sie können den Auftrag auch in die Hintergrundwarteschlange senden, statt ihm zuzusehen – siehe Hintergrundübertragungen.
+Zwei Einstellungen gelten für jeden Kopiervorgang und befinden sich unter **Konfiguration ▸ Kopieren/Löschen**: das Erhalten von Datumsangaben, Berechtigungen und anderen Attributen (standardmäßig aktiviert) und eine Geschwindigkeitsbegrenzung, damit ein großer Kopiervorgang Ihre Festplatte oder Netzwerkverbindung nicht auslastet. Zu Aufträgen in der Warteschlange siehe Hintergrundübertragungen.
 
 ## Fortschritt
 
-Ein Fortschrittsfenster zeigt mit getrennten Balken die aktuelle Datei und den Gesamtauftrag sowie die Übertragungsgeschwindigkeit. Sie können jederzeit pausieren und fortsetzen oder den laufenden Kopiervorgang an den Manager für Hintergrundübertragungen senden, um weiterzuarbeiten, während er zu Ende läuft.
+Ein Fortschrittsfenster zeigt zwei Balken – die gerade kopierte Datei und den Gesamtauftrag – mit Datei- und Byte-Anzahl, der Übertragungsgeschwindigkeit und der Restzeit. Sie können jederzeit anhalten und fortsetzen. Das Geschwindigkeitsmenü neben den Schaltflächen begrenzt diesen Kopiervorgang sofort (1, 5 oder 20 MB/s oder volle Geschwindigkeit), ohne die Begrenzung in der Konfiguration zu ändern; **Standard** kehrt zu dieser Begrenzung zurück. Um weiterzuarbeiten, während ein Kopiervorgang läuft, starten Sie ihn mit **Im Hintergrund ausführen**.
 
 ![Der Übertragungsfortschritt-Dialog mit Fortschrittsbalken, Datei- und Byte-Zählern sowie Pause- und Abbrechen-Schaltflächen](screenshots/progress-dialog.png)
 *(Abbildung: Der Fortschrittsdialog während eines Kopier- oder Verschiebevorgangs.)*

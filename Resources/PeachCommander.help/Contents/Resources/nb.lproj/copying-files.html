@@ -27,13 +27,13 @@
 <p>Før du bekrefter, kan du endre hvordan kopieringen oppfører seg:</p>
 <ul>
 <li><strong>Bare nyere filer</strong> — hopper over ethvert element hvis kopi allerede finnes og er like gammel eller nyere, slik at bare endrede filer oppdateres.</li>
-<li><strong>Bevar metadata</strong> — beholder datoer, tillatelser og andre filattributter på kopiene. Dette er på som standard.</li>
-<li><strong>Hastighetsgrense</strong> — begrenser overføringshastigheten slik at en stor kopiering ikke metter disken eller nettverksforbindelsen din.</li>
+<li><strong>Kjør i bakgrunnen</strong> — overlater kopieringen til bakgrunnsoverføringsbehandleren i stedet for å vise fremdriftsvinduet.</li>
+<li><strong>Legg i kø til senere</strong> — legger kopieringen i bakgrunnskøen uten å starte den ennå.</li>
 <li><strong>Omdøpingsmaske</strong> — skriv et jokertegnmønster i målfeltet (for eksempel <code>*.bak</code>) for å gi elementene nytt navn mens de kopieres.</li>
 </ul>
-<p>Du kan også sende jobben til bakgrunnskøen i stedet for å se på den — se Bakgrunnsoverføringer.</p>
+<p>To innstillinger gjelder for all kopiering og ligger under <strong>Konfigurasjon ▸ Kopier/slett</strong>: bevaring av datoer, tillatelser og andre attributter (på som standard) og en hastighetsgrense som hindrer en stor kopiering i å mette disken eller nettverksforbindelsen din. For jobber i køen, se Bakgrunnsoverføringer.</p>
 <h2 id="fremdrift">Fremdrift</h2>
-<p>Et fremdriftsvindu viser gjeldende fil og hele jobben med separate linjer, pluss overføringshastigheten. Du kan sette på pause og gjenoppta når som helst, eller sende den kjørende kopieringen til bakgrunnsoverføringsbehandleren for å fortsette å arbeide mens den fullføres.</p>
+<p>Et fremdriftsvindu viser to linjer — filen som kopieres og hele jobben — med antall filer og byte, overføringshastigheten og gjenstående tid. Du kan sette på pause og fortsette når som helst. Hastighetsmenyen ved siden av knappene begrenser denne kopieringen med en gang (1, 5 eller 20 MB/s, eller full hastighet) uten å endre grensen i Konfigurasjon; <strong>Standard</strong> går tilbake til den grensen. Vil du fortsette å arbeide mens en kopiering pågår, starter du den med <strong>Kjør i bakgrunnen</strong>.</p>
 <p><img alt="Fremdriftsdialogen for overføring med en fremdriftslinje, fil- og byteantall, og Pause- og Avbryt-knapper" src="images/progress-dialog.png" />
 <em>(Figur: Fremdriftsdialogen som vises under en kopiering eller flytting.)</em></p>
 <h2 id="handtering-av-filer-som-allerede-finnes">Håndtering av filer som allerede finnes</h2>

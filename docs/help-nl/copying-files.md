@@ -25,15 +25,15 @@ Peach Commander is opgebouwd rond twee panelen naast elkaar: het ene bevat de be
 Voordat je bevestigt, kun je wijzigen hoe het kopiëren zich gedraagt:
 
 - **Alleen nieuwere bestanden** — slaat elk item over waarvan de kopie al bestaat en even oud of nieuwer is, zodat alleen gewijzigde bestanden worden bijgewerkt.
-- **Metadata behouden** — behoudt datums, machtigingen en andere bestandsattributen op de kopieën. Dit staat standaard aan.
-- **Snelheidslimiet** — begrenst de overdrachtssnelheid zodat een grote kopieerbewerking je schijf of netwerkverbinding niet verzadigt.
+- **Op achtergrond uitvoeren** — geeft de kopieerbewerking door aan de achtergrondoverdrachtsbeheerder in plaats van het voortgangsvenster te tonen.
+- **In wachtrij voor later** — voegt de kopieerbewerking toe aan de achtergrondwachtrij zonder haar al te starten.
 - **Hernoemmasker** — typ een jokertekenpatroon in het doelveld (bijvoorbeeld `*.bak`) om items te hernoemen terwijl ze worden gekopieerd.
 
-Je kunt de taak ook naar de achtergrondwachtrij sturen in plaats van ernaar te kijken — zie Achtergrondoverdrachten.
+Twee instellingen gelden voor elke kopieerbewerking en staan in **Configuratie ▸ Kopiëren/verwijderen**: het behouden van datums, machtigingen en andere attributen (standaard aan) en een snelheidslimiet die voorkomt dat een grote kopieerbewerking je schijf of netwerkverbinding verzadigt. Voor taken in de wachtrij, zie Overdrachten op de achtergrond.
 
 ## Voortgang
 
-Een voortgangsvenster toont het huidige bestand en de totale taak met afzonderlijke balken, plus de overdrachtssnelheid. Je kunt op elk moment pauzeren en hervatten, of de lopende kopieerbewerking naar de achtergrondoverdrachtsbeheerder sturen om door te werken terwijl deze afrondt.
+Een voortgangsvenster toont twee balken — het bestand dat wordt gekopieerd en de hele taak — met aantallen bestanden en bytes, de overdrachtssnelheid en de resterende tijd. Je kunt op elk moment pauzeren en hervatten. Het snelheidsmenu naast de knoppen begrenst deze kopieerbewerking meteen (1, 5 of 20 MB/s, of volle snelheid) zonder de limiet in Configuratie te wijzigen; **Standaard** gaat terug naar die limiet. Wil je doorwerken terwijl een kopieerbewerking loopt, start die dan met **Op achtergrond uitvoeren**.
 
 ![Het voortgangsvenster voor overdrachten met een voortgangsbalk, bestands- en byte-aantallen, en de knoppen Pauzeer en Annuleer](screenshots/progress-dialog.png)
 *(Afbeelding: Het voortgangsvenster dat tijdens een kopieer- of verplaatsbewerking wordt getoond.)*

@@ -25,15 +25,15 @@ Peach Commander er bygget rundt to paneler side om side: det ene inneholder file
 Før du bekrefter, kan du endre hvordan kopieringen oppfører seg:
 
 - **Bare nyere filer** — hopper over ethvert element hvis kopi allerede finnes og er like gammel eller nyere, slik at bare endrede filer oppdateres.
-- **Bevar metadata** — beholder datoer, tillatelser og andre filattributter på kopiene. Dette er på som standard.
-- **Hastighetsgrense** — begrenser overføringshastigheten slik at en stor kopiering ikke metter disken eller nettverksforbindelsen din.
+- **Kjør i bakgrunnen** — overlater kopieringen til bakgrunnsoverføringsbehandleren i stedet for å vise fremdriftsvinduet.
+- **Legg i kø til senere** — legger kopieringen i bakgrunnskøen uten å starte den ennå.
 - **Omdøpingsmaske** — skriv et jokertegnmønster i målfeltet (for eksempel `*.bak`) for å gi elementene nytt navn mens de kopieres.
 
-Du kan også sende jobben til bakgrunnskøen i stedet for å se på den — se Bakgrunnsoverføringer.
+To innstillinger gjelder for all kopiering og ligger under **Konfigurasjon ▸ Kopier/slett**: bevaring av datoer, tillatelser og andre attributter (på som standard) og en hastighetsgrense som hindrer en stor kopiering i å mette disken eller nettverksforbindelsen din. For jobber i køen, se Bakgrunnsoverføringer.
 
 ## Fremdrift
 
-Et fremdriftsvindu viser gjeldende fil og hele jobben med separate linjer, pluss overføringshastigheten. Du kan sette på pause og gjenoppta når som helst, eller sende den kjørende kopieringen til bakgrunnsoverføringsbehandleren for å fortsette å arbeide mens den fullføres.
+Et fremdriftsvindu viser to linjer — filen som kopieres og hele jobben — med antall filer og byte, overføringshastigheten og gjenstående tid. Du kan sette på pause og fortsette når som helst. Hastighetsmenyen ved siden av knappene begrenser denne kopieringen med en gang (1, 5 eller 20 MB/s, eller full hastighet) uten å endre grensen i Konfigurasjon; **Standard** går tilbake til den grensen. Vil du fortsette å arbeide mens en kopiering pågår, starter du den med **Kjør i bakgrunnen**.
 
 ![Fremdriftsdialogen for overføring med en fremdriftslinje, fil- og byteantall, og Pause- og Avbryt-knapper](screenshots/progress-dialog.png)
 *(Figur: Fremdriftsdialogen som vises under en kopiering eller flytting.)*

@@ -1923,7 +1923,8 @@ extension MainWindowController {
                 dlg.present(over: window)
                 dlg.update(OpProgress(filesTotal: 128, filesDone: 47,
                                       bytesTotal: 2_400_000_000, bytesDone: 900_000_000,
-                                      currentItem: "vacation.mov", bytesPerSecond: 82_000_000))
+                                      currentItem: "vacation.mov", bytesPerSecond: 82_000_000,
+                                      currentFileBytesTotal: 1_200_000_000, currentFileBytesDone: 420_000_000))
             case "help":       NSApplication.shared.showHelp(nil)   // open the Help Book in Help Viewer
             case "automate":   await automateCoreTool(arg)          // drive the Automation Core: automate <tool>|<json>
             case "bardrop":                                // bardrop <path> — as if dropped on free bar space

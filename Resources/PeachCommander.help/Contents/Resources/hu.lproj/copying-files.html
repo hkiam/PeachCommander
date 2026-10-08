@@ -27,13 +27,13 @@
 <p>A megerősítés előtt módosíthatja a másolás viselkedését:</p>
 <ul>
 <li><strong>Csak újabb fájlok</strong> – kihagy minden olyan elemet, amelynek a másolata már létezik és ugyanolyan korú vagy újabb, így csak a megváltozott fájlok frissülnek.</li>
-<li><strong>Metaadatok megőrzése</strong> – megtartja a dátumokat, jogosultságokat és egyéb fájlattribútumokat a másolatokon. Ez alapértelmezés szerint be van kapcsolva.</li>
-<li><strong>Sebességkorlát</strong> – korlátozza az átviteli sebességet, hogy egy nagy másolás ne terhelje túl a lemezt vagy a hálózati kapcsolatot.</li>
+<li><strong>Futtatás a háttérben</strong> – a másolást a háttérben futó átvitelek kezelőjének adja át a folyamatablak megjelenítése helyett.</li>
+<li><strong>Sorba állítás későbbre</strong> – a másolást a háttérsorba teszi anélkül, hogy már elindítaná.</li>
 <li><strong>Átnevezési maszk</strong> – írjon egy helyettesítő karakteres mintát a célmezőbe (például <code>*.bak</code>), hogy az elemeket másolás közben átnevezze.</li>
 </ul>
-<p>A feladatot a háttérsorba is elküldheti, ahelyett hogy figyelné – lásd a <strong>Háttérben futó átvitelek</strong> témát.</p>
+<p>Két beállítás minden másolásra érvényes, és a <strong>Konfiguráció ▸ Másolás/törlés</strong> alatt található: a dátumok, jogosultságok és egyéb attribútumok megőrzése (alapértelmezés szerint be van kapcsolva), valamint egy sebességkorlát, amely megakadályozza, hogy egy nagy másolás túlterhelje a lemezt vagy a hálózati kapcsolatot. A sorban lévő feladatokról lásd a <strong>Háttérben futó átvitelek</strong> témát.</p>
 <h2 id="folyamat">Folyamat</h2>
-<p>Egy folyamatablak külön sávokon mutatja az aktuális fájlt és a teljes feladatot, valamint az átviteli sebességet. Bármikor szüneteltetheti és folytathatja, vagy a futó másolást elküldheti a háttérben futó átvitelek kezelőjének, hogy tovább dolgozhasson, amíg a művelet befejeződik.</p>
+<p>Egy folyamatablak két sávot mutat – a másolás alatt álló fájlt és a teljes feladatot – a fájlok és bájtok számával, az átviteli sebességgel és a hátralévő idővel. Bármikor szüneteltetheti és folytathatja. A gombok melletti sebességmenü azonnal korlátozza ezt a másolást (1, 5 vagy 20 MB/s, vagy teljes sebesség) anélkül, hogy a Konfigurációban beállított korlátot módosítaná; az <strong>Alapértelmezett</strong> visszaáll erre a korlátra. Ha dolgozni szeretne, amíg egy másolás fut, indítsa a <strong>Futtatás a háttérben</strong> lehetőséggel.</p>
 <p><img alt="Az átviteli folyamat párbeszédpanele folyamatjelző sávval, fájl- és bájtszámlálóval, valamint Szüneteltetés és Megszakítás gombokkal" src="images/progress-dialog.png" />
 <em>(Ábra: A folyamatot jelző párbeszédpanel másolás vagy áthelyezés közben.)</em></p>
 <h2 id="mar-letezo-fajlok-kezelese">Már létező fájlok kezelése</h2>
