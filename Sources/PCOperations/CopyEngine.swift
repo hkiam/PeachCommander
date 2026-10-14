@@ -49,7 +49,6 @@ public final class CopyEngine {
         let counting = Task.detached(priority: .utility) { Self.countTotals(items, followSymlinks: follow, into: tally) }
         defer { counting.cancel() }
         self.tally = tally
-        self.topItems = items
         report()
 
         for src in items {
@@ -85,6 +84,7 @@ public final class CopyEngine {
         await counting.value
         // Everything that was copied had arrived; a delivery too quick to be measured counts too.
         state.bytesReceived = state.bytesToReceive
+        state.filesReceived = state.filesToReceive
         report()
         return processed
     }
@@ -97,23 +97,33 @@ public final class CopyEngine {
         private var files = 0
         private var bytes: Int64 = 0
         private var unreceived: Int64 = 0
+        private var lacking: [DeliveryMeter.Placeholder] = []
         private var finished = false
 
         /// `unreceived` is what the files lack on disk — size beyond the allocated bytes. Only a
-        /// coordinated copy uses it: it is what another app still has to deliver.
-        func add(files: Int, bytes: Int64, unreceived: Int64 = 0) {
-            lock.lock(); self.files += files; self.bytes += bytes; self.unreceived += unreceived; lock.unlock()
+        /// coordinated copy uses it: it is what another app still has to deliver. `placeholder` names
+        /// the file that lacks it, so the delivery can be measured file by file.
+        func add(files: Int, bytes: Int64, unreceived: Int64 = 0, placeholder: String? = nil) {
+            lock.lock()
+            self.files += files; self.bytes += bytes; self.unreceived += unreceived
+            if let placeholder, unreceived > 0 {
+                lacking.append(.init(path: placeholder, size: bytes, lacking: unreceived))
+            }
+            lock.unlock()
         }
         func finish() { lock.lock(); finished = true; lock.unlock() }
         var snapshot: (files: Int, bytes: Int64, unreceived: Int64, finished: Bool) {
             lock.lock(); defer { lock.unlock() }
             return (files, bytes, unreceived, finished)
         }
+        /// The files that lacked content when they were counted.
+        var placeholders: [DeliveryMeter.Placeholder] { lock.lock(); defer { lock.unlock() }; return lacking }
     }
 
     private var tally: Tally?
-    /// The items `run` was given — what a wait for a source measures the delivery across.
-    private var topItems: [String] = []
+    /// What a wait for a source measures the delivery with — made at the first wait, once the count has
+    /// named the placeholders, and kept for the whole copy, so each file's figure only ever grows.
+    private var delivery: DeliveryMeter?
 
     /// Count what `items` will copy. Directory by directory through `getattrlistbulk`, so the cost on
     /// a network volume is a round trip per directory rather than two per file; per file only where
@@ -128,7 +138,7 @@ public final class CopyEngine {
             switch kind {
             case .file:
                 let s = size()
-                tally.add(files: 1, bytes: s.size, unreceived: max(0, s.size - s.allocated))
+                tally.add(files: 1, bytes: s.size, unreceived: max(0, s.size - s.allocated), placeholder: path)
             case .symlink:
                 // With `followSymlinks` the copy takes what the link points at, which may be a whole
                 // directory — counted as one file here, the total was short by everything inside it
@@ -358,9 +368,16 @@ public final class CopyEngine {
         // Until the presenter has answered, the bytes on disk may be a placeholder — see
         // `CopyOptions.coordinateSourceReads`. The size is read again for the same reason.
         let readSize = try await coordinateRead(src) ? FSLowLevel.size(of: src) : size
-        try await copyFileData(from: src, to: dst, size: readSize, appendMode: append)
+        let cloned = try await copyFileData(from: src, to: dst, size: readSize, appendMode: append)
         // On append we keep the target's own metadata (merging content, not replacing).
-        if options.preserveMetadata, !append { copyMetadata(from: src, to: dst) }
+        // A clone carries the metadata already — mode, flags, owner, both dates, every extended
+        // attribute — except the ACL (measured: `clonefile` and `cp -c` both drop it). Copying all of
+        // it again was most of the work: 60 % of a copy of 500 000 small files went to
+        // `copyfile(COPYFILE_METADATA)` after the clone, and the copy ran at half the pace of
+        // `cp -c` and `ditto`. After a clone only the ACL is copied, and only when there is one.
+        if options.preserveMetadata, !append {
+            if cloned { DeepPath.copyACL(from: src, to: dst) } else { copyMetadata(from: src, to: dst) }
+        }
         state.filesDone += 1
         report()
         // An append merges content into a file that keeps its identity, so it keeps its own comment; the
@@ -382,7 +399,9 @@ public final class CopyEngine {
 
     // MARK: - Data copy
 
-    private func copyFileData(from src: String, to dst: String, size: Int64, appendMode: Bool = false) async throws {
+    /// True when the file was cloned rather than streamed.
+    @discardableResult
+    private func copyFileData(from src: String, to dst: String, size: Int64, appendMode: Bool = false) async throws -> Bool {
         // Replacing something? Then write beside it and take its place at the end.
         //
         // The old order was: remove the target, then write in its place. A cancel or an error in
@@ -414,7 +433,7 @@ public final class CopyEngine {
                 state.bytesDone += size
                 state.currentFileBytesDone = size
                 report()
-                return
+                return true
             }
             if replacing { _ = DeepPath.unlink(writeTo) }   // a half-made clone is not a copy
             // errno EXDEV / ENOTSUP / EEXIST → fall through to streaming.
@@ -470,6 +489,7 @@ public final class CopyEngine {
         // file that did not land is worse than none, because the verifier would compare the
         // destination against it and call the mismatch a corruption.
         if let hasher, let sink = options.digestSink { sink(src, hasher.finalizeHex()) }
+        return false
     }
 
     // MARK: - Metadata / helpers
@@ -510,13 +530,14 @@ public final class CopyEngine {
         // The wait is where the time goes — the copy after it is a clone — so it is shown as a wait on
         // this item rather than as a bar standing at the last figure.
         state.currentItem = (src as NSString).lastPathComponent
+        let delivery = self.delivery ?? DeliveryMeter(placeholders: tally?.placeholders ?? [])
+        self.delivery = delivery
+        state.filesToReceive = delivery.count
         state.isWaitingForSource = true
         report()
-        let delivery = DeliveryMeter(items: topItems, followSymlinks: options.followSymlinks,
-                                     toReceive: state.bytesToReceive, received: state.bytesReceived)
         let metering = state.bytesToReceive > state.bytesReceived
-            ? Task.detached(priority: .utility) { [state, progress] in
-                await delivery.watch(from: state, report: progress)
+            ? Task.detached(priority: .utility) { [state, progress, startTime] in
+                await delivery.watch(from: state, since: startTime, report: progress)
             }
             : nil
         let error: Error? = await withCheckedContinuation { done in
@@ -526,7 +547,10 @@ public final class CopyEngine {
         metering?.cancel()
         await metering?.value
         if delivery.hasMeasured { delivery.measure() }   // a long wait: take what it ended with
-        state.bytesReceived = delivery.received
+        // A file whose own presenter has answered is there, whatever its last bytes look like.
+        if error == nil { delivery.complete(src) }
+        state.bytesReceived = max(state.bytesReceived, delivery.received)
+        state.filesReceived = max(state.filesReceived, delivery.filesComplete)
         state.isWaitingForSource = false
         report()
         try await control.checkpoint()
@@ -537,48 +561,104 @@ public final class CopyEngine {
 
     /// How much of what the sources lacked has arrived, measured while a coordinated read waits.
     ///
-    /// The Windows App writes the content into its placeholders in place — measured: the allocated
-    /// bytes grew from nothing to the full size over the download, the inode stayed the same — so
-    /// what the sources still lack, size beyond allocated, falls as the content arrives. It is the
-    /// same walk the totals were counted with, so the two figures agree. A writer that `fsync`s its
-    /// placeholder makes APFS allocate all of it at once; the bar then fills early, never backwards.
+    /// The Windows App writes the content into its placeholders in place, from the front, in 256 KB
+    /// pieces — the inode stays the same. While a placeholder is still sparse, its allocated bytes say
+    /// how far it is. They stop saying it partway: measured on a paste of 101 MB, both files jumped to
+    /// fully allocated at 55 % and 75 % of their download (an `fsync`, or writeback, makes APFS allocate
+    /// the whole sparse file), the meter read everything as delivered, and the bar stood at the end of
+    /// the delivery while a quarter of it was still coming. Once a file reads as fully allocated, the
+    /// meter looks at its content instead: where the bytes end and the zeros begin.
     ///
     /// Only after the wait has lasted a moment: a presenter that answers at once — any local source —
     /// costs nothing but the wait. The reports go out from here with the state the wait began with,
     /// so the engine's own state is touched only by the engine.
     final class DeliveryMeter: @unchecked Sendable {
-        private let items: [String], followSymlinks: Bool, toReceive: Int64
+        /// A file that lacked content when it was counted: its size, and how much of it was missing.
+        struct Placeholder: Sendable {
+            let path: String, size: Int64, lacking: Int64
+        }
+
+        private let files: [Placeholder]
         private let lock = NSLock()
-        private var best: Int64
+        /// Per file, what has arrived of what it lacked. Only ever grows.
+        private var arrived: [Int64]
         private var measured = false
 
-        init(items: [String], followSymlinks: Bool, toReceive: Int64, received: Int64) {
-            self.items = items; self.followSymlinks = followSymlinks
-            self.toReceive = toReceive; self.best = received
+        init(placeholders: [Placeholder]) {
+            files = placeholders
+            arrived = Array(repeating: 0, count: placeholders.count)
         }
 
-        var received: Int64 { lock.lock(); defer { lock.unlock() }; return best }
+        var received: Int64 { lock.lock(); defer { lock.unlock() }; return arrived.reduce(0, +) }
+        var count: Int { files.count }
+        /// The files that have arrived whole.
+        var filesComplete: Int {
+            lock.lock(); defer { lock.unlock() }
+            return zip(arrived, files).filter { $0 >= $1.lacking }.count
+        }
         var hasMeasured: Bool { lock.lock(); defer { lock.unlock() }; return measured }
 
-        /// One walk. Never lower than before — a figure that fell back would move the bar backwards —
-        /// and an unfinished walk counts for nothing, because it would read as everything delivered.
+        /// One look at every file that is not complete yet. Never lower than before — a figure that
+        /// fell back would move the bar backwards.
         func measure() {
-            let now = Tally()
-            CopyEngine.countTotals(items, followSymlinks: followSymlinks, into: now)
-            let snapshot = now.snapshot
-            guard snapshot.finished else { return }
-            let arrived = min(toReceive, max(0, toReceive - snapshot.unreceived))
-            lock.lock(); best = max(best, arrived); measured = true; lock.unlock()
+            for (i, file) in files.enumerated() {
+                lock.lock(); let have = arrived[i]; lock.unlock()
+                guard have < file.lacking else { continue }
+                let filled = Self.filled(file.path, size: file.size)
+                let now = min(file.lacking, max(0, filled - (file.size - file.lacking)))
+                lock.lock(); arrived[i] = max(arrived[i], now); lock.unlock()
+            }
+            lock.lock(); measured = true; lock.unlock()
         }
 
-        func watch(from state: OpProgress, report: @Sendable (OpProgress) -> Void) async {
+        /// `path` has been delivered: its presenter answered the read of it.
+        func complete(_ path: String) {
+            guard let i = files.firstIndex(where: { $0.path == path }) else { return }
+            lock.lock(); arrived[i] = files[i].lacking; lock.unlock()
+        }
+
+        /// How far a placeholder that is filled from the front has been filled, in bytes.
+        ///
+        /// Its allocated bytes while it is still sparse — that costs one `lstat`. Fully allocated, it
+        /// may still be mostly zeros, so then the boundary is searched for: a binary search over 64 KB
+        /// steps, reading 512 bytes at each, about ten reads for a file of 64 MB. Content that holds
+        /// 512 zero bytes at such a step can make the search stop short; the figure is then low until
+        /// the file's own read completes it — late, never backwards.
+        static func filled(_ path: String, size: Int64) -> Int64 {
+            let s = FSLowLevel.sizeAndAllocated(of: path)
+            guard s.allocated >= s.size else { return s.allocated }
+            let fd = open(path, O_RDONLY)
+            guard fd >= 0 else { return s.allocated }
+            defer { close(fd) }
+            let step: Int64 = 64 << 10
+            var probe = [UInt8](repeating: 0, count: 512)
+            func hasData(_ index: Int64) -> Bool {
+                let n = probe.withUnsafeMutableBytes { pread(fd, $0.baseAddress, 512, off_t(index * step)) }
+                return n > 0 && probe[0..<n].contains { $0 != 0 }
+            }
+            // `low` holds data (or is -1), `high` does not (or is past the end).
+            var low: Int64 = -1, high = (size + step - 1) / step
+            while high - low > 1 {
+                let mid = (low + high) / 2
+                if hasData(mid) { low = mid } else { high = mid }
+            }
+            return min(size, (low + 1) * step)
+        }
+
+        /// Reports what has arrived every half second. The speed is the delivery's too — bytes received
+        /// since the copy began — because no byte is copied while it runs, and a speed from the bytes
+        /// copied stood at nothing for the whole download.
+        func watch(from state: OpProgress, since start: Date, report: @Sendable (OpProgress) -> Void) async {
             var state = state
             while true {
                 try? await Task.sleep(nanoseconds: 500_000_000)
                 if Task.isCancelled { return }
                 measure()
                 if Task.isCancelled { return }
-                state.bytesReceived = received
+                state.bytesReceived = max(state.bytesReceived, received)
+                state.filesReceived = max(state.filesReceived, filesComplete)
+                let elapsed = Date().timeIntervalSince(start)
+                if elapsed > 0 { state.bytesPerSecond = Double(state.bytesReceived + state.bytesDone) / elapsed }
                 report(state)
             }
         }

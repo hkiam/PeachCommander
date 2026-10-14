@@ -113,19 +113,24 @@ final class ProgressDialog: NSWindowController {
             totalProgressIndicator.startAnimation(nil)
         }
 
-        let filesFormat = String(localized: "%d / %d files")
-        filesLabel.stringValue = String(format: filesFormat, progress.filesDone, progress.filesTotal)
-
-        // While another app delivers a source, what has arrived is the figure that moves.
+        // While another app delivers a source, what has arrived is the figure that moves — in files
+        // as in bytes.
         let receiving = progress.isWaitingForSource && progress.bytesToReceive > 0
+        let filesFormat = String(localized: "%d / %d files")
+        filesLabel.stringValue = receiving
+            ? String(format: filesFormat, progress.filesReceived, progress.filesToReceive)
+            : String(format: filesFormat, progress.filesDone, progress.filesTotal)
+
         let done = ByteSize(receiving ? progress.bytesReceived : progress.bytesDone).formatted(style: .kb)
         let total = ByteSize(receiving ? progress.bytesToReceive : progress.bytesTotal).formatted(style: .kb)
         let bytesFormat = String(localized: "%@ / %@")
         bytesLabel.stringValue = String(format: bytesFormat, done, total)
 
         let speed = ByteSize(Int64(progress.bytesPerSecond)).formatted(style: .kb)
-        if progress.bytesPerSecond > 0, progress.bytesTotal > progress.bytesDone {
-            let eta = Double(progress.bytesTotal - progress.bytesDone) / progress.bytesPerSecond
+        let remaining = receiving ? progress.bytesToReceive - progress.bytesReceived
+                                  : progress.bytesTotal - progress.bytesDone
+        if progress.bytesPerSecond > 0, remaining > 0 {
+            let eta = Double(remaining) / progress.bytesPerSecond
             speedLabel.stringValue = String(format: String(localized: "%@/s · %@ left"), speed, Self.formatETA(eta))
         } else {
             speedLabel.stringValue = String(localized: "\(speed)/s")

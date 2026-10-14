@@ -26,10 +26,15 @@ public struct OpProgress: Sendable, Equatable {
     /// and how much of it has arrived. Zero unless the copy reads its sources coordinated.
     ///
     /// Part of the one fraction rather than a second bar: the delivery is where a paste from a remote
-    /// session spends its time, and the copy after it is a clone. Counted together, the bar fills while
-    /// the content arrives and never runs backwards when the copy begins.
+    /// session spends its time, and the copy after it is a clone. The bar fills while the content
+    /// arrives and never runs backwards when the copy begins.
     public var bytesToReceive: Int64
     public var bytesReceived: Int64
+    /// The same in files: how many of the sources lacked content, and how many of those have arrived.
+    /// The Windows App delivers a whole pasted folder while the copy still waits for the folder, so
+    /// the files copied stood at 0 until the end and then all finished at once.
+    public var filesToReceive = 0
+    public var filesReceived = 0
     /// The file being copied right now, in bytes — the second bar (SPEC-004 §4). Over a few large files
     /// the total barely moves for minutes, and this is what shows the copy is getting anywhere. Zero
     /// when the operation moves no file data (a delete, a trash) or no file has started yet.
@@ -46,11 +51,23 @@ public struct OpProgress: Sendable, Equatable {
     /// wait whose delivery can be measured is not one of those.
     public var isIndeterminate: Bool { isCounting || (isWaitingForSource && bytesToReceive == 0) }
 
-    /// How far the work is, from 0 to 1: bytes received and copied against both totals, or files when
-    /// there are no bytes to go by.
+    /// How far the work is, from 0 to 1: bytes against the total, or files when there are no bytes to
+    /// go by.
+    ///
+    /// A byte that had to be delivered counts once, when it arrives — not a second time when it is
+    /// copied. Counted twice, delivery and copy each had half the bar, and the copy of a delivered file
+    /// is a clone: a paste from a remote session stood at 50 % for the whole download and jumped to the
+    /// end in the last few milliseconds. The bytes copied are weighted by the share that did not need
+    /// delivering, which keeps both terms growing and ends at 1 when both are done. A delivered file
+    /// copied to another volume takes real time after its delivery; that time is not on the bar, and
+    /// it is short against a download through a remote session.
     public var fraction: Double {
-        let total = bytesTotal + bytesToReceive
-        if total > 0 { return min(1, Double(bytesDone + min(bytesReceived, bytesToReceive)) / Double(total)) }
+        if bytesTotal > 0 {
+            let toReceive = min(bytesToReceive, bytesTotal)
+            let local = Double(bytesTotal - toReceive) / Double(bytesTotal)
+            let done = Double(min(bytesReceived, toReceive)) + Double(bytesDone) * local
+            return min(1, done / Double(bytesTotal))
+        }
         if filesTotal > 0 { return min(1, Double(filesDone) / Double(filesTotal)) }
         return 0
     }

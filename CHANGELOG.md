@@ -15,6 +15,22 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A local copy of many small files runs at the pace of `cp -c` and `ditto`, not at half of it.**
+  After cloning a file, the copy copied all of its metadata again, and that was 60 % of the time on a
+  folder of 500 000 files. A clone already carries mode, flags, owner, both dates and every extended
+  attribute, so only the one thing it drops, the ACL, is copied after it now, and only when there is
+  one.
+- **A paste from the Windows App (Remote Desktop) shows the download as it happens.** The bar stood at
+  50 % for much of the download and then jumped to the end. The Windows App allocates a file whole
+  partway through filling it, so the copy took a quarter of the download as already there. It now
+  looks at where the content ends. The copy after the download, which is a clone and takes
+  milliseconds, no longer has half the bar. The file count and the speed follow the download too:
+  they stood at 0 / 3 files and 0 KB/s until the end. Measured on a 100 MB folder: the transfer runs
+  at about 0.5 MB/s, the same as Finder's, because that is the pace of Remote Desktop's clipboard
+  channel. Peach Commander's own part of it takes 5 ms.
+
 ## [0.9.5] — 2026-10-08
 
 A Git client in the Git panel — history, staging by line, a three-way merge editor, pull requests and

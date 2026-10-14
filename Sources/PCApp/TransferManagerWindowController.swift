@@ -198,7 +198,8 @@ final class TransferManagerWindowController: NSWindowController {
             let total = SelectionSummaryFormatter.dynamicSize(receiving ? p.bytesToReceive : p.bytesTotal)
             let speed = p.bytesPerSecond > 0 ? "  ·  \(SelectionSummaryFormatter.dynamicSize(Int64(p.bytesPerSecond)))/s" : ""
             let state = job.status == .paused ? String(localized: "Paused") : ""
-            let files = "\(p.filesDone)/\(max(p.filesTotal, p.filesDone))"
+            let files = receiving ? "\(p.filesReceived)/\(p.filesToReceive)"
+                                  : "\(p.filesDone)/\(max(p.filesTotal, p.filesDone))"
             return "\(files) files  ·  \(done) / \(total)\(speed)   \(state)"
         }
     }

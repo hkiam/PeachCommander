@@ -230,6 +230,28 @@ extension DeepPath {
         return value
     }
 
+    /// Copies the source's ACL onto an existing target, if the source has one.
+    ///
+    /// For a clone, which carries every other piece of metadata but not this one. One call to read
+    /// it, and none to write when there is nothing — most files have no ACL. A deep path goes through
+    /// `copyfile` with `COPYFILE_ACL`, which can reach it by descriptor.
+    @discardableResult
+    public static func copyACL(from source: String, to destination: String) -> Int32 {
+        guard isDeep(source) || isDeep(destination) else {
+            guard let acl = acl_get_link_np(source, ACL_TYPE_EXTENDED) else { return 0 }
+            defer { acl_free(UnsafeMutableRawPointer(acl)) }
+            return acl_set_link_np(destination, ACL_TYPE_EXTENDED, acl)
+        }
+        let from = open(source, O_RDONLY)
+        guard from >= 0 else { return -1 }
+        defer { close(from) }
+        var to = open(destination, O_WRONLY)
+        if to < 0 { to = open(destination, O_RDONLY) }
+        guard to >= 0 else { return -1 }
+        defer { close(to) }
+        return fcopyfile(from, to, nil, copyfile_flags_t(COPYFILE_ACL))
+    }
+
     /// Copies metadata onto an existing target (`COPYFILE_METADATA`).
     ///
     /// There is no `copyfileat`, so the deep case goes through `fcopyfile` between two descriptors.

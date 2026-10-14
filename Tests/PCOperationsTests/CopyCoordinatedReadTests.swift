@@ -38,15 +38,16 @@ private final class FillingPresenter: NSObject, NSFilePresenter {
 }
 
 /// Writes `content` into the placeholder in `chunks`, in place, pausing between them — a download.
-/// No `fsync` between chunks: on APFS that allocates the whole sparse file at once, and the measure
-/// would see everything arrive with the first chunk.
+/// `syncs` calls `fsync` after each chunk, which on APFS allocates the whole sparse file at once: what
+/// the Windows App was measured to do partway through a download.
 private final class TricklingPresenter: NSObject, NSFilePresenter {
     let presentedItemURL: URL?
     let presentedItemOperationQueue = OperationQueue()
-    private let content: Data, chunks: Int, pause: TimeInterval
+    private let content: Data, chunks: Int, pause: TimeInterval, syncs: Bool
 
-    init(file: URL, content: Data, chunks: Int, pause: TimeInterval) {
+    init(file: URL, content: Data, chunks: Int, pause: TimeInterval, syncs: Bool = false) {
         presentedItemURL = file; self.content = content; self.chunks = chunks; self.pause = pause
+        self.syncs = syncs
     }
 
     func relinquishPresentedItem(toReader reader: @escaping ((() -> Void)?) -> Void) {
@@ -55,9 +56,33 @@ private final class TricklingPresenter: NSObject, NSFilePresenter {
         for i in 0..<chunks {
             try? h.seek(toOffset: UInt64(i * step))
             try? h.write(contentsOf: content[(i * step)..<(i == chunks - 1 ? content.count : (i + 1) * step)])
+            if syncs { try? h.synchronize() }
             Thread.sleep(forTimeInterval: pause)
         }
         try? h.close()
+        reader(nil)
+    }
+}
+
+/// Presents a folder and fills the placeholders inside it one after another, pausing after each, before
+/// it answers — the Windows App delivering a pasted folder while the read of the folder waits.
+private final class FolderDeliveryPresenter: NSObject, NSFilePresenter {
+    let presentedItemURL: URL?
+    let presentedItemOperationQueue = OperationQueue()
+    private let files: [URL], content: Data, pause: TimeInterval
+
+    init(folder: URL, files: [URL], content: Data, pause: TimeInterval) {
+        presentedItemURL = folder; self.files = files; self.content = content; self.pause = pause
+    }
+
+    func relinquishPresentedItem(toReader reader: @escaping ((() -> Void)?) -> Void) {
+        for file in files {
+            if let h = try? FileHandle(forWritingTo: file) {
+                try? h.write(contentsOf: content)
+                try? h.close()
+            }
+            Thread.sleep(forTimeInterval: pause)
+        }
         reader(nil)
     }
 }
@@ -244,5 +269,100 @@ final class CopyCoordinatedReadTests: XCTestCase {
         let fractions = reports.filter { !$0.isIndeterminate }.map(\.fraction)
         XCTAssertEqual(fractions, fractions.sorted(), "the bar ran backwards")
         XCTAssertEqual(reports.last?.fraction, 1)
+    }
+
+    /// The Windows App's placeholders turn fully allocated partway through their download, and a meter
+    /// that went by allocation read everything as delivered: the bar stood at the end of the delivery
+    /// while a quarter of it was still coming. Here every chunk is synced, so the placeholder is fully
+    /// allocated after the first one — the bar still has to stand in between while the rest arrives.
+    func testTheBarFollowsADeliveryThatAllocatesTheWholeFileEarly() async throws {
+        let file = src.appendingPathComponent("remote.bin")
+        let big = Data((0..<(4 << 20)).map { UInt8(truncatingIfNeeded: $0 &* 13 &+ 1) })
+        FileManager.default.createFile(atPath: file.path, contents: nil)
+        let h = try FileHandle(forWritingTo: file)
+        try h.truncate(atOffset: UInt64(big.count))
+        try h.close()
+        let p = TricklingPresenter(file: file, content: big, chunks: 8, pause: 0.3, syncs: true)
+        NSFileCoordinator.addFilePresenter(p)
+        defer { NSFileCoordinator.removeFilePresenter(p) }
+
+        let lock = NSLock()
+        var reports: [OpProgress] = []
+        var o = CopyOptions()
+        o.coordinateSourceReads = true
+        let engine = CopyEngine(options: o, control: OperationControl(), resolver: AbortResolver(),
+                                progress: { p in lock.lock(); reports.append(p); lock.unlock() })
+        try await engine.run(items: [file.path], toDirectory: dst.path)
+
+        XCTAssertEqual(try Data(contentsOf: dst.appendingPathComponent("remote.bin")), big)
+        lock.lock(); defer { lock.unlock() }
+        let total = Int64(big.count)
+        XCTAssertTrue(reports.contains { $0.isWaitingForSource && $0.bytesReceived > 0 && $0.bytesReceived < total },
+                      "the delivery read as complete before it was: \(reports.map(\.bytesReceived))")
+        let fractions = reports.filter { !$0.isIndeterminate }.map(\.fraction)
+        XCTAssertEqual(fractions, fractions.sorted(), "the bar ran backwards")
+        XCTAssertEqual(reports.last?.fraction, 1)
+    }
+
+    /// A fully allocated file with content in front and zeros behind: the measure finds the boundary.
+    func testTheFilledPartOfAnAllocatedPlaceholderIsFoundByItsContent() throws {
+        let file = src.appendingPathComponent("allocated.bin")
+        var bytes = Data((0..<(1 << 20)).map { UInt8(truncatingIfNeeded: $0 &* 7 &+ 3) })
+        bytes.append(Data(count: 3 << 20))   // written zeros: allocated, not a hole
+        try bytes.write(to: file)
+        let filled = CopyEngine.DeliveryMeter.filled(file.path, size: Int64(bytes.count))
+        XCTAssertEqual(filled, 1 << 20)
+        XCTAssertEqual(CopyEngine.DeliveryMeter.filled(file.path, size: Int64(bytes.count)), filled)
+    }
+
+    /// A byte that had to be delivered counts once: the bar follows the download to its end and does
+    /// not wait at half for a clone that takes milliseconds.
+    func testADeliveredByteCountsOnce() {
+        let downloading = OpProgress(bytesTotal: 100, bytesDone: 0, bytesToReceive: 100, bytesReceived: 50)
+        XCTAssertEqual(downloading.fraction, 0.5, accuracy: 1e-9)
+        let delivered = OpProgress(bytesTotal: 100, bytesDone: 0, bytesToReceive: 100, bytesReceived: 100)
+        XCTAssertEqual(delivered.fraction, 1, accuracy: 1e-9)
+        // Part delivered, part local: each byte counts once, by whichever it needed.
+        let mixed = OpProgress(bytesTotal: 100, bytesDone: 50, bytesToReceive: 40, bytesReceived: 40)
+        XCTAssertEqual(mixed.fraction, 0.4 + 0.5 * 0.6, accuracy: 1e-9)
+        let finished = OpProgress(bytesTotal: 100, bytesDone: 100, bytesToReceive: 40, bytesReceived: 40)
+        XCTAssertEqual(finished.fraction, 1, accuracy: 1e-9)
+        // Without anything to deliver, it is the bytes copied, as before.
+        XCTAssertEqual(OpProgress(bytesTotal: 100, bytesDone: 25).fraction, 0.25, accuracy: 1e-9)
+    }
+
+    /// A pasted folder arrives file by file while the copy still waits for the folder, and nothing is
+    /// copied until that wait ends. The files copied stood at 0 / 3 for the whole download and then all
+    /// finished at once, and the speed — bytes copied per second — stood at nothing. During the wait
+    /// both have to follow what has arrived.
+    func testFilesAndSpeedFollowTheDeliveryOfAFolder() async throws {
+        let folder = src.appendingPathComponent("export")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let files = ["a.bin", "b.bin", "c.bin"].map { folder.appendingPathComponent($0) }
+        for file in files { try placeholder(file) }
+        let p = FolderDeliveryPresenter(folder: folder, files: files, content: content, pause: 0.7)
+        NSFileCoordinator.addFilePresenter(p)
+        defer { NSFileCoordinator.removeFilePresenter(p) }
+
+        let lock = NSLock()
+        var reports: [OpProgress] = []
+        var o = CopyOptions()
+        o.coordinateSourceReads = true
+        let engine = CopyEngine(options: o, control: OperationControl(), resolver: AbortResolver(),
+                                progress: { p in lock.lock(); reports.append(p); lock.unlock() })
+        try await engine.run(items: [folder.path], toDirectory: dst.path)
+
+        for file in files {
+            XCTAssertEqual(try Data(contentsOf: dst.appendingPathComponent("export/\(file.lastPathComponent)")), content)
+        }
+        lock.lock(); defer { lock.unlock() }
+        let waiting = reports.filter { $0.isWaitingForSource && $0.currentItem == "export" }
+        XCTAssertTrue(waiting.allSatisfy { $0.filesToReceive == 3 })
+        XCTAssertTrue(waiting.contains { $0.filesReceived > 0 && $0.filesReceived < 3 },
+                      "the files arrived one by one but were shown as \(waiting.map(\.filesReceived))")
+        XCTAssertTrue(waiting.contains { $0.bytesPerSecond > 0 }, "the speed stood at nothing while bytes arrived")
+        XCTAssertEqual(waiting.map(\.filesReceived), waiting.map(\.filesReceived).sorted())
+        XCTAssertEqual(reports.last?.filesReceived, 3)
+        XCTAssertEqual(reports.last?.filesDone, 3)
     }
 }
