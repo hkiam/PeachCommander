@@ -1149,6 +1149,76 @@ final class FSImagePluginTests: XCTestCase {
                              "an image smaller than the filesystem it describes must fail")
     }
 
+    /// Overwrite the start of a directory's first block with a record no ext directory
+    /// can hold: a rec_len of 38, not a multiple of four — byte for byte what a
+    /// Raspberry Pi rootfs dd'd while running had, where the directory was created
+    /// mid-copy and its block still held a freed file's bytes.
+    ///
+    /// The block is found with `debugfs` rather than by this test parsing the image:
+    /// a test that locates the block with the reader under test would share its bugs.
+    private func damageDirectory(_ path: String, in image: String) throws {
+        let debugfs = try requireTool("debugfs", hint: "brew install e2fsprogs")
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: debugfs)
+        process.arguments = ["-R", "bmap \(path) 0", image]
+        let output = Pipe()
+        process.standardOutput = output
+        process.standardError = FileHandle.nullDevice
+        try process.run(); process.waitUntilExit()
+        let text = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        guard let block = UInt64(text.trimmingCharacters(in: .whitespacesAndNewlines)), block > 0 else {
+            return XCTFail("debugfs found no block for \(path): \(text)")
+        }
+        let handle = try FileHandle(forUpdating: URL(fileURLWithPath: image))
+        try handle.seek(toOffset: block * 4096)
+        try handle.write(contentsOf: Data([0x1a, 0x01, 0x39, 0x00, 0x26, 0x00, 0x03, 0x00]))
+        try handle.close()
+    }
+
+    /// One unreadable directory must not cost the rest of the filesystem. Before, the
+    /// error escaped the driver's walk and the image would not open at all — and inside
+    /// a partitioned image that surfaced as an empty partition with no reason given.
+    func testADamagedDirectoryIsMarkedAndTheRestOfTheTreeStillLists() throws {
+        let image = try makeExtImage(type: "ext4")
+        try damageDirectory("/etc/conf.d", in: image)
+
+        let paths = Set(try PCXArchive(library: lib).list(archivePath: image).map(\.path))
+        XCTAssertTrue(paths.contains("etc/motd"), "a sibling of the damaged directory: \(paths.sorted())")
+        XCTAssertTrue(paths.contains("bin/big.dat"), "another branch of the tree")
+        XCTAssertTrue(paths.contains { $0.hasPrefix("etc/conf.d/") && $0.contains("DAMAGED DIRECTORY") },
+                      "the damage is announced inside the directory it affects: \(paths.sorted())")
+        XCTAssertFalse(paths.contains("etc/conf.d/app.conf"),
+                       "nothing is invented for a directory that could not be read")
+    }
+
+    /// A partition whose filesystem was recognised but could not be opened says why,
+    /// instead of listing as an empty directory — which reads as "this partition holds
+    /// nothing", the one answer that is certainly wrong.
+    func testAPartitionThatCannotBeOpenedSaysWhyInsteadOfListingEmpty() throws {
+        let filesystem = try makeExtImage(type: "ext4")
+        // The root directory, not a subdirectory: that one still ends the walk, because
+        // without it there is no tree to hang anything from.
+        try damageDirectory("/", in: filesystem)
+
+        // A one-partition MBR disk: a megabyte of lead-in, then the filesystem at LBA 2048.
+        let body = try Data(contentsOf: URL(fileURLWithPath: filesystem))
+        var disk = Data(count: 1 << 20)
+        let sectors = UInt32(body.count / 512)
+        var entry = Data([0x00, 0, 0, 0, 0x83, 0, 0, 0])
+        entry += withUnsafeBytes(of: UInt32(2048).littleEndian) { Data($0) }
+        entry += withUnsafeBytes(of: sectors.littleEndian) { Data($0) }
+        disk.replaceSubrange(446..<462, with: entry)
+        disk[510] = 0x55; disk[511] = 0xAA
+        disk += body
+        let image = dir.appendingPathComponent("disk-damaged-root.img")
+        try disk.write(to: image)
+
+        let paths = try PCXArchive(library: lib).list(archivePath: image.path).map(\.path)
+        XCTAssertTrue(paths.contains { $0.hasPrefix("1-") && $0.contains("UNREADABLE ext")
+                                       && $0.contains("record length") },
+                      "the partition names its driver and the reason: \(paths)")
+    }
+
     // MARK: - initramfs conformance battery
 
     func testListsTheWholeTreeThroughTheHostAdapter() async throws {

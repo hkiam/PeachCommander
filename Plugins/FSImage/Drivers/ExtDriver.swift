@@ -296,6 +296,10 @@ final class ExtDriver: ImageFilesystemDriver {
         guard visited.insert(number).inserted else {
             throw ImageError.damaged(reason: "directory cycle at \(path.isEmpty ? "/" : path)")
         }
+        // Deferred, not at the end: a damaged subdirectory is now caught and skipped by
+        // the caller, and a removal that only runs on success would leave its inode
+        // behind — a later hardlink to it would then read as a cycle.
+        defer { visited.remove(number) }   // a sibling may legitimately reach the same inode via a hardlink
         let inode = try readInode(number)
         guard inode.isDirectory else {
             throw ImageError.damaged(reason: "inode \(number) at \(path) is not a directory")
@@ -341,10 +345,35 @@ final class ExtDriver: ImageFilesystemDriver {
         }
 
         for child in subdirectories {
-            try walkDirectory(inode: child.inode, path: child.path, depth: depth + 1,
-                              visited: &visited, collector: &collector)
+            do {
+                try walkDirectory(inode: child.inode, path: child.path, depth: depth + 1,
+                                  visited: &visited, collector: &collector)
+            } catch let error as ImageError where Self.isConfinedToOneDirectory(error) {
+                // One unreadable directory does not make the filesystem unreadable. An
+                // image dd'd from a running system routinely holds a directory created
+                // mid-copy whose block was never written — on a Raspberry Pi rootfs it
+                // was one Docker overlay directory among a hundred thousand. Letting
+                // that error escape `init` threw away the whole tree, and a partition
+                // wrapped around it listed as empty with no reason given. The marker
+                // goes *inside* the damaged directory, where whoever finds it is
+                // already looking; whatever entries were read before the damage stay.
+                try collector.add(ImageEntry(
+                    path: "\(child.path)/\(Self.damagedDirectoryMarker)",
+                    size: 0, mtime: 0, kind: .special, mode: 0, locator: 0))
+            }
         }
-        visited.remove(number)   // a sibling may legitimately reach the same inode via a hardlink
+    }
+
+    static let damagedDirectoryMarker = "!! DAMAGED DIRECTORY - contents could not be read, run e2fsck"
+
+    /// Errors that describe one directory's own structures, as opposed to the image
+    /// as a whole. A limit, or the file failing to read, is neither confined nor
+    /// recoverable by skipping, so those still end the walk.
+    private static func isConfinedToOneDirectory(_ error: ImageError) -> Bool {
+        switch error {
+        case .damaged, .unsupported, .outOfBounds: return true
+        case .limitExceeded, .readFailed, .cannotOpen, .notThisFormat: return false
+        }
     }
 
     private func appendEntry(inode number: UInt32, path: String, collector: inout EntryCollector,

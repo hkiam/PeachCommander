@@ -12,7 +12,9 @@
 // partition is listed as an empty directory with its type in the name, not omitted.
 // Somebody auditing a device needs to see that a third partition exists even when its
 // contents are out of reach — a silently shortened partition list is a wrong answer
-// about the hardware, not just about the file.
+// about the hardware, not just about the file. A partition some driver *recognised* but
+// could not open is different again, and says so: its directory holds one entry naming
+// the driver and the reason.
 //
 // **The recursion is one level deep.** A partition containing another partition table is
 // not walked. That combination is vanishingly rare in practice and unbounded in
@@ -97,8 +99,22 @@ final class PartitionedDriver: ImageFilesystemDriver {
                                                 windowOffset: partition.offset,
                                                 windowLength: partition.length),
                   let type = DriverRegistry.driverType(for: window,
-                                                       excluding: [Self.self, CarvedDriver.self]),
-                  let driver = try? type.init(reader: window) else { continue }
+                                                       excluding: [Self.self, CarvedDriver.self])
+            else { continue }
+
+            // A driver claimed the partition and then failed to open it. That is not
+            // the same as "unrecognised", and an empty directory says the latter — a
+            // Raspberry Pi rootfs with one bad directory block listed exactly like a
+            // partition holding nothing. The reason is put where it is seen, as the one
+            // entry in the partition's directory.
+            let driver: any ImageFilesystemDriver
+            do {
+                driver = try type.init(reader: window)
+            } catch {
+                try collector.add(ImageEntry(path: "\(name)/\(Self.failureMarker(type: type, error: error))",
+                                             size: 0, mtime: 0, kind: .special, mode: 0, locator: 0))
+                continue
+            }
 
             drivers[index] = driver
             for (entryIndex, entry) in driver.entries.enumerated() {
@@ -127,6 +143,27 @@ final class PartitionedDriver: ImageFilesystemDriver {
 
         entries = collector.entries
         droppedNames += collector.droppedNames
+    }
+
+    /// The entry name standing in for a partition its driver could not open.
+    ///
+    /// The reason is the driver's own text, which may carry a "/" (a path inside the
+    /// filesystem) or run long; both are folded so the name passes `EntryPath`. This
+    /// is our message, not a name from the image, so repairing it is right here.
+    static func failureMarker(type: any ImageFilesystemDriver.Type, error: Error) -> String {
+        let reason: String
+        switch error as? ImageError {
+        case .damaged(let why)?, .unsupported(let why)?: reason = why
+        case .limitExceeded(let limit)?: reason = "limit reached: \(limit)"
+        case .outOfBounds?: reason = "the partition ends before its own structures do"
+        default: reason = "could not be read"
+        }
+        var name = "!! UNREADABLE \(type.id) - \(reason)"
+        name = String(name.unicodeScalars.map { scalar -> Character in
+            scalar == "/" || scalar.value < 0x20 || scalar.value == 0x7F ? " " : Character(scalar)
+        })
+        while name.utf8.count > 200 { name.removeLast() }
+        return name
     }
 
     /// The runs of the image no partition covers, identified where possible.

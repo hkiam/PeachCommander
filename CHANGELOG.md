@@ -17,6 +17,13 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
 
 ### Fixed
 
+- **A disk image whose Linux partition has one damaged directory opens, instead of the partition
+  listing empty.** A Raspberry Pi image taken with `dd` from the running system had a directory
+  created mid-copy whose block was never written, and that one error discarded the whole ext4 tree:
+  `2-Linux` showed nothing and gave no reason. The damaged directory now holds a `!! DAMAGED
+  DIRECTORY` entry and the rest of the filesystem lists, 419 868 entries in that image. A partition
+  whose filesystem is recognised but cannot be opened at all names its reader and the reason in an
+  `!! UNREADABLE` entry rather than appearing empty.
 - **A local copy of many small files runs at the pace of `cp -c` and `ditto`, not at half of it.**
   After cloning a file, the copy copied all of its metadata again, and that was 60 % of the time on a
   folder of 500 000 files. A clone already carries mode, flags, owner, both dates and every extended
