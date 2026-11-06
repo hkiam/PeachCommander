@@ -42,4 +42,32 @@ public enum TextContentKind {
         // Not valid in the encoding it was taken for: salvage what is there, and treat it as binary.
         return (String(decoding: bytes, as: UTF8.self), true)
     }
+
+    // MARK: - One line too long to lay out unwrapped
+
+    /// The longest line, in UTF-16 units, above which the viewer must wrap the text.
+    ///
+    /// Reported: the `document.xml` of a Word file — 620,490 characters on one line — took the app
+    /// minutes to open. Sampled in the act, the whole time was inside `NSTextView.sizeToFit`, where
+    /// TextKit 2 measures that line as a single CTLine and walks its caret offsets. Without wrapping the
+    /// cost grows with the length of the line; wrapped, TextKit 2 lays out only what is on screen.
+    /// Measured on that file in a bare text view: 0.94 s unwrapped, 0.03 s wrapped, and 17 ms unwrapped
+    /// at 10,000 characters. The running app was far slower than the bare view, so the limit sits where
+    /// even the bare view is still cheap, and long above any line written by hand.
+    public static let wrapLineLength = 10_000
+
+    /// Whether `text` has a line longer than `wrapLineLength`, so that it may go into an NSTextView only
+    /// wrapped. CR, LF and CRLF all end a line.
+    public static func hasOverlongLine(_ text: String, limit: Int = wrapLineLength) -> Bool {
+        var run = 0
+        for unit in text.utf16 {
+            if unit == 0x0A || unit == 0x0D {
+                run = 0
+            } else {
+                run += 1
+                if run > limit { return true }
+            }
+        }
+        return false
+    }
 }

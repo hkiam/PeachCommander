@@ -12,6 +12,12 @@ enum SyntaxHighlightApplier {
     /// `string` in `language`. No-op coloring for very large storages (kept cheap).
     static func apply(_ string: String, language: SyntaxLanguage?, to storage: NSTextStorage) {
         let full = NSRange(location: 0, length: storage.length)
+        // One edit for all of it: outside beginEditing/endEditing every addAttribute runs processEditing,
+        // which finds the enclosing paragraph by scanning the text — on a file that is one long line
+        // (a Word document.xml, minified JSON) that is the whole file once per token. Measured on a
+        // 620,490-character line: 76 s in the viewer before the window appeared.
+        storage.beginEditing()
+        defer { storage.endEditing() }
         storage.removeAttribute(.foregroundColor, range: full)
         storage.addAttribute(.foregroundColor, value: NSColor.textColor, range: full)
         guard let language, storage.length <= 2_000_000 else { return }

@@ -27,6 +27,10 @@ enum TreeSitterHighlighter {
         guard let tree = parser.parse(text) else { return false }
 
         let length = storage.length
+        // Batched for the reason given in SyntaxHighlightApplier.apply: per-token edits cost a scan of
+        // the whole paragraph each, which on a one-line file is the whole file.
+        storage.beginEditing()
+        defer { storage.endEditing() }
         storage.removeAttribute(.foregroundColor, range: NSRange(location: 0, length: length))
         storage.addAttribute(.foregroundColor, value: NSColor.textColor,
                              range: NSRange(location: 0, length: length))

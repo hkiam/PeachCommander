@@ -77,6 +77,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         tv.isIncrementalSearchingEnabled = true
         tv.delegate = self   // for bracket-match highlighting on selection change
         tv.onCommandClick = { [weak self] idx in self?.goToDefinition(at: idx) }
+        // A line too long to lay out unwrapped turns wrapping on, whatever the toggle says: unwrapped,
+        // TextKit 2 measures it as one CTLine and the window stops responding (see TextContentKind).
+        wrapForced = TextContentKind.hasOverlongLine(text)
         applyWrap(to: tv)    // F-114: honor the wrap/no-wrap toggle
         tv.string = text
         if let storage = tv.textStorage {
@@ -115,6 +118,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Viewer text state (F-114): word-wrap toggle + adjustable font size.
     private var wrapText = false
+    /// True while the text view shows content with a line too long to lay out unwrapped, so it is
+    /// wrapped regardless of `wrapText`. Set by `makeTextContent`, cleared on every rebuild.
+    private var wrapForced = false
     private var viewerFontSize: CGFloat = 12
     /// Configurable hex line width / binary columns (F-111), cycled with +/-.
     private var hexBytesPerRow = 16
@@ -130,7 +136,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Configure a text view for the current wrap mode: wrapping tracks the scroll
     /// view width; no-wrap uses an unbounded container with a horizontal scroller.
     private func applyWrap(to tv: NSTextView) {
-        if wrapText {
+        if wrapText || wrapForced {
             let w = max(50, scrollView.contentSize.width)
             tv.isHorizontallyResizable = false
             tv.textContainer?.widthTracksTextView = true
@@ -1220,6 +1226,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         teardownMedia()
         isFormatted = false
         formatterUsed = nil
+        wrapForced = false
         displayedText = nil
         displayedBytesCache = nil
 
@@ -1467,6 +1474,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         """
     }
 
+    /// Says why the text is wrapped although the toggle is off — otherwise `w` seems to do nothing.
+    private var wrapForcedNote: String {
+        wrapForced ? " · \(String(localized: "wrapped (very long line)"))" : ""
+    }
+
     private func updateStatus() {
         let size = slice?.count ?? 0
         let modeName: String
@@ -1480,7 +1492,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             } else {
                 fmt = ""
             }
-            modeName = "\(String(localized: "Text")) · \(enc)\(fmt)"
+            modeName = "\(String(localized: "Text")) · \(enc)\(fmt)\(wrapForcedNote)"
         case .hex: modeName = "\(String(localized: "Hex")) · \(hexBytesPerRow)/line"   // F-111
         case .binary: modeName = "\(String(localized: "Binary")) · \(binaryColumns)/line"
         case .image:
@@ -1496,7 +1508,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case .code:
             let ext = (files[index] as NSString).pathExtension.lowercased()
             let lang = SyntaxHighlighter.language(forExtension: ext)?.name ?? String(localized: "Code")
-            modeName = "\(String(localized: "Code")) · \(lang)"
+            modeName = "\(String(localized: "Code")) · \(lang)\(wrapForcedNote)"
         case .xmlTree:
             modeName = String(localized: "XML Tree")
         }
@@ -1874,6 +1886,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case 29 where mode == .image: docZoomActual(); return true        // 0 (actual size, 100%)
         case 3 where mode == .image: docZoomFit(); return true            // f (fit the whole picture)
         case 13 where mode == .text || mode == .code:                    // w = toggle word wrap
+            // Content with an overlong line stays wrapped (see `wrapForced`); unwrapping it is the hang.
+            if wrapForced { NSSound.beep(); return true }
             wrapText.toggle(); rebuildContent(); return true
         case 24 where mode == .text || mode == .code:                    // + = larger font
             viewerFontSize = min(48, viewerFontSize + 1); rebuildContent(); return true

@@ -77,4 +77,33 @@ final class TextContentKindTests: XCTestCase {
         XCTAssertTrue(result.needsVirtualView)
         XCTAssertTrue(result.text.contains("readable part"))
     }
+
+    // MARK: - One overlong line must be wrapped
+
+    func testOrdinaryLinesNeedNoWrap() {
+        let text = String(repeating: String(repeating: "x", count: 200) + "\n", count: 500)
+        XCTAssertFalse(TextContentKind.hasOverlongLine(text))
+    }
+
+    func testAWordDocumentXMLOnOneLineNeedsWrap() {
+        // The reported shape: a Word file's document.xml, all of it on one line.
+        let text = "<w:document>" + String(repeating: "<w:p><w:r><w:t>Absatz</w:t></w:r></w:p>", count: 2_000)
+            + "</w:document>"
+        XCTAssertTrue(TextContentKind.hasOverlongLine(text))
+    }
+
+    func testTheLimitIsTheLongestLineNotTheSize() {
+        // Many lines at exactly the limit are fine however large the file; one character more on
+        // one of them is not.
+        let atLimit = String(repeating: "a", count: TextContentKind.wrapLineLength)
+        XCTAssertFalse(TextContentKind.hasOverlongLine(Array(repeating: atLimit, count: 50).joined(separator: "\n")))
+        XCTAssertTrue(TextContentKind.hasOverlongLine(atLimit + "a"))
+    }
+
+    func testCarriageReturnsEndLinesToo() {
+        // Old Mac and Windows line ends: CR alone, and CRLF, must reset the count as LF does.
+        let line = String(repeating: "b", count: TextContentKind.wrapLineLength)
+        XCTAssertFalse(TextContentKind.hasOverlongLine(line + "\r" + line))
+        XCTAssertFalse(TextContentKind.hasOverlongLine(line + "\r\n" + line))
+    }
 }
