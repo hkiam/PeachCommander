@@ -24,6 +24,16 @@ permission — it is not a Developer ID and changes nothing about Gatekeeper.
   DIRECTORY` entry and the rest of the filesystem lists, 419 868 entries in that image. A partition
   whose filesystem is recognised but cannot be opened at all names its reader and the reason in an
   `!! UNREADABLE` entry rather than appearing empty.
+- **A packer plugin switched on in Settings or the plugin manager works at once, without a restart.**
+  Enter on a disk image did nothing after enabling Linux Filesystem Images until the app was
+  relaunched.
+- **Ctrl+PageDown on a disk image opens it with the plugin, not as a tar of one garbage-named
+  member.** The first sector of a disk image passed for an old-style tar header; a header without
+  the `ustar` mark now has to have a checksum that adds up. A real old-style tar now lists all its
+  members, not only the first.
+- **Moving elsewhere while an image is being opened keeps you there.** Opening a large image takes
+  seconds; the panel used to jump into it afterwards wherever it was by then. It shows "Reading…"
+  while it waits, and an open you have moved away from is dropped.
 - **A local copy of many small files runs at the pace of `cp -c` and `ditto`, not at half of it.**
   After cloning a file, the copy copied all of its metadata again, and that was 60 % of the time on a
   folder of 500 000 files. A clone already carries mode, flags, owner, both dates and every extended
