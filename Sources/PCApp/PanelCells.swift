@@ -52,6 +52,9 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
         label.isEditable = false
         label.drawsBackground = false
         label.lineBreakMode = .byTruncatingTail
+        // A name cut off with "…" shows in full on hover, laid over the cell as Finder does. AppKit
+        // offers it only when the text really is truncated, so a name that fits gets no tooltip.
+        label.allowsExpansionToolTips = true
         label.font = Fonts.panelText
         badgeLabel.translatesAutoresizingMaskIntoConstraints = false
         badgeLabel.isBezeled = false; badgeLabel.isEditable = false; badgeLabel.drawsBackground = false
@@ -238,6 +241,7 @@ final class PlainCellView: NSTableCellView {
         label.isEditable = false
         label.drawsBackground = false
         label.lineBreakMode = .byTruncatingTail
+        label.allowsExpansionToolTips = true   // full text on hover when truncated; see DirectoryCellView
         addSubview(label)
         textField = label
 
