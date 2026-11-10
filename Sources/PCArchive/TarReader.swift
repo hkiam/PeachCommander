@@ -171,7 +171,10 @@ public final class TarReader: ArchiveSource {
             // block also effectively terminates a well-formed stream.
             if block.allSatisfy({ $0 == 0 }) { break }
 
-            guard Self.isUstarOrGNU(block) || sawValidHeader == false && Self.looksLikeHeader(block) else {
+            // The v7 test applies to every header, not only the first: a v7 tar has no magic in
+            // *any* of them, and restricting it to the first block listed one member and called
+            // the rest trailing garbage. It can afford to, now that it checks the checksum.
+            guard Self.isUstarOrGNU(block) || Self.looksLikeHeader(block) else {
                 // Not a header where one is expected — bail unless we already have
                 // valid members (trailing garbage tolerated).
                 if sawValidHeader { break }
@@ -243,8 +246,15 @@ public final class TarReader: ArchiveSource {
             && block[s + 3] == 0x61 && block[s + 4] == 0x72
     }
 
-    /// Fallback heuristic for old-style (v7) tar with no ustar magic: a plausible
-    /// header has a NUL/space-terminated octal size field and a nonzero name byte.
+    /// Fallback for old-style (v7) tar with no ustar magic: a NUL/space-terminated octal
+    /// size field, a nonzero name byte, **and a header checksum that adds up**.
+    ///
+    /// The checksum is what makes this a test rather than a guess. Without it any block
+    /// whose first byte is set and whose bytes 124–134 are zero passed — which is the
+    /// first sector of nearly every disk image: x86 boot code up front, zeros after it.
+    /// Ctrl+PageDown on a Raspberry Pi `.ddfull` then "opened" a tar of one member named
+    /// after the boot code, instead of letting the filesystem-image plugin have it. Every
+    /// tar writer since v7 fills the checksum in, so nothing real is lost.
     private static func looksLikeHeader(_ block: Data) -> Bool {
         guard block[block.startIndex] != 0 else { return false }
         // Size field at 124 must be octal digits then NUL/space.
@@ -252,7 +262,28 @@ public final class TarReader: ArchiveSource {
             let c = block[block.startIndex + i]
             if !(c == 0x20 || c == 0 || (c >= 0x30 && c <= 0x37)) { return false }
         }
-        return true
+        return checksumMatches(block)
+    }
+
+    /// The header sum: every byte of the block, with the checksum field itself (148..<156)
+    /// counted as spaces. Historic writers summed signed bytes, so either sum is accepted.
+    private static func checksumMatches(_ block: Data) -> Bool {
+        let base = block.startIndex
+        var digits = 0, value = 0
+        for i in 148..<156 {
+            let c = block[base + i]
+            if c >= 0x30 && c <= 0x37 { value = value * 8 + Int(c - 0x30); digits += 1 }
+            else if c == 0 || c == 0x20 { if digits > 0 { break } }
+            else { return false }
+        }
+        guard digits > 0 else { return false }
+        var unsigned = 0, signed = 0
+        for i in 0..<blockSize {
+            let byte = (148..<156).contains(i) ? 0x20 : block[base + i]
+            unsigned += Int(byte)
+            signed += Int(Int8(bitPattern: byte))
+        }
+        return value == unsigned || value == signed
     }
 
     /// ustar name = prefix (offset 345, 155) + "/" + name (offset 0, 100).

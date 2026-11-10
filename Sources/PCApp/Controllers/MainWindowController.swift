@@ -4894,7 +4894,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             win.setPluginRows(pluginRows)
             win.onTogglePlugin = { [weak self] name, enabled in
-                Task { @MainActor in await self?.pluginManager.setEnabled(name, enabled); self?.loadExternalPlugins() }
+                Task { @MainActor in await self?.pluginManager.setEnabled(name, enabled); self?.pluginSetChanged() }
             }
             win.onOpenPluginsManager = { [weak self] in self?.showPluginsManager() }
             // File-type colour editor (F-032).
@@ -6719,6 +6719,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     // MARK: - Plugins (I14)
 
+    /// Everything that has to follow a change to the set of enabled plugins: switched on or off,
+    /// installed, removed.
+    ///
+    /// Two halves, and the second was missing from every path but install. `loadExternalPlugins`
+    /// covers contributions, file-system plugins and content columns; packer plugins are wired by
+    /// `loadPlugins` — the archive registry's extensions and the by-content probe for names no
+    /// plugin declares. Without it, a packer switched on was listed as on and opened nothing until
+    /// the next launch: FSImage enabled in Settings, Enter on a Raspberry Pi `.ddfull` image did
+    /// nothing, because the probe had been left off at launch while the plugin was disabled.
+    func pluginSetChanged() {
+        loadExternalPlugins()
+        loadPlugins()
+    }
+
     private func loadPlugins() {
         // Both panels open archives through the same registry the search uses. The
         // plugin-resolving closure that used to live here moved into
@@ -6822,14 +6836,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         win.onToggle = { [weak self] name, enabled in
             Task { @MainActor in
                 await self?.pluginManager.setEnabled(name, enabled)
-                self?.loadExternalPlugins()   // re-aggregate contributions → menus rebuild
+                self?.pluginSetChanged()   // contributions, menus and the archive gate
                 await self?.refreshPluginsWindow()
             }
         }
         win.onRemove = { [weak self] name in
             Task { @MainActor in
                 await self?.pluginManager.remove(name: name)
-                self?.loadExternalPlugins()
+                self?.pluginSetChanged()
                 await self?.refreshPluginsWindow()
             }
         }
@@ -6881,8 +6895,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             presentInfo(String(localized: "Install failed"), Self.installErrorDetail(error, url: url))
         }
         await pluginManager.discard(staged)
-        loadExternalPlugins()
-        loadPlugins()
+        pluginSetChanged()
         await refreshPluginsWindow()
     }
 
@@ -7789,6 +7802,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// The path `loadPath` is currently fetching, so a partial snapshot from a listing that has since
     /// been overtaken does not paint over the one that replaced it.
     private var loadingPath: String?
+    /// Bumped by every `enterArchive`, so an open that finishes after a newer one started does not
+    /// land on top of it.
+    private var enterArchiveGeneration: UInt64 = 0
     /// When a partial listing was last painted, for the throttle.
     private var lastPartialPaint = Date.distantPast
     /// How often partial rows may be painted. Ten times a second is faster than anyone reads and slow
@@ -8085,6 +8101,19 @@ final class PanelController: NSObject, PanelControllerProtocol {
     func enterArchive(_ pathToOpen: String, speculative: Bool = false) async {
         guard let opening = archiveOpening else { NSSound.beep(); return }
 
+        // Where the user was when they asked. Opening is asynchronous and can take seconds — a
+        // 31 GB disk image is parsed in full before there is anything to show — and the panel
+        // stays usable meanwhile. Without this the archive was pushed onto whatever the panel had
+        // moved to since: browse three folders on, and the image you gave up on swallowed the
+        // panel from under you. Checked against the place rather than the cursor, because an
+        // archive can be entered without a cursor on it (the automation harness does).
+        enterArchiveGeneration &+= 1
+        let generation = enterArchiveGeneration
+        let originFS = fs
+        let originPath = await model.getPath()
+        view.beginStandingMessage(String(localized: "Reading…"))
+        defer { view.endStandingMessage() }
+
         // The registry does the nested-archive extraction (F-134) itself, so the three
         // call sites that each used to do it — and each had a different idea of who
         // deletes the result — now share one.
@@ -8115,6 +8144,21 @@ final class PanelController: NSObject, PanelControllerProtocol {
                     opened = await opening.probeByContent(localFile: URL(fileURLWithPath: pathToOpen))
                 }
             }
+        }
+
+        // Superseded: a newer Enter on an archive, or the panel has gone somewhere else — or is on
+        // its way there (`loadingPath` is set before a navigation's first await). Nothing is said
+        // and nothing is opened externally either: the user has visibly moved on.
+        let currentPath = await model.getPath()
+        let movedOn = generation != enterArchiveGeneration
+            || fs !== originFS
+            || currentPath != originPath
+            || (loadingPath.map { $0 != originPath } ?? false)
+        if movedOn {
+            if let archive = opened, archive.isTemporary {
+                try? FileManager.default.removeItem(at: archive.localURL)
+            }
+            return
         }
 
         guard let archive = opened else {

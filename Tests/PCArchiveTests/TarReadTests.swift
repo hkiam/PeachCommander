@@ -74,6 +74,27 @@ final class TarReadTests: XCTestCase {
         XCTAssertEqual(top, "hello from tar\n")
     }
 
+    /// A v7 tar has no `ustar` magic, so it is recognised by its header alone — and still is.
+    func test_v7Tar_withoutMagic_stillListsAndReads() async throws {
+        let url = try makeTar(named: "v7.tar", flags: ["--format", "v7tar", "-cf"])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: url, fsID: "tar:v7"))
+        let top = try await read(fs, "/top.txt")
+        XCTAssertEqual(top, "hello from tar\n")
+    }
+
+    /// The first sector of a disk image: boot code from byte 0, zeros through the size field.
+    /// That passed the old v7 heuristic, and Ctrl+PageDown on a Raspberry Pi image listed one
+    /// member named after the boot code. Without a checksum that adds up, it is not a header.
+    func test_bootSector_isNotMistakenForAV7Header() throws {
+        var image = Data(count: 4096)
+        image.replaceSubrange(0..<16, with: [0xfa, 0xb8, 0x00, 0x10, 0x8e, 0xd0, 0xbc, 0x00,
+                                             0xb0, 0xb8, 0x00, 0x00, 0x8e, 0xd8, 0x8e, 0xc0])
+        image[510] = 0x55; image[511] = 0xaa
+        let url = dir.appendingPathComponent("disk.ddfull")
+        try image.write(to: url)
+        XCTAssertNil(ArchiveFS(archiveFileURL: url, fsID: "x"))
+    }
+
     func test_notAnArchive_returnsNil() throws {
         let junk = dir.appendingPathComponent("junk.bin")
         try Data(repeating: 0x42, count: 2048).write(to: junk)
